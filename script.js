@@ -14,6 +14,87 @@ document.addEventListener('DOMContentLoaded', () => {
     let cachedAutoLabels = null; // Store auto_labels.json data globally
     let cachedChartData = null; // Store chart-data.json for releases data
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
+    
+    // ==================== PERSISTENT STORAGE ====================
+    const STORAGE_KEY = 'mmm-pending-changes';
+    
+    // Load any pending changes from localStorage
+    function loadPendingChanges() {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data && data.bandsData && Array.isArray(data.bandsData)) {
+                    console.log('Found pending changes in localStorage');
+                    return data;
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to load pending changes:', err);
+        }
+        return null;
+    }
+    
+    // Save pending changes to localStorage
+    function savePendingChanges() {
+        if (!hasUnsavedChanges) {
+            // Clear storage if no changes
+            localStorage.removeItem(STORAGE_KEY);
+            return;
+        }
+        try {
+            const data = {
+                bandsData: bandsData,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            console.log('Saved pending changes to localStorage');
+        } catch (err) {
+            console.warn('Failed to save pending changes:', err);
+        }
+    }
+    
+    // Prompt before leaving if there are unsaved changes
+    window.addEventListener('beforeunload', (e) => {
+        if (hasUnsavedChanges) {
+            // Save to localStorage before potentially leaving
+            savePendingChanges();
+            // Show browser's default confirmation dialog
+            e.preventDefault();
+            e.returnValue = 'Имате незачувани промени. Промените се сочувани локално, но не се поднесени. Сигурно сакате да излезете?';
+            return e.returnValue;
+        }
+    });
+    
+    // Auto-save changes periodically
+    setInterval(() => {
+        if (hasUnsavedChanges) {
+            savePendingChanges();
+        }
+    }, 30000); // Save every 30 seconds
+    
+    // ==================== DARK MODE ====================
+    function initDarkMode() {
+        const toggle = document.getElementById('dark-mode-toggle');
+        if (!toggle) return;
+        
+        // Check localStorage for saved preference
+        const savedMode = localStorage.getItem('mmm-dark-mode');
+        if (savedMode === 'true') {
+            document.body.classList.add('dark-mode');
+            toggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('mmm-dark-mode', isDark);
+            toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    }
+    
+    // Initialize dark mode early
+    initDarkMode();
 
     console.log('Script loaded, initializing...');
 
@@ -634,6 +715,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Loading bands data...');
             loadingBar.classList.add('active');
             controls.style.display = 'none';
+            
+            // Check for pending changes in localStorage
+            const pendingChanges = loadPendingChanges();
 
             // Load chart data first for artist images
             try {
@@ -670,8 +754,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 const filtered = existing.filter(l => !labelsToRemove.includes(l));
                 return filtered.length ? filtered.join(', ') : null;
             }
-
-            bandsData = data.muzickaMasterLista.map((band) => {
+            
+            // Check if we should restore pending changes
+            if (pendingChanges && pendingChanges.bandsData) {
+                const savedAt = new Date(pendingChanges.savedAt);
+                const timeAgo = Math.round((Date.now() - savedAt.getTime()) / 60000); // minutes
+                
+                // Show notification about pending changes
+                setTimeout(() => {
+                    showNotification(
+                        `Пронајдени се незачувани промени од пред ${timeAgo} минути. Промените се вратени.`,
+                        'info',
+                        8000
+                    );
+                }, 500);
+                
+                // Use the saved data
+                bandsData = pendingChanges.bandsData;
+                hasUnsavedChanges = true;
+                
+                // Still load original data for comparison
+                const originalFromServer = data.muzickaMasterLista.map((band) => {
+                    let status;
+                    if (band.isActive === true) {
+                        status = 'Активен';
+                    } else if (band.isActive === false) {
+                        status = 'Неактивен';
+                    } else {
+                        status = band.isActive || 'Непознато';
+                    }
+                    let label = band.label || null;
+                    label = removeComputedLabels(label, CONTROLLED_LABELS);
+                    return {
+                        name: band.name || 'недостигаат податоци',
+                        city: band.city || 'недостигаат податоци',
+                        genre: band.genre || 'недостигаат податоци',
+                        soundsLike: band.soundsLike || 'недостигаат податоци',
+                        isActive: status,
+                        links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
+                        contact: band.contact || 'недостигаат податоци',
+                        lastfmName: band.lastfmName || null,
+                        label
+                    };
+                });
+                originalBandsData = JSON.parse(JSON.stringify(originalFromServer));
+            } else {
+                // Normal load - no pending changes
+                bandsData = data.muzickaMasterLista.map((band) => {
                     let status;
                     if (band.isActive === true) {
                         status = 'Активен';
@@ -697,6 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         label
                     };
                 });
+                originalBandsData = JSON.parse(JSON.stringify(bandsData));
+            }
             bandsData.sort((a, b) => {
                 const nameA = transliterateCyrillicToLatin(a.name);
                 const nameB = transliterateCyrillicToLatin(b.name);
@@ -741,7 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             console.log(`Loaded ${bandsData.length} bands`);
-            originalBandsData = JSON.parse(JSON.stringify(bandsData));
+            // originalBandsData is already set during load (with or without pending changes)
             populateFilters(bandsData);
             renderBands(bandsData);
             initializeFilters();
@@ -1207,6 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearErrors();
             hasUnsavedChanges = true;
             updateSubmitButtonState();
+            savePendingChanges(); // Save to localStorage
             console.log('Form submission successful');
         });
 
@@ -1308,6 +1440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 filterBands();
                 hasUnsavedChanges = true;
                 updateSubmitButtonState();
+                savePendingChanges(); // Save to localStorage
             }
         }
 
@@ -1480,6 +1613,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     originalBandsData = JSON.parse(JSON.stringify(bandsData));
                     hasUnsavedChanges = false;
                     updateSubmitButtonState();
+                    // Clear pending changes from localStorage after successful submission
+                    localStorage.removeItem(STORAGE_KEY);
                 } catch (_) {}
             }
         });
