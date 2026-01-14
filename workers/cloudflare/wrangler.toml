@@ -8,4 +8,4 @@ GITHUB_OWNER = "martinpetkovski"
 GITHUB_REPO = "martinpetkovski.github.io"
 GITHUB_DEFAULT_BRANCH = "master"
 ## Comma-separated list of allowed origins for CORS
-CORS_ORIGINS = "https://www.najjak.com,https://martinpetkovski.github.io"
+CORS_ORIGINS = "https://toplista.mk,https://www.toplista.mk,https://www.najjak.com,https://martinpetkovski.github.io"
