@@ -10,17 +10,164 @@
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* Dark mode variables */
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-hover: #1f3460;
+            --text-primary: #eee;
+            --text-secondary: #aaa;
+            --text-muted: #777;
+            --border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .chart-section-header {
+            background: linear-gradient(135deg, #c9302c, #d9534f);
+        }
+        
+        body.dark-mode .share-card {
+            background: #1a1a2e;
+            border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .share-card-list {
+            background: #1a1a2e;
+        }
+        
+        body.dark-mode .share-card-item {
+            border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .share-card-song {
+            color: #eee;
+        }
+        
+        body.dark-mode .share-card-artist {
+            color: #aaa;
+        }
+        
+        body.dark-mode .share-card-footer {
+            background: #16213e;
+            border-color: #2d3a5a;
+        }
+        
+        /* Dark mode for chart sections and items */
+        body.dark-mode .chart-section {
+            background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.9) 100%);
+            border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .chart-item {
+            background: linear-gradient(90deg, rgba(45, 58, 90, 0.3) 0%, transparent 100%);
+            border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .chart-item:hover {
+            background: linear-gradient(90deg, rgba(45, 58, 90, 0.6) 0%, rgba(45, 58, 90, 0.2) 100%);
+        }
+        
+        body.dark-mode .chart-cover {
+            background: #2d3a5a;
+        }
+        
+        body.dark-mode .chart-title {
+            color: #eee;
+        }
+        
+        body.dark-mode .chart-artist-link {
+            color: #aaa;
+        }
+        
+        body.dark-mode .chart-release-type {
+            background: rgba(45, 58, 90, 0.6);
+            color: #aaa;
+        }
+        
+        body.dark-mode .share-modal-content {
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            border-color: #2d3a5a;
+        }
+        
+        body.dark-mode .share-actions button {
+            background: linear-gradient(180deg, #2d3a5a 0%, #252e45 100%);
+            border-color: #3d4a6a;
+            color: #eee;
+        }
+        
+        body.dark-mode .share-actions button:hover {
+            background: linear-gradient(180deg, #3d4a6a 0%, #2d3a5a 100%);
+        }
+        
+        body.dark-mode .share-modal-close {
+            color: #aaa;
+        }
+        
+        body.dark-mode .share-modal-close:hover {
+            color: #eee;
+        }
+        
+        body.dark-mode .cache-info {
+            color: #777;
+        }
+        
+        /* Dark mode toggle button */
+        .dark-mode-toggle {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(0,0,0,0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 0.35rem 0.6rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        .dark-mode-toggle:hover {
+            background: linear-gradient(180deg, var(--bg-hover) 0%, rgba(0,0,0,0.08) 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        body.dark-mode .dark-mode-toggle {
+            background: linear-gradient(180deg, #2d3a5a 0%, #252e45 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        
+        body.dark-mode .dark-mode-toggle:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        
         body.chart-page {
             overflow: hidden;
             height: 100vh;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(103, 126, 234, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 0%, rgba(250, 82, 82, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 100% 100%, rgba(18, 184, 134, 0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(121, 80, 242, 0.06) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(253, 126, 20, 0.04) 0%, transparent 60%),
+                linear-gradient(180deg, #f8fafc 0%, #eef2f7 25%, #e8ecf2 50%, #e2e8ef 75%, #dce3eb 100%);
+        }
+        
+        body.dark-mode.chart-page {
+            background: 
+                radial-gradient(ellipse at 0% 0%, rgba(103, 126, 234, 0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 100% 0%, rgba(250, 82, 82, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 100% 100%, rgba(18, 184, 134, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 0% 100%, rgba(121, 80, 242, 0.1) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(253, 126, 20, 0.06) 0%, transparent 55%),
+                linear-gradient(180deg, #1a1a2e 0%, #151a30 20%, #121929 40%, #0f172a 60%, #0c1322 80%, #0a101c 100%);
         }
         
         .chart-container {
             max-width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1.25rem;
             flex: 1;
             min-height: 0;
             display: flex;
@@ -31,8 +178,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0 0.25rem;
+            margin-bottom: 0.65rem;
+            padding: 0 0.35rem;
         }
         
         .chart-header h1 {
@@ -66,24 +213,45 @@
         }
         
         .chart-section {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            border: 1px solid rgba(222, 226, 230, 0.6);
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                        inset 0 1px 0 rgba(255,255,255,0.9);
+            transition: all 0.2s ease;
+        }
+        
+        .chart-section:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                        inset 0 1px 0 rgba(255,255,255,0.9);
         }
         
         .chart-section-header {
-            background: linear-gradient(135deg, #fa5252, #fd7e14);
+            background: linear-gradient(135deg, #fa5252 0%, #fd7e14 100%);
             color: #fff;
-            padding: 0.5rem 0.75rem;
+            padding: 0.6rem 0.85rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.15);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 
+                        inset 0 -1px 0 rgba(0,0,0,0.15),
+                        0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .chart-section-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
         }
         
         .chart-section-header h2 {
@@ -111,26 +279,27 @@
         }
         
         .share-btn {
-            background: rgba(255,255,255,0.15);
-            border: none;
-            border-radius: 4px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
             color: #fff;
-            padding: 0.2rem 0.4rem;
+            padding: 0.25rem 0.5rem;
             font-size: 0.55rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.2rem;
-            transition: background 0.15s ease, transform 0.15s ease;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         
         .share-btn:hover {
-            background: rgba(255,255,255,0.25);
-            transform: scale(1.05);
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.2) 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
         }
         
         .share-btn:active {
-            transform: scale(0.95);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .share-btn i {
@@ -162,87 +331,104 @@
         }
         
         .share-modal-content {
-            background: var(--bg-primary);
-            border-radius: 8px;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            border-radius: 16px;
             max-width: 90vw;
             max-height: 90vh;
             overflow: auto;
             position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 
+                        0 0 0 1px rgba(255,255,255,0.1),
+                        inset 0 1px 0 rgba(255,255,255,0.2);
+            backdrop-filter: blur(20px);
         }
         
         .share-modal-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.25rem;
             border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
         }
         
         .share-modal-header h3 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.9rem;
+            font-weight: 700;
         }
         
         .share-modal-close {
-            background: none;
-            border: none;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
             color: var(--text-secondary);
             font-size: 1rem;
             cursor: pointer;
-            padding: 0.25rem;
+            padding: 0.35rem 0.5rem;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .share-modal-close:hover {
             color: var(--text-primary);
+            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .share-preview {
-            padding: 1rem;
+            padding: 1.25rem;
             display: flex;
             justify-content: center;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%);
         }
         
         .share-preview img {
             max-width: 100%;
-            border-radius: 4px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
         }
         
         .share-actions {
             display: flex;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
             border-top: 1px solid var(--border-color);
             justify-content: center;
             flex-wrap: wrap;
+            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
         }
         
         .share-action-btn {
-            background: var(--accent-green);
+            background: linear-gradient(180deg, var(--accent-green) 0%, #37b24d 100%);
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             color: #fff;
-            padding: 0.5rem 1rem;
-            font-size: 0.7rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            transition: background 0.15s ease, transform 0.15s ease;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         
         .share-action-btn:hover {
-            transform: scale(1.02);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25);
+        }
+        
+        .share-action-btn:active {
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .share-action-btn.download {
-            background: var(--accent-blue);
+            background: linear-gradient(180deg, var(--accent-blue) 0%, #1864ab 100%);
         }
         
         .share-action-btn.copy {
-            background: var(--accent-purple);
+            background: linear-gradient(180deg, var(--accent-purple) 0%, #7048e8 100%);
         }
         
         /* Shareable chart card (hidden, used for rendering) */
@@ -448,40 +634,56 @@
         .chart-item {
             display: flex;
             align-items: center;
-            padding: 0.4rem 0.75rem 0.4rem 0.4rem;
+            padding: 0.5rem 0.85rem 0.5rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
-            gap: 0.35rem;
-            transition: background 0.15s ease;
+            gap: 0.45rem;
+            transition: all 0.15s ease;
+            background: linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%);
         }
         
         .chart-item:last-child { border-bottom: none; }
-        .chart-item:hover { background: var(--bg-hover); }
+        .chart-item:hover { 
+            background: linear-gradient(90deg, var(--bg-hover) 0%, rgba(255,255,255,0.3) 100%);
+            box-shadow: inset 3px 0 0 var(--accent-orange);
+        }
         
         .chart-rank {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            width: 18px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            width: 22px;
             text-align: right;
             flex-shrink: 0;
             color: var(--text-muted);
         }
         
-        .chart-rank.gold { color: #FFD700; }
-        .chart-rank.silver { color: #C0C0C0; }
-        .chart-rank.bronze { color: #CD7F32; }
+        .chart-rank.gold { 
+            color: #d4a000; 
+        }
+        .chart-rank.silver { 
+            color: #8a8a8a; 
+        }
+        .chart-rank.bronze { 
+            color: #a86830; 
+        }
         
-        .chart-item.rank-1 { background: linear-gradient(90deg, rgba(255,215,0,0.08) 0%, transparent 100%); }
-        .chart-item.rank-2 { background: linear-gradient(90deg, rgba(192,192,192,0.08) 0%, transparent 100%); }
-        .chart-item.rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.08) 0%, transparent 100%); }
+        .chart-item.rank-1 { background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 60%, transparent 100%); }
+        .chart-item.rank-2 { background: linear-gradient(90deg, rgba(192,192,192,0.12) 0%, rgba(192,192,192,0.03) 60%, transparent 100%); }
+        .chart-item.rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.12) 0%, rgba(205,127,50,0.03) 60%, transparent 100%); }
         
         .chart-cover {
-            width: 36px;
-            height: 36px;
-            border-radius: 3px;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
             overflow: hidden;
             flex-shrink: 0;
             background: var(--bg-secondary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.15s ease;
+        }
+        
+        .chart-item:hover .chart-cover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15);
         }
         
         .chart-cover img {
@@ -508,12 +710,18 @@
         
         .chart-title {
             font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .chart-title:hover {
+            color: #1DB954;
         }
         
         .chart-artist {
@@ -524,38 +732,59 @@
             text-overflow: ellipsis;
         }
         
-        .chart-release-type {
-            display: inline-block;
-            font-size: 0.45rem;
-            font-weight: 500;
-            background: var(--accent-green);
-            color: #fff;
-            padding: 0.02rem 0.15rem;
-            border-radius: 2px;
-            margin-left: 0.15rem;
-            vertical-align: middle;
+        .chart-artist-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.15s ease;
         }
         
-        .chart-release-type.album { background: var(--accent-purple); }
-        .chart-release-type.ep { background: var(--accent-blue); }
+        .chart-artist-link:hover {
+            color: #1DB954;
+            text-decoration: none;
+            background: linear-gradient(90deg, rgba(29,185,84,0.1) 0%, transparent 100%);
+            padding-left: 0.25rem;
+            margin-left: -0.25rem;
+            border-radius: 3px;
+        }
+        
+        .chart-release-type {
+            display: inline-block;
+            font-size: 0.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-green) 0%, #37b24d 100%);
+            color: #fff;
+            padding: 0.08rem 0.25rem;
+            border-radius: 3px;
+            margin-left: 0.2rem;
+            vertical-align: middle;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        
+        .chart-release-type.album { 
+            background: linear-gradient(135deg, var(--accent-purple) 0%, #7048e8 100%); 
+        }
+        .chart-release-type.ep { 
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #1864ab 100%); 
+        }
         
         /* Chart change indicators */
         .chart-change {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 20px;
+            width: 24px;
             flex-shrink: 0;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .chart-change.new {
-            color: #FFD700;
+            color: #d4a000;
         }
         
         .chart-change.new i {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
         
         .chart-change.up {
@@ -591,112 +820,97 @@
         
         /* New entry highlight */
         .chart-item.is-new {
-            background: linear-gradient(90deg, rgba(255,215,0,0.06) 0%, transparent 70%);
+            background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
         }
         
         .chart-item.is-new .chart-title::after {
             content: 'НОВО';
-            font-size: 0.4rem;
+            font-size: 0.45rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #000;
-            padding: 0.05rem 0.2rem;
-            border-radius: 2px;
-            margin-left: 0.3rem;
+            background: linear-gradient(135deg, #d4a000, #c47f00);
+            color: #fff;
+            padding: 0.1rem 0.25rem;
+            border-radius: 3px;
+            margin-left: 0.35rem;
             vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .chart-meta {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.5rem;
             flex-shrink: 0;
         }
         
         .chart-stat {
             display: flex;
             align-items: center;
-            gap: 0.2rem;
+            gap: 0.25rem;
             font-size: 0.75rem;
             color: var(--text-muted);
             font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
         }
         
         .chart-stat.weeks {
-            width: 30px;
+            width: 32px;
             justify-content: flex-end;
             white-space: nowrap;
+            background: linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 100%);
+            padding: 0.15rem 0.25rem;
+            border-radius: 4px;
         }
         
         .chart-stat.followers {
-            width: 30px;
+            width: 32px;
             margin-right: 10px;
             justify-content: flex-end;
             color: var(--accent-green);
             position: relative;
+            font-weight: 600;
         }
         
-        .chart-stat i { font-size: 0.65rem; }
+        .chart-stat i { font-size: 0.7rem; }
         
-        /* Play button column */
-        .chart-play-col {
-            width: 24px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .chart-play-btn {
-            background: #1DB954;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.15s ease, background 0.15s ease;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-        
-        .chart-play-btn i {
-            color: #fff;
-            font-size: 8px;
-        }
-        
-        .chart-play-btn:hover {
-            transform: scale(1.15);
-            background: #1ed760;
-        }
+
         
         .chart-loading, .chart-empty {
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             color: var(--text-muted);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
+            border-radius: 8px;
+            margin: 0.5rem;
         }
         
         .chart-loading i, .chart-empty i {
-            font-size: 1rem;
+            font-size: 1.25rem;
             color: var(--accent-blue);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             display: block;
         }
         
         .back-link {
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.35rem;
             color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.7rem;
-            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.65rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
         }
         
-        .back-link:hover { color: var(--accent-blue); }
+        .back-link:hover { 
+            color: var(--accent-blue); 
+            background: linear-gradient(180deg, rgba(34,139,230,0.08) 0%, rgba(34,139,230,0.15) 100%);
+        }
         
         /* Mobile adjustments */
         @media (max-width: 900px) {
@@ -728,44 +942,48 @@
         .spotify-embed-backdrop {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
         }
         
         .spotify-embed-content {
             position: relative;
             width: 90%;
             max-width: 400px;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255,255,255,0.15);
         }
         
         .spotify-embed-close {
             position: absolute;
-            top: -12px;
-            right: -12px;
-            width: 28px;
-            height: 28px;
+            top: -14px;
+            right: -14px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: #1DB954;
+            background: linear-gradient(135deg, #1DB954 0%, #169c46 100%);
             border: none;
             color: #fff;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.15s ease, background 0.15s ease;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
         }
         
         .spotify-embed-close:hover {
-            transform: scale(1.1);
-            background: #1ed760;
+            background: linear-gradient(135deg, #1ed760 0%, #1DB954 100%);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
         }
         
         #spotify-embed-container iframe {
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -782,6 +1000,9 @@
                 </div>
             </div>
             <div class="header-buttons">
+                <button id="dark-mode-toggle" class="dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <a href="list.html" class="header-btn"><i class="fas fa-list"></i> Листа</a>
                 <button id="start-tour-btn" class="header-btn tour-btn"><i class="fas fa-globe"></i> Тура</button>
             </div>
@@ -1398,14 +1619,11 @@
                                 }
                             </div>
                             <div class="chart-info">
-                                <div class="chart-title">${release.releaseTitle}</div>
-                                <div class="chart-artist">${release.bandName}</div>
-                            </div>
-                            <div class="chart-play-col">
-                                ${spotifyId 
-                                    ? `<button class="chart-play-btn" data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}" title="Преслушај"><i class="fas fa-play"></i></button>`
-                                    : `<a href="${release.topTrackUrl || release.releaseUrl}" target="_blank" class="chart-play-btn" title="Слушај"><i class="fas fa-play"></i></a>`
-                                }
+                                <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.releaseTitle}</div>
+                                <div class="chart-artist">${release.artistUrl 
+                                    ? `<a href="${release.artistUrl}" target="_blank" class="chart-artist-link" title="Отвори артист во Spotify">${release.bandName}</a>`
+                                    : release.bandName
+                                }</div>
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
@@ -1415,13 +1633,22 @@
                     `;
                 }).join('');
                 
-                // Add click listeners for play buttons
-                container.querySelectorAll('.chart-play-btn[data-spotify-id]').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                // Add click listeners for track titles to play
+                container.querySelectorAll('.chart-title[data-spotify-id]').forEach(title => {
+                    title.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const spotifyId = btn.dataset.spotifyId;
-                        const spotifyType = btn.dataset.spotifyType;
+                        const spotifyId = title.dataset.spotifyId;
+                        const spotifyType = title.dataset.spotifyType;
                         showSpotifyEmbed(spotifyId, spotifyType);
+                    });
+                });
+                
+                // Fallback for titles without Spotify ID - open URL
+                container.querySelectorAll('.chart-title[data-url]').forEach(title => {
+                    title.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const url = title.dataset.url;
+                        if (url) window.open(url, '_blank');
                     });
                 });
             }
@@ -1489,6 +1716,28 @@
             }
             
             loadChartData();
+            
+            // ==================== DARK MODE ====================
+            function initDarkMode() {
+                const toggle = document.getElementById('dark-mode-toggle');
+                if (!toggle) return;
+                
+                // Check localStorage for saved preference
+                const savedMode = localStorage.getItem('mmm-dark-mode');
+                if (savedMode === 'true') {
+                    document.body.classList.add('dark-mode');
+                    toggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+                
+                toggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('mmm-dark-mode', isDark);
+                    toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                });
+            }
+            
+            initDarkMode();
             
             // ==================== TOUR FUNCTIONALITY ====================
             const tourSteps = [
