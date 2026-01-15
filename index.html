@@ -12,13 +12,19 @@
     <style>
         /* Dark mode variables */
         body.dark-mode {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --bg-hover: #1f3460;
-            --text-primary: #eee;
-            --text-secondary: #aaa;
-            --text-muted: #777;
-            --border-color: #2d3a5a;
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-hover: #252542;
+            --text-primary: #f0f0f5;
+            --text-secondary: #b8b8cc;
+            --text-muted: #6e6e8a;
+            --border-color: #3d3d5c;
+            --accent-blue: #5c7cfa;
+            --accent-green: #51cf66;
+            --accent-orange: #ff922b;
+            --accent-red: #ff6b6b;
+            --accent-purple: #9775fa;
+            --accent-teal: #20c997;
         }
         
         body.dark-mode .chart-section-header {
@@ -26,28 +32,28 @@
         }
         
         body.dark-mode .share-card {
-            background: #1a1a2e;
-            border-color: #2d3a5a;
+            background: #0f0f1a;
+            border-color: #3d3d5c;
         }
         
         body.dark-mode .share-card-list {
-            background: #1a1a2e;
+            background: #0f0f1a;
         }
         
         body.dark-mode .share-card-item {
-            border-color: #2d3a5a;
+            border-color: #3d3d5c;
         }
         
         body.dark-mode .share-card-song {
-            color: #eee;
+            color: #f0f0f5;
         }
         
         body.dark-mode .share-card-artist {
-            color: #aaa;
+            color: #b8b8cc;
         }
         
         body.dark-mode .share-card-footer {
-            background: #16213e;
+            background: #1a1a2e;
             border-color: #2d3a5a;
         }
         
@@ -110,25 +116,96 @@
             color: #777;
         }
         
+        /* Chart page icon-only buttons */
+        .chart-page .header-btn {
+            font-size: 0;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .chart-page .header-btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* Tooltip for buttons on chart page */
+        .chart-page .header-btn[title]::after {
+            content: attr(title);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.35rem 0.6rem;
+            background: linear-gradient(180deg, #343a40 0%, #212529 100%);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            border-radius: 6px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            pointer-events: none;
+        }
+        
+        .chart-page .header-btn[title]::before {
+            content: '';
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: #343a40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+            z-index: 1000;
+        }
+        
+        .chart-page .header-btn[title]:hover::after,
+        .chart-page .header-btn[title]:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .chart-page .header-btn:hover {
+            transform: translateY(-1px);
+        }
+        
         /* Dark mode toggle button */
         .dark-mode-toggle {
             background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(0,0,0,0.05) 100%);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
-            padding: 0.35rem 0.6rem;
-            font-size: 0.85rem;
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            font-size: 0;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            justify-content: center;
+            gap: 0;
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+        
+        .dark-mode-toggle i {
+            font-size: 0.9rem;
         }
         
         .dark-mode-toggle:hover {
             background: linear-gradient(180deg, var(--bg-hover) 0%, rgba(0,0,0,0.08) 100%);
             box-shadow: 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
+            transform: translateY(-1px);
         }
         
         body.dark-mode .dark-mode-toggle {
@@ -1003,8 +1080,8 @@
                 <button id="dark-mode-toggle" class="dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
                 </button>
-                <a href="list.html" class="header-btn"><i class="fas fa-list"></i> Листа</a>
-                <button id="start-tour-btn" class="header-btn tour-btn"><i class="fas fa-globe"></i> Тура</button>
+                <a href="list.html" class="header-btn" title="Листа"><i class="fas fa-list"></i></a>
+                <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
             </div>
         </div>
     </header>
@@ -1778,7 +1855,7 @@
                     position: 'bottom'
                 },
                 {
-                    element: '.header-btn:first-child',
+                    element: 'a.header-btn[href="list.html"]',
                     title: 'База на артисти',
                     description: 'Пристап до комплетната база на македонски музички артисти со филтри и детални информации.',
                     position: 'bottom'

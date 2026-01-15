@@ -98,7 +98,7 @@ export default {
       const bandsJson = body?.bandsJson;
       const description = body?.description || 'Automated PR from MMM form';
       const contributor = body?.contributor || '';
-      const targetPath = body?.path || 'masterlista/bands.json';
+      const targetPath = body?.path || 'bands.json';
 
       if (!bandsJson || typeof bandsJson !== 'string') {
         return json({ error: 'Invalid payload: bandsJson string required' }, 400, corsHeaders);
@@ -121,7 +121,7 @@ export default {
         token = env.GITHUB_TOKEN;
       }
       const owner = env.GITHUB_OWNER || 'martinpetkovski';
-      const repo = env.GITHUB_REPO || 'martinpetkovski.github.io';
+      const repo = env.GITHUB_REPO || 'masterlista';
       const baseBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
 
       if (!token) {
