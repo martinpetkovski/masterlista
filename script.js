@@ -174,6 +174,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!btn) return;
         btn.disabled = !hasUnsavedChanges;
         btn.title = hasUnsavedChanges ? 'Испрати барање за промена' : 'Нема промени за поднесување';
+        
+        // Add/remove glow animation class based on changes
+        if (hasUnsavedChanges) {
+            btn.classList.add('has-changes');
+        } else {
+            btn.classList.remove('has-changes');
+        }
     }
     function transliterateCyrillicToLatinShorthand(text) {
         return text.split('')
@@ -837,7 +844,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Fetch last modified date from GitHub API
             try {
-                const response = await fetch('https://api.github.com/repos/martinpetkovski/martinpetkovski.github.io/commits?path=masterlista/bands.json&per_page=1');
+                const response = await fetch('https://api.github.com/repos/martinpetkovski/masterlista/commits?path=bands.json&per_page=1');
                 if (response.ok) {
                     const commits = await response.json();
                     if (commits.length > 0) {
@@ -1584,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         bandsJson: json,
                         contributor: formData.contributor,
                         description: formData.description,
-                        path: 'masterlista/bands.json'
+                        path: 'bands.json'
                     })
                 });
 
@@ -2078,6 +2085,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentTourStep = 0;
     let tourActive = false;
+    const TOUR_VIEWED_KEY = 'mmm-tour-viewed';
 
     function initTour() {
         const tourBtn = document.getElementById('start-tour-btn');
@@ -2112,6 +2120,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'ArrowRight' || e.key === 'Enter') nextStep();
             if (e.key === 'ArrowLeft') prevStep();
         });
+        
+        // Auto-start tour for new users (only on master list page)
+        const isListPage = window.location.pathname.endsWith('list.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
+        const hasViewedTour = localStorage.getItem(TOUR_VIEWED_KEY) === 'true';
+        
+        // Check if this is the list page (not chart page)
+        if (isListPage && !document.body.classList.contains('chart-page') && !hasViewedTour) {
+            // Delay tour start to let page fully load
+            setTimeout(() => {
+                startTour();
+            }, 1500);
+        }
     }
 
     function startTour() {
@@ -2131,6 +2151,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tourActive = false;
         document.getElementById('tour-overlay').classList.remove('active');
         document.body.style.overflow = '';
+        
+        // Mark tour as viewed so it doesn't auto-start again
+        localStorage.setItem(TOUR_VIEWED_KEY, 'true');
     }
 
     function prevStep() {

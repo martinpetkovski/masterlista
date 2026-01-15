@@ -27,7 +27,7 @@ npm i -g wrangler
 wrangler secret put GITHUB_TOKEN
 ```
 
-At minimum, `GITHUB_TOKEN` is required (PAT with `repo` scope). The others have defaults: owner `martinpetkovski`, repo `martinpetkovski.github.io`, base branch `master`.
+At minimum, `GITHUB_TOKEN` is required (PAT with `repo` scope). The others have defaults: owner `martinpetkovski`, repo `masterlista`, base branch `master`.
 
 ### (Optional) Switch to GitHub App authentication instead of PAT.
 
@@ -82,7 +82,7 @@ compatibility_date = "2023-10-02"
 [vars]
 # Optional defaults; can be set as "secret" via wrangler too
 GITHUB_OWNER = "martinpetkovski"
-GITHUB_REPO = "martinpetkovski.github.io"
+GITHUB_REPO = "masterlista"
 GITHUB_DEFAULT_BRANCH = "master"
 ```
 
@@ -93,7 +93,7 @@ GITHUB_DEFAULT_BRANCH = "master"
   "bandsJson": "...stringified JSON of bands.json...",
   "contributor": "optional name/email",
   "description": "short description",
-  "path": "masterlista/bands.json"
+  "path": "bands.json"
 }
 ```
 
