@@ -1,0 +1,20 @@
+# robots.txt for toplista.mk
+# Macedonian Music Master List / Top Lista
+
+User-agent: *
+Allow: /
+
+# Main pages
+Allow: /index.html
+Allow: /list.html
+Allow: /releases.html
+
+# Disallow admin and non-public pages
+Disallow: /admin.html
+Disallow: /spotify-credentials.json
+
+# Sitemap
+Sitemap: https://toplista.mk/sitemap.xml
+
+# Crawl delay (optional, be nice to servers)
+Crawl-delay: 1

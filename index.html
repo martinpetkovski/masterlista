@@ -3,7 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Македонска Музичка Топ Листа</title>
+    <title>Македонска Музичка Топ Листа | Најпопуларни Македонски Песни</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="Македонска Музичка Топ Листа | Најпопуларни Македонски Песни">
+    <meta name="description" content="Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена. Ажурирано неделно.">
+    <meta name="keywords" content="македонска музика, топ листа, македонски песни, македонски албуми, музичка листа, македонски артисти, нови изданија, македонска музичка сцена">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="https://toplista.mk/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/">
+    <meta property="og:title" content="Македонска Музичка Топ Листа | Најпопуларни Македонски Песни">
+    <meta property="og:description" content="Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена.">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+    <meta property="og:site_name" content="Топ Листа МК">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://toplista.mk/">
+    <meta property="twitter:title" content="Македонска Музичка Топ Листа">
+    <meta property="twitter:description" content="Откријте ги најпопуларните македонски песни и албуми. Топ листа од македонската музичка сцена.">
+    <meta property="twitter:image" content="https://toplista.mk/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Македонска Музичка Топ Листа",
+        "alternateName": "Топ Листа МК",
+        "url": "https://toplista.mk/",
+        "description": "Топ листа на најпопуларни македонски песни, албуми и нови изданија",
+        "inLanguage": "mk",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Македонска Музичка Мастер Листа"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Македонска Музичка Топ Листа",
+        "description": "Неделна листа на најпопуларни македонски сингли и албуми",
+        "itemListElement": []
+    }
+    </script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Montserrat:wght@600;700&family=Bungee&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
@@ -400,7 +457,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 0.5rem;
         }
         
         .share-modal.active {
@@ -409,12 +466,12 @@
         
         .share-modal-content {
             background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            border-radius: 16px;
-            max-width: 90vw;
-            max-height: 90vh;
+            border-radius: 10px;
+            max-width: 420px;
+            max-height: 85vh;
             overflow: auto;
             position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), 
                         0 0 0 1px rgba(255,255,255,0.1),
                         inset 0 1px 0 rgba(255,255,255,0.2);
             backdrop-filter: blur(20px);
@@ -424,25 +481,25 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 1.25rem;
+            padding: 0.6rem 0.85rem;
             border-bottom: 1px solid var(--border-color);
             background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
         }
         
         .share-modal-header h3 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 700;
         }
         
         .share-modal-close {
             background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%);
             border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 8px;
+            border-radius: 6px;
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            padding: 0.35rem 0.5rem;
+            padding: 0.25rem 0.4rem;
             transition: all 0.15s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
@@ -454,7 +511,7 @@
         }
         
         .share-preview {
-            padding: 1.25rem;
+            padding: 0.75rem;
             display: flex;
             justify-content: center;
             background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%);
@@ -462,14 +519,15 @@
         
         .share-preview img {
             max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
+            max-height: 350px;
+            border-radius: 6px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.15);
         }
         
         .share-actions {
             display: flex;
-            gap: 0.75rem;
-            padding: 1rem 1.25rem;
+            gap: 0.5rem;
+            padding: 0.6rem 0.85rem;
             border-top: 1px solid var(--border-color);
             justify-content: center;
             flex-wrap: wrap;
@@ -479,21 +537,21 @@
         .share-action-btn {
             background: linear-gradient(180deg, var(--accent-green) 0%, #37b24d 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             color: #fff;
-            padding: 0.6rem 1.25rem;
-            font-size: 0.75rem;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.7rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.3rem;
             transition: all 0.15s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         
         .share-action-btn:hover {
-            box-shadow: 0 6px 10px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
         }
         
         .share-action-btn:active {
