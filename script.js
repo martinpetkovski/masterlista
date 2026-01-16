@@ -778,6 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Use the saved data
                 bandsData = pendingChanges.bandsData;
+                invalidateBandCache(); // Clear cache since data changed
                 hasUnsavedChanges = true;
                 
                 // Still load original data for comparison
@@ -952,7 +953,9 @@ document.addEventListener('DOMContentLoaded', () => {
             allowClear: true,
             width: '100%'
         }).val('').trigger('change');
-        document.getElementById('search-name').addEventListener('input', filterBands);
+        // Use debounced filter for search input (better performance)
+        document.getElementById('search-name').addEventListener('input', filterBandsDebounced);
+        // Use regular filter for dropdowns (immediate feedback)
         $('#filter-city').on('change', filterBands);
         $('#filter-genre').on('change', filterBands);
         $('#filter-sounds-like').on('change', filterBands);
@@ -1335,6 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nameB = transliterateCyrillicToLatin(b.name);
                 return nameA.localeCompare(nameB, 'en');
             });
+            invalidateBandCache(); // Clear cache since data changed
             document.getElementById('total-bands').textContent = bandsData.length;
             populateFilters(bandsData);
             filterBands();
@@ -1442,6 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (confirmed) {
                 console.log(`Deleting band at index ${index}`);
                 bandsData.splice(index, 1);
+                invalidateBandCache(); // Clear cache since data changed
                 document.getElementById('total-bands').textContent = bandsData.length;
                 populateFilters(bandsData);
                 filterBands();
@@ -1647,141 +1652,344 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==================== OPTIMIZED FILTER SYSTEM ====================
+    
+    // Cache for pre-computed band data to avoid repeated string operations
+    let bandDataCache = null;
+    
+    // Debounce timer for search input
+    let searchDebounceTimer = null;
+    const SEARCH_DEBOUNCE_MS = 150;
+    
+    // Build optimized cache for band data
+    function buildBandDataCache() {
+        if (bandDataCache && bandDataCache.length === bandsData.length) return bandDataCache;
+        
+        bandDataCache = bandsData.map(band => {
+            const nameLower = band.name.toLowerCase();
+            const nameLatinFull = transliterateCyrillicToLatin(band.name).toLowerCase();
+            const nameLatinShort = transliterateCyrillicToLatinShorthand(band.name).toLowerCase();
+            const cities = band.city !== 'недостигаат податоци' 
+                ? band.city.split(',').map(c => c.trim()).filter(Boolean)
+                : [];
+            const genres = band.genre !== 'недостигаат податоци'
+                ? band.genre.split(',').map(g => g.trim()).filter(Boolean)
+                : [];
+            const soundsLike = band.soundsLike !== 'недостигаат податоци'
+                ? band.soundsLike.split(',').map(s => s.trim()).filter(Boolean)
+                : [];
+            const labels = (band.label && band.label !== 'недостигаат податоци' && band.label !== null)
+                ? String(band.label).split(',').map(l => l.trim()).filter(Boolean)
+                : [];
+            
+            return {
+                band,
+                nameLower,
+                nameLatinFull,
+                nameLatinShort,
+                cities: new Set(cities),
+                citiesArray: cities,
+                genres: new Set(genres),
+                genresArray: genres,
+                soundsLike: new Set(soundsLike),
+                soundsLikeArray: soundsLike,
+                labels: new Set(labels),
+                labelsArray: labels,
+                status: band.isActive
+            };
+        });
+        
+        return bandDataCache;
+    }
+    
+    // Invalidate cache when bands data changes
+    function invalidateBandCache() {
+        bandDataCache = null;
+    }
+    
+    // Flag to prevent recursive filtering during option updates
+    let isUpdatingFilters = false;
+    
+    // Get current filter values
+    function getCurrentFilters() {
+        return {
+            searchName: document.getElementById('search-name').value.toLowerCase(),
+            city: $('#filter-city').val() || '',
+            genre: $('#filter-genre').val() || '',
+            soundsLike: $('#filter-sounds-like').val() || '',
+            status: $('#filter-status').val() || '',
+            label: $('#filter-label').val() || ''
+        };
+    }
+    
+    // Filter bands with a specific filter excluded (for updating that filter's options)
+    function getFilteredBandsExcluding(excludeFilter) {
+        const cache = buildBandDataCache();
+        const filters = getCurrentFilters();
+        
+        const searchName = filters.searchName;
+        const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
+        const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
+        
+        return cache.filter(cached => {
+            // Name filter (never excluded)
+            if (searchName) {
+                const matchesName = (
+                    cached.nameLower.includes(searchName) ||
+                    cached.nameLatinFull.includes(searchNameLatinFull) ||
+                    cached.nameLatinShort.includes(searchNameLatinShort) ||
+                    cached.nameLatinFull.includes(searchNameLatinShort) ||
+                    cached.nameLatinShort.includes(searchNameLatinFull)
+                );
+                if (!matchesName) return false;
+            }
+            
+            // City filter
+            if (excludeFilter !== 'city' && filters.city) {
+                if (!cached.cities.has(filters.city)) return false;
+            }
+            
+            // Genre filter
+            if (excludeFilter !== 'genre' && filters.genre) {
+                if (!cached.genres.has(filters.genre)) return false;
+            }
+            
+            // Sounds like filter
+            if (excludeFilter !== 'soundsLike' && filters.soundsLike) {
+                if (!cached.soundsLike.has(filters.soundsLike)) return false;
+            }
+            
+            // Status filter
+            if (excludeFilter !== 'status' && filters.status) {
+                if (cached.status !== filters.status) return false;
+            }
+            
+            // Label filter
+            if (excludeFilter !== 'label' && filters.label) {
+                if (!cached.labels.has(filters.label)) return false;
+            }
+            
+            return true;
+        });
+    }
+    
+    // Update a single filter's options based on available data
+    function updateFilterOptions(filterId, selectElement, getValuesFromCached, currentValue) {
+        const filteredData = getFilteredBandsExcluding(filterId);
+        const counts = {};
+        
+        filteredData.forEach(cached => {
+            const values = getValuesFromCached(cached);
+            values.forEach(val => {
+                counts[val] = (counts[val] || 0) + 1;
+            });
+        });
+        
+        // Sort by transliterated name
+        const sortedValues = Object.keys(counts).sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en')
+        );
+        
+        // Build new options array
+        const newOptions = sortedValues.map(val => ({
+            value: val,
+            text: `${val} (${counts[val]})`
+        }));
+        
+        // Check if we need to update (compare values only)
+        const currentOptionValues = Array.from(selectElement.options)
+            .slice(1) // Skip empty option
+            .map(o => o.value)
+            .join('|');
+        const newOptionValues = sortedValues.join('|');
+        
+        // Also check if counts changed
+        const currentOptionTexts = Array.from(selectElement.options)
+            .slice(1)
+            .map(o => o.text)
+            .join('|');
+        const newOptionTexts = newOptions.map(o => o.text).join('|');
+        
+        if (currentOptionValues !== newOptionValues || currentOptionTexts !== newOptionTexts) {
+            // Build new HTML
+            const newHtml = '<option value=""></option>' +
+                newOptions.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
+            
+            selectElement.innerHTML = newHtml;
+            
+            // Restore value if it still exists in options
+            if (currentValue && counts[currentValue]) {
+                selectElement.value = currentValue;
+            }
+        }
+    }
+    
+    // Update all filter dropdowns based on current selection
+    function updateAllFilterOptions() {
+        const filters = getCurrentFilters();
+        
+        updateFilterOptions('city', document.getElementById('filter-city'), 
+            cached => cached.citiesArray, filters.city);
+        updateFilterOptions('genre', document.getElementById('filter-genre'),
+            cached => cached.genresArray, filters.genre);
+        updateFilterOptions('soundsLike', document.getElementById('filter-sounds-like'),
+            cached => cached.soundsLikeArray, filters.soundsLike);
+        updateFilterOptions('status', document.getElementById('filter-status'),
+            cached => [cached.status], filters.status);
+        updateFilterOptions('label', document.getElementById('filter-label'),
+            cached => cached.labelsArray, filters.label);
+    }
+    
+    // Initial population of filters (full data, no filtering)
     function populateFilters(data) {
         console.log('Populating filters');
+        // Ensure cache is built
+        buildBandDataCache();
+        
         const citySelect = document.getElementById('filter-city');
         const genreSelect = document.getElementById('filter-genre');
         const soundsLikeSelect = document.getElementById('filter-sounds-like');
         const statusSelect = document.getElementById('filter-status');
         const labelSelect = document.getElementById('filter-label');
-        if (citySelect.innerHTML === '') {
-            const cityCounts = {};
-            data.forEach(band => {
-                if (band.city !== 'недостигаат податоци') {
-                    band.city.split(',').map(c => c.trim()).forEach(city => {
-                        cityCounts[city] = (cityCounts[city] || 0) + 1;
-                    });
-                }
-            });
-            const cities = [...new Set(
-                data
-                    .flatMap(band => band.city.split(',').map(c => c.trim()))
-                    .filter(c => c !== 'недостигаат податоци')
-                    .sort((a, b) => transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'))
-            )];
-            citySelect.innerHTML = '<option value=""></option>' +
-                cities.map(city => `<option value="${city}">${city} (${cityCounts[city] || 0})</option>`).join('');
-        }
-        if (genreSelect.innerHTML === '') {
-            const genreCounts = {};
-            data.forEach(band => {
-                if (band.genre !== 'недостигаат податоци') {
-                    band.genre.split(',').map(g => g.trim()).forEach(genre => {
-                        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-                    });
-                }
-            });
-            const genres = [...new Set(
-                data
-                    .flatMap(band => band.genre.split(',').map(g => g.trim()))
-                    .filter(g => g !== 'недостигаат податоци')
-                    .sort((a, b) => transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'))
-            )];
-            genreSelect.innerHTML = '<option value=""></option>' +
-                genres.map(genre => `<option value="${genre}">${genre} (${genreCounts[genre] || 0})</option>`).join('');
-        }
-        if (soundsLikeSelect.innerHTML === '') {
-            const soundsLikeCounts = {};
-            data.forEach(band => {
-                if (band.soundsLike !== 'недостигаат податоци') {
-                    band.soundsLike.split(',').map(s => s.trim()).forEach(sound => {
-                        soundsLikeCounts[sound] = (soundsLikeCounts[sound] || 0) + 1;
-                    });
-                }
-            });
-            const soundsLike = [...new Set(
-                data
-                    .flatMap(band => band.soundsLike.split(',').map(s => s.trim()))
-                    .filter(s => s !== 'недостигаат податоци')
-                    .sort((a, b) => transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'))
-            )];
-            soundsLikeSelect.innerHTML = '<option value=""></option>' +
-                soundsLike.map(sound => `<option value="${sound}">${sound} (${soundsLikeCounts[sound] || 0})</option>`).join('');
-        }
-        if (statusSelect.innerHTML === '') {
-            const statusCounts = {};
-            data.forEach(band => {
-                const status = band.isActive;
+        
+        // City
+        const cityCounts = {};
+        const citySet = new Set();
+        data.forEach(band => {
+            if (band.city !== 'недостигаат податоци') {
+                band.city.split(',').map(c => c.trim()).filter(Boolean).forEach(city => {
+                    cityCounts[city] = (cityCounts[city] || 0) + 1;
+                    citySet.add(city);
+                });
+            }
+        });
+        const cities = [...citySet].sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
+        citySelect.innerHTML = '<option value=""></option>' +
+            cities.map(city => `<option value="${city}">${city} (${cityCounts[city] || 0})</option>`).join('');
+        
+        // Genre
+        const genreCounts = {};
+        const genreSet = new Set();
+        data.forEach(band => {
+            if (band.genre !== 'недостигаат податоци') {
+                band.genre.split(',').map(g => g.trim()).filter(Boolean).forEach(genre => {
+                    genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+                    genreSet.add(genre);
+                });
+            }
+        });
+        const genres = [...genreSet].sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
+        genreSelect.innerHTML = '<option value=""></option>' +
+            genres.map(genre => `<option value="${genre}">${genre} (${genreCounts[genre] || 0})</option>`).join('');
+        
+        // Sounds Like
+        const soundsLikeCounts = {};
+        const soundsLikeSet = new Set();
+        data.forEach(band => {
+            if (band.soundsLike !== 'недостигаат податоци') {
+                band.soundsLike.split(',').map(s => s.trim()).filter(Boolean).forEach(sound => {
+                    soundsLikeCounts[sound] = (soundsLikeCounts[sound] || 0) + 1;
+                    soundsLikeSet.add(sound);
+                });
+            }
+        });
+        const soundsLike = [...soundsLikeSet].sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
+        soundsLikeSelect.innerHTML = '<option value=""></option>' +
+            soundsLike.map(sound => `<option value="${sound}">${sound} (${soundsLikeCounts[sound] || 0})</option>`).join('');
+        
+        // Status
+        const statusCounts = {};
+        data.forEach(band => {
+            const status = band.isActive;
+            if (status !== undefined) {
                 statusCounts[status] = (statusCounts[status] || 0) + 1;
-            });
-            const statuses = [...new Set(
-                data
-                    .map(band => band.isActive)
-                    .filter(s => s !== undefined)
-                    .sort((a, b) => transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'))
-            )];
-            statusSelect.innerHTML = '<option value=""></option>' +
-                statuses.map(status => `<option value="${status}">${status} (${statusCounts[status] || 0})</option>`).join('');
-        }
-        if (labelSelect.innerHTML === '') {
-            const labelCounts = {};
-            data.forEach(band => {
-                if (band.label && band.label !== 'недостигаат податоци' && band.label !== null) {
-                    String(band.label)
-                        .split(',')
-                        .map(l => l.trim())
-                        .filter(Boolean)
-                        .forEach(l => {
-                            labelCounts[l] = (labelCounts[l] || 0) + 1;
-                        });
-                }
-            });
-            const labels = [...new Set(
-                data
-                    .flatMap(band => (band.label && band.label !== 'недостигаат податоци' && band.label !== null)
-                        ? String(band.label).split(',').map(l => l.trim()).filter(Boolean)
-                        : [])
-                    .sort((a, b) => transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'))
-            )];
-            labelSelect.innerHTML = '<option value=""></option>' +
-                labels.map(label => `<option value="${label}">${label} (${labelCounts[label] || 0})</option>`).join('');
-        }
+            }
+        });
+        const statuses = Object.keys(statusCounts).sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
+        statusSelect.innerHTML = '<option value=""></option>' +
+            statuses.map(status => `<option value="${status}">${status} (${statusCounts[status] || 0})</option>`).join('');
+        
+        // Label
+        const labelCounts = {};
+        const labelSet = new Set();
+        data.forEach(band => {
+            if (band.label && band.label !== 'недостигаат податоци' && band.label !== null) {
+                String(band.label).split(',').map(l => l.trim()).filter(Boolean).forEach(l => {
+                    labelCounts[l] = (labelCounts[l] || 0) + 1;
+                    labelSet.add(l);
+                });
+            }
+        });
+        const labels = [...labelSet].sort((a, b) => 
+            transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
+        labelSelect.innerHTML = '<option value=""></option>' +
+            labels.map(label => `<option value="${label}">${label} (${labelCounts[label] || 0})</option>`).join('');
     }
 
     function filterBands() {
+        // Prevent recursive filtering during option updates
+        if (isUpdatingFilters) return;
+        
         console.log('Filtering bands');
-        const searchName = document.getElementById('search-name').value.toLowerCase();
-        const filterCity = $('#filter-city').val() || '';
-        const filterGenre = $('#filter-genre').val() || '';
-        const filterSoundsLike = $('#filter-sounds-like').val() || '';
-        const filterStatus = $('#filter-status').val() || '';
-        const filterLabel = $('#filter-label').val() || '';
-        const searchNameLatinFull = transliterateCyrillicToLatin(searchName).toLowerCase();
-        const searchNameLatinShorthand = transliterateCyrillicToLatinShorthand(searchName).toLowerCase();
-        const filteredBands = bandsData.filter(band => {
-            const bandNameLatinFull = transliterateCyrillicToLatin(band.name).toLowerCase();
-            const bandNameLatinShorthand = transliterateCyrillicToLatinShorthand(band.name).toLowerCase();
-            const matchesName = (
-                band.name.toLowerCase().includes(searchName) ||
-                bandNameLatinFull.includes(searchNameLatinFull) ||
-                bandNameLatinShorthand.includes(searchNameLatinShorthand) ||
-                bandNameLatinFull.includes(searchNameLatinShorthand) ||
-                bandNameLatinShorthand.includes(searchNameLatinFull)
-            );
-            const matchesCity = !filterCity ||
-                band.city.split(',').map(c => c.trim()).includes(filterCity);
-            const matchesGenre = !filterGenre ||
-                band.genre.split(',').map(g => g.trim()).includes(filterGenre);
-            const matchesSoundsLike = !filterSoundsLike ||
-                band.soundsLike.split(',').map(s => s.trim()).includes(filterSoundsLike);
-            const matchesStatus = !filterStatus || band.isActive === filterStatus;
-            const matchesLabel = !filterLabel || (
-                band.label && band.label !== 'недостигаат податоци' &&
-                String(band.label).split(',').map(l => l.trim()).includes(filterLabel)
-            );
-            return matchesName && matchesCity && matchesGenre && matchesSoundsLike && matchesStatus && matchesLabel;
-        });
+        const cache = buildBandDataCache();
+        const filters = getCurrentFilters();
+        
+        const searchName = filters.searchName;
+        const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
+        const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
+        
+        const filteredBands = cache.filter(cached => {
+            // Name filter
+            if (searchName) {
+                const matchesName = (
+                    cached.nameLower.includes(searchName) ||
+                    cached.nameLatinFull.includes(searchNameLatinFull) ||
+                    cached.nameLatinShort.includes(searchNameLatinShort) ||
+                    cached.nameLatinFull.includes(searchNameLatinShort) ||
+                    cached.nameLatinShort.includes(searchNameLatinFull)
+                );
+                if (!matchesName) return false;
+            }
+            
+            // City filter
+            if (filters.city && !cached.cities.has(filters.city)) return false;
+            
+            // Genre filter
+            if (filters.genre && !cached.genres.has(filters.genre)) return false;
+            
+            // Sounds like filter
+            if (filters.soundsLike && !cached.soundsLike.has(filters.soundsLike)) return false;
+            
+            // Status filter
+            if (filters.status && cached.status !== filters.status) return false;
+            
+            // Label filter
+            if (filters.label && !cached.labels.has(filters.label)) return false;
+            
+            return true;
+        }).map(cached => cached.band);
+        
+        // Update filter dropdowns to show only available options (with guard flag)
+        isUpdatingFilters = true;
+        try {
+            updateAllFilterOptions();
+        } finally {
+            isUpdatingFilters = false;
+        }
+        
         renderBands(filteredBands);
+    }
+    
+    // Debounced filter for search input
+    function filterBandsDebounced() {
+        if (searchDebounceTimer) {
+            clearTimeout(searchDebounceTimer);
+        }
+        searchDebounceTimer = setTimeout(filterBands, SEARCH_DEBOUNCE_MS);
     }
 
     function renderBands(bands) {
