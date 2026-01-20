@@ -1481,7 +1481,7 @@
         
         document.addEventListener('DOMContentLoaded', async () => {
             const CHART_DATA_URL = 'chart-data.json';
-            const PREVIOUS_DATA_URL = 'https://raw.githubusercontent.com/martinpetkovski/martinpetkovski.github.io/HEAD~1/masterlista/chart-data.json';
+            const CHART_HISTORY_DIR = 'chart-history';
             
             const now = new Date();
             const twoMonthsAgo = new Date(now);
@@ -1495,6 +1495,27 @@
             
             // Store previous chart data for comparison
             let previousChartData = null;
+            
+            /**
+             * Get ISO week number and year for a given date.
+             */
+            function getISOWeek(date) {
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+                const yearStart = new Date(d.getFullYear(), 0, 1);
+                const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+                return { year: d.getFullYear(), week: weekNum };
+            }
+            
+            /**
+             * Get the previous week's ISO week number and year.
+             */
+            function getPreviousWeek(date) {
+                const d = new Date(date);
+                d.setDate(d.getDate() - 7); // Go back 7 days
+                return getISOWeek(d);
+            }
             
             function formatDataAge(isoString) {
                 if (!isoString) return null;
@@ -1517,10 +1538,13 @@
             }
             
             // Build a lookup map for previous chart positions
-            function buildPreviousChartMap(previousReleases, filterFn, sortFn) {
+            function buildPreviousChartMap(previousReleases, filterFn, sortFn, deduplicateFn) {
                 if (!previousReleases || previousReleases.length === 0) return {};
                 
-                const releasesSortedByDate = [...previousReleases].sort((a, b) => 
+                // Deduplicate collabs in previous data too
+                const dedupedReleases = deduplicateFn ? deduplicateFn(previousReleases) : previousReleases;
+                
+                const releasesSortedByDate = [...dedupedReleases].sort((a, b) => 
                     new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
                 );
                 
@@ -1556,40 +1580,52 @@
             }
             
             async function loadPreviousData() {
+                // Calculate previous week's filename
+                const prevWeek = getPreviousWeek(now);
+                const prevWeekFileName = `chart-${prevWeek.year}-W${String(prevWeek.week).padStart(2, '0')}.json`;
+                const prevWeekUrl = `${CHART_HISTORY_DIR}/${prevWeekFileName}`;
+                
                 try {
-                    // Try to fetch from GitHub's raw content for the previous commit
-                    const response = await fetch(PREVIOUS_DATA_URL + '?t=' + Date.now());
+                    // Try to load last week's chart data from history
+                    const response = await fetch(prevWeekUrl + '?t=' + Date.now());
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('Loaded previous chart data for comparison');
+                        console.log(`Loaded previous week chart data: ${prevWeekFileName}`);
                         return data;
+                    } else {
+                        console.log(`Previous week data not found: ${prevWeekFileName}`);
                     }
                 } catch (err) {
-                    console.log('Could not load previous chart data:', err.message);
-                }
-                
-                // Fallback: try localStorage
-                try {
-                    const stored = localStorage.getItem('mmm-previous-chart');
-                    if (stored) {
-                        return JSON.parse(stored);
-                    }
-                } catch (err) {
-                    console.log('No localStorage data available');
+                    console.log('Could not load previous week chart data:', err.message);
                 }
                 
                 return null;
             }
             
-            function savePreviousData(data) {
-                try {
-                    localStorage.setItem('mmm-previous-chart', JSON.stringify({
-                        generatedAt: data.generatedAt,
-                        releases: data.releases
-                    }));
-                } catch (err) {
-                    console.log('Could not save to localStorage');
-                }
+            // Merge collaborative releases (same releaseId = same track, different artists)
+            function deduplicateCollabs(releases) {
+                const releaseMap = new Map();
+                
+                releases.forEach(release => {
+                    const existing = releaseMap.get(release.releaseId);
+                    if (existing) {
+                        // Merge artist names for collab (avoid duplicates)
+                        const existingArtists = existing.bandName.split(', ');
+                        if (!existingArtists.includes(release.bandName)) {
+                            existing.bandName = existingArtists.concat(release.bandName).join(', ');
+                        }
+                        // Keep the higher popularity and follower count
+                        existing.popularity = Math.max(existing.popularity || 0, release.popularity || 0);
+                        existing.followers = Math.max(existing.followers || 0, release.followers || 0);
+                        // Mark as collab
+                        existing.isCollab = true;
+                    } else {
+                        // Clone the release to avoid mutating the original
+                        releaseMap.set(release.releaseId, { ...release });
+                    }
+                });
+                
+                return Array.from(releaseMap.values());
             }
             
             async function loadChartData() {
@@ -1607,10 +1643,7 @@
                         generatedAt = chartData.generatedAt;
                         console.log('Loaded', releases.length, 'releases from chart-data.json');
                         
-                        // Save current data as previous for next time (if different)
-                        if (!previousChartData || previousChartData.generatedAt !== generatedAt) {
-                            savePreviousData(chartData);
-                        }
+                        // Previous week data is now managed by the generate script
                     } else {
                         console.warn('chart-data.json returned status:', response.status);
                     }
@@ -1621,6 +1654,10 @@
                 if (releases.length === 0) {
                     console.warn('No releases found in chart-data.json');
                 }
+                
+                // Deduplicate collaborative releases (same releaseId appearing for multiple artists)
+                releases = deduplicateCollabs(releases);
+                console.log('After deduplication:', releases.length, 'unique releases');
                 
                 updateDataInfo(generatedAt);
                 document.querySelectorAll('.chart-loading').forEach(el => el.style.display = 'none');
@@ -1649,10 +1686,10 @@
                 // Latest: 20 most recent releases, sorted by date (newest first)
                 const latestReleases = releasesSortedByDate.slice(0, 20);
                 
-                // Build previous chart maps for comparison
+                // Build previous chart maps for comparison (also deduplicate collabs)
                 const prevReleases = previousChartData?.releases || [];
-                const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity);
-                const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity);
+                const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs);
+                const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs);
                 // For latest, we don't track position changes since it's date-sorted
                 
                 renderChart('singles-chart', topSingles, prevSinglesMap);
