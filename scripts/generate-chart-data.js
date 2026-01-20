@@ -320,12 +320,79 @@ async function main() {
     releases: releases.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
   };
   
-  // Write to file
   const outputPath = path.join(__dirname, '..', 'chart-data.json');
+  const historyDir = path.join(__dirname, '..', 'chart-history');
+  
+  // Save weekly historical snapshot
+  saveWeeklySnapshot(chartData, historyDir, now);
+  
+  // Write current chart data
   fs.writeFileSync(outputPath, JSON.stringify(chartData, null, 2));
   console.log(`Chart data written to ${outputPath}`);
   console.log(`Total releases: ${chartData.totalReleases}`);
   console.log(`Total artists: ${chartData.totalArtists}`);
+}
+
+/**
+ * Save a weekly snapshot of chart data to the history folder.
+ * Only saves one snapshot per week (first generation of the week).
+ * Format: chart-YYYY-WXX.json (e.g., chart-2026-W03.json)
+ */
+function saveWeeklySnapshot(chartData, historyDir, now) {
+  // Ensure history directory exists
+  if (!fs.existsSync(historyDir)) {
+    fs.mkdirSync(historyDir, { recursive: true });
+    console.log(`Created history directory: ${historyDir}`);
+  }
+  
+  // Get ISO week number for current date
+  const weekInfo = getISOWeek(now);
+  const weekFileName = `chart-${weekInfo.year}-W${String(weekInfo.week).padStart(2, '0')}.json`;
+  const weekFilePath = path.join(historyDir, weekFileName);
+  
+  // Only save if this week's file doesn't exist yet (first generation of the week)
+  if (!fs.existsSync(weekFilePath)) {
+    fs.writeFileSync(weekFilePath, JSON.stringify(chartData, null, 2));
+    console.log(`Saved weekly snapshot: ${weekFileName}`);
+  } else {
+    console.log(`Weekly snapshot already exists: ${weekFileName}`);
+  }
+}
+
+/**
+ * Get the ISO week number and year for a given date.
+ * ISO weeks start on Monday, and week 1 is the week containing January 4th.
+ */
+function getISOWeek(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  
+  // Set to nearest Thursday (current date + 4 - current day number, with Sunday = 7)
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  
+  // Get first day of year
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  
+  // Calculate week number: Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+  const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  
+  return {
+    year: d.getFullYear(),
+    week: weekNum
+  };
+}
+
+/**
+ * Get the Monday 00:00:00 of the week containing the given date.
+ */
+function getWeekMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  // Sunday is 0, Monday is 1, etc. We want Monday = 0
+  const diff = day === 0 ? -6 : 1 - day; // If Sunday, go back 6 days; otherwise go back to Monday
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
 main().catch(err => {
