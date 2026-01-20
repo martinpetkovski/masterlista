@@ -841,6 +841,8 @@
         .chart-info {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
         
         .chart-title {
@@ -1054,10 +1056,168 @@
         }
         
         @media (max-width: 600px) {
-            .chart-container { padding: 0.5rem; }
+            .chart-container { 
+                padding: 0.5rem; 
+                padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+            }
             .chart-header h1 { font-size: 0.8rem; }
             .chart-item { padding: 0.2rem 0.35rem; }
             .chart-cover { width: 24px; height: 24px; }
+            
+            /* Mobile header buttons - more compact */
+            .chart-section-header {
+                padding: 0.5rem 0.65rem;
+            }
+            .chart-section-header h2 {
+                font-size: 0.75rem;
+            }
+            .chart-header-right {
+                gap: 0.35rem;
+            }
+            .chart-section-header .period {
+                font-size: 0.55rem;
+            }
+            .share-btn {
+                padding: 0.2rem 0.35rem;
+                font-size: 0.5rem;
+            }
+            .share-btn span {
+                display: none;
+            }
+            .view-mode-toggle {
+                padding: 0.2rem 0.35rem;
+            }
+        }
+        
+        /* Compact/Expanded mode toggle */
+        .view-mode-toggle {
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: #fff;
+            padding: 0.25rem 0.4rem;
+            font-size: 0.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        
+        .view-mode-toggle:hover {
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.2) 100%);
+        }
+        
+        .view-mode-toggle i { font-size: 0.55rem; }
+        
+        /* Compact mode styles - single row layout */
+        .chart-section.compact-mode .chart-item {
+            padding: 0.2rem 0.5rem;
+            gap: 0.35rem;
+        }
+        
+        .chart-section.compact-mode .chart-cover {
+            width: 28px;
+            height: 28px;
+            border-radius: 3px;
+        }
+        
+        .chart-section.compact-mode .chart-rank {
+            font-size: 0.7rem;
+            width: 16px;
+        }
+        
+        .chart-section.compact-mode .chart-change {
+            width: 18px;
+            font-size: 0.6rem;
+        }
+        
+        /* Single row: title and artist inline */
+        .chart-section.compact-mode .chart-info {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        
+        .chart-section.compact-mode .chart-title {
+            font-size: 0.75rem;
+            flex-shrink: 1;
+        }
+        
+        .chart-section.compact-mode .chart-artist {
+            font-size: 0.7rem;
+            flex-shrink: 2;
+            opacity: 0.7;
+        }
+        
+        .chart-section.compact-mode .chart-artist::before {
+            content: '•';
+            margin-right: 0.35rem;
+            opacity: 0.5;
+        }
+        
+        .chart-section.compact-mode .chart-meta {
+            gap: 0.3rem;
+        }
+        
+        .chart-section.compact-mode .chart-stat {
+            font-size: 0.65rem;
+        }
+        
+        .chart-section.compact-mode .chart-stat.weeks {
+            width: 26px;
+            padding: 0.1rem 0.2rem;
+        }
+        
+        .chart-section.compact-mode .chart-stat.followers {
+            width: 26px;
+            margin-right: 6px;
+        }
+        
+        /* Mobile compact - even more compact, single row */
+        @media (max-width: 600px) {
+            .chart-section.compact-mode .chart-item {
+                padding: 0.15rem 0.35rem;
+                gap: 0.2rem;
+            }
+            
+            .chart-section.compact-mode .chart-cover {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .chart-section.compact-mode .chart-rank {
+                font-size: 0.65rem;
+                width: 14px;
+            }
+            
+            .chart-section.compact-mode .chart-change {
+                width: 16px;
+                font-size: 0.55rem;
+            }
+            
+            .chart-section.compact-mode .chart-info {
+                gap: 0.25rem;
+            }
+            
+            .chart-section.compact-mode .chart-title {
+                font-size: 0.7rem;
+            }
+            
+            .chart-section.compact-mode .chart-artist {
+                font-size: 0.6rem;
+            }
+            
+            .chart-section.compact-mode .chart-stat {
+                font-size: 0.55rem;
+            }
+            
+            .chart-section.compact-mode .chart-stat.weeks,
+            .chart-section.compact-mode .chart-stat.followers {
+                width: 22px;
+                padding: 0.1rem 0.15rem;
+            }
         }
         
         /* Spotify embed modal */
@@ -1153,8 +1313,11 @@
                     <h2><i class="fas fa-music"></i> Синглови</h2>
                     <div class="chart-header-right">
                         <span class="period" id="singles-period"></span>
+                        <button class="view-mode-toggle" onclick="toggleViewMode('singles-section')" title="Компактен/Проширен приказ">
+                            <i class="fas fa-compress-alt"></i>
+                        </button>
                         <button class="share-btn" onclick="shareChart('singles')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> Сподели
+                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
                     </div>
                 </div>
@@ -1176,8 +1339,11 @@
                     <h2><i class="fas fa-compact-disc"></i> Албуми</h2>
                     <div class="chart-header-right">
                         <span class="period" id="albums-period"></span>
+                        <button class="view-mode-toggle" onclick="toggleViewMode('albums-section')" title="Компактен/Проширен приказ">
+                            <i class="fas fa-compress-alt"></i>
+                        </button>
                         <button class="share-btn" onclick="shareChart('albums')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> Сподели
+                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
                     </div>
                 </div>
@@ -1199,8 +1365,11 @@
                     <h2><i class="fas fa-clock"></i> Најнови</h2>
                     <div class="chart-header-right">
                         <span class="period" id="latest-period"></span>
+                        <button class="view-mode-toggle" onclick="toggleViewMode('latest-section')" title="Компактен/Проширен приказ">
+                            <i class="fas fa-compress-alt"></i>
+                        </button>
                         <button class="share-btn" onclick="shareChart('latest')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> Сподели
+                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
                     </div>
                 </div>
@@ -1260,6 +1429,49 @@
             albums: 'Топ Албуми',
             latest: 'Најнови Изданија'
         };
+        
+        // View mode toggle function
+        function toggleViewMode(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            
+            const isCompact = section.classList.toggle('compact-mode');
+            const btn = section.querySelector('.view-mode-toggle');
+            if (btn) {
+                btn.innerHTML = isCompact 
+                    ? '<i class="fas fa-expand-alt"></i>' 
+                    : '<i class="fas fa-compress-alt"></i>';
+                btn.title = isCompact ? 'Проширен приказ' : 'Компактен приказ';
+            }
+            
+            // Save preference
+            const prefs = JSON.parse(localStorage.getItem('mmm-view-mode') || '{}');
+            prefs[sectionId] = isCompact;
+            localStorage.setItem('mmm-view-mode', JSON.stringify(prefs));
+        }
+        
+        // Initialize view modes based on screen size and saved preferences
+        function initViewModes() {
+            const isMobile = window.innerWidth <= 600;
+            const prefs = JSON.parse(localStorage.getItem('mmm-view-mode') || '{}');
+            
+            ['singles-section', 'albums-section', 'latest-section'].forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (!section) return;
+                
+                // Use saved preference, or default to compact on mobile
+                const shouldBeCompact = prefs[sectionId] !== undefined ? prefs[sectionId] : isMobile;
+                
+                if (shouldBeCompact) {
+                    section.classList.add('compact-mode');
+                    const btn = section.querySelector('.view-mode-toggle');
+                    if (btn) {
+                        btn.innerHTML = '<i class="fas fa-expand-alt"></i>';
+                        btn.title = 'Проширен приказ';
+                    }
+                }
+            });
+        }
         
         const chartIcons = {
             singles: 'fa-music',
@@ -1911,7 +2123,13 @@
             
             initDarkMode();
             
+            // Initialize view modes after DOM is ready
+            initViewModes();
+            
             // ==================== TOUR FUNCTIONALITY ====================
+            // Check if mobile
+            const isMobile = () => window.innerWidth <= 600;
+            
             const tourSteps = [
                 {
                     element: null,
@@ -1920,40 +2138,46 @@
                     position: 'center'
                 },
                 {
-                    element: '#singles-section',
+                    element: '#singles-section .chart-section-header',
                     title: 'Синглови',
                     description: 'Најпопуларни синглови од последните два месеци, рангирани според популарност на Spotify.',
-                    position: 'right'
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
-                    element: '#albums-section',
+                    element: '#albums-section .chart-section-header',
                     title: 'Албуми',
                     description: 'Нови албуми и EP изданија од македонски артисти во истиот период.',
-                    position: 'left'
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
-                    element: '#latest-section',
+                    element: '#latest-section .chart-section-header',
                     title: 'Најнови',
                     description: 'Последните 20 изданија подредени по датум на објава - од најново кон најстаро.',
-                    position: 'left'
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
                     element: '.chart-item',
                     title: 'Детали за издание',
-                    description: 'Секое издание содржи корица, наслов, артист, датум на објава и популарност. Индикаторите покажуваат промена во рангирањето од претходниот период.',
-                    position: 'bottom'
+                    description: 'Секое издание содржи корица, наслов, артист и популарност. Стрелките покажуваат промена во позицијата од минатата недела.',
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
-                    element: '.share-btn',
-                    title: 'Споделување',
-                    description: 'Генерирајте слика од листата за споделување на социјални мрежи.',
-                    position: 'bottom'
+                    element: '.view-mode-toggle',
+                    title: 'Компактен приказ',
+                    description: 'Менувајте помеѓу компактен и проширен приказ. На мобилни уреди стандардно е компактен.',
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
                     element: 'a.header-btn[href="list.html"]',
                     title: 'База на артисти',
                     description: 'Пристап до комплетната база на македонски музички артисти со филтри и детални информации.',
-                    position: 'bottom'
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 }
             ];
 
@@ -2018,7 +2242,10 @@
                 tourActive = true;
                 currentTourStep = 0;
                 document.getElementById('tour-overlay').classList.add('active');
-                document.body.style.overflow = 'hidden';
+                // On mobile, allow scrolling to see elements; on desktop, prevent scroll
+                if (!isMobile()) {
+                    document.body.style.overflow = 'hidden';
+                }
                 showTourStep(currentTourStep);
             }
 
@@ -2065,6 +2292,20 @@
                     : 'Следно <i class="fas fa-arrow-right"></i>';
 
                 tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
+
+                // On mobile, use bottom sheet style - hide highlight and let CSS handle tooltip
+                if (isMobile()) {
+                    highlight.style.display = 'none';
+                    tooltip.style.top = '';
+                    tooltip.style.left = '';
+                    
+                    // Scroll target element into view if it exists
+                    const targetEl = step.element ? document.querySelector(step.element) : null;
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
 
                 if (step.position === 'center' || !step.element) {
                     highlight.style.display = 'none';
