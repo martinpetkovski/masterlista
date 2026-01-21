@@ -1937,11 +1937,25 @@
                     
                     const popularity = release.popularity || 0;
                     
-                    // Calculate weeks on chart
+                    // Calculate time since release (smart formatting)
                     const releaseDate = new Date(release.releaseDate);
                     const now = new Date();
-                    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-                    const weeksOnChart = Math.max(1, Math.ceil((now - releaseDate) / msPerWeek));
+                    const msElapsed = now - releaseDate;
+                    const hoursElapsed = Math.floor(msElapsed / (60 * 60 * 1000));
+                    const daysElapsed = Math.floor(msElapsed / (24 * 60 * 60 * 1000));
+                    const weeksElapsed = Math.floor(daysElapsed / 7);
+                    
+                    let timeSinceRelease, timeSinceTitle;
+                    if (weeksElapsed >= 1) {
+                        timeSinceRelease = `${weeksElapsed}н`;
+                        timeSinceTitle = `${weeksElapsed} недел${weeksElapsed === 1 ? 'а' : 'и'} од издавање`;
+                    } else if (daysElapsed >= 1) {
+                        timeSinceRelease = `${daysElapsed}д`;
+                        timeSinceTitle = `${daysElapsed} ден${daysElapsed === 1 ? '' : 'а'} од издавање`;
+                    } else {
+                        timeSinceRelease = `${Math.max(1, hoursElapsed)}ч`;
+                        timeSinceTitle = `${Math.max(1, hoursElapsed)} час${hoursElapsed === 1 ? '' : 'а'} од издавање`;
+                    }
                     
                     // Format release date for display
                     const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
@@ -1986,8 +2000,8 @@
                         }
                     }
                     
-                    // For date-sorted, show weeks on chart (same as other charts)
-                    const metaContent = `<span class="chart-stat weeks" title="Недели на листата">${weeksOnChart}н</span>`;
+                    // Time since release stat
+                    const metaContent = `<span class="chart-stat weeks" title="${timeSinceTitle}">${timeSinceRelease}</span>`;
                     
                     // For date-sorted charts, hide position and change indicators
                     const showPosition = !isDateSorted;
