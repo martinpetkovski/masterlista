@@ -773,12 +773,10 @@ tr:hover .missing-data { opacity: 0.6; }
     background: var(--text-muted);
     color: #fff;
     padding: 0.15rem 0.35rem;
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     font-weight: 700;
     cursor: pointer;
     height: auto;
-    border-radius: 3px;
-    margin-left: 2px;
     transition: all var(--transition);
 }
 
