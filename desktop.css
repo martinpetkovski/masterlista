@@ -626,7 +626,7 @@ tr:hover {
 
 .name {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.95rem !important;
     font-weight: 700;
     color: var(--text-primary);
     display: flex;
@@ -635,7 +635,7 @@ tr:hover {
 }
 
 .artist-thumb {
-    height: calc(1.3em + 1rem); /* line-height + padding */
+    height: calc(1.3em + 0.5rem); /* line-height + padding */
     width: auto;
     aspect-ratio: 1;
     border-radius: 0;
@@ -752,10 +752,10 @@ tr:hover .missing-data { opacity: 0.6; }
     color: #fff;
     padding: 0.15rem 0.35rem;
     margin: 0.05rem 0.05rem 0.05rem 0;
-    font-size: 0.78rem; /* 20% larger than 0.65rem */
-    font-weight: 700;
+    font-size: 0.60rem !important;
+    font-weight: 400;
+    border-radius: 2px;
     cursor: pointer;
-    border-radius: 0;
     transition: all var(--transition);
 }
 
@@ -770,13 +770,14 @@ tr:hover .missing-data { opacity: 0.6; }
 .expand-items-btn {
     display: inline-flex;
     align-items: center;
-    background: var(--text-muted);
+    background: var(--accent-orange);
     color: #fff;
     padding: 0.15rem 0.35rem;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 700;
     cursor: pointer;
     height: auto;
+    border-radius: 2px;
     transition: all var(--transition);
 }
 
