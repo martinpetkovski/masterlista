@@ -46,10 +46,10 @@
     </script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Montserrat:wght@600&family=Bungee&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&family=Bungee&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
-    <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
 </head>
 <body class="compact">
     <header>
@@ -57,7 +57,7 @@
             <div class="logo-title-group">
                 <span class="site-logo-text">MMM</span>
                 <div class="title-group">
-                    <h1>Македонска Музичка Мастер Листа</h1>
+                    <h1>Македонска Музичка Мастер Листа <span class="title-separator">•</span> <a href="index.html" class="back-to-chart-link">Назад кон Топ Листата</a></h1>
                     <div class="subtitle-stats">
                         <span>Листата содржи <strong id="total-bands">0</strong> артисти</span>
                         <span class="separator">•</span>
@@ -73,6 +73,9 @@
                 <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
                 </button>
+                <a href="index.html" class="header-btn chart-btn back-to-charts-btn" title="Назад кон Топ Листата" aria-label="Назад кон Топ Листата">
+                    <i class="fas fa-chart-line"></i>
+                </a>
                 <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
                 <button id="submit-pr-btn" class="header-btn request-change edit-hidden" title="Побарај промена" data-endpoint="https://muzichka-master-lista.deeeeelay.workers.dev">
                     <i class="fas fa-paper-plane"></i>
@@ -81,7 +84,6 @@
                     <i class="fas fa-filter"></i>
                 </button>
                 <button id="copy-data-btn" class="header-btn copy-data edit-hidden" title="Копирај податоци"><i class="fas fa-copy"></i></button>
-                <a href="index.html" class="header-btn chart-btn" title="Топ Листа"><i class="fas fa-trophy"></i></a>
                 <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
             </div>
         </div>
@@ -109,7 +111,6 @@
                             <th>Жанр</th>
                             <th>Звучи како</th>
                             <th>Линкови</th>
-                            <th class="play-column"></th>
                             <th><i class="fas fa-circle status-header-icon"></i></th>
                             <th class="edit-hidden">Акции</th>
                         </tr>
@@ -217,13 +218,6 @@
             </div>
         </div>
     </div>
-    <!-- Spotify Embed Player Modal -->
-    <div id="spotify-embed-modal" class="modal spotify-modal">
-        <div class="spotify-modal-content">
-            <button class="spotify-modal-close" title="Затвори"><i class="fas fa-times"></i></button>
-            <div id="spotify-embed-container"></div>
-        </div>
-    </div>
     <!-- Notification Area -->
     <div id="notification-area" class="notification-area"></div>
     <!-- Tour Overlay -->
@@ -247,6 +241,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="spotify-api.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>

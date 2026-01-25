@@ -13,7 +13,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let isEditMode = false;
     let cachedAutoLabels = null; // Store auto_labels.json data globally
     let cachedChartData = null; // Store chart-data.json for releases data
+    let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
+    
+    // Get artist thumbnail from chart-data.json (most recent release)
+    function getArtistThumbnail(artistName) {
+        if (!artistName) return null;
+        
+        // Check cache first
+        if (artistThumbnailCache[artistName] !== undefined) {
+            return artistThumbnailCache[artistName];
+        }
+        
+        if (!cachedChartData?.releases) {
+            artistThumbnailCache[artistName] = null;
+            return null;
+        }
+        
+        // Find the most recent release for this artist (case-insensitive match)
+        const normalizedName = artistName.toLowerCase().trim();
+        const release = cachedChartData.releases.find(r => 
+            r.bandName && r.bandName.toLowerCase().trim() === normalizedName
+        );
+        
+        const thumbnail = release?.thumbnail || null;
+        artistThumbnailCache[artistName] = thumbnail;
+        return thumbnail;
+    }
     
     // ==================== PERSISTENT STORAGE ====================
     const STORAGE_KEY = 'mmm-pending-changes';
@@ -1362,20 +1388,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectWrapper = document.createElement('div');
             selectWrapper.className = 'platform-select-wrapper';
             
-            // Create icon element
+            // Create icon element (shown next to dropdown)
             const iconEl = document.createElement('i');
             const currentPlatform = socialPlatforms.find(p => p.id === platform);
             iconEl.className = (currentPlatform?.icon || 'fa-solid fa-link') + ' platform-icon';
             
             const select = document.createElement('select');
+            select.className = 'platform-select';
             select.innerHTML = '<option value="none">Избери платформа</option>' +
                 socialPlatforms.map(p => `<option value="${p.id}" ${p.id === platform ? 'selected' : ''}>${p.name}</option>`).join('');
-            
-            // Update icon when platform changes
-            select.addEventListener('change', () => {
-                const selectedPlatform = socialPlatforms.find(p => p.id === select.value);
-                iconEl.className = (selectedPlatform?.icon || 'fa-solid fa-link') + ' platform-icon';
-            });
             
             selectWrapper.appendChild(iconEl);
             selectWrapper.appendChild(select);
@@ -1394,6 +1415,26 @@ document.addEventListener('DOMContentLoaded', () => {
             linkGroup.appendChild(input);
             linkGroup.appendChild(removeBtn);
             linksContainer.appendChild(linkGroup);
+            
+            // Update standalone icon when selection changes
+            select.addEventListener('change', function() {
+                const selectedPlatform = socialPlatforms.find(p => p.id === this.value);
+                iconEl.className = (selectedPlatform?.icon || 'fa-solid fa-link') + ' platform-icon';
+            });
+        }
+        
+        // Format function for Select2 dropdown options (with icons)
+        function formatPlatformOption(option) {
+            if (!option.id) return option.text;
+            const icon = $(option.element).data('icon') || 'fa-solid fa-link';
+            return $(`<span><i class="${icon}" style="width: 20px; margin-right: 8px;"></i>${option.text}</span>`);
+        }
+        
+        // Format function for Select2 selected item
+        function formatPlatformSelection(option) {
+            if (!option.id) return option.text;
+            const icon = $(option.element).data('icon') || 'fa-solid fa-link';
+            return $(`<span><i class="${icon}" style="width: 20px; margin-right: 8px;"></i>${option.text}</span>`);
         }
 
         function openModal(mode, band = null, index = null) {
@@ -2052,22 +2093,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     linksHtml += `<a href="mailto:${band.contact}" class="contact-link"><i class="fa-solid fa-envelope"></i></a>`;
                 }
             }
-            // Play button in separate column
-            if (hasSpotifyLink) {
-                playBtnHtml = `<button class="artist-preview-btn" data-spotify-url="${band.links.spotify}" title="Преслушај"><i class="fas fa-play"></i></button>`;
-            } else {
-                playBtnHtml = `<button class="artist-preview-btn" disabled title="Нема преслушување"><i class="fas fa-play"></i></button>`;
-            }
             let cityHtml = band.city === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
+                : (() => {
+                    const items = band.city.split(',').map(c => c.trim());
+                    const visibleItems = items.slice(0, 2).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
+                    const hiddenItems = items.slice(2).map(c => `<span class="city-item hidden-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
+                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
+                    return visibleItems + hiddenItems + expandBtn;
+                })();
             let genreHtml = band.genre === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
+                : (() => {
+                    const items = band.genre.split(',').map(g => g.trim());
+                    const visibleItems = items.slice(0, 2).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
+                    const hiddenItems = items.slice(2).map(g => `<span class="genre-item hidden-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
+                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
+                    return visibleItems + hiddenItems + expandBtn;
+                })();
             let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
-            let nameHtml = band.name;
+                : (() => {
+                    const items = band.soundsLike.split(',').map(s => s.trim());
+                    const visibleItems = items.slice(0, 2).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
+                    const hiddenItems = items.slice(2).map(s => `<span class="sounds-like-item hidden-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
+                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
+                    return visibleItems + hiddenItems + expandBtn;
+                })();
+            
+            // Get artist thumbnail from chart data
+            const artistThumbnail = getArtistThumbnail(band.name);
+            const thumbnailHtml = artistThumbnail 
+                ? `<img src="${artistThumbnail}" alt="" class="artist-thumb" loading="lazy">` 
+                : '<span class="artist-thumb artist-thumb-placeholder"></span>';
+            
+            let nameHtml = `${thumbnailHtml}<span class="artist-name-text">${band.name}</span>`;
             if (band.label && band.label !== 'недостигаат податоци') {
                 const labels = String(band.label).split(',').map(l => l.trim()).filter(Boolean);
                 const labelSpans = labels.map(l => {
@@ -2077,13 +2137,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 nameHtml += ` ${labelSpans}`;
             }
             const statusClass = band.isActive === 'Непознато' ? 'missing-data' : '';
+            const nameDataSpotify = hasSpotifyLink ? `data-spotify-url="${band.links.spotify}" data-band-name="${band.name}"` : '';
             bandRow.innerHTML = `
-                <td data-label="Име" class="name">${nameHtml}</td>
+                <td data-label="Име" class="name ${hasSpotifyLink ? 'clickable' : ''}" ${nameDataSpotify}>${nameHtml}</td>
                 <td data-label="Град">${cityHtml}</td>
                 <td data-label="Жанр">${genreHtml}</td>
                 <td data-label="Звучи како">${soundsLikeHtml}</td>
                 <td data-label="Линкови" class="links">${linksHtml}</td>
-                <td data-label="Преслушај" class="play-column">${playBtnHtml}</td>
                 <td data-label="Статус" data-status="${band.isActive}" class="${statusClass}">
                     <span class="status-content" data-status-text="${band.isActive}">${band.isActive}</span>
                 </td>
@@ -2137,6 +2197,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelector('.controls').style.display = 'flex';
                 });
             });
+            // Expand button click handler for collapsed items
+            bandRow.querySelectorAll('.expand-items-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const td = btn.closest('td');
+                    if (td) {
+                        td.classList.toggle('items-expanded');
+                    }
+                });
+            });
             const editBtn = bandRow.querySelector('.edit-btn');
             editBtn.addEventListener('click', () => {
                 const idx = parseInt(editBtn.dataset.index);
@@ -2149,13 +2219,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            // Add event listener for Spotify preview button
-            const previewBtn = bandRow.querySelector('.artist-preview-btn');
-            if (previewBtn) {
-                previewBtn.addEventListener('click', async (e) => {
+            // Add event listener for clicking on artist name (if has Spotify link)
+            const nameCell = bandRow.querySelector('.name.clickable');
+            if (nameCell) {
+                nameCell.addEventListener('click', async (e) => {
+                    // Don't trigger if clicking on a label badge
+                    if (e.target.classList.contains('band-label')) return;
                     e.preventDefault();
                     e.stopPropagation();
-                    await handleArtistPreviewClick(previewBtn);
+                    const spotifyUrl = nameCell.dataset.spotifyUrl;
+                    const bandName = nameCell.dataset.bandName || nameCell.textContent.trim();
+                    if (spotifyUrl) {
+                        const match = spotifyUrl.match(/spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
+                        if (match) {
+                            showMusicPlayer(match[2], match[1], bandName, bandName, '');
+                        }
+                    }
                 });
             }
             
@@ -2163,23 +2242,256 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Handle artist preview button clicks - shows Spotify embed player
-    async function handleArtistPreviewClick(btn) {
-        const spotifyUrl = btn.dataset.spotifyUrl;
+    // ==================== INLINE MUSIC PLAYER ====================
+    // Service definitions with icons and embed support
+    const serviceDefinitions = {
+        spotify: { name: 'Spotify', icon: 'fab fa-spotify', hasEmbed: true, linkKey: 'spotify' },
+        youtube: { name: 'YouTube', icon: 'fab fa-youtube', hasEmbed: true, linkKey: 'youtube' },
+        apple: { name: 'Apple', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
+        deezer: { name: 'Deezer', icon: 'fab fa-deezer', hasEmbed: true, linkKey: 'deezer' },
+        tidal: { name: 'Tidal', icon: 'fas fa-water', hasEmbed: false, linkKey: 'tidal' },
+        bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', hasEmbed: true, linkKey: 'bandcamp' },
+        soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', hasEmbed: true, linkKey: 'soundcloud' }
+    };
+    
+    let currentTrackData = null;
+    
+    function findBandByName(artistName) {
+        if (!bandsData) return null;
         
-        if (!spotifyUrl) return;
+        // Try exact match first
+        let band = bandsData.find(b => b.name.toLowerCase() === artistName.toLowerCase());
+        if (band) return band;
         
-        // Parse the URL to get type and ID
-        // Format: https://open.spotify.com/artist/XXXX
-        const match = spotifyUrl.match(/spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
-        if (match) {
-            const spotifyType = match[1];
-            const spotifyId = match[2];
-            showSpotifyEmbed(spotifyId, spotifyType);
-        } else {
-            // Fallback: open in new tab
-            window.open(spotifyUrl, '_blank');
+        // Try first artist in collab (split by comma)
+        const firstArtist = artistName.split(',')[0].trim();
+        band = bandsData.find(b => b.name.toLowerCase() === firstArtist.toLowerCase());
+        if (band) return band;
+        
+        // Try partial match
+        band = bandsData.find(b => artistName.toLowerCase().includes(b.name.toLowerCase()));
+        return band;
+    }
+    
+    function getPreferredService() {
+        return localStorage.getItem('mmm-preferred-player') || 'spotify';
+    }
+    
+    function setPreferredService(serviceId) {
+        localStorage.setItem('mmm-preferred-player', serviceId);
+    }
+    
+    function showMusicPlayer(spotifyId, type = 'artist', title = '', artist = '', thumbnail = '') {
+        let player = document.getElementById('music-player');
+        
+        // Find band links from bands.json
+        const band = findBandByName(artist);
+        const artistLinks = band?.links || {};
+        
+        // Use artist thumbnail from chart data if available
+        const artistThumbnail = getArtistThumbnail(artist) || thumbnail;
+        
+        currentTrackData = { spotifyId, type, title, artist, thumbnail: artistThumbnail, artistLinks };
+        
+        if (!player) {
+            // Create player if it doesn't exist
+            player = document.createElement('div');
+            player.id = 'music-player';
+            player.className = 'music-player';
+            player.innerHTML = `
+                <div class="music-player-bar">
+                    <div class="music-player-cover">
+                        <img src="" alt="">
+                    </div>
+                    <div class="music-player-info">
+                        <div class="music-player-title"></div>
+                        <div class="music-player-artist"></div>
+                    </div>
+                    <div class="music-player-tabs"></div>
+                    <button class="music-player-close" title="Затвори"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="music-player-embed"></div>
+            `;
+            document.body.appendChild(player);
+            
+            // Close button
+            player.querySelector('.music-player-close').addEventListener('click', closeMusicPlayer);
+            
+            // Close on Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && player.classList.contains('active')) {
+                    closeMusicPlayer();
+                }
+            });
         }
+        
+        // Update player content
+        const coverContainer = player.querySelector('.music-player-cover');
+        const coverImg = coverContainer?.querySelector('img');
+        if (artistThumbnail) {
+            if (coverImg) coverImg.src = artistThumbnail;
+            coverContainer.style.display = '';
+        } else {
+            coverContainer.style.display = 'none';
+        }
+        player.querySelector('.music-player-title').textContent = title;
+        player.querySelector('.music-player-artist').textContent = artist;
+        
+        // Render service tabs
+        renderServiceTabs(player, artistLinks);
+        
+        // Load preferred service if available, or first available service
+        const preferredService = getPreferredService();
+        const hasPreferred = preferredService === 'spotify' || artistLinks[preferredService];
+        
+        if (hasPreferred) {
+            activateService(preferredService);
+        } else if (artistLinks.spotify || spotifyId) {
+            activateService('spotify');
+        } else {
+            // Load first available service
+            const firstAvailable = Object.keys(artistLinks)[0];
+            if (firstAvailable) {
+                activateService(firstAvailable);
+            }
+        }
+        
+        player.classList.add('active');
+    }
+    
+    function renderServiceTabs(player, artistLinks) {
+        const tabsContainer = player.querySelector('.music-player-tabs');
+        
+        // Build available services
+        const availableServices = [];
+        
+        // Spotify is always available if we have spotifyId
+        if (currentTrackData.spotifyId) {
+            availableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
+        }
+        
+        // Add services from artist's links
+        Object.entries(artistLinks).forEach(([key, url]) => {
+            if (key !== 'spotify' && serviceDefinitions[key]) {
+                availableServices.push({ id: key, ...serviceDefinitions[key], url });
+            }
+        });
+        
+        if (availableServices.length === 0) {
+            tabsContainer.innerHTML = '';
+            return;
+        }
+        
+        tabsContainer.innerHTML = availableServices.map(service => `
+            <button class="music-player-tab" 
+                    data-service="${service.id}" 
+                    data-url="${service.url || ''}"
+                    data-has-embed="${service.hasEmbed}"
+                    title="${service.name}">
+                <i class="${service.icon}"></i>
+            </button>
+        `).join('');
+        
+        // Add click handlers
+        tabsContainer.querySelectorAll('.music-player-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const serviceId = tab.dataset.service;
+                activateService(serviceId);
+                // Save preference
+                setPreferredService(serviceId);
+            });
+        });
+    }
+    
+    function activateService(serviceId) {
+        const player = document.getElementById('music-player');
+        if (!player || !currentTrackData) return;
+        
+        const tabsContainer = player.querySelector('.music-player-tabs');
+        const embedContainer = player.querySelector('.music-player-embed');
+        const { spotifyId, type, artistLinks } = currentTrackData;
+        const service = serviceDefinitions[serviceId];
+        const url = artistLinks[serviceId];
+        
+        // Update active tab
+        tabsContainer.querySelectorAll('.music-player-tab').forEach(t => t.classList.remove('active'));
+        const activeTab = tabsContainer.querySelector(`[data-service="${serviceId}"]`);
+        if (activeTab) activeTab.classList.add('active');
+        
+        // Check if this service has an embed available
+        let embedHtml = '';
+        let hasEmbed = false;
+        
+        if (serviceId === 'spotify' && spotifyId) {
+            hasEmbed = true;
+            embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        } else if (serviceId === 'youtube' && url) {
+            const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (ytMatch) {
+                hasEmbed = true;
+                embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+            }
+        } else if (serviceId === 'soundcloud' && url) {
+            hasEmbed = true;
+            const encodedUrl = encodeURIComponent(url);
+            embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
+        } else if (serviceId === 'apple' && url) {
+            const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(?:album|playlist)\/[^\/]+\/([0-9]+)/);
+            if (appleMatch) {
+                hasEmbed = true;
+                const country = appleMatch[1];
+                const albumId = appleMatch[2];
+                embedHtml = `<iframe class="apple-embed" src="https://embed.music.apple.com/${country}/album/${albumId}?theme=dark" allow="autoplay *; encrypted-media *; fullscreen *" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy"></iframe>`;
+            }
+        } else if (serviceId === 'deezer' && url) {
+            const deezerMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/(\d+)/);
+            if (deezerMatch) {
+                hasEmbed = true;
+                const deezerType = deezerMatch[1];
+                const deezerId = deezerMatch[2];
+                embedHtml = `<iframe scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" style="width:100%;height:80px;" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+            }
+        }
+        
+        // If no embed available, open URL in new tab directly
+        if (!hasEmbed && url) {
+            window.open(url, '_blank');
+            // Don't change the embed area, keep showing current service
+            return;
+        }
+        
+        // Update embed
+        if (hasEmbed) {
+            embedContainer.innerHTML = embedHtml;
+            embedContainer.classList.add('expanded');
+        } else {
+            embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за ${service?.name || 'оваа услуга'}</div>`;
+            embedContainer.classList.add('expanded');
+        }
+    }
+    
+    function closeMusicPlayer() {
+        const player = document.getElementById('music-player');
+        
+        if (player) {
+            player.classList.remove('active');
+            // Stop playback by clearing embed
+            const embedContainer = player.querySelector('.music-player-embed');
+            if (embedContainer) {
+                embedContainer.innerHTML = '';
+                embedContainer.classList.remove('expanded');
+            }
+            currentTrackData = null;
+        }
+    }
+    
+    // Keep old function name for compatibility
+    function showSpotifyEmbed(spotifyId, type = 'artist') {
+        showMusicPlayer(spotifyId, type, '', '', '');
+    }
+    
+    function closeSpotifyEmbed() {
+        closeMusicPlayer();
     }
 
     // ==================== TOUR FUNCTIONALITY ====================
