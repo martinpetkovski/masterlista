@@ -62,115 +62,219 @@
     </script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&family=Montserrat:wght@600;700&family=Bungee&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&family=Bungee&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Dark mode variables */
         body.dark-mode {
-            --bg-primary: #0f0f1a;
-            --bg-secondary: #1a1a2e;
-            --bg-hover: #252542;
-            --text-primary: #f0f0f5;
-            --text-secondary: #b8b8cc;
-            --text-muted: #6e6e8a;
-            --border-color: #3d3d5c;
-            --accent-blue: #5c7cfa;
+            --bg-primary: #0c1014;
+            --bg-secondary: #141a1f;
+            --bg-hover: #1c2428;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --text-muted: #5f6368;
+            --border-color: #2d3439;
+            --accent-blue: #0095f6;
             --accent-green: #51cf66;
-            --accent-orange: #ff922b;
-            --accent-red: #ff6b6b;
+            --accent-orange: #e07800;
+            --accent-red: #ed4956;
             --accent-purple: #9775fa;
             --accent-teal: #20c997;
         }
         
         body.dark-mode .chart-section-header {
-            background: linear-gradient(135deg, #c9302c, #d9534f);
+            background: #000;
+            color: #fff;
+        }
+        
+        body.dark-mode .chart-section-header h2 {
+            color: #fff;
         }
         
         body.dark-mode .share-card {
-            background: #0f0f1a;
-            border-color: #3d3d5c;
+            background: #141a1f;
+            border-color: #2d3439;
         }
         
         body.dark-mode .share-card-list {
-            background: #0f0f1a;
+            background: #141a1f;
         }
         
         body.dark-mode .share-card-item {
-            border-color: #3d3d5c;
+            border-color: #2d3439;
         }
         
+        body.dark-mode .share-card-rank {
+            color: #5f6368;
+        }
+        
+        body.dark-mode .share-card-rank.gold { color: #ffd700; }
+        body.dark-mode .share-card-rank.silver { color: #c0c0c0; }
+        body.dark-mode .share-card-rank.bronze { color: #cd7f32; }
+        
         body.dark-mode .share-card-song {
-            color: #f0f0f5;
+            color: #e8eaed;
         }
         
         body.dark-mode .share-card-artist {
-            color: #b8b8cc;
+            color: #9aa0a6;
         }
         
         body.dark-mode .share-card-footer {
-            background: #1a1a2e;
-            border-color: #2d3a5a;
+            background: #1c2428;
+            border-color: #2d3439;
+        }
+        
+        body.dark-mode .share-card-date,
+        body.dark-mode .share-card-url {
+            color: #5f6368;
+        }
+        
+        body.dark-mode .chart-section {
+            background: #141a1f;
+            border-color: #2d3439;
+        }
+        
+        body.dark-mode .chart-item {
+            border-color: #2d3439;
+        }
+        
+        body.dark-mode .chart-item:hover {
+            background: #1c2428;
+        }
+        
+        body.dark-mode .chart-title {
+            color: #e8eaed;
+        }
+        
+        body.dark-mode .chart-artist {
+            color: #9aa0a6;
+        }
+        
+        body.dark-mode .chart-artist-link {
+            color: #9aa0a6;
+        }
+        
+        body.dark-mode .chart-artist-link:hover {
+            color: #e07800;
+        }
+        
+        body.dark-mode .chart-stat.followers {
+            color: #e07800;
+            text-shadow: 0 0 25px rgba(224, 120, 0, 0.4);
+        }
+        
+        body.dark-mode .chart-stat.weeks {
+            color: #64748b;
+        }
+        
+        body.dark-mode .chart-cover .placeholder {
+            background: #1c2428;
+            color: #5f6368;
+        }
+        
+        body.dark-mode .share-modal-content {
+            background: #141a1f;
+        }
+        
+        body.dark-mode .share-modal-header h3 {
+            color: #e8eaed;
+        }
+        
+        body.dark-mode .share-action-btn {
+            background: #1c2428;
+            color: #e8eaed;
+            border-color: #2d3439;
+        }
+        
+        body.dark-mode .share-action-btn:hover {
+            background: #2d3439;
+        }
+        
+        body.dark-mode .view-mode-toggle {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.15);
+            color: #e8eaed;
+        }
+        
+        body.dark-mode .view-mode-toggle:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        
+        body.dark-mode .chart-loading,
+        body.dark-mode .chart-empty {
+            color: #9aa0a6;
+        }
+        
+        body.dark-mode .share-btn {
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+            border-color: rgba(255,255,255,0.2);
+            color: #e8eaed;
+        }
+        
+        body.dark-mode .share-btn:hover {
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%);
         }
         
         /* Dark mode for chart sections and items */
         body.dark-mode .chart-section {
-            background: linear-gradient(180deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.9) 100%);
-            border-color: #2d3a5a;
+            background: #141a1f;
+            border-color: #2d3439;
         }
         
         body.dark-mode .chart-item {
-            background: linear-gradient(90deg, rgba(45, 58, 90, 0.3) 0%, transparent 100%);
-            border-color: #2d3a5a;
+            background: transparent;
+            border-color: #2d3439;
         }
         
         body.dark-mode .chart-item:hover {
-            background: linear-gradient(90deg, rgba(45, 58, 90, 0.6) 0%, rgba(45, 58, 90, 0.2) 100%);
+            background: #1c2428;
         }
         
         body.dark-mode .chart-cover {
-            background: #2d3a5a;
+            background: #1c2428;
         }
         
         body.dark-mode .chart-title {
-            color: #eee;
+            color: #e8eaed;
         }
         
         body.dark-mode .chart-artist-link {
-            color: #aaa;
+            color: #9aa0a6;
         }
         
         body.dark-mode .chart-release-type {
-            background: rgba(45, 58, 90, 0.6);
-            color: #aaa;
+            background: #1c2428;
+            color: #9aa0a6;
         }
         
         body.dark-mode .share-modal-content {
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            border-color: #2d3a5a;
+            background: #141a1f;
+            border-color: #2d3439;
         }
         
         body.dark-mode .share-actions button {
-            background: linear-gradient(180deg, #2d3a5a 0%, #252e45 100%);
-            border-color: #3d4a6a;
-            color: #eee;
+            background: #1c2428;
+            border-color: #2d3439;
+            color: #e8eaed;
         }
         
         body.dark-mode .share-actions button:hover {
-            background: linear-gradient(180deg, #3d4a6a 0%, #2d3a5a 100%);
+            background: #2d3439;
         }
         
         body.dark-mode .share-modal-close {
-            color: #aaa;
+            color: #9aa0a6;
         }
         
         body.dark-mode .share-modal-close:hover {
-            color: #eee;
+            color: #e8eaed;
         }
         
         body.dark-mode .cache-info {
-            color: #777;
+            color: #5f6368;
         }
         
         /* Chart page icon-only buttons */
@@ -208,7 +312,6 @@
             visibility: hidden;
             transition: all 0.15s ease;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
             pointer-events: none;
         }
         
@@ -252,7 +355,6 @@
             justify-content: center;
             gap: 0;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
         }
         
         .dark-mode-toggle i {
@@ -261,17 +363,27 @@
         
         .dark-mode-toggle:hover {
             background: linear-gradient(180deg, var(--bg-hover) 0%, rgba(0,0,0,0.08) 100%);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8);
             transform: translateY(-1px);
         }
         
         body.dark-mode .dark-mode-toggle {
-            background: linear-gradient(180deg, #2d3a5a 0%, #252e45 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            background: #1c2428;
+            border-color: #2d3439;
         }
         
         body.dark-mode .dark-mode-toggle:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+            background: #2d3439;
+        }
+        
+        /* Dark mode header buttons */
+        body.dark-mode.chart-page .header-btn {
+            background: #1c2428;
+            border-color: #2d3439;
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode.chart-page .header-btn:hover {
+            background: #2d3439;
         }
         
         body.chart-page {
@@ -290,13 +402,7 @@
         }
         
         body.dark-mode.chart-page {
-            background: 
-                radial-gradient(ellipse at 0% 0%, rgba(103, 126, 234, 0.12) 0%, transparent 45%),
-                radial-gradient(ellipse at 100% 0%, rgba(250, 82, 82, 0.08) 0%, transparent 40%),
-                radial-gradient(ellipse at 100% 100%, rgba(18, 184, 134, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 0% 100%, rgba(121, 80, 242, 0.1) 0%, transparent 45%),
-                radial-gradient(ellipse at 50% 50%, rgba(253, 126, 20, 0.06) 0%, transparent 55%),
-                linear-gradient(180deg, #1a1a2e 0%, #151a30 20%, #121929 40%, #0f172a 60%, #0c1322 80%, #0a101c 100%);
+            background: #0c1014;
         }
         
         .chart-container {
@@ -319,7 +425,7 @@
         .chart-header h1 {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 0.4rem;
@@ -349,32 +455,22 @@
         .chart-section {
             background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
             border: 1px solid rgba(222, 226, 230, 0.6);
-            border-radius: 12px;
+            border-radius: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             min-height: 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06),
-                        inset 0 1px 0 rgba(255,255,255,0.9);
             transition: all 0.2s ease;
         }
         
-        .chart-section:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                        inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-        
         .chart-section-header {
-            background: linear-gradient(135deg, #fa5252 0%, #fd7e14 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #FAFAFA 0%, #DDD 100%);
+            color: #000;
             padding: 0.6rem 0.85rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 
-                        inset 0 -1px 0 rgba(0,0,0,0.15),
-                        0 2px 4px rgba(0,0,0,0.1);
             position: relative;
         }
         
@@ -385,17 +481,16 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
         }
         
         .chart-section-header h2 {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 800;
             display: flex;
             align-items: center;
             gap: 0.35rem;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         
         .chart-section-header h2 i { font-size: 0.75rem; }
@@ -413,31 +508,25 @@
         }
         
         .share-btn {
-            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
+            border: 1px solid rgba(0,0,0,0.15);
             border-radius: 6px;
-            color: #fff;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.55rem;
+            color: #212529;
+            padding: 0.4rem 0.7rem;
+            font-size: 0.7rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.2rem;
+            gap: 0.3rem;
             transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         
         .share-btn:hover {
-            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.2) 100%);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
-        }
-        
-        .share-btn:active {
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.22) 100%);
         }
         
         .share-btn i {
-            font-size: 0.5rem;
+            font-size: 0.65rem;
         }
         
         .share-btn.sharing {
@@ -471,9 +560,6 @@
             max-height: 85vh;
             overflow: auto;
             position: relative;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), 
-                        0 0 0 1px rgba(255,255,255,0.1),
-                        inset 0 1px 0 rgba(255,255,255,0.2);
             backdrop-filter: blur(20px);
         }
         
@@ -489,7 +575,7 @@
         .share-modal-header h3 {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.8rem;
-            font-weight: 700;
+            font-weight: 800;
         }
         
         .share-modal-close {
@@ -501,13 +587,11 @@
             cursor: pointer;
             padding: 0.25rem 0.4rem;
             transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .share-modal-close:hover {
             color: var(--text-primary);
             background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .share-preview {
@@ -521,7 +605,6 @@
             max-width: 100%;
             max-height: 350px;
             border-radius: 6px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 0 3px 8px rgba(0,0,0,0.15);
         }
         
         .share-actions {
@@ -535,7 +618,7 @@
         }
         
         .share-action-btn {
-            background: linear-gradient(180deg, var(--accent-green) 0%, #37b24d 100%);
+            background: linear-gradient(180deg, var(--accent-orange) 0%, #fd7e14 100%);
             border: none;
             border-radius: 6px;
             color: #fff;
@@ -547,15 +630,6 @@
             align-items: center;
             gap: 0.3rem;
             transition: all 0.15s ease;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        
-        .share-action-btn:hover {
-            box-shadow: 0 5px 8px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-        
-        .share-action-btn:active {
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .share-action-btn.download {
@@ -575,7 +649,7 @@
             background: #fff;
             padding: 0;
             border-radius: 8px;
-            font-family: 'Source Sans Pro', sans-serif;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
             border: 1px solid #e0e0e0;
         }
@@ -596,7 +670,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         
         .share-card-title i {
@@ -655,7 +728,7 @@
         .share-card-rank {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 800;
             width: 24px;
             text-align: right;
             color: #999;
@@ -779,17 +852,42 @@
         .chart-item:last-child { border-bottom: none; }
         .chart-item:hover { 
             background: linear-gradient(90deg, var(--bg-hover) 0%, rgba(255,255,255,0.3) 100%);
-            box-shadow: inset 3px 0 0 var(--accent-orange);
         }
         
         .chart-rank {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
+            font-size: 1.4rem;
             font-weight: 800;
-            width: 22px;
-            text-align: right;
+            width: 36px;
+            text-align: center;
             flex-shrink: 0;
             color: var(--text-muted);
+            position: relative;
+        }
+        
+        /* Position change indicators via arrow superscript - absolutely positioned */
+        .chart-rank.rank-up::after {
+            content: '▲';
+            position: absolute;
+            top: -8px;
+            right: -2px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: #1DB954;
+            line-height: 1;
+            text-shadow: 0 0 10px rgba(29, 185, 84, 0.35);
+        }
+        
+        .chart-rank.rank-down::after {
+            content: '▼';
+            position: absolute;
+            top: -8px;
+            right: -2px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: #e74c3c;
+            line-height: 1;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.35);
         }
         
         .chart-rank.gold { 
@@ -813,12 +911,7 @@
             overflow: hidden;
             flex-shrink: 0;
             background: var(--bg-secondary);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,0.1);
             transition: all 0.15s ease;
-        }
-        
-        .chart-item:hover .chart-cover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15);
         }
         
         .chart-cover img {
@@ -858,7 +951,7 @@
         }
         
         .chart-title:hover {
-            color: #1DB954;
+            color: #e07800;
         }
         
         .chart-artist {
@@ -876,26 +969,20 @@
         }
         
         .chart-artist-link:hover {
-            color: #1DB954;
+            color: #e07800;
             text-decoration: none;
-            background: linear-gradient(90deg, rgba(29,185,84,0.1) 0%, transparent 100%);
-            padding-left: 0.25rem;
-            margin-left: -0.25rem;
-            border-radius: 3px;
         }
         
         .chart-release-type {
             display: inline-block;
             font-size: 0.5rem;
             font-weight: 600;
-            background: linear-gradient(135deg, var(--accent-green) 0%, #37b24d 100%);
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
             color: #fff;
             padding: 0.08rem 0.25rem;
             border-radius: 3px;
             margin-left: 0.2rem;
             vertical-align: middle;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
         }
         
         .chart-release-type.album { 
@@ -905,55 +992,27 @@
             background: linear-gradient(135deg, var(--accent-blue) 0%, #1864ab 100%); 
         }
         
-        /* Chart change indicators */
-        .chart-change {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            flex-shrink: 0;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        
-        .chart-change.new {
-            color: #d4a000;
-        }
-        
-        .chart-change.new i {
-            font-size: 0.85rem;
-        }
-        
-        .chart-change.up {
-            color: #1DB954;
-        }
-        
-        .chart-change.down {
-            color: #e74c3c;
-        }
-        
-        .chart-change.same {
-            color: var(--text-muted);
-            font-size: 0.6rem;
-        }
-        
-        .chart-change .change-value {
-            font-size: 0.65rem;
-            margin-left: 2px;
-        }
-        
-        /* Popularity change indicator - superscript style */
+        /* Popularity change indicator - arrow overlays the number */
         .pop-change {
-            font-size: 0.45rem;
-            font-weight: 700;
             position: absolute;
-            top: -4px;
-            right: -2px;
-            transform: translateX(100%);
+            top: 0%;
+            left: 90%;
+            font-size: 1rem;
+            font-weight: 900;
+            line-height: 1;
+            color: transparent;
+            pointer-events: none;
+            z-index: 1;
         }
         
-        .pop-change.up { color: #1DB954; }
-        .pop-change.down { color: #e74c3c; }
+        .pop-change.up::before { 
+            content: '▲';
+            color: rgba(29, 185, 84, 0.85);
+        }
+        .pop-change.down::before { 
+            content: '▼';
+            color: rgba(231, 76, 60, 0.85);
+        }
         
         /* New entry highlight */
         .chart-item.is-new {
@@ -970,7 +1029,6 @@
             border-radius: 3px;
             margin-left: 0.35rem;
             vertical-align: middle;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
         .chart-meta {
@@ -983,32 +1041,32 @@
         .chart-stat {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 500;
+            justify-content: center;
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+            font-weight: 800;
+            letter-spacing: -0.02em;
         }
         
         .chart-stat.weeks {
-            width: 32px;
-            justify-content: flex-end;
-            white-space: nowrap;
-            background: linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 100%);
-            padding: 0.15rem 0.25rem;
-            border-radius: 4px;
+            display: none;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            min-width: 26px;
+            text-align: right;
         }
         
         .chart-stat.followers {
-            width: 32px;
-            margin-right: 10px;
-            justify-content: flex-end;
-            color: var(--accent-green);
             position: relative;
-            font-weight: 600;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #94a3b8;
+            min-width: 36px;
+            text-align: right;
+            cursor: default;
+            text-shadow: 0 0 20px rgba(224, 120, 0, 0.3);
         }
         
-        .chart-stat i { font-size: 0.7rem; }
+        .chart-stat i { display: none; }
         
 
         
@@ -1078,38 +1136,37 @@
                 font-size: 0.55rem;
             }
             .share-btn {
-                padding: 0.2rem 0.35rem;
-                font-size: 0.5rem;
+                padding: 0.35rem 0.5rem;
+                font-size: 0.65rem;
             }
             .share-btn span {
                 display: none;
             }
             .view-mode-toggle {
-                padding: 0.2rem 0.35rem;
+                padding: 0.35rem 0.5rem;
             }
         }
         
         /* Compact/Expanded mode toggle */
         .view-mode-toggle {
-            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
+            border: 1px solid rgba(0,0,0,0.15);
             border-radius: 6px;
-            color: #fff;
-            padding: 0.25rem 0.4rem;
-            font-size: 0.6rem;
+            color: #212529;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.2rem;
+            gap: 0.25rem;
             transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
         }
         
         .view-mode-toggle:hover {
-            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.2) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.22) 100%);
         }
         
-        .view-mode-toggle i { font-size: 0.55rem; }
+        .view-mode-toggle i { font-size: 0.7rem; }
         
         /* Compact mode styles - single row layout */
         .chart-section.compact-mode .chart-item {
@@ -1126,6 +1183,13 @@
         .chart-section.compact-mode .chart-rank {
             font-size: 0.7rem;
             width: 16px;
+        }
+
+        .chart-section.compact-mode .chart-rank.rank-up::after,
+        .chart-section.compact-mode .chart-rank.rank-down::after {
+            top: -6px;
+            right: -2px;
+            font-size: 0.65rem;
         }
         
         .chart-section.compact-mode .chart-change {
@@ -1158,21 +1222,27 @@
         }
         
         .chart-section.compact-mode .chart-meta {
-            gap: 0.3rem;
-        }
-        
-        .chart-section.compact-mode .chart-stat {
-            font-size: 0.65rem;
+            gap: 0.4rem;
         }
         
         .chart-section.compact-mode .chart-stat.weeks {
-            width: 26px;
-            padding: 0.1rem 0.2rem;
+            font-size: 0.55rem;
+            min-width: 20px;
         }
         
         .chart-section.compact-mode .chart-stat.followers {
-            width: 26px;
-            margin-right: 6px;
+            font-size: 1rem;
+            min-width: 28px;
+        }
+        
+        .chart-section.compact-mode .pop-change {
+            font-size: 0.45rem;
+            margin-left: 1px;
+        }
+
+        .chart-section.compact-mode .pop-change.up::before,
+        .chart-section.compact-mode .pop-change.down::before {
+            font-size: 0.45rem;
         }
         
         /* Mobile compact - even more compact, single row */
@@ -1209,76 +1279,273 @@
                 font-size: 0.6rem;
             }
             
-            .chart-section.compact-mode .chart-stat {
-                font-size: 0.55rem;
+            .chart-section.compact-mode .chart-stat.weeks {
+                font-size: 0.5rem;
+                min-width: 16px;
             }
             
-            .chart-section.compact-mode .chart-stat.weeks,
             .chart-section.compact-mode .chart-stat.followers {
-                width: 22px;
-                padding: 0.1rem 0.15rem;
+                font-size: 0.9rem;
+                min-width: 24px;
+            }
+            
+            .chart-section.compact-mode .pop-change {
+                display: none;
             }
         }
         
-        /* Spotify embed modal */
-        .spotify-embed-modal {
-            display: none;
+        /* Inline music player - compact style */
+        .music-player {
             position: fixed;
-            inset: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+            border-top: 1px solid rgba(255, 146, 43, 0.3);
+            padding: 0;
             z-index: 5000;
-            align-items: center;
-            justify-content: center;
+            display: none;
+            flex-direction: column;
         }
         
-        .spotify-embed-modal.active {
+        body.dark-mode .music-player {
+            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+        }
+        
+        .music-player.active {
             display: flex;
         }
         
-        .spotify-embed-backdrop {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
+        .music-player-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         
-        .spotify-embed-content {
-            position: relative;
-            width: 90%;
-            max-width: 400px;
-            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            border-radius: 16px;
-            padding: 1.25rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4),
-                        inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        
-        .spotify-embed-close {
-            position: absolute;
-            top: -14px;
-            right: -14px;
+        .music-player-cover {
             width: 32px;
             height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1DB954 0%, #169c46 100%);
-            border: none;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .music-player-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .music-player-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+        
+        .music-player-title {
+            font-weight: 600;
+            font-size: 0.75rem;
             color: #fff;
-            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .music-player-artist {
+            font-size: 0.65rem;
+            color: #9aa0a6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .music-player-services {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .music-player-service {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.15s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
         }
         
-        .spotify-embed-close:hover {
-            background: linear-gradient(135deg, #1ed760 0%, #1DB954 100%);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+        .music-player-service span {
+            display: none;
         }
         
-        #spotify-embed-container iframe {
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        .music-player-service:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e8eaed;
+        }
+        
+        .music-player-service.active {
+            background: #e07800;
+            color: #fff;
+        }
+        
+        .music-player-service.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .music-player-service i {
+            font-size: 1rem;
+        }
+        
+        /* Service-specific colors on hover */
+        .music-player-service[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
+        .music-player-service[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
+        .music-player-service[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
+        .music-player-service[data-service="deezer"]:hover:not(.active) { color: #FEAA2D; }
+        .music-player-service[data-service="soundcloud"]:hover:not(.active) { color: #ff7700; }
+        .music-player-service[data-service="bandcamp"]:hover:not(.active) { color: #1da0c3; }
+        .music-player-service[data-service="tidal"]:hover:not(.active) { color: #00FFFF; }
+        
+        .music-player-remember {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.55rem;
+            color: #6b7280;
+            margin-left: 0.25rem;
+            cursor: pointer;
+            padding-left: 0.5rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .music-player-remember:hover {
+            color: #9ca3af;
+        }
+        
+        .music-player-remember input {
+            accent-color: #e07800;
+            width: 10px;
+            height: 10px;
+        }
+        
+        .music-player-close {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+        
+        .music-player-close:hover {
+            background: rgba(255, 82, 82, 0.15);
+            color: #fa5252;
+        }
+        
+        .music-player-embed {
+            width: 100%;
+        }
+        
+        .music-player iframe {
+            width: 100%;
+            height: 80px;
+            border: none;
+        }
+        
+        .music-player iframe.youtube-embed,
+        .music-player iframe.soundcloud-embed {
+            height: 80px;
+        }
+        
+        .music-player-external {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .music-player-external a {
+            background: linear-gradient(180deg, #e07800 0%, #c96b00 100%);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.15s ease;
+        }
+        
+        .music-player-external a:hover {
+            background: linear-gradient(180deg, #c96b00 0%, #b35f00 100%);
+            transform: translateY(-1px);
+        }
+        
+        .music-player-no-links {
+            padding: 1rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+        
+        @media (max-width: 600px) {
+            .music-player-header {
+                padding: 0.3rem 0.5rem;
+            }
+            
+            .music-player-cover {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .music-player-title {
+                font-size: 0.7rem;
+            }
+            
+            .music-player-artist {
+                font-size: 0.6rem;
+            }
+            
+            .music-player-service {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .music-player-service i {
+                font-size: 0.85rem;
+            }
+            
+            .music-player-remember {
+                display: none;
+            }
+            
+            .music-player-close {
+                width: 24px;
+                height: 24px;
+            }
         }
     </style>
 </head>
@@ -1550,6 +1817,9 @@
             
             await Promise.all(imagePromises);
             
+            // Cache-busting timestamp for images
+            const cacheBuster = Date.now();
+            
             container.innerHTML = `
                 <div class="share-card" id="share-card-render">
                     <div class="share-card-header">
@@ -1566,12 +1836,13 @@
                         ${releases.map((release, index) => {
                             const rank = index + 1;
                             const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                            const thumbUrl = release.thumbnail ? `${release.thumbnail}${release.thumbnail.includes('?') ? '&' : '?'}cb=${cacheBuster}` : '';
                             return `
                                 <li class="share-card-item">
                                     <span class="share-card-rank ${rankClass}">${rank}</span>
                                     <div class="share-card-cover">
-                                        ${release.thumbnail 
-                                            ? `<img src="${release.thumbnail}" crossorigin="anonymous" alt="">`
+                                        ${thumbUrl 
+                                            ? `<img src="${thumbUrl}" crossorigin="anonymous" alt="">`
                                             : ''
                                         }
                                     </div>
@@ -1975,25 +2246,25 @@
                         if (!prev) {
                             // New entry
                             itemClass += ' is-new';
-                            changeIndicator = `<div class="chart-change new" title="Ново"><i class="fas fa-star"></i></div>`;
+                            changeIndicator = '';
                             popChangeIndicator = '';
                         } else {
                             // Position change
                             const posChange = prev.position - rank;
                             if (posChange > 0) {
-                                changeIndicator = `<div class="chart-change up" title="Се качи за ${posChange}"><i class="fas fa-caret-up"></i><span class="change-value">${posChange}</span></div>`;
+                                changeIndicator = 'rank-up';
                             } else if (posChange < 0) {
-                                changeIndicator = `<div class="chart-change down" title="Падна за ${Math.abs(posChange)}"><i class="fas fa-caret-down"></i><span class="change-value">${Math.abs(posChange)}</span></div>`;
+                                changeIndicator = 'rank-down';
                             } else {
-                                changeIndicator = `<div class="chart-change same" title="Без промена"><i class="fas fa-minus"></i></div>`;
+                                changeIndicator = 'rank-same';
                             }
                             
                             // Popularity change - only show if changed
                             const popDiff = popularity - prev.popularity;
                             if (popDiff > 0) {
-                                popChangeIndicator = `<span class="pop-change up" title="Зголемена популарност">+${popDiff}</span>`;
+                                popChangeIndicator = `<span class="pop-change up">+${popDiff}</span>`;
                             } else if (popDiff < 0) {
-                                popChangeIndicator = `<span class="pop-change down" title="Намалена популарност">${popDiff}</span>`;
+                                popChangeIndicator = `<span class="pop-change down">${popDiff}</span>`;
                             } else {
                                 popChangeIndicator = '';
                             }
@@ -2008,8 +2279,7 @@
                     
                     return `
                         <li class="chart-item ${itemClass}">
-                            ${showPosition ? `<span class="chart-rank ${rankClass}">${rank}</span>` : ''}
-                            ${showPosition ? changeIndicator : ''}
+                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : ''}">${rank}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
@@ -2025,7 +2295,7 @@
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
-                                <span class="chart-stat followers" title="Популарност"><i class="fas fa-fire"></i>${popularity}${popChangeIndicator}</span>
+                                <span class="chart-stat followers" title="Популарност на Spotify (0-100)">${popularity}${popChangeIndicator}</span>
                             </div>
                         </li>
                     `;
@@ -2037,7 +2307,11 @@
                         e.preventDefault();
                         const spotifyId = title.dataset.spotifyId;
                         const spotifyType = title.dataset.spotifyType;
-                        showSpotifyEmbed(spotifyId, spotifyType);
+                        const songTitle = title.textContent;
+                        const item = title.closest('.chart-item');
+                        const artist = item.querySelector('.chart-artist')?.textContent || '';
+                        const thumbnail = item.querySelector('.chart-cover img')?.src || '';
+                        showSpotifyEmbed(spotifyId, spotifyType, songTitle, artist, thumbnail);
                     });
                 });
                 
@@ -2051,67 +2325,274 @@
                 });
             }
             
-            // Spotify embed modal functionality
-            function showSpotifyEmbed(spotifyId, type = 'track') {
-                let modal = document.getElementById('spotify-embed-modal');
+            // Inline music player functionality
+            // Service definitions with icons and embed support
+            const serviceDefinitions = {
+                spotify: { name: 'Spotify', icon: 'fab fa-spotify', hasEmbed: true, linkKey: 'spotify' },
+                youtube: { name: 'YouTube', icon: 'fab fa-youtube', hasEmbed: true, linkKey: 'youtube' },
+                apple: { name: 'Apple', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
+                deezer: { name: 'Deezer', icon: 'fab fa-deezer', hasEmbed: true, linkKey: 'deezer' },
+                tidal: { name: 'Tidal', icon: 'fas fa-water', hasEmbed: false, linkKey: 'tidal' },
+                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', hasEmbed: true, linkKey: 'bandcamp' },
+                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', hasEmbed: true, linkKey: 'soundcloud' }
+            };
+            
+            let bandsData = null;
+            let currentTrackData = null;
+            
+            // Load bands.json on page load
+            async function loadBandsData() {
+                try {
+                    const response = await fetch('bands.json?t=' + Date.now());
+                    if (response.ok) {
+                        const data = await response.json();
+                        bandsData = data.muzickaMasterLista || [];
+                        console.log('Loaded', bandsData.length, 'bands from bands.json');
+                    }
+                } catch (err) {
+                    console.warn('Could not load bands.json:', err);
+                    bandsData = [];
+                }
+            }
+            
+            // Find band by name (case-insensitive, handles collabs)
+            function findBandByName(artistName) {
+                if (!bandsData) return null;
                 
-                if (!modal) {
-                    // Create modal if it doesn't exist
-                    modal = document.createElement('div');
-                    modal.id = 'spotify-embed-modal';
-                    modal.className = 'spotify-embed-modal';
-                    modal.innerHTML = `
-                        <div class="spotify-embed-backdrop"></div>
-                        <div class="spotify-embed-content">
-                            <button class="spotify-embed-close"><i class="fas fa-times"></i></button>
-                            <div id="spotify-embed-container"></div>
+                // Try exact match first
+                let band = bandsData.find(b => b.name.toLowerCase() === artistName.toLowerCase());
+                if (band) return band;
+                
+                // Try first artist in collab (split by comma)
+                const firstArtist = artistName.split(',')[0].trim();
+                band = bandsData.find(b => b.name.toLowerCase() === firstArtist.toLowerCase());
+                if (band) return band;
+                
+                // Try partial match
+                band = bandsData.find(b => artistName.toLowerCase().includes(b.name.toLowerCase()));
+                return band;
+            }
+            
+            function getPreferredService() {
+                return localStorage.getItem('mmm-preferred-player') || 'spotify';
+            }
+            
+            function setPreferredService(serviceId) {
+                localStorage.setItem('mmm-preferred-player', serviceId);
+            }
+            
+            function showMusicPlayer(spotifyId, type = 'track', title = '', artist = '', thumbnail = '') {
+                let player = document.getElementById('music-player');
+                
+                // Find band links from bands.json
+                const band = findBandByName(artist);
+                const artistLinks = band?.links || {};
+                
+                currentTrackData = { spotifyId, type, title, artist, thumbnail, artistLinks };
+                
+                if (!player) {
+                    // Create player if it doesn't exist
+                    player = document.createElement('div');
+                    player.id = 'music-player';
+                    player.className = 'music-player';
+                    player.innerHTML = `
+                        <div class="music-player-bar">
+                            <div class="music-player-cover">
+                                <img src="" alt="">
+                            </div>
+                            <div class="music-player-info">
+                                <div class="music-player-title"></div>
+                                <div class="music-player-artist"></div>
+                            </div>
+                            <div class="music-player-tabs"></div>
+                            <button class="music-player-close" title="Затвори"><i class="fas fa-times"></i></button>
                         </div>
+                        <div class="music-player-embed"></div>
                     `;
-                    document.body.appendChild(modal);
+                    document.body.appendChild(player);
                     
-                    // Close on backdrop click
-                    modal.querySelector('.spotify-embed-backdrop').addEventListener('click', closeSpotifyEmbed);
-                    modal.querySelector('.spotify-embed-close').addEventListener('click', closeSpotifyEmbed);
+                    // Close button
+                    player.querySelector('.music-player-close').addEventListener('click', closeMusicPlayer);
                     
                     // Close on Escape
                     document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape' && modal.classList.contains('active')) {
-                            closeSpotifyEmbed();
+                        if (e.key === 'Escape' && player.classList.contains('active')) {
+                            closeMusicPlayer();
                         }
                     });
                 }
                 
-                const container = document.getElementById('spotify-embed-container');
-                const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0`;
+                // Update player content - hide cover if no thumbnail
+                const coverContainer = player.querySelector('.music-player-cover');
+                const coverImg = coverContainer?.querySelector('img');
+                if (thumbnail) {
+                    if (coverImg) coverImg.src = thumbnail;
+                    coverContainer.style.display = '';
+                } else {
+                    coverContainer.style.display = 'none';
+                }
+                player.querySelector('.music-player-title').textContent = title;
+                player.querySelector('.music-player-artist').textContent = artist;
                 
-                container.innerHTML = `
-                    <iframe 
-                        src="${embedUrl}" 
-                        width="100%" 
-                        height="${type === 'track' ? '152' : '352'}" 
-                        frameBorder="0" 
-                        allowfullscreen="" 
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                        loading="lazy"
-                    ></iframe>
-                `;
+                // Render service tabs
+                renderServiceTabs(player, artistLinks);
                 
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                // Load preferred service if available, or first available service
+                const preferredService = getPreferredService();
+                const hasPreferred = preferredService === 'spotify' || artistLinks[preferredService];
+                
+                if (hasPreferred) {
+                    activateService(preferredService);
+                } else if (artistLinks.spotify || spotifyId) {
+                    activateService('spotify');
+                } else {
+                    // Load first available service
+                    const firstAvailable = Object.keys(artistLinks)[0];
+                    if (firstAvailable) {
+                        activateService(firstAvailable);
+                    }
+                }
+                
+                player.classList.add('active');
+            }
+            
+            function renderServiceTabs(player, artistLinks) {
+                const tabsContainer = player.querySelector('.music-player-tabs');
+                
+                // Build available services
+                const availableServices = [];
+                
+                // Spotify is always available if we have spotifyId
+                if (currentTrackData.spotifyId) {
+                    availableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
+                }
+                
+                // Add services from artist's links
+                Object.entries(artistLinks).forEach(([key, url]) => {
+                    if (key !== 'spotify' && serviceDefinitions[key]) {
+                        availableServices.push({ id: key, ...serviceDefinitions[key], url });
+                    }
+                });
+                
+                if (availableServices.length === 0) {
+                    tabsContainer.innerHTML = '';
+                    return;
+                }
+                
+                tabsContainer.innerHTML = availableServices.map(service => `
+                    <button class="music-player-tab" 
+                            data-service="${service.id}" 
+                            data-url="${service.url || ''}"
+                            data-has-embed="${service.hasEmbed}"
+                            title="${service.name}">
+                        <i class="${service.icon}"></i>
+                    </button>
+                `).join('');
+                
+                // Add click handlers
+                tabsContainer.querySelectorAll('.music-player-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const serviceId = tab.dataset.service;
+                        activateService(serviceId);
+                        // Save preference
+                        setPreferredService(serviceId);
+                    });
+                });
+            }
+            
+            function activateService(serviceId) {
+                const player = document.getElementById('music-player');
+                if (!player || !currentTrackData) return;
+                
+                const tabsContainer = player.querySelector('.music-player-tabs');
+                const embedContainer = player.querySelector('.music-player-embed');
+                const { spotifyId, type, artistLinks } = currentTrackData;
+                const service = serviceDefinitions[serviceId];
+                const url = artistLinks[serviceId];
+                
+                // Update active tab
+                tabsContainer.querySelectorAll('.music-player-tab').forEach(t => t.classList.remove('active'));
+                const activeTab = tabsContainer.querySelector(`[data-service="${serviceId}"]`);
+                if (activeTab) activeTab.classList.add('active');
+                
+                // Check if this service has an embed available
+                let embedHtml = '';
+                let hasEmbed = false;
+                
+                if (serviceId === 'spotify' && spotifyId) {
+                    hasEmbed = true;
+                    embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                } else if (serviceId === 'youtube' && url) {
+                    const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                    if (ytMatch) {
+                        hasEmbed = true;
+                        embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+                    }
+                } else if (serviceId === 'soundcloud' && url) {
+                    hasEmbed = true;
+                    const encodedUrl = encodeURIComponent(url);
+                    embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
+                } else if (serviceId === 'apple' && url) {
+                    const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(?:album|playlist)\/[^\/]+\/([0-9]+)/);
+                    if (appleMatch) {
+                        hasEmbed = true;
+                        const country = appleMatch[1];
+                        const albumId = appleMatch[2];
+                        embedHtml = `<iframe class="apple-embed" src="https://embed.music.apple.com/${country}/album/${albumId}?theme=dark" allow="autoplay *; encrypted-media *; fullscreen *" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy"></iframe>`;
+                    }
+                } else if (serviceId === 'deezer' && url) {
+                    const deezerMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/(\d+)/);
+                    if (deezerMatch) {
+                        hasEmbed = true;
+                        const deezerType = deezerMatch[1];
+                        const deezerId = deezerMatch[2];
+                        embedHtml = `<iframe scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" style="width:100%;height:80px;" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+                    }
+                }
+                
+                // If no embed available, open URL in new tab directly
+                if (!hasEmbed && url) {
+                    window.open(url, '_blank');
+                    // Don't change the embed area, keep showing current service
+                    return;
+                }
+                
+                // Update embed
+                if (hasEmbed) {
+                    embedContainer.innerHTML = embedHtml;
+                    embedContainer.classList.add('expanded');
+                } else {
+                    embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за ${service?.name || 'оваа услуга'}</div>`;
+                    embedContainer.classList.add('expanded');
+                }
+            }
+            
+            function closeMusicPlayer() {
+                const player = document.getElementById('music-player');
+                
+                if (player) {
+                    player.classList.remove('active');
+                    // Stop playback by clearing embed
+                    const embedContainer = player.querySelector('.music-player-embed');
+                    if (embedContainer) {
+                        embedContainer.innerHTML = '';
+                        embedContainer.classList.remove('expanded');
+                    }
+                    currentTrackData = null;
+                }
+            }
+            
+            // Keep old function name for compatibility
+            function showSpotifyEmbed(spotifyId, type = 'track', title = '', artist = '', thumbnail = '') {
+                showMusicPlayer(spotifyId, type, title, artist, thumbnail);
             }
             
             function closeSpotifyEmbed() {
-                const modal = document.getElementById('spotify-embed-modal');
-                const container = document.getElementById('spotify-embed-container');
-                
-                if (modal) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-                if (container) {
-                    container.innerHTML = '';
-                }
+                closeMusicPlayer();
             }
+            
+            // Load bands data on page load
+            loadBandsData();
             
             loadChartData();
             
