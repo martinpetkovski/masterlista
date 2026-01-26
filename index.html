@@ -95,7 +95,6 @@
         
         body.dark-mode .share-card {
             background: #141a1f;
-            border-color: #2d3439;
         }
         
         body.dark-mode .share-card-list {
@@ -651,7 +650,7 @@
             border-radius: 8px;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            border: 1px solid #e0e0e0;
+            border: none;
         }
         
         .share-card-header {
@@ -659,14 +658,14 @@
             align-items: center;
             justify-content: space-between;
             padding: 0.75rem 1rem;
-            background: linear-gradient(135deg, #fa5252, #fd7e14);
+            background: linear-gradient(135deg, #FAFAFA 0%, #DDD 100%);
         }
         
         .share-card-title {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.1rem;
             font-weight: 700;
-            color: #fff;
+            color: #000;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -678,7 +677,7 @@
         
         .share-card-branding {
             font-size: 0.55rem;
-            color: rgba(255,255,255,0.85);
+            color: rgba(0,0,0,0.7);
             text-align: right;
             line-height: 1.3;
         }
@@ -686,12 +685,12 @@
         .share-card-branding .mmm {
             font-family: 'Bungee', sans-serif;
             font-size: 0.8rem;
-            background: linear-gradient(135deg, #fa5252, #fd7e14);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: #fff;
+            background: none;
+            color: #fa5252;
+            -webkit-text-fill-color: #fa5252;
             display: block;
             margin-bottom: 2px;
+            text-shadow: 1px 1px 2px rgba(250, 82, 82, 0.3);
         }
         
         .share-card-list {
@@ -800,31 +799,14 @@
             min-height: 0;
         }
         
+        /* Chart list scroll shadows - disabled */
         .chart-list-wrapper::before,
         .chart-list-wrapper::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 20px;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 0.2s ease;
+            display: none;
         }
         
-        .chart-list-wrapper::before {
-            top: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
-        }
-        
-        .chart-list-wrapper::after {
-            bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);
-        }
-        
-        .chart-list-wrapper.scroll-top::before { opacity: 1; }
-        .chart-list-wrapper.scroll-bottom::after { opacity: 1; }
+        .chart-list-wrapper.scroll-top::before { opacity: 0; }
+        .chart-list-wrapper.scroll-bottom::after { opacity: 0; }
         
         .chart-list {
             list-style: none;
@@ -1803,6 +1785,44 @@
             const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
             const dateStr = `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
             
+            // Check if dark mode is active
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            
+            // Theme colors - match exactly what's displayed
+            const theme = isDarkMode ? {
+                cardBg: '#141a1f',
+                listBg: '#141a1f',
+                itemBorder: '#2d3439',
+                songColor: '#e8eaed',
+                artistColor: '#9aa0a6',
+                footerBg: '#1c2428',
+                dateColor: '#5f6368',
+                rankColor: '#5f6368',
+                rankGold: '#ffd700',
+                rankSilver: '#c0c0c0',
+                rankBronze: '#cd7f32',
+                coverBg: '#1c2428',
+                headerBg: '#000',
+                headerColor: '#fff',
+                brandingColor: 'rgba(255,255,255,0.85)'
+            } : {
+                cardBg: '#fff',
+                listBg: '#fff',
+                itemBorder: '#eee',
+                songColor: '#1a1a1a',
+                artistColor: '#666',
+                footerBg: '#f5f5f5',
+                dateColor: '#888',
+                rankColor: '#999',
+                rankGold: '#d4a000',
+                rankSilver: '#888',
+                rankBronze: '#a06020',
+                coverBg: '#f0f0f0',
+                headerBg: 'linear-gradient(135deg, #FAFAFA 0%, #DDD 100%)',
+                headerColor: '#000',
+                brandingColor: 'rgba(0,0,0,0.7)'
+            };
+            
             // Preload images to ensure they're available for html2canvas
             const imagePromises = releases.map(release => {
                 if (!release.thumbnail) return Promise.resolve(null);
@@ -1820,43 +1840,58 @@
             // Cache-busting timestamp for images
             const cacheBuster = Date.now();
             
+            // Get rank color based on position
+            const getRankColor = (rank) => {
+                if (rank === 1) return theme.rankGold;
+                if (rank === 2) return theme.rankSilver;
+                if (rank === 3) return theme.rankBronze;
+                return theme.rankColor;
+            };
+            
+            // Get item background based on position
+            const getItemBg = (rank) => {
+                if (rank === 1) return isDarkMode ? 'linear-gradient(90deg, rgba(255,215,0,0.1) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(255,215,0,0.15) 0%, transparent 100%)';
+                if (rank === 2) return isDarkMode ? 'linear-gradient(90deg, rgba(192,192,192,0.08) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(192,192,192,0.12) 0%, transparent 100%)';
+                if (rank === 3) return isDarkMode ? 'linear-gradient(90deg, rgba(205,127,50,0.08) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(205,127,50,0.12) 0%, transparent 100%)';
+                return 'transparent';
+            };
+            
             container.innerHTML = `
-                <div class="share-card" id="share-card-render">
-                    <div class="share-card-header">
-                        <div class="share-card-title">
+                <div class="share-card" id="share-card-render" style="background: ${theme.cardBg};">
+                    <div class="share-card-header" style="background: ${theme.headerBg};">
+                        <div class="share-card-title" style="color: ${theme.headerColor};">
                             <i class="fas ${chartIcons[chartType]}"></i>
                             ${chartTitles[chartType]}
                         </div>
-                        <div class="share-card-branding">
+                        <div class="share-card-branding" style="color: ${theme.brandingColor};">
                             <span class="mmm">MMM</span>
                             Македонска Музичка<br>Мастер Листа
                         </div>
                     </div>
-                    <ul class="share-card-list">
+                    <ul class="share-card-list" style="background: ${theme.listBg};">
                         ${releases.map((release, index) => {
                             const rank = index + 1;
-                            const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
                             const thumbUrl = release.thumbnail ? `${release.thumbnail}${release.thumbnail.includes('?') ? '&' : '?'}cb=${cacheBuster}` : '';
                             return `
-                                <li class="share-card-item">
-                                    <span class="share-card-rank ${rankClass}">${rank}</span>
-                                    <div class="share-card-cover">
+                                <li class="share-card-item" style="border-color: ${theme.itemBorder}; background: ${getItemBg(rank)};">
+                                    <span class="share-card-rank" style="color: ${getRankColor(rank)};">${rank}</span>
+                                    <div class="share-card-cover" style="background: ${theme.coverBg};">
                                         ${thumbUrl 
                                             ? `<img src="${thumbUrl}" crossorigin="anonymous" alt="">`
                                             : ''
                                         }
                                     </div>
                                     <div class="share-card-info">
-                                        <div class="share-card-song">${release.releaseTitle}</div>
-                                        <div class="share-card-artist">${release.bandName}</div>
+                                        <div class="share-card-song" style="color: ${theme.songColor};">${release.releaseTitle}</div>
+                                        <div class="share-card-artist" style="color: ${theme.artistColor};">${release.bandName}</div>
                                     </div>
                                 </li>
                             `;
                         }).join('')}
                     </ul>
-                    <div class="share-card-footer">
-                        <div class="share-card-date">${dateStr}</div>
-                        <div class="share-card-url">masterlista.martinpetkovski.com</div>
+                    <div class="share-card-footer" style="background: ${theme.footerBg}; border-color: ${theme.itemBorder};">
+                        <div class="share-card-date" style="color: ${theme.dateColor};">${dateStr}</div>
+                        <div class="share-card-url" style="color: ${theme.dateColor};">toplista.mk</div>
                     </div>
                 </div>
             `;
