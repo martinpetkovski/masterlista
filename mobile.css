@@ -365,32 +365,10 @@ body.guide-page main { padding: 0.4rem; height: auto; overflow: auto; }
     width: 100%;
 }
 
-/* Scroll shadow overlays */
+/* Scroll shadow overlays - disabled */
 .scroll-shadow-top,
 .scroll-shadow-bottom {
-    position: absolute;
-    left: 0;
-    right: 4px;
-    height: 20px;
-    pointer-events: none;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.scroll-shadow-top {
-    top: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-bottom {
-    bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-top.visible,
-.scroll-shadow-bottom.visible {
-    opacity: 1;
+    display: none;
 }
 
 .table-scroll-container::-webkit-scrollbar { width: 4px; }
@@ -513,6 +491,11 @@ td[data-label="Линкови"] {
     gap: 0.3rem;
     align-items: center;
     white-space: nowrap;
+}
+
+/* Hide Медиуми column on mobile - content merged into Линкови via JS */
+td[data-label="Медиуми"] {
+    display: none !important;
 }
 
 td[data-label="Линкови"] a {
@@ -984,32 +967,10 @@ footer { display: none; }
     position: relative;
 }
 
-/* Horizontal scroll shadows */
+/* Horizontal scroll shadows - disabled */
 .scroll-shadow-left,
 .scroll-shadow-right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 20px;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.scroll-shadow-left {
-    left: 0;
-    background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-right {
-    right: 0;
-    background: linear-gradient(to left, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-left.visible,
-.scroll-shadow-right.visible {
-    opacity: 1;
+    display: none;
 }
 
 .new-release-grid {

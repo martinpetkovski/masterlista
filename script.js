@@ -467,11 +467,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const linkSelects = linksContainer.querySelectorAll('select');
         const linkInputs = linksContainer.querySelectorAll('input[type="url"]');
         const platforms = new Set();
+        // Media platforms that can have multiple entries (reviews, interviews, etc.)
+        const allowDuplicates = ['monoton', 'review', 'interview', 'article', 'wikipedia', 'generic'];
         for (let i = 0; i < linkSelects.length; i++) {
             const platform = linkSelects[i].value;
             const url = linkInputs[i].value.trim();
             if (platform !== 'none' && url) {
-                if (platforms.has(platform)) {
+                // Only check for duplicates if platform doesn't allow them
+                if (!allowDuplicates.includes(platform) && platforms.has(platform)) {
                     return { valid: false, message: `Дупликат платформа: ${platform}` };
                 }
                 platforms.add(platform);
@@ -947,6 +950,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'vimeo', name: 'Vimeo', icon: 'fa-brands fa-vimeo' },
         { id: 'patreon', name: 'Patreon', icon: 'fa-brands fa-patreon' },
         { id: 'discord', name: 'Discord', icon: 'fa-brands fa-discord' },
+        { id: 'monoton', name: 'Mono-Ton', icon: 'fa-solid fa-dove' },
+        { id: 'interview', name: 'Интервју', icon: 'fa-solid fa-microphone' },
+        { id: 'review', name: 'Рецензија', icon: 'fa-solid fa-star' },
+        { id: 'article', name: 'Натпис', icon: 'fa-solid fa-newspaper' },
         { id: 'website', name: 'Website', icon: 'fa-solid fa-globe' },
         { id: 'linktree', name: 'Linktree', icon: 'fa-solid fa-tree' },
         { id: 'generic', name: 'Друг линк', icon: 'fa-solid fa-link' }
@@ -1342,11 +1349,21 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             const linkSelects = linksContainer.querySelectorAll('select');
             const linkInputs = linksContainer.querySelectorAll('input[type="url"]');
+            // Platforms that can have multiple entries
+            const multiLinkPlatforms = ['monoton', 'review', 'interview', 'article', 'wikipedia', 'generic'];
             for (let i = 0; i < linkSelects.length; i++) {
                 const platform = linkSelects[i].value;
                 const url = linkInputs[i].value.trim();
                 if (url && platform !== 'none') {
-                    band.links[platform] = url;
+                    if (multiLinkPlatforms.includes(platform)) {
+                        // Store as array for platforms that allow multiple
+                        if (!band.links[platform]) {
+                            band.links[platform] = [];
+                        }
+                        band.links[platform].push(url);
+                    } else {
+                        band.links[platform] = url;
+                    }
                 }
             }
             if (Object.keys(band.links).length === 0) {
@@ -1465,8 +1482,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('band-lastfm').value = band.lastfmName || '';
                 document.getElementById('band-contact').value = band.contact !== 'недостигаат податоци' ? band.contact : '';
                 if (band.links && band.links.none !== 'недостигаат податоци') {
-                    Object.entries(band.links).forEach(([platform, url]) => {
-                        addLinkInput(platform, url);
+                    Object.entries(band.links).forEach(([platform, urlOrUrls]) => {
+                        // Handle both single URLs (string) and multiple URLs (array)
+                        if (Array.isArray(urlOrUrls)) {
+                            urlOrUrls.forEach(url => addLinkInput(platform, url));
+                        } else {
+                            addLinkInput(platform, urlOrUrls);
+                        }
                     });
                 } else {
                     addLinkInput();
@@ -2043,8 +2065,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkPopularityOrder = [
                 'youtube', 'spotify', 'itunes', 'deezer', 'instagram',
                 'facebook', 'twitter', 'soundcloud', 'bandcamp', 'website', 'linktree',
-                'tiktok', 'linkedin', 'pinterest', 'twitch', 'vimeo', 'patreon', 'discord', 'generic'
+                'tiktok', 'linkedin', 'pinterest', 'twitch', 'vimeo', 'patreon', 'discord', 'generic',
+                'monoton', 'review', 'interview', 'article', 'wikipedia'
             ];
+            const reviewPlatforms = ['monoton', 'review', 'interview', 'article', 'wikipedia'];
             const linkIcons = {
                 facebook: 'fa-brands fa-facebook',
                 instagram: 'fa-brands fa-instagram',
@@ -2064,33 +2088,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 vimeo: 'fa-brands fa-vimeo',
                 patreon: 'fa-brands fa-patreon',
                 discord: 'fa-brands fa-discord',
+                monoton: 'fa-solid fa-dove',
+                interview: 'fa-solid fa-microphone',
+                review: 'fa-solid fa-star',
+                article: 'fa-solid fa-newspaper',
                 website: 'fa-solid fa-globe',
                 linktree: 'fa-solid fa-tree',
                 generic: 'fa-solid fa-link'
             };
             let linksHtml = '';
+            let reviewsHtml = '';
             let playBtnHtml = '';
             const hasSpotifyLink = band.links?.spotify && band.links.spotify !== 'недостигаат податоци';
             if (band.links.none === 'недостигаат податоци' && band.contact === 'недостигаат податоци') {
                 linksHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
+                reviewsHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
             } else {
                 const sortedPlatforms = Object.keys(band.links).sort((a, b) => {
                     const indexA = linkPopularityOrder.indexOf(a);
                     const indexB = linkPopularityOrder.indexOf(b);
                     return indexA - indexB;
                 });
-                linksHtml = sortedPlatforms
-                    .map(platform => {
-                        let url = band.links[platform];
-                        if (platform === 'spotify') {
-                            url = convertSpotifyUrlToAppUri(url);
-                        }
-                        const iconClass = linkIcons[platform] || 'fa-solid fa-link';
-                        return `<a href="${url}" target="_blank"><i class="${iconClass}"></i></a>`;
+                // Separate regular links from review links
+                const regularLinks = sortedPlatforms.filter(p => !reviewPlatforms.includes(p));
+                const reviewLinks = sortedPlatforms.filter(p => reviewPlatforms.includes(p));
+                
+                linksHtml = regularLinks
+                    .flatMap(platform => {
+                        const urlOrUrls = band.links[platform];
+                        const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
+                        return urls.map(url => {
+                            if (platform === 'spotify') {
+                                url = convertSpotifyUrlToAppUri(url);
+                            }
+                            const iconClass = linkIcons[platform] || 'fa-solid fa-link';
+                            return `<a href="${url}" target="_blank"><i class="${iconClass}"></i></a>`;
+                        });
                     })
                     .join('');
                 if (band.contact !== 'недостигаат податоци') {
                     linksHtml += `<a href="mailto:${band.contact}" class="contact-link"><i class="fa-solid fa-envelope"></i></a>`;
+                }
+                
+                // Build reviews HTML
+                if (reviewLinks.length > 0) {
+                    reviewsHtml = reviewLinks
+                        .flatMap(platform => {
+                            const urlOrUrls = band.links[platform];
+                            const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
+                            return urls.map(url => {
+                                const iconClass = linkIcons[platform] || 'fa-solid fa-link';
+                                return `<a href="${url}" target="_blank"><i class="${iconClass}"></i></a>`;
+                            });
+                        })
+                        .join('');
+                } else {
+                    reviewsHtml = '';
                 }
             }
             let cityHtml = band.city === 'недостигаат податоци'
@@ -2138,12 +2191,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const statusClass = band.isActive === 'Непознато' ? 'missing-data' : '';
             const nameDataSpotify = hasSpotifyLink ? `data-spotify-url="${band.links.spotify}" data-band-name="${band.name}"` : '';
+            
+            // On mobile, merge media links into the links column
+            const isMobile = window.innerWidth <= 600;
+            const combinedLinksHtml = isMobile && reviewsHtml ? linksHtml + reviewsHtml : linksHtml;
+            
             bandRow.innerHTML = `
                 <td data-label="Име" class="name ${hasSpotifyLink ? 'clickable' : ''}" ${nameDataSpotify}>${nameHtml}</td>
                 <td data-label="Град">${cityHtml}</td>
                 <td data-label="Жанр">${genreHtml}</td>
                 <td data-label="Звучи како">${soundsLikeHtml}</td>
-                <td data-label="Линкови" class="links">${linksHtml}</td>
+                <td data-label="Линкови" class="links">${combinedLinksHtml}</td>
+                <td data-label="Медиуми" class="links reviews">${reviewsHtml}</td>
                 <td data-label="Статус" data-status="${band.isActive}" class="${statusClass}">
                     <span class="status-content" data-status-text="${band.isActive}">${band.isActive}</span>
                 </td>

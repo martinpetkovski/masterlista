@@ -541,32 +541,10 @@ body.guide-page main { height: auto; overflow: auto; display: block; padding: 1r
     position: relative;
 }
 
-/* Scroll shadow overlays */
+/* Scroll shadow overlays - disabled */
 .scroll-shadow-top,
 .scroll-shadow-bottom {
-    position: absolute;
-    left: 0;
-    right: 8px; /* Account for scrollbar */
-    height: 25px;
-    pointer-events: none;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.scroll-shadow-top {
-    top: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-bottom {
-    bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-top.visible,
-.scroll-shadow-bottom.visible {
-    opacity: 1;
+    display: none;
 }
 
 .table-wrapper::-webkit-scrollbar { width: 8px; }
@@ -1208,32 +1186,10 @@ th.edit-hidden, td.edit-hidden, .action-buttons { display: table-cell; }
     position: relative;
 }
 
-/* Horizontal scroll shadows for new releases */
+/* Horizontal scroll shadows - disabled */
 .scroll-shadow-left,
 .scroll-shadow-right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 30px;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.scroll-shadow-left {
-    left: 0;
-    background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-right {
-    right: 0;
-    background: linear-gradient(to left, rgba(0,0,0,0.3) 0%, transparent 100%);
-}
-
-.scroll-shadow-left.visible,
-.scroll-shadow-right.visible {
-    opacity: 1;
+    display: none;
 }
 
 .new-release-grid {
