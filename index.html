@@ -404,6 +404,169 @@
             background: #0c1014;
         }
         
+        /* Chart Filter Bar */
+        .chart-filter-bar {
+            background: linear-gradient(180deg, #f0f2f5 0%, #e8ebef 100%);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            padding: 0.5rem 1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        body.dark-mode .chart-filter-bar {
+            background: linear-gradient(180deg, #1c2428 0%, #141a1f 100%);
+            border-bottom-color: rgba(255,255,255,0.08);
+        }
+        
+        .chart-filter-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            max-width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+        
+        .filter-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 0.2rem;
+        }
+        
+        .filter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.8);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255,255,255,1);
+            border-color: rgba(0,0,0,0.2);
+            color: var(--text-primary);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
+            border-color: var(--accent-orange);
+            color: #fff;
+        }
+        
+        .filter-btn.reset-btn {
+            background: transparent;
+            border-color: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            padding: 0.3rem 0.5rem;
+        }
+        
+        .filter-btn.reset-btn:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .filter-btn.reset-btn {
+            border-color: rgba(255,255,255,0.15);
+            color: var(--text-muted);
+        }
+        
+        body.dark-mode .filter-btn.reset-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+        
+        .filter-btn i {
+            font-size: 0.65rem;
+        }
+        
+        body.dark-mode .filter-btn {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.12);
+            color: var(--text-secondary);
+        }
+        
+        body.dark-mode .filter-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
+            border-color: var(--accent-orange);
+            color: #fff;
+        }
+        
+        /* Current filter indicator */
+        .chart-filter-indicator {
+            font-size: 0.65rem;
+            color: var(--accent-orange);
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(224, 120, 0, 0.1);
+            border-radius: 4px;
+        }
+        
+        .chart-filter-indicator.visible {
+            display: inline-flex;
+        }
+        
+        @media (max-width: 600px) {
+            .chart-filter-bar {
+                padding: 0.4rem 0.5rem;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .chart-filter-bar::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .chart-filter-content {
+                gap: 0.4rem;
+                flex-wrap: nowrap;
+                padding-right: 0.5rem;
+            }
+            
+            .filter-group {
+                gap: 0.2rem;
+                flex-shrink: 0;
+            }
+            
+            .filter-label {
+                font-size: 0.5rem;
+                display: none; /* Hide labels on mobile to save space */
+            }
+            
+            .filter-btn {
+                padding: 0.28rem 0.45rem;
+                font-size: 0.58rem;
+                border-radius: 12px;
+            }
+        }
+        
         .chart-container {
             max-width: 100%;
             padding: 0.85rem 1.25rem;
@@ -411,6 +574,7 @@
             min-height: 0;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         .chart-header {
@@ -446,9 +610,12 @@
         .chart-sections {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 1fr;
             gap: 1rem;
             flex: 1;
             min-height: 0;
+            height: 0;
+            overflow: hidden;
         }
         
         .chart-section {
@@ -459,6 +626,7 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
+            max-height: 100%;
             transition: all 0.2s ease;
         }
         
@@ -797,6 +965,7 @@
             position: relative;
             flex: 1;
             min-height: 0;
+            overflow: hidden;
         }
         
         /* Chart list scroll shadows - disabled */
@@ -812,8 +981,7 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            max-height: none;
-            height: 100%;
+            max-height: calc(100vh - 180px);
             overflow-y: auto;
         }
         
@@ -953,6 +1121,46 @@
         .chart-artist-link:hover {
             color: #e07800;
             text-decoration: none;
+        }
+        
+        /* Artist chart specific styles */
+        .artist-item .artist-cover {
+            border-radius: 50%;
+        }
+        
+        .artist-item .artist-cover img {
+            border-radius: 50%;
+        }
+        
+        .artist-item .artist-name a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        
+        .artist-item .artist-name a:hover {
+            color: #e07800;
+        }
+        
+        .artist-item .artist-details {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .artist-item .chart-stat.followers {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .artist-item .chart-stat.followers i {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        /* All-time section takes full width */
+        .alltime-section {
+            grid-column: 1 / -1;
         }
         
         .chart-release-type {
@@ -1553,6 +1761,51 @@
         </div>
     </header>
     
+    <!-- Special Charts Filter -->
+    <div class="chart-filter-bar">
+        <div class="chart-filter-content">
+            <div class="filter-group" data-filter-group="chart">
+                <span class="filter-label">Листа:</span>
+                <button class="filter-btn active" data-filter-type="chart" data-filter-value="standard" title="Стандардна листа">
+                    Стандардна
+                </button>
+                <button class="filter-btn" data-filter-type="chart" data-filter-value="alltime" title="На сите времиња">
+                    Сите времиња
+                </button>
+            </div>
+            <div class="filter-group" data-filter-group="genre">
+                <span class="filter-label">Жанр:</span>
+                <button class="filter-btn active" data-filter-type="genre" data-filter-value="all" title="Сите жанрови">
+                    Сите
+                </button>
+                <button class="filter-btn" data-filter-type="genre" data-filter-value="alt" title="Алтернативна музика">
+                    Алтернативна
+                </button>
+                <button class="filter-btn" data-filter-type="genre" data-filter-value="rap" title="Рап и Трап">
+                    Рап/Трап
+                </button>
+                <button class="filter-btn" data-filter-type="genre" data-filter-value="electronic" title="Електронска музика">
+                    Електронска
+                </button>
+            </div>
+            <div class="filter-group" data-filter-group="city">
+                <span class="filter-label">Град:</span>
+                <button class="filter-btn active" data-filter-type="city" data-filter-value="all" title="Сите градови">
+                    Сите
+                </button>
+                <button class="filter-btn" data-filter-type="city" data-filter-value="skopje" title="Скопје">
+                    Скопје
+                </button>
+                <button class="filter-btn" data-filter-type="city" data-filter-value="bitola" title="Битола">
+                    Битола
+                </button>
+            </div>
+            <button class="filter-btn reset-btn" id="reset-filters-btn" title="Ресетирај филтри">
+                <i class="fas fa-undo"></i> Ресетирај
+            </button>
+        </div>
+    </div>
+    
     <div class="chart-container">
         
         <div class="chart-sections">
@@ -1630,6 +1883,32 @@
                     <ol id="latest-chart" class="chart-list" style="display: none;"></ol>
                     <div id="latest-chart-empty" class="chart-empty" style="display: none;">
                         <p>Нема изданија</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- All-Time Artists (hidden by default) -->
+            <div class="chart-section alltime-section" id="artists-section" style="display: none;">
+                <div class="chart-section-header artists">
+                    <h2><i class="fas fa-users"></i> Топ Артисти</h2>
+                    <div class="chart-header-right">
+                        <span class="period" id="artists-period">сите времиња</span>
+                        <button class="view-mode-toggle" onclick="toggleViewMode('artists-section')" title="Компактен/Проширен приказ">
+                            <i class="fas fa-compress-alt"></i>
+                        </button>
+                        <button class="share-btn" onclick="shareChart('artists')" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-list-wrapper">
+                    <div id="artists-chart-loading" class="chart-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Се вчитува...</p>
+                    </div>
+                    <ol id="artists-chart" class="chart-list" style="display: none;"></ol>
+                    <div id="artists-chart-empty" class="chart-empty" style="display: none;">
+                        <p>Нема артисти</p>
                     </div>
                 </div>
             </div>
@@ -1725,8 +2004,50 @@
         const chartIcons = {
             singles: 'fa-music',
             albums: 'fa-compact-disc',
-            latest: 'fa-clock'
+            latest: 'fa-clock',
+            artists: 'fa-users'
         };
+        
+        // Dynamic chart titles based on current filter
+        function getChartTitle(chartType) {
+            const baseTitles = {
+                singles: 'Топ Синглови',
+                albums: 'Топ Албуми',
+                latest: 'Најнови Изданија',
+                artists: 'Топ Артисти'
+            };
+            
+            // Get current filter state from active buttons
+            const chartBtn = document.querySelector('.filter-btn[data-filter-type="chart"].active');
+            const genreBtn = document.querySelector('.filter-btn[data-filter-type="genre"].active');
+            const cityBtn = document.querySelector('.filter-btn[data-filter-type="city"].active');
+            
+            const chartFilter = chartBtn?.dataset?.filterValue || 'standard';
+            const genreFilter = genreBtn?.dataset?.filterValue || 'all';
+            const cityFilter = cityBtn?.dataset?.filterValue || 'all';
+            
+            // Build filter suffix
+            const genreLabels = { 'alt': 'Алтернативна', 'rap': 'Рап/Трап', 'electronic': 'Електронска' };
+            const cityLabels = { 'skopje': 'Скопје', 'bitola': 'Битола' };
+            
+            const genreLabel = genreFilter !== 'all' ? genreLabels[genreFilter] : null;
+            const cityLabel = cityFilter !== 'all' ? cityLabels[cityFilter] : null;
+            const filterSuffix = [genreLabel, cityLabel].filter(Boolean).join(' • ');
+            
+            let title = baseTitles[chartType];
+            
+            // For all-time view
+            if (chartFilter === 'alltime') {
+                title = chartType === 'artists' ? 'Топ Артисти (Сите времиња)' : title + ' (Сите времиња)';
+            }
+            
+            // Add genre/city suffix
+            if (filterSuffix) {
+                title += ' - ' + filterSuffix;
+            }
+            
+            return title;
+        }
         
         // Share functions
         async function shareChart(chartType) {
@@ -1740,8 +2061,8 @@
                     return;
                 }
                 
-                // Create share card
-                const canvas = await createShareCard(chartType, releases.slice(0, 10));
+                // Create share card with dynamic title
+                const canvas = await createShareCard(chartType, releases.slice(0, 10), getChartTitle(chartType));
                 
                 // Convert to blob
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
@@ -1753,7 +2074,7 @@
                 const preview = document.getElementById('share-preview');
                 const title = document.getElementById('share-modal-title');
                 
-                title.textContent = 'Сподели: ' + chartTitles[chartType];
+                title.textContent = 'Сподели: ' + getChartTitle(chartType);
                 
                 // Create preview image
                 const img = document.createElement('img');
@@ -1779,11 +2100,14 @@
             }
         }
         
-        async function createShareCard(chartType, releases) {
+        async function createShareCard(chartType, releases, customTitle = null) {
             const container = document.getElementById('share-card-container');
             const now = new Date();
             const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
             const dateStr = `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // Use custom title or fallback to default
+            const chartTitle = customTitle || chartTitles[chartType] || 'Топ Листа';
             
             // Check if dark mode is active
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -1860,8 +2184,8 @@
                 <div class="share-card" id="share-card-render" style="background: ${theme.cardBg};">
                     <div class="share-card-header" style="background: ${theme.headerBg};">
                         <div class="share-card-title" style="color: ${theme.headerColor};">
-                            <i class="fas ${chartIcons[chartType]}"></i>
-                            ${chartTitles[chartType]}
+                            <i class="fas ${chartIcons[chartType] || 'fa-users'}"></i>
+                            ${chartTitle}
                         </div>
                         <div class="share-card-branding" style="color: ${theme.brandingColor};">
                             <span class="mmm">MMM</span>
@@ -1872,18 +2196,27 @@
                         ${releases.map((release, index) => {
                             const rank = index + 1;
                             const thumbUrl = release.thumbnail ? `${release.thumbnail}${release.thumbnail.includes('?') ? '&' : '?'}cb=${cacheBuster}` : '';
+                            
+                            // Handle both releases and artists
+                            const isArtist = chartType === 'artists';
+                            const title = isArtist ? release.bandName : release.releaseTitle;
+                            const subtitle = isArtist 
+                                ? (release.followers >= 1000 ? (release.followers / 1000).toFixed(1) + 'K следбеници' : release.followers + ' следбеници')
+                                : release.bandName;
+                            const coverStyle = isArtist ? 'border-radius: 50%;' : '';
+                            
                             return `
                                 <li class="share-card-item" style="border-color: ${theme.itemBorder}; background: ${getItemBg(rank)};">
                                     <span class="share-card-rank" style="color: ${getRankColor(rank)};">${rank}</span>
-                                    <div class="share-card-cover" style="background: ${theme.coverBg};">
+                                    <div class="share-card-cover" style="background: ${theme.coverBg}; ${coverStyle}">
                                         ${thumbUrl 
-                                            ? `<img src="${thumbUrl}" crossorigin="anonymous" alt="">`
+                                            ? `<img src="${thumbUrl}" crossorigin="anonymous" alt="" style="${coverStyle}">`
                                             : ''
                                         }
                                     </div>
                                     <div class="share-card-info">
-                                        <div class="share-card-song" style="color: ${theme.songColor};">${release.releaseTitle}</div>
-                                        <div class="share-card-artist" style="color: ${theme.artistColor};">${release.bandName}</div>
+                                        <div class="share-card-song" style="color: ${theme.songColor};">${title}</div>
+                                        <div class="share-card-artist" style="color: ${theme.artistColor};">${subtitle}</div>
                                     </div>
                                 </li>
                             `;
@@ -2013,6 +2346,39 @@
             
             // Store previous chart data for comparison
             let previousChartData = null;
+            
+            // Store all releases data for filtering
+            let allReleasesData = [];
+            let allBandsData = [];
+            
+            // Current filter state (radio-button style - one selection per group)
+            let currentFilters = {
+                chart: 'standard',  // 'standard' or 'alltime'
+                genre: 'all',       // 'all', 'alt', 'rap', 'electronic'
+                city: 'all'         // 'all', 'skopje', 'bitola'
+            };
+            
+            // Filter configuration - genre keywords to match in bands.json
+            const genreConfig = {
+                'alt': {
+                    label: 'Алтернативна',
+                    // Note: 'Рок' removed - only match specific sub-genres, not plain 'Рок'
+                    genres: ['Алтернативен', 'Инди', 'Пост-панк', 'Панк', 'Шугејз', 'Дрим Поп', 'Пост-рок', 'Гранџ', 'Експериментален', 'Мат Рок', 'Арт Рок', 'Алтернативен Рок', 'Инди Рок', 'Пост-Панк']
+                },
+                'rap': {
+                    label: 'Рап/Трап',
+                    genres: ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап']
+                },
+                'electronic': {
+                    label: 'Електронска',
+                    genres: ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв']
+                }
+            };
+            
+            const cityConfig = {
+                'skopje': { label: 'Скопје', city: 'Скопје' },
+                'bitola': { label: 'Битола', city: 'Битола' }
+            };
             
             /**
              * Get ISO week number and year for a given date.
@@ -2153,6 +2519,18 @@
                 // Load previous data for comparison
                 previousChartData = await loadPreviousData();
                 
+                // Load bands data for filtering
+                try {
+                    const bandsResponse = await fetch('bands.json?t=' + Date.now());
+                    if (bandsResponse.ok) {
+                        const bandsJson = await bandsResponse.json();
+                        allBandsData = bandsJson.muzickaMasterLista || [];
+                        console.log('Loaded', allBandsData.length, 'bands for filtering');
+                    }
+                } catch (err) {
+                    console.warn('Could not load bands.json for filtering:', err);
+                }
+                
                 try {
                     const response = await fetch(CHART_DATA_URL + '?t=' + Date.now());
                     if (response.ok) {
@@ -2177,50 +2555,279 @@
                 releases = deduplicateCollabs(releases);
                 console.log('After deduplication:', releases.length, 'unique releases');
                 
+                // Store all releases for filtering
+                allReleasesData = releases;
+                
                 updateDataInfo(generatedAt);
                 document.querySelectorAll('.chart-loading').forEach(el => el.style.display = 'none');
                 
-                // Sort all releases by date (most recent first)
-                const releasesSortedByDate = [...releases].sort((a, b) => 
-                    new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-                );
+                // Initialize filter buttons first
+                initFilterButtons();
                 
-                const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                
-                // Top Singles: 20 most recent singles, then sorted by track popularity
-                const singlesFilter = r => r.releaseType === 'single';
-                const topSingles = releasesSortedByDate
-                    .filter(singlesFilter)
-                    .slice(0, 20)
-                    .sort(sortByPopularity);
-                
-                // Top Albums: 20 most recent albums/compilations, then sorted by track popularity
-                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
-                const topAlbums = releasesSortedByDate
-                    .filter(albumsFilter)
-                    .slice(0, 20)
-                    .sort(sortByPopularity);
-                
-                // Latest: 20 most recent releases, sorted by date (newest first)
-                const latestReleases = releasesSortedByDate.slice(0, 20);
-                
-                // Build previous chart maps for comparison (also deduplicate collabs)
-                const prevReleases = previousChartData?.releases || [];
-                const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs);
-                const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs);
-                // For latest, we don't track position changes since it's date-sorted
-                
-                renderChart('singles-chart', topSingles, prevSinglesMap);
-                renderChart('albums-chart', topAlbums, prevAlbumsMap);
-                renderChart('latest-chart', latestReleases, {}, true);
-                
-                // Store chart data for sharing
-                chartDataStore.singles = topSingles;
-                chartDataStore.albums = topAlbums;
-                chartDataStore.latest = latestReleases;
+                // Apply current filters and render
+                applyFilters();
                 
                 // Initialize scroll shadows after rendering
                 initScrollShadows();
+            }
+            
+            // Get artist's genre and city from bands.json
+            function getArtistInfo(artistName) {
+                if (!allBandsData || allBandsData.length === 0) return null;
+                
+                // Normalize artist name for matching
+                const normalizedName = artistName.toLowerCase().trim();
+                
+                // Try exact match first
+                let band = allBandsData.find(b => b.name.toLowerCase().trim() === normalizedName);
+                
+                // Try first artist in collab (split by comma)
+                if (!band) {
+                    const firstArtist = artistName.split(',')[0].trim().toLowerCase();
+                    band = allBandsData.find(b => b.name.toLowerCase().trim() === firstArtist);
+                }
+                
+                return band ? { genre: band.genre || '', city: band.city || '' } : null;
+            }
+            
+            // Get artist info by artistId from bands.json
+            function getArtistInfoById(artistId) {
+                if (!allBandsData || allBandsData.length === 0) return null;
+                
+                const band = allBandsData.find(b => {
+                    const idFromBand = b.links?.spotify?.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
+                    return idFromBand === artistId;
+                });
+                
+                return band ? { name: band.name, genre: band.genre || '', city: band.city || '' } : null;
+            }
+            
+            // Check if artist matches genre filter
+            function artistMatchesGenre(artistName, genreFilter) {
+                if (genreFilter === 'all') return true;
+                
+                const config = genreConfig[genreFilter];
+                if (!config) return true;
+                
+                const artistInfo = getArtistInfo(artistName);
+                if (!artistInfo) return false;
+                
+                const artistGenres = artistInfo.genre.toLowerCase();
+                return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
+            }
+            
+            // Check if artist matches city filter
+            function artistMatchesCity(artistName, cityFilter) {
+                if (cityFilter === 'all') return true;
+                
+                const config = cityConfig[cityFilter];
+                if (!config) return true;
+                
+                const artistInfo = getArtistInfo(artistName);
+                if (!artistInfo) return false;
+                
+                const artistCity = artistInfo.city.toLowerCase();
+                return artistCity.includes(config.city.toLowerCase());
+            }
+            
+            // Check if artist matches genre filter by artistId
+            function artistMatchesGenreById(artistId, genreFilter) {
+                if (genreFilter === 'all') return true;
+                
+                const config = genreConfig[genreFilter];
+                if (!config) return true;
+                
+                const artistInfo = getArtistInfoById(artistId);
+                if (!artistInfo) return false;
+                
+                const artistGenres = artistInfo.genre.toLowerCase();
+                return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
+            }
+            
+            // Check if artist matches city filter by artistId
+            function artistMatchesCityById(artistId, cityFilter) {
+                if (cityFilter === 'all') return true;
+                
+                const config = cityConfig[cityFilter];
+                if (!config) return true;
+                
+                const artistInfo = getArtistInfoById(artistId);
+                if (!artistInfo) return false;
+                
+                const artistCity = artistInfo.city.toLowerCase();
+                return artistCity.includes(config.city.toLowerCase());
+            }
+            
+            // Apply combined filters and re-render charts
+            function applyFilters() {
+                const { chart, genre, city } = currentFilters;
+                
+                // Filter releases based on genre AND city
+                let filteredReleases = allReleasesData.filter(r => 
+                    artistMatchesGenre(r.bandName, genre) && artistMatchesCity(r.bandName, city)
+                );
+                
+                const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
+                const singlesFilter = r => r.releaseType === 'single';
+                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
+                
+                // Build filter label for display
+                const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
+                const cityLabel = city !== 'all' ? cityConfig[city]?.label : null;
+                const filterSuffix = [genreLabel, cityLabel].filter(Boolean).join(' • ');
+                
+                if (chart === 'alltime') {
+                    // All-time: Show single artists chart sorted by followers
+                    document.getElementById('singles-section').style.display = 'none';
+                    document.getElementById('albums-section').style.display = 'none';
+                    document.getElementById('latest-section').style.display = 'none';
+                    document.getElementById('artists-section').style.display = 'block';
+                    
+                    // Extract unique artists by artistId, apply genre/city filters
+                    const artistMap = new Map();
+                    for (const release of allReleasesData) {
+                        // Skip if doesn't match genre/city filters
+                        if (!artistMatchesGenreById(release.artistId, genre)) continue;
+                        if (!artistMatchesCityById(release.artistId, city)) continue;
+                        
+                        const existing = artistMap.get(release.artistId);
+                        if (!existing || (release.followers || 0) > (existing.followers || 0)) {
+                            // Get canonical artist name from bands.json
+                            const bandInfo = getArtistInfoById(release.artistId);
+                            const canonicalName = bandInfo?.name || release.bandName;
+                            
+                            artistMap.set(release.artistId, {
+                                artistId: release.artistId,
+                                bandName: canonicalName,
+                                followers: release.followers || 0,
+                                spotifyUrl: release.spotifyUrl,
+                                thumbnail: release.thumbnail
+                            });
+                        }
+                    }
+                    
+                    // Sort by followers and take top 100
+                    const topArtists = Array.from(artistMap.values())
+                        .sort((a, b) => b.followers - a.followers)
+                        .slice(0, 100);
+                    
+                    // Update period label with filter suffix
+                    document.getElementById('artists-period').textContent = 'сите времиња' + (filterSuffix ? ' • ' + filterSuffix : '');
+                    
+                    renderArtistsChart('artists-chart', topArtists);
+                    
+                    // Store for sharing
+                    chartDataStore.artists = topArtists;
+                    chartDataStore.singles = [];
+                    chartDataStore.albums = [];
+                    chartDataStore.latest = [];
+                    
+                    console.log(`All-time artists (${filterSuffix || 'all'}): ${topArtists.length}`);
+                } else {
+                    // Standard view: Show release charts
+                    document.getElementById('singles-section').style.display = 'block';
+                    document.getElementById('albums-section').style.display = 'block';
+                    document.getElementById('latest-section').style.display = 'block';
+                    document.getElementById('artists-section').style.display = 'none';
+                    
+                    // Recent releases sorted by popularity
+                    const releasesSortedByDate = [...filteredReleases].sort((a, b) => 
+                        new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
+                    );
+                    
+                    const topSingles = releasesSortedByDate
+                        .filter(singlesFilter)
+                        .slice(0, 20)
+                        .sort(sortByPopularity);
+                    
+                    const topAlbums = releasesSortedByDate
+                        .filter(albumsFilter)
+                        .slice(0, 20)
+                        .sort(sortByPopularity);
+                    
+                    const latestReleases = releasesSortedByDate.slice(0, 20);
+                    
+                    // Set period labels with filter suffix
+                    const periodWithFilter = periodText + (filterSuffix ? ' • ' + filterSuffix : '');
+                    document.getElementById('singles-period').textContent = periodWithFilter;
+                    document.getElementById('albums-period').textContent = periodWithFilter;
+                    document.getElementById('latest-period').textContent = 'последни 20' + (filterSuffix ? ' • ' + filterSuffix : '');
+                    
+                    // Restore Latest section header
+                    const latestHeader = document.querySelector('#latest-section h2');
+                    if (latestHeader) {
+                        latestHeader.innerHTML = '<i class="fas fa-clock"></i> Најнови';
+                    }
+                    
+                    // Build previous chart maps for comparison
+                    const prevReleases = previousChartData?.releases || [];
+                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs);
+                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs);
+                    
+                    renderChart('singles-chart', topSingles, prevSinglesMap, false);
+                    renderChart('albums-chart', topAlbums, prevAlbumsMap, false);
+                    renderChart('latest-chart', latestReleases, {}, true);
+                    
+                    // Store chart data for sharing
+                    chartDataStore.singles = topSingles;
+                    chartDataStore.albums = topAlbums;
+                    chartDataStore.latest = latestReleases;
+                    chartDataStore.artists = [];
+                    
+                    console.log(`Filter applied (${filterSuffix || 'all'}): Singles: ${topSingles.length}, Albums: ${topAlbums.length}, Latest: ${latestReleases.length}`);
+                }
+            }
+            
+            // Initialize filter buttons (radio-button style per group)
+            function initFilterButtons() {
+                const filterBtns = document.querySelectorAll('.filter-btn[data-filter-type]');
+                
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filterType = btn.dataset.filterType;
+                        const filterValue = btn.dataset.filterValue;
+                        
+                        // Update active state only within the same group
+                        const group = btn.closest('.filter-group');
+                        group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        // Update filter state
+                        currentFilters[filterType] = filterValue;
+                        
+                        // Apply combined filters
+                        applyFilters();
+                        
+                        // Scroll charts into view on mobile
+                        if (window.innerWidth <= 600) {
+                            document.querySelector('.chart-container')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+                
+                // Reset button
+                const resetBtn = document.getElementById('reset-filters-btn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => {
+                        // Reset filter state to defaults
+                        currentFilters = {
+                            chart: 'standard',
+                            genre: 'all',
+                            city: 'all'
+                        };
+                        
+                        // Reset all button active states
+                        document.querySelectorAll('.filter-group').forEach(group => {
+                            group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                            // Activate the first button (default) in each group
+                            const firstBtn = group.querySelector('.filter-btn');
+                            if (firstBtn) firstBtn.classList.add('active');
+                        });
+                        
+                        // Apply filters
+                        applyFilters();
+                    });
+                }
             }
             
             function renderChart(containerId, releases, previousMap = {}, isDateSorted = false) {
@@ -2231,10 +2838,26 @@
                 loading.style.display = 'none';
                 
                 if (releases.length === 0) {
+                    container.style.display = 'none';
                     empty.style.display = 'block';
+                    // Update empty message based on current filters
+                    const { genre, city } = currentFilters;
+                    const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
+                    const cityLabel = city !== 'all' ? cityConfig[city]?.label : null;
+                    const filterLabel = [genreLabel, cityLabel].filter(Boolean).join(' + ');
+                    
+                    if (filterLabel) {
+                        empty.innerHTML = `<p>Нема изданија за „${filterLabel}"</p>`;
+                    } else {
+                        // Default empty messages
+                        if (containerId === 'singles-chart') empty.innerHTML = '<p>Нема синглови</p>';
+                        else if (containerId === 'albums-chart') empty.innerHTML = '<p>Нема албуми</p>';
+                        else empty.innerHTML = '<p>Нема изданија</p>';
+                    }
                     return;
                 }
                 
+                empty.style.display = 'none';
                 container.style.display = 'block';
                 container.innerHTML = releases.map((release, index) => {
                     const rank = index + 1;
@@ -2276,11 +2899,15 @@
                     let changeIndicator = '';
                     let popChangeIndicator = '';
                     
+                    // Mark as new only if released within the last 7 days
+                    if (daysElapsed <= 7) {
+                        itemClass += ' is-new';
+                    }
+                    
                     if (!isDateSorted) {
                         const prev = previousMap[release.releaseId];
                         if (!prev) {
-                            // New entry
-                            itemClass += ' is-new';
+                            // New entry to the chart
                             changeIndicator = '';
                             popChangeIndicator = '';
                         } else {
@@ -2309,6 +2936,10 @@
                     // Time since release stat
                     const metaContent = `<span class="chart-stat weeks" title="${timeSinceTitle}">${timeSinceRelease}</span>`;
                     
+                    // Show popularity score for releases (0-100)
+                    const metricTitle = 'Популарност на Spotify (0-100)';
+                    const metricDisplay = popularity;
+                    
                     // For date-sorted charts, hide position and change indicators
                     const showPosition = !isDateSorted;
                     
@@ -2330,7 +2961,7 @@
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
-                                <span class="chart-stat followers" title="Популарност на Spotify (0-100)">${popularity}${popChangeIndicator}</span>
+                                <span class="chart-stat followers" title="${metricTitle}">${metricDisplay}${popChangeIndicator}</span>
                             </div>
                         </li>
                     `;
@@ -2358,6 +2989,67 @@
                         if (url) window.open(url, '_blank');
                     });
                 });
+            }
+            
+            // Render all-time artists chart
+            function renderArtistsChart(containerId, artists) {
+                const container = document.getElementById(containerId);
+                const loading = document.getElementById(`${containerId}-loading`);
+                const empty = document.getElementById(`${containerId}-empty`);
+                
+                loading.style.display = 'none';
+                
+                if (artists.length === 0) {
+                    container.style.display = 'none';
+                    empty.style.display = 'block';
+                    return;
+                }
+                
+                empty.style.display = 'none';
+                container.style.display = 'block';
+                container.innerHTML = artists.map((artist, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                    const itemClass = rank <= 3 ? `rank-${rank}` : '';
+                    
+                    const followers = artist.followers || 0;
+                    const followersDisplay = followers >= 1000000 
+                        ? (followers / 1000000).toFixed(1) + 'M'
+                        : followers >= 1000 
+                            ? (followers / 1000).toFixed(1) + 'K' 
+                            : followers;
+                    
+                    // Get artist info from bands.json for genre/city
+                    const artistInfo = getArtistInfo(artist.bandName);
+                    const genre = artistInfo?.genre || '';
+                    const city = artistInfo?.city || '';
+                    
+                    // Extract artist ID for Spotify link
+                    const spotifyArtistUrl = artist.spotifyUrl || `https://open.spotify.com/artist/${artist.artistId}`;
+                    
+                    return `
+                        <li class="chart-item artist-item ${itemClass}">
+                            <span class="chart-rank ${rankClass}">${rank}</span>
+                            <div class="chart-cover artist-cover">
+                                ${artist.thumbnail 
+                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-user\\'></i></div>'">`
+                                    : '<div class="placeholder"><i class="fas fa-user"></i></div>'
+                                }
+                            </div>
+                            <div class="chart-info">
+                                <div class="chart-title artist-name">
+                                    <a href="${spotifyArtistUrl}" target="_blank" title="Отвори во Spotify">${artist.bandName}</a>
+                                </div>
+                                <div class="chart-artist artist-details">${genre}${genre && city ? ' • ' : ''}${city}</div>
+                            </div>
+                            <div class="chart-meta">
+                                <span class="chart-stat followers" title="${followers.toLocaleString()} следбеници на Spotify">
+                                    <i class="fas fa-users"></i> ${followersDisplay}
+                                </span>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
             }
             
             // Inline music player functionality
@@ -2666,6 +3358,13 @@
                     title: 'Македонска Музичка Топ Листа',
                     description: 'Преглед на најновите изданија од македонски артисти. Листите се ажурираат автоматски секој ден врз основа на Spotify податоци.',
                     position: 'center'
+                },
+                {
+                    element: '.chart-filter-bar',
+                    title: 'Специјални листи',
+                    description: 'Изберете тип на листа: Стандардна, На сите времиња, или филтрирајте по жанр (Алтернативна, Рап/Трап, Електронска) и град (Скопје, Битола).',
+                    position: 'bottom',
+                    mobilePosition: 'bottom'
                 },
                 {
                     element: '#singles-section .chart-section-header',
