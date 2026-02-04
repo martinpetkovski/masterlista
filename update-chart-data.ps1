@@ -29,6 +29,12 @@ if (-not $creds.clientId -or -not $creds.clientSecret) {
 $env:SPOTIFY_CLIENT_ID = $creds.clientId
 $env:SPOTIFY_CLIENT_SECRET = $creds.clientSecret
 
+# Set Discord webhook URL if provided
+if ($creds.discordWebhookUrl) {
+    $env:DISCORD_WEBHOOK_URL = $creds.discordWebhookUrl
+    Write-Host "Discord webhook configured"
+}
+
 $nodeScript = Join-Path $scriptRoot "scripts\generate-chart-data.js"
 
 Write-Host "Running data generation script..."
