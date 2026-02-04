@@ -8,6 +8,7 @@
  * Environment variables:
  *   - SPOTIFY_CLIENT_ID
  *   - SPOTIFY_CLIENT_SECRET
+ *   - DISCORD_WEBHOOK_URL (optional) - Posts new releases to Discord
  */
 
 const fs = require('fs');
@@ -74,6 +75,122 @@ async function fetchWithRetry(url, options, retries = 3, timeout = 10000) {
     }
   }
   throw new Error(`Failed after ${retries} retries`);
+}
+
+// ==================== Discord Webhook Helpers ====================
+
+/**
+ * Load the current chart data to compare against new releases
+ */
+function loadExistingChartData() {
+  try {
+    const chartPath = path.join(__dirname, '..', 'chart-data.json');
+    if (fs.existsSync(chartPath)) {
+      const data = JSON.parse(fs.readFileSync(chartPath, 'utf8'));
+      return data;
+    }
+  } catch (e) {
+    console.log('Could not load existing chart data:', e.message);
+  }
+  return null;
+}
+
+/**
+ * Find new releases by comparing against existing chart data
+ */
+function findNewReleases(newReleases, existingChartData) {
+  if (!existingChartData?.releases) {
+    console.log('No existing chart data found, skipping new release detection');
+    return [];
+  }
+
+  const existingIds = new Set(existingChartData.releases.map(r => r.releaseId));
+  const newOnes = newReleases.filter(r => !existingIds.has(r.releaseId));
+  
+  return newOnes;
+}
+
+/**
+ * Send a Discord webhook notification for new releases
+ */
+async function sendDiscordNotification(releases, webhookUrl) {
+  if (!webhookUrl || !releases.length) return;
+
+  console.log(`Sending Discord notification for ${releases.length} new release(s)...`);
+
+  // Group releases to avoid hitting Discord rate limits (max 10 embeds per message)
+  const MAX_EMBEDS = 10;
+  const batches = [];
+  for (let i = 0; i < releases.length; i += MAX_EMBEDS) {
+    batches.push(releases.slice(i, i + MAX_EMBEDS));
+  }
+
+  for (const batch of batches) {
+    const embeds = batch.map(release => {
+      // Format release type
+      const typeLabels = {
+        'album': '💿 Албум',
+        'single': '🎵 Сингл',
+        'ep': '📀 EP',
+        'compilation': '📚 Компилација'
+      };
+      const typeLabel = typeLabels[release.releaseType] || release.releaseType;
+
+      return {
+        title: release.releaseTitle,
+        url: release.releaseUrl,
+        description: `**${release.bandName}**\n${typeLabel}`,
+        color: 0x1DB954, // Spotify green
+        thumbnail: release.thumbnail ? { url: release.thumbnail } : undefined,
+        fields: [
+          {
+            name: 'Датум',
+            value: release.releaseDate,
+            inline: true
+          },
+          {
+            name: 'Песни',
+            value: String(release.totalTracks || 1),
+            inline: true
+          }
+        ],
+        footer: {
+          text: 'Мастер Листа • Нова Музика'
+        },
+        timestamp: new Date().toISOString()
+      };
+    });
+
+    const payload = {
+      username: 'Мастер Листа',
+      avatar_url: 'https://martinpetkovski.github.io/masterlista/favicon.ico',
+      content: releases.length === 1 
+        ? '🎉 **Ново издание на Мастер Листа!**'
+        : `🎉 **${releases.length} нови изданија на Мастер Листа!**`,
+      embeds: embeds
+    };
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        console.error(`Discord webhook failed: ${response.status} ${await response.text()}`);
+      } else {
+        console.log(`Discord notification sent for ${batch.length} release(s)`);
+      }
+
+      // Rate limit: wait between batches
+      if (batches.length > 1) {
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    } catch (err) {
+      console.error('Discord webhook error:', err.message);
+    }
+  }
 }
 
 async function getArtistsBatch(artistIds, token) {
@@ -163,6 +280,18 @@ async function getTracksBatch(trackIds, token) {
 
 async function main() {
   console.log('Starting chart data generation...');
+  
+  // Load existing chart data to detect new releases
+  const existingChartData = loadExistingChartData();
+  console.log(existingChartData 
+    ? `Loaded existing chart with ${existingChartData.releases?.length || 0} releases`
+    : 'No existing chart data found');
+  
+  // Get Discord webhook URL (optional)
+  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (discordWebhookUrl) {
+    console.log('Discord webhook configured');
+  }
   
   // Get credentials from environment or local file
   let clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -331,6 +460,17 @@ async function main() {
   console.log(`Chart data written to ${outputPath}`);
   console.log(`Total releases: ${chartData.totalReleases}`);
   console.log(`Total artists: ${chartData.totalArtists}`);
+  
+  // Send Discord notifications for new releases
+  if (discordWebhookUrl) {
+    const newReleases = findNewReleases(chartData.releases, existingChartData);
+    if (newReleases.length > 0) {
+      console.log(`Found ${newReleases.length} new release(s) to announce`);
+      await sendDiscordNotification(newReleases, discordWebhookUrl);
+    } else {
+      console.log('No new releases to announce');
+    }
+  }
 }
 
 /**
