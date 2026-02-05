@@ -34,12 +34,7 @@
         <priority>0.8</priority>
     </url>
     
-    <!-- Artist Profile Pages (dynamic) -->
-    <url>
-        <loc>https://toplista.mk/artist.html</loc>
-        <lastmod>2026-02-05</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>
+    <!-- Artist Profile Pages use clean URLs like /artist-name -->
+    <!-- These are generated dynamically and handled via 404.html routing -->
     
 </urlset>
