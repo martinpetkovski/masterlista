@@ -1976,6 +1976,35 @@
     <div id="share-card-container"></div>
     
     <script>
+        // Transliteration map for generating URL slugs
+        const cyrillicToLatinMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'Gj', 'ѓ': 'gj', 'Е': 'E', 'е': 'e', 'Ж': 'Zh', 'ж': 'zh',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'Dz', 'ѕ': 'dz', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'Kj', 'ќ': 'kj',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'Ch', 'ч': 'ch', 'Џ': 'Dz', 'џ': 'dz', 'Ш': 'Sh', 'ш': 'sh'
+        };
+        
+        function transliterateCyrillicToLatin(text) {
+            return text.split('').map(char => cyrillicToLatinMap[char] || char).join('');
+        }
+        
+        // Generate URL-safe slug from artist name
+        function generateArtistSlug(name) {
+            return transliterateCyrillicToLatin(name)
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+        
+        // Get artist page URL
+        function getArtistPageUrl(artistName) {
+            return `artist.html?a=${encodeURIComponent(generateArtistSlug(artistName))}`;
+        }
+        
         // Global state for sharing
         let chartDataStore = {
             singles: [],
@@ -2987,10 +3016,9 @@
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.releaseTitle}</div>
-                                <div class="chart-artist">${release.artistUrl 
-                                    ? `<a href="${release.artistUrl}" target="_blank" class="chart-artist-link" title="Отвори артист во Spotify">${release.bandName}</a>`
-                                    : release.bandName
-                                }</div>
+                                <div class="chart-artist">
+                                    <a href="${getArtistPageUrl(release.bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${release.bandName}</a>
+                                </div>
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
@@ -3057,8 +3085,8 @@
                     const genre = artistInfo?.genre || '';
                     const city = artistInfo?.city || '';
                     
-                    // Extract artist ID for Spotify link
-                    const spotifyArtistUrl = artist.spotifyUrl || `https://open.spotify.com/artist/${artist.artistId}`;
+                    // Artist page URL
+                    const artistPageUrl = getArtistPageUrl(artist.bandName);
                     
                     return `
                         <li class="chart-item artist-item ${itemClass}">
@@ -3071,7 +3099,7 @@
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title artist-name">
-                                    <a href="${spotifyArtistUrl}" target="_blank" title="Отвори во Spotify">${artist.bandName}</a>
+                                    <a href="${artistPageUrl}" title="Отвори профил на артистот">${artist.bandName}</a>
                                 </div>
                                 <div class="chart-artist artist-details">${genre}${genre && city ? ' • ' : ''}${city}</div>
                             </div>
