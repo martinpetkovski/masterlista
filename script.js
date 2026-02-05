@@ -704,21 +704,38 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!modal || !container) return;
         
-        // Create embed iframe
-        // Spotify embed URL format: https://open.spotify.com/embed/{type}/{id}
-        const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0`;
+        // Clean up previous Spotify embed controller
+        if (spotifyEmbedController) {
+            spotifyEmbedController.destroy();
+            spotifyEmbedController = null;
+        }
         
-        container.innerHTML = `
-            <iframe 
-                src="${embedUrl}" 
-                width="100%" 
-                height="${type === 'track' ? '152' : '352'}" 
-                frameBorder="0" 
-                allowfullscreen="" 
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                loading="lazy"
-            ></iframe>
-        `;
+        // Try Spotify IFrame API for autoplay
+        if (spotifyIframeAPI) {
+            container.innerHTML = '';
+            const target = document.createElement('div');
+            container.appendChild(target);
+            spotifyIframeAPI.createController(target, {
+                uri: `spotify:${type}:${spotifyId}`,
+                autoplay: true
+            }, (controller) => {
+                spotifyEmbedController = controller;
+            });
+        } else {
+            // Fallback to regular iframe
+            const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0`;
+            container.innerHTML = `
+                <iframe 
+                    src="${embedUrl}" 
+                    width="100%" 
+                    height="${type === 'track' ? '152' : '352'}" 
+                    frameBorder="0" 
+                    allowfullscreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy"
+                ></iframe>
+            `;
+        }
         
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -2335,6 +2352,64 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let currentTrackData = null;
     
+    // Spotify IFrame API for autoplay support
+    let spotifyIframeAPI = null;
+    let spotifyEmbedController = null;
+    
+    (function loadSpotifyIframeApi() {
+        const script = document.createElement('script');
+        script.src = 'https://open.spotify.com/embed/iframe-api/v1';
+        script.async = true;
+        document.head.appendChild(script);
+    })();
+    
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+        spotifyIframeAPI = IFrameAPI;
+    };
+    
+    // Songlink API cache and resolver - gets correct track URLs for all platforms
+    const songlinkCache = {};
+    const songlinkPlatformMap = {
+        spotify: 'spotify',
+        appleMusic: 'itunes',
+        youtubeMusic: 'youtube_music',
+        youtube: 'youtube',
+        amazonMusic: 'amazon_music',
+        deezer: 'deezer',
+        tidal: 'tidal',
+        soundcloud: 'soundcloud',
+        napster: 'napster',
+        audiomack: 'audiomack'
+    };
+    
+    async function fetchSonglinkData(spotifyId, type) {
+        const spotifyUrl = `https://open.spotify.com/${type}/${spotifyId}`;
+        if (songlinkCache[spotifyUrl]) return songlinkCache[spotifyUrl];
+        
+        try {
+            const response = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(spotifyUrl)}`);
+            if (!response.ok) return null;
+            const data = await response.json();
+            
+            // Extract track-specific URLs from Songlink response
+            const trackLinks = {};
+            if (data.linksByPlatform) {
+                for (const [platform, linkData] of Object.entries(data.linksByPlatform)) {
+                    const ourKey = songlinkPlatformMap[platform];
+                    if (ourKey && linkData.url) {
+                        trackLinks[ourKey] = linkData.url;
+                    }
+                }
+            }
+            
+            songlinkCache[spotifyUrl] = trackLinks;
+            return trackLinks;
+        } catch (err) {
+            console.warn('Songlink API error:', err);
+            return null;
+        }
+    }
+    
     function findBandByName(artistName) {
         if (!bandsData) return null;
         
@@ -2416,68 +2491,150 @@ document.addEventListener('DOMContentLoaded', () => {
         player.querySelector('.music-player-title').textContent = title;
         player.querySelector('.music-player-artist').textContent = artist;
         
-        // Render service tabs
+        // Render service tabs - separate embeddable from external
         renderServiceTabs(player, artistLinks);
         
-        // Load preferred service if available, or first available service
-        const preferredService = getPreferredService();
-        const hasPreferred = preferredService === 'spotify' || artistLinks[preferredService];
-        
-        if (hasPreferred) {
-            activateService(preferredService);
-        } else if (artistLinks.spotify || spotifyId) {
+        // Always default to Spotify when opening a new song
+        if (spotifyId) {
             activateService('spotify');
+            
+            // Fetch track-specific URLs from Songlink API in background
+            fetchSonglinkData(spotifyId, type).then(trackLinks => {
+                if (trackLinks && currentTrackData && currentTrackData.spotifyId === spotifyId) {
+                    // Merge track-specific URLs (override artist profile URLs)
+                    currentTrackData.trackLinks = trackLinks;
+                    // Re-render tabs with correct song links
+                    const player = document.getElementById('music-player');
+                    if (player) {
+                        renderServiceTabs(player, artistLinks, trackLinks);
+                    }
+                }
+            });
         } else {
-            // Load first available service
-            const firstAvailable = Object.keys(artistLinks)[0];
-            if (firstAvailable) {
-                activateService(firstAvailable);
+            // Fallback to first available service with embed
+            const firstEmbeddable = Object.keys(artistLinks).find(k => 
+                serviceDefinitions[k]?.hasEmbed && artistLinks[k]
+            );
+            if (firstEmbeddable) {
+                activateService(firstEmbeddable);
             }
         }
         
         player.classList.add('active');
     }
     
-    function renderServiceTabs(player, artistLinks) {
+    // Helper function to check if a URL can be embedded
+    function canEmbed(serviceId, url) {
+        if (!url) return false;
+        switch (serviceId) {
+            case 'youtube':
+                return /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url);
+            case 'soundcloud':
+                return /soundcloud\.com\/[^\/]+\/[^\/]+/.test(url); // Must be a track, not just artist
+            case 'apple':
+            case 'itunes':
+                return /music\.apple\.com\/[a-z]{2}\/(?:album|playlist)\//.test(url);
+            case 'deezer':
+                return /deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/\d+/.test(url);
+            case 'tidal':
+                return /tidal\.com\/(?:browse\/)?(album|track|video)\/\d+/.test(url);
+            case 'bandcamp':
+                return /bandcamp\.com\/(track|album)\//.test(url);
+            default:
+                return false;
+        }
+    }
+
+    function renderServiceTabs(player, artistLinks, trackLinks = null) {
         const tabsContainer = player.querySelector('.music-player-tabs');
         
-        // Build available services
-        const availableServices = [];
+        // Use track-specific links when available, fall back to artist profile links
+        const effectiveLinks = {};
         
-        // Spotify is always available if we have spotifyId
-        if (currentTrackData.spotifyId) {
-            availableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
-        }
-        
-        // Add services from artist's links
+        // Start with artist profile links as base
         Object.entries(artistLinks).forEach(([key, url]) => {
             if (key !== 'spotify' && serviceDefinitions[key]) {
-                availableServices.push({ id: key, ...serviceDefinitions[key], url });
+                effectiveLinks[key] = { url, isTrackLink: false };
             }
         });
         
-        if (availableServices.length === 0) {
+        // Override/add with track-specific links from Songlink
+        if (trackLinks) {
+            Object.entries(trackLinks).forEach(([key, url]) => {
+                if (key !== 'spotify' && serviceDefinitions[key]) {
+                    effectiveLinks[key] = { url, isTrackLink: true };
+                }
+            });
+        }
+        
+        // Build available services - separate embeddable from external
+        const embeddableServices = [];
+        const externalServices = [];
+        
+        // Spotify is always embeddable if we have spotifyId (with correct song)
+        if (currentTrackData.spotifyId) {
+            embeddableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
+        }
+        
+        // Add other services - use track-specific URL if available
+        Object.entries(effectiveLinks).forEach(([key, { url, isTrackLink }]) => {
+            const service = { id: key, ...serviceDefinitions[key], url, isTrackLink };
+            if (isTrackLink && canEmbed(key, url)) {
+                embeddableServices.push(service);
+            } else if (!isTrackLink && canEmbed(key, url)) {
+                // Artist profile URL that happens to be embeddable - still external since wrong content
+                externalServices.push(service);
+            } else {
+                externalServices.push(service);
+            }
+        });
+        
+        if (embeddableServices.length === 0 && externalServices.length === 0) {
             tabsContainer.innerHTML = '';
             return;
         }
         
-        tabsContainer.innerHTML = availableServices.map(service => `
-            <button class="music-player-tab" 
-                    data-service="${service.id}" 
-                    data-url="${service.url || ''}"
-                    data-has-embed="${service.hasEmbed}"
-                    title="${service.name}">
-                <i class="${service.icon}"></i>
-            </button>
-        `).join('');
+        // Build HTML with separator between embeddable and external
+        let html = '';
         
-        // Add click handlers
-        tabsContainer.querySelectorAll('.music-player-tab').forEach(tab => {
+        // Embeddable services
+        if (embeddableServices.length > 0) {
+            html += embeddableServices.map(service => `
+                <button class="music-player-tab embeddable" 
+                        data-service="${service.id}" 
+                        data-url="${service.url || ''}"
+                        data-has-embed="true"
+                        title="${service.name} (плеер)">
+                    <i class="${service.icon}"></i>
+                </button>
+            `).join('');
+        }
+        
+        // Separator and external services (non-embeddable links)
+        if (externalServices.length > 0) {
+            if (embeddableServices.length > 0) {
+                html += '<span class="music-player-separator"></span>';
+            }
+            html += externalServices.map(service => `
+                <a class="music-player-tab external" 
+                   href="${service.url}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   data-service="${service.id}" 
+                   title="${service.name} (профил)">
+                    <i class="${service.icon}"></i>
+                    <i class="fas fa-external-link-alt external-icon"></i>
+                </a>
+            `).join('');
+        }
+        
+        tabsContainer.innerHTML = html;
+        
+        // Add click handlers only for embeddable tabs
+        tabsContainer.querySelectorAll('.music-player-tab.embeddable').forEach(tab => {
             tab.addEventListener('click', () => {
                 const serviceId = tab.dataset.service;
                 activateService(serviceId);
-                // Save preference
-                setPreferredService(serviceId);
             });
         });
     }
@@ -2486,38 +2643,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const player = document.getElementById('music-player');
         if (!player || !currentTrackData) return;
         
+        // Clean up previous Spotify embed controller
+        if (spotifyEmbedController) {
+            spotifyEmbedController.destroy();
+            spotifyEmbedController = null;
+        }
+        
         const tabsContainer = player.querySelector('.music-player-tabs');
         const embedContainer = player.querySelector('.music-player-embed');
-        const { spotifyId, type, artistLinks } = currentTrackData;
-        const service = serviceDefinitions[serviceId];
-        const url = artistLinks[serviceId];
+        const { spotifyId, type, artistLinks, trackLinks } = currentTrackData;
+        // Prefer track-specific URL, fall back to artist profile URL
+        const url = (trackLinks && trackLinks[serviceId]) || artistLinks[serviceId];
         
         // Update active tab
         tabsContainer.querySelectorAll('.music-player-tab').forEach(t => t.classList.remove('active'));
         const activeTab = tabsContainer.querySelector(`[data-service="${serviceId}"]`);
         if (activeTab) activeTab.classList.add('active');
         
-        // Check if this service has an embed available
+        // Use Spotify IFrame API for autoplay
+        if (serviceId === 'spotify' && spotifyId && spotifyIframeAPI) {
+            const target = document.createElement('div');
+            embedContainer.innerHTML = '';
+            embedContainer.appendChild(target);
+            embedContainer.classList.add('expanded');
+            spotifyIframeAPI.createController(target, {
+                uri: `spotify:${type}:${spotifyId}`,
+                autoplay: true
+            }, (controller) => {
+                spotifyEmbedController = controller;
+            });
+            return;
+        }
+        
+        // Generate embed HTML based on service
         let embedHtml = '';
-        let hasEmbed = false;
         
         if (serviceId === 'spotify' && spotifyId) {
-            hasEmbed = true;
+            // Fallback when IFrame API not loaded yet
             embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
         } else if (serviceId === 'youtube' && url) {
             const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
             if (ytMatch) {
-                hasEmbed = true;
-                embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+                embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
             }
         } else if (serviceId === 'soundcloud' && url) {
-            hasEmbed = true;
             const encodedUrl = encodeURIComponent(url);
-            embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
-        } else if (serviceId === 'apple' && url) {
+            embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
+        } else if ((serviceId === 'apple' || serviceId === 'itunes') && url) {
             const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(?:album|playlist)\/[^\/]+\/([0-9]+)/);
             if (appleMatch) {
-                hasEmbed = true;
                 const country = appleMatch[1];
                 const albumId = appleMatch[2];
                 embedHtml = `<iframe class="apple-embed" src="https://embed.music.apple.com/${country}/album/${albumId}?theme=dark" allow="autoplay *; encrypted-media *; fullscreen *" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy"></iframe>`;
@@ -2525,32 +2699,40 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (serviceId === 'deezer' && url) {
             const deezerMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/(\d+)/);
             if (deezerMatch) {
-                hasEmbed = true;
                 const deezerType = deezerMatch[1];
                 const deezerId = deezerMatch[2];
-                embedHtml = `<iframe scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" style="width:100%;height:80px;" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+                embedHtml = `<iframe class="deezer-embed" scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
             }
-        }
-        
-        // If no embed available, open URL in new tab directly
-        if (!hasEmbed && url) {
-            window.open(url, '_blank');
-            // Don't change the embed area, keep showing current service
-            return;
+        } else if (serviceId === 'tidal' && url) {
+            const tidalMatch = url.match(/tidal\.com\/(?:browse\/)?(album|track|video)\/(\d+)/);
+            if (tidalMatch) {
+                const tidalType = tidalMatch[1];
+                const tidalId = tidalMatch[2];
+                embedHtml = `<iframe class="tidal-embed" src="https://embed.tidal.com/${tidalType}s/${tidalId}?layout=gridify" allow="encrypted-media" loading="lazy"></iframe>`;
+            }
+        } else if (serviceId === 'bandcamp' && url) {
+            // Bandcamp requires fetching the page to get embed code, use oEmbed
+            embedHtml = `<iframe class="bandcamp-embed" src="https://bandcamp.com/EmbeddedPlayer/size=large/bgcol=333333/linkcol=e99708/tracklist=false/artwork=small/transparent=true/" seamless loading="lazy"><a href="${url}">Open on Bandcamp</a></iframe>`;
         }
         
         // Update embed
-        if (hasEmbed) {
+        if (embedHtml) {
             embedContainer.innerHTML = embedHtml;
             embedContainer.classList.add('expanded');
         } else {
-            embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за ${service?.name || 'оваа услуга'}</div>`;
+            embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за оваа услуга</div>`;
             embedContainer.classList.add('expanded');
         }
     }
     
     function closeMusicPlayer() {
         const player = document.getElementById('music-player');
+        
+        // Clean up Spotify embed controller
+        if (spotifyEmbedController) {
+            spotifyEmbedController.destroy();
+            spotifyEmbedController = null;
+        }
         
         if (player) {
             player.classList.remove('active');
