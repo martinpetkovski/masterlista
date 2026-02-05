@@ -352,17 +352,190 @@
             margin-bottom: 1rem;
         }
         
-        /* Spotify Embed */
-        .artist-spotify-embed {
-            margin-top: 1.5rem;
-            border-radius: 12px;
-            overflow: hidden;
+        /* Play button on releases */
+        .release-play-btn {
+            background: linear-gradient(135deg, #1DB954, #1ed760);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(29, 185, 84, 0.3);
         }
         
-        .artist-spotify-embed iframe {
+        .release-play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.4);
+        }
+        
+        .release-play-btn i {
+            font-size: 0.85rem;
+            margin-left: 2px;
+        }
+        
+        /* Inline music player - compact style (same as index.html) */
+        .music-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+            border-top: 1px solid rgba(255, 146, 43, 0.3);
+            padding: 0;
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        body.dark-mode .music-player {
+            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+        }
+        
+        .music-player.active {
+            display: flex;
+        }
+        
+        .music-player-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .music-player-cover {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .music-player-cover img {
             width: 100%;
-            height: 152px;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .music-player-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+        
+        .music-player-title {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .music-player-artist {
+            font-size: 0.65rem;
+            color: #9aa0a6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .music-player-tabs {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .music-player-tab {
+            background: transparent;
             border: none;
+            color: #6b7280;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        
+        .music-player-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e8eaed;
+        }
+        
+        .music-player-tab.active {
+            background: #e07800;
+            color: #fff;
+        }
+        
+        .music-player-tab i {
+            font-size: 1rem;
+        }
+        
+        /* Service-specific colors on hover */
+        .music-player-tab[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
+        .music-player-tab[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
+        .music-player-tab[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
+        .music-player-tab[data-service="deezer"]:hover:not(.active) { color: #FEAA2D; }
+        .music-player-tab[data-service="soundcloud"]:hover:not(.active) { color: #ff7700; }
+        .music-player-tab[data-service="bandcamp"]:hover:not(.active) { color: #1da0c3; }
+        .music-player-tab[data-service="tidal"]:hover:not(.active) { color: #00FFFF; }
+        
+        .music-player-close {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+        
+        .music-player-close:hover {
+            background: rgba(255, 82, 82, 0.15);
+            color: #fa5252;
+        }
+        
+        .music-player-embed {
+            width: 100%;
+        }
+        
+        .music-player iframe {
+            width: 100%;
+            height: 80px;
+            border: none;
+        }
+        
+        .music-player iframe.youtube-embed,
+        .music-player iframe.soundcloud-embed {
+            height: 80px;
+        }
+        
+        .music-player-no-embed {
+            padding: 1rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.75rem;
         }
         
         /* Label badges */
@@ -1045,22 +1218,6 @@ a.chart-history-item {
                 linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">Нема достапни линкови</p>`;
             }
             
-            // Build Spotify embed if available
-            let spotifyEmbedHtml = '';
-            if (artist.links && artist.links.spotify) {
-                const spotifyUrl = artist.links.spotify;
-                const match = spotifyUrl.match(/spotify\.com\/artist\/([a-zA-Z0-9]+)/);
-                if (match) {
-                    spotifyEmbedHtml = `
-                        <div class="artist-spotify-embed">
-                            <iframe src="https://open.spotify.com/embed/artist/${match[1]}?utm_source=generator&theme=0" 
-                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                                    loading="lazy"></iframe>
-                        </div>
-                    `;
-                }
-            }
-            
             // Build edit URL
             const artistSlug = generateSlug(artist.name);
             const editUrl = `list.html?edit=${encodeURIComponent(artistSlug)}`;
@@ -1092,8 +1249,6 @@ a.chart-history-item {
                 </div>
                 
                 <div id="chart-history-container"></div>
-                
-                ${spotifyEmbedHtml}
                 
                 <div class="artist-footer">
                     <a href="index.html">
@@ -1352,7 +1507,7 @@ a.chart-history-item {
         }
         
         // Render releases section
-        function renderReleases(artistHistory) {
+        function renderReleases(artistHistory, artistLinks) {
             const container = document.getElementById('chart-history-container');
             if (!container) return;
             
@@ -1365,8 +1520,12 @@ a.chart-history-item {
                 return;
             }
             
-            // Render releases - simplified without stats
-            const releasesHtml = releases.map(release => {
+            // Store releases for music player
+            window.artistReleases = releases;
+            window.artistLinks = artistLinks || {};
+            
+            // Render releases with play buttons
+            const releasesHtml = releases.map((release, index) => {
                 const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
                 const typeLabel = release.releaseType === 'album' ? 'Албум' : 'Сингл';
                 const typeClass = release.releaseType === 'album' ? 'album' : 'single';
@@ -1376,10 +1535,21 @@ a.chart-history-item {
                 const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
                 const dateStr = `${releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
                 
-                const releaseUrl = release.releaseUrl || release.topTrackUrl || '#';
+                // Check if we can play this release (has Spotify URL or any streaming links)
+                const hasSpotify = release.releaseUrl && release.releaseUrl.includes('spotify.com');
+                const hasStreamingLinks = artistLinks && Object.keys(artistLinks).some(k => 
+                    ['spotify', 'youtube', 'soundcloud', 'apple', 'deezer', 'bandcamp'].includes(k)
+                );
+                const canPlay = hasSpotify || hasStreamingLinks;
+                
+                const playButton = canPlay ? `
+                    <button class="release-play-btn" data-release-index="${index}" title="Пушти">
+                        <i class="fas fa-play"></i>
+                    </button>
+                ` : '';
                 
                 return `
-                    <a href="${releaseUrl}" target="_blank" rel="noopener" class="chart-history-item">
+                    <div class="chart-history-item">
                         <div class="chart-history-cover">
                             ${release.thumbnail 
                                 ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
@@ -1395,8 +1565,8 @@ a.chart-history-item {
                                 <span>${dateStr}</span>
                             </div>
                         </div>
-                        <i class="fas fa-external-link-alt chart-history-link"></i>
-                    </a>
+                        ${playButton}
+                    </div>
                 `;
             }).join('');
             
@@ -1411,6 +1581,262 @@ a.chart-history-item {
                     </div>
                 </div>
             `;
+            
+            // Add click handlers for play buttons
+            container.querySelectorAll('.release-play-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const index = parseInt(btn.dataset.releaseIndex);
+                    const release = window.artistReleases[index];
+                    console.log('Play button clicked, release:', release);
+                    if (release) {
+                        openMusicPlayer(release);
+                    }
+                });
+            });
+        }
+        
+        // Inline music player functionality (same as index.html)
+        // Service definitions with icons and embed support
+        const serviceDefinitions = {
+            spotify: { name: 'Spotify', icon: 'fab fa-spotify', hasEmbed: true, linkKey: 'spotify' },
+            youtube: { name: 'YouTube', icon: 'fab fa-youtube', hasEmbed: true, linkKey: 'youtube' },
+            apple: { name: 'Apple', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
+            deezer: { name: 'Deezer', icon: 'fab fa-deezer', hasEmbed: true, linkKey: 'deezer' },
+            tidal: { name: 'Tidal', icon: 'fas fa-water', hasEmbed: false, linkKey: 'tidal' },
+            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', hasEmbed: true, linkKey: 'bandcamp' },
+            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', hasEmbed: true, linkKey: 'soundcloud' }
+        };
+        
+        let currentTrackData = null;
+        
+        function getPreferredService() {
+            return localStorage.getItem('mmm-preferred-player') || 'spotify';
+        }
+        
+        function setPreferredService(serviceId) {
+            localStorage.setItem('mmm-preferred-player', serviceId);
+        }
+        
+        function showMusicPlayer(spotifyId, type = 'track', title = '', artist = '', thumbnail = '') {
+            let player = document.getElementById('music-player');
+            
+            // Get artist links from stored data
+            const artistLinks = window.artistLinks || {};
+            
+            currentTrackData = { spotifyId, type, title, artist, thumbnail, artistLinks };
+            
+            if (!player) {
+                // Create player if it doesn't exist
+                player = document.createElement('div');
+                player.id = 'music-player';
+                player.className = 'music-player';
+                player.innerHTML = `
+                    <div class="music-player-bar">
+                        <div class="music-player-cover">
+                            <img src="" alt="">
+                        </div>
+                        <div class="music-player-info">
+                            <div class="music-player-title"></div>
+                            <div class="music-player-artist"></div>
+                        </div>
+                        <div class="music-player-tabs"></div>
+                        <button class="music-player-close" title="Затвори"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="music-player-embed"></div>
+                `;
+                document.body.appendChild(player);
+                
+                // Close button
+                player.querySelector('.music-player-close').addEventListener('click', closeMusicPlayer);
+                
+                // Close on Escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && player.classList.contains('active')) {
+                        closeMusicPlayer();
+                    }
+                });
+            }
+            
+            // Update player content - hide cover if no thumbnail
+            const coverContainer = player.querySelector('.music-player-cover');
+            const coverImg = coverContainer?.querySelector('img');
+            if (thumbnail) {
+                if (coverImg) coverImg.src = thumbnail;
+                coverContainer.style.display = '';
+            } else {
+                coverContainer.style.display = 'none';
+            }
+            player.querySelector('.music-player-title').textContent = title;
+            player.querySelector('.music-player-artist').textContent = artist;
+            
+            // Render service tabs
+            renderServiceTabs(player, artistLinks);
+            
+            // Load preferred service if available, or first available service
+            const preferredService = getPreferredService();
+            const hasPreferred = preferredService === 'spotify' || artistLinks[preferredService];
+            
+            if (hasPreferred) {
+                activateService(preferredService);
+            } else if (artistLinks.spotify || spotifyId) {
+                activateService('spotify');
+            } else {
+                // Load first available service
+                const firstAvailable = Object.keys(artistLinks)[0];
+                if (firstAvailable) {
+                    activateService(firstAvailable);
+                }
+            }
+            
+            player.classList.add('active');
+        }
+        
+        function renderServiceTabs(player, artistLinks) {
+            const tabsContainer = player.querySelector('.music-player-tabs');
+            
+            // Build available services
+            const availableServices = [];
+            
+            // Spotify is always available if we have spotifyId
+            if (currentTrackData.spotifyId) {
+                availableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
+            }
+            
+            // Add services from artist's links
+            Object.entries(artistLinks).forEach(([key, url]) => {
+                if (key !== 'spotify' && serviceDefinitions[key]) {
+                    availableServices.push({ id: key, ...serviceDefinitions[key], url });
+                }
+            });
+            
+            if (availableServices.length === 0) {
+                tabsContainer.innerHTML = '';
+                return;
+            }
+            
+            tabsContainer.innerHTML = availableServices.map(service => `
+                <button class="music-player-tab" 
+                        data-service="${service.id}" 
+                        data-url="${service.url || ''}"
+                        data-has-embed="${service.hasEmbed}"
+                        title="${service.name}">
+                    <i class="${service.icon}"></i>
+                </button>
+            `).join('');
+            
+            // Add click handlers
+            tabsContainer.querySelectorAll('.music-player-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const serviceId = tab.dataset.service;
+                    activateService(serviceId);
+                    // Save preference
+                    setPreferredService(serviceId);
+                });
+            });
+        }
+        
+        function activateService(serviceId) {
+            const player = document.getElementById('music-player');
+            if (!player || !currentTrackData) return;
+            
+            const tabsContainer = player.querySelector('.music-player-tabs');
+            const embedContainer = player.querySelector('.music-player-embed');
+            const { spotifyId, type, artistLinks } = currentTrackData;
+            const service = serviceDefinitions[serviceId];
+            const url = artistLinks[serviceId];
+            
+            // Update active tab
+            tabsContainer.querySelectorAll('.music-player-tab').forEach(t => t.classList.remove('active'));
+            const activeTab = tabsContainer.querySelector(`[data-service="${serviceId}"]`);
+            if (activeTab) activeTab.classList.add('active');
+            
+            // Check if this service has an embed available
+            let embedHtml = '';
+            let hasEmbed = false;
+            
+            if (serviceId === 'spotify' && spotifyId) {
+                hasEmbed = true;
+                embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+            } else if (serviceId === 'youtube' && url) {
+                const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (ytMatch) {
+                    hasEmbed = true;
+                    embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+                }
+            } else if (serviceId === 'soundcloud' && url) {
+                hasEmbed = true;
+                const encodedUrl = encodeURIComponent(url);
+                embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
+            } else if (serviceId === 'apple' && url) {
+                const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(?:album|playlist)\/[^\/]+\/([0-9]+)/);
+                if (appleMatch) {
+                    hasEmbed = true;
+                    const country = appleMatch[1];
+                    const albumId = appleMatch[2];
+                    embedHtml = `<iframe class="apple-embed" src="https://embed.music.apple.com/${country}/album/${albumId}?theme=dark" allow="autoplay *; encrypted-media *; fullscreen *" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy"></iframe>`;
+                }
+            } else if (serviceId === 'deezer' && url) {
+                const deezerMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/(\d+)/);
+                if (deezerMatch) {
+                    hasEmbed = true;
+                    const deezerType = deezerMatch[1];
+                    const deezerId = deezerMatch[2];
+                    embedHtml = `<iframe scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" style="width:100%;height:80px;" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+                }
+            }
+            
+            // If no embed available, open URL in new tab directly
+            if (!hasEmbed && url) {
+                window.open(url, '_blank');
+                // Don't change the embed area, keep showing current service
+                return;
+            }
+            
+            // Update embed
+            if (hasEmbed) {
+                embedContainer.innerHTML = embedHtml;
+                embedContainer.classList.add('expanded');
+            } else {
+                embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за ${service?.name || 'оваа услуга'}</div>`;
+                embedContainer.classList.add('expanded');
+            }
+        }
+        
+        function closeMusicPlayer() {
+            const player = document.getElementById('music-player');
+            
+            if (player) {
+                player.classList.remove('active');
+                // Stop playback by clearing embed
+                const embedContainer = player.querySelector('.music-player-embed');
+                if (embedContainer) {
+                    embedContainer.innerHTML = '';
+                    embedContainer.classList.remove('expanded');
+                }
+                currentTrackData = null;
+            }
+        }
+        
+        // Wrapper function called from release play buttons
+        function openMusicPlayer(release) {
+            // Extract Spotify ID from release URL
+            let spotifyId = null;
+            let type = 'album';
+            if (release.releaseUrl && release.releaseUrl.includes('spotify.com')) {
+                const albumMatch = release.releaseUrl.match(/spotify\.com\/album\/([a-zA-Z0-9]+)/);
+                const trackMatch = release.releaseUrl.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/);
+                if (albumMatch) {
+                    spotifyId = albumMatch[1];
+                    type = 'album';
+                } else if (trackMatch) {
+                    spotifyId = trackMatch[1];
+                    type = 'track';
+                }
+            }
+            
+            showMusicPlayer(spotifyId, type, release.releaseTitle, release.bandName, release.thumbnail);
         }
         
         // Render error state
@@ -1481,6 +1907,9 @@ a.chart-history-item {
                 // Render artist page
                 renderArtist(artist, thumbnail);
                 
+                // Store artist links globally for the music player
+                window.artistLinks = artist.links || {};
+                
                 // Extract and apply colors from thumbnail
                 if (thumbnail) {
                     try {
@@ -1497,7 +1926,7 @@ a.chart-history-item {
                 try {
                     const chartHistory = await loadChartHistory(artist.name);
                     renderPopularityGraph(chartHistory);
-                    renderReleases(chartHistory);
+                    renderReleases(chartHistory, artist.links);
                 } catch (e) {
                     console.warn('Could not load chart history:', e);
                 }
