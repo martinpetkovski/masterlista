@@ -2245,20 +2245,30 @@ body.dark-mode .music-player {
 /* Service-specific colors on hover */
 .music-player-tab[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
 .music-player-tab[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
+.music-player-tab[data-service="youtube_music"]:hover:not(.active) { color: #FF0000; }
 .music-player-tab[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
+.music-player-tab[data-service="itunes"]:hover:not(.active) { color: #fc3c44; }
 .music-player-tab[data-service="deezer"]:hover:not(.active) { color: #FEAA2D; }
 .music-player-tab[data-service="soundcloud"]:hover:not(.active) { color: #ff7700; }
 .music-player-tab[data-service="bandcamp"]:hover:not(.active) { color: #1da0c3; }
 .music-player-tab[data-service="tidal"]:hover:not(.active) { color: #00FFFF; }
+.music-player-tab[data-service="amazon_music"]:hover:not(.active) { color: #FF9900; }
+.music-player-tab[data-service="napster"]:hover:not(.active) { color: #000; }
+.music-player-tab[data-service="audiomack"]:hover:not(.active) { color: #FFA500; }
 
 /* Service-specific active colors */
 .music-player-tab[data-service="spotify"].active { background: #1DB954; }
 .music-player-tab[data-service="youtube"].active { background: #FF0000; }
+.music-player-tab[data-service="youtube_music"].active { background: #FF0000; }
 .music-player-tab[data-service="apple"].active { background: #fc3c44; }
+.music-player-tab[data-service="itunes"].active { background: #fc3c44; }
 .music-player-tab[data-service="deezer"].active { background: #FEAA2D; }
 .music-player-tab[data-service="soundcloud"].active { background: #ff7700; }
 .music-player-tab[data-service="bandcamp"].active { background: #1da0c3; }
 .music-player-tab[data-service="tidal"].active { background: #00b4b4; }
+.music-player-tab[data-service="amazon_music"].active { background: #FF9900; }
+.music-player-tab[data-service="napster"].active { background: #333; }
+.music-player-tab[data-service="audiomack"].active { background: #FFA500; }
 
 /* Close button */
 .music-player-close {
