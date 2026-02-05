@@ -239,6 +239,7 @@
         /* Platform-specific colors */
         .artist-link.spotify i { color: #1DB954; }
         .artist-link.youtube i { color: #FF0000; }
+        .artist-link.youtube_music i { color: #FF0000; }
         .artist-link.instagram i { color: #E4405F; }
         .artist-link.facebook i { color: #1877F2; }
         .artist-link.twitter i { color: #1DA1F2; }
@@ -247,7 +248,13 @@
         .artist-link.bandcamp i { color: #1DA0C3; }
         .artist-link.soundcloud i { color: #FF7700; }
         .artist-link.itunes i { color: #FA233B; }
+        .artist-link.apple_music i { color: #FA233B; }
         .artist-link.deezer i { color: #FEAA2D; }
+        .artist-link.tidal i { color: #00FFFF; }
+        .artist-link.amazon_music i { color: #FF9900; }
+        .artist-link.napster i { color: #000; }
+        body.dark-mode .artist-link.napster i { color: #fff; }
+        .artist-link.audiomack i { color: #FFA500; }
         .artist-link.website i { color: #228be6; }
         .artist-link.linktree i { color: #43E660; }
         .artist-link.discord i { color: #5865F2; }
@@ -488,11 +495,16 @@
         /* Service-specific colors on hover */
         .music-player-tab[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
         .music-player-tab[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
+        .music-player-tab[data-service="youtube_music"]:hover:not(.active) { color: #FF0000; }
         .music-player-tab[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
+        .music-player-tab[data-service="itunes"]:hover:not(.active) { color: #fc3c44; }
         .music-player-tab[data-service="deezer"]:hover:not(.active) { color: #FEAA2D; }
         .music-player-tab[data-service="soundcloud"]:hover:not(.active) { color: #ff7700; }
         .music-player-tab[data-service="bandcamp"]:hover:not(.active) { color: #1da0c3; }
         .music-player-tab[data-service="tidal"]:hover:not(.active) { color: #00FFFF; }
+        .music-player-tab[data-service="amazon_music"]:hover:not(.active) { color: #FF9900; }
+        .music-player-tab[data-service="napster"]:hover:not(.active) { color: #000; }
+        .music-player-tab[data-service="audiomack"]:hover:not(.active) { color: #FFA500; }
         
         .music-player-close {
             background: transparent;
@@ -518,6 +530,8 @@
         
         .music-player-embed {
             width: 100%;
+            max-height: 60vh;
+            overflow: hidden;
         }
         
         .music-player iframe {
@@ -526,9 +540,36 @@
             border: none;
         }
         
-        .music-player iframe.youtube-embed,
-        .music-player iframe.soundcloud-embed {
+        /* Audio-only embeds */
+        .music-player iframe.soundcloud-embed,
+        .music-player iframe.deezer-embed {
             height: 80px;
+        }
+        
+        /* Spotify embed - slightly taller for album art */
+        .music-player iframe.spotify-embed {
+            height: 152px;
+        }
+        
+        /* Apple Music embed */
+        .music-player iframe.apple-embed {
+            height: 175px;
+        }
+        
+        /* Video embeds - fixed height for videos */
+        .music-player iframe.youtube-embed {
+            height: 315px;
+            max-height: 50vh;
+        }
+        
+        /* Bandcamp embed */
+        .music-player iframe.bandcamp-embed {
+            height: 120px;
+        }
+        
+        /* Tidal embed */
+        .music-player iframe.tidal-embed {
+            height: 120px;
         }
         
         .music-player-no-embed {
@@ -985,21 +1026,27 @@ a.chart-history-item {
         const platformConfig = {
             spotify: { name: 'Spotify', icon: 'fab fa-spotify', priority: 1 },
             youtube: { name: 'YouTube', icon: 'fab fa-youtube', priority: 2 },
-            instagram: { name: 'Instagram', icon: 'fab fa-instagram', priority: 3 },
-            facebook: { name: 'Facebook', icon: 'fab fa-facebook', priority: 4 },
-            twitter: { name: 'Twitter / X', icon: 'fab fa-twitter', priority: 5 },
-            tiktok: { name: 'TikTok', icon: 'fab fa-tiktok', priority: 6 },
-            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', priority: 7 },
-            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', priority: 8 },
-            itunes: { name: 'Apple Music', icon: 'fab fa-itunes-note', priority: 9 },
-            deezer: { name: 'Deezer', icon: 'fab fa-deezer', priority: 10 },
-            website: { name: 'Веб страница', icon: 'fas fa-globe', priority: 11 },
-            linktree: { name: 'Linktree', icon: 'fas fa-tree', priority: 12 },
-            discord: { name: 'Discord', icon: 'fab fa-discord', priority: 13 },
-            patreon: { name: 'Patreon', icon: 'fab fa-patreon', priority: 14 },
-            linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin', priority: 15 },
-            twitch: { name: 'Twitch', icon: 'fab fa-twitch', priority: 16 },
-            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 17 }
+            youtube_music: { name: 'YouTube Music', icon: 'fab fa-youtube', priority: 3 },
+            instagram: { name: 'Instagram', icon: 'fab fa-instagram', priority: 4 },
+            facebook: { name: 'Facebook', icon: 'fab fa-facebook', priority: 5 },
+            twitter: { name: 'Twitter / X', icon: 'fab fa-twitter', priority: 6 },
+            tiktok: { name: 'TikTok', icon: 'fab fa-tiktok', priority: 7 },
+            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', priority: 8 },
+            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', priority: 9 },
+            itunes: { name: 'Apple Music', icon: 'fab fa-itunes-note', priority: 10 },
+            apple_music: { name: 'Apple Music', icon: 'fab fa-itunes-note', priority: 10 },
+            deezer: { name: 'Deezer', icon: 'fab fa-deezer', priority: 11 },
+            tidal: { name: 'Tidal', icon: 'fas fa-water', priority: 12 },
+            amazon_music: { name: 'Amazon Music', icon: 'fab fa-amazon', priority: 13 },
+            napster: { name: 'Napster', icon: 'fab fa-napster', priority: 14 },
+            audiomack: { name: 'Audiomack', icon: 'fas fa-headphones', priority: 15 },
+            website: { name: 'Веб страница', icon: 'fas fa-globe', priority: 16 },
+            linktree: { name: 'Linktree', icon: 'fas fa-tree', priority: 17 },
+            discord: { name: 'Discord', icon: 'fab fa-discord', priority: 18 },
+            patreon: { name: 'Patreon', icon: 'fab fa-patreon', priority: 19 },
+            linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin', priority: 20 },
+            twitch: { name: 'Twitch', icon: 'fab fa-twitch', priority: 21 },
+            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 22 }
         };
         
         const mediaPlatforms = {
@@ -1538,7 +1585,7 @@ a.chart-history-item {
                 // Check if we can play this release (has Spotify URL or any streaming links)
                 const hasSpotify = release.releaseUrl && release.releaseUrl.includes('spotify.com');
                 const hasStreamingLinks = artistLinks && Object.keys(artistLinks).some(k => 
-                    ['spotify', 'youtube', 'soundcloud', 'apple', 'deezer', 'bandcamp'].includes(k)
+                    ['spotify', 'youtube', 'soundcloud', 'apple', 'itunes', 'deezer', 'tidal', 'bandcamp'].includes(k)
                 );
                 const canPlay = hasSpotify || hasStreamingLinks;
                 
@@ -1602,9 +1649,14 @@ a.chart-history-item {
         const serviceDefinitions = {
             spotify: { name: 'Spotify', icon: 'fab fa-spotify', hasEmbed: true, linkKey: 'spotify' },
             youtube: { name: 'YouTube', icon: 'fab fa-youtube', hasEmbed: true, linkKey: 'youtube' },
-            apple: { name: 'Apple', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
+            youtube_music: { name: 'YouTube Music', icon: 'fab fa-youtube', hasEmbed: false, linkKey: 'youtube_music' },
+            apple: { name: 'Apple Music', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
+            itunes: { name: 'Apple Music', icon: 'fab fa-itunes-note', hasEmbed: true, linkKey: 'itunes' },
             deezer: { name: 'Deezer', icon: 'fab fa-deezer', hasEmbed: true, linkKey: 'deezer' },
             tidal: { name: 'Tidal', icon: 'fas fa-water', hasEmbed: false, linkKey: 'tidal' },
+            amazon_music: { name: 'Amazon Music', icon: 'fab fa-amazon', hasEmbed: false, linkKey: 'amazon_music' },
+            napster: { name: 'Napster', icon: 'fab fa-napster', hasEmbed: false, linkKey: 'napster' },
+            audiomack: { name: 'Audiomack', icon: 'fas fa-headphones', hasEmbed: false, linkKey: 'audiomack' },
             bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', hasEmbed: true, linkKey: 'bandcamp' },
             soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', hasEmbed: true, linkKey: 'soundcloud' }
         };
@@ -1758,7 +1810,7 @@ a.chart-history-item {
             
             if (serviceId === 'spotify' && spotifyId) {
                 hasEmbed = true;
-                embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                embedHtml = `<iframe class="spotify-embed" src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
             } else if (serviceId === 'youtube' && url) {
                 const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
                 if (ytMatch) {
@@ -1783,7 +1835,20 @@ a.chart-history-item {
                     hasEmbed = true;
                     const deezerType = deezerMatch[1];
                     const deezerId = deezerMatch[2];
-                    embedHtml = `<iframe scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" style="width:100%;height:80px;" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+                    embedHtml = `<iframe class="deezer-embed" scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
+                }
+            } else if (serviceId === 'bandcamp' && url) {
+                // Bandcamp embeds require album/track ID which isn't easily extractable from URL
+                // Open externally as fallback
+                hasEmbed = false;
+            } else if (serviceId === 'tidal' && url) {
+                // Tidal URLs: tidal.com/browse/album/xxx or tidal.com/browse/track/xxx
+                const tidalMatch = url.match(/tidal\.com\/(?:browse\/)?(album|track|video)\/(\d+)/);
+                if (tidalMatch) {
+                    hasEmbed = true;
+                    const tidalType = tidalMatch[1];
+                    const tidalId = tidalMatch[2];
+                    embedHtml = `<iframe class="tidal-embed" src="https://embed.tidal.com/${tidalType}s/${tidalId}?layout=gridify" allow="encrypted-media" loading="lazy"></iframe>`;
                 }
             }
             
