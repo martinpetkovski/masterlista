@@ -902,10 +902,13 @@ a.chart-history-item {
             document.getElementById('twitter-title').content = `${artist.name} | MMM`;
             document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
             
-            // Update browser URL to clean URL (if not already clean)
-            const cleanPath = '/' + encodeURIComponent(generateSlug(artist.name));
-            if (window.location.pathname !== cleanPath && !window.location.pathname.includes(generateSlug(artist.name))) {
-                window.history.replaceState({}, '', cleanPath);
+            // Update browser URL to clean URL (if not already clean) - only in production
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            if (!isLocalhost) {
+                const cleanPath = '/' + encodeURIComponent(generateSlug(artist.name));
+                if (window.location.pathname !== cleanPath && !window.location.pathname.includes(generateSlug(artist.name))) {
+                    window.history.replaceState({}, '', cleanPath);
+                }
             }
             
             if (thumbnail) {
