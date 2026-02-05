@@ -41,25 +41,37 @@
     
     <style>
         /* Artist Page Styles */
+        :root {
+            --artist-color-1: rgba(224, 120, 0, 0.15);
+            --artist-color-2: rgba(103, 126, 234, 0.1);
+            --artist-color-3: rgba(121, 80, 242, 0.08);
+            --artist-color-1-dark: rgba(224, 120, 0, 0.12);
+            --artist-color-2-dark: rgba(103, 126, 234, 0.08);
+            --artist-color-3-dark: rgba(121, 80, 242, 0.06);
+            --artist-accent: #e07800;
+        }
+        
         body.artist-page {
             background: 
-                radial-gradient(ellipse at 50% 0%, rgba(224, 120, 0, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 0% 100%, rgba(103, 126, 234, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, rgba(121, 80, 242, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 0%, var(--artist-color-1) 0%, transparent 60%),
+                radial-gradient(ellipse at 0% 100%, var(--artist-color-2) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, var(--artist-color-3) 0%, transparent 50%),
                 linear-gradient(180deg, #f8fafc 0%, #eef2f7 50%, #e2e8ef 100%);
             background-attachment: fixed;
             min-height: 100vh;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            transition: background 0.5s ease;
         }
         
         body.artist-page.dark-mode {
             background: 
-                radial-gradient(ellipse at 50% 0%, rgba(224, 120, 0, 0.12) 0%, transparent 60%),
-                radial-gradient(ellipse at 0% 100%, rgba(103, 126, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, rgba(121, 80, 242, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 0%, var(--artist-color-1-dark) 0%, transparent 60%),
+                radial-gradient(ellipse at 0% 100%, var(--artist-color-2-dark) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, var(--artist-color-3-dark) 0%, transparent 50%),
                 linear-gradient(180deg, #0c1014 0%, #141a1f 50%, #1c2428 100%);
+            background-attachment: fixed;
         }
         
         .artist-container {
@@ -82,9 +94,9 @@
             border-radius: 10%;
             margin: 0 auto 1rem;
             overflow: hidden;
-            border: 0px solid rgba(224, 120, 0, 0.3);
+            border: 0px solid var(--artist-accent, rgba(224, 120, 0, 0.3));
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            background: linear-gradient(135deg, var(--artist-accent, #e07800) 0%, var(--artist-accent, #fd7e14) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -107,7 +119,22 @@
             font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
+        
+        .artist-name .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .artist-name .status-dot.active { background: #40c057; }
+        .artist-name .status-dot.inactive { background: #fa5252; }
+        .artist-name .status-dot.unknown { background: #868e96; }
         
         .artist-meta {
             display: flex;
@@ -137,24 +164,6 @@
             background: linear-gradient(135deg, #7950f2 0%, #6741d9 100%);
             color: #fff;
         }
-        
-        .artist-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        
-        .artist-status .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        
-        .artist-status.active .status-dot { background: #40c057; }
-        .artist-status.inactive .status-dot { background: #fa5252; }
-        .artist-status.unknown .status-dot { background: #868e96; }
         
         .artist-sounds-like {
             font-size: 0.75rem;
@@ -469,13 +478,18 @@ a.chart-history-item {
             color: var(--accent-orange);
         }
         
-        /* Edit Button */
+        /* Edit Button Row */
+        .edit-button-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
         .edit-artist-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
             padding: 0.5rem 1rem;
-            margin-top: 1rem;
             background: transparent;
             border: 1px solid rgba(0, 0, 0, 0.15);
             border-radius: 8px;
@@ -690,6 +704,109 @@ a.chart-history-item {
             }
         }
         initDarkMode();
+        
+        // Extract dominant colors from an image
+        async function extractColorsFromImage(imageUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 50; // Small sample size for performance
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    ctx.drawImage(img, 0, 0, size, size);
+                    
+                    try {
+                        const imageData = ctx.getImageData(0, 0, size, size);
+                        const pixels = imageData.data;
+                        
+                        // Collect color samples from different regions
+                        const colorBuckets = {};
+                        
+                        for (let i = 0; i < pixels.length; i += 4) {
+                            const r = pixels[i];
+                            const g = pixels[i + 1];
+                            const b = pixels[i + 2];
+                            
+                            // Skip very dark or very light pixels
+                            const brightness = (r + g + b) / 3;
+                            if (brightness < 30 || brightness > 225) continue;
+                            
+                            // Skip very desaturated pixels
+                            const max = Math.max(r, g, b);
+                            const min = Math.min(r, g, b);
+                            const saturation = max === 0 ? 0 : (max - min) / max;
+                            if (saturation < 0.15) continue;
+                            
+                            // Quantize colors to reduce unique values
+                            const qr = Math.round(r / 32) * 32;
+                            const qg = Math.round(g / 32) * 32;
+                            const qb = Math.round(b / 32) * 32;
+                            const key = `${qr},${qg},${qb}`;
+                            
+                            if (!colorBuckets[key]) {
+                                colorBuckets[key] = { r: qr, g: qg, b: qb, count: 0 };
+                            }
+                            colorBuckets[key].count++;
+                        }
+                        
+                        // Sort by frequency and get top colors
+                        const sortedColors = Object.values(colorBuckets)
+                            .sort((a, b) => b.count - a.count)
+                            .slice(0, 5);
+                        
+                        if (sortedColors.length >= 1) {
+                            // Get primary and secondary colors
+                            const primary = sortedColors[0];
+                            const secondary = sortedColors[1] || primary;
+                            const tertiary = sortedColors[2] || secondary;
+                            
+                            resolve({
+                                primary: { r: primary.r, g: primary.g, b: primary.b },
+                                secondary: { r: secondary.r, g: secondary.g, b: secondary.b },
+                                tertiary: { r: tertiary.r, g: tertiary.g, b: tertiary.b }
+                            });
+                        } else {
+                            resolve(null);
+                        }
+                    } catch (e) {
+                        console.warn('Could not extract colors:', e);
+                        resolve(null);
+                    }
+                };
+                
+                img.onerror = () => {
+                    resolve(null);
+                };
+                
+                img.src = imageUrl;
+            });
+        }
+        
+        // Apply extracted colors to the page
+        function applyDynamicColors(colors) {
+            if (!colors) return;
+            
+            const { primary, secondary, tertiary } = colors;
+            const root = document.documentElement;
+            
+            // Light mode colors (more transparent)
+            root.style.setProperty('--artist-color-1', `rgba(${primary.r}, ${primary.g}, ${primary.b}, 0.18)`);
+            root.style.setProperty('--artist-color-2', `rgba(${secondary.r}, ${secondary.g}, ${secondary.b}, 0.12)`);
+            root.style.setProperty('--artist-color-3', `rgba(${tertiary.r}, ${tertiary.g}, ${tertiary.b}, 0.10)`);
+            
+            // Dark mode colors (slightly less transparent)
+            root.style.setProperty('--artist-color-1-dark', `rgba(${primary.r}, ${primary.g}, ${primary.b}, 0.15)`);
+            root.style.setProperty('--artist-color-2-dark', `rgba(${secondary.r}, ${secondary.g}, ${secondary.b}, 0.10)`);
+            root.style.setProperty('--artist-color-3-dark', `rgba(${tertiary.r}, ${tertiary.g}, ${tertiary.b}, 0.08)`);
+            
+            // Set accent color (used for avatar fallback, etc.)
+            root.style.setProperty('--artist-accent', `rgb(${primary.r}, ${primary.g}, ${primary.b})`);
+        }
         
         // Platform configurations
         const platformConfig = {
@@ -943,14 +1060,16 @@ a.chart-history-item {
             contentEl.innerHTML = `
                 <div class="artist-header">
                     <div class="artist-avatar">${avatarHtml}</div>
-                    <h1 class="artist-name">${artist.name}</h1>
+                    <h1 class="artist-name">
+                        ${artist.name}
+                        <span class="status-dot ${statusClass}" title="${statusText}"></span>
+                    </h1>
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
-                    <div class="artist-status ${statusClass}">
-                        <span class="status-dot"></span>
-                        ${statusText}
-                    </div>
                     ${labelsHtml}
                     ${soundsLikeHtml}
+                </div>
+                
+                <div class="edit-button-row">
                     <a href="${editUrl}" class="edit-artist-btn">
                         <i class="fas fa-edit"></i>
                         Уреди податоци
@@ -1345,6 +1464,18 @@ a.chart-history-item {
                 
                 // Render artist page
                 renderArtist(artist, thumbnail);
+                
+                // Extract and apply colors from thumbnail
+                if (thumbnail) {
+                    try {
+                        const colors = await extractColorsFromImage(thumbnail);
+                        if (colors) {
+                            applyDynamicColors(colors);
+                        }
+                    } catch (e) {
+                        console.warn('Could not extract colors from image:', e);
+                    }
+                }
                 
                 // Load and render chart history
                 try {
