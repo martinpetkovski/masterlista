@@ -627,23 +627,22 @@ tr:hover {
     background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
 }
 
-.artist-name-text {
+.artist-name-link {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.name.clickable {
-    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
     transition: color 0.15s ease;
 }
 
-.name.clickable:hover {
-    color: #e07800;
+.artist-name-link:hover {
+    color: var(--accent-orange);
 }
 
-tr:hover .name { color: var(--accent-blue); }
-tr:hover .name.clickable { color: #e07800; }
+tr:hover .artist-name-link { 
+    color: var(--accent-orange); 
+}
 
 /* Tags */
 .band-label {

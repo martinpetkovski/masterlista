@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Артист | Македонска Музичка Мастер Листа</title>
+    
+    <!-- Primary SEO Meta Tags - will be updated dynamically -->
+    <meta name="title" id="meta-title" content="Артист | Македонска Музичка Мастер Листа">
+    <meta name="description" id="meta-description" content="Профил на македонски музички артист со сите линкови и информации.">
+    <meta name="keywords" content="македонски артист, македонска музика, музички профил">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <link rel="canonical" id="canonical-url" href="https://toplista.mk/artist.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="profile">
+    <meta property="og:url" id="og-url" content="https://toplista.mk/artist.html">
+    <meta property="og:title" id="og-title" content="Артист | Македонска Музичка Мастер Листа">
+    <meta property="og:description" id="og-description" content="Профил на македонски музички артист со сите линкови и информации.">
+    <meta property="og:image" id="og-image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+    <meta property="og:site_name" content="Топ Листа МК">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" id="twitter-url" content="https://toplista.mk/artist.html">
+    <meta property="twitter:title" id="twitter-title" content="Артист | Македонска Музичка Мастер Листа">
+    <meta property="twitter:description" id="twitter-description" content="Профил на македонски музички артист.">
+    <meta property="twitter:image" id="twitter-image" content="https://toplista.mk/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Bungee&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=6" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=6" media="screen and (max-width: 600px)">
+    
+    <style>
+        /* Artist Page Styles */
+        body.artist-page {
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(224, 120, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 0% 100%, rgba(103, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(121, 80, 242, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #f8fafc 0%, #eef2f7 50%, #e2e8ef 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.artist-page.dark-mode {
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(224, 120, 0, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 0% 100%, rgba(103, 126, 234, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 100% 100%, rgba(121, 80, 242, 0.06) 0%, transparent 50%),
+                linear-gradient(180deg, #0c1014 0%, #141a1f 50%, #1c2428 100%);
+        }
+        
+        .artist-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 3rem;
+            flex: 1;
+            width: 100%;
+        }
+        
+        /* Artist Header Card */
+        .artist-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .artist-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 10%;
+            margin: 0 auto 1rem;
+            overflow: hidden;
+            border: 0px solid rgba(224, 120, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .artist-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .artist-avatar-placeholder {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .artist-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .artist-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .artist-city,
+        .artist-genre {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .artist-city {
+            background: linear-gradient(135deg, #228be6 0%, #1971c2 100%);
+            color: #fff;
+        }
+        
+        .artist-genre {
+            background: linear-gradient(135deg, #7950f2 0%, #6741d9 100%);
+            color: #fff;
+        }
+        
+        .artist-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .artist-status .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .artist-status.active .status-dot { background: #40c057; }
+        .artist-status.inactive .status-dot { background: #fa5252; }
+        .artist-status.unknown .status-dot { background: #868e96; }
+        
+        .artist-sounds-like {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+        
+        .artist-sounds-like strong {
+            color: var(--text-secondary);
+        }
+        
+        /* Links Section */
+        .artist-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .link-section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin: 1rem 0 0.5rem;
+            padding-left: 0.5rem;
+        }
+        
+        .artist-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        body.dark-mode .artist-link {
+            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        
+        .artist-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-color: rgba(224, 120, 0, 0.3);
+        }
+        
+        .artist-link i {
+            font-size: 1.25rem;
+            width: 32px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .artist-link-text {
+            flex: 1;
+        }
+        
+        .artist-link-arrow {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        /* Platform-specific colors */
+        .artist-link.spotify i { color: #1DB954; }
+        .artist-link.youtube i { color: #FF0000; }
+        .artist-link.instagram i { color: #E4405F; }
+        .artist-link.facebook i { color: #1877F2; }
+        .artist-link.twitter i { color: #1DA1F2; }
+        .artist-link.tiktok i { color: #000; }
+        body.dark-mode .artist-link.tiktok i { color: #fff; }
+        .artist-link.bandcamp i { color: #1DA0C3; }
+        .artist-link.soundcloud i { color: #FF7700; }
+        .artist-link.itunes i { color: #FA233B; }
+        .artist-link.deezer i { color: #FEAA2D; }
+        .artist-link.website i { color: #228be6; }
+        .artist-link.linktree i { color: #43E660; }
+        .artist-link.discord i { color: #5865F2; }
+        .artist-link.patreon i { color: #FF424D; }
+        .artist-link.monoton i { color: #7950f2; }
+        .artist-link.wikipedia i { color: #000; }
+        body.dark-mode .artist-link.wikipedia i { color: #fff; }
+        .artist-link.email i { color: #EA4335; }
+        
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--accent-orange);
+        }
+        
+        /* Branding footer */
+        .artist-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .artist-footer a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.2s ease;
+        }
+        
+        .artist-footer a:hover {
+            color: var(--accent-orange);
+        }
+        
+        .artist-footer .mmm-logo {
+            font-family: 'Bungee', sans-serif;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, #fa5252, #fd7e14);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Error state */
+        .artist-error {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .artist-error i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .artist-error h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .artist-error p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .artist-error a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        /* Loading state */
+        .artist-loading {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .artist-loading i {
+            font-size: 2rem;
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+        
+        /* Spotify Embed */
+        .artist-spotify-embed {
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .artist-spotify-embed iframe {
+            width: 100%;
+            height: 152px;
+            border: none;
+        }
+        
+        /* Label badges */
+        .artist-labels {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        
+        .artist-label {
+            padding: 0.2rem 0.5rem;
+            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Chart History Section */
+        .chart-history-section {
+            margin-top: 1.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title i {
+            color: var(--accent-orange);
+        }
+        
+        .chart-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .chart-history-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        body.dark-mode .chart-history-item {
+            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+        
+        .chart-history-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .chart-history-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+        
+        .chart-history-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .chart-history-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .chart-history-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.15rem;
+        }
+        
+a.chart-history-item {
+                text-decoration: none;
+                color: inherit;
+            }
+            
+            a.chart-history-item:hover {
+                border-color: var(--accent-orange);
+            }
+            
+            a.chart-history-item:hover .chart-history-title {
+            color: var(--accent-orange);
+        }
+        
+        /* Edit Button */
+        .edit-artist-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-artist-btn:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        
+        body.dark-mode .edit-artist-btn {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        body.dark-mode .edit-artist-btn:hover {
+            border-color: var(--accent-orange);
+        }
+        
+        .chart-history-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        
+        .chart-history-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.15rem 0.4rem;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        body.dark-mode .chart-history-type {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .chart-history-type.single { color: #228be6; }
+        .chart-history-type.album { color: #7950f2; }
+        
+        .chart-history-link {
+            margin-left: auto;
+            color: var(--accent-orange);
+            font-size: 0.85rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .chart-history-item:hover .chart-history-link {
+            opacity: 1;
+        }
+        
+        .chart-history-empty {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        .chart-history-empty i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            opacity: 0.5;
+        }
+        
+        /* Popularity Graph */
+        .popularity-graph-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .popularity-graph-container {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+        }
+        
+        body.dark-mode .popularity-graph-container {
+            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+        
+        .popularity-graph {
+            width: 100%;
+            height: 120px;
+        }
+        
+        .graph-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+        
+        .graph-value-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
+        .graph-value-label span {
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+        
+        .graph-new-releases {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.75rem;
+            justify-content: center;
+        }
+        
+        .new-release-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .new-release-tag i {
+            font-size: 0.55rem;
+        }
+        
+        .new-release-tag small {
+            opacity: 0.7;
+            font-weight: 400;
+        }
+        
+        body.dark-mode .new-release-tag {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .artist-container {
+                padding: 1rem 0.75rem 2rem;
+            }
+            
+            .artist-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .artist-name {
+                font-size: 1.5rem;
+            }
+            
+            .artist-link {
+                padding: 0.75rem 0.9rem;
+                font-size: 0.85rem;
+            }
+            
+            .popularity-graph {
+                height: 100px;
+            }
+            
+            .chart-history-item {
+                padding: 0.6rem;
+            }
+            
+            .chart-history-cover {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .chart-history-title {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="artist-page">
+    <div class="artist-container">
+        <a href="list.html" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Назад кон листата
+        </a>
+        
+        <div id="artist-content">
+            <div class="artist-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Се вчитува...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Dark mode initialization
+        function initDarkMode() {
+            const savedMode = localStorage.getItem('mmm-dark-mode');
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        initDarkMode();
+        
+        // Platform configurations
+        const platformConfig = {
+            spotify: { name: 'Spotify', icon: 'fab fa-spotify', priority: 1 },
+            youtube: { name: 'YouTube', icon: 'fab fa-youtube', priority: 2 },
+            instagram: { name: 'Instagram', icon: 'fab fa-instagram', priority: 3 },
+            facebook: { name: 'Facebook', icon: 'fab fa-facebook', priority: 4 },
+            twitter: { name: 'Twitter / X', icon: 'fab fa-twitter', priority: 5 },
+            tiktok: { name: 'TikTok', icon: 'fab fa-tiktok', priority: 6 },
+            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', priority: 7 },
+            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', priority: 8 },
+            itunes: { name: 'Apple Music', icon: 'fab fa-itunes-note', priority: 9 },
+            deezer: { name: 'Deezer', icon: 'fab fa-deezer', priority: 10 },
+            website: { name: 'Веб страница', icon: 'fas fa-globe', priority: 11 },
+            linktree: { name: 'Linktree', icon: 'fas fa-tree', priority: 12 },
+            discord: { name: 'Discord', icon: 'fab fa-discord', priority: 13 },
+            patreon: { name: 'Patreon', icon: 'fab fa-patreon', priority: 14 },
+            linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin', priority: 15 },
+            twitch: { name: 'Twitch', icon: 'fab fa-twitch', priority: 16 },
+            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 17 }
+        };
+        
+        const mediaPlatforms = {
+            monoton: { name: 'Mono-Ton', icon: 'fas fa-dove', priority: 1 },
+            interview: { name: 'Интервју', icon: 'fas fa-microphone', priority: 2 },
+            review: { name: 'Рецензија', icon: 'fas fa-star', priority: 3 },
+            article: { name: 'Натпис', icon: 'fas fa-newspaper', priority: 4 },
+            wikipedia: { name: 'Wikipedia', icon: 'fab fa-wikipedia-w', priority: 5 },
+            generic: { name: 'Линк', icon: 'fas fa-link', priority: 99 }
+        };
+        
+        // Transliteration maps
+        const cyrillicToLatinMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'Gj', 'ѓ': 'gj', 'Е': 'E', 'е': 'e', 'Ж': 'Zh', 'ж': 'zh',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'Dz', 'ѕ': 'dz', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'Kj', 'ќ': 'kj',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'Ch', 'ч': 'ch', 'Џ': 'Dz', 'џ': 'dz', 'Ш': 'Sh', 'ш': 'sh'
+        };
+        
+        function transliterate(text) {
+            return text.split('').map(char => cyrillicToLatinMap[char] || char).join('');
+        }
+        
+        // Generate URL-safe slug from artist name
+        function generateSlug(name) {
+            return transliterate(name)
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+        
+        // Find artist by slug or exact name
+        function findArtist(bandsData, searchParam) {
+            // Try exact name match first
+            let artist = bandsData.find(b => b.name === searchParam);
+            if (artist) return artist;
+            
+            // Try slug match
+            artist = bandsData.find(b => generateSlug(b.name) === searchParam);
+            if (artist) return artist;
+            
+            // Try case-insensitive match
+            const searchLower = searchParam.toLowerCase();
+            artist = bandsData.find(b => b.name.toLowerCase() === searchLower);
+            if (artist) return artist;
+            
+            // Try transliterated match
+            artist = bandsData.find(b => transliterate(b.name).toLowerCase() === searchLower);
+            if (artist) return artist;
+            
+            return null;
+        }
+        
+        // Render artist page
+        function renderArtist(artist, thumbnail) {
+            const contentEl = document.getElementById('artist-content');
+            
+            // Update page metadata
+            document.getElementById('page-title').textContent = `${artist.name} | Македонска Музичка Мастер Листа`;
+            document.getElementById('meta-title').content = `${artist.name} | Македонска Музичка Мастер Листа`;
+            document.getElementById('meta-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
+            
+            const artistUrl = `https://toplista.mk/artist.html?a=${encodeURIComponent(generateSlug(artist.name))}`;
+            document.getElementById('canonical-url').href = artistUrl;
+            document.getElementById('og-url').content = artistUrl;
+            document.getElementById('og-title').content = `${artist.name} | MMM`;
+            document.getElementById('og-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
+            document.getElementById('twitter-url').content = artistUrl;
+            document.getElementById('twitter-title').content = `${artist.name} | MMM`;
+            document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
+            
+            if (thumbnail) {
+                document.getElementById('og-image').content = thumbnail;
+                document.getElementById('twitter-image').content = thumbnail;
+            }
+            
+            // Build avatar HTML
+            const avatarHtml = thumbnail 
+                ? `<img src="${thumbnail}" alt="${artist.name}">`
+                : `<i class="fas fa-music artist-avatar-placeholder"></i>`;
+            
+            // Build status class and text
+            let statusClass = 'unknown';
+            let statusText = 'Непознат статус';
+            if (artist.isActive === true || artist.isActive === 'Активен') {
+                statusClass = 'active';
+                statusText = 'Активен';
+            } else if (artist.isActive === false || artist.isActive === 'Неактивен') {
+                statusClass = 'inactive';
+                statusText = 'Неактивен';
+            }
+            
+            // Build meta badges
+            let metaHtml = '';
+            if (artist.city && artist.city !== 'недостигаат податоци') {
+                const cities = artist.city.split(',').map(c => c.trim()).slice(0, 2);
+                metaHtml += cities.map(city => `<span class="artist-city"><i class="fas fa-map-marker-alt"></i> ${city}</span>`).join('');
+            }
+            if (artist.genre && artist.genre !== 'недостигаат податоци') {
+                const genres = artist.genre.split(',').map(g => g.trim()).slice(0, 2);
+                metaHtml += genres.map(genre => `<span class="artist-genre"><i class="fas fa-music"></i> ${genre}</span>`).join('');
+            }
+            
+            // Build sounds like section
+            let soundsLikeHtml = '';
+            if (artist.soundsLike && artist.soundsLike !== 'недостигаат податоци') {
+                soundsLikeHtml = `<p class="artist-sounds-like"><strong>Звучи како:</strong> ${artist.soundsLike}</p>`;
+            }
+            
+            // Build labels
+            let labelsHtml = '';
+            if (artist.label && artist.label !== 'недостигаат податоци') {
+                const labels = String(artist.label).split(',').map(l => l.trim()).filter(Boolean);
+                if (labels.length > 0) {
+                    labelsHtml = `<div class="artist-labels">${labels.map(l => `<span class="artist-label">${l}</span>`).join('')}</div>`;
+                }
+            }
+            
+            // Build streaming links
+            const streamingLinks = [];
+            const mediaLinks = [];
+            
+            if (artist.links && typeof artist.links === 'object') {
+                Object.entries(artist.links).forEach(([platform, urlOrUrls]) => {
+                    if (platform === 'none' || !urlOrUrls || urlOrUrls === 'недостигаат податоци') return;
+                    
+                    const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
+                    
+                    urls.forEach((url, idx) => {
+                        if (mediaPlatforms[platform]) {
+                            const config = mediaPlatforms[platform];
+                            const label = urls.length > 1 ? `${config.name} ${idx + 1}` : config.name;
+                            mediaLinks.push({
+                                platform,
+                                url,
+                                name: label,
+                                icon: config.icon,
+                                priority: config.priority
+                            });
+                        } else if (platformConfig[platform]) {
+                            const config = platformConfig[platform];
+                            streamingLinks.push({
+                                platform,
+                                url,
+                                name: config.name,
+                                icon: config.icon,
+                                priority: config.priority
+                            });
+                        } else {
+                            // Unknown platform, add to streaming
+                            streamingLinks.push({
+                                platform: 'generic',
+                                url,
+                                name: platform.charAt(0).toUpperCase() + platform.slice(1),
+                                icon: 'fas fa-link',
+                                priority: 100
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // Add contact email if available
+            if (artist.contact && artist.contact !== 'недостигаат податоци') {
+                streamingLinks.push({
+                    platform: 'email',
+                    url: `mailto:${artist.contact}`,
+                    name: 'Контакт е-пошта',
+                    icon: 'fas fa-envelope',
+                    priority: 50
+                });
+            }
+            
+            // Sort links by priority
+            streamingLinks.sort((a, b) => a.priority - b.priority);
+            mediaLinks.sort((a, b) => a.priority - b.priority);
+            
+            // Build links HTML
+            let linksHtml = '';
+            
+            if (streamingLinks.length > 0) {
+                linksHtml += streamingLinks.map(link => `
+                    <a href="${link.url}" target="_blank" rel="noopener" class="artist-link ${link.platform}">
+                        <i class="${link.icon}"></i>
+                        <span class="artist-link-text">${link.name}</span>
+                        <i class="fas fa-chevron-right artist-link-arrow"></i>
+                    </a>
+                `).join('');
+            }
+            
+            if (mediaLinks.length > 0) {
+                linksHtml += `<h3 class="link-section-title">Медиуми</h3>`;
+                linksHtml += mediaLinks.map(link => `
+                    <a href="${link.url}" target="_blank" rel="noopener" class="artist-link ${link.platform}">
+                        <i class="${link.icon}"></i>
+                        <span class="artist-link-text">${link.name}</span>
+                        <i class="fas fa-chevron-right artist-link-arrow"></i>
+                    </a>
+                `).join('');
+            }
+            
+            if (streamingLinks.length === 0 && mediaLinks.length === 0) {
+                linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">Нема достапни линкови</p>`;
+            }
+            
+            // Build Spotify embed if available
+            let spotifyEmbedHtml = '';
+            if (artist.links && artist.links.spotify) {
+                const spotifyUrl = artist.links.spotify;
+                const match = spotifyUrl.match(/spotify\.com\/artist\/([a-zA-Z0-9]+)/);
+                if (match) {
+                    spotifyEmbedHtml = `
+                        <div class="artist-spotify-embed">
+                            <iframe src="https://open.spotify.com/embed/artist/${match[1]}?utm_source=generator&theme=0" 
+                                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                                    loading="lazy"></iframe>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Build edit URL
+            const artistSlug = generateSlug(artist.name);
+            const editUrl = `list.html?edit=${encodeURIComponent(artistSlug)}`;
+            
+            // Render content (chart history will be added after loading)
+            contentEl.innerHTML = `
+                <div class="artist-header">
+                    <div class="artist-avatar">${avatarHtml}</div>
+                    <h1 class="artist-name">${artist.name}</h1>
+                    ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
+                    <div class="artist-status ${statusClass}">
+                        <span class="status-dot"></span>
+                        ${statusText}
+                    </div>
+                    ${labelsHtml}
+                    ${soundsLikeHtml}
+                    <a href="${editUrl}" class="edit-artist-btn">
+                        <i class="fas fa-edit"></i>
+                        Уреди податоци
+                    </a>
+                </div>
+                
+                <div id="popularity-graph-container"></div>
+                
+                <div class="artist-links">
+                    ${linksHtml}
+                </div>
+                
+                <div id="chart-history-container"></div>
+                
+                ${spotifyEmbedHtml}
+                
+                <div class="artist-footer">
+                    <a href="index.html">
+                        <span class="mmm-logo">MMM</span>
+                        Македонска Музичка Мастер Листа
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Load and process chart history for an artist
+        async function loadChartHistory(artistName) {
+            const chartFiles = [
+                'chart-history/chart-2026-W03.json',
+                'chart-history/chart-2026-W04.json',
+                'chart-history/chart-2026-W05.json',
+                'chart-history/chart-2026-W06.json'
+            ];
+            
+            const artistHistory = {
+                releases: new Map(), // releaseId -> release data with chart history
+                weeklyPopularity: new Map(), // weekId -> cumulative popularity
+                totalWeeksOnChart: 0,
+                peakPopularity: 0,
+                followers: 0
+            };
+            
+            const artistNameLower = artistName.toLowerCase();
+            
+            for (const chartFile of chartFiles) {
+                try {
+                    const response = await fetch(chartFile);
+                    if (!response.ok) continue;
+                    
+                    const chartData = await response.json();
+                    const weekMatch = chartFile.match(/chart-(\d{4}-W\d{2})\.json/);
+                    const weekId = weekMatch ? weekMatch[1] : chartFile;
+                    
+                    // Parse generatedAt for display
+                    const generatedAt = chartData.generatedAt ? new Date(chartData.generatedAt) : null;
+                    
+                    const releases = chartData.releases || [];
+                    
+                    // Calculate cumulative popularity for this week
+                    let weekCumulativePopularity = 0;
+                    const newReleasesThisWeek = [];
+                    
+                    // Parse week ID to get start/end dates (ISO week: Monday-Sunday)
+                    // e.g., 2026-W06 = week 6 of 2026
+                    function getWeekDateRange(weekId) {
+                        const match = weekId.match(/(\d{4})-W(\d{2})/);
+                        if (!match) return null;
+                        const year = parseInt(match[1]);
+                        const week = parseInt(match[2]);
+                        
+                        // Simple approach: use a known reference point
+                        // 2026-01-05 is Monday of W02 in 2026
+                        // So W01 starts 2025-12-29, W02 starts 2026-01-05, etc.
+                        const w02Start = new Date(2026, 0, 5); // Jan 5, 2026 (Monday of W02)
+                        const weekStart = new Date(w02Start);
+                        weekStart.setDate(w02Start.getDate() + (week - 2) * 7);
+                        
+                        // End of week (Sunday)
+                        const weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekStart.getDate() + 6);
+                        
+                        return { start: weekStart, end: weekEnd };
+                    }
+                    
+                    const weekRange = getWeekDateRange(weekId);
+                    
+                    // Find all releases for this artist
+                    releases.forEach((release, index) => {
+                        if (release.bandName && release.bandName.toLowerCase() === artistNameLower) {
+                            const releaseId = release.releaseId;
+                            
+                            // Add to cumulative popularity for this week
+                            weekCumulativePopularity += (release.popularity || 0);
+                            
+                            // Check if this release was published within this chart week
+                            let isNewThisWeek = false;
+                            if (weekRange && release.releaseDate) {
+                                // Parse release date as local date (YYYY-MM-DD format)
+                                const parts = release.releaseDate.split('-');
+                                const releaseDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                                
+                                // Compare dates (ignoring time)
+                                const releaseDateOnly = new Date(releaseDate.getFullYear(), releaseDate.getMonth(), releaseDate.getDate());
+                                const weekStartOnly = new Date(weekRange.start.getFullYear(), weekRange.start.getMonth(), weekRange.start.getDate());
+                                const weekEndOnly = new Date(weekRange.end.getFullYear(), weekRange.end.getMonth(), weekRange.end.getDate());
+                                
+                                isNewThisWeek = releaseDateOnly >= weekStartOnly && releaseDateOnly <= weekEndOnly;
+                            }
+                            
+                            // Update artist followers (use most recent)
+                            if (release.followers) {
+                                artistHistory.followers = release.followers;
+                            }
+                            
+                            if (!artistHistory.releases.has(releaseId)) {
+                                artistHistory.releases.set(releaseId, {
+                                    ...release,
+                                    chartWeeks: [],
+                                    firstSeenWeek: weekId
+                                });
+                            }
+                            
+                            // Track new releases for this specific week
+                            if (isNewThisWeek) {
+                                newReleasesThisWeek.push(release.releaseTitle);
+                            }
+                            
+                            const releaseData = artistHistory.releases.get(releaseId);
+                            
+                            releaseData.chartWeeks.push({
+                                week: weekId,
+                                popularity: release.popularity || 0,
+                                date: generatedAt
+                            });
+                            
+                            if ((release.popularity || 0) > artistHistory.peakPopularity) {
+                                artistHistory.peakPopularity = release.popularity || 0;
+                            }
+                        }
+                    });
+                    
+                    // Store cumulative popularity for this week
+                    if (weekCumulativePopularity > 0) {
+                        artistHistory.weeklyPopularity.set(weekId, {
+                            week: weekId,
+                            popularity: weekCumulativePopularity,
+                            date: generatedAt,
+                            newReleases: newReleasesThisWeek
+                        });
+                    }
+                } catch (e) {
+                    console.warn(`Could not load ${chartFile}:`, e);
+                }
+            }
+            
+            // Calculate total weeks on chart
+            artistHistory.releases.forEach(release => {
+                artistHistory.totalWeeksOnChart += release.chartWeeks.length;
+            });
+            
+            return artistHistory;
+        }
+        
+        // Render popularity graph
+        function renderPopularityGraph(artistHistory) {
+            const container = document.getElementById('popularity-graph-container');
+            if (!container) return;
+            
+            // Convert weekly popularity to sorted array
+            const weeklyData = Array.from(artistHistory.weeklyPopularity.values())
+                .sort((a, b) => a.week.localeCompare(b.week));
+            
+            if (weeklyData.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const maxPopularity = Math.max(...weeklyData.map(d => d.popularity));
+            const minPopularity = Math.min(...weeklyData.map(d => d.popularity));
+            const avgPopularity = Math.round(weeklyData.reduce((sum, d) => sum + d.popularity, 0) / weeklyData.length);
+            
+            // Generate SVG path
+            const width = 340;
+            const height = 100;
+            const padding = 10;
+            const leftPadding = 35; // Extra space for Y-axis labels
+            const graphWidth = width - leftPadding - padding;
+            const graphHeight = height - padding * 2;
+            
+            const points = weeklyData.map((d, i) => {
+                const x = leftPadding + (i / (weeklyData.length - 1 || 1)) * graphWidth;
+                const normalizedY = maxPopularity === minPopularity ? 0.5 : 
+                    (d.popularity - minPopularity) / (maxPopularity - minPopularity);
+                const y = height - padding - (normalizedY * graphHeight);
+                return { x, y, popularity: d.popularity, week: d.week, newReleases: d.newReleases || [] };
+            });
+            
+            // Create smooth path
+            let pathD = `M ${points[0].x} ${points[0].y}`;
+            for (let i = 1; i < points.length; i++) {
+                pathD += ` L ${points[i].x} ${points[i].y}`;
+            }
+            
+            // Create area fill path
+            let areaD = pathD + ` L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
+            
+            // Week labels
+            const firstWeek = weeklyData[0].week.replace('2026-', '');
+            const lastWeek = weeklyData[weeklyData.length - 1].week.replace('2026-', '');
+            
+            // Create dots for each data point - highlight new releases with green
+            const dotsHtml = points.map(p => {
+                if (p.newReleases.length > 0) {
+                    // New release marker - green dot with label
+                    return `
+                        <circle cx="${p.x}" cy="${p.y}" r="6" fill="#22c55e" stroke="var(--bg-primary)" stroke-width="2"/>
+                        <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" fill="#22c55e" font-size="7" font-weight="bold">НОВО</text>
+                    `;
+                }
+                return `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="2"/>`;
+            }).join('');
+            
+            // Y-axis labels (min and max)
+            const yAxisLabels = `
+                <text x="${leftPadding - 5}" y="${padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${maxPopularity}</text>
+                <text x="${leftPadding - 5}" y="${height - padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${minPopularity}</text>
+                <line x1="${leftPadding - 2}" y1="${padding}" x2="${leftPadding + 3}" y2="${padding}" stroke="var(--text-muted)" stroke-width="1"/>
+                <line x1="${leftPadding - 2}" y1="${height - padding}" x2="${leftPadding + 3}" y2="${height - padding}" stroke="var(--text-muted)" stroke-width="1"/>
+            `;
+            
+            // Find new releases to show below graph
+            const allNewReleases = weeklyData
+                .filter(d => d.newReleases && d.newReleases.length > 0)
+                .map(d => ({ week: d.week.replace('2026-', ''), titles: d.newReleases }));
+            
+            const newReleasesHtml = allNewReleases.length > 0 
+                ? `<div class="graph-new-releases">
+                    ${allNewReleases.map(r => 
+                        `<span class="new-release-tag"><i class="fas fa-plus-circle"></i> ${r.titles.join(', ')} <small>(${r.week})</small></span>`
+                    ).join('')}
+                   </div>`
+                : '';
+            
+            container.innerHTML = `
+                <div class="popularity-graph-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-chart-area"></i>
+                        Кумулативна Популарност
+                    </h3>
+                    <div class="popularity-graph-container">
+                        <svg class="popularity-graph" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:var(--accent-orange);stop-opacity:0.3" />
+                                    <stop offset="100%" style="stop-color:var(--accent-orange);stop-opacity:0.05" />
+                                </linearGradient>
+                            </defs>
+                            ${yAxisLabels}
+                            <path d="${areaD}" fill="url(#areaGradient)" />
+                            <path d="${pathD}" fill="none" stroke="var(--accent-orange)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            ${dotsHtml}
+                        </svg>
+                        <div class="graph-labels">
+                            <span style="margin-left: 25px;">${firstWeek}</span>
+                            <span>${lastWeek}</span>
+                        </div>
+                        ${newReleasesHtml}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render releases section
+        function renderReleases(artistHistory) {
+            const container = document.getElementById('chart-history-container');
+            if (!container) return;
+            
+            // Convert map to array and sort by most recent release date
+            const releases = Array.from(artistHistory.releases.values())
+                .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+            
+            if (releases.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            // Render releases - simplified without stats
+            const releasesHtml = releases.map(release => {
+                const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
+                const typeLabel = release.releaseType === 'album' ? 'Албум' : 'Сингл';
+                const typeClass = release.releaseType === 'album' ? 'album' : 'single';
+                
+                // Format release date
+                const releaseDate = new Date(release.releaseDate);
+                const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
+                const dateStr = `${releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
+                
+                const releaseUrl = release.releaseUrl || release.topTrackUrl || '#';
+                
+                return `
+                    <a href="${releaseUrl}" target="_blank" rel="noopener" class="chart-history-item">
+                        <div class="chart-history-cover">
+                            ${release.thumbnail 
+                                ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
+                                : `<i class="${typeIcon}" style="font-size: 1.25rem; color: var(--text-muted);"></i>`
+                            }
+                        </div>
+                        <div class="chart-history-info">
+                            <div class="chart-history-title">${release.releaseTitle}</div>
+                            <div class="chart-history-meta">
+                                <span class="chart-history-type ${typeClass}">
+                                    <i class="${typeIcon}"></i> ${typeLabel}
+                                </span>
+                                <span>${dateStr}</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-external-link-alt chart-history-link"></i>
+                    </a>
+                `;
+            }).join('');
+            
+            container.innerHTML = `
+                <div class="chart-history-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-compact-disc"></i>
+                        Изданија
+                    </h3>
+                    <div class="chart-history-list">
+                        ${releasesHtml}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render error state
+        function renderError() {
+            document.getElementById('artist-content').innerHTML = `
+                <div class="artist-error">
+                    <i class="fas fa-question-circle"></i>
+                    <h2>Артистот не е пронајден</h2>
+                    <p>Не можевме да го пронајдеме бараниот артист.</p>
+                    <a href="list.html">
+                        <i class="fas fa-list"></i>
+                        Прегледај ја листата
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Main initialization
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+            
+            if (!artistParam) {
+                renderError();
+                return;
+            }
+            
+            try {
+                // Load bands data
+                const response = await fetch('bands.json');
+                const data = await response.json();
+                const bandsData = data.muzickaMasterLista;
+                
+                // Find artist
+                const artist = findArtist(bandsData, decodeURIComponent(artistParam));
+                
+                if (!artist) {
+                    renderError();
+                    return;
+                }
+                
+                // Try to get artist thumbnail from chart-data.json
+                let thumbnail = null;
+                try {
+                    const chartResponse = await fetch('chart-data.json');
+                    const chartData = await chartResponse.json();
+                    const releases = chartData.releases || [];
+                    
+                    // Find release with matching artist name
+                    const release = releases.find(r => 
+                        r.bandName && r.bandName.toLowerCase() === artist.name.toLowerCase()
+                    );
+                    
+                    if (release && release.thumbnail) {
+                        thumbnail = release.thumbnail;
+                    }
+                } catch (e) {
+                    console.warn('Could not load chart data for thumbnail:', e);
+                }
+                
+                // Render artist page
+                renderArtist(artist, thumbnail);
+                
+                // Load and render chart history
+                try {
+                    const chartHistory = await loadChartHistory(artist.name);
+                    renderPopularityGraph(chartHistory);
+                    renderReleases(chartHistory);
+                } catch (e) {
+                    console.warn('Could not load chart history:', e);
+                }
+                
+            } catch (error) {
+                console.error('Error loading artist:', error);
+                renderError();
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
