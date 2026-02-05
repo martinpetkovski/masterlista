@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пренасочување... | Топ Листа МК</title>
+    <script>
+        (function() {
+            // Get the pathname (e.g., /Artist-Name or /artist-name)
+            const path = window.location.pathname;
+            
+            // List of known static pages to exclude from artist routing
+            const staticPages = [
+                '/', '/index.html', '/list.html', '/admin.html', 
+                '/releases.html', '/artist.html', '/404.html',
+                '/robots.txt', '/sitemap.xml', '/CNAME',
+                '/desktop.css', '/mobile.css', '/script.js',
+                '/spotify-api.js', '/bands.json', '/chart-data.json',
+                '/favicon.svg', '/og-image.svg'
+            ];
+            
+            // Check if path starts with known directories
+            const staticDirs = ['/chart-history/', '/scripts/', '/workers/'];
+            const isStaticDir = staticDirs.some(dir => path.startsWith(dir));
+            
+            // If it's not a static page or directory, treat it as an artist page
+            if (!staticPages.includes(path) && !isStaticDir && path !== '/') {
+                // Extract artist slug from path (remove leading slash)
+                const artistSlug = decodeURIComponent(path.substring(1));
+                
+                // Redirect to artist.html with the slug as a query parameter
+                // Using sessionStorage to pass the clean URL info
+                sessionStorage.setItem('artistSlug', artistSlug);
+                sessionStorage.setItem('cleanUrl', 'true');
+                
+                // Redirect to artist.html (it will read from sessionStorage)
+                window.location.replace('/artist.html?a=' + encodeURIComponent(artistSlug));
+            }
+        })();
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+            color: #374151;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #6b7280;
+        }
+        a {
+            color: #e07800;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Страницата не е пронајдена</h1>
+        <p>Страницата што ја барате не постои.</p>
+        <p><a href="/">← Назад кон почетна</a></p>
+    </div>
+</body>
+</html>

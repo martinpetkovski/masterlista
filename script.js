@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Get artist page URL
     function getArtistPageUrl(artistName) {
-        return `artist.html?a=${encodeURIComponent(generateArtistSlug(artistName))}`;
+        return `/${encodeURIComponent(generateArtistSlug(artistName))}`;
     }
 
     function deepClone(obj) {

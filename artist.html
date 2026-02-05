@@ -893,7 +893,7 @@ a.chart-history-item {
             document.getElementById('meta-title').content = `${artist.name} | Македонска Музичка Мастер Листа`;
             document.getElementById('meta-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
             
-            const artistUrl = `https://toplista.mk/artist.html?a=${encodeURIComponent(generateSlug(artist.name))}`;
+            const artistUrl = `https://toplista.mk/${encodeURIComponent(generateSlug(artist.name))}`;
             document.getElementById('canonical-url').href = artistUrl;
             document.getElementById('og-url').content = artistUrl;
             document.getElementById('og-title').content = `${artist.name} | MMM`;
@@ -901,6 +901,12 @@ a.chart-history-item {
             document.getElementById('twitter-url').content = artistUrl;
             document.getElementById('twitter-title').content = `${artist.name} | MMM`;
             document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
+            
+            // Update browser URL to clean URL (if not already clean)
+            const cleanPath = '/' + encodeURIComponent(generateSlug(artist.name));
+            if (window.location.pathname !== cleanPath && !window.location.pathname.includes(generateSlug(artist.name))) {
+                window.history.replaceState({}, '', cleanPath);
+            }
             
             if (thumbnail) {
                 document.getElementById('og-image').content = thumbnail;
@@ -1422,7 +1428,14 @@ a.chart-history-item {
         // Main initialization
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
-            const artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+            let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+            
+            // Check if we came from a clean URL (via 404.html redirect)
+            const cleanUrl = sessionStorage.getItem('cleanUrl');
+            if (cleanUrl) {
+                sessionStorage.removeItem('cleanUrl');
+                sessionStorage.removeItem('artistSlug');
+            }
             
             if (!artistParam) {
                 renderError();
