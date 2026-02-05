@@ -162,7 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Get artist page URL
     function getArtistPageUrl(artistName) {
-        return `/${encodeURIComponent(generateArtistSlug(artistName))}`;
+        const slug = encodeURIComponent(generateArtistSlug(artistName));
+        // Use query params on localhost (no 404.html routing), clean URLs in production
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return `artist.html?a=${slug}`;
+        }
+        return `/${slug}`;
     }
 
     function deepClone(obj) {
