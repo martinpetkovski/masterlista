@@ -315,9 +315,10 @@ async function main() {
   const spotifyToken = await getSpotifyToken(clientId, clientSecret);
   console.log('Got Spotify token');
   
-  // Load bands.json
+  // Load bands.json (strip BOM if present)
   const bandsPath = path.join(__dirname, '..', 'bands.json');
-  const bandsData = JSON.parse(fs.readFileSync(bandsPath, 'utf8'));
+  const bandsRaw = fs.readFileSync(bandsPath, 'utf8').replace(/^\uFEFF/, '');
+  const bandsData = JSON.parse(bandsRaw);
   const bands = bandsData.muzickaMasterLista || bandsData;
   console.log(`Loaded ${bands.length} bands`);
   
