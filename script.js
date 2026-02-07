@@ -14,9 +14,62 @@ document.addEventListener('DOMContentLoaded', () => {
     let cachedAutoLabels = null; // Store auto_labels.json data globally
     let cachedChartData = null; // Store chart-data.json for releases data
     let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
+    let latestReleaseDateByArtist = {}; // Cache artist name -> latest release date string
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
-    // Get artist thumbnail from chart-data.json (most recent release)
+    /**
+     * Calculate activity status based on chart data release dates.
+     * active  - published work in the past 2 years
+     * inactive - no published work in the past 3 years
+     * maybe   - published work in the 2-3 years range
+     * unknown - no data available
+     */
+    function getActivityStatus(bandName) {
+        if (!bandName) return 'Непознато';
+        const normalizedName = bandName.toLowerCase().trim();
+        const dateStr = latestReleaseDateByArtist[normalizedName];
+        if (!dateStr) return 'Непознато';
+        
+        const now = new Date();
+        const parts = dateStr.split('-');
+        const releaseDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        const diffMs = now - releaseDate;
+        const diffYears = diffMs / (365.25 * 24 * 60 * 60 * 1000);
+        
+        if (diffYears <= 2) return 'Активен';
+        if (diffYears <= 3) return 'Можеби';
+        return 'Неактивен';
+    }
+    
+    /**
+     * Build the latest release date lookup from chart data.
+     * Should be called after cachedChartData is loaded.
+     */
+    function buildReleaseDateLookup() {
+        latestReleaseDateByArtist = {};
+        if (!cachedChartData?.releases) return;
+        
+        cachedChartData.releases.forEach(release => {
+            if (!release.bandName || !release.releaseDate) return;
+            const key = release.bandName.toLowerCase().trim();
+            if (!latestReleaseDateByArtist[key] || release.releaseDate > latestReleaseDateByArtist[key]) {
+                latestReleaseDateByArtist[key] = release.releaseDate;
+            }
+        });
+    }
+    
+    // Compute whether white or black text has better contrast on a hex color
+    function getContrastTextColor(hex) {
+        if (!hex || hex.length < 7) return '#fff';
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        // Relative luminance (sRGB)
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.55 ? '#000' : '#fff';
+    }
+    
+    // Get artist profile image from chart-data.json (prefers Spotify artist image over release thumbnail)
     function getArtistThumbnail(artistName) {
         if (!artistName) return null;
         
@@ -36,9 +89,59 @@ document.addEventListener('DOMContentLoaded', () => {
             r.bandName && r.bandName.toLowerCase().trim() === normalizedName
         );
         
-        const thumbnail = release?.thumbnail || null;
+        // Prefer artist profile image, fall back to release thumbnail
+        const thumbnail = release?.artistImage || release?.thumbnail || null;
         artistThumbnailCache[artistName] = thumbnail;
         return thumbnail;
+    }
+    
+    // Extract two dominant colors from an image URL, returns promise of [hex1, hex2] or null
+    const imageColorCache = {};
+    function extractTwoColorsFromImage(imageUrl) {
+        if (imageColorCache[imageUrl] !== undefined) return Promise.resolve(imageColorCache[imageUrl]);
+        return new Promise(resolve => {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 40;
+                    canvas.width = size;
+                    canvas.height = size;
+                    ctx.drawImage(img, 0, 0, size, size);
+                    const data = ctx.getImageData(0, 0, size, size).data;
+                    const buckets = {};
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i], g = data[i+1], b = data[i+2];
+                        const brightness = (r + g + b) / 3;
+                        if (brightness < 30 || brightness > 225) continue;
+                        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        if (max === 0 || (max - min) / max < 0.12) continue;
+                        const qr = Math.round(r / 32) * 32, qg = Math.round(g / 32) * 32, qb = Math.round(b / 32) * 32;
+                        const key = `${qr},${qg},${qb}`;
+                        if (!buckets[key]) buckets[key] = { r: qr, g: qg, b: qb, count: 0 };
+                        buckets[key].count++;
+                    }
+                    const sorted = Object.values(buckets).sort((a, b) => b.count - a.count);
+                    if (sorted.length >= 1) {
+                        const toHex = c => '#' + [c.r, c.g, c.b].map(v => Math.min(255, v).toString(16).padStart(2, '0')).join('');
+                        const c1 = toHex(sorted[0]);
+                        const c2 = sorted.length >= 2 ? toHex(sorted[1]) : c1;
+                        imageColorCache[imageUrl] = [c1, c2];
+                        resolve([c1, c2]);
+                    } else {
+                        imageColorCache[imageUrl] = null;
+                        resolve(null);
+                    }
+                } catch (e) {
+                    imageColorCache[imageUrl] = null;
+                    resolve(null);
+                }
+            };
+            img.onerror = () => { imageColorCache[imageUrl] = null; resolve(null); };
+            img.src = imageUrl;
+        });
     }
     
     // ==================== PERSISTENT STORAGE ====================
@@ -190,11 +293,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 added.push(name);
             } else {
                 const prev = o.get(name);
-                const fields = ['city','genre','soundsLike','isActive','label','contact'];
+                const fields = ['city','genre','soundsLike','label','contact','confirmed'];
                 const linkChanged = JSON.stringify(prev.links) !== JSON.stringify(band.links);
+                const accentChanged = JSON.stringify(prev.accentColors) !== JSON.stringify(band.accentColors);
                 const fieldChanges = [];
                 fields.forEach(f => { if (prev[f] !== band[f]) fieldChanges.push({ field: f, from: prev[f], to: band[f] }); });
                 if (linkChanged) fieldChanges.push({ field: 'links', from: prev.links, to: band.links });
+                if (accentChanged) fieldChanges.push({ field: 'accentColors', from: prev.accentColors, to: band.accentColors });
                 if (fieldChanges.length > 0) modified.push({ name, changes: fieldChanges });
             }
         });
@@ -794,6 +899,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const chartResponse = await fetch('chart-data.json');
                 cachedChartData = await chartResponse.json();
+                buildReleaseDateLookup();
                 console.log('Loaded chart-data.json with', cachedChartData.releases?.length || 0, 'releases');
             } catch (chartError) {
                 console.warn('Could not load chart-data.json:', chartError);
@@ -847,14 +953,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Still load original data for comparison
                 const originalFromServer = data.muzickaMasterLista.map((band) => {
-                    let status;
-                    if (band.isActive === true) {
-                        status = 'Активен';
-                    } else if (band.isActive === false) {
-                        status = 'Неактивен';
-                    } else {
-                        status = band.isActive || 'Непознато';
-                    }
                     let label = band.label || null;
                     label = removeComputedLabels(label, CONTROLLED_LABELS);
                     return {
@@ -862,26 +960,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         city: band.city || 'недостигаат податоци',
                         genre: band.genre || 'недостигаат податоци',
                         soundsLike: band.soundsLike || 'недостигаат податоци',
-                        isActive: status,
                         links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
                         contact: band.contact || 'недостигаат податоци',
                         lastfmName: band.lastfmName || null,
-                        label
+                        label,
+                        accentColors: band.accentColors || null,
+                        confirmed: band.confirmed || false
                     };
                 });
                 originalBandsData = JSON.parse(JSON.stringify(originalFromServer));
             } else {
                 // Normal load - no pending changes
                 bandsData = data.muzickaMasterLista.map((band) => {
-                    let status;
-                    if (band.isActive === true) {
-                        status = 'Активен';
-                    } else if (band.isActive === false) {
-                        status = 'Неактивен';
-                    } else {
-                        status = band.isActive || 'Непознато';
-                    }
-                    
                     // Remove manual "Ново Издание" tags - only Spotify data will add them
                     let label = band.label || null;
                     label = removeComputedLabels(label, CONTROLLED_LABELS);
@@ -891,11 +981,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         city: band.city || 'недостигаат податоци',
                         genre: band.genre || 'недостигаат податоци',
                         soundsLike: band.soundsLike || 'недостигаат податоци',
-                        isActive: status,
                         links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
                         contact: band.contact || 'недостигаат податоци',
                         lastfmName: band.lastfmName || null,
-                        label
+                        label,
+                        accentColors: band.accentColors || null,
+                        confirmed: band.confirmed || false
                     };
                 });
                 originalBandsData = JSON.parse(JSON.stringify(bandsData));
@@ -946,7 +1037,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Loaded ${bandsData.length} bands`);
             // originalBandsData is already set during load (with or without pending changes)
             populateFilters(bandsData);
-            renderBands(bandsData);
+            renderBands(bandsData, { progressive: true });
             initializeFilters();
             initializeModal();
             initializeSpotifyEmbedModal();
@@ -1385,10 +1476,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 city: document.getElementById('band-city').value.trim() || 'недостигаат податоци',
                 genre: document.getElementById('band-genre').value.trim() || 'недостигаат податоци',
                 soundsLike: document.getElementById('band-sounds-like').value.trim() || 'недостигаат податоци',
-                isActive: document.getElementById('band-status').value,
                 label: document.getElementById('band-label').value.trim() || null,
                 lastfmName: document.getElementById('band-lastfm').value.trim() || null,
                 contact: contact || 'недостигаат податоци',
+                accentColors: (() => {
+                    const c1 = document.getElementById('band-accent-color-1').value.trim();
+                    const c2 = document.getElementById('band-accent-color-2').value.trim();
+                    return (c1 || c2) ? [c1 || null, c2 || null] : null;
+                })(),
+                confirmed: document.getElementById('band-confirmed')?.checked || false,
                 links: {}
             };
             const linkSelects = linksContainer.querySelectorAll('select');
@@ -1521,10 +1617,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('band-city').value = band.city !== 'недостигаат податоци' ? band.city : '';
                 document.getElementById('band-genre').value = band.genre !== 'недостигаат податоци' ? band.genre : '';
                 document.getElementById('band-sounds-like').value = band.soundsLike !== 'недостигаат податоци' ? band.soundsLike : '';
-                document.getElementById('band-status').value = band.isActive || 'Непознато';
                 document.getElementById('band-label').value = band.label !== 'недостигаат податоци' ? band.label : '';
                 document.getElementById('band-lastfm').value = band.lastfmName || '';
                 document.getElementById('band-contact').value = band.contact !== 'недостигаат податоци' ? band.contact : '';
+                document.getElementById('band-accent-color-1').value = (band.accentColors && band.accentColors[0]) || '';
+                document.getElementById('band-accent-color-2').value = (band.accentColors && band.accentColors[1]) || '';
+                // Update color picker previews and native pickers
+                const picker1 = document.getElementById('accent-picker-1');
+                const picker2 = document.getElementById('accent-picker-2');
+                if (band.accentColors && (band.accentColors[0] || band.accentColors[1])) {
+                    if (picker1) picker1.value = band.accentColors[0] || band.accentColors[1];
+                    if (picker2) picker2.value = band.accentColors[1] || band.accentColors[0];
+                } else {
+                    // No explicit colors — try to suggest from thumbnail
+                    const thumb = getArtistThumbnail(band.name);
+                    if (thumb) {
+                        extractTwoColorsFromImage(thumb).then(colors => {
+                            if (colors) {
+                                document.getElementById('band-accent-color-1').value = colors[0];
+                                document.getElementById('band-accent-color-2').value = colors[1];
+                                if (picker1) picker1.value = colors[0];
+                                if (picker2) picker2.value = colors[1];
+                            }
+                        });
+                    } else {
+                        if (picker1) picker1.value = '#e94560';
+                        if (picker2) picker2.value = '#ffa502';
+                    }
+                }
+                const confirmedEl = document.getElementById('band-confirmed');
+                if (confirmedEl) confirmedEl.checked = band.confirmed || false;
                 if (band.links && band.links.none !== 'недостигаат податоци') {
                     Object.entries(band.links).forEach(([platform, urlOrUrls]) => {
                         // Handle both single URLs (string) and multiple URLs (array)
@@ -1586,11 +1708,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         city: band.city,
                         genre: band.genre,
                         soundsLike: band.soundsLike,
-                        isActive: band.isActive === 'Активен' ? true : band.isActive === 'Неактивен' ? false : band.isActive,
                         links: band.links,
                         contact: band.contact,
                         lastfmName: band.lastfmName,
-                        label: band.label
+                        label: band.label,
+                        accentColors: band.accentColors || null,
+                        confirmed: band.confirmed || false
                     }))
                 };
                 const json = JSON.stringify(exportData, null, 2);
@@ -1681,11 +1804,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         city: band.city,
                         genre: band.genre,
                         soundsLike: band.soundsLike,
-                        isActive: band.isActive === 'Активен' ? true : band.isActive === 'Неактивен' ? false : band.isActive,
                         links: band.links,
                         contact: band.contact,
                         lastfmName: band.lastfmName,
-                        label: band.label
+                        label: band.label,
+                        accentColors: band.accentColors || null,
+                        confirmed: band.confirmed || false
                     }))
                 };
 
@@ -1802,7 +1926,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 soundsLikeArray: soundsLike,
                 labels: new Set(labels),
                 labelsArray: labels,
-                status: band.isActive
+                status: getActivityStatus(band.name)
             };
         });
         
@@ -2007,13 +2131,11 @@ document.addEventListener('DOMContentLoaded', () => {
         soundsLikeSelect.innerHTML = '<option value=""></option>' +
             soundsLike.map(sound => `<option value="${sound}">${sound} (${soundsLikeCounts[sound] || 0})</option>`).join('');
         
-        // Status
+        // Status (computed from chart data)
         const statusCounts = {};
         data.forEach(band => {
-            const status = band.isActive;
-            if (status !== undefined) {
-                statusCounts[status] = (statusCounts[status] || 0) + 1;
-            }
+            const status = getActivityStatus(band.name);
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
         });
         const statuses = Object.keys(statusCounts).sort((a, b) => 
             transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
@@ -2099,13 +2221,62 @@ document.addEventListener('DOMContentLoaded', () => {
         searchDebounceTimer = setTimeout(filterBands, SEARCH_DEBOUNCE_MS);
     }
 
-    function renderBands(bands) {
-        console.log(`Rendering ${bands.length} bands`);
+    let renderAbortController = null; // To cancel progressive renders when a new render starts
+
+    function renderBands(bands, { progressive = false, chunkSize = 20 } = {}) {
+        console.log(`Rendering ${bands.length} bands${progressive ? ' (progressive)' : ''}`);
         const bandTableBody = document.getElementById('band-table-body');
         bandTableBody.innerHTML = '';
-        bands.forEach((band, displayIndex) => {
+        
+        // Cancel any in-progress progressive render
+        if (renderAbortController) {
+            renderAbortController.abort();
+            renderAbortController = null;
+        }
+        
+        if (!progressive || bands.length <= chunkSize) {
+            // Render all at once (used by filtering, small datasets)
+            bands.forEach((band, displayIndex) => {
+                renderSingleBandRow(band, bandTableBody);
+            });
+            return;
+        }
+        
+        // Progressive rendering: yield between chunks so the browser can paint
+        renderAbortController = new AbortController();
+        const signal = renderAbortController.signal;
+        let offset = 0;
+        
+        function renderChunk() {
+            if (signal.aborted) return;
+            const end = Math.min(offset + chunkSize, bands.length);
+            for (let i = offset; i < end; i++) {
+                renderSingleBandRow(bands[i], bandTableBody);
+            }
+            offset = end;
+            if (offset < bands.length) {
+                requestAnimationFrame(renderChunk);
+            } else {
+                renderAbortController = null;
+            }
+        }
+        renderChunk();
+    }
+    
+    function renderSingleBandRow(band, bandTableBody) {
             const originalIndex = bandsData.findIndex(b => b.name === band.name && b.city === band.city && b.genre === band.genre);
             const bandRow = document.createElement('tr');
+            // Only show accent colors for confirmed artists
+            if (band.confirmed && band.accentColors && (band.accentColors[0] || band.accentColors[1])) {
+                bandRow.classList.add('has-accent');
+                const c1 = band.accentColors[0] || band.accentColors[1];
+                const c2 = band.accentColors[1] || band.accentColors[0];
+                bandRow.style.setProperty('--accent-1', c1);
+                bandRow.style.setProperty('--accent-2', c2);
+                // Compute adaptive text color based on accent-1 luminance
+                const textColor = getContrastTextColor(c1);
+                bandRow.style.setProperty('--accent-text', textColor);
+            }
             const linkPopularityOrder = [
                 'youtube', 'spotify', 'itunes', 'deezer', 'instagram',
                 'facebook', 'twitter', 'soundcloud', 'bandcamp', 'website', 'linktree',
@@ -2227,12 +2398,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
             const thumbnailHtml = artistThumbnail 
-                ? `<img src="${artistThumbnail}" alt="" class="artist-thumb" loading="lazy">` 
+                ? `<img src="${artistThumbnail}" alt="" class="artist-thumb" loading="lazy" decoding="async">` 
                 : '<span class="artist-thumb artist-thumb-placeholder"></span>';
             
             // Artist name links to artist page
             const artistPageUrl = getArtistPageUrl(band.name);
             let nameHtml = `${thumbnailHtml}<a href="${artistPageUrl}" class="artist-name-link" title="Отвори профил на артистот">${band.name}</a>`;
+            if (band.confirmed) {
+                nameHtml += '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+            }
             if (band.label && band.label !== 'недостигаат податоци') {
                 const labels = String(band.label).split(',').map(l => l.trim()).filter(Boolean);
                 const labelSpans = labels.map(l => {
@@ -2241,7 +2415,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).join(' ');
                 nameHtml += ` ${labelSpans}`;
             }
-            const statusClass = band.isActive === 'Непознато' ? 'missing-data' : '';
+            const activityStatus = getActivityStatus(band.name);
+            const statusClass = activityStatus === 'Непознато' ? 'missing-data' : '';
             
             // On mobile, merge media links into the links column
             const isMobile = window.innerWidth <= 600;
@@ -2254,8 +2429,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Звучи како">${soundsLikeHtml}</td>
                 <td data-label="Линкови" class="links">${combinedLinksHtml}</td>
                 <td data-label="Медиуми" class="links reviews">${reviewsHtml}</td>
-                <td data-label="Статус" data-status="${band.isActive}" class="${statusClass}">
-                    <span class="status-content" data-status-text="${band.isActive}">${band.isActive}</span>
+                <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
+                    <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
                 <td data-label="Акции" class="action-buttons edit-hidden">
                     <button class="action-btn edit-btn" data-index="${originalIndex}"><i class="fas fa-edit"></i></button>
@@ -2266,7 +2441,7 @@ document.addEventListener('DOMContentLoaded', () => {
             statusSpan.addEventListener('mouseover', (e) => {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'status-tooltip';
-                tooltip.textContent = band.isActive;
+                tooltip.textContent = activityStatus;
                 document.body.appendChild(tooltip);
                 const offsetX = 10;
                 const offsetY = 10;
@@ -2330,7 +2505,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             bandTableBody.appendChild(bandRow);
-        });
     }
     
     // ==================== INLINE MUSIC PLAYER ====================
@@ -2790,13 +2964,13 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: '.artist-preview-btn',
             title: 'Преслушај',
-            description: 'Ова зелено копче <i class="fas fa-play" style="color: #1DB954;"></i> ти пушта песна директно тука, без да одиш на друг сајт. Практично за брзо да чуеш како звучи некој.',
+            description: 'Ова зелено копче <i class="fas fa-play" style="color: #4a9c6d;"></i> ти пушта песна директно тука, без да одиш на друг сајт. Практично за брзо да чуеш како звучи некој.',
             position: 'bottom'
         },
         {
             element: '.status-indicator',
             title: 'Статус',
-            description: 'Боичките значат:<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#40c057;margin-right:4px;"></span> активен (свири, снима)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fa5252;margin-right:4px;"></span> неактивен (не свири повеќе)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fd7e14;margin-right:4px;"></span> можеби (не сме сигурни)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#868e96;margin-right:4px;"></span> непознато',
+            description: 'Боичките значат:<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#40c057;margin-right:4px;"></span> активен (свири, снима)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b85450;margin-right:4px;"></span> неактивен (не свири повеќе)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#5b8fb9;margin-right:4px;"></span> можеби (не сме сигурни)<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#868e96;margin-right:4px;"></span> непознато',
             position: 'left'
         },
         {

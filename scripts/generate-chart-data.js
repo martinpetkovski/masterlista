@@ -394,6 +394,7 @@ async function main() {
                   releaseDate: album.release_date,
                   releaseUrl: album.external_urls?.spotify,
                   thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
+                  artistImage: artistInfo?.images?.[0]?.url || null,
                   totalTracks: album.total_tracks,
                   popularity: maxTrackPopularity, // Use max track popularity
                   topTrackName,
@@ -413,6 +414,7 @@ async function main() {
                   releaseDate: album.release_date,
                   releaseUrl: album.external_urls?.spotify,
                   thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
+                  artistImage: artistInfo?.images?.[0]?.url || null,
                   totalTracks: album.total_tracks,
                   popularity: artistInfo?.popularity || 0,
                   followers: artistInfo?.followers?.total || 0,

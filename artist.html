@@ -31,32 +31,34 @@
     <meta property="twitter:image" id="twitter-image" content="https://toplista.mk/og-image.png">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&family=Bungee&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="desktop.css?v=6" media="screen and (min-width: 601px)">
-    <link rel="stylesheet" href="mobile.css?v=6" media="screen and (max-width: 600px)">
+    <!-- Preconnect to external origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=8" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=8" media="screen and (max-width: 600px)">
     
     <style>
         /* Artist Page Styles */
         :root {
-            --artist-color-1: rgba(224, 120, 0, 0.15);
-            --artist-color-2: rgba(103, 126, 234, 0.1);
-            --artist-color-3: rgba(121, 80, 242, 0.08);
-            --artist-color-1-dark: rgba(224, 120, 0, 0.12);
-            --artist-color-2-dark: rgba(103, 126, 234, 0.08);
-            --artist-color-3-dark: rgba(121, 80, 242, 0.06);
-            --artist-accent: #e07800;
+            --artist-color-1: rgba(184, 134, 46, 0.08);
+            --artist-color-2: rgba(74, 127, 165, 0.06);
+            --artist-color-3: rgba(123, 110, 158, 0.05);
+            --artist-color-1-dark: rgba(184, 134, 46, 0.06);
+            --artist-color-2-dark: rgba(74, 127, 165, 0.04);
+            --artist-color-3-dark: rgba(123, 110, 158, 0.03);
+            --artist-accent: #5b8fb9;
         }
         
         body.artist-page {
-            background: 
-                radial-gradient(ellipse at 50% 0%, var(--artist-color-1) 0%, transparent 60%),
-                radial-gradient(ellipse at 0% 100%, var(--artist-color-2) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, var(--artist-color-3) 0%, transparent 50%),
-                linear-gradient(180deg, #f8fafc 0%, #eef2f7 50%, #e2e8ef 100%);
+            background: #f2f3f5;
             background-attachment: fixed;
             min-height: 100vh;
             overflow-y: auto;
@@ -66,11 +68,7 @@
         }
         
         body.artist-page.dark-mode {
-            background: 
-                radial-gradient(ellipse at 50% 0%, var(--artist-color-1-dark) 0%, transparent 60%),
-                radial-gradient(ellipse at 0% 100%, var(--artist-color-2-dark) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, var(--artist-color-3-dark) 0%, transparent 50%),
-                linear-gradient(180deg, #0c1014 0%, #141a1f 50%, #1c2428 100%);
+            background: #111318;
             background-attachment: fixed;
         }
         
@@ -80,6 +78,40 @@
             padding: 1.5rem 1rem 3rem;
             flex: 1;
             width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Background accent gradient hero */
+        .artist-bg-media-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70vh;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            will-change: transform;
+        }
+        .artist-bg-media-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(242,243,245,0.0) 0%, rgba(242,243,245,0.3) 35%, rgba(242,243,245,0.8) 65%, var(--bg-primary, #f2f3f5) 100%);
+            z-index: 1;
+        }
+        body.dark-mode .artist-bg-media-wrapper::after {
+            background: linear-gradient(to bottom, rgba(17,19,24,0.0) 0%, rgba(17,19,24,0.3) 35%, rgba(17,19,24,0.8) 65%, #111318 100%);
+        }
+        .artist-bg-gradient {
+            width: 100%;
+            height: 100%;
+            opacity: 0.55;
+            transition: opacity 0.6s ease;
+        }
+        body.dark-mode .artist-bg-gradient {
+            opacity: 0.4;
         }
         
         /* Artist Header Card */
@@ -94,12 +126,13 @@
             border-radius: 10%;
             margin: 0 auto 1rem;
             overflow: hidden;
-            border: 0px solid var(--artist-accent, rgba(224, 120, 0, 0.3));
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            background: linear-gradient(135deg, var(--artist-accent, #e07800) 0%, var(--artist-accent, #fd7e14) 100%);
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            background: var(--artist-accent);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: box-shadow 0.5s ease, border-color 0.5s ease;
         }
         
         .artist-avatar img {
@@ -132,9 +165,16 @@
             flex-shrink: 0;
         }
         
-        .artist-name .status-dot.active { background: #40c057; }
-        .artist-name .status-dot.inactive { background: #fa5252; }
-        .artist-name .status-dot.unknown { background: #868e96; }
+        .artist-name .status-dot.active { background: var(--accent-green); }
+        .artist-name .status-dot.inactive { background: var(--accent-red); }
+        .artist-name .status-dot.maybe { background: var(--accent-orange); }
+        .artist-name .status-dot.unknown { background: var(--text-muted); }
+
+        .artist-name .verified-badge {
+            color: #1d9bf0;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
         
         .artist-meta {
             display: flex;
@@ -156,12 +196,12 @@
         }
         
         .artist-city {
-            background: linear-gradient(135deg, #228be6 0%, #1971c2 100%);
+            background: var(--accent-blue);
             color: #fff;
         }
         
         .artist-genre {
-            background: linear-gradient(135deg, #7950f2 0%, #6741d9 100%);
+            background: var(--accent-purple);
             color: #fff;
         }
         
@@ -198,26 +238,26 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.9rem 1rem;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             text-decoration: none;
             color: var(--text-primary);
             font-weight: 500;
             font-size: 0.9rem;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: none;
         }
         
         body.dark-mode .artist-link {
-            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            background: var(--bg-secondary);
             border-color: rgba(255, 255, 255, 0.08);
         }
         
         .artist-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            border-color: rgba(224, 120, 0, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-color: var(--link-accent, var(--border-color));
         }
         
         .artist-link i {
@@ -237,7 +277,7 @@
         }
         
         /* Platform-specific colors */
-        .artist-link.spotify i { color: #1DB954; }
+        .artist-link.spotify i { color: #1ed760; }
         .artist-link.youtube i { color: #FF0000; }
         .artist-link.youtube_music i { color: #FF0000; }
         .artist-link.instagram i { color: #E4405F; }
@@ -269,15 +309,24 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            color: var(--text-muted);
+            color: #fff;
             text-decoration: none;
             font-size: 0.8rem;
             margin-bottom: 1.5rem;
-            transition: color 0.2s ease;
+            transition: all 0.2s ease;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-weight: 500;
+            z-index: 10;
+            position: relative;
         }
         
         .back-link:hover {
-            color: var(--accent-orange);
+            background: rgba(0,0,0,0.65);
+            color: #fff;
         }
         
         /* Branding footer */
@@ -302,13 +351,9 @@
             color: var(--accent-orange);
         }
         
-        .artist-footer .mmm-logo {
-            font-family: 'Bungee', sans-serif;
-            font-size: 0.9rem;
-            background: linear-gradient(135deg, #fa5252, #fd7e14);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .artist-footer .mmm-logo-svg {
+            vertical-align: middle;
+            border-radius: 50%;
         }
         
         /* Error state */
@@ -339,10 +384,10 @@
             align-items: center;
             gap: 0.4rem;
             padding: 0.6rem 1.2rem;
-            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             color: #fff;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
             font-size: 0.85rem;
         }
@@ -361,7 +406,7 @@
         
         /* Play button on releases */
         .release-play-btn {
-            background: linear-gradient(135deg, #1DB954, #1ed760);
+            background: var(--accent-green);
             border: none;
             color: #fff;
             width: 36px;
@@ -373,12 +418,12 @@
             justify-content: center;
             flex-shrink: 0;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(29, 185, 84, 0.3);
+            box-shadow: none;
         }
         
         .release-play-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.4);
+            filter: brightness(1.1);
         }
         
         .release-play-btn i {
@@ -392,8 +437,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
-            border-top: 1px solid rgba(255, 146, 43, 0.3);
+            background: #171b21;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 0;
             z-index: 5000;
             display: none;
@@ -401,7 +446,7 @@
         }
         
         body.dark-mode .music-player {
-            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+            background: #171b21;
         }
         
         .music-player.active {
@@ -484,7 +529,7 @@
         }
         
         .music-player-tab.active {
-            background: #e07800;
+            background: var(--accent-orange);
             color: #fff;
         }
         
@@ -493,7 +538,7 @@
         }
         
         /* Service-specific colors on hover */
-        .music-player-tab[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
+        .music-player-tab[data-service="spotify"]:hover:not(.active) { color: #1ed760; }
         .music-player-tab[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
         .music-player-tab[data-service="youtube_music"]:hover:not(.active) { color: #FF0000; }
         .music-player-tab[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
@@ -552,7 +597,7 @@
         
         .music-player-close:hover {
             background: rgba(255, 82, 82, 0.15);
-            color: #fa5252;
+            color: var(--accent-red);
         }
         
         .music-player-embed {
@@ -617,7 +662,7 @@
         
         .artist-label {
             padding: 0.2rem 0.5rem;
-            background: linear-gradient(135deg, #e07800 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             color: #fff;
             border-radius: 4px;
             font-size: 0.65rem;
@@ -660,14 +705,14 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             transition: all 0.2s ease;
         }
         
         body.dark-mode .chart-history-item {
-            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            background: var(--bg-secondary);
             border-color: rgba(255, 255, 255, 0.06);
         }
         
@@ -682,7 +727,7 @@
             border-radius: 6px;
             overflow: hidden;
             flex-shrink: 0;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            background: var(--bg-secondary);
         }
         
         .chart-history-cover img {
@@ -812,15 +857,15 @@ a.chart-history-item {
         }
         
         .popularity-graph-container {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            border-radius: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 1rem;
             margin-top: 0.75rem;
         }
         
         body.dark-mode .popularity-graph-container {
-            background: linear-gradient(180deg, rgba(28, 36, 40, 0.95) 0%, rgba(20, 26, 31, 0.9) 100%);
+            background: var(--bg-secondary);
             border-color: rgba(255, 255, 255, 0.06);
         }
         
@@ -1034,6 +1079,7 @@ a.chart-history-item {
             
             const { primary, secondary, tertiary } = colors;
             const root = document.documentElement;
+            const isDark = document.body.classList.contains('dark-mode');
             
             // Light mode colors (more transparent)
             root.style.setProperty('--artist-color-1', `rgba(${primary.r}, ${primary.g}, ${primary.b}, 0.18)`);
@@ -1047,6 +1093,28 @@ a.chart-history-item {
             
             // Set accent color (used for avatar fallback, etc.)
             root.style.setProperty('--artist-accent', `rgb(${primary.r}, ${primary.g}, ${primary.b})`);
+            
+            // Apply tinted styles to page elements
+            const avatarEl = document.querySelector('.artist-avatar');
+            if (avatarEl) {
+                avatarEl.style.boxShadow = `0 8px 32px rgba(${primary.r}, ${primary.g}, ${primary.b}, 0.3)`;
+            }
+            
+            // Tint section titles with primary color
+            document.querySelectorAll('.section-title i').forEach(el => {
+                el.style.color = `rgb(${primary.r}, ${primary.g}, ${primary.b})`;
+            });
+            
+            // Tint link cards on hover border
+            const linkHoverColor = `rgba(${primary.r}, ${primary.g}, ${primary.b}, 0.4)`;
+            const styleEl = document.createElement('style');
+            styleEl.textContent = `
+                .artist-link:hover { border-color: ${linkHoverColor} !important; }
+                .chart-history-item:hover { border-color: ${linkHoverColor} !important; }
+                .release-play-btn { background: rgb(${primary.r}, ${primary.g}, ${primary.b}) !important; }
+                .artist-label { background: rgb(${primary.r}, ${primary.g}, ${primary.b}) !important; }
+            `;
+            document.head.appendChild(styleEl);
         }
         
         // Platform configurations
@@ -1109,6 +1177,24 @@ a.chart-history-item {
                 .replace(/^-+|-+$/g, '');
         }
         
+        /**
+         * Compute activity status from latest release date.
+         * active  - published work in the past 2 years
+         * inactive - no published work in the past 3 years
+         * maybe   - published work in the 2-3 years range
+         * unknown - no data available
+         */
+        function computeActivityStatus(latestReleaseDate) {
+            if (!latestReleaseDate) return 'unknown';
+            const now = new Date();
+            const parts = latestReleaseDate.split('-');
+            const rd = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const diffYears = (now - rd) / (365.25 * 24 * 60 * 60 * 1000);
+            if (diffYears <= 2) return 'active';
+            if (diffYears <= 3) return 'maybe';
+            return 'inactive';
+        }
+        
         // Find artist by slug or exact name
         function findArtist(bandsData, searchParam) {
             // Try exact name match first
@@ -1168,16 +1254,15 @@ a.chart-history-item {
                 ? `<img src="${thumbnail}" alt="${artist.name}">`
                 : `<i class="fas fa-music artist-avatar-placeholder"></i>`;
             
-            // Build status class and text
-            let statusClass = 'unknown';
-            let statusText = 'Непознат статус';
-            if (artist.isActive === true || artist.isActive === 'Активен') {
-                statusClass = 'active';
-                statusText = 'Активен';
-            } else if (artist.isActive === false || artist.isActive === 'Неактивен') {
-                statusClass = 'inactive';
-                statusText = 'Неактивен';
-            }
+            // Build status class and text from computed activity status
+            const statusMap = {
+                'active': { cls: 'active', text: 'Активен' },
+                'inactive': { cls: 'inactive', text: 'Неактивен' },
+                'maybe': { cls: 'maybe', text: 'Можеби' },
+                'unknown': { cls: 'unknown', text: 'Непознат статус' }
+            };
+            const computedStatus = artist._activityStatus || 'unknown';
+            const { cls: statusClass, text: statusText } = statusMap[computedStatus] || statusMap['unknown'];
             
             // Build meta badges
             let metaHtml = '';
@@ -1302,6 +1387,7 @@ a.chart-history-item {
                     <div class="artist-avatar">${avatarHtml}</div>
                     <h1 class="artist-name">
                         ${artist.name}
+                        ${artist.confirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                         <span class="status-dot ${statusClass}" title="${statusText}"></span>
                     </h1>
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
@@ -1326,11 +1412,51 @@ a.chart-history-item {
                 
                 <div class="artist-footer">
                     <a href="index.html">
-                        <span class="mmm-logo">MMM</span>
+                        <img src="/logo.png" alt="MMM" class="mmm-logo-svg" width="22" height="22">
                         Македонска Музичка Мастер Листа
                     </a>
                 </div>
             `;
+            
+            // Inject accent color gradient hero with parallax (only for confirmed artists)
+            const accentColors = artist.accentColors;
+            if (artist.confirmed && accentColors && (accentColors[0] || accentColors[1])) {
+                const c1 = accentColors[0] || accentColors[1];
+                const c2 = accentColors[1] || accentColors[0];
+                const existing = document.querySelector('.artist-bg-media-wrapper');
+                if (existing) existing.remove();
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'artist-bg-media-wrapper';
+                
+                const gradientDiv = document.createElement('div');
+                gradientDiv.className = 'artist-bg-gradient';
+                gradientDiv.style.background = `
+                    radial-gradient(ellipse at 20% 20%, ${c1} 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 30%, ${c2} 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 80%, ${c1}88 0%, transparent 40%),
+                    radial-gradient(ellipse at 10% 70%, ${c2}66 0%, transparent 45%),
+                    radial-gradient(ellipse at 90% 80%, ${c1}44 0%, transparent 40%)
+                `;
+                wrapper.appendChild(gradientDiv);
+                document.body.insertBefore(wrapper, document.body.firstChild);
+                
+                // Parallax scroll effect
+                let ticking = false;
+                window.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        requestAnimationFrame(() => {
+                            const scrollY = window.scrollY;
+                            wrapper.style.transform = `translateY(${-scrollY * 0.3}px)`;
+                            // Fade out as user scrolls
+                            const opacity = Math.max(0, 1 - scrollY / (window.innerHeight * 0.6));
+                            gradientDiv.style.opacity = document.body.classList.contains('dark-mode') ? opacity * 0.4 : opacity * 0.55;
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                }, { passive: true });
+            }
         }
         
         // Load and process chart history for an artist
@@ -2113,24 +2239,36 @@ a.chart-history-item {
                     return;
                 }
                 
-                // Try to get artist thumbnail from chart-data.json
+                // Try to get artist thumbnail and activity status from chart-data.json
                 let thumbnail = null;
+                let latestReleaseDate = null;
+                let latestReleaseThumbnail = null;
                 try {
                     const chartResponse = await fetch('chart-data.json');
                     const chartData = await chartResponse.json();
                     const releases = chartData.releases || [];
+                    const artistNameLower = artist.name.toLowerCase();
                     
-                    // Find release with matching artist name
-                    const release = releases.find(r => 
-                        r.bandName && r.bandName.toLowerCase() === artist.name.toLowerCase()
-                    );
-                    
-                    if (release && release.thumbnail) {
-                        thumbnail = release.thumbnail;
-                    }
+                    let artistImage = null;
+                    releases.forEach(r => {
+                        if (r.bandName && r.bandName.toLowerCase() === artistNameLower) {
+                            if (!artistImage && r.artistImage) artistImage = r.artistImage;
+                            if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
+                            if (r.releaseDate && (!latestReleaseDate || r.releaseDate > latestReleaseDate)) {
+                                latestReleaseDate = r.releaseDate;
+                                if (r.thumbnail) latestReleaseThumbnail = r.thumbnail;
+                            }
+                        }
+                    });
+                    // Prefer artist profile image, fall back to latest release thumbnail
+                    if (artistImage) thumbnail = artistImage;
+                    else if (latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
                 } catch (e) {
-                    console.warn('Could not load chart data for thumbnail:', e);
+                    console.warn('Could not load chart data:', e);
                 }
+                
+                // Compute activity status from release dates
+                artist._activityStatus = computeActivityStatus(latestReleaseDate);
                 
                 // Render artist page
                 renderArtist(artist, thumbnail);
@@ -2138,10 +2276,32 @@ a.chart-history-item {
                 // Store artist links globally for the music player
                 window.artistLinks = artist.links || {};
                 
-                // Extract and apply colors from thumbnail
-                if (thumbnail) {
+                // Apply accent colors only for confirmed artists
+                if (artist.confirmed && artist.accentColors && (artist.accentColors[0] || artist.accentColors[1])) {
+                    const c1 = artist.accentColors[0] || artist.accentColors[1];
+                    const c2 = artist.accentColors[1] || artist.accentColors[0];
+                    document.documentElement.style.setProperty('--artist-accent-1', c1);
+                    document.documentElement.style.setProperty('--artist-accent-2', c2);
+                    // Apply accent color to avatar border
+                    const avatar = document.querySelector('.artist-avatar');
+                    if (avatar) {
+                        avatar.style.borderColor = c1;
+                    }
+                    // Tint the artist name
+                    const nameEl = document.querySelector('.artist-name');
+                    if (nameEl) nameEl.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+                    if (nameEl) { nameEl.style.webkitBackgroundClip = 'text'; nameEl.style.webkitTextFillColor = 'transparent'; nameEl.style.backgroundClip = 'text'; }
+                    // Add subtle accent to link cards on hover via CSS variable
+                    document.querySelectorAll('.artist-link').forEach(link => {
+                        link.style.setProperty('--link-accent', c1);
+                    });
+                }
+                
+                // Extract and apply colors from the latest release thumbnail
+                const colorSourceImage = latestReleaseThumbnail || thumbnail;
+                if (colorSourceImage) {
                     try {
-                        const colors = await extractColorsFromImage(thumbnail);
+                        const colors = await extractColorsFromImage(colorSourceImage);
                         if (colors) {
                             applyDynamicColors(colors);
                         }
