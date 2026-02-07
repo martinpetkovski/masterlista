@@ -133,7 +133,7 @@
             border-color: var(--border-color);
         }
         
-        body.dark-mode .share-card-date,
+        body.dark-mode .share-card-week,
         body.dark-mode .share-card-url {
             color: var(--text-muted);
         }
@@ -865,22 +865,15 @@
         }
         
         .share-card-branding {
-            font-size: 0.55rem;
-            color: rgba(0,0,0,0.7);
-            text-align: right;
-            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
         
-        .share-card-branding .mmm {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 800;
-            background: none;
-            color: var(--accent-orange);
-            -webkit-text-fill-color: var(--accent-orange);
-            display: block;
-            margin-bottom: 2px;
-            text-shadow: none;
+        .share-card-branding .share-logo {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
         }
         
         .share-card-list {
@@ -973,9 +966,11 @@
             border-top: 1px solid #eee;
         }
         
-        .share-card-date {
-            font-size: 0.65rem;
-            color: #888;
+        .share-card-week {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #555;
         }
         
         .share-card-url {
@@ -2076,6 +2071,9 @@
                 <button class="share-action-btn copy" onclick="copyShareImage()">
                     <i class="fas fa-copy"></i> Копирај
                 </button>
+                <button class="share-action-btn" onclick="saveForInstagram()" id="instagram-save-btn" style="background: #E1306C;">
+                    <i class="fab fa-instagram"></i> Instagram
+                </button>
             </div>
         </div>
     </div>
@@ -2316,10 +2314,18 @@
                 
                 // Check if native share is supported
                 const nativeShareBtn = document.getElementById('native-share-btn');
+                const instagramBtn = document.getElementById('instagram-save-btn');
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                
                 if (navigator.share && navigator.canShare) {
                     nativeShareBtn.style.display = 'flex';
                 } else {
                     nativeShareBtn.style.display = 'none';
+                }
+                
+                // Show Instagram button prominently on mobile
+                if (instagramBtn) {
+                    instagramBtn.style.display = isMobile ? 'flex' : 'none';
                 }
                 
                 modal.classList.add('active');
@@ -2335,8 +2341,14 @@
         async function createShareCard(chartType, releases, customTitle = null) {
             const container = document.getElementById('share-card-container');
             const now = new Date();
-            const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
-            const dateStr = `${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+            
+            // Calculate chart week in W## YYYY format
+            const d = new Date(now);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            const weekStr = `W${String(weekNum).padStart(2, '0')} ${d.getFullYear()}`;
             
             // Use custom title or fallback to default
             const chartTitle = customTitle || chartTitles[chartType] || 'Топ Листа';
@@ -2360,7 +2372,8 @@
                 coverBg: '#1c2428',
                 headerBg: '#000',
                 headerColor: '#fff',
-                brandingColor: 'rgba(255,255,255,0.85)'
+                brandingColor: 'rgba(255,255,255,0.85)',
+                weekColor: '#8c929a'
             } : {
                 cardBg: '#fff',
                 listBg: '#fff',
@@ -2369,6 +2382,7 @@
                 artistColor: '#666',
                 footerBg: '#f5f5f5',
                 dateColor: '#888',
+                weekColor: '#555',
                 rankColor: '#999',
                 rankGold: '#d4a000',
                 rankSilver: '#888',
@@ -2412,6 +2426,15 @@
                 return 'transparent';
             };
             
+            // Preload logo image
+            const logoImg = new Image();
+            logoImg.crossOrigin = 'anonymous';
+            await new Promise((resolve) => {
+                logoImg.onload = resolve;
+                logoImg.onerror = resolve;
+                logoImg.src = '/logo.png';
+            });
+            
             container.innerHTML = `
                 <div class="share-card" id="share-card-render" style="background: ${theme.cardBg};">
                     <div class="share-card-header" style="background: ${theme.headerBg};">
@@ -2419,9 +2442,8 @@
                             <i class="fas ${chartIcons[chartType] || 'fa-users'}"></i>
                             ${chartTitle}
                         </div>
-                        <div class="share-card-branding" style="color: ${theme.brandingColor};">
-                            <span class="mmm">MMM</span>
-                            Македонска Музичка<br>Мастер Листа
+                        <div class="share-card-branding">
+                            <img src="/logo.png" crossorigin="anonymous" class="share-logo" alt="">
                         </div>
                     </div>
                     <ul class="share-card-list" style="background: ${theme.listBg};">
@@ -2455,7 +2477,7 @@
                         }).join('')}
                     </ul>
                     <div class="share-card-footer" style="background: ${theme.footerBg}; border-color: ${theme.itemBorder};">
-                        <div class="share-card-date" style="color: ${theme.dateColor};">${dateStr}</div>
+                        <div class="share-card-week" style="color: ${theme.weekColor};">${weekStr}</div>
                         <div class="share-card-url" style="color: ${theme.dateColor};">toplista.mk</div>
                     </div>
                 </div>
@@ -2463,11 +2485,11 @@
             
             const card = document.getElementById('share-card-render');
             
-            // Lazy-load html2canvas and render the card
+            // Lazy-load html2canvas and render the card at high resolution for Instagram
             await loadHtml2Canvas();
             const canvas = await html2canvas(card, {
                 backgroundColor: null,
-                scale: 2,
+                scale: 3,
                 useCORS: true,
                 allowTaint: true,
                 logging: false
@@ -2490,19 +2512,19 @@
             if (!currentShareBlob) return;
             
             try {
-                const file = new File([currentShareBlob], `mmm-${currentShareType}-chart.png`, { type: 'image/png' });
+                const file = new File([currentShareBlob], `toplista-mk-${currentShareType}.png`, { type: 'image/png' });
                 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     await navigator.share({
                         files: [file],
-                        title: chartTitles[currentShareType],
-                        text: `${chartTitles[currentShareType]} - Македонска Музичка Мастер Листа`
+                        title: getChartTitle(currentShareType),
+                        text: `${getChartTitle(currentShareType)} — toplista.mk`
                     });
                 } else {
                     // Fallback to just sharing URL/text
                     await navigator.share({
-                        title: chartTitles[currentShareType],
-                        text: `${chartTitles[currentShareType]} - Македонска Музичка Мастер Листа`,
+                        title: getChartTitle(currentShareType),
+                        text: `${getChartTitle(currentShareType)} — toplista.mk`,
                         url: window.location.href
                     });
                 }
@@ -2519,7 +2541,7 @@
             const url = URL.createObjectURL(currentShareBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `mmm-${currentShareType}-chart.png`;
+            a.download = `toplista-mk-${currentShareType}.png`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -2546,6 +2568,28 @@
             } catch (err) {
                 console.error('Copy failed:', err);
                 alert('Не може да се копира. Пробајте да преземете.');
+            }
+        }
+        
+        // Save image optimized for Instagram sharing (mobile: triggers native share; desktop: downloads)
+        async function saveForInstagram() {
+            if (!currentShareBlob) return;
+            
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const file = new File([currentShareBlob], `toplista-mk-${currentShareType}.png`, { type: 'image/png' });
+            
+            if (isMobile && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file] });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        // Fallback to download
+                        downloadShareImage();
+                    }
+                }
+            } else {
+                // Desktop or no share API - download the file
+                downloadShareImage();
             }
         }
         
