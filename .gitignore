@@ -1,0 +1,11 @@
+# Update script state
+.last-run-state.json
+
+# Credentials
+spotify-credentials.json
+
+# Runtime backups
+bands.json.backup
+
+# Node
+node_modules/

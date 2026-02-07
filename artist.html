@@ -308,24 +308,36 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            color: #fff;
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.8rem;
-            margin-bottom: 1.5rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             padding: 0.4rem 0.85rem;
             border-radius: 20px;
             font-weight: 500;
-            z-index: 10;
-            position: relative;
+            z-index: 100;
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .back-link:hover {
-            background: rgba(0,0,0,0.65);
-            color: #fff;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .back-link {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .back-link:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
         
         /* Branding footer */
@@ -1140,8 +1152,7 @@ a.chart-history-item {
             patreon: { name: 'Patreon', icon: 'fab fa-patreon', priority: 19 },
             linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin', priority: 20 },
             twitch: { name: 'Twitch', icon: 'fab fa-twitch', priority: 21 },
-            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 22 },
-            wikipedia: { name: 'Wikipedia', icon: 'fab fa-wikipedia-w', priority: 23 }
+            wikipedia: { name: 'Wikipedia', icon: 'fab fa-wikipedia-w', priority: 22 }
         };
         
         const mediaPlatforms = {
@@ -2208,6 +2219,8 @@ a.chart-history-item {
         
         // Main initialization
         // ==================== RSS FEED LOADING & MATCHING ====================
+        const RSS_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/rss-proxy';
+        
         async function loadRssFeeds() {
             try {
                 const feedsResp = await fetch('rss-feeds.json');
@@ -2216,7 +2229,9 @@ a.chart-history-item {
                 
                 const feedPromises = feeds.map(async (feed) => {
                     try {
-                        const resp = await fetch(feed.feedUrl);
+                        const proxyUrl = `${RSS_PROXY}?url=${encodeURIComponent(feed.feedUrl)}`;
+                        const resp = await fetch(proxyUrl);
+                        if (!resp.ok) throw new Error(`Proxy returned ${resp.status}`);
                         const text = await resp.text();
                         const parser = new DOMParser();
                         const xml = parser.parseFromString(text, 'text/xml');
@@ -2255,27 +2270,30 @@ a.chart-history-item {
             }
         }
         
-        function findMatchingArticles(articles, bandName, lastfmName) {
+        function findMatchingArticles(articles, bandName) {
             if (!articles || articles.length === 0 || !bandName) return [];
             
-            const searchTerms = new Set();
-            const nameLower = bandName.toLowerCase().trim();
-            if (nameLower.length >= 2) searchTerms.add(nameLower);
-            
-            const latinName = transliterate(bandName).toLowerCase().trim();
-            if (latinName.length >= 2 && latinName !== nameLower) searchTerms.add(latinName);
-            
-            if (lastfmName) {
-                const lfmLower = lastfmName.toLowerCase().trim();
-                if (lfmLower.length >= 2) searchTerms.add(lfmLower);
+            // Capitalize helper: first letter uppercase unless starts with digit
+            function capitalize(s) {
+                if (!s || /^\d/.test(s)) return s;
+                return s.charAt(0).toUpperCase() + s.slice(1);
             }
+            
+            const searchTerms = new Set();
+            const name = bandName.trim();
+            if (name.length >= 3) searchTerms.add(capitalize(name));
+            
+            const latinName = transliterate(bandName).trim();
+            if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
             
             if (searchTerms.size === 0) return [];
             
-            const boundaryChars = '[\\s,;:.!?\\-\u2013\u2014\\/\\(\\)\\[\\]"\'\\|\u00ab\u00bb\u201e\u201c\\u2018\\u2019\\u201c\\u201d]';
+            // Word boundaries: start/end of string, whitespace, or common punctuation.
+            // Case-sensitive matching with exact word boundaries.
+            const B = '[\\s,;:.!?\\-\u2013\u2014\\/\\(\\)\\[\\]"\'\\|\u00ab\u00bb\u201e\u201c\\u2018\\u2019\\u201c\\u201d]';
             const termRegexes = [...searchTerms].map(term => {
                 const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                return new RegExp('(?:^|' + boundaryChars + ')' + escaped + '(?:$|' + boundaryChars + ')', 'i');
+                return new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
             });
             
             return articles.filter(article => {
@@ -2403,7 +2421,7 @@ a.chart-history-item {
                 // Load and render RSS media articles
                 try {
                     const allArticles = await rssLoadPromise;
-                    const matched = findMatchingArticles(allArticles, artist.name, artist.lastfmName);
+                    const matched = findMatchingArticles(allArticles, artist.name);
                     if (matched.length > 0) {
                         const linksContainer = document.querySelector('.artist-links');
                         if (linksContainer) {

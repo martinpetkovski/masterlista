@@ -539,6 +539,9 @@
                 scrollbar-width: none;
                 -ms-overflow-style: none;
                 flex-shrink: 0;
+                -webkit-overflow-scrolling: touch;
+                -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+                mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
             }
             
             .chart-filter-bar::-webkit-scrollbar {
@@ -546,31 +549,43 @@
             }
             
             .chart-filter-content {
-                gap: 0.4rem;
+                gap: 0.5rem;
                 flex-wrap: nowrap;
                 padding-right: 0.5rem;
                 min-width: max-content;
             }
             
             .filter-group {
-                gap: 0.2rem;
+                gap: 0.25rem;
                 flex-shrink: 0;
+                padding-right: 0.5rem;
+                border-right: 1px solid var(--border-color);
+            }
+
+            .filter-group:last-of-type {
+                border-right: none;
+                padding-right: 0;
             }
             
             .filter-label {
-                font-size: 0.5rem;
-                display: none; /* Hide labels on mobile to save space */
-            }
-            
-            .filter-btn {
-                padding: 0.28rem 0.45rem;
-                font-size: 0.58rem;
-                border-radius: 12px;
+                font-size: 0.55rem;
+                display: block;
+                margin-right: 0.15rem;
                 white-space: nowrap;
             }
             
+            .filter-btn {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.65rem;
+                border-radius: 14px;
+                white-space: nowrap;
+                min-height: 30px;
+            }
+            
             .reset-btn {
-                padding: 0.28rem 0.4rem;
+                padding: 0.3rem 0.55rem;
+                border-radius: 14px;
+                min-height: 30px;
             }
             
             .reset-btn i {
@@ -3775,14 +3790,14 @@
                 {
                     element: '.view-mode-toggle',
                     title: 'Компактен приказ',
-                    description: 'Менувајте помеѓу компактен и проширен приказ. На мобилни уреди стандардно е компактен.',
+                    description: 'Менувајте помеѓу компактен и проширен приказ. На мобилни стандардно е компактен.',
                     position: 'bottom',
                     mobilePosition: 'bottom'
                 },
                 {
                     element: '.site-nav-trigger',
                     title: 'Навигација',
-                    description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести.',
+                    description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести. Секоја страница има своја тура.',
                     position: 'bottom',
                     mobilePosition: 'bottom'
                 }

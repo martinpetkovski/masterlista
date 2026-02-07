@@ -22,5 +22,65 @@
         "feedUrl": "https://www.mktickets.mk/feed/",
         "iconUrl": "https://www.google.com/s2/favicons?domain=mktickets.mk&sz=32",
         "siteUrl": "https://www.mktickets.mk/"
+    },
+    {
+        "name": "Слободен Печат",
+        "feedUrl": "https://slobodenpecat.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=slobodenpecat.mk&sz=32",
+        "siteUrl": "https://slobodenpecat.mk/"
+    },
+    {
+        "name": "Нова Македонија",
+        "feedUrl": "https://novamakedonija.com.mk/feed/", 
+        "iconUrl": "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk&sz=32",
+        "siteUrl": "https://novamakedonija.com.mk/"
+    },
+    {
+        "name": "А1он",
+        "feedUrl": "https://a1on.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=a1on.mk&sz=32",
+        "siteUrl": "https://a1on.mk/"
+    },
+    {
+        "name": "Мета.мк",
+        "feedUrl": "https://meta.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=meta.mk&sz=32",
+        "siteUrl": "https://meta.mk/"
+    },
+    {
+        "name": "МКД.МК",
+        "feedUrl": "https://mkd.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=mkd.mk&sz=32",
+        "siteUrl": "https://mkd.mk/"
+    },
+    {
+        "name": "Либертас",
+        "feedUrl": "https://libertas.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=libertas.mk&sz=32",
+        "siteUrl": "https://libertas.mk/"
+    },
+    {
+        "name": "360 Степени",
+        "feedUrl": "https://360stepeni.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=360stepeni.mk&sz=32",
+        "siteUrl": "https://360stepeni.mk/"
+    },
+    {
+        "name": "Радио МОФ",
+        "feedUrl": "https://www.radiomof.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=radiomof.mk&sz=32",
+        "siteUrl": "https://www.radiomof.mk/"
+    },
+    {
+        "name": "Фокус",
+        "feedUrl": "https://fokus.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=fokus.mk&sz=32",
+        "siteUrl": "https://fokus.mk/"
+    },
+    {
+        "name": "Нетпрес",
+        "feedUrl": "https://netpress.com.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=netpress.com.mk&sz=32",
+        "siteUrl": "https://netpress.com.mk/"
     }
 ]
