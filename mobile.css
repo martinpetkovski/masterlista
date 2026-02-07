@@ -535,7 +535,7 @@ td[data-label="Име"] {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-primary);
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -545,10 +545,25 @@ td[data-label="Име"] {
 td[data-label="Линкови"] {
     flex-shrink: 0;
     flex: 0 0 auto;
+    max-width: 100px;
     display: flex;
-    gap: 0.3rem;
     align-items: center;
     white-space: nowrap;
+}
+
+td[data-label="Линкови"] .cell-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.3rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
+}
+td[data-label="Линкови"] .cell-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 /* Hide Медиуми column on mobile - content merged into Линкови via JS */
@@ -648,43 +663,6 @@ td[data-label="Статус"] > span.status-content {
 
 .sounds-like-item { background: var(--accent-blue); }
 .city-item { background: var(--accent-teal); }
-
-/* Hidden items - collapsed by default (higher specificity) */
-.genre-item.hidden-item,
-.sounds-like-item.hidden-item,
-.city-item.hidden-item {
-    display: none !important;
-}
-
-/* Expand button */
-.expand-items-btn {
-    background: var(--text-muted);
-    color: #fff;
-    padding: 0.15rem 0.35rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    height: 24px;
-    border-radius: 3px;
-    margin-left: 2px;
-}
-
-.expand-items-btn:active {
-    transform: scale(0.95);
-}
-
-/* When expanded, show all items and hide button */
-.items-expanded .genre-item.hidden-item,
-.items-expanded .sounds-like-item.hidden-item,
-.items-expanded .city-item.hidden-item {
-    display: inline-flex !important;
-}
-
-.items-expanded .expand-items-btn {
-    display: none;
-}
 
 .band-label {
     background: var(--accent-red);

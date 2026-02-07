@@ -293,58 +293,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return `/${slug}`;
     }
 
-    // ==================== RSS FEED LOADING & MATCHING ====================
+    // ==================== ARTICLE LOADING & MATCHING ====================
     
     /**
-     * Load RSS feeds configuration and fetch all articles.
+     * Load articles from the pre-built articles.json archive.
      * Results are cached in cachedRssArticles.
      */
     async function loadRssFeeds() {
         if (cachedRssArticles !== null) return cachedRssArticles;
         try {
-            const feedsResp = await fetch('rss-feeds.json');
-            rssFeedsConfig = await feedsResp.json();
-            
-            const allArticles = [];
-            
-            const feedPromises = rssFeedsConfig.map(async (feed) => {
-                try {
-                    const resp = await fetch(feed.feedUrl);
-                    const text = await resp.text();
-                    const parser = new DOMParser();
-                    const xml = parser.parseFromString(text, 'text/xml');
-                    const items = xml.querySelectorAll('item');
-                    
-                    items.forEach(item => {
-                        const title = item.querySelector('title')?.textContent || '';
-                        const link = item.querySelector('link')?.textContent || '';
-                        const description = item.querySelector('description')?.textContent || '';
-                        const content = item.querySelector('content\\:encoded, encoded')?.textContent || '';
-                        const pubDateStr = item.querySelector('pubDate')?.textContent || '';
-                        const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
-                        
-                        allArticles.push({
-                            title,
-                            link,
-                            description: description.replace(/<[^>]*>/g, '').trim(),
-                            content: content.replace(/<[^>]*>/g, '').trim(),
-                            pubDate,
-                            source: feed.name,
-                            sourceIcon: feed.iconUrl,
-                            siteUrl: feed.siteUrl
-                        });
-                    });
-                } catch (err) {
-                    console.warn(`Failed to fetch RSS feed ${feed.name}:`, err);
-                }
-            });
-            
-            await Promise.all(feedPromises);
+            const resp = await fetch('articles.json');
+            if (!resp.ok) throw new Error(`Failed to load articles.json: ${resp.status}`);
+            const archive = await resp.json();
+            const allArticles = (archive.articles || []).map(a => ({
+                title: a.title || '',
+                link: a.link || '',
+                description: a.description || '',
+                content: '',
+                pubDate: a.date ? new Date(a.date) : new Date(0),
+                source: a.source || '',
+                sourceIcon: a.iconUrl || '',
+                siteUrl: a.siteUrl || ''
+            }));
             allArticles.sort((a, b) => b.pubDate - a.pubDate);
             cachedRssArticles = allArticles;
             return allArticles;
         } catch (err) {
-            console.warn('Failed to load RSS feeds:', err);
+            console.warn('Failed to load articles:', err);
             cachedRssArticles = [];
             return [];
         }
@@ -356,32 +331,34 @@ document.addEventListener('DOMContentLoaded', () => {
      * against article titles and content (case-insensitive).
      * Returns matches sorted by date (latest first).
      */
-    function findMatchingArticles(bandName, lastfmName) {
+    function findMatchingArticles(bandName) {
         if (!cachedRssArticles || cachedRssArticles.length === 0) return [];
         if (!bandName) return [];
         
-        // Build search terms: original name + Latin transliteration + lastfmName
-        const searchTerms = new Set();
-        const nameLower = bandName.toLowerCase().trim();
-        if (nameLower.length >= 2) searchTerms.add(nameLower);
-        
-        const latinName = transliterateCyrillicToLatin(bandName).toLowerCase().trim();
-        if (latinName.length >= 2 && latinName !== nameLower) searchTerms.add(latinName);
-        
-        if (lastfmName) {
-            const lfmLower = lastfmName.toLowerCase().trim();
-            if (lfmLower.length >= 2) searchTerms.add(lfmLower);
+        // Capitalize helper: first letter uppercase unless starts with digit
+        function capitalize(s) {
+            if (!s || /^\d/.test(s)) return s;
+            return s.charAt(0).toUpperCase() + s.slice(1);
         }
+        
+        // Build search terms with proper casing (first letter uppercase).
+        // Matching is case-sensitive and requires exact word boundaries to avoid
+        // false positives like "визија" matching common text or "Јулијан" matching "Јулија".
+        const searchTerms = new Set();
+        const name = bandName.trim();
+        if (name.length >= 3) searchTerms.add(capitalize(name));
+        
+        const latinName = transliterateCyrillicToLatin(bandName).trim();
+        if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
         
         if (searchTerms.size === 0) return [];
         
-        // Use word-boundary matching to avoid false positives with common-word names
-        // (e.g. "aTa" must not match "data" or "kata")
-        // We define boundaries as: start/end of string, whitespace, or common punctuation
-        const boundaryChars = '[\\s,;:.!?\\-–—\\/\\(\\)\\[\\]"\'\\|«»„"\\u2018\\u2019\\u201c\\u201d]';
+        // Word boundaries: start/end of string, whitespace, or common punctuation.
+        // Case-sensitive matching with exact word boundaries.
+        const B = '[\\s,;:.!?\\-–—\\/\\(\\)\\[\\]"\'\\|«»„"\\u2018\\u2019\\u201c\\u201d]';
         const termRegexes = [...searchTerms].map(term => {
             const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return new RegExp('(?:^|' + boundaryChars + ')' + escaped + '(?:$|' + boundaryChars + ')', 'i');
+            return new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
         });
         
         return cachedRssArticles.filter(article => {
@@ -617,23 +594,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function generateCityColor(city) {
         const asciiSum = city.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+        // Saturated, clearly distinct colors for each city
         const colorPalette = [
-            { start: '#4a2c6d', end: '#2a4d8f' },
-            { start: '#5e35b1', end: '#3949ab' },
-            { start: '#6b3e99', end: '#8e4ec6' },
-            { start: '#0288d1', end: '#03a9f4' },
-            { start: '#2e7d32', end: '#4caf50' },
-            { start: '#d32f2f', end: '#f44336' },
-            { start: '#f57c00', end: '#ff9800' },
-            { start: '#00695c', end: '#26a69a' },
-            { start: '#0277bd', end: '#4fc3f7' },
-            { start: '#b71c1c', end: '#d81b60' },
-            { start: '#ff5722', end: '#ff8a65' },
-            { start: '#00838f', end: '#4dd0e1' }
+            '#0e8a7d',  // teal
+            '#7c3aed',  // vivid purple
+            '#16803c',  // forest green
+            '#b45309',  // amber
+            '#2563eb',  // bright blue
+            '#be185d',  // deep pink
+            '#0d9488',  // cyan-teal
+            '#7e22ce',  // grape purple  
+            '#4d7c0f',  // lime green
+            '#c2410c',  // burnt orange
+            '#0369a1',  // ocean blue
+            '#9f1239',  // crimson
         ];
         const paletteIndex = asciiSum % colorPalette.length;
-        const selectedGradient = colorPalette[paletteIndex];
-        return `linear-gradient(135deg, ${selectedGradient.start} 0%, ${selectedGradient.end} 100%)`;
+        return colorPalette[paletteIndex];
     }
 
     // Initialize scroll shadows for scrollable containers
@@ -699,6 +676,68 @@ document.addEventListener('DOMContentLoaded', () => {
             observer.observe(releaseContainer, { childList: true, subtree: true });
         }
     }
+
+    // Enable horizontal drag-to-scroll and wheel-to-scroll on .cell-scroll elements
+    function initCellScrollDrag() {
+        // Update fade mask based on scroll position
+        function updateFadeMask(el) {
+            if (el.scrollWidth <= el.clientWidth) {
+                el.style.webkitMaskImage = 'none';
+                el.style.maskImage = 'none';
+                return;
+            }
+            const atStart = el.scrollLeft < 2;
+            const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2;
+            if (atStart && !atEnd) {
+                el.style.webkitMaskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
+                el.style.maskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
+            } else if (!atStart && atEnd) {
+                el.style.webkitMaskImage = 'linear-gradient(to left, black calc(100% - 18px), transparent 100%)';
+                el.style.maskImage = 'linear-gradient(to left, black calc(100% - 18px), transparent 100%)';
+            } else if (!atStart && !atEnd) {
+                el.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%)';
+                el.style.maskImage = 'linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%)';
+            } else {
+                el.style.webkitMaskImage = 'none';
+                el.style.maskImage = 'none';
+            }
+        }
+
+        // Attach scroll listener to dynamically update masks
+        document.addEventListener('scroll', (e) => {
+            const scrollEl = e.target.closest ? e.target.closest('.cell-scroll') : null;
+            if (scrollEl) updateFadeMask(scrollEl);
+        }, true);
+
+        document.addEventListener('mousedown', (e) => {
+            const scrollEl = e.target.closest('.cell-scroll');
+            if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
+            scrollEl.style.cursor = 'grabbing';
+            const startX = e.pageX;
+            const startScrollLeft = scrollEl.scrollLeft;
+            const onMove = (ev) => {
+                ev.preventDefault();
+                scrollEl.scrollLeft = startScrollLeft - (ev.pageX - startX);
+                updateFadeMask(scrollEl);
+            };
+            const onUp = () => {
+                scrollEl.style.cursor = 'grab';
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            };
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+        // Wheel-to-scroll: convert vertical wheel into horizontal scroll on .cell-scroll
+        document.addEventListener('wheel', (e) => {
+            const scrollEl = e.target.closest('.cell-scroll');
+            if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
+            e.preventDefault();
+            scrollEl.scrollLeft += e.deltaY;
+            updateFadeMask(scrollEl);
+        }, { passive: false });
+    }
+    initCellScrollDrag();
 
     function validateEmail(email) {
         if (!email) return true;
@@ -1086,7 +1125,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         soundsLike: band.soundsLike || 'недостигаат податоци',
                         links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
                         contact: band.contact || 'недостигаат податоци',
-                        lastfmName: band.lastfmName || null,
                         label,
                         accentColors: band.accentColors || null,
                         confirmed: band.confirmed || false
@@ -1107,7 +1145,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         soundsLike: band.soundsLike || 'недостигаат податоци',
                         links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
                         contact: band.contact || 'недостигаат податоци',
-                        lastfmName: band.lastfmName || null,
                         label,
                         accentColors: band.accentColors || null,
                         confirmed: band.confirmed || false
@@ -1209,7 +1246,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'amazon_music', name: 'Amazon Music', icon: 'fa-brands fa-amazon' },
         { id: 'napster', name: 'Napster', icon: 'fa-brands fa-napster' },
         { id: 'audiomack', name: 'Audiomack', icon: 'fa-solid fa-headphones' },
-        { id: 'lastfm', name: 'Last.fm', icon: 'fa-brands fa-lastfm' },
         { id: 'wikipedia', name: 'Wikipedia', icon: 'fa-brands fa-wikipedia-w' },
         { id: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok' },
         { id: 'linkedin', name: 'LinkedIn', icon: 'fa-brands fa-linkedin' },
@@ -1609,7 +1645,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 genre: document.getElementById('band-genre').value.trim() || 'недостигаат податоци',
                 soundsLike: document.getElementById('band-sounds-like').value.trim() || 'недостигаат податоци',
                 label: document.getElementById('band-label').value.trim() || null,
-                lastfmName: document.getElementById('band-lastfm').value.trim() || null,
                 contact: contact || 'недостигаат податоци',
                 accentColors: (() => {
                     const c1 = document.getElementById('band-accent-color-1').value.trim();
@@ -1750,7 +1785,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('band-genre').value = band.genre !== 'недостигаат податоци' ? band.genre : '';
                 document.getElementById('band-sounds-like').value = band.soundsLike !== 'недостигаат податоци' ? band.soundsLike : '';
                 document.getElementById('band-label').value = band.label !== 'недостигаат податоци' ? band.label : '';
-                document.getElementById('band-lastfm').value = band.lastfmName || '';
                 document.getElementById('band-contact').value = band.contact !== 'недостигаат податоци' ? band.contact : '';
                 document.getElementById('band-accent-color-1').value = (band.accentColors && band.accentColors[0]) || '';
                 document.getElementById('band-accent-color-2').value = (band.accentColors && band.accentColors[1]) || '';
@@ -1842,7 +1876,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         soundsLike: band.soundsLike,
                         links: band.links,
                         contact: band.contact,
-                        lastfmName: band.lastfmName,
                         label: band.label,
                         accentColors: band.accentColors || null,
                         confirmed: band.confirmed || false
@@ -1938,7 +1971,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         soundsLike: band.soundsLike,
                         links: band.links,
                         contact: band.contact,
-                        lastfmName: band.lastfmName,
                         label: band.label,
                         accentColors: band.accentColors || null,
                         confirmed: band.confirmed || false
@@ -2410,9 +2442,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 bandRow.style.setProperty('--accent-text', textColor);
             }
             const linkPopularityOrder = [
-                'youtube', 'spotify', 'itunes', 'deezer', 'instagram',
-                'facebook', 'twitter', 'soundcloud', 'bandcamp', 'website', 'linktree',
-                'tiktok', 'linkedin', 'pinterest', 'twitch', 'vimeo', 'patreon', 'discord', 'wikipedia', 'generic',
+                'spotify', 'youtube', 'youtube_music', 'apple_music', 'itunes', 'amazon_music',
+                'deezer', 'tidal', 'soundcloud', 'bandcamp', 'napster', 'audiomack',
+                'tiktok', 'instagram', 'facebook', 'twitter',
+                'website', 'linktree', 'linkedin', 'discord', 'twitch', 'patreon',
+                'pinterest', 'vimeo', 'wikipedia', 'generic',
                 'review', 'interview', 'article'
             ];
             const reviewPlatforms = ['review', 'interview', 'article'];
@@ -2432,7 +2466,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 amazon_music: 'fa-brands fa-amazon',
                 napster: 'fa-brands fa-napster',
                 audiomack: 'fa-solid fa-headphones',
-                lastfm: 'fa-brands fa-lastfm',
                 wikipedia: 'fa-brands fa-wikipedia-w',
                 tiktok: 'fa-brands fa-tiktok',
                 linkedin: 'fa-brands fa-linkedin',
@@ -2455,7 +2488,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (band.links.none === 'недостигаат податоци' && band.contact === 'недостигаат податоци') {
                 linksHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
                 // Even with no links, check for RSS matches
-                const matchedArticles = findMatchingArticles(band.name, band.lastfmName);
+                const matchedArticles = findMatchingArticles(band.name);
                 if (matchedArticles.length > 0) {
                     reviewsHtml = matchedArticles
                         .map(article => {
@@ -2509,7 +2542,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 // Add RSS-matched articles to media column
-                const matchedArticles = findMatchingArticles(band.name, band.lastfmName);
+                const matchedArticles = findMatchingArticles(band.name);
                 let rssHtml = '';
                 if (matchedArticles.length > 0) {
                     rssHtml = matchedArticles
@@ -2524,31 +2557,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             let cityHtml = band.city === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : (() => {
-                    const items = band.city.split(',').map(c => c.trim());
-                    const visibleItems = items.slice(0, 2).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
-                    const hiddenItems = items.slice(2).map(c => `<span class="city-item hidden-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
-                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
-                    return visibleItems + hiddenItems + expandBtn;
-                })();
+                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
             let genreHtml = band.genre === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : (() => {
-                    const items = band.genre.split(',').map(g => g.trim());
-                    const visibleItems = items.slice(0, 2).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
-                    const hiddenItems = items.slice(2).map(g => `<span class="genre-item hidden-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
-                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
-                    return visibleItems + hiddenItems + expandBtn;
-                })();
+                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
             let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : (() => {
-                    const items = band.soundsLike.split(',').map(s => s.trim());
-                    const visibleItems = items.slice(0, 2).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
-                    const hiddenItems = items.slice(2).map(s => `<span class="sounds-like-item hidden-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
-                    const expandBtn = items.length > 2 ? `<span class="expand-items-btn" data-count="+${items.length - 2}">+${items.length - 2}</span>` : '';
-                    return visibleItems + hiddenItems + expandBtn;
-                })();
+                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
             
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
@@ -2579,11 +2594,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             bandRow.innerHTML = `
                 <td data-label="Име" class="name">${nameHtml}</td>
-                <td data-label="Град">${cityHtml}</td>
-                <td data-label="Жанр">${genreHtml}</td>
-                <td data-label="Звучи како">${soundsLikeHtml}</td>
-                <td data-label="Линкови" class="links">${combinedLinksHtml}</td>
-                <td data-label="Медиуми" class="links reviews">${reviewsHtml}</td>
+                <td data-label="Град"><div class="cell-scroll">${cityHtml}</div></td>
+                <td data-label="Жанр"><div class="cell-scroll">${genreHtml}</div></td>
+                <td data-label="Звучи како"><div class="cell-scroll">${soundsLikeHtml}</div></td>
+                <td data-label="Линкови" class="links"><div class="cell-scroll">${combinedLinksHtml}</div></td>
+                <td data-label="Медиуми" class="links reviews"><div class="cell-scroll">${reviewsHtml}</div></td>
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
@@ -2637,16 +2652,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.querySelector('.controls').style.display = 'flex';
                 });
             });
-            // Expand button click handler for collapsed items
-            bandRow.querySelectorAll('.expand-items-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const td = btn.closest('td');
-                    if (td) {
-                        td.classList.toggle('items-expanded');
-                    }
-                });
-            });
             const editBtn = bandRow.querySelector('.edit-btn');
             editBtn.addEventListener('click', () => {
                 const idx = parseInt(editBtn.dataset.index);
@@ -2660,6 +2665,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             bandTableBody.appendChild(bandRow);
+
+            // Initialize fade masks for scrollable cells
+            bandRow.querySelectorAll('.cell-scroll').forEach(el => {
+                if (el.scrollWidth > el.clientWidth) {
+                    el.style.webkitMaskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
+                    el.style.maskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
+                } else {
+                    el.style.webkitMaskImage = 'none';
+                    el.style.maskImage = 'none';
+                }
+            });
     }
     
     // ==================== INLINE MUSIC PLAYER ====================
@@ -3107,7 +3123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: 'table thead',
             title: 'Листа на артисти',
-            description: 'Еве ги сите артисти. Секој ред има име, град, жанр, и линкови до профилите.',
+            description: 'Еве ги сите артисти. Секој ред има име, град, жанр, и линкови до профилите. Колоните со повеќе содржина може да ги лизгаш хоризонтално со повлекување или со тркалцето на глувчето.',
             position: 'bottom'
         },
         {
@@ -3179,7 +3195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: '.site-nav-trigger',
             title: 'Навигација',
-            description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести.',
+            description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести. Секоја страница има своја тура - кликни на <i class="fas fa-globe"></i> копчето за да ја видиш.',
             position: 'bottom',
             beforeShow: () => {
                 document.getElementById('custom-dialog-modal').style.display = 'none';
