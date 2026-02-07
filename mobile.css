@@ -10,7 +10,7 @@
     --border-color: #dfe1e5;
     --accent-blue: #4a7fa5;
     --accent-green: #22c55e;
-    --accent-orange: #f97316;
+    --accent-orange: #4a7fa5;
     --accent-red: #ef4444;
     --accent-purple: #7b6e9e;
     --accent-pink: #a86078;
@@ -32,7 +32,8 @@ body {
     overflow: hidden;
 }
 
-body.guide-page { overflow: auto; }
+body.guide-page { overflow: auto; height: auto; min-height: 100vh; overflow-x: hidden; }
+body.vesti-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; }
 
 /* Header */
 header {
@@ -118,6 +119,10 @@ header h1, header p { display: none; }
     align-items: center;
 }
 
+.header-info {
+    display: none;
+}
+
 /* Icon-only Buttons with uniform sizing */
 .header-btn {
     font-size: 0;
@@ -199,6 +204,7 @@ main {
 }
 
 body.guide-page main { padding: 0.4rem; height: auto; overflow: auto; }
+body.vesti-page main { height: auto; overflow: visible; padding: 0; }
 
 /* Meta strip (ex-footer info) */
 .meta-strip {
@@ -532,8 +538,8 @@ td[data-label="Акции"] button.delete-btn {
 
 td[data-label="Име"] {
     font-family: 'Montserrat', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-primary);
     flex: 1 1 0;
     min-width: 0;
@@ -1637,7 +1643,7 @@ body.dark-mode {
     --border-color: #2a2e36;
     --accent-blue: #5a8ab5;
     --accent-green: #22c55e;
-    --accent-orange: #f97316;
+    --accent-orange: #4a7fa5;
     --accent-red: #ef4444;
     --accent-purple: #8a7db5;
     --accent-teal: #5a9e92;
@@ -1831,11 +1837,12 @@ body.dark-mode .dark-mode-toggle {
 
 .site-nav-menu a.active {
     font-weight: 600;
-    color: var(--accent-blue, #4a7fa5);
+    color: #fff;
+    background: var(--accent-blue, #4a7fa5);
 }
 
 .site-nav-menu a.active i {
-    color: var(--accent-blue, #4a7fa5);
+    color: #fff;
 }
 
 .media-news-icon {
@@ -1843,4 +1850,52 @@ body.dark-mode .dark-mode-toggle {
     height: 14px;
     border-radius: 2px;
     vertical-align: middle;
+}
+
+/* ==================== SITE FOOTER ==================== */
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+}
+
+.site-footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font-size: 0.5rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+
+.site-footer-content .separator {
+    color: var(--border-color);
+}
+
+.site-footer-content a {
+    color: var(--text-muted);
+    text-decoration: underline;
+}
+
+body.dark-mode .site-footer {
+    background: #15181e;
+    border-top-color: #2a2e36;
+}
+
+body.dark-mode .site-footer-content {
+    color: #6b7280;
+}
+
+body.dark-mode .site-footer-content a {
+    color: #6b7280;
+}
+
+body.guide-page .site-footer {
+    position: static;
 }

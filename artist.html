@@ -303,43 +303,6 @@
         body.dark-mode .artist-link.wikipedia i { color: #fff; }
         .artist-link.email i { color: #EA4335; }
         
-        /* Back link */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.75rem;
-            transition: all 0.2s ease;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            padding: 0.4rem 0.85rem;
-            border-radius: 20px;
-            font-weight: 500;
-            z-index: 100;
-            position: fixed;
-            top: 0.75rem;
-            left: 0.75rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .back-link:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-
-        body.dark-mode .back-link {
-            background: var(--bg-secondary);
-            border-color: var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        body.dark-mode .back-link:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        
         /* Branding footer */
         .artist-footer {
             text-align: center;
@@ -978,12 +941,29 @@ a.chart-history-item {
     </style>
 </head>
 <body class="artist-page">
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                </div>
+                <div class="title-group">
+                    <h1 id="artist-page-title">Артист</h1>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
     <div class="artist-container">
-        <a href="list.html" class="back-link">
-            <i class="fas fa-arrow-left"></i>
-            Назад кон листата
-        </a>
-        
         <div id="artist-content">
             <div class="artist-loading">
                 <i class="fas fa-spinner fa-spin"></i>
@@ -994,13 +974,41 @@ a.chart-history-item {
     
     <script>
         // Dark mode initialization
-        function initDarkMode() {
-            const savedMode = localStorage.getItem('mmm-dark-mode');
-            if (savedMode === 'true') {
-                document.body.classList.add('dark-mode');
+        (function() {
+            const toggle = document.getElementById('dark-mode-toggle');
+            const body = document.body;
+            const icon = toggle ? toggle.querySelector('i') : null;
+
+            function setDarkMode(enabled) {
+                body.classList.toggle('dark-mode', enabled);
+                if (icon) icon.className = enabled ? 'fas fa-sun' : 'fas fa-moon';
+                localStorage.setItem('mmm-dark-mode', enabled ? 'true' : 'false');
+                localStorage.setItem('darkMode', enabled ? 'true' : 'false');
             }
-        }
-        initDarkMode();
+
+            const saved = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
+            if (saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                setDarkMode(true);
+            }
+            if (toggle) toggle.addEventListener('click', () => setDarkMode(!body.classList.contains('dark-mode')));
+        })();
+
+        // Nav menu
+        (function() {
+            const trigger = document.querySelector('.site-nav-trigger');
+            const menu = document.getElementById('site-nav-menu');
+            if (!trigger || !menu) return;
+            trigger.addEventListener('click', (e) => {
+                if (window.innerWidth <= 600) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !trigger.contains(e.target)) menu.classList.remove('open');
+            });
+        })();
         
         // Extract dominant colors from an image
         async function extractColorsFromImage(imageUrl) {
@@ -1421,8 +1429,7 @@ a.chart-history-item {
                 
                 <div class="artist-footer">
                     <a href="index.html">
-                        <img src="/logo.png" alt="MMM" class="mmm-logo-svg" width="22" height="22">
-                        Македонска Музичка Мастер Листа
+                        <img src="/logo.png" alt="Македонска Музичка Мастер Листа" class="mmm-logo-svg" width="28" height="28">
                     </a>
                 </div>
             `;

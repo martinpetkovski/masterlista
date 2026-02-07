@@ -48,7 +48,9 @@
         /* ==================== PAGE LAYOUT ==================== */
         body.vesti-page {
             height: auto;
-            overflow: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body.vesti-page main {
@@ -79,6 +81,27 @@
             color: var(--text-primary);
             margin: 0;
             letter-spacing: -0.01em;
+        }
+
+        .news-search {
+            flex: 0 1 220px;
+            padding: 0.4rem 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        .news-search:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .news-search::placeholder {
+            color: var(--text-muted);
         }
 
         .news-source-filters {
@@ -532,7 +555,7 @@
 
             .news-page-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
                 gap: 0.5rem;
                 margin-bottom: 1rem;
             }
@@ -541,14 +564,29 @@
                 font-size: 1rem;
             }
 
+            .news-search {
+                width: 100%;
+                padding: 0 0.75rem;
+                font-size: 0.8rem;
+                border-radius: 6px;
+                height: 32px;
+                max-height: 32px;
+                min-height: 32px;
+                line-height: 32px;
+                flex-shrink: 0;
+                flex-grow: 0;
+            }
+
             .news-source-filters {
                 justify-content: flex-start;
                 width: 100%;
+                padding-bottom: 0.25rem;
             }
 
             .news-source-filter {
-                padding: 0.25rem 0.5rem;
-                font-size: 0.65rem;
+                padding: 0.35rem 0.6rem;
+                font-size: 0.68rem;
+                min-height: 32px;
             }
 
             /* Hero stacks vertically on mobile */
@@ -657,13 +695,158 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* ==================== MOBILE WIDTH FIX ==================== */
+        @media (max-width: 600px) {
+            .news-container {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .news-card-image img,
+            .news-hero-image img {
+                max-width: 100%;
+            }
+
+            .news-hero-title,
+            .news-hero-desc,
+            .news-card-title,
+            .news-card-desc {
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .news-page-header {
+                max-width: 100%;
+                overflow: hidden;
+            }
+
+            .news-source-filters {
+                max-width: 100%;
+            }
+        }
+
+        /* ==================== COMPACT VIEW ==================== */
+        .header-btn.compact-active {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* Compact list container — table layout */
+        .news-compact-list {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .news-compact-list.visible {
+            display: table;
+        }
+
+        .news-compact-item {
+            display: table-row;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.12s ease;
+        }
+
+        .news-compact-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .news-compact-item > * {
+            display: table-cell;
+            vertical-align: middle;
+            padding: 0.45rem 0.35rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .news-compact-item:first-child > * {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .news-compact-date {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            text-align: right;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            padding-right: 0.5rem;
+        }
+
+        .news-compact-source-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+
+        .news-compact-icon-cell {
+            width: 1px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .news-compact-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.35;
+            max-width: 0;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .news-compact-item:hover .news-compact-title {
+            color: var(--accent-blue);
+        }
+
+        .news-compact-artists {
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .news-compact-artists .news-artist-tag {
+            font-size: 0.55rem;
+            padding: 0.08rem 0.3rem;
+        }
+
+        @media (max-width: 600px) {
+            .news-compact-item > * {
+                padding: 0.4rem 0.2rem;
+            }
+
+            .news-compact-date {
+                font-size: 0.58rem;
+            }
+
+            .news-compact-source-icon {
+                width: 14px;
+                height: 14px;
+            }
+
+            .news-compact-title {
+                font-size: 0.72rem;
+            }
+
+            .news-compact-artists {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="compact vesti-page">
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="javascript:void(0)" class="site-logo-link site-nav-trigger" title="Мени">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
@@ -673,12 +856,17 @@
                 </div>
                 <div class="title-group">
                     <h1>Музички Вести</h1>
-                    <div class="subtitle-stats">
-                        <span>напојувано од <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a></span>
-                    </div>
                 </div>
             </div>
             <div class="header-buttons">
+                <span class="header-info">
+                    <span>Ажурирано <span id="articles-updated">...</span></span>
+                    <span class="separator">•</span>
+                    <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
+                </span>
+                <button id="compact-toggle" class="header-btn" title="Компактен приказ">
+                    <i class="fas fa-list"></i>
+                </button>
                 <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -689,6 +877,7 @@
         <div class="news-container">
             <div class="news-page-header">
                 <h2>Најнови Вести</h2>
+                <input type="text" id="news-search" class="news-search" placeholder="Пребарај вести...">
                 <div class="news-source-filters" id="news-source-filters"></div>
             </div>
             <div id="news-loading" class="news-loading">
@@ -698,12 +887,10 @@
             <div id="news-hero" style="display:none;"></div>
             <div class="news-section-label" id="news-section-label" style="display:none;">Последни Написи</div>
             <div id="news-grid" class="news-grid" style="display:none;"></div>
+            <div id="news-compact-list" class="news-compact-list"></div>
             <div id="news-empty" class="news-empty" style="display:none;">
                 <i class="fas fa-newspaper"></i>
                 <p>Нема вести за артисти од Мастер Листата во моментов.</p>
-            </div>
-            <div class="news-footer">
-                <span>напојувано од <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a></span>
             </div>
         </div>
     </main>
@@ -712,7 +899,7 @@
         function initDarkMode() {
             const toggle = document.getElementById('dark-mode-toggle');
             if (!toggle) return;
-            const savedMode = localStorage.getItem('mmm-dark-mode');
+            const savedMode = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
             if (savedMode === 'true') {
                 document.body.classList.add('dark-mode');
                 toggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -733,9 +920,12 @@
             if (!trigger || !menu) return;
             
             trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                menu.classList.toggle('open');
+                // Only toggle dropdown on mobile (<=600px); on desktop nav is always visible
+                if (window.innerWidth <= 600) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                }
             });
             
             document.addEventListener('click', (e) => {
@@ -813,6 +1003,19 @@
                 
                 if (!articlesResp.ok) throw new Error(`Failed to load articles.json: ${articlesResp.status}`);
                 const archive = await articlesResp.json();
+                
+                // Populate last-updated in header
+                const updatedEl = document.getElementById('articles-updated');
+                if (updatedEl && archive.lastUpdated) {
+                    const d = new Date(archive.lastUpdated);
+                    const ageMs = Date.now() - d.getTime();
+                    const hours = Math.floor(ageMs / (60 * 60 * 1000));
+                    const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
+                    if (hours >= 24) { updatedEl.textContent = `пред ${Math.floor(hours/24)}д`; }
+                    else if (hours > 0) { updatedEl.textContent = `пред ${hours}ч`; }
+                    else { updatedEl.textContent = `пред ${minutes}мин`; }
+                }
+                
                 const allArticles = (archive.articles || []).map(a => ({
                     ...a,
                     pubDate: a.date ? new Date(a.date) : new Date(0),
@@ -862,6 +1065,16 @@
                 } else {
                     renderNews(matchedArticles);
                 }
+                
+                // Wire up search
+                const searchInput = document.getElementById('news-search');
+                if (searchInput) {
+                    let searchTimeout;
+                    searchInput.addEventListener('input', () => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => renderNews(matchedArticles), 200);
+                    });
+                }
             } catch (err) {
                 console.error('Failed to load articles:', err);
                 document.getElementById('news-loading').innerHTML = '<div><i class="fas fa-exclamation-triangle"></i></div><div>Грешка при вчитување на вестите.</div>';
@@ -882,24 +1095,86 @@
             return date.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short', year: 'numeric' });
         }
         
+        let isCompactView = false;
+
+        function initCompactToggle() {
+            const btn = document.getElementById('compact-toggle');
+            if (!btn) return;
+            // Restore saved preference
+            const saved = localStorage.getItem('mmm-news-compact');
+            if (saved === 'true') {
+                isCompactView = true;
+                btn.classList.add('compact-active');
+                btn.innerHTML = '<i class="fas fa-th-large"></i>';
+            }
+            btn.addEventListener('click', () => {
+                isCompactView = !isCompactView;
+                localStorage.setItem('mmm-news-compact', isCompactView);
+                btn.classList.toggle('compact-active', isCompactView);
+                btn.innerHTML = isCompactView
+                    ? '<i class="fas fa-th-large"></i>'
+                    : '<i class="fas fa-list"></i>';
+                // Re-render with current articles
+                if (window._currentNewsArticles) renderNews(window._currentNewsArticles);
+            });
+        }
+        initCompactToggle();
+
         function renderNews(articles) {
+            window._currentNewsArticles = articles;
             const heroContainer = document.getElementById('news-hero');
             const gridContainer = document.getElementById('news-grid');
             const sectionLabel = document.getElementById('news-section-label');
+            const compactList = document.getElementById('news-compact-list');
             const activeFilters = Array.from(document.querySelectorAll('.news-source-filter.active'))
                 .map(btn => btn.dataset.source);
+            const searchQuery = (document.getElementById('news-search')?.value || '').trim().toLowerCase();
             
-            const filtered = articles.filter(a => activeFilters.includes(a.source));
+            let filtered = articles.filter(a => activeFilters.includes(a.source));
+            
+            if (searchQuery) {
+                filtered = filtered.filter(a => {
+                    const title = (a.title || '').toLowerCase();
+                    const desc = (a.description || '').toLowerCase();
+                    const source = (a.source || '').toLowerCase();
+                    const artists = (a.matchedArtists || []).join(' ').toLowerCase();
+                    return title.includes(searchQuery) || desc.includes(searchQuery) || source.includes(searchQuery) || artists.includes(searchQuery);
+                });
+            }
             
             if (filtered.length === 0) {
                 heroContainer.style.display = 'none';
                 gridContainer.style.display = 'none';
                 sectionLabel.style.display = 'none';
+                compactList.classList.remove('visible');
                 document.getElementById('news-empty').style.display = 'block';
                 return;
             }
             
             document.getElementById('news-empty').style.display = 'none';
+
+            // Compact view
+            if (isCompactView) {
+                heroContainer.style.display = 'none';
+                gridContainer.style.display = 'none';
+                sectionLabel.style.display = 'none';
+                compactList.classList.add('visible');
+                compactList.innerHTML = filtered.map(article => {
+                    const dateStr = article.pubDate.getTime() > 0 ? relativeTime(article.pubDate) : '';
+                    const artistTagsHtml = (article.matchedArtists || []).slice(0, 2)
+                        .map(a => `<span class="news-artist-tag"><i class="fas fa-guitar"></i> ${a}</span>`).join('');
+                    return `<a href="${article.link}" target="_blank" class="news-compact-item">
+                        <span class="news-compact-date">${dateStr}</span>
+                        <span class="news-compact-icon-cell"><img class="news-compact-source-icon" src="${article.sourceIcon}" alt="${article.source}"></span>
+                        <span class="news-compact-title">${article.title}</span>
+                        ${artistTagsHtml ? `<span class="news-compact-artists">${artistTagsHtml}</span>` : ''}
+                    </a>`;
+                }).join('');
+                return;
+            }
+
+            // Card/default view
+            compactList.classList.remove('visible');
             heroContainer.style.display = '';
             gridContainer.style.display = '';
             sectionLabel.style.display = filtered.length > 1 ? '' : 'none';

@@ -85,7 +85,7 @@
             --border-color: #2a2e36;
             --accent-blue: #5a8ab5;
             --accent-green: #22c55e;
-            --accent-orange: #f97316;
+            --accent-orange: #4a7fa5;
             --accent-red: #ef4444;
             --accent-purple: #8a7db5;
             --accent-teal: #5a9e92;
@@ -1883,7 +1883,7 @@
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="javascript:void(0)" class="site-logo-link site-nav-trigger" title="Мени">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
@@ -1893,13 +1893,20 @@
                 </div>
                 <div class="title-group">
                     <h1>Македонска Музичка Топ Листа</h1>
-                    <div class="subtitle-stats">
-                        <span>Ажурирано пред <span id="last-updated">...</span></span>
-                    </div>
                 </div>
             </div>
             <div class="header-buttons">
-                <button id="dark-mode-toggle" class="dark-mode-toggle" title="Темен/Светол режим">
+                <span class="header-info">
+                    <span>Ажурирано <span id="last-updated">...</span></span>
+                    <span class="separator">•</span>
+                    <span id="header-week"></span>
+                    <span class="separator">•</span>
+                    <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
+                </span>
+                <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
+                    <i class="fas fa-compress-alt"></i>
+                </button>
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
                 </button>
                 <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
@@ -1961,9 +1968,6 @@
                     <h2><i class="fas fa-music"></i> Синглови</h2>
                     <div class="chart-header-right">
                         <span class="period" id="singles-period"></span>
-                        <button class="view-mode-toggle" onclick="toggleViewMode('singles-section')" title="Компактен/Проширен приказ">
-                            <i class="fas fa-compress-alt"></i>
-                        </button>
                         <button class="share-btn" onclick="shareChart('singles')" title="Сподели">
                             <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
@@ -1987,9 +1991,6 @@
                     <h2><i class="fas fa-compact-disc"></i> Албуми</h2>
                     <div class="chart-header-right">
                         <span class="period" id="albums-period"></span>
-                        <button class="view-mode-toggle" onclick="toggleViewMode('albums-section')" title="Компактен/Проширен приказ">
-                            <i class="fas fa-compress-alt"></i>
-                        </button>
                         <button class="share-btn" onclick="shareChart('albums')" title="Сподели">
                             <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
@@ -2013,9 +2014,6 @@
                     <h2><i class="fas fa-clock"></i> Најнови</h2>
                     <div class="chart-header-right">
                         <span class="period" id="latest-period"></span>
-                        <button class="view-mode-toggle" onclick="toggleViewMode('latest-section')" title="Компактен/Проширен приказ">
-                            <i class="fas fa-compress-alt"></i>
-                        </button>
                         <button class="share-btn" onclick="shareChart('latest')" title="Сподели">
                             <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
@@ -2039,9 +2037,6 @@
                     <h2><i class="fas fa-users"></i> Топ Артисти</h2>
                     <div class="chart-header-right">
                         <span class="period" id="artists-period">сите времиња</span>
-                        <button class="view-mode-toggle" onclick="toggleViewMode('artists-section')" title="Компактен/Проширен приказ">
-                            <i class="fas fa-compress-alt"></i>
-                        </button>
                         <button class="share-btn" onclick="shareChart('artists')" title="Сподели">
                             <i class="fas fa-share-alt"></i> <span>Сподели</span>
                         </button>
@@ -2095,9 +2090,12 @@
             const menu = document.getElementById('site-nav-menu');
             if (!trigger || !menu) return;
             trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                menu.classList.toggle('open');
+                // Only toggle dropdown on mobile (<=600px); on desktop nav is always visible
+                if (window.innerWidth <= 600) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                }
             });
             document.addEventListener('click', (e) => {
                 if (!menu.contains(e.target) && !trigger.contains(e.target)) {
@@ -2139,6 +2137,19 @@
             }
             return `/${slug}`;
         }
+
+        // Render artist name(s) as individual clickable links
+        // For collabs like "Artist1, Artist2", each artist gets its own link
+        function renderArtistLinks(bandName) {
+            const artists = bandName.split(',').map(a => a.trim()).filter(a => a);
+            if (artists.length <= 1) {
+                return `<a href="${getArtistPageUrl(bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${bandName}</a>`;
+            }
+            return artists.map((artist, i) => {
+                const separator = i < artists.length - 1 ? ', ' : '';
+                return `<a href="${getArtistPageUrl(artist)}" class="chart-artist-link" title="Отвори профил на артистот">${artist}</a>${separator}`;
+            }).join('');
+        }
         
         // Global state for sharing
         let chartDataStore = {
@@ -2155,47 +2166,56 @@
             latest: 'Најнови Изданија'
         };
         
-        // View mode toggle function
-        function toggleViewMode(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (!section) return;
+        // View mode toggle function - toggles all chart sections at once
+        function toggleGlobalCompact() {
+            const sections = ['singles-section', 'albums-section', 'latest-section', 'artists-section'];
+            const isCurrentlyCompact = document.getElementById('singles-section')?.classList.contains('compact-mode');
+            const newState = !isCurrentlyCompact;
             
-            const isCompact = section.classList.toggle('compact-mode');
-            const btn = section.querySelector('.view-mode-toggle');
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.toggle('compact-mode', newState);
+                }
+            });
+            
+            const btn = document.getElementById('global-compact-toggle');
             if (btn) {
-                btn.innerHTML = isCompact 
+                btn.innerHTML = newState 
                     ? '<i class="fas fa-expand-alt"></i>' 
                     : '<i class="fas fa-compress-alt"></i>';
-                btn.title = isCompact ? 'Проширен приказ' : 'Компактен приказ';
+                btn.title = newState ? 'Проширен приказ' : 'Компактен приказ';
             }
             
-            // Save preference
-            const prefs = JSON.parse(localStorage.getItem('mmm-view-mode') || '{}');
-            prefs[sectionId] = isCompact;
-            localStorage.setItem('mmm-view-mode', JSON.stringify(prefs));
+            localStorage.setItem('mmm-global-compact', JSON.stringify(newState));
+        }
+        
+        // Legacy per-section toggle (kept for compatibility)
+        function toggleViewMode(sectionId) {
+            toggleGlobalCompact();
         }
         
         // Initialize view modes based on screen size and saved preferences
         function initViewModes() {
             const isMobile = window.innerWidth <= 600;
-            const prefs = JSON.parse(localStorage.getItem('mmm-view-mode') || '{}');
+            const savedPref = JSON.parse(localStorage.getItem('mmm-global-compact') || 'null');
+            const shouldBeCompact = savedPref !== null ? savedPref : isMobile;
             
-            ['singles-section', 'albums-section', 'latest-section'].forEach(sectionId => {
+            ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(sectionId => {
                 const section = document.getElementById(sectionId);
                 if (!section) return;
-                
-                // Use saved preference, or default to compact on mobile
-                const shouldBeCompact = prefs[sectionId] !== undefined ? prefs[sectionId] : isMobile;
-                
                 if (shouldBeCompact) {
                     section.classList.add('compact-mode');
-                    const btn = section.querySelector('.view-mode-toggle');
-                    if (btn) {
-                        btn.innerHTML = '<i class="fas fa-expand-alt"></i>';
-                        btn.title = 'Проширен приказ';
-                    }
                 }
             });
+            
+            if (shouldBeCompact) {
+                const btn = document.getElementById('global-compact-toggle');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-expand-alt"></i>';
+                    btn.title = 'Проширен приказ';
+                }
+            }
         }
         
         const chartIcons = {
@@ -2632,6 +2652,13 @@
                 const lastUpdated = document.getElementById('last-updated');
                 const age = formatDataAge(generatedAt);
                 if (lastUpdated) lastUpdated.textContent = age || '...';
+                
+                // Populate week number in header
+                const headerWeek = document.getElementById('header-week');
+                if (headerWeek) {
+                    const w = getISOWeek(new Date());
+                    headerWeek.textContent = `W${String(w.week).padStart(2, '0')} ${w.year}`;
+                }
             }
             
             // Build a lookup map for previous chart positions
@@ -3177,7 +3204,7 @@
                             <div class="chart-info">
                                 <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.releaseTitle}</div>
                                 <div class="chart-artist">
-                                    <a href="${getArtistPageUrl(release.bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${release.bandName}</a>${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
+                                    ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
                             </div>
                             <div class="chart-meta">

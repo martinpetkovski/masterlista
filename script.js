@@ -233,9 +233,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const menu = document.getElementById('site-nav-menu');
         if (!trigger || !menu) return;
         trigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            menu.classList.toggle('open');
+            // Only toggle dropdown on mobile (<=600px); on desktop nav is always visible
+            if (window.innerWidth <= 600) {
+                e.preventDefault();
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            }
         });
         document.addEventListener('click', (e) => {
             if (!menu.contains(e.target) && !trigger.contains(e.target)) {
@@ -1157,48 +1160,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nameB = transliterateCyrillicToLatin(b.name);
                 return nameA.localeCompare(nameB, 'en');
             });
-            document.getElementById('total-bands').textContent = bandsData.length;
-            
-            // Fetch last modified date from GitHub API
-            try {
-                const response = await fetch('https://api.github.com/repos/martinpetkovski/masterlista/commits?path=bands.json&per_page=1');
-                if (response.ok) {
-                    const commits = await response.json();
-                    if (commits.length > 0) {
-                        const lastCommit = commits[0];
-                        const lastModified = new Date(lastCommit.commit.committer.date);
-                        const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-                        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-                        const formattedDate = lastModified.toLocaleDateString('mk-MK', dateOptions).replace(' г.', '');
-                        const formattedTime = lastModified.toLocaleTimeString('mk-MK', timeOptions);
-                        document.getElementById('last-modified').textContent = `${formattedDate} ${formattedTime}`;
-                    } else {
-                        // Fallback to hardcoded date if no commits found
-                        const lastModified = new Date('2025-05-24T00:00:00');
-                        const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-                        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-                        const formattedDate = lastModified.toLocaleDateString('mk-MK', dateOptions).replace(' г.', '');
-                        const formattedTime = lastModified.toLocaleTimeString('mk-MK', timeOptions);
-                        document.getElementById('last-modified').textContent = `${formattedDate} ${formattedTime}`;
-                    }
-                } else {
-                    throw new Error('GitHub API request failed');
-                }
-            } catch (error) {
-                console.warn('Failed to fetch last modified date from GitHub:', error);
-                // Fallback to hardcoded date
-                const lastModified = new Date('2025-05-24T00:00:00');
-                const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
-                const formattedDate = lastModified.toLocaleDateString('mk-MK', dateOptions).replace(' г.', '');
-                const formattedTime = lastModified.toLocaleTimeString('mk-MK', timeOptions);
-                document.getElementById('last-modified').textContent = `${formattedDate} ${formattedTime}`;
-            }
+            const totalBandsEl = document.getElementById('total-bands');
+            if (totalBandsEl) totalBandsEl.textContent = bandsData.length;
             
             console.log(`Loaded ${bandsData.length} bands`);
-            // originalBandsData is already set during load (with or without pending changes)
-            populateFilters(bandsData);
             
+            // Render the table first (highest priority)
             // Ensure RSS feeds are loaded before rendering (for МЕДИУМИ column)
             try {
                 await rssLoadPromise;
@@ -1208,22 +1175,56 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             renderBands(bandsData, { progressive: true });
-            initializeFilters();
-            initializeModal();
-            initializeSpotifyEmbedModal();
-            initializeCopyData();
-            initializeSubmitPR();
-            updateSubmitButtonState();
-            initScrollShadows();
             
-            // Check for edit parameter in URL
-            handleEditUrlParam();
+            // Initialize filters and UI — each wrapped individually so one failure doesn't block the rest
+            try { populateFilters(bandsData); } catch (e) { console.warn('populateFilters error:', e); }
+            try { initializeFilters(); } catch (e) { console.warn('initializeFilters error:', e); }
+            try { initializeModal(); } catch (e) { console.warn('initializeModal error:', e); }
+            try { initializeSpotifyEmbedModal(); } catch (e) { console.warn('initializeSpotifyEmbedModal error:', e); }
+            try { initializeCopyData(); } catch (e) { console.warn('initializeCopyData error:', e); }
+            try { initializeSubmitPR(); } catch (e) { console.warn('initializeSubmitPR error:', e); }
+            try { updateSubmitButtonState(); } catch (e) { console.warn('updateSubmitButtonState error:', e); }
+            try { initScrollShadows(); } catch (e) { console.warn('initScrollShadows error:', e); }
+            try { handleEditUrlParam(); } catch (e) { console.warn('handleEditUrlParam error:', e); }
+            
+            // Fetch last modified date from GitHub API (non-blocking)
+            try {
+                const response = await fetch('https://api.github.com/repos/martinpetkovski/masterlista/commits?path=bands.json&per_page=1');
+                if (response.ok) {
+                    const commits = await response.json();
+                    if (commits.length > 0) {
+                        const lastModified = new Date(commits[0].commit.committer.date);
+                        const ageMs = Date.now() - lastModified.getTime();
+                        const hours = Math.floor(ageMs / (60 * 60 * 1000));
+                        const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
+                        let ageStr;
+                        if (hours >= 24) { ageStr = `пред ${Math.floor(hours/24)}д`; }
+                        else if (hours > 0) { ageStr = `пред ${hours}ч`; }
+                        else { ageStr = `пред ${minutes}мин`; }
+                        const el = document.getElementById('last-modified');
+                        if (el) el.textContent = ageStr;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch last modified date from GitHub:', error);
+            }
             
             // Load Spotify data from static JSON (generated by GitHub Action)
             loadChartDataReleases(data.muzickaMasterLista, bandsData);
         } catch (error) {
             console.error('Error loading bands:', error);
-            document.getElementById('band-table-body').innerHTML = '<tr><td colspan="8">Извинете, нешто тргна наопаку.</td></tr>';
+            // Only show error if no data was rendered at all
+            if (bandsData.length === 0) {
+                // Cancel any in-progress progressive render
+                if (renderAbortController) {
+                    renderAbortController.abort();
+                    renderAbortController = null;
+                }
+                const tbody = document.getElementById('band-table-body');
+                if (tbody && tbody.children.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8">Извинете, нешто тргна наопаку.</td></tr>';
+                }
+            }
         } finally {
             loadingBar.classList.remove('active');
             controls.style.display = '';
@@ -1689,7 +1690,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return nameA.localeCompare(nameB, 'en');
             });
             invalidateBandCache(); // Clear cache since data changed
-            document.getElementById('total-bands').textContent = bandsData.length;
+            const tb1 = document.getElementById('total-bands');
+            if (tb1) tb1.textContent = bandsData.length;
             populateFilters(bandsData);
             filterBands();
             modal.style.display = 'none';
@@ -1842,7 +1844,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`Deleting band at index ${index}`);
                 bandsData.splice(index, 1);
                 invalidateBandCache(); // Clear cache since data changed
-                document.getElementById('total-bands').textContent = bandsData.length;
+                const tb2 = document.getElementById('total-bands');
+                if (tb2) tb2.textContent = bandsData.length;
                 populateFilters(bandsData);
                 filterBands();
                 hasUnsavedChanges = true;

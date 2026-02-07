@@ -68,7 +68,7 @@
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="javascript:void(0)" class="site-logo-link site-nav-trigger" title="Мени">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
@@ -78,22 +78,16 @@
                 </div>
                 <div class="title-group">
                     <h1>Македонска Музичка Мастер Листа</h1>
-                    <div class="subtitle-stats">
-                        <span>Листата содржи <strong id="total-bands">0</strong> артисти</span>
-                        <span class="separator">•</span>
-                        <span>Последна промена на <span id="last-modified">непознато</span></span>
-                        <span class="separator">•</span>
-                        <span>Податоците се лиценцирани со <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution</a></span>
-                        <span class="separator">•</span>
-                        <span>напојувано од <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a></span>
-                    </div>
                 </div>
             </div>
             <div class="header-buttons">
-                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
-                    <i class="fas fa-moon"></i>
-                </button>
-
+                <span class="header-info">
+                    <span><strong id="total-bands">0</strong> артисти</span>
+                    <span class="separator">•</span>
+                    <span>Ажурирано <span id="last-modified">...</span></span>
+                    <span class="separator">•</span>
+                    <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
+                </span>
                 <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
                 <button id="submit-pr-btn" class="header-btn request-change edit-hidden" title="Побарај промена" data-endpoint="https://muzichka-master-lista.deeeeelay.workers.dev">
                     <i class="fas fa-paper-plane"></i>
@@ -102,6 +96,9 @@
                     <i class="fas fa-filter"></i>
                 </button>
                 <button id="copy-data-btn" class="header-btn copy-data edit-hidden" title="Копирај податоци"><i class="fas fa-copy"></i></button>
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
             </div>
         </div>
