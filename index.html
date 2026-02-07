@@ -2485,10 +2485,16 @@
             
             const card = document.getElementById('share-card-render');
             
+            // Remove border-radius for clean image rendering (no transparent corners)
+            card.style.borderRadius = '0';
+            
+            // Determine background color matching theme
+            const shareBgColor = isDarkMode ? '#141a1f' : '#ffffff';
+            
             // Lazy-load html2canvas and render the card at high resolution for Instagram
             await loadHtml2Canvas();
             const canvas = await html2canvas(card, {
-                backgroundColor: null,
+                backgroundColor: shareBgColor,
                 scale: 3,
                 useCORS: true,
                 allowTaint: true,
