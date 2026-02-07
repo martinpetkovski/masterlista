@@ -71,6 +71,59 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
+    // ==================== RSS PROXY ENDPOINT ====================
+    const url = new URL(request.url);
+    if (request.method === 'GET' && url.pathname === '/rss-proxy') {
+      const feedUrl = url.searchParams.get('url');
+      if (!feedUrl) {
+        return json({ error: 'Missing "url" query parameter' }, 400, corsHeaders);
+      }
+      // Allowlist: only proxy known RSS feed domains
+      const allowedHosts = [
+        'rss.app',
+        'www.kulturabeta.com',
+        'kulturabeta.com',
+        'popup.mk',
+        'www.popup.mk',
+        'www.mktickets.mk',
+        'mktickets.mk',
+        'www.mono-ton.com',
+        'mono-ton.com',
+      ];
+      let parsedFeed;
+      try {
+        parsedFeed = new URL(feedUrl);
+      } catch {
+        return json({ error: 'Invalid feed URL' }, 400, corsHeaders);
+      }
+      if (!allowedHosts.includes(parsedFeed.hostname)) {
+        return json({ error: 'Feed host not allowed' }, 403, corsHeaders);
+      }
+      // Rate limit RSS proxy: 30 req/min per IP
+      const proxyIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const proxyRl = rateLimitCheck('rss:' + proxyIp, 30, 60000);
+      if (!proxyRl.allowed) {
+        return json({ error: 'Rate limit exceeded' }, 429, corsHeaders);
+      }
+      try {
+        const feedResp = await fetch(feedUrl, {
+          headers: { 'User-Agent': 'TopListaMK-RSSProxy/1.0' },
+          cf: { cacheTtl: 300, cacheEverything: true },
+        });
+        const body = await feedResp.text();
+        return new Response(body, {
+          status: feedResp.status,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': feedResp.headers.get('Content-Type') || 'application/xml',
+            'Cache-Control': 'public, max-age=300',
+          },
+        });
+      } catch (e) {
+        return json({ error: 'Failed to fetch feed', detail: e.message }, 502, corsHeaders);
+      }
+    }
+
     if (request.method !== 'POST') {
       return json({ error: 'Method Not Allowed' }, 405, corsHeaders);
     }

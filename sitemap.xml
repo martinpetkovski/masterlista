@@ -34,6 +34,14 @@
         <priority>0.8</priority>
     </url>
     
+    <!-- Music News Page -->
+    <url>
+        <loc>https://toplista.mk/vesti.html</loc>
+        <lastmod>2026-02-07</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
     <!-- Artist Profile Pages use clean URLs like /artist-name -->
     <!-- These are generated dynamically and handled via 404.html routing -->
     

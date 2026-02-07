@@ -40,7 +40,7 @@ header {
     border-bottom: 1px solid var(--border-color);
     padding: 0.25rem 0.4rem;
     min-height: 44px;
-    z-index: 10;
+    z-index: 200;
 }
 
 body.dark-mode header {
@@ -90,6 +90,7 @@ body.dark-mode header .subtitle-stats {
     align-items: center;
     gap: 0.3rem;
     flex: 1;
+    position: relative;
 }
 
 .site-logo-link {
@@ -146,11 +147,6 @@ header h1, header p { display: none; }
     background: var(--bg-primary); 
     border-color: var(--border-color); 
     color: var(--accent-green); 
-}
-.header-btn.chart-btn { 
-    background: var(--bg-primary); 
-    border-color: var(--border-color); 
-    color: var(--accent-orange); 
 }
 .header-btn.tour-btn { 
     background: var(--bg-primary); 
@@ -1809,4 +1805,64 @@ body.dark-mode .dark-mode-toggle {
 .artist-name-link:hover,
 .artist-name-link:active {
     color: var(--accent-orange);
+}
+
+/* ==================== SITE NAV MENU ==================== */
+.site-nav-trigger {
+    cursor: pointer;
+}
+
+.site-nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    min-width: 160px;
+    background: var(--bg-primary, #fff);
+    border: 1px solid var(--border-color, #dfe1e5);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 0.3rem 0;
+    margin-top: 0.2rem;
+}
+
+.site-nav-menu.open {
+    display: block;
+}
+
+.site-nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-primary, #1a1d21);
+    text-decoration: none;
+}
+
+.site-nav-menu a:hover {
+    background: var(--bg-hover, #eceef1);
+}
+
+.site-nav-menu a i {
+    width: 16px;
+    text-align: center;
+    color: var(--text-muted, #8b929a);
+}
+
+.site-nav-menu a.active {
+    font-weight: 600;
+    color: var(--accent-blue, #4a7fa5);
+}
+
+.site-nav-menu a.active i {
+    color: var(--accent-blue, #4a7fa5);
+}
+
+.media-news-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    vertical-align: middle;
 }
