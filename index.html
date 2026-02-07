@@ -32,8 +32,15 @@
     <meta property="twitter:image" content="https://toplista.mk/og-image.png">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Preconnect to external origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     
     <!-- Structured Data / JSON-LD -->
     <script type="application/ld+json">
@@ -61,52 +68,52 @@
     }
     </script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&family=Bungee&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Dark mode variables */
         body.dark-mode {
-            --bg-primary: #0c1014;
-            --bg-secondary: #141a1f;
-            --bg-hover: #1c2428;
-            --text-primary: #e8eaed;
-            --text-secondary: #9aa0a6;
-            --text-muted: #5f6368;
-            --border-color: #2d3439;
-            --accent-blue: #0095f6;
-            --accent-green: #51cf66;
-            --accent-orange: #e07800;
-            --accent-red: #ed4956;
-            --accent-purple: #9775fa;
-            --accent-teal: #20c997;
+            --bg-primary: #111318;
+            --bg-secondary: #191c22;
+            --bg-hover: #22262e;
+            --text-primary: #d5d8de;
+            --text-secondary: #8c929a;
+            --text-muted: #555b64;
+            --border-color: #2a2e36;
+            --accent-blue: #5a8ab5;
+            --accent-green: #22c55e;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #8a7db5;
+            --accent-teal: #5a9e92;
         }
         
         body.dark-mode .chart-section-header {
-            background: #000;
-            color: #fff;
+            background: #15181e;
+            color: var(--text-primary);
         }
         
         body.dark-mode .chart-section-header h2 {
-            color: #fff;
+            color: var(--text-primary);
         }
         
         body.dark-mode .share-card {
-            background: #141a1f;
+            background: var(--bg-secondary);
         }
         
         body.dark-mode .share-card-list {
-            background: #141a1f;
+            background: var(--bg-secondary);
         }
         
         body.dark-mode .share-card-item {
-            border-color: #2d3439;
+            border-color: var(--border-color);
         }
         
         body.dark-mode .share-card-rank {
-            color: #5f6368;
+            color: var(--text-muted);
         }
         
         body.dark-mode .share-card-rank.gold { color: #ffd700; }
@@ -114,166 +121,166 @@
         body.dark-mode .share-card-rank.bronze { color: #cd7f32; }
         
         body.dark-mode .share-card-song {
-            color: #e8eaed;
+            color: var(--text-primary);
         }
         
         body.dark-mode .share-card-artist {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .share-card-footer {
-            background: #1c2428;
-            border-color: #2d3439;
+            background: var(--bg-hover);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .share-card-date,
         body.dark-mode .share-card-url {
-            color: #5f6368;
+            color: var(--text-muted);
         }
         
         body.dark-mode .chart-section {
-            background: #141a1f;
-            border-color: #2d3439;
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .chart-item {
-            border-color: #2d3439;
+            border-color: var(--border-color);
         }
         
         body.dark-mode .chart-item:hover {
-            background: #1c2428;
+            background: var(--bg-hover);
         }
         
         body.dark-mode .chart-title {
-            color: #e8eaed;
+            color: var(--text-primary);
         }
         
         body.dark-mode .chart-artist {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .chart-artist-link {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .chart-artist-link:hover {
-            color: #e07800;
+            color: var(--accent-orange);
         }
         
         body.dark-mode .chart-stat.followers {
-            color: #e07800;
-            text-shadow: 0 0 25px rgba(224, 120, 0, 0.4);
+            color: var(--accent-orange);
+            text-shadow: none;
         }
         
         body.dark-mode .chart-stat.weeks {
-            color: #64748b;
+            color: var(--text-muted);
         }
         
         body.dark-mode .chart-cover .placeholder {
-            background: #1c2428;
-            color: #5f6368;
+            background: var(--bg-hover);
+            color: var(--text-muted);
         }
         
         body.dark-mode .share-modal-content {
-            background: #141a1f;
+            background: var(--bg-secondary);
         }
         
         body.dark-mode .share-modal-header h3 {
-            color: #e8eaed;
+            color: var(--text-primary);
         }
         
         body.dark-mode .share-action-btn {
-            background: #1c2428;
-            color: #e8eaed;
-            border-color: #2d3439;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .share-action-btn:hover {
-            background: #2d3439;
+            background: #2a2e36;
         }
         
         body.dark-mode .view-mode-toggle {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.15);
-            color: #e8eaed;
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+            color: var(--text-primary);
         }
         
         body.dark-mode .view-mode-toggle:hover {
-            background: rgba(255,255,255,0.15);
+            background: #2a2e36;
         }
         
         body.dark-mode .chart-loading,
         body.dark-mode .chart-empty {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .share-btn {
-            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
-            border-color: rgba(255,255,255,0.2);
-            color: #e8eaed;
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+            color: var(--text-primary);
         }
         
         body.dark-mode .share-btn:hover {
-            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%);
+            background: #2a2e36;
         }
         
         /* Dark mode for chart sections and items */
         body.dark-mode .chart-section {
-            background: #141a1f;
-            border-color: #2d3439;
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .chart-item {
             background: transparent;
-            border-color: #2d3439;
+            border-color: var(--border-color);
         }
         
         body.dark-mode .chart-item:hover {
-            background: #1c2428;
+            background: var(--bg-hover);
         }
         
         body.dark-mode .chart-cover {
-            background: #1c2428;
+            background: var(--bg-hover);
         }
         
         body.dark-mode .chart-title {
-            color: #e8eaed;
+            color: var(--text-primary);
         }
         
         body.dark-mode .chart-artist-link {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .chart-release-type {
-            background: #1c2428;
-            color: #9aa0a6;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
         }
         
         body.dark-mode .share-modal-content {
-            background: #141a1f;
-            border-color: #2d3439;
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .share-actions button {
-            background: #1c2428;
-            border-color: #2d3439;
-            color: #e8eaed;
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+            color: var(--text-primary);
         }
         
         body.dark-mode .share-actions button:hover {
-            background: #2d3439;
+            background: #2a2e36;
         }
         
         body.dark-mode .share-modal-close {
-            color: #9aa0a6;
+            color: var(--text-secondary);
         }
         
         body.dark-mode .share-modal-close:hover {
-            color: #e8eaed;
+            color: var(--text-primary);
         }
         
         body.dark-mode .cache-info {
-            color: #5f6368;
+            color: var(--text-muted);
         }
         
         /* Chart page icon-only buttons */
@@ -301,12 +308,12 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 0.35rem 0.6rem;
-            background: linear-gradient(180deg, #343a40 0%, #212529 100%);
+            background: #2c3038;
             color: #fff;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 500;
             white-space: nowrap;
-            border-radius: 6px;
+            border-radius: 4px;
             opacity: 0;
             visibility: hidden;
             transition: all 0.15s ease;
@@ -321,7 +328,7 @@
             left: 50%;
             transform: translateX(-50%);
             border: 6px solid transparent;
-            border-bottom-color: #343a40;
+            border-bottom-color: #2c3038;
             opacity: 0;
             visibility: hidden;
             transition: all 0.15s ease;
@@ -335,15 +342,15 @@
         }
         
         .chart-page .header-btn:hover {
-            transform: translateY(-1px);
+            background: var(--bg-hover);
         }
         
         /* Dark mode toggle button */
         .dark-mode-toggle {
-            background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(0,0,0,0.05) 100%);
+            background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
+            border-radius: 6px;
+            color: var(--text-secondary);
             width: 34px;
             height: 34px;
             padding: 0;
@@ -361,28 +368,29 @@
         }
         
         .dark-mode-toggle:hover {
-            background: linear-gradient(180deg, var(--bg-hover) 0%, rgba(0,0,0,0.08) 100%);
-            transform: translateY(-1px);
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
         
         body.dark-mode .dark-mode-toggle {
-            background: #1c2428;
-            border-color: #2d3439;
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
         }
         
         body.dark-mode .dark-mode-toggle:hover {
-            background: #2d3439;
+            background: var(--bg-hover);
         }
         
         /* Dark mode header buttons */
         body.dark-mode.chart-page .header-btn {
-            background: #1c2428;
-            border-color: #2d3439;
-            color: var(--text-primary);
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
         }
         
         body.dark-mode.chart-page .header-btn:hover {
-            background: #2d3439;
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
         
         body.chart-page {
@@ -391,31 +399,25 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: 
-                radial-gradient(ellipse at 0% 0%, rgba(103, 126, 234, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 0%, rgba(250, 82, 82, 0.06) 0%, transparent 40%),
-                radial-gradient(ellipse at 100% 100%, rgba(18, 184, 134, 0.07) 0%, transparent 50%),
-                radial-gradient(ellipse at 0% 100%, rgba(121, 80, 242, 0.06) 0%, transparent 45%),
-                radial-gradient(ellipse at 50% 50%, rgba(253, 126, 20, 0.04) 0%, transparent 60%),
-                linear-gradient(180deg, #f8fafc 0%, #eef2f7 25%, #e8ecf2 50%, #e2e8ef 75%, #dce3eb 100%);
+            background: #f2f3f5;
         }
         
         body.dark-mode.chart-page {
-            background: #0c1014;
+            background: #111318;
         }
         
         /* Chart Filter Bar */
         .chart-filter-bar {
-            background: linear-gradient(180deg, #f0f2f5 0%, #e8ebef 100%);
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
             padding: 0.5rem 1rem;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
         
         body.dark-mode .chart-filter-bar {
-            background: linear-gradient(180deg, #1c2428 0%, #141a1f 100%);
-            border-bottom-color: rgba(255,255,255,0.08);
+            background: var(--bg-secondary);
+            border-bottom-color: var(--border-color);
         }
         
         .chart-filter-content {
@@ -449,9 +451,9 @@
             padding: 0.35rem 0.65rem;
             font-size: 0.7rem;
             font-weight: 500;
-            border: 1px solid rgba(0,0,0,0.12);
-            border-radius: 16px;
-            background: rgba(255,255,255,0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.15s ease;
@@ -459,37 +461,36 @@
         }
         
         .filter-btn:hover {
-            background: rgba(255,255,255,1);
-            border-color: rgba(0,0,0,0.2);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
         
         .filter-btn.active {
-            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             border-color: var(--accent-orange);
             color: #fff;
         }
         
         .filter-btn.reset-btn {
             background: transparent;
-            border-color: rgba(0,0,0,0.2);
+            border-color: var(--border-color);
             color: var(--text-muted);
             font-size: 0.65rem;
             padding: 0.3rem 0.5rem;
         }
         
         .filter-btn.reset-btn:hover {
-            background: rgba(0,0,0,0.05);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
         
         body.dark-mode .filter-btn.reset-btn {
-            border-color: rgba(255,255,255,0.15);
+            border-color: var(--border-color);
             color: var(--text-muted);
         }
         
         body.dark-mode .filter-btn.reset-btn:hover {
-            background: rgba(255,255,255,0.1);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
         
@@ -498,19 +499,18 @@
         }
         
         body.dark-mode .filter-btn {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.12);
+            background: var(--bg-hover);
+            border-color: var(--border-color);
             color: var(--text-secondary);
         }
         
         body.dark-mode .filter-btn:hover {
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(255,255,255,0.2);
+            background: #2a2e36;
             color: var(--text-primary);
         }
         
         body.dark-mode .filter-btn.active {
-            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             border-color: var(--accent-orange);
             color: #fff;
         }
@@ -630,8 +630,8 @@
         }
         
         .chart-section {
-            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
-            border: 1px solid rgba(222, 226, 230, 0.6);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             border-radius: 0;
             overflow: hidden;
             display: flex;
@@ -642,24 +642,19 @@
         }
         
         .chart-section-header {
-            background: linear-gradient(135deg, #FAFAFA 0%, #DDD 100%);
-            color: #000;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             padding: 0.6rem 0.85rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
             position: relative;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .chart-section-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+            display: none;
         }
         
         .chart-section-header h2 {
@@ -686,10 +681,10 @@
         }
         
         .share-btn {
-            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
-            border: 1px solid rgba(0,0,0,0.15);
-            border-radius: 6px;
-            color: #212529;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
             padding: 0.4rem 0.7rem;
             font-size: 0.7rem;
             cursor: pointer;
@@ -700,7 +695,8 @@
         }
         
         .share-btn:hover {
-            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.22) 100%);
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
         
         .share-btn i {
@@ -732,13 +728,12 @@
         }
         
         .share-modal-content {
-            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            border-radius: 10px;
+            background: var(--bg-primary);
+            border-radius: 8px;
             max-width: 420px;
             max-height: 85vh;
             overflow: auto;
             position: relative;
-            backdrop-filter: blur(20px);
         }
         
         .share-modal-header {
@@ -747,7 +742,7 @@
             justify-content: space-between;
             padding: 0.6rem 0.85rem;
             border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            background: var(--bg-secondary);
         }
         
         .share-modal-header h3 {
@@ -757,9 +752,9 @@
         }
         
         .share-modal-close {
-            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%);
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 6px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             color: var(--text-secondary);
             font-size: 0.85rem;
             cursor: pointer;
@@ -769,14 +764,14 @@
         
         .share-modal-close:hover {
             color: var(--text-primary);
-            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
+            background: var(--border-color);
         }
         
         .share-preview {
             padding: 0.75rem;
             display: flex;
             justify-content: center;
-            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%);
+            background: var(--bg-secondary);
         }
         
         .share-preview img {
@@ -792,13 +787,13 @@
             border-top: 1px solid var(--border-color);
             justify-content: center;
             flex-wrap: wrap;
-            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
+            background: var(--bg-secondary);
         }
         
         .share-action-btn {
-            background: linear-gradient(180deg, var(--accent-orange) 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             color: #fff;
             padding: 0.45rem 0.9rem;
             font-size: 0.7rem;
@@ -811,11 +806,11 @@
         }
         
         .share-action-btn.download {
-            background: linear-gradient(180deg, var(--accent-blue) 0%, #1864ab 100%);
+            background: var(--accent-blue);
         }
         
         .share-action-btn.copy {
-            background: linear-gradient(180deg, var(--accent-purple) 0%, #7048e8 100%);
+            background: var(--accent-purple);
         }
         
         /* Shareable chart card (hidden, used for rendering) */
@@ -837,7 +832,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0.75rem 1rem;
-            background: linear-gradient(135deg, #FAFAFA 0%, #DDD 100%);
+            background: var(--bg-secondary);
         }
         
         .share-card-title {
@@ -862,14 +857,15 @@
         }
         
         .share-card-branding .mmm {
-            font-family: 'Bungee', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             font-size: 0.8rem;
+            font-weight: 800;
             background: none;
-            color: #fa5252;
-            -webkit-text-fill-color: #fa5252;
+            color: var(--accent-orange);
+            -webkit-text-fill-color: var(--accent-orange);
             display: block;
             margin-bottom: 2px;
-            text-shadow: 1px 1px 2px rgba(250, 82, 82, 0.3);
+            text-shadow: none;
         }
         
         .share-card-list {
@@ -892,15 +888,15 @@
         }
         
         .share-card-item:nth-child(1) {
-            background: linear-gradient(90deg, rgba(255,215,0,0.15) 0%, transparent 100%);
+            background: rgba(212, 160, 0, 0.08);
         }
         
         .share-card-item:nth-child(2) {
-            background: linear-gradient(90deg, rgba(192,192,192,0.12) 0%, transparent 100%);
+            background: rgba(138, 138, 138, 0.06);
         }
         
         .share-card-item:nth-child(3) {
-            background: linear-gradient(90deg, rgba(205,127,50,0.12) 0%, transparent 100%);
+            background: rgba(168, 104, 48, 0.06);
         }
         
         .share-card-rank {
@@ -1007,12 +1003,39 @@
             border-bottom: 1px solid var(--border-color);
             gap: 0.45rem;
             transition: all 0.15s ease;
-            background: linear-gradient(90deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+            background: transparent;
+            contain: layout style;
+            position: relative;
+            overflow: hidden;
+            clip-path: inset(0);
+        }
+        
+        /* Accent color for chart items */
+        .chart-item.has-accent::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            opacity: 0.22;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+        .chart-item.has-accent:hover::before {
+            opacity: 0.35;
+        }
+        .chart-item.has-accent > *:not(style)::before {
+            position: relative;
+            z-index: 1;
+        }
+        .chart-item.has-accent .chart-title a,
+        .chart-item.has-accent .chart-artist-link {
+            color: var(--accent-1);
         }
         
         .chart-item:last-child { border-bottom: none; }
         .chart-item:hover { 
-            background: linear-gradient(90deg, var(--bg-hover) 0%, rgba(255,255,255,0.3) 100%);
+            background: var(--bg-hover);
         }
         
         .chart-rank {
@@ -1034,9 +1057,9 @@
             right: -2px;
             font-size: 0.8rem;
             font-weight: 900;
-            color: #1DB954;
+            color: var(--accent-green);
             line-height: 1;
-            text-shadow: 0 0 10px rgba(29, 185, 84, 0.35);
+            text-shadow: none;
         }
         
         .chart-rank.rank-down::after {
@@ -1046,9 +1069,9 @@
             right: -2px;
             font-size: 0.8rem;
             font-weight: 900;
-            color: #e74c3c;
+            color: var(--accent-red);
             line-height: 1;
-            text-shadow: 0 0 10px rgba(231, 76, 60, 0.35);
+            text-shadow: none;
         }
         
         .chart-rank.gold { 
@@ -1061,9 +1084,9 @@
             color: #a86830; 
         }
         
-        .chart-item.rank-1 { background: linear-gradient(90deg, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.03) 60%, transparent 100%); }
-        .chart-item.rank-2 { background: linear-gradient(90deg, rgba(192,192,192,0.12) 0%, rgba(192,192,192,0.03) 60%, transparent 100%); }
-        .chart-item.rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.12) 0%, rgba(205,127,50,0.03) 60%, transparent 100%); }
+        .chart-item.rank-1 { background: rgba(212, 160, 0, 0.06); }
+        .chart-item.rank-2 { background: rgba(138, 138, 138, 0.05); }
+        .chart-item.rank-3 { background: rgba(168, 104, 48, 0.05); }
         
         .chart-cover {
             width: 40px;
@@ -1087,8 +1110,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1DB954, #191414);
-            color: rgba(255,255,255,0.5);
+            background: var(--bg-secondary);
+            color: var(--text-muted);
             font-size: 0.7rem;
         }
         
@@ -1112,7 +1135,7 @@
         }
         
         .chart-title:hover {
-            color: #e07800;
+            color: var(--accent-orange);
         }
         
         .chart-artist {
@@ -1130,8 +1153,15 @@
         }
         
         .chart-artist-link:hover {
-            color: #e07800;
+            color: var(--accent-orange);
             text-decoration: none;
+        }
+
+        .verified-badge {
+            color: #1d9bf0;
+            font-size: 0.7rem;
+            margin-left: 0.25rem;
+            vertical-align: middle;
         }
         
         /* Artist chart specific styles */
@@ -1150,7 +1180,7 @@
         }
         
         .artist-item .artist-name a:hover {
-            color: #e07800;
+            color: var(--accent-orange);
         }
         
         .artist-item .artist-details {
@@ -1178,7 +1208,7 @@
             display: inline-block;
             font-size: 0.5rem;
             font-weight: 600;
-            background: linear-gradient(135deg, var(--accent-orange) 0%, #fd7e14 100%);
+            background: var(--accent-orange);
             color: #fff;
             padding: 0.08rem 0.25rem;
             border-radius: 3px;
@@ -1187,10 +1217,10 @@
         }
         
         .chart-release-type.album { 
-            background: linear-gradient(135deg, var(--accent-purple) 0%, #7048e8 100%); 
+            background: var(--accent-purple); 
         }
         .chart-release-type.ep { 
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #1864ab 100%); 
+            background: var(--accent-blue); 
         }
         
         /* Popularity change indicator - arrow overlays the number */
@@ -1208,23 +1238,23 @@
         
         .pop-change.up::before { 
             content: '▲';
-            color: rgba(29, 185, 84, 0.85);
+            color: var(--accent-green);
         }
         .pop-change.down::before { 
             content: '▼';
-            color: rgba(231, 76, 60, 0.85);
+            color: var(--accent-red);
         }
         
         /* New entry highlight */
         .chart-item.is-new {
-            background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, rgba(255,215,0,0.02) 50%, transparent 100%);
+            background: rgba(184, 134, 46, 0.06);
         }
         
         .chart-item.is-new .chart-title::after {
             content: 'НОВО';
             font-size: 0.45rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #d4a000, #c47f00);
+            background: var(--accent-orange);
             color: #fff;
             padding: 0.1rem 0.25rem;
             border-radius: 3px;
@@ -1260,11 +1290,11 @@
             position: relative;
             font-size: 1.6rem;
             font-weight: 800;
-            color: #94a3b8;
+            color: #8b929a;
             min-width: 36px;
             text-align: right;
             cursor: default;
-            text-shadow: 0 0 20px rgba(224, 120, 0, 0.3);
+            text-shadow: none;
         }
         
         .chart-stat i { display: none; }
@@ -1276,8 +1306,8 @@
             padding: 2rem;
             color: var(--text-muted);
             font-size: 0.75rem;
-            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
             margin: 0.5rem;
         }
         
@@ -1298,14 +1328,14 @@
             font-weight: 500;
             margin-top: 0.65rem;
             padding: 0.35rem 0.6rem;
-            border-radius: 6px;
+            border-radius: 4px;
             transition: all 0.15s ease;
-            background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
+            background: var(--bg-secondary);
         }
         
         .back-link:hover { 
             color: var(--accent-blue); 
-            background: linear-gradient(180deg, rgba(34,139,230,0.08) 0%, rgba(34,139,230,0.15) 100%);
+            background: var(--bg-hover);
         }
         
         /* Mobile adjustments */
@@ -1372,10 +1402,10 @@
         
         /* Compact/Expanded mode toggle */
         .view-mode-toggle {
-            background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
-            border: 1px solid rgba(0,0,0,0.15);
-            border-radius: 6px;
-            color: #212529;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
             padding: 0.4rem 0.6rem;
             font-size: 0.75rem;
             cursor: pointer;
@@ -1386,7 +1416,8 @@
         }
         
         .view-mode-toggle:hover {
-            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.22) 100%);
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
         
         .view-mode-toggle i { font-size: 0.7rem; }
@@ -1523,8 +1554,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
-            border-top: 1px solid rgba(255, 146, 43, 0.3);
+            background: #171b21;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 0;
             z-index: 5000;
             display: none;
@@ -1532,7 +1563,7 @@
         }
         
         body.dark-mode .music-player {
-            background: linear-gradient(180deg, #1a2027 0%, #141a1f 100%);
+            background: #171b21;
         }
         
         .music-player.active {
@@ -1619,7 +1650,7 @@
         }
         
         .music-player-service.active {
-            background: #e07800;
+            background: var(--accent-orange);
             color: #fff;
         }
         
@@ -1633,7 +1664,7 @@
         }
         
         /* Service-specific colors on hover */
-        .music-player-service[data-service="spotify"]:hover:not(.active) { color: #1DB954; }
+        .music-player-service[data-service="spotify"]:hover:not(.active) { color: #1ed760; }
         .music-player-service[data-service="youtube"]:hover:not(.active) { color: #FF0000; }
         .music-player-service[data-service="youtube_music"]:hover:not(.active) { color: #FF0000; }
         .music-player-service[data-service="apple"]:hover:not(.active) { color: #fc3c44; }
@@ -1690,7 +1721,7 @@
         }
         
         .music-player-remember input {
-            accent-color: #e07800;
+            accent-color: var(--accent-orange);
             width: 10px;
             height: 10px;
         }
@@ -1714,7 +1745,7 @@
         
         .music-player-close:hover {
             background: rgba(255, 82, 82, 0.15);
-            color: #fa5252;
+            color: var(--accent-red);
         }
         
         .music-player-embed {
@@ -1770,10 +1801,10 @@
         }
         
         .music-player-external a {
-            background: linear-gradient(180deg, #e07800 0%, #c96b00 100%);
+            background: var(--accent-orange);
             color: #fff;
             padding: 0.5rem 1rem;
-            border-radius: 6px;
+            border-radius: 4px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.75rem;
@@ -1784,7 +1815,7 @@
         }
         
         .music-player-external a:hover {
-            background: linear-gradient(180deg, #c96b00 0%, #b35f00 100%);
+            filter: brightness(1.1);
             transform: translateY(-1px);
         }
         
@@ -1837,7 +1868,9 @@
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <span class="site-logo-text">MMM</span>
+                <a href="/" class="site-logo-link" title="MMM">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
                 <div class="title-group">
                     <h1>Македонска Музичка Топ Листа</h1>
                     <div class="subtitle-stats">
@@ -2177,6 +2210,21 @@
             return title;
         }
         
+        // Lazy-load html2canvas only when sharing
+        let _html2canvasLoaded = null;
+        function loadHtml2Canvas() {
+            if (window.html2canvas) return Promise.resolve();
+            if (_html2canvasLoaded) return _html2canvasLoaded;
+            _html2canvasLoaded = new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                s.onload = resolve;
+                s.onerror = reject;
+                document.head.appendChild(s);
+            });
+            return _html2canvasLoaded;
+        }
+        
         // Share functions
         async function shareChart(chartType) {
             const btn = event.target.closest('.share-btn');
@@ -2270,7 +2318,7 @@
                 rankSilver: '#888',
                 rankBronze: '#a06020',
                 coverBg: '#f0f0f0',
-                headerBg: 'linear-gradient(135deg, #FAFAFA 0%, #DDD 100%)',
+                headerBg: '#eef0f2',
                 headerColor: '#000',
                 brandingColor: 'rgba(0,0,0,0.7)'
             };
@@ -2302,9 +2350,9 @@
             
             // Get item background based on position
             const getItemBg = (rank) => {
-                if (rank === 1) return isDarkMode ? 'linear-gradient(90deg, rgba(255,215,0,0.1) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(255,215,0,0.15) 0%, transparent 100%)';
-                if (rank === 2) return isDarkMode ? 'linear-gradient(90deg, rgba(192,192,192,0.08) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(192,192,192,0.12) 0%, transparent 100%)';
-                if (rank === 3) return isDarkMode ? 'linear-gradient(90deg, rgba(205,127,50,0.08) 0%, transparent 100%)' : 'linear-gradient(90deg, rgba(205,127,50,0.12) 0%, transparent 100%)';
+                if (rank === 1) return isDarkMode ? 'rgba(212, 160, 0, 0.08)' : 'rgba(212, 160, 0, 0.08)';
+                if (rank === 2) return isDarkMode ? 'rgba(138, 138, 138, 0.06)' : 'rgba(138, 138, 138, 0.06)';
+                if (rank === 3) return isDarkMode ? 'rgba(168, 104, 48, 0.06)' : 'rgba(168, 104, 48, 0.06)';
                 return 'transparent';
             };
             
@@ -2359,7 +2407,8 @@
             
             const card = document.getElementById('share-card-render');
             
-            // Use html2canvas to render the card
+            // Lazy-load html2canvas and render the card
+            await loadHtml2Canvas();
             const canvas = await html2canvas(card, {
                 backgroundColor: null,
                 scale: 2,
@@ -2715,7 +2764,7 @@
                     band = allBandsData.find(b => b.name.toLowerCase().trim() === firstArtist);
                 }
                 
-                return band ? { genre: band.genre || '', city: band.city || '' } : null;
+                return band ? { genre: band.genre || '', city: band.city || '', accentColors: band.accentColors || null, confirmed: band.confirmed || false } : null;
             }
             
             // Get artist info by artistId from bands.json
@@ -2727,7 +2776,7 @@
                     return idFromBand === artistId;
                 });
                 
-                return band ? { name: band.name, genre: band.genre || '', city: band.city || '' } : null;
+                return band ? { name: band.name, genre: band.genre || '', city: band.city || '', accentColors: band.accentColors || null, confirmed: band.confirmed || false } : null;
             }
             
             // Check if artist matches genre filter
@@ -3071,19 +3120,28 @@
                     // For date-sorted charts, hide position and change indicators
                     const showPosition = !isDateSorted;
                     
+                    // Accent colors from bands.json (only for confirmed artists)
+                    const releaseArtistInfo = getArtistInfo(release.bandName);
+                    const isConfirmed = releaseArtistInfo?.confirmed;
+                    const accentColors = isConfirmed ? releaseArtistInfo?.accentColors : null;
+                    const hasAccent = accentColors && (accentColors[0] || accentColors[1]);
+                    const accent1 = hasAccent ? (accentColors[0] || accentColors[1]) : '';
+                    const accent2 = hasAccent ? (accentColors[1] || accentColors[0]) : '';
+                    const accentStyle = hasAccent ? `style="--accent-1:${accent1};--accent-2:${accent2}"` : '';
+                    
                     return `
-                        <li class="chart-item ${itemClass}">
+                        <li class="chart-item ${itemClass}${hasAccent ? ' has-accent' : ''}" ${accentStyle}>
                             ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : ''}">${rank}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
-                                    ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
+                                    ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
                                     : '<div class="placeholder"><i class="fab fa-spotify"></i></div>'
                                 }
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.releaseTitle}</div>
                                 <div class="chart-artist">
-                                    <a href="${getArtistPageUrl(release.bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${release.bandName}</a>
+                                    <a href="${getArtistPageUrl(release.bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${release.bandName}</a>${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
                             </div>
                             <div class="chart-meta">
@@ -3150,22 +3208,28 @@
                     const artistInfo = getArtistInfo(artist.bandName);
                     const genre = artistInfo?.genre || '';
                     const city = artistInfo?.city || '';
+                    const artIsConfirmed = artistInfo?.confirmed;
+                    const artAccentColors = artIsConfirmed ? artistInfo?.accentColors : null;
+                    const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
+                    const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
+                    const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
+                    const artAccentStyle = artHasAccent ? `style="--accent-1:${artAccent1};--accent-2:${artAccent2}"` : '';
                     
                     // Artist page URL
                     const artistPageUrl = getArtistPageUrl(artist.bandName);
                     
                     return `
-                        <li class="chart-item artist-item ${itemClass}">
+                        <li class="chart-item artist-item ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artist.thumbnail 
-                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-user\\'></i></div>'">`
+                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-user\\'></i></div>'">`
                                     : '<div class="placeholder"><i class="fas fa-user"></i></div>'
                                 }
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title artist-name">
-                                    <a href="${artistPageUrl}" title="Отвори профил на артистот">${artist.bandName}</a>
+                                    <a href="${artistPageUrl}" title="Отвори профил на артистот">${artist.bandName}</a>${artIsConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
                                 <div class="chart-artist artist-details">${genre}${genre && city ? ' • ' : ''}${city}</div>
                             </div>
