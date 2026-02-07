@@ -299,7 +299,6 @@
         .artist-link.linktree i { color: #43E660; }
         .artist-link.discord i { color: #5865F2; }
         .artist-link.patreon i { color: #FF424D; }
-        .artist-link.monoton i { color: #7950f2; }
         .artist-link.wikipedia i { color: #000; }
         body.dark-mode .artist-link.wikipedia i { color: #fff; }
         .artist-link.email i { color: #EA4335; }
@@ -1141,15 +1140,14 @@ a.chart-history-item {
             patreon: { name: 'Patreon', icon: 'fab fa-patreon', priority: 19 },
             linkedin: { name: 'LinkedIn', icon: 'fab fa-linkedin', priority: 20 },
             twitch: { name: 'Twitch', icon: 'fab fa-twitch', priority: 21 },
-            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 22 }
+            lastfm: { name: 'Last.fm', icon: 'fab fa-lastfm', priority: 22 },
+            wikipedia: { name: 'Wikipedia', icon: 'fab fa-wikipedia-w', priority: 23 }
         };
         
         const mediaPlatforms = {
-            monoton: { name: 'Mono-Ton', icon: 'fas fa-dove', priority: 1 },
             interview: { name: 'Интервју', icon: 'fas fa-microphone', priority: 2 },
             review: { name: 'Рецензија', icon: 'fas fa-star', priority: 3 },
             article: { name: 'Натпис', icon: 'fas fa-newspaper', priority: 4 },
-            wikipedia: { name: 'Wikipedia', icon: 'fab fa-wikipedia-w', priority: 5 },
             generic: { name: 'Линк', icon: 'fas fa-link', priority: 99 }
         };
         
@@ -2209,6 +2207,89 @@ a.chart-history-item {
         }
         
         // Main initialization
+        // ==================== RSS FEED LOADING & MATCHING ====================
+        async function loadRssFeeds() {
+            try {
+                const feedsResp = await fetch('rss-feeds.json');
+                const feeds = await feedsResp.json();
+                const allArticles = [];
+                
+                const feedPromises = feeds.map(async (feed) => {
+                    try {
+                        const resp = await fetch(feed.feedUrl);
+                        const text = await resp.text();
+                        const parser = new DOMParser();
+                        const xml = parser.parseFromString(text, 'text/xml');
+                        const items = xml.querySelectorAll('item');
+                        
+                        items.forEach(item => {
+                            const title = item.querySelector('title')?.textContent || '';
+                            const link = item.querySelector('link')?.textContent || '';
+                            const description = item.querySelector('description')?.textContent || '';
+                            const content = item.querySelector('content\\:encoded, encoded')?.textContent || '';
+                            const pubDateStr = item.querySelector('pubDate')?.textContent || '';
+                            const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
+                            
+                            allArticles.push({
+                                title,
+                                link,
+                                description: description.replace(/<[^>]*>/g, '').trim(),
+                                content: content.replace(/<[^>]*>/g, '').trim(),
+                                pubDate,
+                                source: feed.name,
+                                sourceIcon: feed.iconUrl,
+                                siteUrl: feed.siteUrl
+                            });
+                        });
+                    } catch (err) {
+                        console.warn(`Failed to fetch RSS feed ${feed.name}:`, err);
+                    }
+                });
+                
+                await Promise.all(feedPromises);
+                allArticles.sort((a, b) => b.pubDate - a.pubDate);
+                return allArticles;
+            } catch (err) {
+                console.warn('Failed to load RSS feeds:', err);
+                return [];
+            }
+        }
+        
+        function findMatchingArticles(articles, bandName, lastfmName) {
+            if (!articles || articles.length === 0 || !bandName) return [];
+            
+            const searchTerms = new Set();
+            const nameLower = bandName.toLowerCase().trim();
+            if (nameLower.length >= 2) searchTerms.add(nameLower);
+            
+            const latinName = transliterate(bandName).toLowerCase().trim();
+            if (latinName.length >= 2 && latinName !== nameLower) searchTerms.add(latinName);
+            
+            if (lastfmName) {
+                const lfmLower = lastfmName.toLowerCase().trim();
+                if (lfmLower.length >= 2) searchTerms.add(lfmLower);
+            }
+            
+            if (searchTerms.size === 0) return [];
+            
+            const boundaryChars = '[\\s,;:.!?\\-\u2013\u2014\\/\\(\\)\\[\\]"\'\\|\u00ab\u00bb\u201e\u201c\\u2018\\u2019\\u201c\\u201d]';
+            const termRegexes = [...searchTerms].map(term => {
+                const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                return new RegExp('(?:^|' + boundaryChars + ')' + escaped + '(?:$|' + boundaryChars + ')', 'i');
+            });
+            
+            return articles.filter(article => {
+                const searchIn = article.title + ' ' + article.description + ' ' + article.content;
+                for (const regex of termRegexes) {
+                    if (regex.test(searchIn)) return true;
+                }
+                return false;
+            });
+        }
+        
+        // Start loading RSS feeds early (non-blocking)
+        const rssLoadPromise = loadRssFeeds();
+        
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
             let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
@@ -2317,6 +2398,44 @@ a.chart-history-item {
                     renderReleases(chartHistory, artist.links);
                 } catch (e) {
                     console.warn('Could not load chart history:', e);
+                }
+                
+                // Load and render RSS media articles
+                try {
+                    const allArticles = await rssLoadPromise;
+                    const matched = findMatchingArticles(allArticles, artist.name, artist.lastfmName);
+                    if (matched.length > 0) {
+                        const linksContainer = document.querySelector('.artist-links');
+                        if (linksContainer) {
+                            // Check if Медиуми section already exists
+                            let mediaTitle = linksContainer.querySelector('.link-section-title');
+                            if (!mediaTitle) {
+                                mediaTitle = document.createElement('h3');
+                                mediaTitle.className = 'link-section-title';
+                                mediaTitle.textContent = 'Медиуми';
+                                linksContainer.appendChild(mediaTitle);
+                            }
+                            
+                            matched.forEach(article => {
+                                const dateStr = article.pubDate.getTime() > 0 
+                                    ? article.pubDate.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short', year: 'numeric' })
+                                    : '';
+                                const a = document.createElement('a');
+                                a.href = article.link;
+                                a.target = '_blank';
+                                a.rel = 'noopener';
+                                a.className = 'artist-link rss-article';
+                                a.innerHTML = `
+                                    <img src="${article.sourceIcon}" alt="${article.source}" style="width:24px;height:24px;border-radius:3px;flex-shrink:0">
+                                    <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem">${article.source} &middot; ${dateStr}</span>` : ''}</span>
+                                    <i class="fas fa-chevron-right artist-link-arrow"></i>
+                                `;
+                                linksContainer.appendChild(a);
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load RSS articles:', e);
                 }
                 
             } catch (error) {

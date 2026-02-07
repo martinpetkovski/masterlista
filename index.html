@@ -1868,9 +1868,14 @@
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="/" class="site-logo-link" title="MMM">
+                <a href="javascript:void(0)" class="site-logo-link site-nav-trigger" title="Мени">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html" class="active"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                </div>
                 <div class="title-group">
                     <h1>Македонска Музичка Топ Листа</h1>
                     <div class="subtitle-stats">
@@ -1882,7 +1887,6 @@
                 <button id="dark-mode-toggle" class="dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
                 </button>
-                <a href="list.html" class="header-btn" title="Листа"><i class="fas fa-list"></i></a>
                 <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
             </div>
         </div>
@@ -2070,6 +2074,23 @@
     <div id="share-card-container"></div>
     
     <script>
+        // ==================== NAV MENU ====================
+        (function() {
+            const trigger = document.querySelector('.site-nav-trigger');
+            const menu = document.getElementById('site-nav-menu');
+            if (!trigger || !menu) return;
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                    menu.classList.remove('open');
+                }
+            });
+        })();
+        
         // Transliteration map for generating URL slugs
         const cyrillicToLatinMap = {
             'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
@@ -3759,9 +3780,9 @@
                     mobilePosition: 'bottom'
                 },
                 {
-                    element: 'a.header-btn[href="list.html"]',
-                    title: 'База на артисти',
-                    description: 'Пристап до комплетната база на македонски музички артисти со филтри и детални информации.',
+                    element: '.site-nav-trigger',
+                    title: 'Навигација',
+                    description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести.',
                     position: 'bottom',
                     mobilePosition: 'bottom'
                 }

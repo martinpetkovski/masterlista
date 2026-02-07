@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let cachedChartData = null; // Store chart-data.json for releases data
     let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
     let latestReleaseDateByArtist = {}; // Cache artist name -> latest release date string
+    let cachedRssArticles = null; // Cache RSS feed articles for media column
+    let rssFeedsConfig = null; // RSS feeds configuration
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
     /**
@@ -225,6 +227,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize dark mode early
     initDarkMode();
 
+    // ==================== NAV MENU ====================
+    function initNavMenu() {
+        const trigger = document.querySelector('.site-nav-trigger');
+        const menu = document.getElementById('site-nav-menu');
+        if (!trigger || !menu) return;
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+    }
+    initNavMenu();
+
     console.log('Script loaded, initializing...');
 
     const cyrillicToLatinMap = {
@@ -272,6 +292,110 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return `/${slug}`;
     }
+
+    // ==================== RSS FEED LOADING & MATCHING ====================
+    
+    /**
+     * Load RSS feeds configuration and fetch all articles.
+     * Results are cached in cachedRssArticles.
+     */
+    async function loadRssFeeds() {
+        if (cachedRssArticles !== null) return cachedRssArticles;
+        try {
+            const feedsResp = await fetch('rss-feeds.json');
+            rssFeedsConfig = await feedsResp.json();
+            
+            const allArticles = [];
+            
+            const feedPromises = rssFeedsConfig.map(async (feed) => {
+                try {
+                    const resp = await fetch(feed.feedUrl);
+                    const text = await resp.text();
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(text, 'text/xml');
+                    const items = xml.querySelectorAll('item');
+                    
+                    items.forEach(item => {
+                        const title = item.querySelector('title')?.textContent || '';
+                        const link = item.querySelector('link')?.textContent || '';
+                        const description = item.querySelector('description')?.textContent || '';
+                        const content = item.querySelector('content\\:encoded, encoded')?.textContent || '';
+                        const pubDateStr = item.querySelector('pubDate')?.textContent || '';
+                        const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
+                        
+                        allArticles.push({
+                            title,
+                            link,
+                            description: description.replace(/<[^>]*>/g, '').trim(),
+                            content: content.replace(/<[^>]*>/g, '').trim(),
+                            pubDate,
+                            source: feed.name,
+                            sourceIcon: feed.iconUrl,
+                            siteUrl: feed.siteUrl
+                        });
+                    });
+                } catch (err) {
+                    console.warn(`Failed to fetch RSS feed ${feed.name}:`, err);
+                }
+            });
+            
+            await Promise.all(feedPromises);
+            allArticles.sort((a, b) => b.pubDate - a.pubDate);
+            cachedRssArticles = allArticles;
+            return allArticles;
+        } catch (err) {
+            console.warn('Failed to load RSS feeds:', err);
+            cachedRssArticles = [];
+            return [];
+        }
+    }
+    
+    /**
+     * Find RSS articles matching a band name.
+     * Checks both the original name and its Latin transliteration
+     * against article titles and content (case-insensitive).
+     * Returns matches sorted by date (latest first).
+     */
+    function findMatchingArticles(bandName, lastfmName) {
+        if (!cachedRssArticles || cachedRssArticles.length === 0) return [];
+        if (!bandName) return [];
+        
+        // Build search terms: original name + Latin transliteration + lastfmName
+        const searchTerms = new Set();
+        const nameLower = bandName.toLowerCase().trim();
+        if (nameLower.length >= 2) searchTerms.add(nameLower);
+        
+        const latinName = transliterateCyrillicToLatin(bandName).toLowerCase().trim();
+        if (latinName.length >= 2 && latinName !== nameLower) searchTerms.add(latinName);
+        
+        if (lastfmName) {
+            const lfmLower = lastfmName.toLowerCase().trim();
+            if (lfmLower.length >= 2) searchTerms.add(lfmLower);
+        }
+        
+        if (searchTerms.size === 0) return [];
+        
+        // Use word-boundary matching to avoid false positives with common-word names
+        // (e.g. "aTa" must not match "data" or "kata")
+        // We define boundaries as: start/end of string, whitespace, or common punctuation
+        const boundaryChars = '[\\s,;:.!?\\-–—\\/\\(\\)\\[\\]"\'\\|«»„"\\u2018\\u2019\\u201c\\u201d]';
+        const termRegexes = [...searchTerms].map(term => {
+            const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return new RegExp('(?:^|' + boundaryChars + ')' + escaped + '(?:$|' + boundaryChars + ')', 'i');
+        });
+        
+        return cachedRssArticles.filter(article => {
+            const searchIn = article.title + ' ' + article.description + ' ' + article.content;
+            
+            for (const regex of termRegexes) {
+                if (regex.test(searchIn)) return true;
+            }
+            return false;
+        });
+    }
+    
+    // Start loading RSS feeds early (non-blocking)
+    const rssLoadPromise = loadRssFeeds();
 
     function deepClone(obj) {
         return JSON.parse(JSON.stringify(obj));
@@ -591,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const linkInputs = linksContainer.querySelectorAll('input[type="url"]');
         const platforms = new Set();
         // Media platforms that can have multiple entries (reviews, interviews, etc.)
-        const allowDuplicates = ['monoton', 'review', 'interview', 'article', 'wikipedia', 'generic'];
+        const allowDuplicates = ['review', 'interview', 'article', 'wikipedia', 'generic'];
         for (let i = 0; i < linkSelects.length; i++) {
             const platform = linkSelects[i].value;
             const url = linkInputs[i].value.trim();
@@ -1037,6 +1161,15 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Loaded ${bandsData.length} bands`);
             // originalBandsData is already set during load (with or without pending changes)
             populateFilters(bandsData);
+            
+            // Ensure RSS feeds are loaded before rendering (for МЕДИУМИ column)
+            try {
+                await rssLoadPromise;
+                console.log(`RSS feeds loaded: ${(cachedRssArticles || []).length} articles`);
+            } catch (rssErr) {
+                console.warn('RSS feeds not available:', rssErr);
+            }
+            
             renderBands(bandsData, { progressive: true });
             initializeFilters();
             initializeModal();
@@ -1085,7 +1218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'vimeo', name: 'Vimeo', icon: 'fa-brands fa-vimeo' },
         { id: 'patreon', name: 'Patreon', icon: 'fa-brands fa-patreon' },
         { id: 'discord', name: 'Discord', icon: 'fa-brands fa-discord' },
-        { id: 'monoton', name: 'Mono-Ton', icon: 'fa-solid fa-dove' },
         { id: 'interview', name: 'Интервју', icon: 'fa-solid fa-microphone' },
         { id: 'review', name: 'Рецензија', icon: 'fa-solid fa-star' },
         { id: 'article', name: 'Натпис', icon: 'fa-solid fa-newspaper' },
@@ -1490,7 +1622,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkSelects = linksContainer.querySelectorAll('select');
             const linkInputs = linksContainer.querySelectorAll('input[type="url"]');
             // Platforms that can have multiple entries
-            const multiLinkPlatforms = ['monoton', 'review', 'interview', 'article', 'wikipedia', 'generic'];
+            const multiLinkPlatforms = ['review', 'interview', 'article', 'wikipedia', 'generic'];
             for (let i = 0; i < linkSelects.length; i++) {
                 const platform = linkSelects[i].value;
                 const url = linkInputs[i].value.trim();
@@ -2280,10 +2412,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkPopularityOrder = [
                 'youtube', 'spotify', 'itunes', 'deezer', 'instagram',
                 'facebook', 'twitter', 'soundcloud', 'bandcamp', 'website', 'linktree',
-                'tiktok', 'linkedin', 'pinterest', 'twitch', 'vimeo', 'patreon', 'discord', 'generic',
-                'monoton', 'review', 'interview', 'article', 'wikipedia'
+                'tiktok', 'linkedin', 'pinterest', 'twitch', 'vimeo', 'patreon', 'discord', 'wikipedia', 'generic',
+                'review', 'interview', 'article'
             ];
-            const reviewPlatforms = ['monoton', 'review', 'interview', 'article', 'wikipedia'];
+            const reviewPlatforms = ['review', 'interview', 'article'];
             const linkIcons = {
                 facebook: 'fa-brands fa-facebook',
                 instagram: 'fa-brands fa-instagram',
@@ -2309,7 +2441,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 vimeo: 'fa-brands fa-vimeo',
                 patreon: 'fa-brands fa-patreon',
                 discord: 'fa-brands fa-discord',
-                monoton: 'fa-solid fa-dove',
                 interview: 'fa-solid fa-microphone',
                 review: 'fa-solid fa-star',
                 article: 'fa-solid fa-newspaper',
@@ -2323,7 +2454,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const hasSpotifyLink = band.links?.spotify && band.links.spotify !== 'недостигаат податоци';
             if (band.links.none === 'недостигаат податоци' && band.contact === 'недостигаат податоци') {
                 linksHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
-                reviewsHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
+                // Even with no links, check for RSS matches
+                const matchedArticles = findMatchingArticles(band.name, band.lastfmName);
+                if (matchedArticles.length > 0) {
+                    reviewsHtml = matchedArticles
+                        .map(article => {
+                            const escapedTitle = article.title.replace(/"/g, '&quot;');
+                            return `<a href="${article.link}" target="_blank" title="${escapedTitle}"><img src="${article.sourceIcon}" alt="${article.source}" class="media-news-icon"></a>`;
+                        })
+                        .join('');
+                } else {
+                    reviewsHtml = '';
+                }
             } else {
                 const sortedPlatforms = Object.keys(band.links).sort((a, b) => {
                     const indexA = linkPopularityOrder.indexOf(a);
@@ -2351,9 +2493,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     linksHtml += `<a href="mailto:${band.contact}" class="contact-link"><i class="fa-solid fa-envelope"></i></a>`;
                 }
                 
-                // Build reviews HTML
+                // Build reviews/media HTML from manual links
+                let manualReviewsHtml = '';
                 if (reviewLinks.length > 0) {
-                    reviewsHtml = reviewLinks
+                    manualReviewsHtml = reviewLinks
                         .flatMap(platform => {
                             const urlOrUrls = band.links[platform];
                             const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
@@ -2363,9 +2506,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                         })
                         .join('');
-                } else {
-                    reviewsHtml = '';
                 }
+                
+                // Add RSS-matched articles to media column
+                const matchedArticles = findMatchingArticles(band.name, band.lastfmName);
+                let rssHtml = '';
+                if (matchedArticles.length > 0) {
+                    rssHtml = matchedArticles
+                        .map(article => {
+                            const escapedTitle = article.title.replace(/"/g, '&quot;');
+                            return `<a href="${article.link}" target="_blank" title="${escapedTitle}"><img src="${article.sourceIcon}" alt="${article.source}" class="media-news-icon"></a>`;
+                        })
+                        .join('');
+                }
+                
+                reviewsHtml = rssHtml + manualReviewsHtml;
             }
             let cityHtml = band.city === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
@@ -3022,9 +3177,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         {
-            element: '.chart-btn',
-            title: 'Топ листа',
-            description: 'Тука се најновите синглови и албуми од македонски артисти. Се ажурира автоматски секој ден.',
+            element: '.site-nav-trigger',
+            title: 'Навигација',
+            description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести.',
             position: 'bottom',
             beforeShow: () => {
                 document.getElementById('custom-dialog-modal').style.display = 'none';

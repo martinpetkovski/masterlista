@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музички Вести | Македонска Музичка Мастер Листа</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="Музички Вести | Македонска Музичка Мастер Листа">
+    <meta name="description" content="Најнови вести од македонската музичка сцена. Рецензии, интервјуа и настани.">
+    <meta name="keywords" content="македонска музика, музички вести, рецензии, интервјуа, македонски бендови">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <link rel="canonical" href="https://toplista.mk/vesti.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/vesti.html">
+    <meta property="og:title" content="Музички Вести | Македонска Музичка Мастер Листа">
+    <meta property="og:description" content="Најнови вести од македонската музичка сцена. Рецензии, интервјуа и настани.">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+    <meta property="og:site_name" content="Топ Листа МК">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://toplista.mk/vesti.html">
+    <meta property="twitter:title" content="Музички Вести">
+    <meta property="twitter:description" content="Најнови вести од македонската музичка сцена.">
+    <meta property="twitter:image" content="https://toplista.mk/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Preconnect to external origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <style>
+        /* ==================== PAGE LAYOUT ==================== */
+        body.vesti-page {
+            height: auto;
+            overflow: auto;
+        }
+
+        body.vesti-page main {
+            height: auto;
+            overflow: visible;
+        }
+
+        .news-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem 2rem;
+        }
+
+        /* ==================== PAGE HEADER / FILTERS ==================== */
+        .news-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .news-page-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .news-source-filters {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .news-source-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .news-source-filter:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-secondary);
+        }
+
+        .news-source-filter.active {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .news-source-filter img {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+        }
+
+        /* ==================== HERO ARTICLE ==================== */
+        .news-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .news-hero:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 20px rgba(74, 127, 165, 0.08);
+        }
+
+        .news-hero-image {
+            aspect-ratio: 16 / 10;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-hover) 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .news-hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .news-hero-image .hero-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-muted);
+            opacity: 0.25;
+            background: linear-gradient(135deg, #e8ecf1 0%, #d1d8e0 100%);
+        }
+
+        .news-hero-body {
+            padding: 1.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .news-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .news-hero-badge img {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+        }
+
+        .news-hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.3;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .news-hero:hover .news-hero-title {
+            color: var(--accent-blue);
+        }
+
+        .news-hero-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* ==================== SECTION LABEL ==================== */
+        .news-section-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-blue);
+            display: inline-block;
+        }
+
+        /* ==================== CARD GRID ==================== */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        /* ==================== NEWS CARD ==================== */
+        .news-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .news-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 16px rgba(74, 127, 165, 0.07);
+            transform: translateY(-2px);
+        }
+
+        .news-card-image {
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-hover) 100%);
+            position: relative;
+        }
+
+        .news-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover .news-card-image img {
+            transform: scale(1.03);
+        }
+
+        .news-card-image .card-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: var(--text-muted);
+            opacity: 0.2;
+        }
+
+        .news-card-body {
+            padding: 0.85rem 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.35rem;
+        }
+
+        .news-card-source {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .news-card-source-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .news-card-source-name img {
+            width: 13px;
+            height: 13px;
+            border-radius: 2px;
+        }
+
+        .news-card-date {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .news-card-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.15s ease;
+        }
+
+        .news-card:hover .news-card-title {
+            color: var(--accent-blue);
+        }
+
+        .news-card-desc {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .news-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-top: 0.4rem;
+            margin-top: auto;
+        }
+
+        .news-card-readmore {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .news-card:hover .news-card-readmore {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ==================== STATES ==================== */
+        .news-loading {
+            text-align: center;
+            padding: 5rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .news-loading i {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            animation: spin 1s linear infinite;
+            color: var(--accent-blue);
+        }
+
+        .news-loading div:last-child {
+            font-size: 0.82rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .news-empty {
+            text-align: center;
+            padding: 5rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .news-empty i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.75rem;
+            opacity: 0.3;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .news-footer {
+            margin-top: 2.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .news-footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .news-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ==================== DARK MODE ==================== */
+        body.dark-mode .news-hero {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .news-hero:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        body.dark-mode .news-hero-image .hero-placeholder {
+            background: linear-gradient(135deg, #1a1e26 0%, #22262e 100%);
+        }
+
+        body.dark-mode .news-card {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .news-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        body.dark-mode .news-card-image {
+            background: linear-gradient(135deg, #1a1e26 0%, #22262e 100%);
+        }
+
+        /* ==================== MOBILE ==================== */
+        @media (max-width: 600px) {
+            .news-container {
+                padding: 0.75rem 0.6rem 1.5rem;
+            }
+
+            .news-page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .news-source-filters {
+                justify-content: flex-start;
+            }
+
+            /* Hero stacks vertically on mobile */
+            .news-hero {
+                grid-template-columns: 1fr;
+                border-radius: 10px;
+            }
+
+            .news-hero-image {
+                aspect-ratio: 16 / 9;
+            }
+
+            .news-hero-body {
+                padding: 1rem;
+            }
+
+            .news-hero-title {
+                font-size: 1.05rem;
+            }
+
+            .news-hero-desc {
+                font-size: 0.78rem;
+                -webkit-line-clamp: 2;
+            }
+
+            /* Single column grid on mobile */
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            /* Horizontal card layout on mobile */
+            .news-card {
+                flex-direction: row;
+                border-radius: 8px;
+            }
+
+            .news-card-image {
+                width: 110px;
+                min-height: 100%;
+                aspect-ratio: auto;
+                flex-shrink: 0;
+            }
+
+            .news-card-body {
+                padding: 0.65rem 0.75rem;
+            }
+
+            .news-card-title {
+                font-size: 0.8rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .news-card-desc {
+                -webkit-line-clamp: 2;
+                font-size: 0.72rem;
+            }
+
+            .news-card-readmore {
+                display: none;
+            }
+
+            .news-card-footer {
+                display: none;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 850px) {
+            .news-hero {
+                grid-template-columns: 1fr;
+            }
+
+            .news-hero-image {
+                aspect-ratio: 16 / 8;
+            }
+
+            .news-hero-body {
+                padding: 1.1rem 1.25rem;
+            }
+
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="compact vesti-page">
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="javascript:void(0)" class="site-logo-link site-nav-trigger" title="Мени">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="vesti.html" class="active"><i class="fas fa-newspaper"></i> Вести</a>
+                </div>
+                <div class="title-group">
+                    <h1>Музички Вести</h1>
+                    <div class="subtitle-stats">
+                        <span>напојувано од <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="news-container">
+            <div class="news-page-header">
+                <h2>Најнови Вести</h2>
+                <div class="news-source-filters" id="news-source-filters"></div>
+            </div>
+            <div id="news-loading" class="news-loading">
+                <div><i class="fas fa-spinner"></i></div>
+                <div>Се вчитуваат вестите...</div>
+            </div>
+            <div id="news-hero" style="display:none;"></div>
+            <div class="news-section-label" id="news-section-label" style="display:none;">Последни Написи</div>
+            <div id="news-grid" class="news-grid" style="display:none;"></div>
+            <div id="news-empty" class="news-empty" style="display:none;">
+                <i class="fas fa-newspaper"></i>
+                <p>Нема достапни вести во моментов.</p>
+            </div>
+            <div class="news-footer">
+                <span>напојувано од <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a></span>
+            </div>
+        </div>
+    </main>
+    <script>
+        // ==================== DARK MODE ====================
+        function initDarkMode() {
+            const toggle = document.getElementById('dark-mode-toggle');
+            if (!toggle) return;
+            const savedMode = localStorage.getItem('mmm-dark-mode');
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                toggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('mmm-dark-mode', isDark);
+                toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+        }
+        initDarkMode();
+
+        // ==================== NAV MENU ====================
+        function initNavMenu() {
+            const trigger = document.querySelector('.site-nav-trigger');
+            const menu = document.getElementById('site-nav-menu');
+            if (!trigger || !menu) return;
+            
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                    menu.classList.remove('open');
+                }
+            });
+        }
+        initNavMenu();
+
+        // ==================== RSS FEED LOADING ====================
+        const RSS_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/rss-proxy';
+        
+        async function fetchFeed(feedUrl) {
+            // Try direct fetch first, fallback to proxy for CORS-blocked feeds
+            try {
+                const resp = await fetch(feedUrl);
+                return await resp.text();
+            } catch {
+                const proxyUrl = `${RSS_PROXY}?url=${encodeURIComponent(feedUrl)}`;
+                const resp = await fetch(proxyUrl);
+                return await resp.text();
+            }
+        }
+        
+        async function loadNewsFeeds() {
+            try {
+                const feedsResp = await fetch('rss-feeds.json');
+                const feeds = await feedsResp.json();
+                
+                const allArticles = [];
+                const filtersContainer = document.getElementById('news-source-filters');
+                
+                // Build source filter buttons
+                feeds.forEach(feed => {
+                    const btn = document.createElement('button');
+                    btn.className = 'news-source-filter active';
+                    btn.dataset.source = feed.name;
+                    btn.innerHTML = `<img src="${feed.iconUrl}" alt="${feed.name}"> ${feed.name}`;
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('active');
+                        renderNews(allArticles);
+                    });
+                    filtersContainer.appendChild(btn);
+                });
+                
+                // Fetch all feeds in parallel
+                const feedPromises = feeds.map(async (feed) => {
+                    try {
+                        const text = await fetchFeed(feed.feedUrl);
+                        const parser = new DOMParser();
+                        const xml = parser.parseFromString(text, 'text/xml');
+                        const items = xml.querySelectorAll('item');
+                        
+                        items.forEach(item => {
+                            const title = item.querySelector('title')?.textContent || '';
+                            const link = item.querySelector('link')?.textContent || '';
+                            const description = item.querySelector('description')?.textContent || '';
+                            const content = item.querySelector('content\\:encoded, encoded')?.textContent || '';
+                            const pubDateStr = item.querySelector('pubDate')?.textContent || '';
+                            const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
+                            
+                            // Extract image from various RSS sources
+                            let image = '';
+                            // 1. Check enclosure
+                            const enclosure = item.querySelector('enclosure[type^="image"]');
+                            if (enclosure) {
+                                image = enclosure.getAttribute('url') || '';
+                            }
+                            // 2. Check media:content / media:thumbnail
+                            if (!image) {
+                                const media = item.querySelector('media\\:content, content[medium="image"], media\\:thumbnail, thumbnail');
+                                if (media) image = media.getAttribute('url') || '';
+                            }
+                            // 3. Extract first image from content or description HTML
+                            if (!image) {
+                                const htmlContent = content || description;
+                                const imgMatch = htmlContent.match(/<img[^>]+src=["']([^"']+)["']/i);
+                                if (imgMatch) image = imgMatch[1];
+                            }
+                            
+                            // Strip HTML tags from description for display
+                            const cleanDesc = description.replace(/<[^>]*>/g, '').trim();
+                            
+                            allArticles.push({
+                                title,
+                                link,
+                                description: cleanDesc,
+                                content: content.replace(/<[^>]*>/g, '').trim(),
+                                pubDate,
+                                pubDateStr,
+                                image,
+                                source: feed.name,
+                                sourceIcon: feed.iconUrl,
+                                siteUrl: feed.siteUrl
+                            });
+                        });
+                    } catch (err) {
+                        console.warn(`Failed to fetch feed ${feed.name}:`, err);
+                    }
+                });
+                
+                await Promise.all(feedPromises);
+                
+                // Sort by date descending
+                allArticles.sort((a, b) => b.pubDate - a.pubDate);
+                
+                document.getElementById('news-loading').style.display = 'none';
+                
+                if (allArticles.length === 0) {
+                    document.getElementById('news-empty').style.display = 'block';
+                } else {
+                    renderNews(allArticles);
+                }
+            } catch (err) {
+                console.error('Failed to load news feeds:', err);
+                document.getElementById('news-loading').innerHTML = '<div><i class="fas fa-exclamation-triangle"></i></div><div>Грешка при вчитување на вестите.</div>';
+            }
+        }
+        
+        function relativeTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Сега';
+            if (diffMins < 60) return `пред ${diffMins} мин`;
+            if (diffHours < 24) return `пред ${diffHours} ч`;
+            if (diffDays < 7) return `пред ${diffDays} ${diffDays === 1 ? 'ден' : 'дена'}`;
+            return date.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        
+        function renderNews(articles) {
+            const heroContainer = document.getElementById('news-hero');
+            const gridContainer = document.getElementById('news-grid');
+            const sectionLabel = document.getElementById('news-section-label');
+            const activeFilters = Array.from(document.querySelectorAll('.news-source-filter.active'))
+                .map(btn => btn.dataset.source);
+            
+            const filtered = articles.filter(a => activeFilters.includes(a.source));
+            
+            if (filtered.length === 0) {
+                heroContainer.style.display = 'none';
+                gridContainer.style.display = 'none';
+                sectionLabel.style.display = 'none';
+                document.getElementById('news-empty').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('news-empty').style.display = 'none';
+            heroContainer.style.display = '';
+            gridContainer.style.display = '';
+            sectionLabel.style.display = filtered.length > 1 ? '' : 'none';
+            
+            // Hero article (first/latest)
+            const hero = filtered[0];
+            const heroDate = hero.pubDate.getTime() > 0 ? relativeTime(hero.pubDate) : '';
+            const heroImageHtml = hero.image
+                ? `<img src="${hero.image}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'hero-placeholder\\'><i class=\\'fas fa-newspaper\\'></i></div>'">`
+                : `<div class="hero-placeholder"><i class="fas fa-newspaper"></i></div>`;
+            
+            heroContainer.innerHTML = `<a href="${hero.link}" target="_blank" class="news-hero">
+                <div class="news-hero-image">${heroImageHtml}</div>
+                <div class="news-hero-body">
+                    <div class="news-hero-badge">
+                        <img src="${hero.sourceIcon}" alt="${hero.source}">
+                        ${hero.source}
+                    </div>
+                    <div class="news-hero-title">${hero.title}</div>
+                    ${hero.description ? `<div class="news-hero-desc">${hero.description}</div>` : ''}
+                    <div class="news-hero-meta">
+                        ${heroDate ? `<span><i class="far fa-clock"></i> ${heroDate}</span>` : ''}
+                    </div>
+                </div>
+            </a>`;
+            
+            // Grid cards (rest of articles)
+            const rest = filtered.slice(1);
+            gridContainer.innerHTML = rest.map(article => {
+                const dateStr = article.pubDate.getTime() > 0 ? relativeTime(article.pubDate) : '';
+                const imageHtml = article.image
+                    ? `<img src="${article.image}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-placeholder\\'><i class=\\'fas fa-music\\'></i></div>'">`
+                    : `<div class="card-placeholder"><i class="fas fa-music"></i></div>`;
+                
+                return `<a href="${article.link}" target="_blank" class="news-card">
+                    <div class="news-card-image">${imageHtml}</div>
+                    <div class="news-card-body">
+                        <div class="news-card-source">
+                            <span class="news-card-source-name">
+                                <img src="${article.sourceIcon}" alt="${article.source}">
+                                ${article.source}
+                            </span>
+                            ${dateStr ? `<span class="news-card-date">${dateStr}</span>` : ''}
+                        </div>
+                        <div class="news-card-title">${article.title}</div>
+                        ${article.description ? `<div class="news-card-desc">${article.description}</div>` : ''}
+                        <div class="news-card-footer">
+                            <span class="news-card-readmore">Прочитај повеќе <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>`;
+            }).join('');
+        }
+        
+        // Start loading
+        loadNewsFeeds();
+    </script>
+</body>
+</html>
