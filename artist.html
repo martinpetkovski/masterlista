@@ -99,12 +99,16 @@
         .artist-bg-media-wrapper::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(242,243,245,0.0) 0%, rgba(242,243,245,0.3) 35%, rgba(242,243,245,0.8) 65%, var(--bg-primary, #f2f3f5) 100%);
-            z-index: 1;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, transparent 0%, #f2f3f5 100%);
+            z-index: 2;
+            pointer-events: none;
         }
         body.dark-mode .artist-bg-media-wrapper::after {
-            background: linear-gradient(to bottom, rgba(17,19,24,0.0) 0%, rgba(17,19,24,0.3) 35%, rgba(17,19,24,0.8) 65%, #111318 100%);
+            background: linear-gradient(to bottom, transparent 0%, #111318 100%);
         }
         .artist-bg-gradient {
             width: 100%;
@@ -112,21 +116,18 @@
             position: relative;
             overflow: hidden;
         }
-        body.dark-mode .artist-bg-gradient {
-            opacity: 0.4;
-        }
         
         /* Animated water-like flowing blobs */
         .artist-bg-orb {
             position: absolute;
-            filter: blur(40px);
-            opacity: 0.7;
+            filter: blur(50px);
+            opacity: 0.55;
             will-change: transform, border-radius;
             mix-blend-mode: normal;
         }
         body.dark-mode .artist-bg-orb {
-            opacity: 0.45;
-            filter: blur(50px);
+            opacity: 0.4;
+            filter: blur(55px);
         }
         
         .artist-bg-orb:nth-child(1) {
@@ -340,12 +341,13 @@
         
         .artist-sounds-like {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             margin-top: 0.5rem;
         }
         
         .artist-sounds-like strong {
-            color: var(--text-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
         }
         
         /* Links Section */
@@ -812,10 +814,13 @@
             align-items: center;
             gap: 0.75rem;
             padding: 0.75rem;
+            padding-bottom: 0.85rem;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
         
         body.dark-mode .chart-history-item {
@@ -871,37 +876,32 @@ a.chart-history-item {
             color: var(--accent-orange);
         }
         
-        /* Edit Button Row */
-        .edit-button-row {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .edit-artist-btn {
+        /* Edit Button in Header */
+        .header-edit-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            padding: 0.5rem 1rem;
+            gap: 0.3rem;
+            padding: 0.35rem 0.7rem;
             background: transparent;
             border: 1px solid rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
+            border-radius: 6px;
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-decoration: none;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
         
-        .edit-artist-btn:hover {
+        .header-edit-btn:hover {
             border-color: var(--accent-orange);
             color: var(--accent-orange);
         }
         
-        body.dark-mode .edit-artist-btn {
+        body.dark-mode .header-edit-btn {
             border-color: rgba(255, 255, 255, 0.15);
         }
         
-        body.dark-mode .edit-artist-btn:hover {
+        body.dark-mode .header-edit-btn:hover {
             border-color: var(--accent-orange);
         }
         
@@ -956,6 +956,25 @@ a.chart-history-item {
             margin-bottom: 0.5rem;
             display: block;
             opacity: 0.5;
+        }
+        
+        /* Release sparkline */
+        .release-sparkline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 16px;
+            pointer-events: none;
+            opacity: 0.35;
+            overflow: hidden;
+            border-radius: 0 0 7px 7px;
+        }
+        
+        .release-sparkline svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         
         /* Popularity Graph */
@@ -1142,6 +1161,50 @@ a.chart-history-item {
                 if (!menu.contains(e.target) && !trigger.contains(e.target)) menu.classList.remove('open');
             });
         })();
+        
+        // Ensure a hex color has sufficient contrast against the page background.
+        // In light mode (bg ~95% L), force lightness ≤ 45%.
+        // In dark mode (bg ~8% L), force lightness ≥ 55%.
+        function ensureReadableColor(hex, isDarkMode) {
+            if (!hex || hex.length < 7) return isDarkMode ? '#ffffff' : '#000000';
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; }
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+                else if (max === g) h = ((b - r) / d + 2) / 6;
+                else h = ((r - g) / d + 4) / 6;
+            }
+            // Clamp lightness for readability
+            if (isDarkMode) {
+                if (l < 0.55) l = 0.55;
+                if (l > 0.8) l = 0.8;
+            } else {
+                if (l > 0.45) l = 0.45;
+                if (l < 0.15) l = 0.15;
+            }
+            // Boost saturation slightly so adjusted colors stay vivid
+            s = Math.min(1, s * 1.15);
+            // HSL to hex
+            function hue2rgb(p, q, t) {
+                if (t < 0) t += 1; if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            }
+            const q2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p2 = 2 * l - q2;
+            const rr = Math.round(hue2rgb(p2, q2, h + 1/3) * 255);
+            const gg = Math.round(hue2rgb(p2, q2, h) * 255);
+            const bb = Math.round(hue2rgb(p2, q2, h - 1/3) * 255);
+            return `#${rr.toString(16).padStart(2,'0')}${gg.toString(16).padStart(2,'0')}${bb.toString(16).padStart(2,'0')}`;
+        }
         
         // Extract dominant colors from an image
         async function extractColorsFromImage(imageUrl) {
@@ -1527,9 +1590,18 @@ a.chart-history-item {
                 linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">Нема достапни линкови</p>`;
             }
             
-            // Build edit URL
+            // Build edit URL and add to header nav
             const artistSlug = generateSlug(artist.name);
             const editUrl = `list.html?edit=${encodeURIComponent(artistSlug)}`;
+            const headerButtons = document.querySelector('.header-buttons');
+            if (headerButtons && !headerButtons.querySelector('.header-edit-btn')) {
+                const editLink = document.createElement('a');
+                editLink.href = editUrl;
+                editLink.className = 'header-edit-btn';
+                editLink.title = 'Уреди податоци';
+                editLink.innerHTML = '<i class="fas fa-edit"></i> Уреди';
+                headerButtons.insertBefore(editLink, headerButtons.firstChild);
+            }
             
             // Render content (chart history will be added after loading)
             contentEl.innerHTML = `
@@ -1543,13 +1615,6 @@ a.chart-history-item {
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
                     ${labelsHtml}
                     ${soundsLikeHtml}
-                </div>
-                
-                <div class="edit-button-row">
-                    <a href="${editUrl}" class="edit-artist-btn">
-                        <i class="fas fa-edit"></i>
-                        Уреди податоци
-                    </a>
                 </div>
                 
                 <div id="popularity-graph-container"></div>
@@ -1577,37 +1642,26 @@ a.chart-history-item {
                 
                 const wrapper = document.createElement('div');
                 wrapper.className = 'artist-bg-media-wrapper';
+                // Solid first accent color as the base background
+                wrapper.style.background = c1;
                 
                 const gradientDiv = document.createElement('div');
                 gradientDiv.className = 'artist-bg-gradient';
                 
-                // Create animated orbs - use full accent colors with colored edges
-                const mix = (a, b, t) => {
-                    // Simple hex color mix
-                    const ha = a.replace('#',''), hb = b.replace('#','');
-                    const ra = parseInt(ha.substring(0,2),16), ga = parseInt(ha.substring(2,4),16), ba2 = parseInt(ha.substring(4,6),16);
-                    const rb = parseInt(hb.substring(0,2),16), gb = parseInt(hb.substring(2,4),16), bb = parseInt(hb.substring(4,6),16);
-                    const r = Math.round(ra + (rb - ra) * t), g = Math.round(ga + (gb - ga) * t), b3 = Math.round(ba2 + (bb - ba2) * t);
-                    return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b3.toString(16).padStart(2,'0')}`;
-                };
-                const c3 = mix(c1, c2, 0.5);
-                
-                // Set a base tinted background on the gradient container
-                gradientDiv.style.background = `linear-gradient(135deg, ${c1}40 0%, ${c2}30 50%, ${c1}25 100%)`;
-                
+                // All orbs use the second accent color with varying opacity
                 const orbConfigs = [
-                    { color: c1, edgeColor: c2 + '60', opacity: 0.8 },
-                    { color: c2, edgeColor: c1 + '50', opacity: 0.75 },
-                    { color: c3, edgeColor: c1 + '40', opacity: 0.7 },
-                    { color: c1, edgeColor: c3 + '50', opacity: 0.65 },
-                    { color: c2, edgeColor: c3 + '45', opacity: 0.6 },
-                    { color: c3, edgeColor: c2 + '55', opacity: 0.55 },
-                    { color: c1, edgeColor: c2 + '40', opacity: 0.5 }
+                    { opacity: 0.7 },
+                    { opacity: 0.6 },
+                    { opacity: 0.55 },
+                    { opacity: 0.5 },
+                    { opacity: 0.45 },
+                    { opacity: 0.4 },
+                    { opacity: 0.35 }
                 ];
                 orbConfigs.forEach(cfg => {
                     const orb = document.createElement('div');
                     orb.className = 'artist-bg-orb';
-                    orb.style.background = `radial-gradient(circle, ${cfg.color} 0%, ${cfg.edgeColor} 70%, transparent 100%)`;
+                    orb.style.background = `radial-gradient(circle, ${c2} 0%, ${c2}80 60%, transparent 100%)`;
                     orb.style.opacity = cfg.opacity;
                     gradientDiv.appendChild(orb);
                 });
@@ -1615,16 +1669,13 @@ a.chart-history-item {
                 wrapper.appendChild(gradientDiv);
                 document.body.insertBefore(wrapper, document.body.firstChild);
                 
-                // Parallax scroll effect
+                // Parallax scroll effect - move entire wrapper (bg + blobs) together
                 let ticking = false;
                 window.addEventListener('scroll', () => {
                     if (!ticking) {
                         requestAnimationFrame(() => {
                             const scrollY = window.scrollY;
-                            wrapper.style.transform = `translateY(${-scrollY * 0.3}px)`;
-                            // Fade out as user scrolls
-                            const opacity = Math.max(0, 1 - scrollY / (window.innerHeight * 0.6));
-                            gradientDiv.style.opacity = document.body.classList.contains('dark-mode') ? opacity * 0.4 : opacity * 0.55;
+                            wrapper.style.transform = `translateY(${-scrollY * 0.35}px)`;
                             ticking = false;
                         });
                         ticking = true;
@@ -1922,6 +1973,24 @@ a.chart-history-item {
                     </button>
                 ` : '';
                 
+                // Build mini sparkline for release popularity over chart weeks
+                let sparklineHtml = '';
+                if (release.chartWeeks && release.chartWeeks.length >= 2) {
+                    const weeks = release.chartWeeks.sort((a, b) => a.week.localeCompare(b.week));
+                    const maxP = Math.max(...weeks.map(w => w.popularity));
+                    const minP = Math.min(...weeks.map(w => w.popularity));
+                    const sw = 200, sh = 16, sp = 1;
+                    const pts = weeks.map((w, i) => {
+                        const x = (i / (weeks.length - 1)) * sw;
+                        const normY = maxP === minP ? 0.5 : (w.popularity - minP) / (maxP - minP);
+                        const y = sh - sp - normY * (sh - sp * 2);
+                        return `${x},${y}`;
+                    });
+                    const areaPath = `M0,${sh} L${pts.map(p => p).join(' L')} L${sw},${sh} Z`;
+                    const linePath = `M${pts.join(' L')}`;
+                    sparklineHtml = `<div class="release-sparkline"><svg viewBox="0 0 ${sw} ${sh}" preserveAspectRatio="none"><path d="${areaPath}" fill="var(--accent-orange)" opacity="0.25"/><path d="${linePath}" fill="none" stroke="var(--accent-orange)" stroke-width="1" opacity="0.5"/></svg></div>`;
+                }
+                
                 return `
                     <div class="chart-history-item">
                         <div class="chart-history-cover">
@@ -1940,6 +2009,7 @@ a.chart-history-item {
                             </div>
                         </div>
                         ${playButton}
+                        ${sparklineHtml}
                     </div>
                 `;
             }).join('');
@@ -2551,10 +2621,38 @@ a.chart-history-item {
                     if (avatar) {
                         avatar.style.borderColor = c1;
                     }
-                    // Tint the artist name
+                    // Set artist name to black or white based on c1 lightness, with thin opposite-color outline
                     const nameEl = document.querySelector('.artist-name');
-                    if (nameEl) nameEl.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
-                    if (nameEl) { nameEl.style.webkitBackgroundClip = 'text'; nameEl.style.webkitTextFillColor = 'transparent'; nameEl.style.backgroundClip = 'text'; }
+                    if (nameEl) {
+                        const rr = parseInt(c1.slice(1,3),16), gg = parseInt(c1.slice(3,5),16), bb = parseInt(c1.slice(5,7),16);
+                        const lum = (0.299 * rr + 0.587 * gg + 0.114 * bb) / 255;
+                        const textCol = lum > 0.5 ? '#000000' : '#ffffff';
+                        const strokeCol = c1;
+                        nameEl.style.color = textCol;
+                        nameEl.style.webkitTextStroke = `2.0px ${strokeCol}`;
+                        nameEl.style.paintOrder = 'stroke fill';
+                        // Status dot and verified badge need to stay visible
+                        const dot = nameEl.querySelector('.status-dot');
+                        if (dot) dot.style.boxShadow = `0 0 0 2px ${textCol === '#ffffff' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.15)'}`;
+                        
+                        // Apply same text color to nearby content in the hero area
+                        const mutedCol = textCol === '#ffffff' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.55)';
+                        const secondaryCol = textCol === '#ffffff' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)';
+                        // Sounds like
+                        const soundsLike = document.querySelector('.artist-sounds-like');
+                        if (soundsLike) { soundsLike.style.color = mutedCol; const strong = soundsLike.querySelector('strong'); if (strong) strong.style.color = secondaryCol; }
+                        // Meta badges
+                        document.querySelectorAll('.artist-city, .artist-genre').forEach(el => { el.style.color = '#fff'; });
+                        // Labels
+                        document.querySelectorAll('.artist-label').forEach(el => { el.style.color = '#fff'; });
+                        // Section titles (Кумулативна Популарност, Изданија)
+                        document.querySelectorAll('.section-title').forEach(el => { el.style.color = mutedCol; const icon = el.querySelector('i'); if (icon) icon.style.color = secondaryCol; });
+                        // Popularity graph text
+                        const graphContainer = document.getElementById('popularity-graph-container');
+                        if (graphContainer) {
+                            graphContainer.querySelectorAll('.graph-labels, .graph-value-label').forEach(el => el.style.color = mutedCol);
+                        }
+                    }
                     // Add subtle accent to link cards on hover via CSS variable
                     document.querySelectorAll('.artist-link').forEach(link => {
                         link.style.setProperty('--link-accent', c1);
