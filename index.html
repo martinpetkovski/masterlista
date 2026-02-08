@@ -1132,8 +1132,8 @@
         .chart-rank.rank-up::after {
             content: '▲';
             position: absolute;
-            top: -8px;
-            right: -2px;
+            top: -4px;
+            right: 0px;
             font-size: 0.8rem;
             font-weight: 900;
             color: var(--accent-green);
@@ -1144,8 +1144,8 @@
         .chart-rank.rank-down::after {
             content: '▼';
             position: absolute;
-            top: -8px;
-            right: -2px;
+            top: -4px;
+            right: 0px;
             font-size: 0.8rem;
             font-weight: 900;
             color: var(--accent-red);
@@ -1305,8 +1305,8 @@
         /* Popularity change indicator - arrow overlays the number */
         .pop-change {
             position: absolute;
-            top: 0%;
-            left: 90%;
+            top: -4px;
+            left: 30px;
             font-size: 1rem;
             font-weight: 900;
             line-height: 1;
@@ -1346,6 +1346,7 @@
             align-items: center;
             gap: 0.5rem;
             flex-shrink: 0;
+            margin-right: 10px;
         }
         
         .chart-stat {
