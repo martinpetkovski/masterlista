@@ -1574,27 +1574,27 @@ function Update-Instagram {
     $slideFiles += $titlePath
     Write-Step "  Saved: slide-1-title.jpg" "DarkGray"
 
-    # Slide 2: Full top 10 list
-    Write-Step "Generating slide 2 (Top 10 list)..."
-    $listBmp = New-ListSlide $topReleases $igHandles $weekLabel
-    $listPath = Join-Path $tempDir "slide-2-list.jpg"
-    Save-SlideAsJpeg $listBmp $listPath
-    $listBmp.Dispose()
-    $slideFiles += $listPath
-    Write-Step "  Saved: slide-2-list.jpg" "DarkGray"
-
-    # Slides 3-5: Individual release cards for #1, #2, #3
+    # Slides 2-4: Individual release cards for #1, #2, #3
     for ($i = 0; $i -lt 3; $i++) {
         $rank = $i + 1
-        Write-Step "Generating slide $($rank + 2) (no. ${rank}: $($topReleases[$i].bandName))..."
+        Write-Step "Generating slide $($rank + 1) (no. ${rank}: $($topReleases[$i].bandName))..."
         $handle = if ($igHandles.ContainsKey($topReleases[$i].bandName)) { $igHandles[$topReleases[$i].bandName] } else { $null }
         $relBmp = New-ReleaseSlide $topReleases[$i] $rank $handle $weekLabel
-        $relPath = Join-Path $tempDir "slide-$($rank + 2)-release.jpg"
+        $relPath = Join-Path $tempDir "slide-$($rank + 1)-release.jpg"
         Save-SlideAsJpeg $relBmp $relPath
         $relBmp.Dispose()
         $slideFiles += $relPath
-        Write-Step "  Saved: slide-$($rank + 2)-release.jpg" "DarkGray"
+        Write-Step "  Saved: slide-$($rank + 1)-release.jpg" "DarkGray"
     }
+
+    # Slide 5: Full top 10 list
+    Write-Step "Generating slide 5 (Top 10 list)..."
+    $listBmp = New-ListSlide $topReleases $igHandles $weekLabel
+    $listPath = Join-Path $tempDir "slide-5-list.jpg"
+    Save-SlideAsJpeg $listBmp $listPath
+    $listBmp.Dispose()
+    $slideFiles += $listPath
+    Write-Step "  Saved: slide-5-list.jpg" "DarkGray"
 
     # Slide 6: Promo / CTA slide
     Write-Step "Generating slide 6 (Promo)..."

@@ -391,8 +391,7 @@ tr {
     flex-wrap: nowrap;
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
-    padding: 0.2rem 0.35rem;
-    min-height: 32px;
+    padding-right: 0.8rem;
     gap: 0.25rem;
     animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
@@ -533,10 +532,6 @@ td[data-label="Акции"] button:active {
 
 td[data-label="Акции"] button.edit-btn {
     color: var(--accent-blue);
-}
-
-td[data-label="Акции"] button.delete-btn {
-    color: var(--accent-red);
 }
 
 td[data-label="Име"] {
@@ -906,6 +901,23 @@ footer { display: none; }
 }
 
 #save-band-btn { margin-top: 0.6rem; background: var(--accent-green); }
+
+.delete-band-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent-red);
+    border: none;
+    cursor: pointer;
+    height: 38px;
+}
+
+.delete-band-btn:hover {
+    opacity: 0.9;
+}
 
 /* New Release */
 .new-release-artists {
@@ -1317,9 +1329,17 @@ th.edit-hidden { display: table-cell; }
     cursor: pointer;
 }
 
+.action-btn.edit-btn {
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 28px;
+}
+
 .action-btn:hover { color: var(--accent-blue); }
-.action-btn.delete-btn { color: var(--text-muted); }
-.action-btn.delete-btn:hover { color: var(--accent-red); }
 
 .guide-content h2, .guide-content h3 {
     font-family: 'Montserrat', sans-serif;
@@ -1815,6 +1835,8 @@ body.dark-mode .dark-mode-toggle {
     color: inherit;
     text-decoration: none;
     transition: color 0.15s ease;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .artist-name-link:hover,

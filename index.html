@@ -1035,7 +1035,25 @@
             display: none;
         }
         
+        .mobile-week-label {
+            display: none;
+        }
+        
         @media (max-width: 600px) {
+            .mobile-week-label {
+                display: flex;
+                align-items: center;
+                padding: 0 0.4rem;
+                font-size: 0.65rem;
+                font-weight: 700;
+                font-family: 'Montserrat', sans-serif;
+                color: var(--text-secondary);
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            body.dark-mode .mobile-week-label {
+                color: #aaa;
+            }
             .mobile-chart-tabs {
                 display: flex;
                 gap: 0;
@@ -1045,6 +1063,7 @@
                 overflow: hidden;
                 margin-bottom: 0.5rem;
                 flex-shrink: 0;
+                align-items: center;
             }
             .mobile-chart-tab {
                 flex: 1;
@@ -1975,6 +1994,7 @@
                     <span class="separator">•</span>
                     <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
                 </span>
+                <span class="mobile-week-label" id="mobile-week-label"></span>
                 <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
                     <i class="fas fa-compress-alt"></i>
                 </button>
@@ -2862,6 +2882,12 @@
                 if (headerWeek) {
                     const w = getISOWeek(new Date());
                     headerWeek.textContent = `W${String(w.week).padStart(2, '0')} ${w.year}`;
+                }
+                // Populate week label in mobile chart tabs
+                const mobileWeek = document.getElementById('mobile-week-label');
+                if (mobileWeek) {
+                    const w2 = getISOWeek(new Date());
+                    mobileWeek.textContent = `W${String(w2.week).padStart(2, '0')}`;
                 }
             }
             
