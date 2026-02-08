@@ -35,6 +35,12 @@ async function fetchWithRetry(url, options = {}, retries = 2, timeout = 8000) {
 
 // ==================== Image fetchers ====================
 
+const SCRAPE_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.5'
+};
+
 async function fetchDeezerImage(deezerUrl) {
   try {
     const artistMatch = deezerUrl.match(/\/artist\/(\d+)/);
@@ -45,16 +51,27 @@ async function fetchDeezerImage(deezerUrl) {
     else if (trackMatch) endpoint = `https://api.deezer.com/track/${trackMatch[1]}`;
     else if (albumMatch) endpoint = `https://api.deezer.com/album/${albumMatch[1]}`;
     else return null;
-
     const resp = await fetchWithRetry(endpoint);
     if (!resp.ok) return null;
     const data = await resp.json();
-
-    if (artistMatch) {
-      return data.picture_xl || data.picture_big || data.picture_medium || null;
-    }
+    if (artistMatch) return data.picture_xl || data.picture_big || data.picture_medium || null;
     const artist = data.artist;
     return artist?.picture_xl || artist?.picture_big || artist?.picture_medium || null;
+  } catch (e) { return null; }
+}
+
+async function fetchDeezerSearchImage(artistName) {
+  try {
+    const resp = await fetchWithRetry(
+      `https://api.deezer.com/search/artist?q=${encodeURIComponent(artistName)}&limit=3`
+    );
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    if (!data.data?.length) return null;
+    const nameLower = artistName.toLowerCase().trim();
+    const match = data.data.find(a => a.name.toLowerCase().trim() === nameLower);
+    if (!match) return null;
+    return match.picture_xl || match.picture_big || match.picture_medium || null;
   } catch (e) { return null; }
 }
 
@@ -73,12 +90,48 @@ async function fetchITunesArtistImage(artistName) {
 
 async function fetchYouTubeImage(youtubeUrl) {
   try {
+    const isChannel = /youtube\.com\/(@|channel\/|user\/|c\/)/.test(youtubeUrl)
+                   || (/youtube\.com\//.test(youtubeUrl) && !/watch|shorts|playlist/.test(youtubeUrl));
+    if (isChannel) {
+      const resp = await fetchWithRetry(youtubeUrl, { headers: SCRAPE_HEADERS }, 2, 10000);
+      if (!resp.ok) return null;
+      const html = await resp.text();
+      const m = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+             || html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+      return m?.[1] || null;
+    }
     const resp = await fetchWithRetry(
       `https://www.youtube.com/oembed?url=${encodeURIComponent(youtubeUrl)}&format=json`
     );
     if (!resp.ok) return null;
     const data = await resp.json();
     return data.thumbnail_url || null;
+  } catch (e) { return null; }
+}
+
+async function fetchLastFmImage(lastfmUrl) {
+  try {
+    const resp = await fetchWithRetry(lastfmUrl, { headers: SCRAPE_HEADERS }, 2, 8000);
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    const m = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+           || html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+    if (!m?.[1]) return null;
+    if (m[1].includes('2a96cbd8b46e442fc41c2b86b821562f')) return null;
+    return m[1];
+  } catch (e) { return null; }
+}
+
+async function fetchOgImage(pageUrl) {
+  try {
+    const url = Array.isArray(pageUrl) ? pageUrl[0] : pageUrl;
+    if (!url || typeof url !== 'string') return null;
+    const resp = await fetchWithRetry(url, { headers: SCRAPE_HEADERS }, 2, 8000);
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    const m = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+           || html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+    return m?.[1] || null;
   } catch (e) { return null; }
 }
 
@@ -93,9 +146,27 @@ async function fetchSoundCloudImage(soundcloudUrl) {
   } catch (e) { return null; }
 }
 
+async function fetchInstagramImage(instagramUrl) {
+  try {
+    const url = Array.isArray(instagramUrl) ? instagramUrl[0] : instagramUrl;
+    if (!url || typeof url !== 'string') return null;
+    const resp = await fetchWithRetry(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        'Accept': 'text/html,application/xhtml+xml'
+      }
+    }, 2, 10000);
+    if (!resp.ok) return null;
+    const html = await resp.text();
+    const m = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+           || html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+    return m?.[1] || null;
+  } catch (e) { return null; }
+}
+
 async function fetchBandcampImage(bandcampUrl) {
   try {
-    const resp = await fetchWithRetry(bandcampUrl, {}, 2, 10000);
+    const resp = await fetchWithRetry(bandcampUrl, { headers: SCRAPE_HEADERS }, 2, 10000);
     if (!resp.ok) return null;
     const html = await resp.text();
     const ogMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
@@ -107,41 +178,47 @@ async function fetchBandcampImage(bandcampUrl) {
 async function fetchFallbackArtistImage(band) {
   const links = band.links || {};
 
-  // Try Deezer first (proper API, returns artist pictures)
-  if (links.deezer) {
-    const img = await fetchDeezerImage(links.deezer);
-    if (img) return { source: 'Deezer', url: img };
-  }
-
-  // Try iTunes / Apple Music (search API by artist name)
-  if (links.itunes || links.apple_music) {
-    const img = await fetchITunesArtistImage(band.name);
-    if (img) return { source: 'iTunes', url: img };
-  }
-
-  // Try YouTube (oembed for video thumbnail)
+  // Priority: YouTube channel/video → Instagram → Deezer → iTunes → Bandcamp → SoundCloud → Last.fm → Website → Facebook → Deezer search
   if (links.youtube || links.youtube_music) {
     const url = links.youtube || links.youtube_music;
     const img = await fetchYouTubeImage(url);
     if (img) return { source: 'YouTube', url: img };
   }
-
-  // Try Bandcamp (scrape og:image from page)
+  if (links.instagram) {
+    const img = await fetchInstagramImage(links.instagram);
+    if (img) return { source: 'Instagram', url: img };
+  }
+  if (links.deezer) {
+    const img = await fetchDeezerImage(links.deezer);
+    if (img) return { source: 'Deezer', url: img };
+  }
+  if (links.itunes || links.apple_music) {
+    const img = await fetchITunesArtistImage(band.name);
+    if (img) return { source: 'iTunes', url: img };
+  }
   if (links.bandcamp) {
     const img = await fetchBandcampImage(links.bandcamp);
     if (img) return { source: 'Bandcamp', url: img };
   }
-
-  // Try SoundCloud oembed
   if (links.soundcloud) {
     const img = await fetchSoundCloudImage(links.soundcloud);
     if (img) return { source: 'SoundCloud', url: img };
   }
-
-  // Last resort: try iTunes even without an Apple Music link
-  if (!links.itunes && !links.apple_music) {
-    const img = await fetchITunesArtistImage(band.name);
-    if (img) return { source: 'iTunes (name search)', url: img };
+  if (links.lastfm) {
+    const img = await fetchLastFmImage(links.lastfm);
+    if (img) return { source: 'Last.fm', url: img };
+  }
+  if (links.website) {
+    const img = await fetchOgImage(links.website);
+    if (img) return { source: 'Website', url: img };
+  }
+  if (links.facebook) {
+    const img = await fetchOgImage(links.facebook);
+    if (img) return { source: 'Facebook', url: img };
+  }
+  {
+    const img = await fetchDeezerSearchImage(band.name);
+    if (img) return { source: 'Deezer (name search)', url: img };
   }
 
   return null;
