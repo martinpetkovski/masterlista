@@ -2544,7 +2544,7 @@ a.chart-history-item {
         
         // Start loading RSS feeds early (non-blocking)
         const rssLoadPromise = loadRssFeeds();
-        
+
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
             let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');

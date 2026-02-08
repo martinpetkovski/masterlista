@@ -498,7 +498,7 @@ async function main() {
   const artistsInfo = await getArtistsBatch(artistIds, spotifyToken);
   console.log(`Got info for ${Object.keys(artistsInfo).length} artists`);
   
-  // Fetch fallback images for artists without a Spotify artist image
+  // Fetch fallback images for artists without any Spotify image
   const fallbackImages = new Map();
   const artistsWithoutImages = artistIds.filter(id => !artistsInfo[id]?.images?.[0]?.url);
   if (artistsWithoutImages.length > 0) {
@@ -640,6 +640,66 @@ async function main() {
   // Save weekly historical snapshot
   saveWeeklySnapshot(chartData, historyDir, now);
   
+  // ==================== Non-Spotify Bands ====================
+  // Process bands that have NO Spotify link but have other service links.
+  // Create a stub release entry so that artist.html can still show an image.
+  const bandsWithoutSpotify = bands.filter(b =>
+    (!b.links?.spotify || b.links.spotify === 'недостигаат податоци') &&
+    b.links && Object.keys(b.links).length > 0
+  );
+  if (bandsWithoutSpotify.length > 0) {
+    console.log(`\n${bandsWithoutSpotify.length} bands have no Spotify link, fetching images from other services...`);
+    const NON_SPOTIFY_BATCH = 5;
+    for (let i = 0; i < bandsWithoutSpotify.length; i += NON_SPOTIFY_BATCH) {
+      const batch = bandsWithoutSpotify.slice(i, i + NON_SPOTIFY_BATCH);
+      const pct = Math.round((i / bandsWithoutSpotify.length) * 100);
+      process.stdout.write(`\rNon-Spotify batch ${Math.floor(i/NON_SPOTIFY_BATCH)+1}/${Math.ceil(bandsWithoutSpotify.length/NON_SPOTIFY_BATCH)} (${pct}%)...`);
+      const batchResults = await Promise.all(
+        batch.map(async (band) => {
+          const img = await fetchFallbackArtistImage(band);
+          return { band, img };
+        })
+      );
+      for (const { band, img } of batchResults) {
+        // Use a stable pseudo-ID derived from the band name
+        const pseudoId = 'no-spotify-' + band.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        // Check if this band already has a stub entry from a previous run
+        const existing = chartData.releases.find(r => r.artistId === pseudoId);
+        if (existing) {
+          if (img && !existing.artistImage) existing.artistImage = img;
+          continue;
+        }
+        chartData.releases.push({
+          bandName: band.name,
+          artistId: pseudoId,
+          releaseId: null,
+          releaseTitle: null,
+          releaseType: null,
+          releaseDate: null,
+          releaseUrl: null,
+          thumbnail: img || null,
+          artistImage: img || null,
+          totalTracks: 0,
+          popularity: 0,
+          topTrackName: null,
+          topTrackId: null,
+          topTrackUrl: null,
+          followers: 0,
+          spotifyUrl: null
+        });
+        if (img) console.log(`\n  ✓ ${band.name}`);
+      }
+      if (i + NON_SPOTIFY_BATCH < bandsWithoutSpotify.length) {
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+    // Update totals
+    chartData.totalReleases = chartData.releases.length;
+    const allArtistIds = new Set(chartData.releases.map(r => r.artistId));
+    chartData.totalArtists = allArtistIds.size;
+    console.log(`\nChart now includes ${chartData.totalArtists} artists (${chartData.totalReleases} entries)`);
+  }
+
   // Write current chart data
   fs.writeFileSync(outputPath, JSON.stringify(chartData, null, 2));
   console.log(`Chart data written to ${outputPath}`);
