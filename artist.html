@@ -876,34 +876,7 @@ a.chart-history-item {
             color: var(--accent-orange);
         }
         
-        /* Edit Button in Header */
-        .header-edit-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.35rem 0.7rem;
-            background: transparent;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            border-radius: 6px;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        
-        .header-edit-btn:hover {
-            border-color: var(--accent-orange);
-            color: var(--accent-orange);
-        }
-        
-        body.dark-mode .header-edit-btn {
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        body.dark-mode .header-edit-btn:hover {
-            border-color: var(--accent-orange);
-        }
+        /* Edit Button in Header - inherits .header-btn styles from desktop/mobile CSS */
         
         .chart-history-meta {
             display: flex;
@@ -979,7 +952,7 @@ a.chart-history-item {
         
         /* Popularity Graph */
         .popularity-graph-section {
-            margin-bottom: 1.5rem;
+            margin-top: 1.5rem;
         }
         
         .popularity-graph-container {
@@ -1597,9 +1570,10 @@ a.chart-history-item {
             if (headerButtons && !headerButtons.querySelector('.header-edit-btn')) {
                 const editLink = document.createElement('a');
                 editLink.href = editUrl;
-                editLink.className = 'header-edit-btn';
+                editLink.className = 'header-btn header-edit-btn';
                 editLink.title = 'Уреди податоци';
-                editLink.innerHTML = '<i class="fas fa-edit"></i> Уреди';
+                editLink.innerHTML = '<i class="fas fa-edit"></i>';
+                editLink.setAttribute('aria-label', 'Уреди податоци');
                 headerButtons.insertBefore(editLink, headerButtons.firstChild);
             }
             
@@ -1617,11 +1591,11 @@ a.chart-history-item {
                     ${soundsLikeHtml}
                 </div>
                 
-                <div id="popularity-graph-container"></div>
-                
                 <div class="artist-links">
                     ${linksHtml}
                 </div>
+                
+                <div id="popularity-graph-container"></div>
                 
                 <div id="chart-history-container"></div>
                 
@@ -2645,8 +2619,8 @@ a.chart-history-item {
                         document.querySelectorAll('.artist-city, .artist-genre').forEach(el => { el.style.color = '#fff'; });
                         // Labels
                         document.querySelectorAll('.artist-label').forEach(el => { el.style.color = '#fff'; });
-                        // Section titles (Кумулативна Популарност, Изданија)
-                        document.querySelectorAll('.section-title').forEach(el => { el.style.color = mutedCol; const icon = el.querySelector('i'); if (icon) icon.style.color = secondaryCol; });
+                        // Section titles (Кумулативна Популарност, Изданија) - same color as artist name
+                        document.querySelectorAll('.section-title').forEach(el => { el.style.color = textCol; const icon = el.querySelector('i'); if (icon) icon.style.color = textCol; });
                         // Popularity graph text
                         const graphContainer = document.getElementById('popularity-graph-container');
                         if (graphContainer) {
