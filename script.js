@@ -3236,14 +3236,22 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: '#band-table-body tr:first-child',
             title: 'Листа на артисти',
-            description: 'Секој ред покажува име, линкови до профили и копче за преслушување. Кликни на името за детали за артистот.',
+            description: 'Секој ред покажува име и линкови до профили. Кликни на името за детали за артистот.',
             position: 'bottom'
         },
         {
-            element: '.artist-preview-btn',
-            title: 'Преслушај',
-            description: 'Зеленото копче <i class="fas fa-play" style="color: #4a9c6d;"></i> ти пушта песна директно тука, без да одиш на друг сајт.',
-            position: 'bottom'
+            element: '#search-name',
+            title: 'Пребарување',
+            description: 'Пишувај име и веднаш се појавуваат резултати. Работи и на кирилица и на латиница.',
+            position: 'bottom',
+            beforeShow: () => {
+                const controls = document.querySelector('.controls');
+                if (controls) controls.classList.add('active');
+            },
+            afterHide: () => {
+                const controls = document.querySelector('.controls');
+                if (controls) controls.classList.remove('active');
+            }
         },
         {
             element: '#add-band-btn',
