@@ -1341,7 +1341,8 @@
       "genre": "Треш, Метал, Прогресивен Метал",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "facebook": "https://www.facebook.com/dejan.nashoku",
+        "youtube": "https://www.youtube.com/@d.nashoku"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1388,12 +1389,12 @@
       "confirmed": false
     },
     {
-      "name": "Deni Omeragich",
+      "name": "Дени Омерагиќ",
       "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/@deniomeragic5268"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1640,7 +1641,7 @@
       "confirmed": false
     },
     {
-      "name": "Dorian Jovanovikj",
+      "name": "Дориан Јовановиќ",
       "city": "недостигаат податоци",
       "genre": "Џез",
       "soundsLike": "недостигаат податоци",
@@ -1812,19 +1813,6 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/watch?v=5WSj4y41IzM"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Elena Baklava",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2050,7 +2038,7 @@
       "confirmed": false
     },
     {
-      "name": "Filip Bukrshliev",
+      "name": "Филип Букршлиев",
       "city": "недостигаат податоци",
       "genre": "Џез",
       "soundsLike": "недостигаат податоци",
@@ -3023,7 +3011,7 @@
       "confirmed": false
     },
     {
-      "name": "Kismet",
+      "name": "Кисмет",
       "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
@@ -3141,7 +3129,7 @@
       "confirmed": false
     },
     {
-      "name": "Kostadin Delinikolov",
+      "name": "Костадин Делиниколов",
       "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
@@ -5216,12 +5204,13 @@
       "confirmed": true
     },
     {
-      "name": "SIZ",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "name": "СИЗ",
+      "city": "Куманово",
+      "genre": "Рок, Инди",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "facebook": "https://www.facebook.com/p/SIZ-%D0%A1%D0%98%D0%97-100063723663047/",
+        "bandcamp": "https://greenhillrecords.bandcamp.com/album/wake-up"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5230,11 +5219,11 @@
     },
     {
       "name": "Skrit",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Џез",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://pmgjazz.bandcamp.com/album/sunday-connection"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5280,19 +5269,6 @@
         "#808080",
         "#608080"
       ],
-      "confirmed": false
-    },
-    {
-      "name": "Slavco Kocev",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
       "confirmed": false
     },
     {
@@ -5348,19 +5324,6 @@
       "confirmed": false
     },
     {
-      "name": "Soulmental",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Sound Waves",
       "city": "Битола",
       "genre": "Рок",
@@ -5376,11 +5339,14 @@
     },
     {
       "name": "Sound_00",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Експериментална",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sound00.bandcamp.com/",
+        "soundcloud": "https://soundcloud.com/sound_00",
+        "facebook": "https://www.facebook.com/sound00lefterna/",
+        "spotify": "https://open.spotify.com/artist/0vUxbZoTUW2LE7i5ryu4AX?si=N9JRXD-9S2qjVHZzZ6v0dQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5402,27 +5368,17 @@
       "confirmed": false
     },
     {
-      "name": "SPECTRAL NERVE",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Steel Temple",
       "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
+      "genre": "Хеви Метал",
+      "soundsLike": "Judas Priest, Whitesnake, Haloween",
       "links": {
-        "none": "недостигаат податоци"
+        "facebook": "https://www.facebook.com/p/Steel-Temple-100026982684304/",
+        "instagram": "https://www.instagram.com/steeltemple_official/?hl=en",
+        "bandcamp": "https://steeltemple.bandcamp.com",
+        "youtube": "https://www.youtube.com/@Steeltemple2000"
       },
-      "contact": "недостигаат податоци",
+      "contact": "steeltemple@gmail.com",
       "label": null,
       "accentColors": null,
       "confirmed": false
@@ -5442,24 +5398,32 @@
     },
     {
       "name": "Stefan Petanovski",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Прогресивен Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/3qH7LO6KFR0mVwvakwXyrE?si=Ja3V6k-mTG2pIFVGdKQZCw"
+        "spotify": "https://open.spotify.com/artist/3qH7LO6KFR0mVwvakwXyrE?si=Ja3V6k-mTG2pIFVGdKQZCw",
+        "youtube": "https://www.youtube.com/@stefanpetanovski",
+        "instagram": "https://www.instagram.com/stefanpetanovski/",
+        "website": "https://stefanpetanovski.com",
+        "linktree": "https://linktr.ee/stefanpetanovski?",
+        "bandcamp": "https://stefanpetanovski.bandcamp.com/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202040",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
       "name": "Стих Наумов",
       "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "genre": "Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=gZElWQxYEOE"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5472,7 +5436,11 @@
       "genre": "Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "youtube": "https://www.youtube.com/@stihovenkalibar"
+        "youtube": "https://www.youtube.com/@stihovenkalibar",
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%A1%D1%82%D0%B8%D1%85%D0%BE%D0%B2%D0%B5%D0%BD_%D0%9A%D0%B0%D0%BB%D0%B8%D0%B1%D0%B0%D1%80"
+        ],
+        "facebook": "https://www.facebook.com/StihovenKalibar/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5616,11 +5584,12 @@
     },
     {
       "name": "Svirci Vardarci",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Современа Музика, Фјужн",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sharla.bandcamp.com/album/svirci-vardarci-lp",
+        "youtube": "https://www.youtube.com/watch?v=gpNwEc2c4l0"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5644,11 +5613,14 @@
     },
     {
       "name": "Syned Brain",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/syned_brain/",
+        "soundcloud": "https://soundcloud.com/synedbrain",
+        "spotify": "https://open.spotify.com/artist/5IbMCyWaYpNWnMMzKngLdo",
+        "youtube": "https://www.youtube.com/watch?v=ZBOoH6eTqrc"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5657,11 +5629,15 @@
     },
     {
       "name": "Т.Б. Трачери",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Куманово",
+      "genre": "Рокабили, Рок, Инди",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%A2.%D0%91._%D0%A2%D1%80%D0%B0%D1%87%D0%B5%D1%80%D0%B8"
+        ],
+        "facebook": "https://www.facebook.com/T.B.Traceri/",
+        "youtube": "https://www.youtube.com/watch?v=5_nhwt-LM8I"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5743,11 +5719,17 @@
     },
     {
       "name": "Тања Царовска",
-      "city": "Скопје",
+      "city": "Битола",
       "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%A2%D0%B0%D1%9A%D0%B0_%D0%A6%D0%B0%D1%80%D0%BE%D0%B2%D1%81%D0%BA%D0%B0"
+        ],
+        "youtube": "https://www.youtube.com/watch?v=77fiHCfJaG0",
+        "facebook": "https://www.facebook.com/TanjaTzarovska/",
+        "instagram": "https://www.instagram.com/tzartichka/?hl=en",
+        "soundcloud": "https://soundcloud.com/tanja-tzar"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5870,11 +5852,16 @@
     },
     {
       "name": "The Hip",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Куманово",
+      "genre": "Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "facebook": "https://www.facebook.com/thehip.mk/",
+        "youtube": "https://www.youtube.com/user/TheHipKu",
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%94_%D0%A5%D0%B8%D0%BF_(%D0%BC%D1%83%D0%B7%D0%B8%D1%87%D0%BA%D0%B0_%D0%B3%D1%80%D1%83%D0%BF%D0%B0)"
+        ],
+        "website": "https://thehip.mk"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5929,11 +5916,17 @@
     },
     {
       "name": "The Ooz",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Пост-панк, Нојз Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/the.ooz.official/",
+        "linktree": "https://linktr.ee/theooz",
+        "bandcamp": "https://theooz.bandcamp.com/album/gamora",
+        "youtube": "https://www.youtube.com/playlist?list=PLAu4Uk2mAPEWCSFXrsN1T6AZvbt2MZSkI",
+        "tidal": "https://listen.tidal.com/album/481398802",
+        "youtube_music": "https://music.youtube.com/playlist?list=PLAu4Uk2mAPEWCSFXrsN1T6AZvbt2MZSkI",
+        "apple_music": "https://music.apple.com/us/album/gamora/1861073442?at=1000lHKX&ct=linktree_http&itsct=lt_m&itscg=30200&ls=1"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6118,11 +6111,11 @@
     },
     {
       "name": "Trapostol",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Трап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "spotify": "https://open.spotify.com/artist/3dTINGmPm40bdYGkbhD33g?si=Y1isDcOrSxaJfte64g3uRQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6164,32 +6157,6 @@
       "confirmed": false
     },
     {
-      "name": "Трипнотик",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Trold",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Tsar Von Time",
       "city": "Битола",
       "genre": "Рок",
@@ -6221,25 +6188,13 @@
       "confirmed": false
     },
     {
-      "name": "Überzeitung",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Убиј Дедо",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Панк",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://ubijdedo.bandcamp.com/album/-",
+        "youtube": "https://www.youtube.com/watch?v=GCiLzy_Q-o8"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6480,9 +6435,14 @@
       "genre": "Рок, Алтернативен Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%92%D0%BE%D0%B4%D0%BE%D0%BB%D0%B8%D1%98%D0%B0_(%D0%BC%D1%83%D0%B7%D0%B8%D1%87%D0%BA%D0%B0_%D0%B3%D1%80%D1%83%D0%BF%D0%B0)"
+        ],
+        "facebook": "https://www.facebook.com/p/VODOLIJA-100037978601020/",
+        "youtube": "https://www.youtube.com/user/vodolija2008",
+        "spotify": "https://open.spotify.com/artist/0Vj615Mlb437Q1bz0gTxTD?si=zIEDsXEhSC-_lFHM01xUdA"
       },
-      "contact": "недостигаат податоци",
+      "contact": "vodolija_band@yahoo.com",
       "label": null,
       "accentColors": null,
       "confirmed": false
@@ -6508,11 +6468,11 @@
     },
     {
       "name": "Warm Hands",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Акустична, Инди",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://warmerhands.bandcamp.com/album/warm-hands"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6521,11 +6481,11 @@
     },
     {
       "name": "Will Discuss",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Експериментална",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "soundcloud": "https://soundcloud.com/will_discuss"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6611,11 +6571,15 @@
       "genre": "Џез",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/04lvZ5kSu11neciYn03EtR?si=QduNWVykT0S28z0yNjKlSg"
+        "spotify": "https://open.spotify.com/artist/04lvZ5kSu11neciYn03EtR?si=QduNWVykT0S28z0yNjKlSg",
+        "instagram": "https://www.instagram.com/deunkcroc/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#e02040",
+        "#e00040"
+      ],
       "confirmed": false
     },
     {
@@ -6641,11 +6605,29 @@
     },
     {
       "name": "Yudhisthira",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Гоа, Психоделичен Транс",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://yudhisthira.bandcamp.com/",
+        "facebook": "https://www.facebook.com/YudhisthiraForestdelic/",
+        "spotify": "https://open.spotify.com/artist/4ky1T6mikzP88kx3NOGqaR?si=HUWLetsRSmycGfng7O-DGw",
+        "instagram": "https://www.instagram.com/yudhisthira_forestdelic/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Zabata",
+      "city": "Скопје",
+      "genre": "Рап",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "spotify": "https://open.spotify.com/artist/2hYVMaLdn6Q0Oca4bqBSox?si=QrwbcOVJSTSG9srvkMejKQ",
+        "youtube": "https://www.youtube.com/channel/UC_DteZRWA-oJdLUl-H80k7A",
+        "instagram": "https://www.instagram.com/_zabataa/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6728,19 +6710,6 @@
       "confirmed": false
     },
     {
-      "name": "Zhabata",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Животни",
       "city": "Скопје",
       "genre": "Инди, Алтернативна",
@@ -6774,10 +6743,11 @@
     {
       "name": "Zol Jad",
       "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "genre": "Блек Метал",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=o8xwGqbQ7O0",
+        "spotify": "https://open.spotify.com/artist/6LPL85ExoxBmiXh3lPmKuz?si=bNUgnYQoRnq6Ky-mVGU6DQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
