@@ -3100,6 +3100,8 @@
                 if (!artistInfo) return false;
                 
                 const artistGenres = artistInfo.genre.toLowerCase();
+                // Exclude artists with Поп genre from alternative chart
+                if (genreFilter === 'alt' && artistGenres.includes('поп')) return false;
                 return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
             }
             
@@ -3128,6 +3130,8 @@
                 if (!artistInfo) return false;
                 
                 const artistGenres = artistInfo.genre.toLowerCase();
+                // Exclude artists with Поп genre from alternative chart
+                if (genreFilter === 'alt' && artistGenres.includes('поп')) return false;
                 return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
             }
             
