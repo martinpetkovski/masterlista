@@ -2516,13 +2516,30 @@
             const container = document.getElementById('share-card-container');
             const now = new Date();
             
-            // Calculate chart week in W## YYYY format
+            // Calculate chart week date range (Monday-Sunday) in Macedonian
+            const mkMonths = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
             const d = new Date(now);
             d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-            const yearStart = new Date(d.getFullYear(), 0, 1);
-            const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            const weekStr = `W${String(weekNum).padStart(2, '0')} ${d.getFullYear()}`;
+            // Find Monday of the current ISO week
+            const dayOfWeek = d.getDay() || 7; // 1=Mon..7=Sun
+            const monday = new Date(d);
+            monday.setDate(d.getDate() - dayOfWeek + 1);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            
+            let weekStr;
+            if (monday.getMonth() === sunday.getMonth()) {
+                // Same month: "2-8 Февруари 2026"
+                weekStr = `${monday.getDate()}-${sunday.getDate()} ${mkMonths[monday.getMonth()]} ${monday.getFullYear()}`;
+            } else if (monday.getFullYear() === sunday.getFullYear()) {
+                // Different months, same year: "28 Јан - 3 Фев 2026"
+                const mkShort = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
+                weekStr = `${monday.getDate()} ${mkShort[monday.getMonth()]} - ${sunday.getDate()} ${mkShort[sunday.getMonth()]} ${sunday.getFullYear()}`;
+            } else {
+                // Different years
+                const mkShort = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
+                weekStr = `${monday.getDate()} ${mkShort[monday.getMonth()]} ${monday.getFullYear()} - ${sunday.getDate()} ${mkShort[sunday.getMonth()]} ${sunday.getFullYear()}`;
+            }
             
             // Use custom title or fallback to default
             const chartTitle = customTitle || chartTitles[chartType] || 'Топ Листа';

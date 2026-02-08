@@ -185,15 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Prompt before leaving if there are unsaved changes
-    window.addEventListener('beforeunload', (e) => {
+    // Save pending changes to localStorage before leaving (no prompt – data is persisted)
+    window.addEventListener('beforeunload', () => {
         if (hasUnsavedChanges) {
-            // Save to localStorage before potentially leaving
             savePendingChanges();
-            // Show browser's default confirmation dialog
-            e.preventDefault();
-            e.returnValue = 'Имате незачувани промени. Промените се сочувани локално, но не се поднесени. Сигурно сакате да излезете?';
-            return e.returnValue;
         }
     });
     
@@ -1107,13 +1102,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 const savedAt = new Date(pendingChanges.savedAt);
                 const timeAgo = Math.round((Date.now() - savedAt.getTime()) / 60000); // minutes
                 
-                // Show notification about pending changes
+                // Show notification about pending changes with discard option
                 setTimeout(() => {
-                    showNotification(
-                        `Пронајдени се незачувани промени од пред ${timeAgo} минути. Промените се вратени.`,
-                        'info',
-                        8000
-                    );
+                    const notificationArea = document.getElementById('notification-area');
+                    const notification = document.createElement('div');
+                    notification.className = 'notification info';
+                    notification.style.display = 'flex';
+                    notification.style.alignItems = 'center';
+                    notification.style.gap = '10px';
+                    notification.style.cursor = 'default';
+                    
+                    const msgSpan = document.createElement('span');
+                    msgSpan.textContent = `Вратени се зачувани промени од пред ${timeAgo} мин.`;
+                    notification.appendChild(msgSpan);
+                    
+                    const discardBtn = document.createElement('button');
+                    discardBtn.textContent = 'Отфрли';
+                    discardBtn.style.cssText = 'background:#e74c3c;color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:0.85em;white-space:nowrap;';
+                    discardBtn.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        // Discard saved changes: revert to original server data
+                        bandsData = JSON.parse(JSON.stringify(originalBandsData));
+                        hasUnsavedChanges = false;
+                        localStorage.removeItem(STORAGE_KEY);
+                        updateSubmitButtonState();
+                        invalidateBandCache();
+                        renderTable();
+                        // Remove notification
+                        if (notification.parentNode) notification.parentNode.removeChild(notification);
+                        showNotification('Зачуваните промени се отфрлени.', 'info', 3000);
+                    });
+                    notification.appendChild(discardBtn);
+                    
+                    notificationArea.appendChild(notification);
+                    
+                    // Auto-dismiss after 15 seconds
+                    setTimeout(() => {
+                        notification.classList.add('fade-out');
+                        setTimeout(() => {
+                            if (notification.parentNode) notification.parentNode.removeChild(notification);
+                        }, 300);
+                    }, 15000);
                 }, 500);
                 
                 // Use the saved data
@@ -1266,6 +1295,42 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'linktree', name: 'Linktree', icon: 'fa-solid fa-tree' },
         { id: 'generic', name: 'Друг линк', icon: 'fa-solid fa-link' }
     ];
+
+    // Auto-detect platform from URL domain/path
+    const platformUrlPatterns = [
+        { id: 'spotify',       pattern: /open\.spotify\.com|spotify\.com/i },
+        { id: 'youtube_music', pattern: /music\.youtube\.com/i },
+        { id: 'youtube',       pattern: /youtube\.com|youtu\.be/i },
+        { id: 'instagram',     pattern: /instagram\.com/i },
+        { id: 'facebook',      pattern: /facebook\.com|fb\.com|fb\.me/i },
+        { id: 'twitter',       pattern: /twitter\.com|x\.com/i },
+        { id: 'bandcamp',      pattern: /bandcamp\.com/i },
+        { id: 'soundcloud',    pattern: /soundcloud\.com/i },
+        { id: 'apple_music',   pattern: /music\.apple\.com/i },
+        { id: 'itunes',        pattern: /itunes\.apple\.com/i },
+        { id: 'deezer',        pattern: /deezer\.com/i },
+        { id: 'tidal',         pattern: /tidal\.com/i },
+        { id: 'amazon_music',  pattern: /music\.amazon/i },
+        { id: 'napster',       pattern: /napster\.com/i },
+        { id: 'audiomack',     pattern: /audiomack\.com/i },
+        { id: 'tiktok',        pattern: /tiktok\.com/i },
+        { id: 'linkedin',      pattern: /linkedin\.com/i },
+        { id: 'pinterest',     pattern: /pinterest\.com/i },
+        { id: 'twitch',        pattern: /twitch\.tv/i },
+        { id: 'vimeo',         pattern: /vimeo\.com/i },
+        { id: 'patreon',       pattern: /patreon\.com/i },
+        { id: 'discord',       pattern: /discord\.gg|discord\.com/i },
+        { id: 'wikipedia',     pattern: /wikipedia\.org/i },
+        { id: 'linktree',      pattern: /linktr\.ee|linktree\.com/i },
+    ];
+
+    function detectPlatformFromUrl(url) {
+        if (!url) return null;
+        for (const { id, pattern } of platformUrlPatterns) {
+            if (pattern.test(url)) return id;
+        }
+        return null;
+    }
 
     function initializeFilters() {
         console.log('Initializing filters');
@@ -1714,26 +1779,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const linkGroup = document.createElement('div');
             linkGroup.className = 'link-group';
             
-            // Create wrapper for select with icon
+            // Auto-detect platform from URL if not explicitly set
+            if (platform === 'none' && url) {
+                const detected = detectPlatformFromUrl(url);
+                if (detected) platform = detected;
+            }
+            
+            // Create wrapper for select/label with icon
             const selectWrapper = document.createElement('div');
             selectWrapper.className = 'platform-select-wrapper';
             
-            // Create icon element (shown next to dropdown)
+            // Create icon element (shown next to dropdown/label)
             const iconEl = document.createElement('i');
             const currentPlatform = socialPlatforms.find(p => p.id === platform);
             iconEl.className = (currentPlatform?.icon || 'fa-solid fa-link') + ' platform-icon';
             
+            // Plain text label for recognized / empty state
+            const label = document.createElement('span');
+            label.className = 'platform-label';
+            label.textContent = currentPlatform ? currentPlatform.name : 'Платформа';
+            
+            // Dropdown for manual selection (hidden by default)
             const select = document.createElement('select');
             select.className = 'platform-select';
+            select.style.display = 'none';
             select.innerHTML = '<option value="none">Избери платформа</option>' +
                 socialPlatforms.map(p => `<option value="${p.id}" ${p.id === platform ? 'selected' : ''}>${p.name}</option>`).join('');
             
             selectWrapper.appendChild(iconEl);
+            selectWrapper.appendChild(label);
             selectWrapper.appendChild(select);
             
             const input = document.createElement('input');
             input.type = 'url';
-            input.placeholder = 'Внеси URL';
+            input.placeholder = 'Внеси URL (платформата се препознава автоматски)';
             input.value = url;
             const removeBtn = document.createElement('button');
             removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -1746,10 +1825,48 @@ document.addEventListener('DOMContentLoaded', () => {
             linkGroup.appendChild(removeBtn);
             linksContainer.appendChild(linkGroup);
             
-            // Update standalone icon when selection changes
+            // Switch between label (read-only) and dropdown (manual)
+            function showLabel(platformId) {
+                const p = socialPlatforms.find(pp => pp.id === platformId);
+                label.textContent = p ? p.name : 'Платформа';
+                label.style.display = '';
+                select.style.display = 'none';
+                selectWrapper.classList.remove('manual-mode');
+                iconEl.className = (p?.icon || 'fa-solid fa-link') + ' platform-icon';
+            }
+            
+            function showDropdown() {
+                label.style.display = 'none';
+                select.style.display = '';
+                selectWrapper.classList.add('manual-mode');
+            }
+            
+            // Update icon when manual selection changes
             select.addEventListener('change', function() {
                 const selectedPlatform = socialPlatforms.find(p => p.id === this.value);
                 iconEl.className = (selectedPlatform?.icon || 'fa-solid fa-link') + ' platform-icon';
+            });
+            
+            // Auto-detect platform when URL is typed or pasted
+            function autoDetectFromInput() {
+                const val = input.value.trim();
+                const detected = detectPlatformFromUrl(val);
+                if (detected) {
+                    select.value = detected;
+                    showLabel(detected);
+                } else if (val) {
+                    // Unrecognized URL — show dropdown for manual selection
+                    showDropdown();
+                } else {
+                    // Empty input — show placeholder label
+                    select.value = 'none';
+                    showLabel(null);
+                }
+            }
+            input.addEventListener('input', autoDetectFromInput);
+            input.addEventListener('paste', () => {
+                // Use setTimeout so the pasted value is available
+                setTimeout(autoDetectFromInput, 0);
             });
         }
         
