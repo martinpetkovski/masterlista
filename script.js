@@ -2043,8 +2043,9 @@ document.addEventListener('DOMContentLoaded', () => {
             isEditMode = !isEditMode;
             document.body.classList.toggle('edit-mode', isEditMode);
             masterEditBtn.innerHTML = isEditMode ?
-                '<i class="fas fa-times"></i> Исклучи уредување' :
-                '<i class="fas fa-edit"></i> Уреди';
+                '<i class="fas fa-times"></i>' :
+                '<i class="fas fa-edit"></i>';
+            masterEditBtn.title = isEditMode ? 'Исклучи уредување' : 'Уреди';
             console.log('Edit mode:', isEditMode);
             renderBands(bandsData);
         });

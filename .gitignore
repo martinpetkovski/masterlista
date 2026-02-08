@@ -3,9 +3,11 @@
 
 # Credentials
 spotify-credentials.json
+instagram-credentials.json
 
 # Runtime backups
 bands.json.backup
+.ig-temp/
 
 # Node
 node_modules/

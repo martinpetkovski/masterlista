@@ -1020,27 +1020,91 @@
             clip-path: inset(0);
         }
         
-        /* Accent color for chart items */
+        /* Accent color for chart items - disabled, show checkmark instead */
         .chart-item.has-accent::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
-            opacity: 0.22;
-            z-index: 0;
-            pointer-events: none;
-            transition: opacity 0.15s ease;
-        }
-        .chart-item.has-accent:hover::before {
-            opacity: 0.35;
-        }
-        .chart-item.has-accent > *:not(style)::before {
-            position: relative;
-            z-index: 1;
+            display: none;
         }
         .chart-item.has-accent .chart-title a,
         .chart-item.has-accent .chart-artist-link {
-            color: var(--accent-1);
+            color: inherit;
+        }
+        
+        /* Mobile chart tabs */
+        .mobile-chart-tabs {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .mobile-chart-tabs {
+                display: flex;
+                gap: 0;
+                background: var(--bg-primary);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                overflow: hidden;
+                margin-bottom: 0.5rem;
+                flex-shrink: 0;
+            }
+            .mobile-chart-tab {
+                flex: 1;
+                padding: 0.5rem 0.25rem;
+                font-size: 0.7rem;
+                font-weight: 600;
+                font-family: 'Inter', sans-serif;
+                border: none;
+                background: transparent;
+                color: var(--text-muted);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.3rem;
+                transition: all 0.15s ease;
+                border-right: 1px solid var(--border-color);
+            }
+            .mobile-chart-tab:last-child {
+                border-right: none;
+            }
+            .mobile-chart-tab.active {
+                background: var(--accent-blue);
+                color: #fff;
+            }
+            .mobile-chart-tab i {
+                font-size: 0.65rem;
+            }
+            body.dark-mode .mobile-chart-tabs {
+                background: #191c22;
+                border-color: #2a2e36;
+            }
+            body.dark-mode .mobile-chart-tab {
+                border-color: #2a2e36;
+            }
+            body.dark-mode .mobile-chart-tab.active {
+                background: var(--accent-blue);
+            }
+            
+            /* Mobile: show only active chart section */
+            .chart-section {
+                display: none !important;
+            }
+            .chart-section.mobile-active {
+                display: flex !important;
+                flex: 1;
+                min-height: 0;
+            }
+            /* Override the old albums-hide rule */
+            .chart-section#albums-section.mobile-active {
+                display: flex !important;
+            }
+            /* Full height chart list when showing one chart */
+            .chart-list-wrapper {
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            .chart-list {
+                max-height: none !important;
+                overflow-y: visible !important;
+            }
         }
         
         .chart-item:last-child { border-bottom: none; }
@@ -1370,13 +1434,17 @@
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
-            /* Hide albums on mobile */
-            .chart-section#albums-section {
-                display: none !important;
-            }
         }
         
         @media (max-width: 600px) {
+            /* Make body flex column so chart-container fills remaining height */
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+            header, .chart-filter-bar {
+                flex-shrink: 0;
+            }
             .chart-container { 
                 padding: 0.5rem; 
                 padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
@@ -1956,6 +2024,13 @@
     
     <div class="chart-container">
         
+        <!-- Mobile chart tab filter -->
+        <div class="mobile-chart-tabs" id="mobile-chart-tabs">
+            <button class="mobile-chart-tab active" data-chart-tab="singles"><i class="fas fa-music"></i> Синглови</button>
+            <button class="mobile-chart-tab" data-chart-tab="albums"><i class="fas fa-compact-disc"></i> Албуми</button>
+            <button class="mobile-chart-tab" data-chart-tab="latest"><i class="fas fa-clock"></i> Најнови</button>
+        </div>
+        
         <div class="chart-sections">
             <!-- Top Singles -->
             <div class="chart-section" id="singles-section">
@@ -2197,7 +2272,8 @@
         function initViewModes() {
             const isMobile = window.innerWidth <= 600;
             const savedPref = JSON.parse(localStorage.getItem('mmm-global-compact') || 'null');
-            const shouldBeCompact = savedPref !== null ? savedPref : isMobile;
+            // Mobile defaults to expanded (false), desktop defaults to non-compact
+            const shouldBeCompact = savedPref !== null ? savedPref : false;
             
             ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(sectionId => {
                 const section = document.getElementById(sectionId);
@@ -2213,6 +2289,45 @@
                     btn.innerHTML = '<i class="fas fa-expand-alt"></i>';
                     btn.title = 'Проширен приказ';
                 }
+            }
+            
+            // Initialize mobile chart tabs (show one chart at a time)
+            if (isMobile) {
+                initMobileChartTabs();
+            }
+        }
+        
+        // Mobile chart tab switching - show one chart at a time
+        function initMobileChartTabs() {
+            const tabContainer = document.getElementById('mobile-chart-tabs');
+            if (!tabContainer) return;
+            
+            const tabs = tabContainer.querySelectorAll('.mobile-chart-tab');
+            const sectionMap = {
+                singles: 'singles-section',
+                albums: 'albums-section',
+                latest: 'latest-section'
+            };
+            
+            // Set initial active section
+            switchMobileChart('singles');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const chartTab = tab.dataset.chartTab;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    switchMobileChart(chartTab);
+                });
+            });
+            
+            function switchMobileChart(chartTab) {
+                Object.entries(sectionMap).forEach(([key, sectionId]) => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        section.classList.toggle('mobile-active', key === chartTab);
+                    }
+                });
             }
         }
         
@@ -2973,6 +3088,15 @@
                     document.getElementById('latest-section').style.display = 'none';
                     document.getElementById('artists-section').style.display = 'block';
                     
+                    // Mobile: hide chart tabs and show artists section
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = 'none';
+                        document.getElementById('artists-section').classList.add('mobile-active');
+                        ['singles-section', 'albums-section', 'latest-section'].forEach(id => 
+                            document.getElementById(id)?.classList.remove('mobile-active'));
+                    }
+                    
                     // Extract unique artists by artistId, apply genre/city filters
                     const artistMap = new Map();
                     for (const release of allReleasesData) {
@@ -3019,6 +3143,20 @@
                     document.getElementById('albums-section').style.display = 'block';
                     document.getElementById('latest-section').style.display = 'block';
                     document.getElementById('artists-section').style.display = 'none';
+                    
+                    // Mobile: restore chart tabs and re-apply active tab
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = '';
+                        document.getElementById('artists-section').classList.remove('mobile-active');
+                        // Re-activate the currently selected tab
+                        const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
+                        const activeChart = activeTab?.dataset?.chartTab || 'singles';
+                        ['singles', 'albums', 'latest'].forEach(key => {
+                            const section = document.getElementById(key + '-section');
+                            if (section) section.classList.toggle('mobile-active', key === activeChart);
+                        });
+                    }
                     
                     // Recent releases sorted by popularity
                     const releasesSortedByDate = [...filteredReleases].sort((a, b) => 
