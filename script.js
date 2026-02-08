@@ -354,6 +354,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const latinName = transliterateCyrillicToLatin(bandName).trim();
         if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
         
+        // Also try shorthand transliteration (e.g. Ш→S instead of Sh)
+        const latinShort = transliterateCyrillicToLatinShorthand(bandName).trim();
+        if (latinShort.length >= 3 && latinShort !== name && latinShort !== latinName) searchTerms.add(capitalize(latinShort));
+        
         if (searchTerms.size === 0) return [];
         
         // Word boundaries: start/end of string, whitespace, or common punctuation.
@@ -463,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = document.getElementById('dialog-submit-btn');
 
             titleEl.textContent = title;
-            messageEl.textContent = message;
+            messageEl.innerHTML = message;
 
             if (isPRForm) {
                 // Show PR form
@@ -1774,6 +1778,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 title.textContent = 'Додај артист';
                 delete form.dataset.editIndex;
                 addLinkInput();
+                const deleteBtn = document.getElementById('delete-band-btn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
             } else {
                 title.textContent = 'Уреди артист';
                 console.log('Pre-filling form with band data:', band);
@@ -1829,6 +1835,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 form.dataset.editIndex = index;
                 ['band-city', 'band-genre', 'band-sounds-like', 'band-label'].forEach(id => updateTags(id));
+                // Show delete button in edit mode
+                const deleteBtn = document.getElementById('delete-band-btn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = '';
+                    deleteBtn.onclick = async () => {
+                        const confirmed = await showCustomDialog(
+                            'Потврда за бришење',
+                            `Дали сте сигурни дека сакате да го избришете артистот <strong>${band.name}</strong>?`
+                        );
+                        if (confirmed) {
+                            modal.style.display = 'none';
+                            console.log(`Deleting band at index ${index}`);
+                            bandsData.splice(index, 1);
+                            invalidateBandCache();
+                            const tb2 = document.getElementById('total-bands');
+                            if (tb2) tb2.textContent = bandsData.length;
+                            populateFilters(bandsData);
+                            filterBands();
+                            hasUnsavedChanges = true;
+                            updateSubmitButtonState();
+                            savePendingChanges();
+                        }
+                    };
+                }
             }
             modal.style.display = 'block';
             console.log('Modal opened successfully');
@@ -1836,9 +1866,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function deleteBand(index) {
             console.log(`Delete band requested for index ${index}`);
+            const bandName = bandsData[index] ? bandsData[index].name : 'овој артист';
             const confirmed = await showCustomDialog(
                 'Потврда за бришење',
-                'Дали сте сигурни дека сакате да го избришете овој бенд?'
+                `Дали сте сигурни дека сакате да го избришете артистот <strong>${bandName}</strong>?`
             );
             if (confirmed) {
                 console.log(`Deleting band at index ${index}`);
@@ -1868,8 +1899,13 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Грешка: копчето за копирање податоци не е пронајдено.', 'error');
             return;
         }
-        copyButton.addEventListener('click', () => {
+        copyButton.addEventListener('click', async () => {
             console.log('Copy data button clicked');
+            const accepted = await showCustomDialog(
+                'Лиценца за податоци',
+                'Податоците се достапни под <strong>CC BY 4.0</strong> (Creative Commons Attribution) лиценца. Со копирање се согласувате дека ќе го наведете изворот при користење на податоците.'
+            );
+            if (!accepted) return;
             try {
                 const exportData = {
                     muzickaMasterLista: bandsData.map(band => ({
@@ -2608,7 +2644,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td data-label="Акции" class="action-buttons edit-hidden">
                     <button class="action-btn edit-btn" data-index="${originalIndex}"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete-btn" onclick="window.deleteBand(${originalIndex})"><i class="fas fa-trash"></i></button>
                 </td>
             `;
             const statusSpan = bandRow.querySelector('.status-content');

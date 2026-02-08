@@ -1026,6 +1026,10 @@ a.chart-history-item {
             background: rgba(34, 197, 94, 0.2);
         }
 
+        #rss-media-container {
+            margin-top: 1.5rem;
+        }
+
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .artist-container {
@@ -1356,6 +1360,22 @@ a.chart-history-item {
             return text.split('').map(char => cyrillicToLatinMap[char] || char).join('');
         }
         
+        // Shorthand transliteration map (simplified, e.g. Ш→S, Ч→C, Ж→Z)
+        const cyrillicToLatinShorthandMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'G', 'ѓ': 'g', 'Е': 'E', 'е': 'e', 'Ж': 'Z', 'ж': 'z',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'D', 'ѕ': 'd', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'L', 'љ': 'l', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'N', 'њ': 'n', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'K', 'ќ': 'k',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'C', 'ч': 'c', 'Џ': 'D', 'џ': 'd', 'Ш': 'S', 'ш': 's'
+        };
+        
+        function transliterateShorthand(text) {
+            return text.split('').map(char => cyrillicToLatinShorthandMap[char] || char).join('');
+        }
+        
         // Generate URL-safe slug from artist name
         function generateSlug(name) {
             return transliterate(name)
@@ -1599,6 +1619,8 @@ a.chart-history-item {
                 <div id="popularity-graph-container"></div>
                 
                 <div id="chart-history-container"></div>
+                
+                <div id="rss-media-container"></div>
                 
                 <div class="artist-footer">
                     <a href="index.html">
@@ -2496,6 +2518,10 @@ a.chart-history-item {
             const latinName = transliterate(bandName).trim();
             if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
             
+            // Also try shorthand transliteration (e.g. Ш→S instead of Sh)
+            const latinShort = transliterateShorthand(bandName).trim();
+            if (latinShort.length >= 3 && latinShort !== name && latinShort !== latinName) searchTerms.add(capitalize(latinShort));
+            
             if (searchTerms.size === 0) return [];
             
             // Word boundaries: start/end of string, whitespace, or common punctuation.
@@ -2661,16 +2687,16 @@ a.chart-history-item {
                     const allArticles = await rssLoadPromise;
                     const matched = findMatchingArticles(allArticles, artist.name);
                     if (matched.length > 0) {
-                        const linksContainer = document.querySelector('.artist-links');
-                        if (linksContainer) {
-                            // Check if Медиуми section already exists
-                            let mediaTitle = linksContainer.querySelector('.link-section-title');
-                            if (!mediaTitle) {
-                                mediaTitle = document.createElement('h3');
-                                mediaTitle.className = 'link-section-title';
-                                mediaTitle.textContent = 'Медиуми';
-                                linksContainer.appendChild(mediaTitle);
-                            }
+                        const mediaContainer = document.getElementById('rss-media-container');
+                        if (mediaContainer) {
+                            const mediaTitle = document.createElement('h3');
+                            mediaTitle.className = 'section-title';
+                            mediaTitle.innerHTML = '<i class="fas fa-newspaper"></i> Медиуми';
+                            mediaContainer.appendChild(mediaTitle);
+                            
+                            const articlesList = document.createElement('div');
+                            articlesList.className = 'artist-links';
+                            mediaContainer.appendChild(articlesList);
                             
                             matched.forEach(article => {
                                 const dateStr = article.pubDate.getTime() > 0 
@@ -2686,7 +2712,7 @@ a.chart-history-item {
                                     <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem">${article.source} &middot; ${dateStr}</span>` : ''}</span>
                                     <i class="fas fa-chevron-right artist-link-arrow"></i>
                                 `;
-                                linksContainer.appendChild(a);
+                                articlesList.appendChild(a);
                             });
                         }
                     }
