@@ -647,11 +647,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=g-ROK3IckzQ",
         "tidal": "https://listen.tidal.com/track/190101439",
         "amazon_music": "https://music.amazon.com/albums/B0B62J6KCR?trackAsin=B0B62K17WZ",
-        "itunes": "https://geo.music.apple.com/us/album/_/1575277461?i=1575277716&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1575277461?i=1575277716&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/billyestebanmusic/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#0040a0",
+        "#002040"
+      ],
       "confirmed": false
     },
     {
@@ -1108,11 +1112,16 @@
         "amazon_music": "https://music.amazon.com/albums/B0CF642J7G?trackAsin=B0CF62QBZL",
         "tidal": "https://listen.tidal.com/track/309981884",
         "youtube_music": "https://music.youtube.com/watch?v=ePuw9IwtxS4",
-        "itunes": "https://geo.music.apple.com/us/album/_/1701843585?i=1701843952&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1701843585?i=1701843952&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/damageburazsamokillshit/",
+        "linktree": "https://linktr.ee/damageburazsamokillshit"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202040",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
@@ -1213,11 +1222,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=_MPz7r6JdLU",
         "tidal": "https://listen.tidal.com/track/60750480",
         "amazon_music": "https://music.amazon.com/albums/B01FXC232M?trackAsin=B01FXC2476",
-        "itunes": "https://geo.music.apple.com/us/album/_/1115101738?i=1115101748&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1115101738?i=1115101748&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/davidtemelkov_official/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#ff2060",
+        "#8060e0"
+      ],
       "confirmed": false
     },
     {
@@ -1528,6 +1541,24 @@
         "youtube_music": "https://music.youtube.com/watch?v=GIgcVg-_cw4",
         "tidal": "https://listen.tidal.com/track/95012524",
         "itunes": "https://geo.music.apple.com/us/album/_/1436160447?i=1436160576&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Допе Куќата",
+      "city": "Скопје",
+      "genre": "Рап",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "spotify": "https://open.spotify.com/artist/7m5v081DwhwEFElWIPApRD",
+        "facebook": "https://www.facebook.com/dopekukjata/",
+        "instagram": "https://www.instagram.com/dopekukjata/?hl=en",
+        "youtube": "https://www.youtube.com/c/dopekukjataentertainment",
+        "bandcamp": "https://dopekukjata.bandcamp.com/album/3018",
+        "soundcloud": "https://soundcloud.com/dopekukjata"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3080,11 +3111,15 @@
         "spotify": "https://open.spotify.com/artist/02u7hE3G0oEkRhWURdklWO?si=Y9egvf4RTNWXfo_bFE7ttw",
         "amazon_music": "https://music.amazon.com/albums/B0B2LVQL6M?trackAsin=B0B2LWCQXT",
         "tidal": "https://listen.tidal.com/track/231271223",
-        "youtube_music": "https://music.youtube.com/watch?v=esHO3gx4VLc"
+        "youtube_music": "https://music.youtube.com/watch?v=esHO3gx4VLc",
+        "instagram": "https://www.instagram.com/coy_coor/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#808040",
+        "#808060"
+      ],
       "confirmed": false
     },
     {
@@ -4531,11 +4566,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=FEif899C6Ew",
         "tidal": "https://listen.tidal.com/track/398430108",
         "amazon_music": "https://music.amazon.com/albums/B0BSVYLT47?trackAsin=B08LKP2L37",
-        "itunes": "https://geo.music.apple.com/us/album/_/1869588310?i=1869588549&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1869588310?i=1869588549&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/justrbproduction/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202040",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
@@ -4618,7 +4657,8 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/4wZVFvacDiNWPIoF9QEua8?si=aDWMxb7wTYy7CILR3fLPQw"
+        "spotify": "https://open.spotify.com/artist/4wZVFvacDiNWPIoF9QEua8?si=aDWMxb7wTYy7CILR3fLPQw",
+        "instagram": "https://www.instagram.com/sam_e_sam_/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6034,11 +6074,16 @@
         "youtube_music": "https://music.youtube.com/watch?v=LvwjN4D3Kl0",
         "tidal": "https://listen.tidal.com/track/23255531",
         "amazon_music": "https://music.amazon.com/albums/B084GX4FDS?trackAsin=B084GWPK1D",
-        "itunes": "https://geo.music.apple.com/us/album/_/828458815?i=828460931&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/828458815?i=828460931&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/vlatko_stefanovski_official/",
+        "website": "https://vlatkostefanovski.com.mk"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#404040"
+      ],
       "confirmed": false
     },
     {
@@ -6314,11 +6359,15 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/watch?v=0eny3VvT3RI",
-        "spotify": "https://open.spotify.com/artist/5rAJ5ljBMcoNE0Gi6lDeeo?si=QlpIe6_sRhKy5m9inx69AA"
+        "spotify": "https://open.spotify.com/artist/5rAJ5ljBMcoNE0Gi6lDeeo?si=QlpIe6_sRhKy5m9inx69AA",
+        "instagram": "https://www.instagram.com/sitesmezhivotni/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#606040",
+        "#604040"
+      ],
       "confirmed": false
     },
     {
