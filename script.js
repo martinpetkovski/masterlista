@@ -3105,12 +3105,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== TOUR FUNCTIONALITY ====================
-    const tourSteps = [
+    const isMobile = () => window.innerWidth <= 600;
+
+    // Desktop tour steps
+    const desktopTourSteps = [
         {
             element: null,
             title: 'Здраво! 👋',
             description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - место каде ги собираме сите домашни артисти на едно место. Проектот е отворен, секој може да помогне.<br><br>Ајде да ти покажам како работи ова.',
             position: 'center'
+        },
+        {
+            element: '.site-nav-trigger',
+            title: 'Мени ☰',
+            description: 'Кликни на <strong>логото</strong> за да отвориш мени. Таму ги имаш Топ Листа, Мастер Листа, Вести и Помош. Секоја страница има своја тура - кликни на <i class="fas fa-globe"></i> копчето за да ја видиш.',
+            position: 'bottom'
         },
         {
             element: '#search-name',
@@ -3197,18 +3206,61 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         {
-            element: '.site-nav-trigger',
-            title: 'Навигација',
-            description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести. Секоја страница има своја тура - кликни на <i class="fas fa-globe"></i> копчето за да ја видиш.',
-            position: 'bottom',
-            beforeShow: () => {
-                document.getElementById('custom-dialog-modal').style.display = 'none';
-            }
-        },
-        {
             element: null,
             title: 'Тоа е сè!',
             description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш! 🎸',
+            position: 'center'
+        }
+    ];
+
+    // Mobile-specific tour steps
+    const mobileTourSteps = [
+        {
+            element: null,
+            title: 'Здраво! 👋',
+            description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - место каде ги собираме сите домашни артисти на едно место.<br><br>Ајде да ти покажам како работи.',
+            position: 'center'
+        },
+        {
+            element: '.site-nav-trigger',
+            title: 'Мени ☰',
+            description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш Топ Листа, Мастер Листа, Вести и Помош.',
+            position: 'bottom'
+        },
+        {
+            element: '#toggle-filters',
+            title: 'Филтри',
+            description: 'Кликни тука за да ги отвориш филтрите. Може да пребаруваш по име, да филтрираш по град, жанр, статус...',
+            position: 'bottom'
+        },
+        {
+            element: '#band-table-body tr:first-child',
+            title: 'Листа на артисти',
+            description: 'Секој ред покажува име, линкови до профили и копче за преслушување. Кликни на името за детали за артистот.',
+            position: 'bottom'
+        },
+        {
+            element: '.artist-preview-btn',
+            title: 'Преслушај',
+            description: 'Зеленото копче <i class="fas fa-play" style="color: #4a9c6d;"></i> ти пушта песна директно тука, без да одиш на друг сајт.',
+            position: 'bottom'
+        },
+        {
+            element: '#add-band-btn',
+            title: 'Додај артист',
+            description: 'Знаеш за бенд што го нема? Кликни овде за да го додадеш. Внеси име, град, жанр, линкови - не мора сè да е пополнето.',
+            position: 'bottom'
+        },
+        {
+            element: '#submit-pr-btn',
+            title: 'Испрати промени',
+            description: 'Кога ќе додадеш или промениш нешто, кликни тука за да ги испратиш промените на преглед.',
+            position: 'bottom'
+        },
+        {
+            element: null,
+            title: 'Тоа е сè! 🎸',
+            description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш!',
             position: 'center'
         }
     ];
@@ -3255,6 +3307,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const isListPage = window.location.pathname.endsWith('list.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
         const hasViewedTour = localStorage.getItem(TOUR_VIEWED_KEY) === 'true';
         
+        // Show a logo pulse hint on mobile for first-time users
+        if (isMobile() && !hasViewedTour) {
+            const logoTrigger = document.querySelector('.site-nav-trigger');
+            if (logoTrigger) {
+                logoTrigger.classList.add('nav-hint-pulse');
+                logoTrigger.addEventListener('animationend', () => {
+                    logoTrigger.classList.remove('nav-hint-pulse');
+                }, { once: true });
+            }
+        }
+        
         // Check if this is the list page (not chart page)
         if (isListPage && !document.body.classList.contains('chart-page') && !hasViewedTour) {
             // Delay tour start to let page fully load
@@ -3268,13 +3331,17 @@ document.addEventListener('DOMContentLoaded', () => {
         tourActive = true;
         currentTourStep = 0;
         document.getElementById('tour-overlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
+        // On mobile, allow scrolling so elements can be scrolled into view
+        if (!isMobile()) {
+            document.body.style.overflow = 'hidden';
+        }
         showTourStep(currentTourStep);
     }
 
     function endTour() {
         // Call afterHide on current step if exists
-        const currentStep = tourSteps[currentTourStep];
+        const steps = getActiveTourSteps();
+        const currentStep = steps[currentTourStep];
         if (currentStep && currentStep.afterHide) {
             currentStep.afterHide();
         }
@@ -3289,7 +3356,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function prevStep() {
         if (currentTourStep > 0) {
             // Call afterHide on current step
-            const currentStep = tourSteps[currentTourStep];
+            const steps = getActiveTourSteps();
+            const currentStep = steps[currentTourStep];
             if (currentStep && currentStep.afterHide) {
                 currentStep.afterHide();
             }
@@ -3299,9 +3367,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function nextStep() {
-        if (currentTourStep < tourSteps.length - 1) {
+        const steps = getActiveTourSteps();
+        if (currentTourStep < steps.length - 1) {
             // Call afterHide on current step
-            const currentStep = tourSteps[currentTourStep];
+            const currentStep = steps[currentTourStep];
             if (currentStep && currentStep.afterHide) {
                 currentStep.afterHide();
             }
@@ -3312,8 +3381,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getActiveTourSteps() {
+        return isMobile() ? mobileTourSteps : desktopTourSteps;
+    }
+
     function showTourStep(stepIndex) {
-        const step = tourSteps[stepIndex];
+        const steps = getActiveTourSteps();
+        const step = steps[stepIndex];
+        if (!step) return;
         const overlay = document.getElementById('tour-overlay');
         const highlight = overlay.querySelector('.tour-highlight');
         const tooltip = overlay.querySelector('.tour-tooltip');
@@ -3331,16 +3406,42 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update content
         titleEl.textContent = step.title;
         descEl.innerHTML = step.description;
-        progressEl.textContent = `${stepIndex + 1} / ${tourSteps.length}`;
+        progressEl.textContent = `${stepIndex + 1} / ${steps.length}`;
 
         // Update buttons
         prevBtn.disabled = stepIndex === 0;
-        nextBtn.innerHTML = stepIndex === tourSteps.length - 1 
+        nextBtn.innerHTML = stepIndex === steps.length - 1 
             ? 'Заврши <i class="fas fa-check"></i>' 
             : 'Следно <i class="fas fa-arrow-right"></i>';
 
         // Remove old arrow classes
         tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
+
+        // On mobile, use bottom-sheet tooltip but still highlight elements
+        if (isMobile()) {
+            tooltip.style.top = '';
+            tooltip.style.left = '';
+            tooltip.style.right = '';
+            tooltip.style.bottom = '';
+
+            if (step.position === 'center' || !step.element) {
+                highlight.style.display = 'none';
+                tooltip.classList.add('tour-center');
+            } else {
+                tooltip.classList.remove('tour-center');
+                const targetEl = document.querySelector(step.element);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Position highlight after scroll settles
+                    setTimeout(() => {
+                        positionHighlightMobile(targetEl, highlight);
+                    }, 350);
+                } else {
+                    highlight.style.display = 'none';
+                }
+            }
+            return;
+        }
 
         if (step.position === 'center' || !step.element) {
             // Centered step (welcome/outro)
@@ -3355,7 +3456,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetEl = document.querySelector(step.element);
             if (!targetEl) {
                 // Skip to next if element not found
-                if (stepIndex < tourSteps.length - 1) {
+                if (stepIndex < steps.length - 1) {
                     currentTourStep++;
                     showTourStep(currentTourStep);
                 }
@@ -3373,11 +3474,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function positionHighlightMobile(element, highlight) {
+        const rect = element.getBoundingClientRect();
+        const padding = 4;
+        highlight.style.display = 'block';
+        highlight.style.position = 'fixed';
+        highlight.style.top = (rect.top - padding) + 'px';
+        highlight.style.left = (rect.left - padding) + 'px';
+        highlight.style.width = (rect.width + padding * 2) + 'px';
+        highlight.style.height = (rect.height + padding * 2) + 'px';
+    }
+
     function positionHighlight(element, highlight) {
         const rect = element.getBoundingClientRect();
         const padding = 4;
         
         highlight.style.display = 'block';
+        highlight.style.position = 'absolute';
         highlight.style.top = (rect.top - padding + window.scrollY) + 'px';
         highlight.style.left = (rect.left - padding + window.scrollX) + 'px';
         highlight.style.width = (rect.width + padding * 2) + 'px';

@@ -718,7 +718,8 @@
             font-size: 0.65rem;
         }
         
-        .share-btn.sharing {
+        .share-btn.sharing,
+        .header-btn.sharing {
             pointer-events: none;
             opacity: 0.7;
         }
@@ -1095,6 +1096,10 @@
             /* Override the old albums-hide rule */
             .chart-section#albums-section.mobile-active {
                 display: flex !important;
+            }
+            /* Hide redundant section headers on mobile - tab buttons already show the name */
+            .chart-section-header {
+                display: none !important;
             }
             /* Full height chart list when showing one chart */
             .chart-list-wrapper {
@@ -1953,6 +1958,7 @@
                     <a href="index.html" class="active"><i class="fas fa-chart-line"></i> Топ Листа</a>
                     <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
                     <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Помош</a>
                 </div>
                 <div class="title-group">
                     <h1>Македонска Музичка Топ Листа</h1>
@@ -1968,6 +1974,9 @@
                 </span>
                 <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
                     <i class="fas fa-compress-alt"></i>
+                </button>
+                <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" title="Сподели">
+                    <i class="fas fa-share-alt"></i>
                 </button>
                 <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
                     <i class="fas fa-moon"></i>
@@ -2395,9 +2404,35 @@
         }
         
         // Share functions
+        function shareActiveChart() {
+            // Determine which chart section is currently active/visible
+            const isMobileView = window.innerWidth <= 600;
+            let chartType = 'singles';
+            if (isMobileView) {
+                const activeTab = document.querySelector('.mobile-chart-tab.active');
+                if (activeTab) chartType = activeTab.dataset.chartTab;
+                // If all-time artists section is showing
+                const artistsSection = document.getElementById('artists-section');
+                if (artistsSection && artistsSection.classList.contains('mobile-active')) chartType = 'artists';
+            } else {
+                // Desktop: check which sections are visible; prefer the first visible one
+                const sections = ['singles', 'albums', 'latest', 'artists'];
+                for (const s of sections) {
+                    const el = document.getElementById(s + '-section');
+                    if (el && el.style.display !== 'none' && el.offsetParent !== null) {
+                        chartType = s;
+                        break;
+                    }
+                }
+            }
+            shareChart(chartType);
+        }
+
         async function shareChart(chartType) {
-            const btn = event.target.closest('.share-btn');
-            if (btn) btn.classList.add('sharing');
+            const shareBtn = document.getElementById('header-share-btn');
+            const inlineBtn = (typeof event !== 'undefined' && event) ? event.target?.closest('.share-btn') : null;
+            if (shareBtn) shareBtn.classList.add('sharing');
+            if (inlineBtn) inlineBtn.classList.add('sharing');
             
             try {
                 const releases = chartDataStore[chartType];
@@ -2449,7 +2484,8 @@
                 console.error('Error creating share image:', err);
                 alert('Грешка при креирање на сликата');
             } finally {
-                if (btn) btn.classList.remove('sharing');
+                if (shareBtn) shareBtn.classList.remove('sharing');
+                if (inlineBtn) inlineBtn.classList.remove('sharing');
             }
         }
         
@@ -3968,53 +4004,43 @@
                     position: 'center'
                 },
                 {
+                    element: '.site-nav-trigger',
+                    title: 'Мени ☰',
+                    description: 'Кликни на <strong>логото</strong> за да отвориш мени. Таму ги имаш Топ Листа, Мастер Листа, Вести и Помош. Секоја страница има своја тура.',
+                    position: 'bottom'
+                },
+                {
                     element: '.chart-filter-bar',
                     title: 'Специјални листи',
                     description: 'Изберете тип на листа: Стандардна, На сите времиња, или филтрирајте по жанр (Алтернативна, Рап/Трап, Електронска) и град (Скопје, Битола).',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
+                    position: 'bottom'
                 },
                 {
-                    element: '#singles-section .chart-section-header',
-                    title: 'Синглови',
-                    description: 'Најпопуларни синглови од последните два месеци, рангирани според популарност на Spotify.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
-                },
-                {
-                    element: '#albums-section .chart-section-header',
-                    title: 'Албуми',
-                    description: 'Нови албуми и EP изданија од македонски артисти во истиот период.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
-                },
-                {
-                    element: '#latest-section .chart-section-header',
-                    title: 'Најнови',
-                    description: 'Последните 20 изданија подредени по датум на објава - од најново кон најстаро.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
+                    element: isMobile() ? '#mobile-chart-tabs' : '#singles-section .chart-section-header',
+                    title: 'Синглови / Албуми / Најнови',
+                    description: isMobile()
+                        ? 'Користи ги копчињата за да менуваш помеѓу Синглови, Албуми и Најнови изданија.'
+                        : 'Најпопуларни синглови од последните два месеци, рангирани според популарност на Spotify.',
+                    position: 'bottom'
                 },
                 {
                     element: '.chart-item',
                     title: 'Детали за издание',
                     description: 'Секое издание содржи корица, наслов, артист и популарност. Стрелките покажуваат промена во позицијата од минатата недела.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
+                    position: 'bottom'
                 },
                 {
-                    element: '.view-mode-toggle',
+                    element: '#header-share-btn',
+                    title: 'Сподели',
+                    description: 'Кликни за да генерираш слика од тековната листа и да ја споделиш на социјални мрежи или да ја зачуваш.',
+                    position: 'bottom'
+                },
+                {
+                    element: isMobile() ? null : '.view-mode-toggle',
                     title: 'Компактен приказ',
                     description: 'Менувајте помеѓу компактен и проширен приказ. На мобилни стандардно е компактен.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
-                },
-                {
-                    element: '.site-nav-trigger',
-                    title: 'Навигација',
-                    description: 'Кликни на логото за мени со Топ Листа, Мастер Листа и Вести. Секоја страница има своја тура.',
-                    position: 'bottom',
-                    mobilePosition: 'bottom'
+                    position: isMobile() ? 'center' : 'bottom',
+                    mobileSkip: true
                 }
             ];
 
@@ -4073,6 +4099,24 @@
                     if (e.key === 'ArrowRight' || e.key === 'Enter') nextStep();
                     if (e.key === 'ArrowLeft') prevStep();
                 });
+
+                // Show a logo pulse hint on mobile for first-time users
+                if (isMobile()) {
+                    const logoTrigger = document.querySelector('.site-nav-trigger');
+                    if (logoTrigger) {
+                        logoTrigger.classList.add('nav-hint-pulse');
+                        logoTrigger.addEventListener('animationend', () => {
+                            logoTrigger.classList.remove('nav-hint-pulse');
+                        }, { once: true });
+                    }
+                }
+            }
+
+            function getActiveTourSteps() {
+                if (isMobile()) {
+                    return tourSteps.filter(s => !s.mobileSkip);
+                }
+                return tourSteps;
             }
 
             function startTour() {
@@ -4100,7 +4144,8 @@
             }
 
             function nextStep() {
-                if (currentTourStep < tourSteps.length - 1) {
+                const steps = getActiveTourSteps();
+                if (currentTourStep < steps.length - 1) {
                     currentTourStep++;
                     showTourStep(currentTourStep);
                 } else {
@@ -4109,7 +4154,9 @@
             }
 
             function showTourStep(stepIndex) {
-                const step = tourSteps[stepIndex];
+                const steps = getActiveTourSteps();
+                const step = steps[stepIndex];
+                if (!step) return;
                 const overlay = document.getElementById('tour-overlay');
                 const highlight = overlay.querySelector('.tour-highlight');
                 const tooltip = overlay.querySelector('.tour-tooltip');
@@ -4121,25 +4168,39 @@
 
                 titleEl.textContent = step.title;
                 descEl.innerHTML = step.description;
-                progressEl.textContent = `${stepIndex + 1} / ${tourSteps.length}`;
+                progressEl.textContent = `${stepIndex + 1} / ${steps.length}`;
 
                 prevBtn.disabled = stepIndex === 0;
-                nextBtn.innerHTML = stepIndex === tourSteps.length - 1 
+                nextBtn.innerHTML = stepIndex === steps.length - 1 
                     ? 'Заврши <i class="fas fa-check"></i>' 
                     : 'Следно <i class="fas fa-arrow-right"></i>';
 
                 tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
 
-                // On mobile, use bottom sheet style - hide highlight and let CSS handle tooltip
+                // On mobile, use bottom sheet tooltip but still highlight elements
                 if (isMobile()) {
-                    highlight.style.display = 'none';
                     tooltip.style.top = '';
                     tooltip.style.left = '';
-                    
-                    // Scroll target element into view if it exists
-                    const targetEl = step.element ? document.querySelector(step.element) : null;
-                    if (targetEl) {
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    if (step.position === 'center' || !step.element) {
+                        highlight.style.display = 'none';
+                    } else {
+                        const targetEl = document.querySelector(step.element);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(() => {
+                                const rect = targetEl.getBoundingClientRect();
+                                const padding = 4;
+                                highlight.style.display = 'block';
+                                highlight.style.position = 'fixed';
+                                highlight.style.top = (rect.top - padding) + 'px';
+                                highlight.style.left = (rect.left - padding) + 'px';
+                                highlight.style.width = (rect.width + padding * 2) + 'px';
+                                highlight.style.height = (rect.height + padding * 2) + 'px';
+                            }, 350);
+                        } else {
+                            highlight.style.display = 'none';
+                        }
                     }
                     return;
                 }
@@ -4152,7 +4213,7 @@
                 } else {
                     const targetEl = document.querySelector(step.element);
                     if (!targetEl) {
-                        if (stepIndex < tourSteps.length - 1) {
+                        if (stepIndex < steps.length - 1) {
                             currentTourStep++;
                             showTourStep(currentTourStep);
                         }
