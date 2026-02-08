@@ -1702,11 +1702,15 @@
         "amazon_music": "https://music.amazon.com/albums/B0F7JM234S?trackAsin=B0F7JR3JJF",
         "tidal": "https://listen.tidal.com/track/434098337",
         "youtube_music": "https://music.youtube.com/watch?v=HlcKGAvB_bU",
-        "itunes": "https://geo.music.apple.com/us/album/_/1812787748?i=1812787751&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1812787748?i=1812787751&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/thisisdragiivanov/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a0c0c0",
+        "#c0e0c0"
+      ],
       "confirmed": false
     },
     {
@@ -1747,7 +1751,8 @@
         "amazon_music": "https://music.amazon.com/albums/B09MZQ8L69?trackAsin=B09MZLYW4R",
         "youtube_music": "https://music.youtube.com/watch?v=iGSTYKTUVS8",
         "tidal": "https://listen.tidal.com/track/207668175",
-        "itunes": "https://geo.music.apple.com/us/album/_/1598622851?i=1598622853&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1598622851?i=1598622853&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/dukebojadziev/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1805,7 +1810,6 @@
       "genre": "Поп, Р’н’Б",
       "soundsLike": "Beyoncé, Rihanna",
       "links": {
-        "lastfm": "https://www.last.fm/music/Elena+Risteska",
         "youtube": "https://www.youtube.com/@elenaristeska3042",
         "spotify": "https://open.spotify.com/artist/16FDymswtcT1ZQj3keHWiQ?si=L120OHYiSGOsTcFOxnNB-g",
         "deezer": "https://www.deezer.com/track/2883380482",
@@ -1814,11 +1818,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=07wA8NA5ZbQ",
         "tidal": "https://listen.tidal.com/track/398565730",
         "amazon_music": "https://music.amazon.com/albums/B0DM9YD29S?trackAsin=B0DMBVYC82",
-        "itunes": "https://geo.music.apple.com/us/album/_/1869532272?i=1869532473&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1869532272?i=1869532473&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/elenaristeska_era/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#402020"
+      ],
       "confirmed": false
     },
     {
@@ -1900,11 +1908,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=IZC34LXYFnI",
         "tidal": "https://listen.tidal.com/track/458800546",
         "youtube": "https://www.youtube.com/watch?v=IZC34LXYFnI",
-        "itunes": "https://geo.music.apple.com/us/album/_/1838728028?i=1838728041&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1838728028?i=1838728041&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/erzana.music/"
       },
-      "contact": "недостигаат податоци",
+      "contact": "Erzana.music@gmail.com",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#c08060",
+        "#c0a0a0"
+      ],
       "confirmed": false
     },
     {
@@ -1913,18 +1925,24 @@
       "genre": "Поп-Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Eye_Cue",
+        "wikipedia": [
+          "https://en.wikipedia.org/wiki/Eye_Cue"
+        ],
         "youtube": "https://www.youtube.com/@AjKjuOfficial",
         "spotify": "https://open.spotify.com/artist/2ybuHt32Qk1nOfpKVvxZtO?si=zFkTmlWAREKumUklZGyCkw",
         "deezer": "https://www.deezer.com/track/473431092",
         "amazon_music": "https://music.amazon.com/albums/B07CVHKS4L?trackAsin=B07CVJHY6W",
         "youtube_music": "https://music.youtube.com/watch?v=vVq8jz70oGk",
         "tidal": "https://listen.tidal.com/track/86679850",
-        "itunes": "https://geo.music.apple.com/us/album/_/1359253329?i=1359254223&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1359253329?i=1359254223&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/eyecueofficial/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a08080",
+        "#a06040"
+      ],
       "confirmed": false
     },
     {
@@ -1973,7 +1991,7 @@
         "itunes": "https://geo.music.apple.com/us/album/_/1543544104?i=1543544105&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
         "instagram": "https://www.instagram.com/fiction_sk/"
       },
-      "contact": "недостигаат податоци",
+      "contact": "fictionmkd@gmail.com",
       "label": null,
       "accentColors": [
         "#0060c0",
@@ -1993,11 +2011,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=14ziIPZAS34",
         "tidal": "https://listen.tidal.com/track/487127098",
         "youtube": "https://www.youtube.com/watch?v=14ziIPZAS34",
-        "itunes": "https://geo.music.apple.com/us/album/_/1866594620?i=1866594621&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1866594620?i=1866594621&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/fiiikoooo/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#804020",
+        "#ffc080"
+      ],
       "confirmed": false
     },
     {
@@ -3096,6 +3118,21 @@
       "confirmed": false
     },
     {
+      "name": "Кристијан Магденовски",
+      "city": "Битола",
+      "genre": "Прогресивен Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@kristijanmagdenovski6721",
+        "spotify": "https://open.spotify.com/artist/59278OxZqz6RetpVYCO1k5?si=shpmqtWkTYm9OAhKVvjOvw",
+        "instagram": "https://www.instagram.com/kristijan_magdenovski/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Крсто Роџевски",
       "city": "Битола",
       "genre": "Боса Нова",
@@ -3106,11 +3143,15 @@
         "amazon_music": "https://music.amazon.com/albums/B0DSCTCK5Z?trackAsin=B0DSCTTDHS",
         "tidal": "https://listen.tidal.com/track/409766971",
         "youtube_music": "https://music.youtube.com/watch?v=Q9UtGxhEyK0",
-        "itunes": "https://geo.music.apple.com/us/album/_/1789104907?i=1789104916&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1789104907?i=1789104916&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/kristorodzevski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#402020",
+        "#604020"
+      ],
       "confirmed": false
     },
     {
@@ -3392,7 +3433,9 @@
       "genre": "Етно",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/luboyna/",
+        "spotify": "https://open.spotify.com/artist/6h93jgv8mtKhe8ZgYbQC0m?si=LToSBhOSQFmvxKtp-JBTqw",
+        "youtube": "https://www.youtube.com/@Ljubojna1"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5099,6 +5142,21 @@
       "confirmed": false
     },
     {
+      "name": "Skullcrush",
+      "city": "Битола",
+      "genre": "Треш, Треш Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/skullcrush_band/",
+        "youtube": "https://www.youtube.com/@skullcrushband",
+        "spotify": "https://open.spotify.com/artist/6PAFqWretJ9egBGWs3sjq7?si=z4HV4BKyTaiTcsxq9NfjWQ"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Слаткаристика",
       "city": "Скопје",
       "genre": "Рап, Трап, Поп",
@@ -5735,6 +5793,21 @@
         "soundcloud": "https://soundcloud.com/the-john-of-skopje",
         "facebook": "https://www.facebook.com/p/The-John-official-100046240842709/",
         "spotify": "https://open.spotify.com/artist/0weNyr4C5tEpxfHDq5UTKS"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "The Local Blue",
+      "city": "Скопје",
+      "genre": "Блуз",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "facebook": "https://www.facebook.com/thelocalblue/",
+        "instagram": "https://www.instagram.com/thelocalblue/?hl=en",
+        "soundcloud": "https://soundcloud.com/thelocalblue"
       },
       "contact": "недостигаат податоци",
       "label": null,
