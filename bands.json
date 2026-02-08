@@ -156,6 +156,20 @@
       "confirmed": false
     },
     {
+      "name": "Алекс",
+      "city": "Прилеп",
+      "genre": "Поп, Рок, Блуз",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@alexcheska",
+        "instagram": "https://www.instagram.com/alexcheska/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Александар Гулевски",
       "city": "Битола",
       "genre": "Рок, Дарк Вејв, Готик Рок",
@@ -342,6 +356,20 @@
       "confirmed": false
     },
     {
+      "name": "Анастасија Трајковска",
+      "city": "Битола",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=7eYQJMZKXtw",
+        "instagram": "https://www.instagram.com/anastasija__trajkovska/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Андреј Татарчевски",
       "city": "Скопје",
       "genre": "Електронска",
@@ -415,11 +443,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=J-Y2ePSNqwQ",
         "tidal": "https://listen.tidal.com/track/187874612",
         "youtube": "https://www.youtube.com/watch?v=J-Y2ePSNqwQ",
-        "itunes": "https://geo.music.apple.com/us/album/_/1572501688?i=1572501689&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1572501688?i=1572501689&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/area.mk/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#608080",
+        "#80a0a0"
+      ],
       "confirmed": false
     },
     {
@@ -1938,11 +1970,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=NcYlK7ido7Q",
         "tidal": "https://listen.tidal.com/track/165037612",
         "amazon_music": "https://music.amazon.com/albums/B08PRWL7KN?trackAsin=B08PS89RGX",
-        "itunes": "https://geo.music.apple.com/us/album/_/1543544104?i=1543544105&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1543544104?i=1543544105&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/fiction_sk/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#0060c0",
+        "#004080"
+      ],
       "confirmed": false
     },
     {
@@ -2551,6 +2587,21 @@
       "confirmed": false
     },
     {
+      "name": "Јана Спирковска",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@jazospcu",
+        "spotify": "https://open.spotify.com/artist/0NZSRSBvalcv2CeB3ieTh8?si=wuSemRqKQoGPPsurl_3ZNw",
+        "instagram": "https://www.instagram.com/spirkovskajana/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Jeff Bahami",
       "city": "Битола",
       "genre": "Синтвејв",
@@ -2710,7 +2761,9 @@
       "genre": "Поп, Рок",
       "soundsLike": "Annie Lennox, Kate Bush",
       "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Kaliopi",
+        "wikipedia": [
+          "https://en.wikipedia.org/wiki/Kaliopi"
+        ],
         "youtube": "https://www.youtube.com/@KaliopiOfficial",
         "spotify": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
         "deezer": "https://www.deezer.com/track/2713667122",
@@ -2720,11 +2773,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=rYs33eJhckk",
         "tidal": "https://listen.tidal.com/track/352351074",
         "amazon_music": "https://music.amazon.com/albums/B0CYLWH8XL?trackAsin=B0CYLY2FT1",
-        "itunes": "https://geo.music.apple.com/us/album/_/1737393878?i=1737393881&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1737393878?i=1737393881&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/kaliopi_zasekogas/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#e0a080"
+      ],
       "confirmed": false
     },
     {
@@ -2900,11 +2957,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=cMh4WGvvDg4",
         "tidal": "https://listen.tidal.com/track/276205736",
         "amazon_music": "https://music.amazon.com/albums/B0BVGW653Q?trackAsin=B0BVGVC4XL",
-        "itunes": "https://geo.music.apple.com/us/album/_/1671240297?i=1671240309&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1671240297?i=1671240309&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/kiril_dzajkovski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202040",
+        "#204040"
+      ],
       "confirmed": false
     },
     {
@@ -3399,6 +3460,20 @@
         "spotify": "https://open.spotify.com/artist/34XhnXv5AtZTH48hn16V8Y?si=M6hZvMtTTTqtTtMCT38CbQ",
         "deezer": "https://www.deezer.com/track/1355490252",
         "youtube_music": "https://music.youtube.com/watch?v=1tiMUdlmZJg"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Магдалена Ена Цветковска",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=Ws_tauPbsLU",
+        "instagram": "https://www.instagram.com/magdalena_ena/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4056,7 +4131,8 @@
       "genre": "Фолк, Етно",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/4wuXoAeL8lQDh052i3ZkLa?si=8t61_ealQS6o841qkAyUVg"
+        "spotify": "https://open.spotify.com/artist/4wuXoAeL8lQDh052i3ZkLa?si=8t61_ealQS6o841qkAyUVg",
+        "instagram": "https://www.instagram.com/nikolcemicevski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4326,6 +4402,20 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/1xO2fDwZgVJasdbMTWF04b?si=03R5Yu3dRCiSrNhp-BJKcw"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Пеперминт",
+      "city": "Скопје",
+      "genre": "Рок, Инди",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/peperminttheband/",
+        "youtube": "https://www.youtube.com/@pajakzajak/videos"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4735,6 +4825,21 @@
         "lastfm": "https://www.last.fm/music/Sanatorium",
         "youtube": "https://www.youtube.com/@sanatorium2011",
         "spotify": "https://open.spotify.com/artist/2WrTKj12WsA9LX5TvdPQlL?si=W1L1iDpsQGm_TC-UjBZSEQ"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Сара Мејс",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@SarahMace",
+        "spotify": "https://open.spotify.com/artist/7k7tAeXP9YKbWJPTWMQEcF?si=JrXk5vntRnusZgBB26Nirg",
+        "instagram": "https://www.instagram.com/sarahmace__/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5456,6 +5561,21 @@
       "confirmed": false
     },
     {
+      "name": "Тамара Волческа",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@volceskatamara",
+        "instagram": "https://www.instagram.com/volce.ska/",
+        "spotify": "https://open.spotify.com/artist/1Jti8meLUjVbrCohmdrJ8q?si=jLtXj6KyQ5SOvTuwUPqJEA"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Тања Царовска",
       "city": "Скопје",
       "genre": "Поп",
@@ -5499,6 +5619,21 @@
         "youtube": "https://www.youtube.com/channel/UClVOb7-xhslEHKdciXfMSKg",
         "bandcamp": "https://pmgjazz.bandcamp.com/album/spiritual-car-wash",
         "spotify": "https://open.spotify.com/artist/078AGCZs6It9IkMpYxF0v9?si=2_zqTAGbQlKdkSDVpojHzg"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Теа Трајковска",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/theatrajkovska/",
+        "youtube": "https://www.youtube.com/theatrajkovska",
+        "spotify": "https://open.spotify.com/artist/2qr2KQvXLa0QjoBd5NHR22?si=dC57ivavT9GxZh4Caqj2Ew"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6051,6 +6186,21 @@
         "tidal": "https://listen.tidal.com/track/315223281",
         "itunes": "https://geo.music.apple.com/us/album/_/1709197090?i=1709197092&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
         "youtube_music": "https://music.youtube.com/watch?v=1wk4-h-jSpo"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Виктор Апостоловски",
+      "city": "Битола",
+      "genre": "Поп, Соул",
+      "soundsLike": "Justin Timberlake",
+      "links": {
+        "youtube": "https://www.youtube.com/@ViktorApostolovski",
+        "instagram": "https://www.instagram.com/professor_va/",
+        "spotify": "https://open.spotify.com/artist/41imdszK6maTqpzNtmOD3E?si=FgPvsFmtTCOoBNus6IVK2Q"
       },
       "contact": "недостигаат податоци",
       "label": null,
