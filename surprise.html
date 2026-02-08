@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изненади ме | Македонска Музичка Мастер Листа</title>
+
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="Изненади ме | Македонска Музичка Мастер Листа">
+    <meta name="description" content="Откриј нов македонски артист по случаен избор! Избери жанр и ера, и препушти се на изненадувањето.">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://toplista.mk/surprise.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/surprise.html">
+    <meta property="og:title" content="Изненади ме | Македонска Музичка Мастер Листа">
+    <meta property="og:description" content="Откриј нов македонски артист по случаен избор!">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <style>
+        body.surprise-page {
+            height: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body.surprise-page main {
+            height: auto;
+            overflow: visible;
+        }
+
+        .surprise-container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 3rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .surprise-hero {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .surprise-hero .hero-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            color: var(--accent-blue);
+        }
+
+        .surprise-hero h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .surprise-hero p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Step container */
+        .surprise-step {
+            margin-bottom: 2rem;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .surprise-step.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .step-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .step-label .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .step-label .step-number.completed {
+            background: #3dba6f;
+        }
+
+        /* Option buttons */
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .option-btn:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 127, 165, 0.06);
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent-blue);
+            background: rgba(74, 127, 165, 0.1);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .option-btn i {
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* Go button */
+        .surprise-go-wrapper {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .surprise-go-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 2.2rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent-blue);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .surprise-go-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(74, 127, 165, 0.35);
+        }
+
+        .surprise-go-btn:active {
+            transform: scale(0.97);
+        }
+
+        .surprise-go-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .surprise-go-btn i {
+            font-size: 1rem;
+        }
+
+        /* Loading spinner */
+        .surprise-go-btn.loading i {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* No results message */
+        .no-results-msg {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .no-results-msg.visible {
+            display: block;
+        }
+
+        .no-results-msg i {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 600px) {
+            .surprise-container {
+                padding: 1.25rem 1rem 2rem;
+            }
+
+            .surprise-hero h2 {
+                font-size: 1.15rem;
+            }
+
+            .surprise-hero .hero-icon {
+                font-size: 2rem;
+            }
+
+            .option-btn {
+                padding: 0.65rem 0.75rem;
+                font-size: 0.78rem;
+            }
+
+            .surprise-go-btn {
+                font-size: 0.85rem;
+                padding: 0.75rem 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="compact surprise-page">
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="surprise.html" class="active"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Помош</a>
+                </div>
+                <div class="title-group">
+                    <h1>Изненади ме</h1>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <span class="header-info">
+                    <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
+                </span>
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="surprise-container">
+            <div class="surprise-hero">
+                <span class="hero-icon"><i class="fas fa-shuffle"></i></span>
+                <h2>Изненади ме!</h2>
+                <p>Избери жанр и ера, и ќе те одведеме до случаен македонски артист.</p>
+            </div>
+
+            <!-- Step 1: Genre -->
+            <div class="surprise-step" id="step-genre">
+                <div class="step-label">
+                    <span class="step-number" id="step-num-1">1</span>
+                    Жанр
+                </div>
+                <div class="option-grid">
+                    <button class="option-btn selected" data-genre="all">
+                        <i class="fas fa-music"></i> Сите
+                    </button>
+                    <button class="option-btn" data-genre="alt">
+                        <i class="fas fa-guitar"></i> Алтернативна
+                    </button>
+                    <button class="option-btn" data-genre="rap">
+                        <i class="fas fa-microphone-lines"></i> Рап/Трап
+                    </button>
+                    <button class="option-btn" data-genre="electronic">
+                        <i class="fas fa-headphones"></i> Електронска
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Era -->
+            <div class="surprise-step" id="step-era">
+                <div class="step-label">
+                    <span class="step-number" id="step-num-2">2</span>
+                    Ера
+                </div>
+                <div class="option-grid">
+                    <button class="option-btn selected" data-era="any">
+                        <i class="fas fa-infinity"></i> Било која
+                    </button>
+                    <button class="option-btn" data-era="new">
+                        <i class="fas fa-bolt"></i> Нови (последни 10г.)
+                    </button>
+                    <button class="option-btn" data-era="old">
+                        <i class="fas fa-record-vinyl"></i> Стари (10+ години)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Go button -->
+            <div class="surprise-go-wrapper">
+                <button class="surprise-go-btn" id="surprise-go" disabled>
+                    <i class="fas fa-shuffle"></i> Изненади ме!
+                </button>
+            </div>
+
+            <div class="no-results-msg" id="no-results">
+                <i class="fas fa-face-sad-tear"></i>
+                Нема артисти со избраните критериуми. Пробај друга комбинација.
+            </div>
+        </div>
+    </main>
+
+    <script>
+    (function() {
+        // ==================== DARK MODE ====================
+        const toggle = document.getElementById('dark-mode-toggle');
+        const body = document.body;
+        const icon = toggle ? toggle.querySelector('i') : null;
+
+        function setDarkMode(enabled) {
+            body.classList.toggle('dark-mode', enabled);
+            if (icon) icon.className = enabled ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('mmm-dark-mode', enabled ? 'true' : 'false');
+        }
+
+        const stored = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
+        if (stored === 'true' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            setDarkMode(true);
+        }
+        if (toggle) toggle.addEventListener('click', () => setDarkMode(!body.classList.contains('dark-mode')));
+
+        // ==================== NAV MENU ====================
+        const trigger = document.querySelector('.site-nav-trigger');
+        const menu = document.getElementById('site-nav-menu');
+        if (trigger && menu) {
+            trigger.addEventListener('click', (e) => {
+                if (window.innerWidth <= 600) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                    menu.classList.remove('open');
+                }
+            });
+        }
+
+        // ==================== GENRE CONFIG (same as chart page) ====================
+        const genreConfig = {
+            'alt': {
+                genres: ['Алтернативен', 'Инди', 'Пост-панк', 'Панк', 'Шугејз', 'Дрим Поп', 'Пост-рок',
+                         'Гранџ', 'Експериментален', 'Мат Рок', 'Арт Рок', 'Алтернативен Рок', 'Инди Рок', 'Пост-Панк'],
+                excludeIfContains: ['поп']
+            },
+            'rap': {
+                genres: ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап'],
+                excludeIfContains: []
+            },
+            'electronic': {
+                genres: ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп',
+                         'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв'],
+                excludeIfContains: []
+            }
+        };
+
+        // ==================== STATE ====================
+        let selectedGenre = 'all';
+        let selectedEra = 'any';
+        let bandsData = [];
+        let releasesData = [];
+        let dataLoaded = false;
+
+        // ==================== OPTION BUTTON LOGIC ====================
+        document.querySelectorAll('#step-genre .option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#step-genre .option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedGenre = btn.dataset.genre;
+                updateGoButton();
+            });
+        });
+
+        document.querySelectorAll('#step-era .option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#step-era .option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedEra = btn.dataset.era;
+                updateGoButton();
+            });
+        });
+
+        // ==================== LOAD DATA ====================
+        async function loadData() {
+            try {
+                const [bandsResp, chartResp] = await Promise.all([
+                    fetch('bands.json'),
+                    fetch('chart-data.json')
+                ]);
+                const bandsJson = await bandsResp.json();
+                const chartJson = await chartResp.json();
+
+                bandsData = bandsJson.muzickaMasterLista || [];
+                releasesData = chartJson.releases || [];
+                dataLoaded = true;
+                updateGoButton();
+            } catch (err) {
+                console.error('Failed to load data:', err);
+            }
+        }
+
+        function updateGoButton() {
+            const goBtn = document.getElementById('surprise-go');
+            goBtn.disabled = !dataLoaded;
+            document.getElementById('no-results').classList.remove('visible');
+        }
+
+        // ==================== GENRE MATCHING ====================
+        function artistMatchesGenre(artist, genreFilter) {
+            if (genreFilter === 'all') return true;
+            const config = genreConfig[genreFilter];
+            if (!config) return true;
+
+            const artistGenres = artist.genre.toLowerCase();
+
+            // Exclude if genre has exclusion keywords (e.g., exclude поп from alt)
+            for (const ex of config.excludeIfContains) {
+                if (artistGenres.includes(ex)) return false;
+            }
+
+            return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
+        }
+
+        // ==================== ERA MATCHING ====================
+        function buildArtistEraMap() {
+            // Build a map: artist name -> most recent release year
+            const eraMap = {};
+            for (const release of releasesData) {
+                const name = release.bandName;
+                const year = parseInt(release.releaseDate, 10);
+                if (!isNaN(year)) {
+                    if (!eraMap[name] || year > eraMap[name]) {
+                        eraMap[name] = year;
+                    }
+                }
+            }
+            return eraMap;
+        }
+
+        function artistMatchesEra(artist, eraFilter, eraMap) {
+            if (eraFilter === 'any') return true;
+
+            const currentYear = new Date().getFullYear();
+            const cutoffYear = currentYear - 10;
+            const latestYear = eraMap[artist.name];
+
+            if (latestYear === undefined) {
+                // No release data available — include in "any" only
+                return false;
+            }
+
+            if (eraFilter === 'new') return latestYear >= cutoffYear;
+            if (eraFilter === 'old') return latestYear < cutoffYear;
+            return true;
+        }
+
+        // ==================== GO! ====================
+        const goBtn = document.getElementById('surprise-go');
+        goBtn.addEventListener('click', () => {
+            if (!dataLoaded) return;
+
+            const eraMap = buildArtistEraMap();
+
+            // Filter artists
+            const candidates = bandsData.filter(artist => {
+                return artistMatchesGenre(artist, selectedGenre) &&
+                       artistMatchesEra(artist, selectedEra, eraMap);
+            });
+
+            const noResultsEl = document.getElementById('no-results');
+
+            if (candidates.length === 0) {
+                noResultsEl.classList.add('visible');
+                return;
+            }
+
+            noResultsEl.classList.remove('visible');
+
+            // Show loading state
+            goBtn.classList.add('loading');
+            goBtn.querySelector('i').className = 'fas fa-spinner';
+
+            // Pick random artist and navigate
+            const randomArtist = candidates[Math.floor(Math.random() * candidates.length)];
+            const artistUrl = 'artist.html?name=' + encodeURIComponent(randomArtist.name);
+
+            setTimeout(() => {
+                window.location.href = artistUrl;
+            }, 400);
+        });
+
+        // ==================== INIT ====================
+        loadData();
+    })();
+    </script>
+</body>
+</html>

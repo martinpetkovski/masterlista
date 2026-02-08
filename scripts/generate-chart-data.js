@@ -193,6 +193,160 @@ async function sendDiscordNotification(releases, webhookUrl) {
   }
 }
 
+// ==================== Fallback Artist Image Fetchers ====================
+
+/**
+ * Try to fetch an artist image from alternative services when Spotify doesn't provide one.
+ * Tries services in order based on available links for the band.
+ */
+async function fetchFallbackArtistImage(band) {
+  const links = band.links || {};
+
+  // Try Deezer (proper API, returns artist pictures)
+  if (links.deezer) {
+    const img = await fetchDeezerImage(links.deezer);
+    if (img) return img;
+  }
+
+  // Try iTunes / Apple Music (search API by artist name)
+  if (links.itunes || links.apple_music) {
+    const img = await fetchITunesArtistImage(band.name);
+    if (img) return img;
+  }
+
+  // Try YouTube (oembed for video thumbnail)
+  if (links.youtube || links.youtube_music) {
+    const url = links.youtube || links.youtube_music;
+    const img = await fetchYouTubeImage(url);
+    if (img) return img;
+  }
+
+  // Try Bandcamp (scrape og:image from page)
+  if (links.bandcamp) {
+    const img = await fetchBandcampImage(links.bandcamp);
+    if (img) return img;
+  }
+
+  // Try SoundCloud (oembed)
+  if (links.soundcloud) {
+    const img = await fetchSoundCloudImage(links.soundcloud);
+    if (img) return img;
+  }
+
+  return null;
+}
+
+/**
+ * Fetch artist image from Deezer's public API.
+ * Supports track, album, and artist URL formats.
+ */
+async function fetchDeezerImage(deezerUrl) {
+  try {
+    const artistMatch = deezerUrl.match(/\/artist\/(\d+)/);
+    const trackMatch = deezerUrl.match(/\/track\/(\d+)/);
+    const albumMatch = deezerUrl.match(/\/album\/(\d+)/);
+
+    let endpoint = null;
+    if (artistMatch) endpoint = `https://api.deezer.com/artist/${artistMatch[1]}`;
+    else if (trackMatch) endpoint = `https://api.deezer.com/track/${trackMatch[1]}`;
+    else if (albumMatch) endpoint = `https://api.deezer.com/album/${albumMatch[1]}`;
+    else return null;
+
+    const resp = await fetchWithRetry(endpoint, {}, 2, 5000);
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    if (artistMatch) {
+      return data.picture_xl || data.picture_big || data.picture_medium || null;
+    }
+    // For track/album, the artist info is nested
+    const artist = data.artist;
+    return artist?.picture_xl || artist?.picture_big || artist?.picture_medium || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Fetch artist image via iTunes Search API (free, no auth required).
+ * Searches by artist name and returns upscaled artwork.
+ */
+async function fetchITunesArtistImage(artistName) {
+  try {
+    const resp = await fetchWithRetry(
+      `https://itunes.apple.com/search?term=${encodeURIComponent(artistName)}&entity=musicArtist&limit=1`,
+      {}, 2, 5000
+    );
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    const artwork = data.results?.[0]?.artworkUrl100;
+    if (!artwork) return null;
+    // Upscale to 600x600
+    return artwork.replace('100x100', '600x600');
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Fetch thumbnail from YouTube via oembed (works for video and some channel URLs).
+ */
+async function fetchYouTubeImage(youtubeUrl) {
+  try {
+    const resp = await fetchWithRetry(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(youtubeUrl)}&format=json`,
+      {}, 2, 5000
+    );
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    return data.thumbnail_url || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Fetch image from a Bandcamp page by scraping the og:image meta tag.
+ */
+async function fetchBandcampImage(bandcampUrl) {
+  try {
+    const resp = await fetchWithRetry(bandcampUrl, {}, 2, 8000);
+    if (!resp.ok) return null;
+
+    const html = await resp.text();
+    // Try og:image first, then other image meta tags
+    const ogMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
+    if (ogMatch?.[1]) return ogMatch[1];
+
+    const ogMatch2 = html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+    if (ogMatch2?.[1]) return ogMatch2[1];
+
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Fetch thumbnail from SoundCloud via oembed.
+ */
+async function fetchSoundCloudImage(soundcloudUrl) {
+  try {
+    const resp = await fetchWithRetry(
+      `https://soundcloud.com/oembed?url=${encodeURIComponent(soundcloudUrl)}&format=json`,
+      {}, 2, 5000
+    );
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    return data.thumbnail_url || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function getArtistsBatch(artistIds, token) {
   const results = {};
   const BATCH_SIZE = 50;
@@ -344,6 +498,34 @@ async function main() {
   const artistsInfo = await getArtistsBatch(artistIds, spotifyToken);
   console.log(`Got info for ${Object.keys(artistsInfo).length} artists`);
   
+  // Fetch fallback images for artists without a Spotify artist image
+  const fallbackImages = new Map();
+  const artistsWithoutImages = artistIds.filter(id => !artistsInfo[id]?.images?.[0]?.url);
+  if (artistsWithoutImages.length > 0) {
+    console.log(`${artistsWithoutImages.length} artists have no Spotify image, trying fallback services...`);
+    const FALLBACK_BATCH = 5;
+    for (let i = 0; i < artistsWithoutImages.length; i += FALLBACK_BATCH) {
+      const batch = artistsWithoutImages.slice(i, i + FALLBACK_BATCH);
+      const results = await Promise.all(
+        batch.map(async (artistId) => {
+          const band = artistMap.get(artistId);
+          const img = await fetchFallbackArtistImage(band);
+          return { artistId, img, name: band.name };
+        })
+      );
+      for (const { artistId, img, name } of results) {
+        if (img) {
+          fallbackImages.set(artistId, img);
+          console.log(`  ✓ Fallback image for ${name}`);
+        }
+      }
+      if (i + FALLBACK_BATCH < artistsWithoutImages.length) {
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+    console.log(`Got ${fallbackImages.size} fallback images out of ${artistsWithoutImages.length} needed`);
+  }
+  
   // Fetch albums and their track popularity with rate limiting
   const releases = [];
   const BATCH_SIZE = 10; // Process 10 artists at a time (reduced for more API calls)
@@ -394,7 +576,7 @@ async function main() {
                   releaseDate: album.release_date,
                   releaseUrl: album.external_urls?.spotify,
                   thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
-                  artistImage: artistInfo?.images?.[0]?.url || null,
+                  artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || null,
                   totalTracks: album.total_tracks,
                   popularity: maxTrackPopularity, // Use max track popularity
                   topTrackName,
@@ -414,7 +596,7 @@ async function main() {
                   releaseDate: album.release_date,
                   releaseUrl: album.external_urls?.spotify,
                   thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
-                  artistImage: artistInfo?.images?.[0]?.url || null,
+                  artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || null,
                   totalTracks: album.total_tracks,
                   popularity: artistInfo?.popularity || 0,
                   followers: artistInfo?.followers?.total || 0,
