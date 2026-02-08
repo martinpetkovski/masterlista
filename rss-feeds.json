@@ -82,5 +82,23 @@
         "feedUrl": "https://netpress.com.mk/feed/",
         "iconUrl": "https://www.google.com/s2/favicons?domain=netpress.com.mk&sz=32",
         "siteUrl": "https://netpress.com.mk/"
+    },
+    {
+        "name": "Друга страна",
+        "feedUrl": "https://drugastrana.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=drugastrana.mk&sz=32",
+        "siteUrl": "https://drugastrana.mk/"
+    },
+    {
+        "name": "Блен.мк",
+        "feedUrl": "https://blen.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=blen.mk&sz=32",
+        "siteUrl": "https://blen.mk/"
+    },
+    {
+        "name": "Терапија.мк",
+        "feedUrl": "https://terapija.mk/feed/",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=terapija.mk&sz=32",
+        "siteUrl": "https://terapija.mk/"
     }
 ]
