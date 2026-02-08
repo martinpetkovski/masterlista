@@ -917,6 +917,19 @@
       "confirmed": false
     },
     {
+      "name": "Член 16",
+      "city": "Скопје, Прилеп",
+      "genre": "Експериментален Рок",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/chlen.16/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Чоканче",
       "city": "Битола",
       "genre": "Рокенрол",
@@ -1715,11 +1728,11 @@
     },
     {
       "name": "Druggy",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Трап, Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/druggy_xy/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1779,12 +1792,12 @@
       "confirmed": false
     },
     {
-      "name": "Elektro Kultura",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "name": "Електро Култура",
+      "city": "Скопје",
+      "genre": "Електронска",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=5WSj4y41IzM"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1869,7 +1882,7 @@
       "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=vRRAgdJqVRQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2446,11 +2459,15 @@
         "tidal": "https://listen.tidal.com/track/420472558",
         "youtube": "https://www.youtube.com/watch?v=nb8DVZv7md0",
         "itunes": "https://geo.music.apple.com/us/album/_/1799124626?i=1799124627&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "youtube_music": "https://music.youtube.com/watch?v=nb8DVZv7md0"
+        "youtube_music": "https://music.youtube.com/watch?v=nb8DVZv7md0",
+        "instagram": "https://www.instagram.com/gwass6000/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#406080",
+        "#6080a0"
+      ],
       "confirmed": false
     },
     {
@@ -2459,7 +2476,7 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=JTzGqmdoZiQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2472,11 +2489,15 @@
       "genre": "Треш Метал, Металкор",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/5KdbE4cUXiR9NFl5j43IqW?si=jFCQW7a_Rsmfv-0YlgnMHQ"
+        "spotify": "https://open.spotify.com/artist/5KdbE4cUXiR9NFl5j43IqW?si=jFCQW7a_Rsmfv-0YlgnMHQ",
+        "instagram": "https://www.instagram.com/hardfacedband/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a0a080",
+        "#402020"
+      ],
       "confirmed": false
     },
     {
@@ -2594,18 +2615,21 @@
       "genre": "Поп",
       "soundsLike": "Ellie Goulding, Sia",
       "links": {
-        "lastfm": "https://www.last.fm/music/Jana+Bur%C4%8Deska",
         "youtube": "https://www.youtube.com/@JanaBurche",
         "spotify": "https://open.spotify.com/artist/0o6ViwBypGcKx0wAphlgXy?si=OUNtJG_HT2KrL9O13Ee1YA",
         "deezer": "https://www.deezer.com/track/2238354447",
         "amazon_music": "https://music.amazon.com/albums/B0C2GZL4DC?trackAsin=B0C2GYN79C",
         "youtube_music": "https://music.youtube.com/watch?v=9uCS9c0A6hU",
         "tidal": "https://listen.tidal.com/track/289151593",
-        "itunes": "https://geo.music.apple.com/us/album/_/1682466669?i=1682466671&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1682466669?i=1682466671&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/boorche/?hl=en"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#404020",
+        "#808040"
+      ],
       "confirmed": false
     },
     {
@@ -2648,7 +2672,7 @@
       "links": {
         "youtube": "https://www.youtube.com/@MVRSVR",
         "spotify": "https://open.spotify.com/artist/79XvNtUxP1krMoZT9Pe0dm?si=kWebdH0CQN63ID86hD_Q9w",
-        "instagram": "https://www.instagram.com/jean_larri_claude/",
+        "instagram": "https://www.instagram.com/jean_larri/",
         "soundcloud": "https://soundcloud.com/d_flute_master",
         "tidal": "https://listen.tidal.com/track/486928591",
         "itunes": "https://geo.music.apple.com/us/album/_/1866410166?i=1866410167&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
@@ -2656,7 +2680,10 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#200040",
+        "#400040"
+      ],
       "confirmed": false
     },
     {
@@ -2681,19 +2708,6 @@
     },
     {
       "name": "Јован Милошевски",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Јулија",
       "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
@@ -2866,11 +2880,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=xpVOLje-XFY",
         "tidal": "https://listen.tidal.com/track/157964358",
         "amazon_music": "https://music.amazon.com/albums/B0F94JBSMV?trackAsin=B0F94HNSBT",
-        "itunes": "https://geo.music.apple.com/us/album/_/1535003376?i=1535003385&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1535003376?i=1535003385&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/karolinagocheva/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#402020"
+      ],
       "confirmed": false
     },
     {
@@ -2904,8 +2922,8 @@
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": [
-        "#402020",
-        "#604020"
+        "#dea238",
+        "#4b8cbd"
       ],
       "confirmed": true
     },
@@ -3057,11 +3075,15 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/3WCFiH40oeSHhdY7e8a7WI?si=RZCTE-06Q5-6Pp0YbhzyZw"
+        "spotify": "https://open.spotify.com/artist/3WCFiH40oeSHhdY7e8a7WI?si=RZCTE-06Q5-6Pp0YbhzyZw",
+        "instagram": "https://www.instagram.com/kokicheband/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#2060a0",
+        "#0060a0"
+      ],
       "confirmed": false
     },
     {
@@ -3156,11 +3178,11 @@
     },
     {
       "name": "Куку Леле",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=-BFEmLX1y54"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3211,11 +3233,15 @@
         "tidal": "https://listen.tidal.com/track/315923315",
         "youtube": "https://www.youtube.com/watch?v=4Z8B50IVRv8",
         "itunes": "https://geo.music.apple.com/us/album/_/1707097990?i=1707097991&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "youtube_music": "https://music.youtube.com/watch?v=4Z8B50IVRv8"
+        "youtube_music": "https://music.youtube.com/watch?v=4Z8B50IVRv8",
+        "instagram": "https://www.instagram.com/lambealabakovski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#402020"
+      ],
       "confirmed": false
     },
     {
@@ -3244,11 +3270,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=VgvupSwpjUY",
         "tidal": "https://listen.tidal.com/track/258074974",
         "amazon_music": "https://music.amazon.com/albums/B0BL9GNCS7?trackAsin=B0BL9FMJGP",
-        "itunes": "https://geo.music.apple.com/us/album/_/1652735495?i=1652735496&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1652735495?i=1652735496&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/_lara.iv_/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#402020",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
@@ -3306,7 +3336,7 @@
       "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=M4tnM1YL-is"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3343,17 +3373,21 @@
     },
     {
       "name": "LD Pistolero",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/6PcXUcgfFMFiFpQPwOhJzj?si=5WV0MUqLRQiZF5fnwUPp4w",
         "soundcloud": "https://soundcloud.com/ldpistolero-music/eden-den-bonus-track-feat-dj?utm_medium=api&utm_campaign=social_sharing&utm_source=id_314547",
-        "amazon_music": "https://music.amazon.com/albums/B08T8KVQP1?trackAsin=B08T8K848R"
+        "amazon_music": "https://music.amazon.com/albums/B08T8KVQP1?trackAsin=B08T8K848R",
+        "instagram": "https://www.instagram.com/ldpistolp/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#404040"
+      ],
       "confirmed": false
     },
     {
@@ -3456,6 +3490,21 @@
       "confirmed": false
     },
     {
+      "name": "Lost In Reverie",
+      "city": "Скопје",
+      "genre": "Емо, Рок",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/l0stinreverie/",
+        "youtube": "https://www.youtube.com/@LostInReverieOfficial",
+        "spotify": "https://open.spotify.com/artist/488GKyeBuJlDFFHcTbTGCA?si=35hbllRzT2i83a1B3BiIOA"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Лозано",
       "city": "недостигаат податоци",
       "genre": "Поп-Рок, Поп",
@@ -3469,11 +3518,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=Oozb4odmckQ",
         "tidal": "https://listen.tidal.com/track/102863960",
         "amazon_music": "https://music.amazon.com/albums/B07F51Q771?trackAsin=B07F4QDLFP",
-        "itunes": "https://geo.music.apple.com/us/album/_/1405755551?i=1405755553&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1405755551?i=1405755553&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/vlatkolozanoski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#8080a0",
+        "#e0c0c0"
+      ],
       "confirmed": false
     },
     {
@@ -3590,7 +3643,8 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "bandcamp": "https://mallardkonechno.bandcamp.com/album/-",
-        "spotify": "https://open.spotify.com/artist/68RQLM42FdtwIn5Vqlumcl?si=bczqHbFuRBWvDOjLZgHqWA"
+        "spotify": "https://open.spotify.com/artist/68RQLM42FdtwIn5Vqlumcl?si=bczqHbFuRBWvDOjLZgHqWA",
+        "instagram": "https://www.instagram.com/mallardkonechno/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3666,11 +3720,12 @@
     },
     {
       "name": "Мартин Џорлев",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Инди, Алтернативна, Џез",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/@martindjorlev7210",
+        "instagram": "https://www.instagram.com/martindjorlev/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3716,11 +3771,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=u1AfNCHdMhc",
         "tidal": "https://listen.tidal.com/track/371281742",
         "amazon_music": "https://music.amazon.com/albums/B0D7WLDCKW?trackAsin=B0D7WWKNB1",
-        "itunes": "https://geo.music.apple.com/us/album/_/1753777534?i=1753777545&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1753777534?i=1753777545&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/matej.foltz/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#406080",
+        "#404040"
+      ],
       "confirmed": false
     },
     {
@@ -3994,11 +4053,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=14ziIPZAS34",
         "tidal": "https://listen.tidal.com/track/487127098",
         "youtube": "https://www.youtube.com/watch?v=14ziIPZAS34",
-        "itunes": "https://geo.music.apple.com/us/album/_/1866594620?i=1866594621&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1866594620?i=1866594621&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/muufiiiiii/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202040",
+        "#606080"
+      ],
       "confirmed": false
     },
     {
@@ -4033,7 +4096,13 @@
       "genre": "Пост-панк",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ"
+        "spotify": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ",
+        "instagram": "https://www.instagram.com/mytearmytear/",
+        "youtube": "https://www.youtube.com/playlist?list=OLAK5uy_mHE0x1vHi1HRCQ7gBoYhdpBi2SbCOOKuA",
+        "bandcamp": "https://mytear.bandcamp.com",
+        "article": [
+          "https://www.popdepresija.com/?p=13984"
+        ]
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4459,6 +4528,19 @@
       "links": {
         "instagram": "https://www.instagram.com/peperminttheband/",
         "youtube": "https://www.youtube.com/@pajakzajak/videos"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Персеида",
+      "city": "Скопје",
+      "genre": "Шугејз",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/perseidaband/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5807,7 +5889,8 @@
       "links": {
         "facebook": "https://www.facebook.com/thelocalblue/",
         "instagram": "https://www.instagram.com/thelocalblue/?hl=en",
-        "soundcloud": "https://soundcloud.com/thelocalblue"
+        "soundcloud": "https://soundcloud.com/thelocalblue",
+        "bandcamp": "https://thelocalblue.bandcamp.com/"
       },
       "contact": "недостигаат податоци",
       "label": null,
