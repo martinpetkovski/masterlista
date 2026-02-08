@@ -308,6 +308,20 @@
       "confirmed": false
     },
     {
+      "name": "Ана Петановска",
+      "city": "Скопје",
+      "genre": "Поп, Фанк, Соул",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/a_petan_/",
+        "youtube": "https://www.youtube.com/@anapetan"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Анастасија",
       "city": "Скопје",
       "genre": "Етно, Фолк, Електронска",
@@ -321,6 +335,21 @@
         "tidal": "https://listen.tidal.com/track/47569219",
         "youtube_music": "https://music.youtube.com/watch?v=-_OVtXjSOmM",
         "itunes": "https://geo.music.apple.com/us/album/_/577793893?i=577793904&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Андреј Татарчевски",
+      "city": "Скопје",
+      "genre": "Електронска",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "spotify": "https://open.spotify.com/artist/7o5iOHSXeLn8OIBLkRwKas",
+        "youtube": "https://www.youtube.com/channel/UCElZXBppBGXSK00TFVOU8aw",
+        "instagram": "https://www.instagram.com/_tatar______/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -666,22 +695,6 @@
       "links": {
         "lastfm": "https://www.last.fm/music/Bis-Bez",
         "youtube": "https://www.youtube.com/watch?v=TJhml9JE5Z4&list=PL7xZvoeDFE5sPNOZ-uJD5-hqGsF27f5Qi"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Blackstate",
-      "city": "Скопје",
-      "genre": "Електронска",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "website": "https://www.blackstate.world/",
-        "bandcamp": "https://blackstate.bandcamp.com/",
-        "spotify": "https://open.spotify.com/artist/5nFdyYU2XG46rm1q2yoFFG?si=9lZUxZ0WQAKnY4JfLU1jVQ",
-        "instagram": "https://www.instagram.com/iamblackstate/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1777,6 +1790,20 @@
       "confirmed": false
     },
     {
+      "name": "Елена Васова",
+      "city": "Скопје",
+      "genre": "недостигаат податоци",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "spotify": "https://open.spotify.com/artist/5YTABVAbCnzl7UsHFpxXhj?si=bO6RmaDVTeWEbquN9d3BIw",
+        "instagram": "https://www.instagram.com/elenavasova/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Елвир Меќиќ",
       "city": "Скопје",
       "genre": "Поп",
@@ -2465,11 +2492,16 @@
         "tidal": "https://listen.tidal.com/track/416912811",
         "youtube": "https://www.youtube.com/watch?v=7Ah0szZlI_E",
         "itunes": "https://geo.music.apple.com/us/album/_/1796072821?i=1796072822&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "youtube_music": "https://music.youtube.com/watch?v=7Ah0szZlI_E"
+        "youtube_music": "https://music.youtube.com/watch?v=7Ah0szZlI_E",
+        "instagram": "https://www.instagram.com/iskra.mkd/",
+        "linktree": "https://linktr.ee/iskra.mkd"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#e04020"
+      ],
       "confirmed": false
     },
     {
@@ -2478,7 +2510,7 @@
       "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=4J4HCkFt46c"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2942,15 +2974,11 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/3WCFiH40oeSHhdY7e8a7WI?si=RZCTE-06Q5-6Pp0YbhzyZw",
-        "instagram": "https://www.instagram.com/kokicheband/"
+        "spotify": "https://open.spotify.com/artist/3WCFiH40oeSHhdY7e8a7WI?si=RZCTE-06Q5-6Pp0YbhzyZw"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#2060a0",
-        "#0060a0"
-      ],
+      "accentColors": null,
       "confirmed": false
     },
     {
@@ -3887,15 +3915,7 @@
       "genre": "Пост-панк",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ",
-        "instagram": "https://www.instagram.com/mytearmytear/",
-        "facebook": "https://www.facebook.com/mytearmytear",
-        "linktree": "https://linktr.ee/mytearmytear",
-        "youtube": "https://www.youtube.com/playlist?list=OLAK5uy_mHE0x1vHi1HRCQ7gBoYhdpBi2SbCOOKuA",
-        "bandcamp": "https://mytear.bandcamp.com/album/koga-ne-se-sakame",
-        "article": [
-          "https://www.popdepresija.com/?p=13984"
-        ]
+        "spotify": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5155,19 +5175,15 @@
     },
     {
       "name": "Stefan Petanovski",
-      "city": "Скопје",
+      "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "spotify": "https://open.spotify.com/artist/3qH7LO6KFR0mVwvakwXyrE?si=Ja3V6k-mTG2pIFVGdKQZCw",
-        "instagram": "https://www.instagram.com/stefanpetanovski/"
+        "spotify": "https://open.spotify.com/artist/3qH7LO6KFR0mVwvakwXyrE?si=Ja3V6k-mTG2pIFVGdKQZCw"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#202040",
-        "#202020"
-      ],
+      "accentColors": null,
       "confirmed": false
     },
     {
@@ -5325,20 +5341,6 @@
         "tidal": "https://listen.tidal.com/track/375303025",
         "amazon_music": "https://music.amazon.com/albums/B0D9HVTP86?trackAsin=B0D9HVF89N",
         "itunes": "https://geo.music.apple.com/us/album/_/1067441731?i=1067441740&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Светлост",
-      "city": "Скопје",
-      "genre": "Џез",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "instagram": "https://www.instagram.com/svetlost.jazz/",
-        "spotify": "https://open.spotify.com/artist/1cZoKPWClsh56lB0wIw3XG?si=VpDHpPwUSEmddKHVXHj86Q"
       },
       "contact": "недостигаат податоци",
       "label": null,
