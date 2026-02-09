@@ -839,7 +839,7 @@ body.compact td { font-size: 0.65rem; }
 body.compact .name { font-size: 0.8rem; }
 body.compact .genre-item, body.compact .sounds-like-item, body.compact .city-item { font-size: 0.72rem; padding: 0.1rem 0.25rem; }
 body.compact .links a { font-size: 0.9rem; }
-body.compact .links a.contact-link { font-size: inherit; padding: 0; }
+body.compact .links a.contact-link { padding: 0; }
 body.compact .band-label { font-size: 0.6rem; padding: 0.05rem 0.2rem; }
 
 /* Status */
