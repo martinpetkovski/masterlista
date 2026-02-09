@@ -1826,12 +1826,42 @@ a.chart-history-item {
         
         // Load and process chart history for an artist
         async function loadChartHistory(artistName) {
-            const chartFiles = [
-                'chart-history/chart-2026-W03.json',
-                'chart-history/chart-2026-W04.json',
-                'chart-history/chart-2026-W05.json',
-                'chart-history/chart-2026-W06.json'
-            ];
+            const CHART_HISTORY_DIR = 'chart-history';
+            const CHART_WEEKS_LIMIT = 20;
+
+            function getISOWeek(date) {
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+                const yearStart = new Date(d.getFullYear(), 0, 1);
+                const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+                return { year: d.getFullYear(), week: weekNum };
+            }
+
+            function getISOWeekStart(year, week) {
+                const jan4 = new Date(year, 0, 4);
+                const jan4Day = jan4.getDay() || 7;
+                const week1Monday = new Date(jan4);
+                week1Monday.setDate(jan4.getDate() - (jan4Day - 1));
+                const weekStart = new Date(week1Monday);
+                weekStart.setDate(week1Monday.getDate() + (week - 1) * 7);
+                weekStart.setHours(0, 0, 0, 0);
+                return weekStart;
+            }
+
+            function buildRecentChartFiles(limit) {
+                const files = [];
+                const cursor = new Date();
+                for (let i = 0; i < limit; i++) {
+                    const info = getISOWeek(cursor);
+                    const weekId = `${info.year}-W${String(info.week).padStart(2, '0')}`;
+                    files.push(`${CHART_HISTORY_DIR}/chart-${weekId}.json`);
+                    cursor.setDate(cursor.getDate() - 7);
+                }
+                return files;
+            }
+
+            const chartFiles = buildRecentChartFiles(CHART_WEEKS_LIMIT);
             
             const artistHistory = {
                 releases: new Map(), // releaseId -> release data with chart history
@@ -1862,24 +1892,14 @@ a.chart-history-item {
                     const newReleasesThisWeek = [];
                     
                     // Parse week ID to get start/end dates (ISO week: Monday-Sunday)
-                    // e.g., 2026-W06 = week 6 of 2026
                     function getWeekDateRange(weekId) {
                         const match = weekId.match(/(\d{4})-W(\d{2})/);
                         if (!match) return null;
-                        const year = parseInt(match[1]);
-                        const week = parseInt(match[2]);
-                        
-                        // Simple approach: use a known reference point
-                        // 2026-01-05 is Monday of W02 in 2026
-                        // So W01 starts 2025-12-29, W02 starts 2026-01-05, etc.
-                        const w02Start = new Date(2026, 0, 5); // Jan 5, 2026 (Monday of W02)
-                        const weekStart = new Date(w02Start);
-                        weekStart.setDate(w02Start.getDate() + (week - 2) * 7);
-                        
-                        // End of week (Sunday)
+                        const year = parseInt(match[1], 10);
+                        const week = parseInt(match[2], 10);
+                        const weekStart = getISOWeekStart(year, week);
                         const weekEnd = new Date(weekStart);
                         weekEnd.setDate(weekStart.getDate() + 6);
-                        
                         return { start: weekStart, end: weekEnd };
                     }
                     
@@ -2006,8 +2026,8 @@ a.chart-history-item {
             let areaD = pathD + ` L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
             
             // Week labels
-            const firstWeek = weeklyData[0].week.replace('2026-', '');
-            const lastWeek = weeklyData[weeklyData.length - 1].week.replace('2026-', '');
+            const firstWeek = weeklyData[0].week.replace(/^\d{4}-/, '');
+            const lastWeek = weeklyData[weeklyData.length - 1].week.replace(/^\d{4}-/, '');
             
             // Create dots for each data point - highlight new releases with green
             const dotsHtml = points.map(p => {
@@ -2032,7 +2052,7 @@ a.chart-history-item {
             // Find new releases to show below graph
             const allNewReleases = weeklyData
                 .filter(d => d.newReleases && d.newReleases.length > 0)
-                .map(d => ({ week: d.week.replace('2026-', ''), titles: d.newReleases }));
+                .map(d => ({ week: d.week.replace(/^\d{4}-/, ''), titles: d.newReleases }));
             
             const newReleasesHtml = allNewReleases.length > 0 
                 ? `<div class="graph-new-releases">

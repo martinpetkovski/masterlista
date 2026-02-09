@@ -568,47 +568,7 @@ async function getAlbumDetailsBatch(albumIds, token) {
   return results;
 }
 
-async function getAlbumTracks(albumId, token) {
-  const response = await fetchWithRetry(
-    `https://api.spotify.com/v1/albums/${albumId}/tracks?market=MK&limit=50`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
-  );
-  
-  if (!response.ok) return [];
-  
-  const data = await response.json();
-  return data.items || [];
-}
 
-async function getTracksBatch(trackIds, token) {
-  const results = {};
-  const BATCH_SIZE = 50;
-  
-  for (let i = 0; i < trackIds.length; i += BATCH_SIZE) {
-    const batch = trackIds.slice(i, i + BATCH_SIZE);
-    
-    const response = await fetchWithRetry(
-      `https://api.spotify.com/v1/tracks?ids=${batch.join(',')}`,
-      { headers: { 'Authorization': `Bearer ${token}` } }
-    );
-    
-    if (response.ok) {
-      const data = await response.json();
-      for (const track of (data.tracks || [])) {
-        if (track) {
-          results[track.id] = track;
-        }
-      }
-    }
-    
-    // Small delay between batches
-    if (i + BATCH_SIZE < trackIds.length) {
-      await new Promise(r => setTimeout(r, 200));
-    }
-  }
-  
-  return results;
-}
 
 async function main() {
   console.log('Starting chart data generation...');
@@ -731,73 +691,28 @@ async function main() {
           console.log(`  Fetching album details for ${band.name} (${albumIds.length} albums)`);
           const fullAlbumDetails = await getAlbumDetailsBatch(albumIds, spotifyToken);
           
-          // For each album, get tracks to find max track popularity
-          const albumsWithPopularity = await Promise.all(
-            albums.map(async (album) => {
-              try {
-                const fullAlbum = fullAlbumDetails[album.id];
-                const albumPopularity = fullAlbum?.popularity || 0;
-                
-                const tracks = await getAlbumTracks(album.id, spotifyToken);
-                // Get full track info to get popularity
-                const trackIds = tracks.map(t => t.id).filter(Boolean);
-                let maxTrackPopularity = 0;
-                let topTrackName = null;
-                let topTrackId = null;
-                
-                if (trackIds.length > 0) {
-                  const tracksInfo = await getTracksBatch(trackIds, spotifyToken);
-                  for (const track of Object.values(tracksInfo)) {
-                    if (track.popularity > maxTrackPopularity) {
-                      maxTrackPopularity = track.popularity;
-                      topTrackName = track.name;
-                      topTrackId = track.id;
-                    }
-                  }
-                }
-                
-                return {
-                  bandName: band.name,
-                  artistId,
-                  releaseId: album.id,
-                  releaseTitle: album.name,
-                  releaseType: album.album_type,
-                  releaseDate: album.release_date,
-                  releaseUrl: album.external_urls?.spotify,
-                  thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
-                  // Priority: Spotify artist image → fallback service image → latest release thumbnail
-                  artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
-                  totalTracks: album.total_tracks,
-                  popularity: albumPopularity, // Spotify album popularity (0-100)
-                  topTrackName,
-                  topTrackId,
-                  topTrackPopularity: maxTrackPopularity, // Max track popularity on this album (0-100)
-                  topTrackUrl: topTrackId ? `https://open.spotify.com/track/${topTrackId}` : null,
-                  followers: artistInfo?.followers?.total || 0,
-                  spotifyUrl: band.links.spotify
-                };
-              } catch (err) {
-                // Fallback to artist popularity if fetch fails
-                return {
-                  bandName: band.name,
-                  artistId,
-                  releaseId: album.id,
-                  releaseTitle: album.name,
-                  releaseType: album.album_type,
-                  releaseDate: album.release_date,
-                  releaseUrl: album.external_urls?.spotify,
-                  thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
-                  // Priority: Spotify artist image → fallback service image → latest release thumbnail
-                  artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
-                  totalTracks: album.total_tracks,
-                  popularity: artistInfo?.popularity || 0,
-                  topTrackPopularity: 0,
-                  followers: artistInfo?.followers?.total || 0,
-                  spotifyUrl: band.links.spotify
-                };
-              }
-            })
-          );
+          // Map each album/single to a release entry with popularity
+          const albumsWithPopularity = albums.map((album) => {
+              const fullAlbum = fullAlbumDetails[album.id];
+              const albumPopularity = fullAlbum?.popularity || 0;
+              
+              return {
+                bandName: band.name,
+                artistId,
+                releaseId: album.id,
+                releaseTitle: album.name,
+                releaseType: album.album_type,
+                releaseDate: album.release_date,
+                releaseUrl: album.external_urls?.spotify,
+                thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
+                // Priority: Spotify artist image → fallback service image → latest release thumbnail
+                artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
+                totalTracks: album.total_tracks,
+                popularity: albumPopularity, // Spotify album/single popularity (0-100)
+                followers: artistInfo?.followers?.total || 0,
+                spotifyUrl: band.links.spotify
+              };
+          });
           
           return albumsWithPopularity;
         } catch (err) {
@@ -874,9 +789,6 @@ async function main() {
           artistImage: img || null,
           totalTracks: 0,
           popularity: 0,
-          topTrackName: null,
-          topTrackId: null,
-          topTrackUrl: null,
           followers: 0,
           spotifyUrl: null
         });
