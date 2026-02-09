@@ -702,7 +702,7 @@
     {
       "name": "Billy Esteban",
       "city": "Скопје",
-      "genre": "Музика од светот",
+      "genre": "Музика од светот, Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
@@ -2650,8 +2650,8 @@
       "contact": "martin@najjak.com",
       "label": null,
       "accentColors": [
-        "#922fff",
-        "#ff0202"
+        "#0000ff",
+        "#ff0000"
       ],
       "confirmed": true
     },
@@ -3399,11 +3399,12 @@
     {
       "name": "Леб и Сол",
       "city": "Скопје",
-      "genre": "Прогресивен Рок, Џез Рок, Етно",
+      "genre": "Прогресивен Рок, Џез Рок, Етно, Поп",
       "soundsLike": "Weather Report, Mahavishnu Orchestra",
       "links": {
-        "wikipedia": "https://en.wikipedia.org/wiki/Leb_i_sol",
-        "lastfm": "https://www.last.fm/music/Leb+i+Sol",
+        "wikipedia": [
+          "https://en.wikipedia.org/wiki/Leb_i_sol"
+        ],
         "youtube": "https://www.youtube.com/@lebisolhd282/videos",
         "spotify": "https://open.spotify.com/artist/5hNernryMZIWE1Nrygbxp0?si=CsX7vM-KT66QmzH-FSYytA",
         "instagram": "https://www.instagram.com/lebisolofficial/",
@@ -6034,7 +6035,7 @@
       "name": "Тони Зен",
       "city": "Скопје",
       "genre": "Хип Хоп, Рап",
-      "soundsLike": "E;</div>minem, Jay-Z",
+      "soundsLike": "Eminem, Jay-Z",
       "links": {
         "spotify": "https://open.spotify.com/artist/60FD0FRdAcg8eSoEdZWegN",
         "deezer": "https://www.deezer.com/track/2700332312",
@@ -6048,7 +6049,10 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#404020",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
@@ -6410,7 +6414,7 @@
     {
       "name": "Влатко Стефановски",
       "city": "Скопје",
-      "genre": "Поп, Џез Рок, Блуз, Етно",
+      "genre": "Џез Рок, Блуз, Етно",
       "soundsLike": "Pat Metheny, Eric Clapton",
       "links": {
         "spotify": "https://open.spotify.com/artist/5ekFgfk58KqyjN2dIVcZ1V?si=eIVxKPvyQGmvW5p5yEFDwA",
