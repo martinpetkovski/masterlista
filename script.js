@@ -836,13 +836,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         maxViewCount: release.popularity || release.followers,
                         newRelease: true,
                         latestVideoId: release.releaseId,
-                        latestVideoUrl: release.topTrackUrl || release.releaseUrl,
+                        latestVideoUrl: release.releaseUrl,
                         latestVideoPublishedAt: release.releaseDate,
-                        latestVideoViewCount: release.popularity || 0, // Use track popularity
+                        latestVideoViewCount: release.popularity || 0,
                         latestVideoTitle: release.releaseTitle,
                         latestVideoThumbnail: release.thumbnail,
-                        releaseType: release.releaseType,
-                        topTrackName: release.topTrackName
+                        releaseType: release.releaseType
                     };
                 }
                 
@@ -856,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cachedAutoLabels.mostViewedNewRelease = {
                     bandName: mostViewed.bandName,
                     videoId: mostViewed.releaseId,
-                    videoUrl: mostViewed.topTrackUrl || mostViewed.releaseUrl,
+                    videoUrl: mostViewed.releaseUrl,
                     videoTitle: mostViewed.releaseTitle,
                     viewCount: mostViewed.popularity || 0,
                     publishedAt: mostViewed.releaseDate,
