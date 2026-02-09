@@ -2709,7 +2709,7 @@
                             
                             // Handle both releases and artists
                             const isArtist = chartType === 'artists';
-                            const title = isArtist ? release.bandName : release.releaseTitle;
+                            const title = isArtist ? release.bandName : (release.displayTitle || release.releaseTitle);
                             const subtitle = isArtist 
                                 ? (release.followers >= 1000 ? (release.followers / 1000).toFixed(1) + 'K следбеници' : release.followers + ' следбеници')
                                 : release.bandName;
@@ -2995,14 +2995,70 @@
                     new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
                 );
                 
-                const filtered = releasesSortedByDate.filter(filterFn).slice(0, 20);
-                const sorted = [...filtered].sort(sortFn);
+                // Prefer last 2 months, backfill with most recent older if < 20
+                const cutoff = new Date();
+                cutoff.setMonth(cutoff.getMonth() - 2);
+                const cutoffStr = cutoff.toISOString().slice(0, 10);
+                const recent = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
+                let pool = [...recent];
+                if (pool.length < 20) {
+                    const older = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
+                    pool = pool.concat(older.slice(0, 20 - pool.length));
+                }
+                const sorted = pool.sort(sortFn).slice(0, 20);
                 
                 const map = {};
                 sorted.forEach((release, index) => {
                     map[release.releaseId] = {
                         position: index + 1,
                         popularity: release.popularity || 0
+                    };
+                });
+                return map;
+            }
+            
+            // Build previous chart map for individual tracks (singles chart)
+            // Extracts top tracks from recent releases, backfills if < 20
+            function buildPreviousTrackChartMap(previousReleases, sortFn, deduplicateFn) {
+                if (!previousReleases || previousReleases.length === 0) return {};
+                
+                const dedupedReleases = deduplicateFn ? deduplicateFn(previousReleases) : previousReleases;
+                
+                const cutoff = new Date();
+                cutoff.setMonth(cutoff.getMonth() - 2);
+                const cutoffStr = cutoff.toISOString().slice(0, 10);
+                
+                const sortedByDate = [...dedupedReleases]
+                    .filter(r => r.topTrackId && r.releaseDate)
+                    .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                
+                // Build track map from recent releases first
+                const trackMap = new Map();
+                sortedByDate
+                    .filter(r => r.releaseDate >= cutoffStr)
+                    .forEach(r => {
+                        const existing = trackMap.get(r.topTrackId);
+                        if (!existing || (r.popularity || 0) > (existing.popularity || 0)) {
+                            trackMap.set(r.topTrackId, r);
+                        }
+                    });
+                // Backfill with most recent older tracks if < 20
+                if (trackMap.size < 20) {
+                    for (const r of sortedByDate.filter(r => r.releaseDate < cutoffStr)) {
+                        if (trackMap.size >= 20) break;
+                        if (!trackMap.has(r.topTrackId)) {
+                            trackMap.set(r.topTrackId, r);
+                        }
+                    }
+                }
+                
+                const sorted = Array.from(trackMap.values()).sort(sortFn).slice(0, 20);
+                
+                const map = {};
+                sorted.forEach((track, index) => {
+                    map[track.topTrackId] = {
+                        position: index + 1,
+                        popularity: track.popularity || 0
                     };
                 });
                 return map;
@@ -3256,7 +3312,6 @@
                 );
                 
                 const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                const singlesFilter = r => r.releaseType === 'single' && (r.totalTracks || 1) <= 1;
                 const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation' || r.releaseType === 'ep' || (r.releaseType === 'single' && (r.totalTracks || 1) > 1);
                 
                 // Build filter label for display
@@ -3346,15 +3401,49 @@
                         new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
                     );
                     
-                    const topSingles = releasesSortedByDate
-                        .filter(singlesFilter)
-                        .slice(0, 20)
-                        .sort(sortByPopularity);
+                    // Singles chart: extract individual tracks, prefer last 2 months, backfill if < 20
+                    const twoMonthsCutoff = twoMonthsAgo.toISOString().slice(0, 10);
+                    const allTracksWithId = releasesSortedByDate.filter(r => r.topTrackId);
                     
-                    const topAlbums = releasesSortedByDate
-                        .filter(albumsFilter)
-                        .slice(0, 20)
-                        .sort(sortByPopularity);
+                    // Build track map from recent releases first
+                    const trackMap = new Map();
+                    allTracksWithId
+                        .filter(r => r.releaseDate >= twoMonthsCutoff)
+                        .forEach(r => {
+                            const existing = trackMap.get(r.topTrackId);
+                            if (!existing || (r.popularity || 0) > (existing.popularity || 0)) {
+                                trackMap.set(r.topTrackId, {
+                                    ...r,
+                                    displayTitle: r.topTrackName || r.releaseTitle,
+                                    chartTrackId: r.topTrackId
+                                });
+                            }
+                        });
+                    // If fewer than 20 unique tracks, backfill with most recent older tracks
+                    if (trackMap.size < 20) {
+                        for (const r of allTracksWithId.filter(r => r.releaseDate < twoMonthsCutoff)) {
+                            if (trackMap.size >= 20) break;
+                            if (!trackMap.has(r.topTrackId)) {
+                                trackMap.set(r.topTrackId, {
+                                    ...r,
+                                    displayTitle: r.topTrackName || r.releaseTitle,
+                                    chartTrackId: r.topTrackId
+                                });
+                            }
+                        }
+                    }
+                    const topSingles = Array.from(trackMap.values())
+                        .sort(sortByPopularity)
+                        .slice(0, 20);
+                    
+                    // Albums chart: prefer last 2 months, backfill with most recent older if < 20
+                    const recentAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate >= twoMonthsCutoff);
+                    let albumPool = [...recentAlbums];
+                    if (albumPool.length < 20) {
+                        const olderAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate < twoMonthsCutoff);
+                        albumPool = albumPool.concat(olderAlbums.slice(0, 20 - albumPool.length));
+                    }
+                    const topAlbums = albumPool.sort(sortByPopularity).slice(0, 20);
                     
                     const latestReleases = releasesSortedByDate.slice(0, 20);
                     
@@ -3372,7 +3461,7 @@
                     
                     // Build previous chart maps for comparison
                     const prevReleases = previousChartData?.releases || [];
-                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs);
+                    const prevSinglesMap = buildPreviousTrackChartMap(prevReleases, sortByPopularity, deduplicateCollabs);
                     const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs);
                     
                     renderChart('singles-chart', topSingles, prevSinglesMap, false);
@@ -3540,7 +3629,7 @@
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
                     let itemClass = rank <= 3 ? `rank-${rank}` : '';
                     
-                    const popularity = release.popularity || 0;
+                    const popularity = release.topTrackPopularity || release.popularity || 0;
                     
                     // Calculate time since release (smart formatting)
                     const releaseDate = new Date(release.releaseDate);
@@ -3581,7 +3670,7 @@
                     }
                     
                     if (!isDateSorted) {
-                        const prev = previousMap[release.releaseId];
+                        const prev = previousMap[release.chartTrackId || release.releaseId];
                         if (!prev) {
                             // New entry to the chart
                             changeIndicator = '';
@@ -3633,12 +3722,12 @@
                             ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : ''}">${rank}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
-                                    ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
+                                    ? `<img src="${release.thumbnail}" alt="${release.displayTitle || release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
                                     : '<div class="placeholder"><i class="fab fa-spotify"></i></div>'
                                 }
                             </div>
                             <div class="chart-info">
-                                <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.releaseTitle}</div>
+                                <div class="chart-title" ${spotifyId ? `data-spotify-id="${spotifyId}" data-spotify-type="${spotifyType}"` : `data-url="${release.topTrackUrl || release.releaseUrl}"`} title="Кликни за преслушување">${release.displayTitle || release.releaseTitle}</div>
                                 <div class="chart-artist">
                                     ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
