@@ -51,6 +51,25 @@ function Write-Step {
     Write-Host "  > $Message" -ForegroundColor $Color
 }
 
+function Write-Elapsed {
+    param([datetime]$Start)
+    $sec = [math]::Round(((Get-Date) - $Start).TotalSeconds, 1)
+    Write-Host "  > Completed in ${sec}s" -ForegroundColor DarkGray
+}
+
+# Overall-progress helper (call before each task)
+$script:taskIndex = 0
+$script:taskTotal = 0
+function Set-OverallProgress {
+    param([string]$TaskName)
+    $script:taskIndex++
+    $pct = [math]::Floor(($script:taskIndex / $script:taskTotal) * 100)
+    $elapsed = [math]::Round(((Get-Date) - $startTime).TotalSeconds, 0)
+    Write-Progress -Id 0 -Activity "Master Lista Update  [${elapsed}s]" `
+        -Status "Task $($script:taskIndex)/$($script:taskTotal): $TaskName" `
+        -PercentComplete $pct
+}
+
 function Get-RunState {
     if (Test-Path $statePath) {
         try {
@@ -107,19 +126,75 @@ function Update-ChartData {
     $nodeScript = Join-Path $scriptRoot "scripts\generate-chart-data.js"
 
     Write-Step "Running chart data generation..."
+    $chartStart = Get-Date
+    # Stream node output line-by-line so we can show live progress
     try {
-        node $nodeScript
-        if ($LASTEXITCODE -ne 0) {
-            Write-Step "Node script exited with code $LASTEXITCODE" "Red"
+        $lastStatus = "Starting..."
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "node"
+        $psi.Arguments = "`"$nodeScript`""
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+        $psi.WorkingDirectory = $scriptRoot
+
+        $proc = [System.Diagnostics.Process]::Start($psi)
+
+        # Read stdout line-by-line, update progress bar with each line
+        while (-not $proc.StandardOutput.EndOfStream) {
+            $line = $proc.StandardOutput.ReadLine()
+            if (-not $line) { continue }
+
+            # Parse percentage from node output like "Processing albums batch 3/15 (20%)"
+            $pct = -1
+            if ($line -match '\((\d+)%\)') {
+                $pct = [int]$Matches[1]
+            }
+
+            $elapsed = [math]::Round(((Get-Date) - $chartStart).TotalSeconds, 0)
+            $lastStatus = $line
+            $progressParams = @{
+                Id       = 1
+                Activity = "Chart Data  [${elapsed}s elapsed]"
+                Status   = $line
+            }
+            if ($pct -ge 0) {
+                $progressParams.PercentComplete = $pct
+            }
+            Write-Progress @progressParams
+
+            # Also print the node output so it's visible in the terminal
+            Write-Host "    [node] $line" -ForegroundColor DarkGray
+        }
+
+        # Drain stderr
+        $stderr = $proc.StandardError.ReadToEnd()
+        $proc.WaitForExit()
+
+        Write-Progress -Id 1 -Activity "Chart Data" -Completed
+
+        if ($stderr) {
+            foreach ($errLine in ($stderr -split "`n")) {
+                if ($errLine.Trim()) {
+                    Write-Host "    [node] $errLine" -ForegroundColor DarkYellow
+                }
+            }
+        }
+
+        if ($proc.ExitCode -ne 0) {
+            Write-Step "Node script exited with code $($proc.ExitCode)" "Red"
             return $false
         }
     }
     catch {
+        Write-Progress -Id 1 -Activity "Chart Data" -Completed
         Write-Step "Failed to run node script: $_" "Red"
         return $false
     }
 
     Write-Step "Chart data updated successfully" "Green"
+    Write-Elapsed $chartStart
     return $true
 }
 
@@ -129,6 +204,7 @@ function Update-ChartData {
 
 function Update-Articles {
     Write-Section "TASK 2: RSS FEED ARTICLES"
+    $articleStart = Get-Date
 
     $feedsPath = Join-Path $scriptRoot "rss-feeds.json"
     $articlesPath = Join-Path $scriptRoot "articles.json"
@@ -171,9 +247,16 @@ function Update-Articles {
 
     $newArticles = [System.Collections.ArrayList]::new()
     $feedErrors = 0
+    $feedIndex = 0
 
     foreach ($feed in $feeds) {
+        $feedIndex++
         $feedName = $feed.name
+        $pct = [math]::Floor(($feedIndex / $feeds.Count) * 100)
+        $elapsed = [math]::Round(((Get-Date) - $articleStart).TotalSeconds, 0)
+        Write-Progress -Id 1 -Activity "RSS Feeds  [${elapsed}s elapsed]" `
+            -Status "[$feedIndex/$($feeds.Count)] $feedName" `
+            -PercentComplete $pct
         Write-Host "    $feedName... " -NoNewline -ForegroundColor Gray
 
         try {
@@ -357,6 +440,7 @@ function Update-Articles {
         }
     }
 
+    Write-Progress -Id 1 -Activity "RSS Feeds" -Completed
     Write-Host ""
 
     if ($newArticles.Count -gt 0) {
@@ -383,6 +467,7 @@ function Update-Articles {
         Write-Step "$feedErrors feed(s) had errors" "DarkYellow"
     }
 
+    Write-Elapsed $articleStart
     return $true
 }
 
@@ -495,6 +580,7 @@ function Get-LinksFromSonglink {
 
 function Update-ServiceLinks {
     Write-Section "TASK 3: SERVICE LINKS FOR NEW BANDS"
+    $linksStart = Get-Date
 
     $bandsJsonPath = Join-Path $scriptRoot "bands.json"
 
@@ -544,10 +630,18 @@ function Update-ServiceLinks {
     $updated = 0
     $newEntrySet = @{}
     foreach ($name in $newEntries) { $newEntrySet[$name] = $true }
+    $processedCount = 0
 
     for ($i = 0; $i -lt $bandsData.muzickaMasterLista.Count; $i++) {
         $artist = $bandsData.muzickaMasterLista[$i]
         if (-not $newEntrySet.ContainsKey($artist.name)) { continue }
+
+        $processedCount++
+        $pct = [math]::Floor(($processedCount / $newEntries.Count) * 100)
+        $elapsed = [math]::Round(((Get-Date) - $linksStart).TotalSeconds, 0)
+        Write-Progress -Id 1 -Activity "Service Links  [${elapsed}s elapsed]" `
+            -Status "[$processedCount/$($newEntries.Count)] $($artist.name)" `
+            -PercentComplete $pct
 
         $artistName = $artist.name
         Write-Host "    $artistName" -NoNewline -ForegroundColor White
@@ -622,6 +716,7 @@ function Update-ServiceLinks {
         }
     }
 
+    Write-Progress -Id 1 -Activity "Service Links" -Completed
     Write-Host ""
 
     if ($updated -gt 0) {
@@ -639,6 +734,7 @@ function Update-ServiceLinks {
         Write-Step "No new service links found for new artists" "DarkGray"
     }
 
+    Write-Elapsed $linksStart
     return $true
 }
 
@@ -707,10 +803,18 @@ if ($Only) {
 }
 
 $results = @{}
+$taskTimings = @{}
+
+# Count how many tasks will actually run for the overall progress bar
+$script:taskTotal = @($runChart, $runArticles, $runLinks, $runInstagram) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
 if ($runChart) {
+    Set-OverallProgress "Chart Data"
+    $t = Get-Date
     $results["Chart Data"] = Update-ChartData
+    $taskTimings["Chart Data"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
     Write-Step "Skipping chart data" "DarkGray"
@@ -718,7 +822,10 @@ else {
 
 # --- Task 2: Articles ---
 if ($runArticles) {
+    Set-OverallProgress "Articles"
+    $t = Get-Date
     $results["Articles"] = Update-Articles
+    $taskTimings["Articles"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
     Write-Step "Skipping articles" "DarkGray"
@@ -726,7 +833,10 @@ else {
 
 # --- Task 3: Service Links ---
 if ($runLinks) {
+    Set-OverallProgress "Service Links"
+    $t = Get-Date
     $results["Service Links"] = Update-ServiceLinks
+    $taskTimings["Service Links"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
     Write-Step "Skipping service links" "DarkGray"
@@ -734,11 +844,16 @@ else {
 
 # --- Task 4: Instagram ---
 if ($runInstagram) {
+    Set-OverallProgress "Instagram"
+    $t = Get-Date
     $results["Instagram"] = Update-Instagram
+    $taskTimings["Instagram"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
     Write-Step "Skipping Instagram posting" "DarkGray"
 }
+
+Write-Progress -Id 0 -Activity "Master Lista Update" -Completed
 
 # --- Save run state (always, so bands.json baseline is tracked) ---
 $bandsJsonPath = Join-Path $scriptRoot "bands.json"
@@ -781,7 +896,8 @@ Write-Host ""
 foreach ($task in $results.Keys) {
     $status = if ($results[$task]) { "OK" } else { "FAILED" }
     $color = if ($results[$task]) { "Green" } else { "Red" }
-    Write-Host "  [$status] $task" -ForegroundColor $color
+    $timing = if ($taskTimings.ContainsKey($task)) { " ($($taskTimings[$task])s)" } else { "" }
+    Write-Host "  [$status] $task$timing" -ForegroundColor $color
 }
 
 Write-Host ""

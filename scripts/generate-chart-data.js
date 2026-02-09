@@ -729,9 +729,10 @@ async function main() {
                   // Priority: Spotify artist image → fallback service image → latest release thumbnail
                   artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
                   totalTracks: album.total_tracks,
-                  popularity: maxTrackPopularity, // Use max track popularity
+                  popularity: maxTrackPopularity, // Use max track popularity as release popularity
                   topTrackName,
                   topTrackId,
+                  topTrackPopularity: maxTrackPopularity, // Individual song popularity on Spotify (0-100)
                   topTrackUrl: topTrackId ? `https://open.spotify.com/track/${topTrackId}` : null,
                   followers: artistInfo?.followers?.total || 0,
                   spotifyUrl: band.links.spotify
