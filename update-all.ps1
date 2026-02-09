@@ -4,6 +4,7 @@
 # Tasks:
 #   1. Chart data - Fetches Spotify data and generates chart-data.json + weekly snapshots
 #   2. Articles   - Fetches RSS feeds for today's articles, archives to articles.json
+#   2b. Scrape    - Scrapes sites for articles not in RSS, merges into articles.json
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
 #   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
 #
@@ -11,19 +12,22 @@
 #   ./update-all.ps1               # Run all tasks
 #   ./update-all.ps1 -SkipChart    # Skip chart generation
 #   ./update-all.ps1 -SkipArticles # Skip RSS archiving
+#   ./update-all.ps1 -SkipScrape   # Skip article scraping
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipInstagram # Skip Instagram posting
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only articles # Run only articles task
+#   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
 #   ./update-all.ps1 -Only instagram # Run only Instagram posting
 
 param(
     [switch]$SkipChart,
     [switch]$SkipArticles,
+    [switch]$SkipScrape,
     [switch]$SkipLinks,
     [switch]$SkipInstagram,
-    [ValidateSet("chart", "articles", "links", "instagram")]
+    [ValidateSet("chart", "articles", "scrape", "links", "instagram")]
     [string]$Only
 )
 
@@ -127,9 +131,9 @@ function Update-ChartData {
 
     Write-Step "Running chart data generation..."
     $chartStart = Get-Date
-    # Stream node output line-by-line so we can show live progress
+    # Use async event-based I/O to avoid stdout/stderr deadlock
+    # and allow the elapsed timer to update continuously
     try {
-        $lastStatus = "Starting..."
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = "node"
         $psi.Arguments = "`"$nodeScript`""
@@ -139,48 +143,109 @@ function Update-ChartData {
         $psi.CreateNoWindow = $true
         $psi.WorkingDirectory = $scriptRoot
 
-        $proc = [System.Diagnostics.Process]::Start($psi)
+        $proc = New-Object System.Diagnostics.Process
+        $proc.StartInfo = $psi
 
-        # Read stdout line-by-line, update progress bar with each line
-        while (-not $proc.StandardOutput.EndOfStream) {
-            $line = $proc.StandardOutput.ReadLine()
-            if (-not $line) { continue }
+        # Thread-safe queue for collecting output asynchronously
+        $outputQueue = [System.Collections.Concurrent.ConcurrentQueue[PSCustomObject]]::new()
 
-            # Parse percentage from node output like "Processing albums batch 3/15 (20%)"
-            $pct = -1
-            if ($line -match '\((\d+)%\)') {
-                $pct = [int]$Matches[1]
+        # Register async event handlers so stdout and stderr are drained in parallel
+        $stdoutEvent = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'out'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $stderrEvent = Register-ObjectEvent -InputObject $proc -EventName ErrorDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'err'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $null = $proc.Start()
+        $proc.BeginOutputReadLine()
+        $proc.BeginErrorReadLine()
+
+        $lastOutputTime = Get-Date
+        $lastStatus = "Starting..."
+        $lastPct = -1
+        $stalled = $false
+        $STALL_WARN_SEC = 30
+        $STALL_TIMEOUT_SEC = 180
+
+        # Poll loop: process queued output and keep the timer/progress bar alive
+        while (-not $proc.HasExited) {
+            $gotOutput = $false
+            $item = $null
+
+            while ($outputQueue.TryDequeue([ref]$item)) {
+                $gotOutput = $true
+                $lastOutputTime = Get-Date
+                $stalled = $false
+
+                if ($item.Stream -eq 'out') {
+                    # Parse percentage from node output like "Processing albums batch 3/15 (20%)"
+                    if ($item.Text -match '\((\d+)%\)') {
+                        $lastPct = [int]$Matches[1]
+                    }
+                    $lastStatus = $item.Text
+                    Write-Host "    [node] $($item.Text)" -ForegroundColor DarkGray
+                }
+                else {
+                    Write-Host "    [node] $($item.Text)" -ForegroundColor DarkYellow
+                }
             }
 
+            # Update progress bar on every tick (even without new output)
             $elapsed = [math]::Round(((Get-Date) - $chartStart).TotalSeconds, 0)
-            $lastStatus = $line
+            $silentSec = [math]::Round(((Get-Date) - $lastOutputTime).TotalSeconds, 0)
+
+            $statusText = $lastStatus
+            if ($silentSec -ge $STALL_WARN_SEC) {
+                $statusText = "$lastStatus  (no output for ${silentSec}s - waiting on API?)"
+                if (-not $stalled) {
+                    Write-Host "    [wait] No output for ${STALL_WARN_SEC}s, still waiting on Spotify API..." -ForegroundColor Yellow
+                    $stalled = $true
+                }
+            }
+            if ($silentSec -ge $STALL_TIMEOUT_SEC) {
+                Write-Host "    [timeout] No output for ${STALL_TIMEOUT_SEC}s, killing node process" -ForegroundColor Red
+                $proc.Kill()
+                break
+            }
+
             $progressParams = @{
                 Id       = 1
                 Activity = "Chart Data  [${elapsed}s elapsed]"
-                Status   = $line
+                Status   = $statusText
             }
-            if ($pct -ge 0) {
-                $progressParams.PercentComplete = $pct
+            if ($lastPct -ge 0) {
+                $progressParams.PercentComplete = $lastPct
             }
             Write-Progress @progressParams
 
-            # Also print the node output so it's visible in the terminal
-            Write-Host "    [node] $line" -ForegroundColor DarkGray
+            Start-Sleep -Milliseconds 500
         }
 
-        # Drain stderr
-        $stderr = $proc.StandardError.ReadToEnd()
-        $proc.WaitForExit()
-
-        Write-Progress -Id 1 -Activity "Chart Data" -Completed
-
-        if ($stderr) {
-            foreach ($errLine in ($stderr -split "`n")) {
-                if ($errLine.Trim()) {
-                    Write-Host "    [node] $errLine" -ForegroundColor DarkYellow
-                }
+        # Drain any remaining queued output
+        $item = $null
+        while ($outputQueue.TryDequeue([ref]$item)) {
+            if ($item.Stream -eq 'out') {
+                Write-Host "    [node] $($item.Text)" -ForegroundColor DarkGray
+            }
+            else {
+                Write-Host "    [node] $($item.Text)" -ForegroundColor DarkYellow
             }
         }
+
+        $proc.WaitForExit()
+        Write-Progress -Id 1 -Activity "Chart Data" -Completed
+
+        # Clean up event registrations
+        Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
+        Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
+        Remove-Job -Id $stdoutEvent.Id -Force -ErrorAction SilentlyContinue
+        Remove-Job -Id $stderrEvent.Id -Force -ErrorAction SilentlyContinue
 
         if ($proc.ExitCode -ne 0) {
             Write-Step "Node script exited with code $($proc.ExitCode)" "Red"
@@ -468,6 +533,40 @@ function Update-Articles {
     }
 
     Write-Elapsed $articleStart
+    return $true
+}
+
+# ============================================================================
+#  TASK 2b: SCRAPE ARTICLES (complement to RSS)
+# ============================================================================
+
+function Update-ScrapeArticles {
+    Write-Section "TASK 2b: SCRAPE ARTICLES"
+    $scrapeStart = Get-Date
+
+    $scrapeScript = Join-Path $scriptRoot "scripts" "scrape-articles.js"
+    if (-not (Test-Path $scrapeScript)) {
+        Write-Step "scripts/scrape-articles.js not found, skipping" "Red"
+        return $false
+    }
+
+    Write-Step "Running article scraper (WP API + HTML)..."
+    try {
+        $output = & node $scrapeScript 2>&1
+        $output | ForEach-Object { Write-Host "    $_" -ForegroundColor Gray }
+
+        if ($LASTEXITCODE -ne 0) {
+            Write-Step "Scraper finished with exit code $LASTEXITCODE" "DarkYellow"
+        } else {
+            Write-Step "Scraper completed successfully" "Green"
+        }
+    }
+    catch {
+        Write-Step "Scraper failed: $_" "Red"
+        return $false
+    }
+
+    Write-Elapsed $scrapeStart
     return $true
 }
 
@@ -792,12 +891,14 @@ Write-Host ("=" * 70) -ForegroundColor Magenta
 # Determine which tasks to run
 $runChart     = -not $SkipChart
 $runArticles  = -not $SkipArticles
+$runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
 $runInstagram = -not $SkipInstagram
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
     $runArticles  = $Only -eq "articles"
+    $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
     $runInstagram = $Only -eq "instagram"
 }
@@ -806,7 +907,7 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runArticles, $runLinks, $runInstagram) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -829,6 +930,17 @@ if ($runArticles) {
 }
 else {
     Write-Step "Skipping articles" "DarkGray"
+}
+
+# --- Task 2b: Scrape Articles ---
+if ($runScrape) {
+    Set-OverallProgress "Scrape Articles"
+    $t = Get-Date
+    $results["Scrape Articles"] = Update-ScrapeArticles
+    $taskTimings["Scrape Articles"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping article scraping" "DarkGray"
 }
 
 # --- Task 3: Service Links ---

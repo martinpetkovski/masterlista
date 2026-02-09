@@ -539,6 +539,35 @@ async function getArtistAlbums(artistId, token, limit = 10) {
   return data.items || [];
 }
 
+// Fetch full album objects in batch (up to 20) to get album.popularity
+async function getAlbumDetailsBatch(albumIds, token) {
+  const results = {};
+  const BATCH_SIZE = 20; // Spotify allows up to 20 per request
+
+  for (let i = 0; i < albumIds.length; i += BATCH_SIZE) {
+    const batch = albumIds.slice(i, i + BATCH_SIZE);
+    const response = await fetchWithRetry(
+      `https://api.spotify.com/v1/albums?ids=${batch.join(',')}&market=MK`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      for (const album of (data.albums || [])) {
+        if (album) {
+          results[album.id] = album;
+        }
+      }
+    }
+
+    if (i + BATCH_SIZE < albumIds.length) {
+      await new Promise(r => setTimeout(r, 200));
+    }
+  }
+
+  return results;
+}
+
 async function getAlbumTracks(albumId, token) {
   const response = await fetchWithRetry(
     `https://api.spotify.com/v1/albums/${albumId}/tracks?market=MK&limit=50`,
@@ -680,11 +709,13 @@ async function main() {
   const releases = [];
   const BATCH_SIZE = 10; // Process 10 artists at a time (reduced for more API calls)
   const BATCH_DELAY = 400; // 400ms between batches
+  const albumsStartTime = Date.now();
   
   for (let i = 0; i < artistIds.length; i += BATCH_SIZE) {
     const batch = artistIds.slice(i, i + BATCH_SIZE);
     const pct = Math.round((i / artistIds.length) * 100);
-    console.log(`Processing albums batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(artistIds.length/BATCH_SIZE)} (${pct}%)`);
+    const elapsedSec = ((Date.now() - albumsStartTime) / 1000).toFixed(1);
+    console.log(`Processing albums batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(artistIds.length/BATCH_SIZE)} (${pct}%) [${elapsedSec}s]`);
     
     const batchResults = await Promise.all(
       batch.map(async (artistId) => {
@@ -695,10 +726,18 @@ async function main() {
           const albums = await getArtistAlbums(artistId, spotifyToken, 10);
           if (!albums?.length) return null;
           
+          // Fetch full album details to get album-level popularity
+          const albumIds = albums.map(a => a.id).filter(Boolean);
+          console.log(`  Fetching album details for ${band.name} (${albumIds.length} albums)`);
+          const fullAlbumDetails = await getAlbumDetailsBatch(albumIds, spotifyToken);
+          
           // For each album, get tracks to find max track popularity
           const albumsWithPopularity = await Promise.all(
             albums.map(async (album) => {
               try {
+                const fullAlbum = fullAlbumDetails[album.id];
+                const albumPopularity = fullAlbum?.popularity || 0;
+                
                 const tracks = await getAlbumTracks(album.id, spotifyToken);
                 // Get full track info to get popularity
                 const trackIds = tracks.map(t => t.id).filter(Boolean);
@@ -729,16 +768,16 @@ async function main() {
                   // Priority: Spotify artist image → fallback service image → latest release thumbnail
                   artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
                   totalTracks: album.total_tracks,
-                  popularity: maxTrackPopularity, // Use max track popularity as release popularity
+                  popularity: albumPopularity, // Spotify album popularity (0-100)
                   topTrackName,
                   topTrackId,
-                  topTrackPopularity: maxTrackPopularity, // Individual song popularity on Spotify (0-100)
+                  topTrackPopularity: maxTrackPopularity, // Max track popularity on this album (0-100)
                   topTrackUrl: topTrackId ? `https://open.spotify.com/track/${topTrackId}` : null,
                   followers: artistInfo?.followers?.total || 0,
                   spotifyUrl: band.links.spotify
                 };
               } catch (err) {
-                // Fallback to artist popularity if track fetch fails
+                // Fallback to artist popularity if fetch fails
                 return {
                   bandName: band.name,
                   artistId,
@@ -752,6 +791,7 @@ async function main() {
                   artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
                   totalTracks: album.total_tracks,
                   popularity: artistInfo?.popularity || 0,
+                  topTrackPopularity: 0,
                   followers: artistInfo?.followers?.total || 0,
                   spotifyUrl: band.links.spotify
                 };
@@ -801,12 +841,12 @@ async function main() {
     b.links && Object.keys(b.links).length > 0
   );
   if (bandsWithoutSpotify.length > 0) {
-    console.log(`\n${bandsWithoutSpotify.length} bands have no Spotify link, fetching images from other services...`);
+    console.log(`${bandsWithoutSpotify.length} bands have no Spotify link, fetching images from other services...`);
     const NON_SPOTIFY_BATCH = 5;
     for (let i = 0; i < bandsWithoutSpotify.length; i += NON_SPOTIFY_BATCH) {
       const batch = bandsWithoutSpotify.slice(i, i + NON_SPOTIFY_BATCH);
       const pct = Math.round((i / bandsWithoutSpotify.length) * 100);
-      process.stdout.write(`\rNon-Spotify batch ${Math.floor(i/NON_SPOTIFY_BATCH)+1}/${Math.ceil(bandsWithoutSpotify.length/NON_SPOTIFY_BATCH)} (${pct}%)...`);
+      console.log(`Non-Spotify batch ${Math.floor(i/NON_SPOTIFY_BATCH)+1}/${Math.ceil(bandsWithoutSpotify.length/NON_SPOTIFY_BATCH)} (${pct}%)`);
       const batchResults = await Promise.all(
         batch.map(async (band) => {
           const img = await fetchFallbackArtistImage(band);
@@ -840,7 +880,7 @@ async function main() {
           followers: 0,
           spotifyUrl: null
         });
-        if (img) console.log(`\n  ✓ ${band.name}`);
+        if (img) console.log(`  ✓ ${band.name}`);
       }
       if (i + NON_SPOTIFY_BATCH < bandsWithoutSpotify.length) {
         await new Promise(r => setTimeout(r, 300));
@@ -850,7 +890,7 @@ async function main() {
     chartData.totalReleases = chartData.releases.length;
     const allArtistIds = new Set(chartData.releases.map(r => r.artistId));
     chartData.totalArtists = allArtistIds.size;
-    console.log(`\nChart now includes ${chartData.totalArtists} artists (${chartData.totalReleases} entries)`);
+    console.log(`Chart now includes ${chartData.totalArtists} artists (${chartData.totalReleases} entries)`);
   }
 
   // Write current chart data
