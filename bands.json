@@ -377,7 +377,12 @@
       "links": {
         "spotify": "https://open.spotify.com/artist/7o5iOHSXeLn8OIBLkRwKas",
         "youtube": "https://www.youtube.com/channel/UCElZXBppBGXSK00TFVOU8aw",
-        "instagram": "https://www.instagram.com/_tatar______/"
+        "instagram": "https://www.instagram.com/_tatar______/",
+        "deezer": "https://www.deezer.com/track/1203169522",
+        "amazon_music": "https://music.amazon.com/albums/B08SL39JZX?trackAsin=B08SKZL759",
+        "youtube_music": "https://music.youtube.com/watch?v=2f0BinX2NaU",
+        "tidal": "https://listen.tidal.com/track/168939449",
+        "itunes": "https://geo.music.apple.com/us/album/_/1548180994?i=1548181387&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1214,7 +1219,7 @@
     },
     {
       "name": "Дарио и МИГ 21",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
@@ -1576,6 +1581,22 @@
       "confirmed": false
     },
     {
+      "name": "dmt ra",
+      "city": "Битола",
+      "genre": "Електронска",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@dmt-ra/featured",
+        "bandcamp": "https://sharla.bandcamp.com/album/zivot-vo-zivo-ep",
+        "instagram": "https://www.instagram.com/__dmtra__/",
+        "linktree": "https://linktr.ee/"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Dobrila & Dorian Duo",
       "city": "Скопје",
       "genre": "Фолк, Алтернативна, Арт Рок",
@@ -1633,7 +1654,9 @@
         "instagram": "https://www.instagram.com/dopekukjata/?hl=en",
         "youtube": "https://www.youtube.com/c/dopekukjataentertainment",
         "bandcamp": "https://dopekukjata.bandcamp.com/album/3018",
-        "soundcloud": "https://soundcloud.com/dopekukjata"
+        "soundcloud": "https://soundcloud.com/dopekukjata",
+        "tidal": "https://listen.tidal.com/track/253188269",
+        "youtube_music": "https://music.youtube.com/watch?v=oGQu7dAi0G4"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -1851,7 +1874,10 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/5YTABVAbCnzl7UsHFpxXhj?si=bO6RmaDVTeWEbquN9d3BIw",
-        "instagram": "https://www.instagram.com/elenavasova/"
+        "instagram": "https://www.instagram.com/elenavasova/",
+        "youtube": "https://www.youtube.com/watch?v=YKsDn5I2LG0",
+        "itunes": "https://geo.music.apple.com/us/album/_/1817948718?i=1817948719&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "youtube_music": "https://music.youtube.com/watch?v=YKsDn5I2LG0"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2524,25 +2550,13 @@
       "confirmed": false
     },
     {
-      "name": "In Fuse",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Inserta",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=-Rq2gUfgIC0",
+        "spotify": "https://open.spotify.com/artist/4H0y0ojlQXvEnn82o18D5s?si=p2BabHDRRpudPLEKt6uTqQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2642,7 +2656,10 @@
       "links": {
         "youtube": "https://www.youtube.com/@jazospcu",
         "spotify": "https://open.spotify.com/artist/0NZSRSBvalcv2CeB3ieTh8?si=wuSemRqKQoGPPsurl_3ZNw",
-        "instagram": "https://www.instagram.com/spirkovskajana/"
+        "instagram": "https://www.instagram.com/spirkovskajana/",
+        "tidal": "https://listen.tidal.com/track/401180921",
+        "itunes": "https://geo.music.apple.com/us/album/_/1781471950?i=1781471951&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "youtube_music": "https://music.youtube.com/watch?v=2Gdt8XnH8Rw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2714,7 +2731,9 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/@jovanmilosevskimilosevski6264/videos",
+        "facebook": "https://www.facebook.com/JovanMilosevskiBand?fref=ts",
+        "instagram": "https://www.instagram.com/milosevskimilosevski/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2740,7 +2759,10 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=jZSmJBAq9vM",
+        "spotify": "https://open.spotify.com/artist/0Vw6yIYJo3aIs91t05kLb4?si=1NUaMIGqQW2yODFqLG_5DQ",
+        "tidal": "https://listen.tidal.com/track/418152046",
+        "itunes": "https://geo.music.apple.com/us/album/_/1797222074?i=1797222230&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2753,20 +2775,10 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Калдрма",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/kallbulla_/?hl=en",
+        "soundcloud": "https://soundcloud.com/kallbulla",
+        "youtube": "https://www.youtube.com/watch?v=qvSCIR-XgcI",
+        "bandcamp": "https://stotrojka.bandcamp.com/album/--5"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2824,11 +2836,11 @@
     },
     {
       "name": "Карамела",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Хеви Метал",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=-mXYH91YaXI"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2837,11 +2849,12 @@
     },
     {
       "name": "Карла Левински",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sharla.bandcamp.com/album/karla-levinski-lp",
+        "youtube": "https://www.youtube.com/watch?v=l8yl_r0zehM"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -2894,7 +2907,7 @@
       "confirmed": false
     },
     {
-      "name": "Kazan",
+      "name": "Казан",
       "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
@@ -2974,7 +2987,7 @@
       "confirmed": false
     },
     {
-      "name": "Kiborg",
+      "name": "Киборг",
       "city": "недостигаат податоци",
       "genre": "Рок",
       "soundsLike": "недостигаат податоци",
@@ -3149,7 +3162,10 @@
       "links": {
         "youtube": "https://www.youtube.com/@kristijanmagdenovski6721",
         "spotify": "https://open.spotify.com/artist/59278OxZqz6RetpVYCO1k5?si=shpmqtWkTYm9OAhKVvjOvw",
-        "instagram": "https://www.instagram.com/kristijan_magdenovski/"
+        "instagram": "https://www.instagram.com/kristijan_magdenovski/",
+        "tidal": "https://listen.tidal.com/track/462701149",
+        "itunes": "https://geo.music.apple.com/us/album/_/1842120258?i=1842120263&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "youtube_music": "https://music.youtube.com/watch?v=EPPLHUa-HKI"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -3499,7 +3515,9 @@
       "links": {
         "instagram": "https://www.instagram.com/l0stinreverie/",
         "youtube": "https://www.youtube.com/@LostInReverieOfficial",
-        "spotify": "https://open.spotify.com/artist/488GKyeBuJlDFFHcTbTGCA?si=35hbllRzT2i83a1B3BiIOA"
+        "spotify": "https://open.spotify.com/artist/488GKyeBuJlDFFHcTbTGCA?si=35hbllRzT2i83a1B3BiIOA",
+        "tidal": "https://listen.tidal.com/track/403776338",
+        "youtube_music": "https://music.youtube.com/watch?v=wozgCHXV5_4"
       },
       "contact": "lostinreverieband@outlook.com",
       "label": null,
@@ -4257,7 +4275,7 @@
       "confirmed": false
     },
     {
-      "name": "Ninoslav Spirovski",
+      "name": "Нинослав Спировски",
       "city": "недостигаат податоци",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
@@ -4973,7 +4991,10 @@
       "links": {
         "youtube": "https://www.youtube.com/@SarahMace",
         "spotify": "https://open.spotify.com/artist/7k7tAeXP9YKbWJPTWMQEcF?si=JrXk5vntRnusZgBB26Nirg",
-        "instagram": "https://www.instagram.com/sarahmace__/"
+        "instagram": "https://www.instagram.com/sarahmace__/",
+        "tidal": "https://listen.tidal.com/track/448247669",
+        "amazon_music": "https://music.amazon.com/albums/B0FHMGS4QN?trackAsin=B0FHM63R3N",
+        "itunes": "https://geo.music.apple.com/us/album/_/1869539484?i=1869539485&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5241,7 +5262,10 @@
       "links": {
         "instagram": "https://www.instagram.com/skullcrush_band/",
         "youtube": "https://www.youtube.com/@skullcrushband",
-        "spotify": "https://open.spotify.com/artist/6PAFqWretJ9egBGWs3sjq7?si=z4HV4BKyTaiTcsxq9NfjWQ"
+        "spotify": "https://open.spotify.com/artist/6PAFqWretJ9egBGWs3sjq7?si=z4HV4BKyTaiTcsxq9NfjWQ",
+        "tidal": "https://listen.tidal.com/track/85815917",
+        "itunes": "https://geo.music.apple.com/us/album/_/1357722513?i=1357722762&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "youtube_music": "https://music.youtube.com/watch?v=7i84n9ZZjjk"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5586,7 +5610,7 @@
       "confirmed": false
     },
     {
-      "name": "Svirci Vardarci",
+      "name": "Свирци Вардарци",
       "city": "Скопје",
       "genre": "Современа Музика, Фјужн",
       "soundsLike": "недостигаат податоци",
@@ -5713,7 +5737,11 @@
       "links": {
         "youtube": "https://www.youtube.com/@volceskatamara",
         "instagram": "https://www.instagram.com/volce.ska/",
-        "spotify": "https://open.spotify.com/artist/1Jti8meLUjVbrCohmdrJ8q?si=jLtXj6KyQ5SOvTuwUPqJEA"
+        "spotify": "https://open.spotify.com/artist/1Jti8meLUjVbrCohmdrJ8q?si=jLtXj6KyQ5SOvTuwUPqJEA",
+        "amazon_music": "https://music.amazon.com/albums/B0FT17Q4J2?trackAsin=B0FT174S2S",
+        "tidal": "https://listen.tidal.com/track/463464247",
+        "youtube_music": "https://music.youtube.com/watch?v=V0cxJS-mobo",
+        "itunes": "https://geo.music.apple.com/us/album/_/1842678022?i=1842678025&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5788,7 +5816,12 @@
       "links": {
         "instagram": "https://www.instagram.com/theatrajkovska/",
         "youtube": "https://www.youtube.com/theatrajkovska",
-        "spotify": "https://open.spotify.com/artist/2qr2KQvXLa0QjoBd5NHR22?si=dC57ivavT9GxZh4Caqj2Ew"
+        "spotify": "https://open.spotify.com/artist/2qr2KQvXLa0QjoBd5NHR22?si=dC57ivavT9GxZh4Caqj2Ew",
+        "deezer": "https://www.deezer.com/track/2831060552",
+        "amazon_music": "https://music.amazon.com/albums/B0D5ZW66LT?trackAsin=B0D5ZY1QMV",
+        "youtube_music": "https://music.youtube.com/watch?v=foyqQh4JoWE",
+        "tidal": "https://listen.tidal.com/track/367139862",
+        "itunes": "https://geo.music.apple.com/us/album/_/1750081751?i=1750081754&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5971,19 +6004,6 @@
       "links": {
         "lastfm": "https://www.last.fm/music/This+Home+Is+Prepared",
         "youtube": "https://www.youtube.com/watch?v=W1AanaDeLHQ&list=PLCTIzozvnjFnQvwo7MmmvBhPzLkXyw-ar"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "this would save us",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6348,7 +6368,13 @@
       "links": {
         "youtube": "https://www.youtube.com/@ViktorApostolovski",
         "instagram": "https://www.instagram.com/professor_va/",
-        "spotify": "https://open.spotify.com/artist/41imdszK6maTqpzNtmOD3E?si=FgPvsFmtTCOoBNus6IVK2Q"
+        "spotify": "https://open.spotify.com/artist/41imdszK6maTqpzNtmOD3E?si=FgPvsFmtTCOoBNus6IVK2Q",
+        "deezer": "https://www.deezer.com/track/1385509762",
+        "soundcloud": "https://soundcloud.com/marioeddie-scmusic/astronaut-in-the-ocean",
+        "napster": "https://play.napster.com/track/tra.586289891",
+        "youtube_music": "https://music.youtube.com/watch?v=Y6IyetE5nsE",
+        "tidal": "https://listen.tidal.com/track/185714687",
+        "itunes": "https://geo.music.apple.com/us/album/_/1569807879?i=1569807881&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -6630,7 +6656,9 @@
       "links": {
         "spotify": "https://open.spotify.com/artist/2hYVMaLdn6Q0Oca4bqBSox?si=QrwbcOVJSTSG9srvkMejKQ",
         "youtube": "https://www.youtube.com/channel/UC_DteZRWA-oJdLUl-H80k7A",
-        "instagram": "https://www.instagram.com/_zabataa/"
+        "instagram": "https://www.instagram.com/_zabataa/",
+        "deezer": "https://www.deezer.com/track/3107654481",
+        "youtube_music": "https://music.youtube.com/watch?v=iowhPvf0fZk"
       },
       "contact": "недостигаат податоци",
       "label": null,
