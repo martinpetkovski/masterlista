@@ -3479,10 +3479,13 @@
         "tidal": "https://listen.tidal.com/track/403776338",
         "youtube_music": "https://music.youtube.com/watch?v=wozgCHXV5_4"
       },
-      "contact": "недостигаат податоци",
+      "contact": "lostinreverieband@outlook.com",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+       "accentColors": [
+        "#dd0e18",
+        "#990554"
+      ],
+      "confirmed": true
     },
     {
       "name": "Лозано",
