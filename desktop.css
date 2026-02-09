@@ -611,7 +611,7 @@ td {
     /* padding: 0.25rem 0.5rem; */
  }
 
-tr { transition: all var(--transition); content-visibility: auto; contain-intrinsic-size: auto 36px; animation: fadeInRow 0.3s ease forwards; opacity: 0; border-bottom: 1px solid var(--border-color); }
+tr { transition: all var(--transition); content-visibility: auto; contain-intrinsic-size: auto 36px; animation: fadeInRow 0.3s ease forwards; opacity: 0; }
 
 @keyframes fadeInRow {
     from { opacity: 0; }
