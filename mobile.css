@@ -1870,8 +1870,8 @@ body.dark-mode .dark-mode-toggle {
     left: 0;
     z-index: 1000;
     min-width: 160px;
-    background: var(--bg-primary, #fff);
-    border: 1px solid var(--border-color, #dfe1e5);
+    background: var(--artist-accent-1, #fff);
+    border: 2px solid var(--artist-accent-2, #dfe1e5);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     padding: 0.3rem 0;
