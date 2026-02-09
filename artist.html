@@ -116,136 +116,31 @@
             position: relative;
             overflow: hidden;
         }
-        
-        /* Animated water-like flowing blobs */
-        .artist-bg-orb {
+
+        /* Subtle thin background lines using second accent color */
+        .artist-bg-line {
             position: absolute;
-            filter: blur(50px);
-            opacity: 0.55;
-            will-change: transform, border-radius;
-            mix-blend-mode: normal;
+            background: currentColor;
+            opacity: 0.1;
         }
-        body.dark-mode .artist-bg-orb {
-            opacity: 0.4;
-            filter: blur(55px);
+        .artist-bg-line.vertical {
+            width: 2px;
+            height: 100%;
+            top: 0;
         }
-        
-        .artist-bg-orb:nth-child(1) {
-            width: 85%;
-            height: 80%;
-            top: -20%;
-            left: -15%;
-            animation: waterFlow1 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+        .artist-bg-line.horizontal {
+            height: 2px;
+            width: 100%;
+            left: 0;
         }
-        .artist-bg-orb:nth-child(2) {
-            width: 80%;
-            height: 75%;
-            top: -5%;
-            right: -20%;
-            animation: waterFlow2 24s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+        .artist-bg-line.diagonal {
+            width: 2px;
+            height: 160%;
+            top: -30%;
+            transform-origin: center center;
         }
-        .artist-bg-orb:nth-child(3) {
-            width: 75%;
-            height: 70%;
-            bottom: -10%;
-            left: 5%;
-            animation: waterFlow3 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-        }
-        .artist-bg-orb:nth-child(4) {
-            width: 70%;
-            height: 65%;
-            bottom: -15%;
-            right: -5%;
-            animation: waterFlow4 18s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-        }
-        .artist-bg-orb:nth-child(5) {
-            width: 60%;
-            height: 60%;
-            top: 15%;
-            left: 20%;
-            animation: waterFlow5 26s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-        }
-        .artist-bg-orb:nth-child(6) {
-            width: 70%;
-            height: 65%;
-            top: -10%;
-            left: 20%;
-            animation: waterFlow6 21s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-        }
-        .artist-bg-orb:nth-child(7) {
-            width: 55%;
-            height: 55%;
-            bottom: 10%;
-            right: 10%;
-            animation: waterFlow7 19s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-        }
-        
-        @keyframes waterFlow1 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 40% 60% 55% 45% / 55% 45% 60% 40%; }
-            15%  { transform: translate(12%, 8%) rotate(25deg) scale(1.08); border-radius: 55% 45% 40% 60% / 45% 60% 35% 65%; }
-            30%  { transform: translate(20%, 15%) rotate(60deg) scale(0.95); border-radius: 45% 55% 65% 35% / 60% 40% 50% 50%; }
-            45%  { transform: translate(8%, 20%) rotate(100deg) scale(1.12); border-radius: 60% 40% 45% 55% / 35% 65% 55% 45%; }
-            60%  { transform: translate(-5%, 12%) rotate(150deg) scale(0.9); border-radius: 35% 65% 50% 50% / 55% 45% 40% 60%; }
-            75%  { transform: translate(-10%, 3%) rotate(210deg) scale(1.05); border-radius: 50% 50% 60% 40% / 40% 60% 45% 55%; }
-            90%  { transform: translate(-3%, -5%) rotate(310deg) scale(1.02); border-radius: 45% 55% 50% 50% / 50% 50% 55% 45%; }
-            100% { transform: translate(0, 0) rotate(360deg) scale(1); border-radius: 40% 60% 55% 45% / 55% 45% 60% 40%; }
-        }
-        @keyframes waterFlow2 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 60% 40% 45% 55% / 40% 60% 55% 45%; }
-            14%  { transform: translate(-15%, 10%) rotate(-30deg) scale(1.1); border-radius: 45% 55% 60% 40% / 55% 45% 40% 60%; }
-            28%  { transform: translate(-8%, 22%) rotate(-70deg) scale(0.92); border-radius: 55% 45% 35% 65% / 45% 55% 65% 35%; }
-            42%  { transform: translate(-20%, 12%) rotate(-120deg) scale(1.06); border-radius: 35% 65% 55% 45% / 60% 40% 45% 55%; }
-            57%  { transform: translate(-12%, -3%) rotate(-180deg) scale(0.94); border-radius: 50% 50% 40% 60% / 40% 60% 55% 45%; }
-            71%  { transform: translate(-5%, -10%) rotate(-250deg) scale(1.08); border-radius: 40% 60% 50% 50% / 55% 45% 35% 65%; }
-            85%  { transform: translate(5%, -5%) rotate(-320deg) scale(0.98); border-radius: 55% 45% 45% 55% / 45% 55% 50% 50%; }
-            100% { transform: translate(0, 0) rotate(-360deg) scale(1); border-radius: 60% 40% 45% 55% / 40% 60% 55% 45%; }
-        }
-        @keyframes waterFlow3 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%; }
-            16%  { transform: translate(10%, -15%) rotate(40deg) scale(0.93); border-radius: 40% 60% 55% 45% / 45% 55% 40% 60%; }
-            33%  { transform: translate(18%, -8%) rotate(90deg) scale(1.1); border-radius: 60% 40% 50% 50% / 35% 65% 55% 45%; }
-            50%  { transform: translate(5%, -18%) rotate(150deg) scale(0.95); border-radius: 45% 55% 35% 65% / 55% 45% 60% 40%; }
-            66%  { transform: translate(-8%, -10%) rotate(220deg) scale(1.07); border-radius: 55% 45% 60% 40% / 40% 60% 45% 55%; }
-            83%  { transform: translate(-3%, -3%) rotate(290deg) scale(0.97); border-radius: 35% 65% 45% 55% / 55% 45% 50% 50%; }
-            100% { transform: translate(0, 0) rotate(360deg) scale(1); border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%; }
-        }
-        @keyframes waterFlow4 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 45% 55% 50% 50% / 50% 50% 45% 55%; }
-            20%  { transform: translate(-12%, -12%) rotate(-45deg) scale(1.12); border-radius: 55% 45% 40% 60% / 40% 60% 55% 45%; }
-            40%  { transform: translate(8%, -20%) rotate(-100deg) scale(0.9); border-radius: 40% 60% 60% 40% / 55% 45% 35% 65%; }
-            60%  { transform: translate(15%, -8%) rotate(-170deg) scale(1.05); border-radius: 60% 40% 45% 55% / 35% 65% 50% 50%; }
-            80%  { transform: translate(5%, -3%) rotate(-270deg) scale(0.95); border-radius: 50% 50% 55% 45% / 45% 55% 40% 60%; }
-            100% { transform: translate(0, 0) rotate(-360deg) scale(1); border-radius: 45% 55% 50% 50% / 50% 50% 45% 55%; }
-        }
-        @keyframes waterFlow5 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%; }
-            12%  { transform: translate(-8%, 12%) rotate(30deg) scale(1.15); border-radius: 40% 60% 45% 55% / 60% 40% 55% 45%; }
-            25%  { transform: translate(-18%, 5%) rotate(75deg) scale(0.88); border-radius: 60% 40% 35% 65% / 45% 55% 60% 40%; }
-            37%  { transform: translate(-10%, -8%) rotate(130deg) scale(1.08); border-radius: 45% 55% 55% 45% / 55% 45% 35% 65%; }
-            50%  { transform: translate(5%, -15%) rotate(180deg) scale(0.92); border-radius: 55% 45% 40% 60% / 35% 65% 50% 50%; }
-            62%  { transform: translate(15%, -5%) rotate(230deg) scale(1.1); border-radius: 35% 65% 50% 50% / 50% 50% 45% 55%; }
-            75%  { transform: translate(10%, 8%) rotate(280deg) scale(0.95); border-radius: 50% 50% 60% 40% / 40% 60% 55% 45%; }
-            87%  { transform: translate(3%, 5%) rotate(330deg) scale(1.03); border-radius: 45% 55% 45% 55% / 55% 45% 40% 60%; }
-            100% { transform: translate(0, 0) rotate(360deg) scale(1); border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%; }
-        }
-        @keyframes waterFlow6 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 50% 50% 55% 45% / 55% 45% 50% 50%; }
-            17%  { transform: translate(15%, 10%) rotate(-35deg) scale(0.94); border-radius: 40% 60% 45% 55% / 45% 55% 60% 40%; }
-            33%  { transform: translate(5%, 20%) rotate(-80deg) scale(1.08); border-radius: 60% 40% 35% 65% / 55% 45% 40% 60%; }
-            50%  { transform: translate(-10%, 15%) rotate(-140deg) scale(0.92); border-radius: 45% 55% 55% 45% / 40% 60% 55% 45%; }
-            67%  { transform: translate(-15%, 5%) rotate(-210deg) scale(1.06); border-radius: 55% 45% 40% 60% / 60% 40% 45% 55%; }
-            83%  { transform: translate(-5%, -3%) rotate(-290deg) scale(0.97); border-radius: 35% 65% 50% 50% / 50% 50% 55% 45%; }
-            100% { transform: translate(0, 0) rotate(-360deg) scale(1); border-radius: 50% 50% 55% 45% / 55% 45% 50% 50%; }
-        }
-        @keyframes waterFlow7 {
-            0%   { transform: translate(0, 0) rotate(0deg) scale(1); border-radius: 45% 55% 45% 55% / 50% 50% 50% 50%; }
-            14%  { transform: translate(10%, -12%) rotate(50deg) scale(1.1); border-radius: 55% 45% 60% 40% / 40% 60% 35% 65%; }
-            29%  { transform: translate(-5%, -18%) rotate(110deg) scale(0.9); border-radius: 40% 60% 40% 60% / 60% 40% 55% 45%; }
-            43%  { transform: translate(-15%, -5%) rotate(170deg) scale(1.05); border-radius: 60% 40% 50% 50% / 45% 55% 40% 60%; }
-            57%  { transform: translate(-8%, 8%) rotate(230deg) scale(0.93); border-radius: 50% 50% 35% 65% / 55% 45% 60% 40%; }
-            71%  { transform: translate(5%, 12%) rotate(280deg) scale(1.08); border-radius: 35% 65% 55% 45% / 40% 60% 45% 55%; }
-            86%  { transform: translate(8%, 3%) rotate(330deg) scale(0.96); border-radius: 55% 45% 45% 55% / 55% 45% 50% 50%; }
-            100% { transform: translate(0, 0) rotate(360deg) scale(1); border-radius: 45% 55% 45% 55% / 50% 50% 50% 50%; }
+        body.dark-mode .artist-bg-line {
+            opacity: 0.1;
         }
         
         /* Artist Header Card */
@@ -1030,6 +925,126 @@ a.chart-history-item {
             margin-top: 1.5rem;
         }
 
+        /* Verified artist header accent - base transition only; colors injected dynamically */
+        body.artist-page.verified-accent header {
+            transition: background 0.6s ease;
+        }
+
+        /* Animated accent lines for verified artists */
+        .verified-lines-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .verified-line {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            opacity: 0;
+            animation: lineFloat 8s ease-in-out infinite;
+        }
+
+        .verified-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(to bottom, transparent, currentColor, transparent);
+            animation: lineSlide 4s ease-in-out infinite;
+        }
+
+        .verified-line:nth-child(1) { left: 5%; animation-delay: 0s; animation-duration: 7s; }
+        .verified-line:nth-child(2) { left: 15%; animation-delay: 1.2s; animation-duration: 9s; }
+        .verified-line:nth-child(3) { left: 25%; animation-delay: 0.5s; animation-duration: 6s; }
+        .verified-line:nth-child(4) { left: 35%; animation-delay: 2.1s; animation-duration: 8s; }
+        .verified-line:nth-child(5) { left: 45%; animation-delay: 0.8s; animation-duration: 10s; }
+        .verified-line:nth-child(6) { left: 55%; animation-delay: 1.5s; animation-duration: 7.5s; }
+        .verified-line:nth-child(7) { left: 65%; animation-delay: 0.3s; animation-duration: 8.5s; }
+        .verified-line:nth-child(8) { left: 75%; animation-delay: 1.8s; animation-duration: 6.5s; }
+        .verified-line:nth-child(9) { left: 85%; animation-delay: 2.5s; animation-duration: 9.5s; }
+        .verified-line:nth-child(10) { left: 95%; animation-delay: 0.7s; animation-duration: 7.2s; }
+
+        /* Diagonal accent lines */
+        .verified-diag-line {
+            position: absolute;
+            width: 1px;
+            height: 200%;
+            opacity: 0;
+            transform-origin: top center;
+            animation: diagFloat 12s ease-in-out infinite;
+        }
+
+        .verified-diag-line:nth-child(1) { left: 10%; transform: rotate(15deg); animation-delay: 0.5s; }
+        .verified-diag-line:nth-child(2) { left: 30%; transform: rotate(-10deg); animation-delay: 2s; animation-duration: 10s; }
+        .verified-diag-line:nth-child(3) { left: 50%; transform: rotate(8deg); animation-delay: 1s; animation-duration: 14s; }
+        .verified-diag-line:nth-child(4) { left: 70%; transform: rotate(-12deg); animation-delay: 3s; animation-duration: 11s; }
+        .verified-diag-line:nth-child(5) { left: 90%; transform: rotate(6deg); animation-delay: 0.8s; animation-duration: 13s; }
+
+        /* Horizontal sweep lines */
+        .verified-sweep {
+            position: absolute;
+            height: 1px;
+            width: 100%;
+            left: 0;
+            opacity: 0;
+            animation: sweepAcross 6s ease-in-out infinite;
+        }
+
+        .verified-sweep::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -20%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, currentColor 40%, currentColor 60%, transparent);
+            animation: sweepSlide 6s ease-in-out infinite;
+        }
+
+        .verified-sweep:nth-child(1) { top: 20%; animation-delay: 0s; }
+        .verified-sweep:nth-child(2) { top: 40%; animation-delay: 2s; animation-duration: 8s; }
+        .verified-sweep:nth-child(3) { top: 60%; animation-delay: 1s; animation-duration: 7s; }
+        .verified-sweep:nth-child(4) { top: 80%; animation-delay: 3s; animation-duration: 5s; }
+
+        @keyframes lineFloat {
+            0%, 100% { opacity: 0; transform: translateY(10px); }
+            20% { opacity: 0.12; }
+            50% { opacity: 0.06; transform: translateY(-5px); }
+            80% { opacity: 0.1; }
+        }
+
+        @keyframes lineSlide {
+            0% { top: -30%; }
+            100% { top: 100%; }
+        }
+
+        @keyframes diagFloat {
+            0%, 100% { opacity: 0; }
+            30% { opacity: 0.08; }
+            60% { opacity: 0.04; }
+            80% { opacity: 0.07; }
+        }
+
+        @keyframes sweepAcross {
+            0%, 100% { opacity: 0; }
+            30% { opacity: 0.15; }
+            70% { opacity: 0.1; }
+        }
+
+        @keyframes sweepSlide {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
         /* Mobile adjustments */
         @media (max-width: 600px) {
             .artist-container {
@@ -1646,22 +1661,36 @@ a.chart-history-item {
                 const gradientDiv = document.createElement('div');
                 gradientDiv.className = 'artist-bg-gradient';
                 
-                // All orbs use the second accent color with varying opacity
-                const orbConfigs = [
-                    { opacity: 0.7 },
-                    { opacity: 0.6 },
-                    { opacity: 0.55 },
-                    { opacity: 0.5 },
-                    { opacity: 0.45 },
-                    { opacity: 0.4 },
-                    { opacity: 0.35 }
+                // Subtle thin lines using second accent color
+                const linePositions = [8, 18, 28, 40, 52, 64, 75, 88];
+                linePositions.forEach(pos => {
+                    const vLine = document.createElement('div');
+                    vLine.className = 'artist-bg-line vertical';
+                    vLine.style.color = c2;
+                    vLine.style.left = pos + '%';
+                    gradientDiv.appendChild(vLine);
+                });
+                const hLinePositions = [15, 35, 55, 78];
+                hLinePositions.forEach(pos => {
+                    const hLine = document.createElement('div');
+                    hLine.className = 'artist-bg-line horizontal';
+                    hLine.style.color = c2;
+                    hLine.style.top = pos + '%';
+                    gradientDiv.appendChild(hLine);
+                });
+                const diagConfigs = [
+                    { left: 12, angle: 20 },
+                    { left: 38, angle: -15 },
+                    { left: 62, angle: 25 },
+                    { left: 85, angle: -20 }
                 ];
-                orbConfigs.forEach(cfg => {
-                    const orb = document.createElement('div');
-                    orb.className = 'artist-bg-orb';
-                    orb.style.background = `radial-gradient(circle, ${c2} 0%, ${c2}80 60%, transparent 100%)`;
-                    orb.style.opacity = cfg.opacity;
-                    gradientDiv.appendChild(orb);
+                diagConfigs.forEach(cfg => {
+                    const dLine = document.createElement('div');
+                    dLine.className = 'artist-bg-line diagonal';
+                    dLine.style.color = c2;
+                    dLine.style.left = cfg.left + '%';
+                    dLine.style.transform = `rotate(${cfg.angle}deg)`;
+                    gradientDiv.appendChild(dLine);
                 });
                 
                 wrapper.appendChild(gradientDiv);
@@ -1679,6 +1708,114 @@ a.chart-history-item {
                         ticking = true;
                     }
                 }, { passive: true });
+                
+                // Apply accent color to header background
+                document.body.classList.add('verified-accent');
+                const headerEl = document.querySelector('header');
+                if (headerEl) {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    headerEl.style.background = isDark
+                        ? `${c1}cc`
+                        : `${c1}dd`;
+                    headerEl.style.borderBottom = `1px solid ${c1}40`;
+                    // Compute lightness of the primary accent to pick black or white text
+                    const hR = parseInt(c1.slice(1,3),16), hG = parseInt(c1.slice(3,5),16), hB = parseInt(c1.slice(5,7),16);
+                    const headerLum = (0.299 * hR + 0.587 * hG + 0.114 * hB) / 255;
+                    const isLight = headerLum > 0.55;
+                    const tc  = isLight ? '#000' : '#fff';
+                    const hoverBg  = isLight ? '#000' : '#fff';
+                    const hoverTc  = isLight ? '#fff' : '#000';
+                    const btnBdr = isLight ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.3)';
+
+                    // Style ALL header text/buttons directly with inline styles + event listeners
+                    // This avoids any CSS specificity issues entirely.
+
+                    // Title
+                    const titleEl = headerEl.querySelector('#artist-page-title');
+                    if (titleEl) titleEl.style.setProperty('color', tc, 'important');
+
+                    // Nav links + their icons
+                    headerEl.querySelectorAll('.site-nav-menu a').forEach(a => {
+                        a.style.setProperty('color', tc, 'important');
+                        const icon = a.querySelector('i');
+                        if (icon) icon.style.setProperty('color', tc, 'important');
+                        a.addEventListener('mouseenter', () => {
+                            a.style.setProperty('background', hoverBg, 'important');
+                            a.style.setProperty('color', hoverTc, 'important');
+                            if (icon) icon.style.setProperty('color', hoverTc, 'important');
+                        });
+                        a.addEventListener('mouseleave', () => {
+                            a.style.setProperty('background', 'transparent', 'important');
+                            a.style.setProperty('color', tc, 'important');
+                            if (icon) icon.style.setProperty('color', tc, 'important');
+                        });
+                    });
+
+                    // Header buttons (dark mode toggle, edit, etc.)
+                    function styleHeaderBtn(btn) {
+                        btn.style.setProperty('color', tc, 'important');
+                        btn.style.setProperty('background', 'transparent', 'important');
+                        btn.style.setProperty('border-color', btnBdr, 'important');
+                        const icon = btn.querySelector('i');
+                        if (icon) icon.style.setProperty('color', tc, 'important');
+                        btn.addEventListener('mouseenter', () => {
+                            btn.style.setProperty('background', hoverBg, 'important');
+                            btn.style.setProperty('color', hoverTc, 'important');
+                            btn.style.setProperty('border-color', hoverBg, 'important');
+                            if (icon) icon.style.setProperty('color', hoverTc, 'important');
+                        });
+                        btn.addEventListener('mouseleave', () => {
+                            btn.style.setProperty('background', 'transparent', 'important');
+                            btn.style.setProperty('color', tc, 'important');
+                            btn.style.setProperty('border-color', btnBdr, 'important');
+                            if (icon) icon.style.setProperty('color', tc, 'important');
+                        });
+                    }
+                    headerEl.querySelectorAll('.header-btn, .header-edit-btn').forEach(styleHeaderBtn);
+
+                    // Also style the edit button when it gets added later
+                    const origInsertBefore = Element.prototype.insertBefore;
+                    const hButtons = headerEl.querySelector('.header-buttons');
+                    if (hButtons) {
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach(m => {
+                                m.addedNodes.forEach(n => {
+                                    if (n.nodeType === 1 && (n.classList.contains('header-btn') || n.classList.contains('header-edit-btn'))) {
+                                        styleHeaderBtn(n);
+                                    }
+                                });
+                            });
+                        });
+                        observer.observe(hButtons, { childList: true });
+                    }
+                }
+                
+                // Inject animated accent lines for verified artists
+                const linesContainer = document.createElement('div');
+                linesContainer.className = 'verified-lines-container';
+                // Vertical lines (all use c2)
+                for (let i = 0; i < 10; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'verified-line';
+                    line.style.color = c2;
+                    line.style.background = `linear-gradient(to bottom, transparent 0%, ${c2}15 30%, transparent 70%)`;
+                    linesContainer.appendChild(line);
+                }
+                // Diagonal lines (all use c2)
+                for (let i = 0; i < 5; i++) {
+                    const dLine = document.createElement('div');
+                    dLine.className = 'verified-diag-line';
+                    dLine.style.background = `linear-gradient(to bottom, transparent, ${c2}20, transparent)`;
+                    linesContainer.appendChild(dLine);
+                }
+                // Horizontal sweep lines (all use c2)
+                for (let i = 0; i < 4; i++) {
+                    const sweep = document.createElement('div');
+                    sweep.className = 'verified-sweep';
+                    sweep.style.color = c2;
+                    linesContainer.appendChild(sweep);
+                }
+                document.body.insertBefore(linesContainer, document.body.firstChild);
             }
         }
         

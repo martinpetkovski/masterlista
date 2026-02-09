@@ -1503,7 +1503,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentValue = input.value;
                 const lastCommaIndex = currentValue.lastIndexOf(',');
                 const prefix = lastCommaIndex >= 0 ? currentValue.substring(0, lastCommaIndex + 1) + ' ' : '';
-                input.value = prefix + value + ', ';
+                input.value = prefix + value;
                 dropdown.classList.remove('active');
                 dropdown.innerHTML = '';
                 input.focus();

@@ -428,6 +428,25 @@
             flex-wrap: wrap;
         }
         
+        .advanced-filters {
+            display: none;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 0.25rem;
+        }
+        
+        .filter-presets {
+            gap: 0.35rem;
+        }
+        
+        .preset-btn i {
+            font-size: 0.6rem;
+        }
+        
         .filter-group {
             display: flex;
             align-items: center;
@@ -540,8 +559,8 @@
                 -ms-overflow-style: none;
                 flex-shrink: 0;
                 -webkit-overflow-scrolling: touch;
-                -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-                mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+                -webkit-mask-image: none;
+                mask-image: none;
             }
             
             .chart-filter-bar::-webkit-scrollbar {
@@ -550,9 +569,33 @@
             
             .chart-filter-content {
                 gap: 0.5rem;
-                flex-wrap: nowrap;
-                padding-right: 0.5rem;
-                min-width: max-content;
+                flex-wrap: wrap;
+                padding-right: 0;
+                min-width: auto;
+            }
+            
+            .filter-presets {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+                padding-right: 0;
+                border-right: none;
+            }
+            
+            .filter-presets .preset-btn {
+                flex: 1;
+                justify-content: center;
+                min-width: 0;
+            }
+            
+            .advanced-filters {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 0.4rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.25rem;
             }
             
             .filter-group {
@@ -2010,48 +2053,69 @@
         </div>
     </header>
     
-    <!-- Special Charts Filter -->
+    <!-- Charts Filter Bar -->
     <div class="chart-filter-bar">
         <div class="chart-filter-content">
-            <div class="filter-group" data-filter-group="chart">
-                <span class="filter-label">Листа:</span>
-                <button class="filter-btn active" data-filter-type="chart" data-filter-value="standard" title="Стандардна листа">
-                    Стандардна
+            <!-- Quick preset buttons -->
+            <div class="filter-group filter-presets" data-filter-group="preset">
+                <button class="filter-btn preset-btn active" data-preset="toplista" title="Стандардна листа со сите жанрови">
+                    <i class="fas fa-chart-line"></i> Топ Листа
                 </button>
-                <button class="filter-btn" data-filter-type="chart" data-filter-value="alltime" title="На сите времиња">
-                    Сите времиња
+                <button class="filter-btn preset-btn" data-preset="alt" title="Алтернативна музика">
+                    <i class="fas fa-guitar"></i> Алтернативна
                 </button>
-            </div>
-            <div class="filter-group" data-filter-group="genre">
-                <span class="filter-label">Жанр:</span>
-                <button class="filter-btn active" data-filter-type="genre" data-filter-value="all" title="Сите жанрови">
-                    Сите
+                <button class="filter-btn preset-btn" data-preset="alltime" title="Сите времиња">
+                    <i class="fas fa-trophy"></i> Сите времиња
                 </button>
-                <button class="filter-btn" data-filter-type="genre" data-filter-value="alt" title="Алтернативна музика">
-                    Алтернативна
-                </button>
-                <button class="filter-btn" data-filter-type="genre" data-filter-value="rap" title="Рап и Трап">
-                    Рап/Трап
-                </button>
-                <button class="filter-btn" data-filter-type="genre" data-filter-value="electronic" title="Електронска музика">
-                    Електронска
+                <button class="filter-btn preset-btn" data-preset="advanced" title="Напредни филтри">
+                    <i class="fas fa-sliders-h"></i> Напредно
                 </button>
             </div>
-            <div class="filter-group" data-filter-group="city">
-                <span class="filter-label">Град:</span>
-                <button class="filter-btn active" data-filter-type="city" data-filter-value="all" title="Сите градови">
-                    Сите
-                </button>
-                <button class="filter-btn" data-filter-type="city" data-filter-value="skopje" title="Скопје">
-                    Скопје
-                </button>
-                <button class="filter-btn" data-filter-type="city" data-filter-value="bitola" title="Битола">
-                    Битола
+            <!-- Advanced filter groups (hidden by default) -->
+            <div class="advanced-filters" id="advanced-filters" style="display: none;">
+                <div class="filter-group" data-filter-group="genre">
+                    <span class="filter-label">Жанр:</span>
+                    <button class="filter-btn active" data-filter-type="genre" data-filter-value="all" title="Сите жанрови">
+                        Сите
+                    </button>
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="alt" title="Алтернативна музика">
+                        Алтернативна
+                    </button>
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="rap" title="Рап и Трап">
+                        Рап/Трап
+                    </button>
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="electronic" title="Електронска музика">
+                        Електронска
+                    </button>
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="pop" title="Поп музика">
+                        Поп
+                    </button>
+                </div>
+                <div class="filter-group" data-filter-group="chart">
+                    <span class="filter-label">Листа:</span>
+                    <button class="filter-btn active" data-filter-type="chart" data-filter-value="standard" title="Стандардна листа">
+                        Стандардна
+                    </button>
+                    <button class="filter-btn" data-filter-type="chart" data-filter-value="alltime" title="На сите времиња">
+                        Сите времиња
+                    </button>
+                </div>
+                <div class="filter-group" data-filter-group="city">
+                    <span class="filter-label">Град:</span>
+                    <button class="filter-btn active" data-filter-type="city" data-filter-value="all" title="Сите градови">
+                        Сите
+                    </button>
+                    <button class="filter-btn" data-filter-type="city" data-filter-value="skopje" title="Скопје">
+                        Скопје
+                    </button>
+                    <button class="filter-btn" data-filter-type="city" data-filter-value="bitola" title="Битола">
+                        Битола
+                    </button>
+                </div>
+                <button class="filter-btn reset-btn" id="reset-filters-btn" title="Ресетирај филтри">
+                    <i class="fas fa-undo"></i> Ресетирај
                 </button>
             </div>
-            <button class="filter-btn reset-btn" id="reset-filters-btn" title="Ресетирај филтри">
-                <i class="fas fa-undo"></i> Ресетирај
-            </button>
         </div>
     </div>
     
@@ -2390,7 +2454,7 @@
             const cityFilter = cityBtn?.dataset?.filterValue || 'all';
             
             // Build filter suffix
-            const genreLabels = { 'alt': 'Алтернативна', 'rap': 'Рап/Трап', 'electronic': 'Електронска' };
+            const genreLabels = { 'alt': 'Алтернативна', 'rap': 'Рап/Трап', 'electronic': 'Електронска', 'pop': 'Поп' };
             const cityLabels = { 'skopje': 'Скопје', 'bitola': 'Битола' };
             
             const genreLabel = genreFilter !== 'all' ? genreLabels[genreFilter] : null;
@@ -2829,24 +2893,35 @@
             // Current filter state (radio-button style - one selection per group)
             let currentFilters = {
                 chart: 'standard',  // 'standard' or 'alltime'
-                genre: 'all',       // 'all', 'alt', 'rap', 'electronic'
+                genre: 'all',       // 'all', 'alt', 'rap', 'electronic', 'pop'
                 city: 'all'         // 'all', 'skopje', 'bitola'
             };
             
             // Filter configuration - genre keywords to match in bands.json
+            // Alternative = everything NOT matching Rap/Trap, Electronic, or Pop subgenres
+            const rapGenres = ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап', 'Поп-Рап'];
+            const electronicGenres = ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв', 'Драм ен Бас', 'Психоделичен Транс', 'Гоа', 'Глич', 'Чилаут', 'Електро-амбиентал', 'Трип Хоп', 'Псајбас', 'Псајдаб'];
+            const popGenres = ['Поп', 'Поп-Рок', 'Поп Рок', 'Данс Поп', 'Синт-Поп', 'К-Поп', 'Турбо-Фолк', 'R&B', 'Поп-Фолк', "Р'н'Б", 'Шлагер', 'Соул'];
+            const nonAltGenres = [...rapGenres, ...electronicGenres, ...popGenres];
+            
             const genreConfig = {
                 'alt': {
                     label: 'Алтернативна',
-                    // Note: 'Рок' removed - only match specific sub-genres, not plain 'Рок'
-                    genres: ['Алтернативен', 'Инди', 'Пост-панк', 'Панк', 'Шугејз', 'Дрим Поп', 'Пост-рок', 'Гранџ', 'Експериментален', 'Мат Рок', 'Арт Рок', 'Алтернативен Рок', 'Инди Рок', 'Пост-Панк']
+                    // Alternative = anything NOT Rap/Trap, Electronic, or Pop
+                    isExclusion: true,
+                    excludeGenres: nonAltGenres
                 },
                 'rap': {
                     label: 'Рап/Трап',
-                    genres: ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап']
+                    genres: rapGenres
                 },
                 'electronic': {
                     label: 'Електронска',
-                    genres: ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв']
+                    genres: electronicGenres
+                },
+                'pop': {
+                    label: 'Поп',
+                    genres: popGenres
                 }
             };
             
@@ -3090,6 +3165,11 @@
                 return band ? { name: band.name, genre: band.genre || '', city: band.city || '', accentColors: band.accentColors || null, confirmed: band.confirmed || false } : null;
             }
             
+            // Split genre string into individual trimmed terms for precise matching
+            function splitGenres(genreStr) {
+                return genreStr.split(',').map(g => g.trim().toLowerCase()).filter(Boolean);
+            }
+            
             // Check if artist matches genre filter
             function artistMatchesGenre(artistName, genreFilter) {
                 if (genreFilter === 'all') return true;
@@ -3100,10 +3180,18 @@
                 const artistInfo = getArtistInfo(artistName);
                 if (!artistInfo) return false;
                 
-                const artistGenres = artistInfo.genre.toLowerCase();
-                // Exclude artists with Поп genre from alternative chart
-                if (genreFilter === 'alt' && artistGenres.includes('поп')) return false;
-                return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
+                const artistGenreList = splitGenres(artistInfo.genre);
+                if (artistGenreList.length === 0) return false;
+                
+                // Alternative = exclusion-based: NOT matching any Rap/Trap, Electronic, or Pop genres
+                if (config.isExclusion) {
+                    if (artistInfo.genre.toLowerCase() === 'недостигаат податоци') return false;
+                    const excludeLower = config.excludeGenres.map(g => g.toLowerCase());
+                    return !artistGenreList.some(ag => excludeLower.some(eg => ag === eg));
+                }
+                
+                const configGenresLower = config.genres.map(g => g.toLowerCase());
+                return artistGenreList.some(ag => configGenresLower.some(cg => ag === cg));
             }
             
             // Check if artist matches city filter
@@ -3130,10 +3218,18 @@
                 const artistInfo = getArtistInfoById(artistId);
                 if (!artistInfo) return false;
                 
-                const artistGenres = artistInfo.genre.toLowerCase();
-                // Exclude artists with Поп genre from alternative chart
-                if (genreFilter === 'alt' && artistGenres.includes('поп')) return false;
-                return config.genres.some(g => artistGenres.includes(g.toLowerCase()));
+                const artistGenreList = splitGenres(artistInfo.genre);
+                if (artistGenreList.length === 0) return false;
+                
+                // Alternative = exclusion-based
+                if (config.isExclusion) {
+                    if (artistInfo.genre.toLowerCase() === 'недостигаат податоци') return false;
+                    const excludeLower = config.excludeGenres.map(g => g.toLowerCase());
+                    return !artistGenreList.some(ag => excludeLower.some(eg => ag === eg));
+                }
+                
+                const configGenresLower = config.genres.map(g => g.toLowerCase());
+                return artistGenreList.some(ag => configGenresLower.some(cg => ag === cg));
             }
             
             // Check if artist matches city filter by artistId
@@ -3160,8 +3256,8 @@
                 );
                 
                 const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                const singlesFilter = r => r.releaseType === 'single';
-                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
+                const singlesFilter = r => r.releaseType === 'single' && (r.totalTracks || 1) <= 1;
+                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation' || r.releaseType === 'ep' || (r.releaseType === 'single' && (r.totalTracks || 1) > 1);
                 
                 // Build filter label for display
                 const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
@@ -3293,9 +3389,72 @@
                 }
             }
             
+            // Sync the advanced filter button active states to match currentFilters
+            function syncAdvancedButtons() {
+                ['chart', 'genre', 'city'].forEach(filterType => {
+                    const group = document.querySelector(`.advanced-filters .filter-group[data-filter-group="${filterType}"]`);
+                    if (!group) return;
+                    group.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.filterValue === currentFilters[filterType]);
+                    });
+                });
+            }
+            
+            // Sync preset button active states
+            function syncPresetButtons(activePreset) {
+                document.querySelectorAll('.preset-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.preset === activePreset);
+                });
+            }
+
             // Initialize filter buttons (radio-button style per group)
             function initFilterButtons() {
-                const filterBtns = document.querySelectorAll('.filter-btn[data-filter-type]');
+                const advancedPanel = document.getElementById('advanced-filters');
+                
+                // Preset buttons (Топ Листа, Алтернативна, Сите времиња, Напредно)
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const preset = btn.dataset.preset;
+                        
+                        if (preset === 'advanced') {
+                            // Toggle advanced panel
+                            const isOpen = advancedPanel.style.display !== 'none';
+                            advancedPanel.style.display = isOpen ? 'none' : 'flex';
+                            syncPresetButtons(isOpen ? '_none' : 'advanced');
+                            // If closing, deactivate advanced and go back to toplista
+                            if (isOpen) {
+                                currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
+                                syncAdvancedButtons();
+                                syncPresetButtons('toplista');
+                                applyFilters();
+                            }
+                            return;
+                        }
+                        
+                        // Hide advanced panel for presets
+                        advancedPanel.style.display = 'none';
+                        
+                        if (preset === 'toplista') {
+                            currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
+                        } else if (preset === 'alt') {
+                            currentFilters = { chart: 'standard', genre: 'alt', city: 'all' };
+                        } else if (preset === 'alltime') {
+                            currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
+                        }
+                        
+                        syncPresetButtons(preset);
+                        syncAdvancedButtons();
+                        applyFilters();
+                        
+                        // Scroll charts into view on mobile
+                        if (window.innerWidth <= 600) {
+                            document.querySelector('.chart-container')?.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+                
+                // Advanced filter buttons (genre, chart type, city)
+                const filterBtns = document.querySelectorAll('.advanced-filters .filter-btn[data-filter-type]');
                 
                 filterBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -3309,6 +3468,9 @@
                         
                         // Update filter state
                         currentFilters[filterType] = filterValue;
+                        
+                        // Keep the preset "Напредно" active when using advanced filters
+                        syncPresetButtons('advanced');
                         
                         // Apply combined filters
                         applyFilters();
@@ -3331,13 +3493,12 @@
                             city: 'all'
                         };
                         
-                        // Reset all button active states
-                        document.querySelectorAll('.filter-group').forEach(group => {
-                            group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                            // Activate the first button (default) in each group
-                            const firstBtn = group.querySelector('.filter-btn');
-                            if (firstBtn) firstBtn.classList.add('active');
-                        });
+                        // Reset all advanced button active states
+                        syncAdvancedButtons();
+                        
+                        // Close advanced panel and go back to Топ Листа
+                        advancedPanel.style.display = 'none';
+                        syncPresetButtons('toplista');
                         
                         // Apply filters
                         applyFilters();
