@@ -1443,8 +1443,112 @@
         
         .chart-stat i { display: none; }
         
+        /* History tooltip on hover over popularity / rank */
+        .chart-history-tooltip {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            background: var(--bg-primary, #fff);
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 8px;
+            padding: 0.5rem 0.6rem;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+            min-width: 180px;
+            max-width: 260px;
+            pointer-events: none;
+            font-family: 'Inter', sans-serif;
+        }
+        body.dark-mode .chart-history-tooltip {
+            background: var(--bg-secondary, #191c22);
+            border-color: var(--border-color, #2a2e36);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+        }
+        .chart-history-tooltip.visible {
+            display: block;
+        }
+        .chart-rank[data-tooltip-html],
+        .chart-stat.followers[data-tooltip-html] {
+            cursor: help;
+        }
+        .history-tooltip-title {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-muted, #888);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .history-tooltip-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.12rem 0;
+            font-size: 0.65rem;
+            border-bottom: 1px solid var(--border-color, #eee);
+        }
+        .history-tooltip-row:last-child {
+            border-bottom: none;
+        }
+        .history-tooltip-row.current {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .history-tooltip-week {
+            color: var(--text-muted, #888);
+            font-size: 0.58rem;
+            min-width: 36px;
+        }
+        .history-tooltip-value {
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            min-width: 24px;
+            text-align: right;
+        }
+        .history-tooltip-change {
+            font-size: 0.55rem;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: right;
+        }
+        .history-tooltip-change.up { color: var(--accent-green, #22c55e); }
+        .history-tooltip-change.down { color: var(--accent-red, #ef4444); }
+        .history-tooltip-change.same { color: var(--text-muted, #888); }
+        .history-tooltip-change.new-entry { color: var(--accent-orange, #e07800); font-size: 0.5rem; }
+        /* Mini sparkline inside tooltip */
+        .history-tooltip-spark {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 20px;
+            margin-top: 0.3rem;
+            padding-top: 0.2rem;
+            border-top: 1px solid var(--border-color, #eee);
+        }
+        .history-tooltip-spark .spark-bar {
+            flex: 1;
+            background: var(--accent-orange, #e07800);
+            border-radius: 2px 2px 0 0;
+            min-height: 2px;
+            opacity: 0.5;
+            transition: opacity 0.1s;
+        }
+        .history-tooltip-spark .spark-bar.current {
+            opacity: 1;
+        }
+        .history-tooltip-spark .spark-bar.empty {
+            background: var(--border-color, #eee);
+            opacity: 0.3;
+        }
+        /* Ensure tooltip is visible on mobile hover/tap */
+        @media (max-width: 600px) {
+            .chart-history-tooltip {
+                min-width: 160px;
+                font-size: 0.6rem;
+                padding: 0.4rem;
+            }
+        }
 
-        
         .chart-loading, .chart-empty {
             text-align: center;
             padding: 2rem;
@@ -2253,6 +2357,9 @@
     <!-- Hidden container for share card rendering -->
     <div id="share-card-container"></div>
     
+    <!-- Portal tooltip for chart history (must be outside .chart-item to avoid clip-path clipping) -->
+    <div id="chart-tooltip-portal" class="chart-history-tooltip"></div>
+    
     <script>
         // ==================== NAV MENU ====================
         (function() {
@@ -2886,6 +2993,170 @@
             // Store previous chart data for comparison
             let previousChartData = null;
             
+            // Store chart history for last 10 weeks (for hover tooltips)
+            let chartHistoryWeeks = []; // Array of { weekId, releases[] } sorted newest first
+            let releaseHistoryMap = new Map(); // releaseId -> [{weekId, popularity, position}]
+            
+            /**
+             * Load the last N weeks of chart history for tooltip display.
+             * Returns array of { weekId, data } sorted newest-first.
+             */
+            async function loadChartHistory(numWeeks = 10) {
+                const results = [];
+                const cursor = new Date();
+                for (let i = 0; i < numWeeks; i++) {
+                    const info = getISOWeek(cursor);
+                    const weekId = `${info.year}-W${String(info.week).padStart(2, '0')}`;
+                    const url = `${CHART_HISTORY_DIR}/chart-${weekId}.json?t=${Date.now()}`;
+                    try {
+                        const resp = await fetch(url);
+                        if (resp.ok) {
+                            const data = await resp.json();
+                            results.push({ weekId, releases: data.releases || [] });
+                        }
+                    } catch (e) { /* skip unavailable weeks */ }
+                    cursor.setDate(cursor.getDate() - 7);
+                }
+                return results; // newest first
+            }
+            
+            /**
+             * Build a per-release history map from chart history data.
+             * For each release, computes the chart position (within its type) per week.
+             * releaseHistoryMap: releaseId -> [{ weekId, popularity, singlesPos, albumsPos }]
+             */
+            function buildReleaseHistoryMap(historyWeeks) {
+                const map = new Map();
+                
+                historyWeeks.forEach(({ weekId, releases }) => {
+                    // Deduplicate collabs
+                    const deduped = deduplicateCollabs(releases);
+                    
+                    const sortByPop = (a, b) => (b.popularity || 0) - (a.popularity || 0);
+                    const singlesFilter = r => r.releaseType === 'single';
+                    const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
+                    
+                    // Build ranked lists
+                    // Use same logic as applyFilters: last 2 months pool, sort by popularity
+                    const byDate = [...deduped].sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                    const cutoff = new Date();
+                    cutoff.setMonth(cutoff.getMonth() - 2);
+                    const cutoffStr = cutoff.toISOString().slice(0, 10);
+                    
+                    function buildRankedList(filterFn) {
+                        const recent = byDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
+                        let pool = [...recent];
+                        if (pool.length < 20) {
+                            const older = byDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
+                            pool = pool.concat(older.slice(0, 20 - pool.length));
+                        }
+                        return pool.sort(sortByPop).slice(0, 20);
+                    }
+                    
+                    const rankedSingles = buildRankedList(singlesFilter);
+                    const rankedAlbums = buildRankedList(albumsFilter);
+                    
+                    // Assign positions
+                    const singlesPosMap = new Map();
+                    rankedSingles.forEach((r, i) => singlesPosMap.set(r.releaseId, i + 1));
+                    
+                    const albumsPosMap = new Map();
+                    rankedAlbums.forEach((r, i) => albumsPosMap.set(r.releaseId, i + 1));
+                    
+                    // Store per-release data
+                    deduped.forEach(r => {
+                        if (!map.has(r.releaseId)) map.set(r.releaseId, []);
+                        map.get(r.releaseId).push({
+                            weekId,
+                            popularity: r.popularity || 0,
+                            singlesPos: singlesPosMap.get(r.releaseId) || null,
+                            albumsPos: albumsPosMap.get(r.releaseId) || null
+                        });
+                    });
+                });
+                
+                return map;
+            }
+            
+            /**
+             * Generate the HTML for a history tooltip.
+             * @param {string} releaseId
+             * @param {'popularity'|'position'} mode - what to show
+             * @param {'single'|'album'} releaseType
+             * @param {number} currentRank - current chart position (1-based)
+             */
+            function buildHistoryTooltipHTML(releaseId, mode, releaseType, currentRank) {
+                const history = releaseHistoryMap.get(releaseId);
+                if (!history || history.length === 0) return '';
+                
+                // Sort oldest first for display
+                const sorted = [...history].sort((a, b) => a.weekId.localeCompare(b.weekId));
+                
+                const isPosition = mode === 'position';
+                const title = isPosition ? 'Позиција' : 'Популарност';
+                const posKey = releaseType === 'single' ? 'singlesPos' : 'albumsPos';
+                
+                // Get values for sparkline
+                const values = sorted.map(h => isPosition ? (h[posKey] || 0) : h.popularity);
+                const maxVal = Math.max(...values.filter(v => v > 0), 1);
+                
+                let rows = '';
+                for (let i = 0; i < sorted.length; i++) {
+                    const h = sorted[i];
+                    const val = isPosition ? (h[posKey] || null) : h.popularity;
+                    const prevVal = i > 0 ? (isPosition ? (sorted[i-1][posKey] || null) : sorted[i-1].popularity) : null;
+                    const isCurrent = i === sorted.length - 1;
+                    
+                    let changeHtml = '';
+                    if (i === 0 || prevVal === null) {
+                        if (val !== null && val > 0) {
+                            changeHtml = '<span class="history-tooltip-change new-entry">НОВ</span>';
+                        } else {
+                            changeHtml = '<span class="history-tooltip-change same">-</span>';
+                        }
+                    } else if (val === null || val === 0) {
+                        changeHtml = '<span class="history-tooltip-change same">-</span>';
+                    } else {
+                        const diff = isPosition ? (prevVal - val) : (val - prevVal);
+                        if (diff > 0) {
+                            changeHtml = `<span class="history-tooltip-change up">${isPosition ? '▲' : '+'}${Math.abs(diff)}</span>`;
+                        } else if (diff < 0) {
+                            changeHtml = `<span class="history-tooltip-change down">${isPosition ? '▼' : ''}${diff}</span>`;
+                        } else {
+                            changeHtml = '<span class="history-tooltip-change same">=</span>';
+                        }
+                    }
+                    
+                    const displayVal = val !== null && val > 0 ? (isPosition ? '#' + val : val) : '-';
+                    
+                    rows += `<div class="history-tooltip-row${isCurrent ? ' current' : ''}">
+                        <span class="history-tooltip-week">${h.weekId.replace(/^\d{4}-/, '')}</span>
+                        <span class="history-tooltip-value">${displayVal}</span>
+                        ${changeHtml}
+                    </div>`;
+                }
+                
+                // Build mini sparkline bars
+                let sparkBars = '';
+                sorted.forEach((h, i) => {
+                    const val = isPosition ? (h[posKey] || 0) : h.popularity;
+                    const isCurrent = i === sorted.length - 1;
+                    if (val <= 0) {
+                        sparkBars += `<div class="spark-bar empty" style="height:2px"></div>`;
+                    } else {
+                        // For position: lower is better, so invert
+                        const height = isPosition
+                            ? Math.max(2, Math.round((1 - (val - 1) / Math.max(maxVal - 1, 1)) * 20))
+                            : Math.max(2, Math.round((val / maxVal) * 20));
+                        sparkBars += `<div class="spark-bar${isCurrent ? ' current' : ''}" style="height:${height}px"></div>`;
+                    }
+                });
+                
+                return `<div class="history-tooltip-title">${title} (${sorted.length} нед.)</div>
+                    ${rows}
+                    <div class="history-tooltip-spark">${sparkBars}</div>`;
+            }
+            
             // Store all releases data for filtering
             let allReleasesData = [];
             let allBandsData = [];
@@ -3093,6 +3364,14 @@
                 // Load previous data for comparison
                 previousChartData = await loadPreviousData();
                 
+                // Load chart history for hover tooltips (last 10 weeks)
+                try {
+                    chartHistoryWeeks = await loadChartHistory(10);
+                    console.log('Loaded chart history:', chartHistoryWeeks.length, 'weeks');
+                } catch (e) {
+                    console.warn('Could not load chart history:', e);
+                }
+                
                 // Load bands data for filtering
                 try {
                     const bandsResponse = await fetch('bands.json?t=' + Date.now());
@@ -3131,6 +3410,12 @@
                 
                 // Store all releases for filtering
                 allReleasesData = releases;
+                
+                // Build release history map for hover tooltips
+                if (chartHistoryWeeks.length > 0) {
+                    releaseHistoryMap = buildReleaseHistoryMap(chartHistoryWeeks);
+                    console.log('Built release history for', releaseHistoryMap.size, 'releases');
+                }
                 
                 updateDataInfo(generatedAt);
                 document.querySelectorAll('.chart-loading').forEach(el => el.style.display = 'none');
@@ -3648,9 +3933,22 @@
                     const accent2 = hasAccent ? (accentColors[1] || accentColors[0]) : '';
                     const accentStyle = hasAccent ? `style="--accent-1:${accent1};--accent-2:${accent2}"` : '';
                     
+                    // Build history tooltips for this release
+                    const posTooltipHtml = showPosition ? buildHistoryTooltipHTML(release.releaseId, 'position', release.releaseType, rank) : '';
+                    const popTooltipHtml = buildHistoryTooltipHTML(release.releaseId, 'popularity', release.releaseType, rank);
+                    
+                    // If we have history tooltips, suppress native title to avoid double tooltip
+                    const rankTitle = posTooltipHtml ? '' : (changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : '');
+                    const popTitle = popTooltipHtml ? '' : metricTitle;
+                    
+                    // Escape tooltip HTML for data attributes
+                    const escAttr = (html) => html.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const posTooltipAttr = posTooltipHtml ? ` data-tooltip-html="${escAttr(posTooltipHtml)}"` : '';
+                    const popTooltipAttr = popTooltipHtml ? ` data-tooltip-html="${escAttr(popTooltipHtml)}"` : '';
+                    
                     return `
                         <li class="chart-item ${itemClass}${hasAccent ? ' has-accent' : ''}" ${accentStyle}>
-                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : ''}">${rank}</span>` : ''}
+                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
@@ -3665,7 +3963,7 @@
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
-                                <span class="chart-stat followers" title="${metricTitle}">${metricDisplay}${popChangeIndicator}</span>
+                                <span class="chart-stat followers" title="${popTitle}"${popTooltipAttr}>${metricDisplay}${popChangeIndicator}</span>
                             </div>
                         </li>
                     `;
@@ -3692,6 +3990,69 @@
                         const url = title.dataset.url;
                         if (url) window.open(url, '_blank');
                     });
+                });
+                
+                // Set up hover positioning for history tooltips using portal
+                const tooltipPortal = document.getElementById('chart-tooltip-portal');
+                container.querySelectorAll('[data-tooltip-html]').forEach(el => {
+                    function positionAndShow() {
+                        // Decode HTML from data attribute
+                        const raw = el.getAttribute('data-tooltip-html');
+                        if (!raw) return;
+                        const html = raw.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                        tooltipPortal.innerHTML = html;
+                        
+                        const rect = el.getBoundingClientRect();
+                        // Show first to measure
+                        tooltipPortal.classList.add('visible');
+                        const tooltipW = tooltipPortal.offsetWidth || 200;
+                        const tooltipH = tooltipPortal.offsetHeight || 200;
+                        
+                        // Position below the element by default
+                        let top = rect.bottom + 6;
+                        let left = rect.left;
+                        
+                        // If it's the popularity (right side), align right edge
+                        if (el.classList.contains('followers')) {
+                            left = rect.right - tooltipW;
+                        }
+                        
+                        // Keep within viewport
+                        if (left < 8) left = 8;
+                        if (left + tooltipW > window.innerWidth - 8) {
+                            left = window.innerWidth - tooltipW - 8;
+                        }
+                        // If tooltip would go below viewport, show above
+                        if (top + tooltipH > window.innerHeight - 8) {
+                            top = rect.top - tooltipH - 6;
+                        }
+                        if (top < 8) top = 8;
+                        
+                        tooltipPortal.style.top = top + 'px';
+                        tooltipPortal.style.left = left + 'px';
+                    }
+                    
+                    el.addEventListener('mouseenter', positionAndShow);
+                    el.addEventListener('mouseleave', () => {
+                        tooltipPortal.classList.remove('visible');
+                    });
+                    
+                    // Touch support: tap to toggle
+                    el.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        if (tooltipPortal.classList.contains('visible')) {
+                            tooltipPortal.classList.remove('visible');
+                        } else {
+                            positionAndShow();
+                        }
+                    }, { passive: false });
+                });
+                
+                // Close tooltip when tapping elsewhere (mobile)
+                container.addEventListener('click', (e) => {
+                    if (!e.target.closest('[data-tooltip-html]')) {
+                        tooltipPortal.classList.remove('visible');
+                    }
                 });
             }
             
