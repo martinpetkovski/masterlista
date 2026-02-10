@@ -937,7 +937,6 @@
                         <div class="tracklist-title">${escHtml(playlist.name || 'Playlist')}</div>
                         <div class="tracklist-meta">${metaText}</div>
                     </div>
-                    <a href="${playlistUrl}" target="_blank" rel="noopener" class="tracklist-play-all" onclick="event.stopPropagation();"><i class="fas fa-play"></i> Пушти</a>
                 </a>
                 <ul class="tracklist-list">${trackItems}</ul>
                 ${buildPlaylistLink(playlistUrl)}
@@ -1148,7 +1147,6 @@
                 </div>
 
                 ${playlistUrls.length > 0 ? `
-                    <div class="curator-section-title"><i class="fas fa-music"></i> Плејлисти</div>
                     ${playlistContent}
                 ` : ''}
 
