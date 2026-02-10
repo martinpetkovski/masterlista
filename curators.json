@@ -1,17 +1,6 @@
 {
     "curators": [
         {
-            "name": "Мартин Петковски",
-            "image": "https://www.najjak.com/header.gif",
-            "links": [
-                "https://www.instagram.com/najnajjak/"
-            ],
-            "relevance": ["Sioto Jazz (гитара)", "GURUVOODOO (вокал)"],
-            "playlists": [
-                "https://open.spotify.com/playlist/5EJWmmTZ854nPUi1lTSg5O?si=db772d8d61f84999"
-            ]
-        },
-        {
             "name": "Петар Котевски",
             "image": "",
             "links": [
@@ -20,6 +9,16 @@
             "relevance": ["Funerals on Monday (кант-автор)"],
             "playlists": [
                 "https://www.deezer.com/playlist/14897847623"
+            ]
+        },{
+            "name": "Мартин Петковски",
+            "image": "https://www.najjak.com/header.gif",
+            "links": [
+                "https://www.instagram.com/najnajjak/"
+            ],
+            "relevance": ["Sioto Jazz (гитара)", "GURUVOODOO (вокал)"],
+            "playlists": [
+                "https://open.spotify.com/playlist/5EJWmmTZ854nPUi1lTSg5O?si=db772d8d61f84999"
             ]
         }
     ]
