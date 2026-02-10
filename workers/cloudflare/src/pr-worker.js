@@ -166,6 +166,51 @@ export default {
       }
     }
 
+    // ==================== AUDIO PREVIEW PROXY ====================
+    // Proxies Deezer preview MP3s to avoid OpaqueResponseBlocking / CORS issues
+    if (request.method === 'GET' && url.pathname === '/audio-proxy') {
+      const audioUrl = url.searchParams.get('url');
+      if (!audioUrl) {
+        return json({ error: 'Missing "url" query parameter' }, 400, corsHeaders);
+      }
+      let parsedAudio;
+      try { parsedAudio = new URL(audioUrl); } catch {
+        return json({ error: 'Invalid audio URL' }, 400, corsHeaders);
+      }
+      // Only allow Deezer CDN domains
+      const allowedAudioHosts = ['cdnt-preview.dzcdn.net', 'cdns-preview-d.dzcdn.net', 'cdns-preview-e.dzcdn.net', 'cdns-preview.dzcdn.net'];
+      if (!allowedAudioHosts.some(h => parsedAudio.hostname === h || parsedAudio.hostname.endsWith('.dzcdn.net'))) {
+        return json({ error: 'Audio host not allowed' }, 403, corsHeaders);
+      }
+      // Rate limit: 60 req/min per IP
+      const audioIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const audioRl = rateLimitCheck('audio:' + audioIp, 60, 60000);
+      if (!audioRl.allowed) {
+        return json({ error: 'Rate limit exceeded' }, 429, corsHeaders);
+      }
+      try {
+        const audioResp = await fetch(audioUrl, {
+          headers: { 'User-Agent': 'TopListaMK-AudioProxy/1.0' },
+          cf: { cacheTtl: 86400, cacheEverything: true },
+        });
+        if (!audioResp.ok) {
+          return new Response(null, { status: audioResp.status, headers: corsHeaders });
+        }
+        const audioBody = audioResp.body;
+        return new Response(audioBody, {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': audioResp.headers.get('Content-Type') || 'audio/mpeg',
+            'Cache-Control': 'public, max-age=86400',
+            'Accept-Ranges': 'bytes',
+          },
+        });
+      } catch (e) {
+        return json({ error: 'Failed to fetch audio', detail: e.message }, 502, corsHeaders);
+      }
+    }
+
     if (request.method !== 'POST') {
       return json({ error: 'Method Not Allowed' }, 405, corsHeaders);
     }

@@ -1123,6 +1123,11 @@
         }
 
         // ==================== AUDIO PLAYER ====================
+        const AUDIO_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/audio-proxy';
+        function proxyAudioUrl(url) {
+            if (url && url.includes('.dzcdn.net')) return `${AUDIO_PROXY}?url=${encodeURIComponent(url)}`;
+            return url;
+        }
         const audioPlayer = document.getElementById('audio-player');
         const miniPlayer = document.getElementById('mini-player');
         const miniPlayerArt = document.getElementById('mini-player-art');
@@ -1154,7 +1159,7 @@
             currentPlaylist = playlist || [];
             currentTrackIndex = index >= 0 ? index : -1;
 
-            audioPlayer.src = track.previewUrl;
+            audioPlayer.src = proxyAudioUrl(track.previewUrl);
             audioPlayer.play().catch(() => {});
 
             // Show mini player
