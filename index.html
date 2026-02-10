@@ -3047,12 +3047,17 @@
              * For each release, computes the chart position (within its type) per week.
              * releaseHistoryMap: releaseId -> [{ weekId, popularity, singlesPos, albumsPos }]
              */
-            function buildReleaseHistoryMap(historyWeeks) {
+            function buildReleaseHistoryMap(historyWeeks, genreFilter = 'all', cityFilter = 'all') {
                 const map = new Map();
                 
                 historyWeeks.forEach(({ weekId, releases }) => {
                     // Deduplicate collabs
                     const deduped = deduplicateCollabs(releases);
+                    
+                    // Apply genre/city filters
+                    const filtered = deduped.filter(r => 
+                        artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
+                    );
                     
                     const sortByPop = (a, b) => (b.popularity || 0) - (a.popularity || 0);
                     const singlesFilter = r => r.releaseType === 'single';
@@ -3060,7 +3065,7 @@
                     
                     // Build ranked lists
                     // Use same logic as applyFilters: last 2 months pool, sort by popularity
-                    const byDate = [...deduped].sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                    const byDate = [...filtered].sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
                     const cutoff = new Date();
                     cutoff.setMonth(cutoff.getMonth() - 2);
                     const cutoffStr = cutoff.toISOString().slice(0, 10);
@@ -3086,7 +3091,7 @@
                     rankedAlbums.forEach((r, i) => albumsPosMap.set(r.releaseId, i + 1));
                     
                     // Store per-release data
-                    deduped.forEach(r => {
+                    filtered.forEach(r => {
                         if (!map.has(r.releaseId)) map.set(r.releaseId, []);
                         map.get(r.releaseId).push({
                             weekId,
@@ -3278,13 +3283,18 @@
             }
             
             // Build a lookup map for previous chart positions
-            function buildPreviousChartMap(previousReleases, filterFn, sortFn, deduplicateFn) {
+            function buildPreviousChartMap(previousReleases, filterFn, sortFn, deduplicateFn, genreFilter = 'all', cityFilter = 'all') {
                 if (!previousReleases || previousReleases.length === 0) return {};
                 
                 // Deduplicate collabs in previous data too
                 const dedupedReleases = deduplicateFn ? deduplicateFn(previousReleases) : previousReleases;
                 
-                const releasesSortedByDate = [...dedupedReleases].sort((a, b) => 
+                // Apply genre/city filters
+                const genreCityFiltered = dedupedReleases.filter(r =>
+                    artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
+                );
+                
+                const releasesSortedByDate = [...genreCityFiltered].sort((a, b) => 
                     new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
                 );
                 
@@ -3697,10 +3707,15 @@
                         latestHeader.innerHTML = '<i class="fas fa-clock"></i> Најнови';
                     }
                     
-                    // Build previous chart maps for comparison
+                    // Build previous chart maps for comparison (with genre/city filters)
                     const prevReleases = previousChartData?.releases || [];
-                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs);
-                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs);
+                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs, genre, city);
+                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs, genre, city);
+                    
+                    // Rebuild history map with current genre/city filters for tooltips
+                    if (chartHistoryWeeks.length > 0) {
+                        releaseHistoryMap = buildReleaseHistoryMap(chartHistoryWeeks, genre, city);
+                    }
                     
                     renderChart('singles-chart', topSingles, prevSinglesMap, false);
                     renderChart('albums-chart', topAlbums, prevAlbumsMap, false);
