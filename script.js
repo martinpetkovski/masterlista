@@ -315,10 +315,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }));
             allArticles.sort((a, b) => b.pubDate - a.pubDate);
             cachedRssArticles = allArticles;
+            invalidateArticleMatchCache();
             return allArticles;
         } catch (err) {
             console.warn('Failed to load articles:', err);
             cachedRssArticles = [];
+            invalidateArticleMatchCache();
             return [];
         }
     }
@@ -329,9 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * against article titles and content (case-insensitive).
      * Returns matches sorted by date (latest first).
      */
+    // Cache for findMatchingArticles results (cleared when RSS data changes)
+    let articleMatchCache = new Map();
+    function invalidateArticleMatchCache() { articleMatchCache = new Map(); }
+
     function findMatchingArticles(bandName) {
         if (!cachedRssArticles || cachedRssArticles.length === 0) return [];
         if (!bandName) return [];
+        if (articleMatchCache.has(bandName)) return articleMatchCache.get(bandName);
         
         // Capitalize helper: first letter uppercase unless starts with digit
         function capitalize(s) {
@@ -363,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
         });
         
-        return cachedRssArticles.filter(article => {
+        const results = cachedRssArticles.filter(article => {
             const searchIn = article.title + ' ' + article.description + ' ' + article.content;
             
             for (const regex of termRegexes) {
@@ -371,6 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return false;
         });
+        articleMatchCache.set(bandName, results);
+        return results;
     }
     
     // Start loading RSS feeds early (non-blocking)
@@ -1376,6 +1385,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('clear-filters').addEventListener('click', () => {
             console.log('Clear filters clicked');
             document.getElementById('search-name').value = '';
+            const mobileInput = document.getElementById('mobile-search-input');
+            if (mobileInput) mobileInput.value = '';
+            const clearBtn = document.getElementById('mobile-search-clear');
+            if (clearBtn) clearBtn.classList.remove('visible');
             $('#filter-city').val('').trigger('change');
             $('#filter-genre').val('').trigger('change');
             $('#filter-sounds-like').val('').trigger('change');
@@ -1390,6 +1403,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const isActive = controls.classList.contains('active');
             document.getElementById('toggle-filters').innerHTML = `<i class="fas ${isActive ? 'fa-times' : 'fa-filter'}"></i>`;
         });
+        // Mobile unified search bar
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        const mobileSearchClear = document.getElementById('mobile-search-clear');
+        if (mobileSearchInput) {
+            let mobileSearchTimer = null;
+            mobileSearchInput.addEventListener('input', () => {
+                const val = mobileSearchInput.value;
+                // Sync to desktop search-name
+                document.getElementById('search-name').value = val;
+                // Show/hide clear button
+                if (mobileSearchClear) {
+                    mobileSearchClear.classList.toggle('visible', val.length > 0);
+                }
+                // Debounced filter (capped for speed)
+                if (mobileSearchTimer) clearTimeout(mobileSearchTimer);
+                mobileSearchTimer = setTimeout(filterBandsFromSearch, SEARCH_DEBOUNCE_MS);
+            });
+            if (mobileSearchClear) {
+                mobileSearchClear.addEventListener('click', () => {
+                    mobileSearchInput.value = '';
+                    document.getElementById('search-name').value = '';
+                    mobileSearchClear.classList.remove('visible');
+                    filterBands();
+                });
+            }
+        }
     }
 
     // Autocomplete data cache
@@ -2215,9 +2254,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cache for pre-computed band data to avoid repeated string operations
     let bandDataCache = null;
     
+    // Pre-built name→index map to avoid O(n) findIndex per row
+    let bandIndexMap = null;
+    function buildBandIndexMap() {
+        if (bandIndexMap && bandIndexMap.size === bandsData.length) return bandIndexMap;
+        bandIndexMap = new Map();
+        for (let i = 0; i < bandsData.length; i++) {
+            const b = bandsData[i];
+            bandIndexMap.set(b.name + '|' + b.city + '|' + b.genre, i);
+        }
+        return bandIndexMap;
+    }
+    
     // Debounce timer for search input
     let searchDebounceTimer = null;
-    const SEARCH_DEBOUNCE_MS = 150;
+    const SEARCH_DEBOUNCE_MS = 120;
+    
+    // Max rows to render during active search (for responsiveness)
+    const SEARCH_RENDER_CAP = 80;
     
     // Build optimized cache for band data
     function buildBandDataCache() {
@@ -2253,7 +2307,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 soundsLikeArray: soundsLike,
                 labels: new Set(labels),
                 labelsArray: labels,
-                status: getActivityStatus(band.name)
+                status: getActivityStatus(band.name),
+                // Unified search string for mobile: name + city + genre + label + soundsLike
+                searchAll: [nameLower, nameLatinFull, nameLatinShort, ...cities.map(c => c.toLowerCase()), ...genres.map(g => g.toLowerCase()), ...soundsLike.map(s => s.toLowerCase()), ...labels.map(l => l.toLowerCase())].join(' ')
             };
         });
         
@@ -2263,6 +2319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Invalidate cache when bands data changes
     function invalidateBandCache() {
         bandDataCache = null;
+        bandIndexMap = null;
     }
     
     // Flag to prevent recursive filtering during option updates
@@ -2483,8 +2540,9 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Core filtering logic shared by search and dropdown paths.
      * @param {boolean} updateDropdowns - Whether to recalculate dropdown option counts
+     * @param {boolean} capResults - Whether to cap rendered results for responsiveness
      */
-    function filterBandsCore(updateDropdowns) {
+    function filterBandsCore(updateDropdowns, capResults) {
         if (isUpdatingFilters) return;
         
         const cache = buildBandDataCache();
@@ -2493,6 +2551,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchName = filters.searchName;
         const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
         const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
+        
+        // Detect if mobile search bar is being used (unified search across all fields)
+        const mobileInput = document.getElementById('mobile-search-input');
+        const isMobileUnifiedSearch = mobileInput && mobileInput.value.length > 0 && window.innerWidth <= 600;
         
         const hasCity = !!filters.city;
         const hasGenre = !!filters.genre;
@@ -2504,15 +2566,25 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0, len = cache.length; i < len; i++) {
             const cached = cache[i];
             
-            // Name filter — check cheapest comparisons first
+            // Name filter — on mobile, search across all fields (name, genre, city, etc.)
             if (searchName) {
-                if (!(
-                    cached.nameLower.includes(searchName) ||
-                    cached.nameLatinFull.includes(searchNameLatinFull) ||
-                    cached.nameLatinShort.includes(searchNameLatinShort) ||
-                    cached.nameLatinFull.includes(searchNameLatinShort) ||
-                    cached.nameLatinShort.includes(searchNameLatinFull)
-                )) continue;
+                if (isMobileUnifiedSearch) {
+                    // Unified mobile search: match any field
+                    if (!(
+                        cached.searchAll.includes(searchName) ||
+                        cached.searchAll.includes(searchNameLatinFull) ||
+                        cached.searchAll.includes(searchNameLatinShort)
+                    )) continue;
+                } else {
+                    // Desktop: only match name
+                    if (!(
+                        cached.nameLower.includes(searchName) ||
+                        cached.nameLatinFull.includes(searchNameLatinFull) ||
+                        cached.nameLatinShort.includes(searchNameLatinShort) ||
+                        cached.nameLatinFull.includes(searchNameLatinShort) ||
+                        cached.nameLatinShort.includes(searchNameLatinFull)
+                    )) continue;
+                }
             }
             
             if (hasCity && !cached.cities.has(filters.city)) continue;
@@ -2534,7 +2606,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        renderBands(filteredBands);
+        // When search is active, cap rendered results for snappy typing
+        const cap = (capResults && searchName) ? SEARCH_RENDER_CAP : 0;
+        renderBands(filteredBands, { cap });
     }
     
     /** Called when a dropdown filter changes — update options + render */
@@ -2542,9 +2616,9 @@ document.addEventListener('DOMContentLoaded', () => {
         filterBandsCore(true);
     }
     
-    /** Called on search text input — skip dropdown option updates for speed */
+    /** Called on search text input — skip dropdown option updates for speed, cap results */
     function filterBandsFromSearch() {
-        filterBandsCore(false);
+        filterBandsCore(false, true);
     }
     
     // Debounced filter for search input
@@ -2557,10 +2631,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let renderAbortController = null; // To cancel progressive renders when a new render starts
 
-    function renderBands(bands, { progressive = false, chunkSize = 20 } = {}) {
-        console.log(`Rendering ${bands.length} bands${progressive ? ' (progressive)' : ''}`);
+    function renderBands(bands, { progressive = false, chunkSize = 20, cap = 0 } = {}) {
+        console.log(`Rendering ${bands.length} bands${progressive ? ' (progressive)' : ''}${cap ? ' (capped at ' + cap + ')' : ''}`);
         const bandTableBody = document.getElementById('band-table-body');
         bandTableBody.innerHTML = '';
+        
+        // Build index map for fast lookups
+        buildBandIndexMap();
         
         // Cancel any in-progress progressive render
         if (renderAbortController) {
@@ -2568,11 +2645,30 @@ document.addEventListener('DOMContentLoaded', () => {
             renderAbortController = null;
         }
         
-        if (!progressive || bands.length <= chunkSize) {
-            // Render all at once (used by filtering, small datasets)
-            bands.forEach((band, displayIndex) => {
-                renderSingleBandRow(band, bandTableBody);
-            });
+        // Apply cap (for search responsiveness)
+        const totalCount = bands.length;
+        const renderBands_ = (cap > 0 && bands.length > cap) ? bands.slice(0, cap) : bands;
+        const wasCapped = cap > 0 && totalCount > cap;
+        
+        if (!progressive || renderBands_.length <= chunkSize) {
+            // Render all at once using DocumentFragment (used by filtering, small datasets)
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < renderBands_.length; i++) {
+                renderSingleBandRow(renderBands_[i], fragment);
+            }
+            bandTableBody.appendChild(fragment);
+            
+            // If capped, show indicator and schedule full render
+            if (wasCapped) {
+                const infoRow = document.createElement('tr');
+                infoRow.className = 'search-cap-row';
+                infoRow.innerHTML = `<td colspan="8" style="text-align:center;padding:12px;color:var(--text-secondary);font-size:0.82rem;">Прикажани ${cap} од ${totalCount} резултати. <a href="#" style="color:var(--accent-blue);cursor:pointer;">Прикажи ги сите</a></td>`;
+                infoRow.querySelector('a').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    renderBands(bands); // re-render without cap
+                });
+                bandTableBody.appendChild(infoRow);
+            }
             return;
         }
         
@@ -2583,12 +2679,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         function renderChunk() {
             if (signal.aborted) return;
-            const end = Math.min(offset + chunkSize, bands.length);
+            const end = Math.min(offset + chunkSize, renderBands_.length);
+            const fragment = document.createDocumentFragment();
             for (let i = offset; i < end; i++) {
-                renderSingleBandRow(bands[i], bandTableBody);
+                renderSingleBandRow(renderBands_[i], fragment);
             }
+            bandTableBody.appendChild(fragment);
             offset = end;
-            if (offset < bands.length) {
+            if (offset < renderBands_.length) {
                 requestAnimationFrame(renderChunk);
             } else {
                 renderAbortController = null;
@@ -2598,7 +2696,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function renderSingleBandRow(band, bandTableBody) {
-            const originalIndex = bandsData.findIndex(b => b.name === band.name && b.city === band.city && b.genre === band.genre);
+            const key = band.name + '|' + band.city + '|' + band.genre;
+            const originalIndex = bandIndexMap ? (bandIndexMap.get(key) ?? -1) : bandsData.findIndex(b => b.name === band.name && b.city === band.city && b.genre === band.genre);
             const bandRow = document.createElement('tr');
             // Only show accent colors for confirmed artists
             if (band.confirmed && band.accentColors && (band.accentColors[0] || band.accentColors[1])) {

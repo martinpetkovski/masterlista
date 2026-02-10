@@ -303,6 +303,7 @@ header p {
 .header-btn.request-change:disabled { opacity: 0.5; cursor: not-allowed; transform: none; animation: none; }
 
 .toggle-filters-btn { display: none; }
+.mobile-search-bar { display: none; }
 
 /* Main */
 main {
