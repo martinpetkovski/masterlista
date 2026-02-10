@@ -148,6 +148,8 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            height: 100%;
+            box-sizing: border-box;
         }
 
         .custos-card:hover {
@@ -304,13 +306,99 @@
         .custos-embed {
             border-radius: 12px;
             overflow: hidden;
+            flex: 1;
         }
 
         .custos-embed iframe {
             display: block;
             width: 100%;
+            height: 100%;
+            min-height: 352px;
             border: none;
             border-radius: 12px;
+        }
+
+        /* Playlist panel should also grow */
+        .custos-playlist-panel.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        /* Playlist tabs */
+        .custos-playlist-tabs {
+            display: flex;
+            gap: 0.35rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .custos-playlist-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.08);
+            background: #f3f4f6;
+            color: #555;
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            user-select: none;
+        }
+
+        .custos-playlist-tab:hover {
+            background: #e8eaed;
+        }
+
+        .custos-playlist-tab.active {
+            background: #5b8fb9;
+            color: #fff;
+            border-color: #5b8fb9;
+        }
+
+        .custos-playlist-tab i {
+            font-size: 0.85rem;
+        }
+
+        .custos-playlist-tab.spotify i { color: #1DB954; }
+        .custos-playlist-tab.youtube i { color: #FF0000; }
+        .custos-playlist-tab.apple i { color: #FA243C; }
+        .custos-playlist-tab.tidal i { color: #000; }
+        .custos-playlist-tab.deezer i { color: #A238FF; }
+        .custos-playlist-tab.soundcloud i { color: #FF5500; }
+        .custos-playlist-tab.default i { color: #5b8fb9; }
+
+        .custos-playlist-tab.active i { color: #fff; }
+
+        body.dark-mode .custos-playlist-tab {
+            background: #2a2d36;
+            border-color: rgba(255,255,255,0.06);
+            color: #aaa;
+        }
+
+        body.dark-mode .custos-playlist-tab:hover {
+            background: #333640;
+        }
+
+        body.dark-mode .custos-playlist-tab.active {
+            background: #5b8fb9;
+            color: #fff;
+            border-color: #5b8fb9;
+        }
+
+        body.dark-mode .custos-playlist-tab.tidal i { color: #fff; }
+        body.dark-mode .custos-playlist-tab.active i { color: #fff; }
+
+        .custos-playlist-panel {
+            display: none;
+        }
+
+        .custos-playlist-panel.active {
+            display: block;
         }
 
         /* Playlist link fallback */
@@ -375,6 +463,21 @@
 
         body.dark-mode .custos-playlist-link .pl-arrow {
             color: #666;
+        }
+
+        /* Push playlist link to bottom of card */
+        .custos-playlist-link {
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        /* Playlist body wrapper – fills remaining card space */
+        .custos-playlist-body {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.5rem;
+            min-height: 0;
         }
 
         /* ==================== LOADING / EMPTY / NO-RESULTS ==================== */
@@ -610,6 +713,25 @@
                 return `<div class="custos-embed"><iframe src="https://w.soundcloud.com/player/?url=${encoded}&color=%235b8fb9&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false" height="380" allow="autoplay" loading="lazy"></iframe></div>`;
             }
 
+            // Deezer: playlist, album, track
+            const deezerMatch = url.match(/deezer\.com\/(playlist|album|track)\/([a-zA-Z0-9]+)/);
+            if (deezerMatch) {
+                const [, type, id] = deezerMatch;
+                const h = type === 'track' ? 150 : 400;
+                const darkTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+                return `<div class="custos-embed"><iframe src="https://widget.deezer.com/widget/${darkTheme}/${type}/${id}" height="${h}" allow="encrypted-media; clipboard-write" loading="lazy"></iframe></div>`;
+            }
+
+            // Tidal: playlist, album, track, video
+            const tidalMatch = url.match(/tidal\.com\/(?:browse\/)?(playlist|album|track|video)\/([a-zA-Z0-9-]+)/);
+            if (tidalMatch) {
+                const [, type, id] = tidalMatch;
+                const typeMap = { playlist: 'playlists', album: 'albums', track: 'tracks', video: 'videos' };
+                const embedType = typeMap[type] || type;
+                const h = type === 'track' ? 150 : 400;
+                return `<div class="custos-embed"><iframe src="https://embed.tidal.com/${embedType}/${id}" height="${h}" allow="encrypted-media" loading="lazy"></iframe></div>`;
+            }
+
             // No embeddable service detected
             return null;
         }
@@ -682,6 +804,9 @@
                 gridEl.style.display = '';
                 gridEl.innerHTML = curators.map(c => renderCard(c)).join('');
 
+                // Tab switching for multi-playlist cards
+                initPlaylistTabs(gridEl);
+
                 // Search
                 initSearch(curators);
             } catch (err) {
@@ -738,15 +863,34 @@
                 })
                 .join('');
 
-            // Playlist: embed first, fallback link always shown below
+            // Playlists: support array (playlists) or legacy single string (playlist)
+            const playlistUrls = c.playlists || (c.playlist ? [c.playlist] : []);
             let playlistHtml = '';
-            if (c.playlist) {
-                const embed = buildPlaylistEmbed(c.playlist);
+            if (playlistUrls.length === 1) {
+                // Single playlist – no tabs needed
+                const url = playlistUrls[0];
+                const embed = buildPlaylistEmbed(url);
                 if (embed) {
-                    playlistHtml = embed + buildPlaylistLink(c.playlist);
+                    playlistHtml = `<div class="custos-playlist-body">${embed}${buildPlaylistLink(url)}</div>`;
                 } else {
-                    playlistHtml = buildPlaylistLink(c.playlist);
+                    playlistHtml = buildPlaylistLink(url);
                 }
+            } else if (playlistUrls.length > 1) {
+                // Multiple playlists – tabbed interface
+                const cardId = 'pl-' + Math.random().toString(36).slice(2, 8);
+                let tabs = '<div class="custos-playlist-tabs">';
+                let panels = '';
+                playlistUrls.forEach((url, i) => {
+                    const info = detectLinkInfo(url);
+                    const cls = info.label.toLowerCase().replace(/[\s\/]/g, '-');
+                    const activeClass = i === 0 ? ' active' : '';
+                    tabs += `<button class="custos-playlist-tab ${cls}${activeClass}" data-tab-group="${cardId}" data-tab-index="${i}"><i class="${info.icon}"></i> ${info.label}</button>`;
+                    const embed = buildPlaylistEmbed(url);
+                    const link = buildPlaylistLink(url);
+                    panels += `<div class="custos-playlist-panel${activeClass}" data-tab-group="${cardId}" data-panel-index="${i}">${embed || ''}${link}</div>`;
+                });
+                tabs += '</div>';
+                playlistHtml = `<div class="custos-playlist-body">${tabs}${panels}</div>`;
             }
 
             // searchable data attribute
@@ -766,6 +910,25 @@
                     </div>
                     ${playlistHtml}
                 </div>`;
+        }
+
+        // ==================== PLAYLIST TABS ====================
+        function initPlaylistTabs(container) {
+            container.addEventListener('click', (e) => {
+                const tab = e.target.closest('.custos-playlist-tab');
+                if (!tab) return;
+                const group = tab.dataset.tabGroup;
+                const index = tab.dataset.tabIndex;
+
+                // Deactivate all tabs & panels in this group
+                container.querySelectorAll(`.custos-playlist-tab[data-tab-group="${group}"]`).forEach(t => t.classList.remove('active'));
+                container.querySelectorAll(`.custos-playlist-panel[data-tab-group="${group}"]`).forEach(p => p.classList.remove('active'));
+
+                // Activate selected
+                tab.classList.add('active');
+                const panel = container.querySelector(`.custos-playlist-panel[data-tab-group="${group}"][data-panel-index="${index}"]`);
+                if (panel) panel.classList.add('active');
+            });
         }
 
         // ==================== SEARCH ====================
