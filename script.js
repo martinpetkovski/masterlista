@@ -1051,10 +1051,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadBandsData() {
         const loadingBar = document.getElementById('loading-bar');
         const controls = document.querySelector('.controls');
+        const searchInput = document.getElementById('search-name');
         try {
             console.log('Loading bands data...');
             loadingBar.classList.add('active');
-            controls.style.display = 'none';
+            // Disable controls while loading (keep visible)
+            searchInput.disabled = true;
+            searchInput.placeholder = 'Се вчитува...';
+            controls.querySelectorAll('select, button').forEach(el => el.disabled = true);
             
             // Check for pending changes in localStorage
             const pendingChanges = loadPendingChanges();
@@ -1126,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         localStorage.removeItem(STORAGE_KEY);
                         updateSubmitButtonState();
                         invalidateBandCache();
-                        renderTable();
+                        renderBands(bandsData);
                         // Remove notification
                         if (notification.parentNode) notification.parentNode.removeChild(notification);
                         showNotification('Зачуваните промени се отфрлени.', 'info', 3000);
@@ -1259,7 +1263,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } finally {
             loadingBar.classList.remove('active');
-            controls.style.display = '';
+            // Re-enable controls
+            searchInput.disabled = false;
+            searchInput.placeholder = 'Пребарај по име...';
+            controls.querySelectorAll('select, button').forEach(el => el.disabled = false);
         }
     }
 
@@ -2273,122 +2280,116 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     
-    // Filter bands with a specific filter excluded (for updating that filter's options)
-    function getFilteredBandsExcluding(excludeFilter) {
+    /**
+     * Single-pass approach: compute available filter options for all dropdowns
+     * by checking, for each cached band, which filters it WOULD pass if a
+     * specific filter were excluded. Instead of 5 separate full-array passes,
+     * we do ONE pass and accumulate counts per filter group.
+     */
+    function computeAllFilterOptionCounts(filters, searchName, searchNameLatinFull, searchNameLatinShort) {
         const cache = buildBandDataCache();
-        const filters = getCurrentFilters();
-        
-        const searchName = filters.searchName;
-        const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
-        const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
-        
-        return cache.filter(cached => {
-            // Name filter (never excluded)
+        const hasCity = !!filters.city;
+        const hasGenre = !!filters.genre;
+        const hasSoundsLike = !!filters.soundsLike;
+        const hasStatus = !!filters.status;
+        const hasLabel = !!filters.label;
+
+        const cityCounts = {};
+        const genreCounts = {};
+        const soundsLikeCounts = {};
+        const statusCounts = {};
+        const labelCounts = {};
+
+        for (let i = 0, len = cache.length; i < len; i++) {
+            const cached = cache[i];
+
+            // Name filter always applies
             if (searchName) {
-                const matchesName = (
+                if (!(
                     cached.nameLower.includes(searchName) ||
                     cached.nameLatinFull.includes(searchNameLatinFull) ||
                     cached.nameLatinShort.includes(searchNameLatinShort) ||
                     cached.nameLatinFull.includes(searchNameLatinShort) ||
                     cached.nameLatinShort.includes(searchNameLatinFull)
-                );
-                if (!matchesName) return false;
+                )) continue;
             }
-            
-            // City filter
-            if (excludeFilter !== 'city' && filters.city) {
-                if (!cached.cities.has(filters.city)) return false;
+
+            // Pre-compute which dropdown filters this item passes
+            const passCity = !hasCity || cached.cities.has(filters.city);
+            const passGenre = !hasGenre || cached.genres.has(filters.genre);
+            const passSoundsLike = !hasSoundsLike || cached.soundsLike.has(filters.soundsLike);
+            const passStatus = !hasStatus || cached.status === filters.status;
+            const passLabel = !hasLabel || cached.labels.has(filters.label);
+
+            // For each filter, count options from items that pass ALL OTHER filters
+            if (passGenre && passSoundsLike && passStatus && passLabel) {
+                for (let j = 0; j < cached.citiesArray.length; j++) {
+                    const v = cached.citiesArray[j];
+                    cityCounts[v] = (cityCounts[v] || 0) + 1;
+                }
             }
-            
-            // Genre filter
-            if (excludeFilter !== 'genre' && filters.genre) {
-                if (!cached.genres.has(filters.genre)) return false;
+            if (passCity && passSoundsLike && passStatus && passLabel) {
+                for (let j = 0; j < cached.genresArray.length; j++) {
+                    const v = cached.genresArray[j];
+                    genreCounts[v] = (genreCounts[v] || 0) + 1;
+                }
             }
-            
-            // Sounds like filter
-            if (excludeFilter !== 'soundsLike' && filters.soundsLike) {
-                if (!cached.soundsLike.has(filters.soundsLike)) return false;
+            if (passCity && passGenre && passStatus && passLabel) {
+                for (let j = 0; j < cached.soundsLikeArray.length; j++) {
+                    const v = cached.soundsLikeArray[j];
+                    soundsLikeCounts[v] = (soundsLikeCounts[v] || 0) + 1;
+                }
             }
-            
-            // Status filter
-            if (excludeFilter !== 'status' && filters.status) {
-                if (cached.status !== filters.status) return false;
+            if (passCity && passGenre && passSoundsLike && passLabel) {
+                const v = cached.status;
+                statusCounts[v] = (statusCounts[v] || 0) + 1;
             }
-            
-            // Label filter
-            if (excludeFilter !== 'label' && filters.label) {
-                if (!cached.labels.has(filters.label)) return false;
+            if (passCity && passGenre && passSoundsLike && passStatus) {
+                for (let j = 0; j < cached.labelsArray.length; j++) {
+                    const v = cached.labelsArray[j];
+                    labelCounts[v] = (labelCounts[v] || 0) + 1;
+                }
             }
-            
-            return true;
-        });
+        }
+
+        return { cityCounts, genreCounts, soundsLikeCounts, statusCounts, labelCounts };
     }
     
-    // Update a single filter's options based on available data
-    function updateFilterOptions(filterId, selectElement, getValuesFromCached, currentValue) {
-        const filteredData = getFilteredBandsExcluding(filterId);
-        const counts = {};
-        
-        filteredData.forEach(cached => {
-            const values = getValuesFromCached(cached);
-            values.forEach(val => {
-                counts[val] = (counts[val] || 0) + 1;
-            });
-        });
-        
-        // Sort by transliterated name
+    // Update a single select element from pre-computed counts
+    function updateFilterSelect(selectElement, counts, currentValue) {
         const sortedValues = Object.keys(counts).sort((a, b) => 
             transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en')
         );
         
-        // Build new options array
-        const newOptions = sortedValues.map(val => ({
-            value: val,
-            text: `${val} (${counts[val]})`
-        }));
+        // Quick diff: compare serialized options to avoid unnecessary DOM writes
+        const newSig = sortedValues.map(v => v + '(' + counts[v] + ')').join('|');
+        if (selectElement._optionSig === newSig) return;
+        selectElement._optionSig = newSig;
         
-        // Check if we need to update (compare values only)
-        const currentOptionValues = Array.from(selectElement.options)
-            .slice(1) // Skip empty option
-            .map(o => o.value)
-            .join('|');
-        const newOptionValues = sortedValues.join('|');
+        selectElement.innerHTML = '<option value=""></option>' +
+            sortedValues.map(v => `<option value="${v}">${v} (${counts[v]})</option>`).join('');
         
-        // Also check if counts changed
-        const currentOptionTexts = Array.from(selectElement.options)
-            .slice(1)
-            .map(o => o.text)
-            .join('|');
-        const newOptionTexts = newOptions.map(o => o.text).join('|');
-        
-        if (currentOptionValues !== newOptionValues || currentOptionTexts !== newOptionTexts) {
-            // Build new HTML
-            const newHtml = '<option value=""></option>' +
-                newOptions.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
-            
-            selectElement.innerHTML = newHtml;
-            
-            // Restore value if it still exists in options
-            if (currentValue && counts[currentValue]) {
-                selectElement.value = currentValue;
-            }
+        if (currentValue && counts[currentValue]) {
+            selectElement.value = currentValue;
         }
     }
     
-    // Update all filter dropdowns based on current selection
-    function updateAllFilterOptions() {
-        const filters = getCurrentFilters();
+    // Update all filter dropdowns in a single pass
+    function updateAllFilterOptions(filters, searchName, searchNameLatinFull, searchNameLatinShort) {
+        if (!filters) filters = getCurrentFilters();
+        if (searchName === undefined) {
+            searchName = filters.searchName;
+            searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
+            searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
+        }
         
-        updateFilterOptions('city', document.getElementById('filter-city'), 
-            cached => cached.citiesArray, filters.city);
-        updateFilterOptions('genre', document.getElementById('filter-genre'),
-            cached => cached.genresArray, filters.genre);
-        updateFilterOptions('soundsLike', document.getElementById('filter-sounds-like'),
-            cached => cached.soundsLikeArray, filters.soundsLike);
-        updateFilterOptions('status', document.getElementById('filter-status'),
-            cached => [cached.status], filters.status);
-        updateFilterOptions('label', document.getElementById('filter-label'),
-            cached => cached.labelsArray, filters.label);
+        const allCounts = computeAllFilterOptionCounts(filters, searchName, searchNameLatinFull, searchNameLatinShort);
+        
+        updateFilterSelect(document.getElementById('filter-city'), allCounts.cityCounts, filters.city);
+        updateFilterSelect(document.getElementById('filter-genre'), allCounts.genreCounts, filters.genre);
+        updateFilterSelect(document.getElementById('filter-sounds-like'), allCounts.soundsLikeCounts, filters.soundsLike);
+        updateFilterSelect(document.getElementById('filter-status'), allCounts.statusCounts, filters.status);
+        updateFilterSelect(document.getElementById('filter-label'), allCounts.labelCounts, filters.label);
     }
     
     // Initial population of filters (full data, no filtering)
@@ -2479,11 +2480,13 @@ document.addEventListener('DOMContentLoaded', () => {
             labels.map(label => `<option value="${label}">${label} (${labelCounts[label] || 0})</option>`).join('');
     }
 
-    function filterBands() {
-        // Prevent recursive filtering during option updates
+    /**
+     * Core filtering logic shared by search and dropdown paths.
+     * @param {boolean} updateDropdowns - Whether to recalculate dropdown option counts
+     */
+    function filterBandsCore(updateDropdowns) {
         if (isUpdatingFilters) return;
         
-        console.log('Filtering bands');
         const cache = buildBandDataCache();
         const filters = getCurrentFilters();
         
@@ -2491,46 +2494,57 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
         const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
         
-        const filteredBands = cache.filter(cached => {
-            // Name filter
+        const hasCity = !!filters.city;
+        const hasGenre = !!filters.genre;
+        const hasSoundsLike = !!filters.soundsLike;
+        const hasStatus = !!filters.status;
+        const hasLabel = !!filters.label;
+        
+        const filteredBands = [];
+        for (let i = 0, len = cache.length; i < len; i++) {
+            const cached = cache[i];
+            
+            // Name filter — check cheapest comparisons first
             if (searchName) {
-                const matchesName = (
+                if (!(
                     cached.nameLower.includes(searchName) ||
                     cached.nameLatinFull.includes(searchNameLatinFull) ||
                     cached.nameLatinShort.includes(searchNameLatinShort) ||
                     cached.nameLatinFull.includes(searchNameLatinShort) ||
                     cached.nameLatinShort.includes(searchNameLatinFull)
-                );
-                if (!matchesName) return false;
+                )) continue;
             }
             
-            // City filter
-            if (filters.city && !cached.cities.has(filters.city)) return false;
+            if (hasCity && !cached.cities.has(filters.city)) continue;
+            if (hasGenre && !cached.genres.has(filters.genre)) continue;
+            if (hasSoundsLike && !cached.soundsLike.has(filters.soundsLike)) continue;
+            if (hasStatus && cached.status !== filters.status) continue;
+            if (hasLabel && !cached.labels.has(filters.label)) continue;
             
-            // Genre filter
-            if (filters.genre && !cached.genres.has(filters.genre)) return false;
-            
-            // Sounds like filter
-            if (filters.soundsLike && !cached.soundsLike.has(filters.soundsLike)) return false;
-            
-            // Status filter
-            if (filters.status && cached.status !== filters.status) return false;
-            
-            // Label filter
-            if (filters.label && !cached.labels.has(filters.label)) return false;
-            
-            return true;
-        }).map(cached => cached.band);
+            filteredBands.push(cached.band);
+        }
         
-        // Update filter dropdowns to show only available options (with guard flag)
-        isUpdatingFilters = true;
-        try {
-            updateAllFilterOptions();
-        } finally {
-            isUpdatingFilters = false;
+        // Only update dropdown option counts when a dropdown changed (expensive)
+        if (updateDropdowns) {
+            isUpdatingFilters = true;
+            try {
+                updateAllFilterOptions(filters, searchName, searchNameLatinFull, searchNameLatinShort);
+            } finally {
+                isUpdatingFilters = false;
+            }
         }
         
         renderBands(filteredBands);
+    }
+    
+    /** Called when a dropdown filter changes — update options + render */
+    function filterBands() {
+        filterBandsCore(true);
+    }
+    
+    /** Called on search text input — skip dropdown option updates for speed */
+    function filterBandsFromSearch() {
+        filterBandsCore(false);
     }
     
     // Debounced filter for search input
@@ -2538,7 +2552,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (searchDebounceTimer) {
             clearTimeout(searchDebounceTimer);
         }
-        searchDebounceTimer = setTimeout(filterBands, SEARCH_DEBOUNCE_MS);
+        searchDebounceTimer = setTimeout(filterBandsFromSearch, SEARCH_DEBOUNCE_MS);
     }
 
     let renderAbortController = null; // To cancel progressive renders when a new render starts

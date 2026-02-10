@@ -1229,8 +1229,38 @@
             currentTrackIndex = -1;
         });
 
+        // ==================== CYRILLIC TRANSLITERATION ====================
+        const cyrillicToLatinMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'Gj', 'ѓ': 'gj', 'Е': 'E', 'е': 'e', 'Ж': 'Zh', 'ж': 'zh',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'Dz', 'ѕ': 'dz', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'Kj', 'ќ': 'kj',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'Ch', 'ч': 'ch', 'Џ': 'Dz', 'џ': 'dz', 'Ш': 'Sh', 'ш': 'sh'
+        };
+        const cyrillicToLatinShorthandMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'G', 'ѓ': 'g', 'Е': 'E', 'е': 'e', 'Ж': 'Z', 'ж': 'z',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'D', 'ѕ': 'd', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'L', 'љ': 'l', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'N', 'њ': 'n', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'K', 'ќ': 'k',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'C', 'ч': 'c', 'Џ': 'D', 'џ': 'd', 'Ш': 'S', 'ш': 's'
+        };
+        function transliterateCyrToLat(text) {
+            return text.split('').map(ch => cyrillicToLatinMap[ch] || ch).join('');
+        }
+        function transliterateCyrToLatShort(text) {
+            return text.split('').map(ch => cyrillicToLatinShorthandMap[ch] || ch).join('');
+        }
+
         // ==================== BAND NAME LOOKUP ====================
         let bandNameSet = new Set();
+        // Pre-built lookup: lowercased latin variants -> original band name
+        let bandNameLookup = new Map();
 
         async function loadBandNames() {
             try {
@@ -1238,11 +1268,32 @@
                 const data = await resp.json();
                 const bands = data.muzickaMasterLista || [];
                 bands.forEach(b => {
-                    if (b.name) bandNameSet.add(b.name);
+                    if (!b.name) return;
+                    bandNameSet.add(b.name);
+                    const lower = b.name.toLowerCase();
+                    const latinFull = transliterateCyrToLat(b.name).toLowerCase();
+                    const latinShort = transliterateCyrToLatShort(b.name).toLowerCase();
+                    bandNameLookup.set(lower, b.name);
+                    if (!bandNameLookup.has(latinFull)) bandNameLookup.set(latinFull, b.name);
+                    if (!bandNameLookup.has(latinShort)) bandNameLookup.set(latinShort, b.name);
                 });
             } catch (err) {
                 console.warn('Failed to load bands.json for relevance linking:', err);
             }
+        }
+
+        /** Find a band name match using Cyrillic + Latin transliteration (case-insensitive) */
+        function findBandMatch(text) {
+            if (!text) return null;
+            const lower = text.toLowerCase();
+            // Direct match (original or Cyrillic)
+            if (bandNameLookup.has(lower)) return bandNameLookup.get(lower);
+            // Try transliterating the input text
+            const latinFull = transliterateCyrToLat(text).toLowerCase();
+            if (bandNameLookup.has(latinFull)) return bandNameLookup.get(latinFull);
+            const latinShort = transliterateCyrToLatShort(text).toLowerCase();
+            if (bandNameLookup.has(latinShort)) return bandNameLookup.get(latinShort);
+            return null;
         }
 
         function renderArtistName(artist) {
@@ -1253,7 +1304,7 @@
             let result = '';
             parts.forEach((part, i) => {
                 const trimmed = part.trim();
-                const match = [...bandNameSet].find(n => n.toLowerCase() === trimmed.toLowerCase());
+                const match = findBandMatch(trimmed);
                 if (match) {
                     result += `<a href="artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(trimmed)}</a>`;
                 } else {
@@ -1269,7 +1320,7 @@
             const parts = items.map(item => {
                 const nameOnly = item.replace(/\s*\([^)]*\)/g, '').trim();
                 const extra = item.slice(nameOnly.length).trim();
-                const match = [...bandNameSet].find(n => n.toLowerCase() === nameOnly.toLowerCase());
+                const match = findBandMatch(nameOnly);
                 if (match) {
                     const href = 'artist.html?name=' + encodeURIComponent(match);
                     return `<a href="${href}">${match}</a>${extra ? ' <span style="opacity:.65">' + extra + '</span>' : ''}`;
@@ -1490,8 +1541,12 @@
             // Curator profile link
             const curatorLink = 'curator.html?name=' + curatorSlug(c.name);
 
-            // searchable data attribute
-            const searchText = [c.name, ...(c.relevance || [])].join(' ').toLowerCase();
+            // searchable data attribute – include original + Latin transliterations for Cyrillic-insensitive search
+            const rawParts = [c.name, ...(c.relevance || [])];
+            const searchText = rawParts.concat(
+                rawParts.map(p => transliterateCyrToLat(p)),
+                rawParts.map(p => transliterateCyrToLatShort(p))
+            ).join(' ').toLowerCase();
 
             return `
                 <div class="custos-card" data-search="${searchText.replace(/"/g, '&quot;')}">
@@ -1622,13 +1677,17 @@
             if (!searchInput) return;
 
             searchInput.addEventListener('input', () => {
-                const q = searchInput.value.trim().toLowerCase();
+                const raw = searchInput.value.trim();
+                const q = raw.toLowerCase();
+                // Also transliterate the query so typing in Latin matches Cyrillic names and vice-versa
+                const qLatinFull = transliterateCyrToLat(raw).toLowerCase();
+                const qLatinShort = transliterateCyrToLatShort(raw).toLowerCase();
                 const cards = gridEl.querySelectorAll('.custos-card');
                 let visible = 0;
 
                 cards.forEach(card => {
                     const text = card.getAttribute('data-search') || '';
-                    const match = !q || text.includes(q);
+                    const match = !q || text.includes(q) || text.includes(qLatinFull) || text.includes(qLatinShort);
                     card.classList.toggle('hidden', !match);
                     if (match) visible++;
                 });
