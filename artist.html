@@ -671,16 +671,18 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--text-muted);
+            background: var(--bg-primary);
+            color: var(--text-primary);
             margin-bottom: 0.75rem;
-            padding-left: 0.5rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
         
         .section-title i {
-            color: var(--accent-orange);
+            color: var(--text-primary);
         }
         
         .chart-history-list {
@@ -2811,8 +2813,10 @@ a.chart-history-item {
                         document.querySelectorAll('.artist-city, .artist-genre').forEach(el => { el.style.color = '#fff'; });
                         // Labels
                         document.querySelectorAll('.artist-label').forEach(el => { el.style.color = '#fff'; });
-                        // Section titles (Кумулативна Популарност, Изданија) - same color as artist name
-                        document.querySelectorAll('.section-title').forEach(el => { el.style.color = textCol; const icon = el.querySelector('i'); if (icon) icon.style.color = textCol; });
+                        // Section titles (Кумулативна Популарност, Изданија) - themed background with inverse text
+                        const sectionBg = textCol;
+                        const sectionText = textCol === '#ffffff' ? '#000000' : '#ffffff';
+                        document.querySelectorAll('.section-title').forEach(el => { el.style.background = sectionBg; el.style.color = sectionText; const icon = el.querySelector('i'); if (icon) icon.style.color = sectionText; });
                         // Popularity graph text
                         const graphContainer = document.getElementById('popularity-graph-container');
                         if (graphContainer) {
