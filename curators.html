@@ -900,11 +900,14 @@
         @media (max-width: 700px) {
             .curators-container {
                 padding: 1rem 0.75rem 1.5rem;
+                max-width: 100vw;
+                overflow-x: hidden;
             }
 
             .curators-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
+                max-width: 100%;
             }
 
             .curators-search {
@@ -914,6 +917,8 @@
 
             .custos-card {
                 padding: 1.15rem;
+                max-width: 100%;
+                overflow: hidden;
             }
 
             .custos-avatar {
@@ -931,12 +936,24 @@
 
             .tracklist-list {
                 max-height: 260px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                touch-action: pan-y;
+                overscroll-behavior: contain;
             }
 
             .track-art {
                 width: 30px;
                 height: 30px;
             }
+
+            .custos-playlist-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .custos-playlist-tabs::-webkit-scrollbar { display: none; }
         }
     </style>
 </head>

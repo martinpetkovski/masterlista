@@ -1529,9 +1529,25 @@ a.chart-history-item {
                     ${linksHtml}
                 </div>
                 
-                <div id="popularity-graph-container"></div>
+                <div id="popularity-graph-container">
+                    <div class="popularity-graph-section">
+                        <h3 class="section-title"><i class="fas fa-chart-area"></i> Кумулативна Популарност</h3>
+                        <div class="popularity-graph-container" style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.8rem;">
+                            <i class="fas fa-spinner fa-spin" style="font-size:1.2rem;margin-bottom:0.5rem;display:block;"></i>
+                            Се вчитува...
+                        </div>
+                    </div>
+                </div>
                 
-                <div id="chart-history-container"></div>
+                <div id="chart-history-container">
+                    <div class="chart-history-section">
+                        <h3 class="section-title"><i class="fas fa-compact-disc"></i> Изданија</h3>
+                        <div class="chart-history-list" style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.8rem;">
+                            <i class="fas fa-spinner fa-spin" style="font-size:1.2rem;margin-bottom:0.5rem;display:block;"></i>
+                            Се вчитуваат изданијата...
+                        </div>
+                    </div>
+                </div>
                 
                 <div id="rss-media-container"></div>
                 
@@ -1643,6 +1659,15 @@ a.chart-history-item {
                     const hoverBg  = isLight ? '#000' : '#fff';
                     const hoverTc  = isLight ? '#fff' : '#000';
                     const btnBdr = isLight ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.3)';
+
+                    // Set CSS custom properties for nav menu theming
+                    const navMenu = headerEl.querySelector('.site-nav-menu');
+                    if (navMenu) {
+                        navMenu.style.setProperty('--nav-bg', isDark ? `${c1}cc` : `${c1}dd`);
+                        navMenu.style.setProperty('--nav-border', `${c1}40`);
+                        navMenu.style.setProperty('--nav-text', tc);
+                        navMenu.style.setProperty('--nav-hover-bg', hoverBg);
+                    }
 
                     // Style ALL header text/buttons directly with inline styles + event listeners
                     // This avoids any CSS specificity issues entirely.
@@ -2128,12 +2153,18 @@ a.chart-history-item {
 
         async function showServiceChooser(releaseUrl, title) {
             serviceChooserTitle.textContent = title || 'Отвори во...';
-            serviceChooserLinks.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Барам линкови...</div>';
             serviceChooserOverlay.classList.add('visible');
 
+            // Show Spotify link immediately
             let links = {};
-            if (releaseUrl) links.spotify = releaseUrl;
+            if (releaseUrl) {
+                links.spotify = releaseUrl;
+                renderServiceLinks(links);
+            } else {
+                serviceChooserLinks.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Барам линкови...</div>';
+            }
 
+            // Fetch additional links in background and update as they arrive
             if (releaseUrl && !songlinkCache[releaseUrl]) {
                 try {
                     const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(releaseUrl)}`);
@@ -2150,6 +2181,10 @@ a.chart-history-item {
                 }
             }
 
+            renderServiceLinks(links, releaseUrl);
+        }
+
+        function renderServiceLinks(links, fallbackUrl) {
             const html = Object.entries(links)
                 .filter(([id]) => streamingServices[id])
                 .map(([id, url]) => {
@@ -2157,7 +2192,7 @@ a.chart-history-item {
                     return `<a href="${url}" target="_blank" rel="noopener noreferrer"><i class="${svc.icon}"></i> ${svc.name}</a>`;
                 }).join('');
             
-            serviceChooserLinks.innerHTML = html || `<a href="${releaseUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
+            serviceChooserLinks.innerHTML = html || (fallbackUrl ? `<a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>` : '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Барам линкови...</div>');
         }
 
         serviceChooserOverlay.addEventListener('click', (e) => {
