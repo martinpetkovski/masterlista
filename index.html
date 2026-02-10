@@ -1940,8 +1940,7 @@
                     <span>Ажурирано <span id="last-updated">...</span></span>
                     <span class="separator">•</span>
                     <span id="header-week"></span>
-                    <span class="separator">•</span>
-                    <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Xotel</a>
+
                 </span>
                 <span class="mobile-week-label" id="mobile-week-label"></span>
                 <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
@@ -4032,6 +4031,11 @@
             });
 
             // ==================== MINI PLAYER ====================
+            const AUDIO_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/audio-proxy';
+            function proxyAudioUrl(url) {
+                if (url && url.includes('.dzcdn.net')) return `${AUDIO_PROXY}?url=${encodeURIComponent(url)}`;
+                return url;
+            }
             const audioPlayer = document.getElementById('audio-player');
             const miniPlayer = document.getElementById('mini-player');
             const miniPlayerArt = document.getElementById('mini-player-art');
@@ -4050,7 +4054,7 @@
                 miniPlayerArt.src = track.thumbnail || '';
                 miniPlayerTitle.textContent = track.title || '';
                 miniPlayerArtist.textContent = track.artist || '';
-                audioPlayer.src = track.previewUrl;
+                audioPlayer.src = proxyAudioUrl(track.previewUrl);
                 audioPlayer.play();
                 miniPlayer.classList.add('visible');
             }
