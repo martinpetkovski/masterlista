@@ -7,6 +7,7 @@
 #   2b. Scrape    - Scrapes sites for articles not in RSS, merges into articles.json
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
 #   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
+#   5. Curators   - Fetches playlist tracklists for curators from streaming APIs
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
@@ -15,11 +16,13 @@
 #   ./update-all.ps1 -SkipScrape   # Skip article scraping
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipInstagram # Skip Instagram posting
+#   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only articles # Run only articles task
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
 #   ./update-all.ps1 -Only instagram # Run only Instagram posting
+#   ./update-all.ps1 -Only curators # Run only curator tracklists
 
 param(
     [switch]$SkipChart,
@@ -27,7 +30,8 @@ param(
     [switch]$SkipScrape,
     [switch]$SkipLinks,
     [switch]$SkipInstagram,
-    [ValidateSet("chart", "articles", "scrape", "links", "instagram")]
+    [switch]$SkipCurators,
+    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators")]
     [string]$Only
 )
 
@@ -876,6 +880,39 @@ function Update-Instagram {
 }
 
 
+function Update-CuratorTracklists {
+    Write-Section "TASK 5: CURATOR TRACKLISTS"
+
+    $curatorScript = Join-Path $scriptRoot "scripts\generate-curator-tracklists.ps1"
+    if (-not (Test-Path $curatorScript)) {
+        Write-Step "scripts/generate-curator-tracklists.ps1 not found" "Red"
+        return $false
+    }
+
+    Write-Step "Running curator tracklist generation..."
+    try {
+        & $curatorScript
+        if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+            Write-Step "Curator tracklist script exited with code $LASTEXITCODE" "Red"
+            return $false
+        }
+    }
+    catch {
+        Write-Step "Curator tracklist script failed: $_" "Red"
+        return $false
+    }
+
+    $outputPath = Join-Path $scriptRoot "curators-tracklists.json"
+    if (Test-Path $outputPath) {
+        $size = [math]::Round((Get-Item $outputPath).Length / 1KB, 1)
+        Write-Step "Generated curators-tracklists.json (${size} KB)" "Green"
+    }
+
+    Write-Step "Curator tracklists completed" "Green"
+    return $true
+}
+
+
 # ============================================================================
 #  MAIN
 # ============================================================================
@@ -894,6 +931,7 @@ $runArticles  = -not $SkipArticles
 $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
 $runInstagram = -not $SkipInstagram
+$runCurators  = -not $SkipCurators
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
@@ -901,13 +939,14 @@ if ($Only) {
     $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
     $runInstagram = $Only -eq "instagram"
+    $runCurators  = $Only -eq "curators"
 }
 
 $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -963,6 +1002,17 @@ if ($runInstagram) {
 }
 else {
     Write-Step "Skipping Instagram posting" "DarkGray"
+}
+
+# --- Task 5: Curator Tracklists ---
+if ($runCurators) {
+    Set-OverallProgress "Curator Tracklists"
+    $t = Get-Date
+    $results["Curator Tracklists"] = Update-CuratorTracklists
+    $taskTimings["Curator Tracklists"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping curator tracklists" "DarkGray"
 }
 
 Write-Progress -Id 0 -Activity "Master Lista Update" -Completed
