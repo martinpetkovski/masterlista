@@ -229,6 +229,103 @@
             color: var(--text-primary);
             font-weight: 600;
         }
+
+        /* Greeting Audio Player */
+        .artist-greeting {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin: 0.75rem auto 1.25rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 280px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body.dark-mode .artist-greeting {
+            background: var(--bg-secondary);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .artist-greeting:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .artist-greeting-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent-orange, #e8590c);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .artist-greeting-btn:hover {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        .artist-greeting-btn i {
+            margin-left: 2px;
+        }
+
+        .artist-greeting-btn.playing i {
+            margin-left: 0;
+        }
+
+        .artist-greeting-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .artist-greeting-wave {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 18px;
+        }
+
+        .artist-greeting-wave span {
+            display: block;
+            width: 3px;
+            height: 4px;
+            background: var(--accent-orange, #e8590c);
+            border-radius: 2px;
+            opacity: 0.4;
+            transition: height 0.15s ease;
+        }
+
+        .artist-greeting.playing .artist-greeting-wave span {
+            animation: greeting-wave 0.8s ease-in-out infinite;
+            opacity: 1;
+        }
+
+        .artist-greeting.playing .artist-greeting-wave span:nth-child(1) { animation-delay: 0s; }
+        .artist-greeting.playing .artist-greeting-wave span:nth-child(2) { animation-delay: 0.15s; }
+        .artist-greeting.playing .artist-greeting-wave span:nth-child(3) { animation-delay: 0.3s; }
+        .artist-greeting.playing .artist-greeting-wave span:nth-child(4) { animation-delay: 0.45s; }
+        .artist-greeting.playing .artist-greeting-wave span:nth-child(5) { animation-delay: 0.6s; }
+
+        @keyframes greeting-wave {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
         
         /* Links Section */
         .artist-links {
@@ -1524,6 +1621,8 @@ a.chart-history-item {
                     ${labelsHtml}
                     ${soundsLikeHtml}
                 </div>
+
+                <div id="greeting-container"></div>
                 
                 <div class="artist-links">
                     ${linksHtml}
@@ -1557,6 +1656,70 @@ a.chart-history-item {
                     </a>
                 </div>
             `;
+            
+            // Load greeting audio for confirmed artists
+            if (artist.confirmed) {
+                const greetingSlug = generateSlug(artist.name);
+                const greetingContainer = document.getElementById('greeting-container');
+                // Try common audio formats
+                const audioExts = ['mp3', 'm4a', 'wav', 'ogg', 'webm', 'aac', 'flac', 'opus', 'aiff', 'wma'];
+                
+                (async () => {
+                    for (const ext of audioExts) {
+                        const audioUrl = `/greetings/${greetingSlug}.${ext}`;
+                        try {
+                            const resp = await fetch(audioUrl, { method: 'HEAD' });
+                            if (resp.ok) {
+                                const greetingAudio = new Audio(audioUrl);
+                                greetingAudio.preload = 'metadata';
+                                let isPlaying = false;
+                                
+                                greetingContainer.innerHTML = `
+                                    <div class="artist-greeting" id="greeting-player" title="Порака од артистот">
+                                        <button class="artist-greeting-btn" id="greeting-play-btn" aria-label="Пушти порака">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <span class="artist-greeting-label">Порака од артистот</span>
+                                        <div class="artist-greeting-wave">
+                                            <span></span><span></span><span></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                const player = document.getElementById('greeting-player');
+                                const playBtn = document.getElementById('greeting-play-btn');
+                                
+                                const togglePlay = () => {
+                                    if (isPlaying) {
+                                        greetingAudio.pause();
+                                        greetingAudio.currentTime = 0;
+                                        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                                        player.classList.remove('playing');
+                                        isPlaying = false;
+                                    } else {
+                                        greetingAudio.play();
+                                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                                        player.classList.add('playing');
+                                        isPlaying = true;
+                                    }
+                                };
+                                
+                                player.addEventListener('click', togglePlay);
+                                
+                                greetingAudio.addEventListener('ended', () => {
+                                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                                    player.classList.remove('playing');
+                                    isPlaying = false;
+                                });
+                                
+                                return; // Stop after first found format
+                            }
+                        } catch (e) {
+                            // Network error or file not found – continue
+                        }
+                    }
+                })();
+            }
             
             // Inject accent color gradient hero with parallax (only for confirmed artists)
             const accentColors = artist.accentColors;
