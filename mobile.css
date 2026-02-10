@@ -35,6 +35,7 @@ body {
 
 body.guide-page { overflow: auto; height: auto; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
 body.vesti-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
+body.curators-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 
 /* Header */
 header {
@@ -42,6 +43,8 @@ header {
     border-bottom: 1px solid var(--border-color);
     padding: 0.25rem 0.4rem;
     min-height: 44px;
+    position: sticky;
+    top: 0;
     z-index: 200;
 }
 

@@ -12,16 +12,37 @@
             // List of known static pages to exclude from artist routing
             const staticPages = [
                 '/', '/index.html', '/list.html', '/admin.html', 
-                '/releases.html', '/artist.html', '/404.html',
+                '/releases.html', '/artist.html', '/curator.html', '/404.html',
                 '/robots.txt', '/sitemap.xml', '/CNAME',
                 '/desktop.css', '/mobile.css', '/script.js',
                 '/spotify-api.js', '/bands.json', '/chart-data.json',
+                '/curators-tracklists.json',
                 '/favicon.svg', '/og-image.svg'
             ];
             
             // Check if path starts with known directories
             const staticDirs = ['/chart-history/', '/scripts/', '/workers/'];
             const isStaticDir = staticDirs.some(dir => path.startsWith(dir));
+
+            // Handle /curators/[name] routes
+            if (path.startsWith('/curators/')) {
+                const curatorSlug = decodeURIComponent(path.substring('/curators/'.length).replace(/\/$/, ''));
+                if (curatorSlug) {
+                    sessionStorage.setItem('curatorSlug', curatorSlug);
+                    sessionStorage.setItem('curatorCleanUrl', 'true');
+                    window.location.replace('/curator.html?name=' + encodeURIComponent(curatorSlug));
+                    return;
+                }
+                // /curators/ with no name → go to curators list
+                window.location.replace('/curators.html');
+                return;
+            }
+
+            // /curators → curators list
+            if (path === '/curators') {
+                window.location.replace('/curators.html');
+                return;
+            }
             
             // If it's not a static page or directory, treat it as an artist page
             if (!staticPages.includes(path) && !isStaticDir && path !== '/') {
