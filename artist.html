@@ -160,21 +160,12 @@
             color: rgba(255, 255, 255, 0.8);
         }
         
-        .artist-name-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            margin-bottom: 0.5rem;
-        }
-        
         .artist-name {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.75rem;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 0;
+            margin-bottom: 0.5rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -239,44 +230,7 @@
             font-weight: 600;
         }
         
-        /* Inline icon links next to name */
-        .artist-inline-links {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            flex-wrap: wrap;
-        }
-        
-        .artist-inline-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        
-        body.dark-mode .artist-inline-link {
-            background: var(--bg-secondary);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-        
-        .artist-inline-link:hover {
-            transform: scale(1.15);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        }
-        
-        .artist-inline-link i {
-            line-height: 1;
-        }
-        
-        /* Media links section (interviews, articles etc.) */
+        /* Links Section */
         .artist-links {
             display: flex;
             flex-direction: column;
@@ -337,32 +291,32 @@
             font-size: 0.8rem;
         }
         
-        /* Platform-specific colors (inline + card links) */
-        .artist-inline-link.spotify i, .artist-link.spotify i { color: #1ed760; }
-        .artist-inline-link.youtube i, .artist-link.youtube i { color: #FF0000; }
-        .artist-inline-link.youtube_music i, .artist-link.youtube_music i { color: #FF0000; }
-        .artist-inline-link.instagram i, .artist-link.instagram i { color: #E4405F; }
-        .artist-inline-link.facebook i, .artist-link.facebook i { color: #1877F2; }
-        .artist-inline-link.twitter i, .artist-link.twitter i { color: #1DA1F2; }
-        .artist-inline-link.tiktok i, .artist-link.tiktok i { color: #000; }
-        body.dark-mode .artist-inline-link.tiktok i, body.dark-mode .artist-link.tiktok i { color: #fff; }
-        .artist-inline-link.bandcamp i, .artist-link.bandcamp i { color: #1DA0C3; }
-        .artist-inline-link.soundcloud i, .artist-link.soundcloud i { color: #FF7700; }
-        .artist-inline-link.itunes i, .artist-link.itunes i { color: #FA233B; }
-        .artist-inline-link.apple_music i, .artist-link.apple_music i { color: #FA233B; }
-        .artist-inline-link.deezer i, .artist-link.deezer i { color: #FEAA2D; }
-        .artist-inline-link.tidal i, .artist-link.tidal i { color: #00FFFF; }
-        .artist-inline-link.amazon_music i, .artist-link.amazon_music i { color: #FF9900; }
-        .artist-inline-link.napster i, .artist-link.napster i { color: #000; }
-        body.dark-mode .artist-inline-link.napster i, body.dark-mode .artist-link.napster i { color: #fff; }
-        .artist-inline-link.audiomack i, .artist-link.audiomack i { color: #FFA500; }
-        .artist-inline-link.website i, .artist-link.website i { color: #228be6; }
-        .artist-inline-link.linktree i, .artist-link.linktree i { color: #43E660; }
-        .artist-inline-link.discord i, .artist-link.discord i { color: #5865F2; }
-        .artist-inline-link.patreon i, .artist-link.patreon i { color: #FF424D; }
-        .artist-inline-link.wikipedia i, .artist-link.wikipedia i { color: #000; }
-        body.dark-mode .artist-inline-link.wikipedia i, body.dark-mode .artist-link.wikipedia i { color: #fff; }
-        .artist-inline-link.email i, .artist-link.email i { color: #EA4335; }
+        /* Platform-specific colors */
+        .artist-link.spotify i { color: #1ed760; }
+        .artist-link.youtube i { color: #FF0000; }
+        .artist-link.youtube_music i { color: #FF0000; }
+        .artist-link.instagram i { color: #E4405F; }
+        .artist-link.facebook i { color: #1877F2; }
+        .artist-link.twitter i { color: #1DA1F2; }
+        .artist-link.tiktok i { color: #000; }
+        body.dark-mode .artist-link.tiktok i { color: #fff; }
+        .artist-link.bandcamp i { color: #1DA0C3; }
+        .artist-link.soundcloud i { color: #FF7700; }
+        .artist-link.itunes i { color: #FA233B; }
+        .artist-link.apple_music i { color: #FA233B; }
+        .artist-link.deezer i { color: #FEAA2D; }
+        .artist-link.tidal i { color: #00FFFF; }
+        .artist-link.amazon_music i { color: #FF9900; }
+        .artist-link.napster i { color: #000; }
+        body.dark-mode .artist-link.napster i { color: #fff; }
+        .artist-link.audiomack i { color: #FFA500; }
+        .artist-link.website i { color: #228be6; }
+        .artist-link.linktree i { color: #43E660; }
+        .artist-link.discord i { color: #5865F2; }
+        .artist-link.patreon i { color: #FF424D; }
+        .artist-link.wikipedia i { color: #000; }
+        body.dark-mode .artist-link.wikipedia i { color: #fff; }
+        .artist-link.email i { color: #EA4335; }
         
         /* Branding footer */
         .artist-footer {
@@ -1605,27 +1559,32 @@ a.chart-history-item {
             streamingLinks.sort((a, b) => a.priority - b.priority);
             mediaLinks.sort((a, b) => a.priority - b.priority);
             
-            // Build inline icon links HTML (streaming & social)
-            let inlineLinksHtml = '';
-            if (streamingLinks.length > 0) {
-                inlineLinksHtml = streamingLinks.map(link => `
-                    <a href="${link.url}" target="_blank" rel="noopener" class="artist-inline-link ${link.platform}" title="${link.name}">
-                        <i class="${link.icon}"></i>
-                    </a>
-                `).join('');
-            }
+            // Build links HTML
+            let linksHtml = '';
             
-            // Build media links HTML (interviews, articles - keep as cards)
-            let mediaLinksHtml = '';
-            if (mediaLinks.length > 0) {
-                mediaLinksHtml += `<h3 class="link-section-title">Медиуми</h3>`;
-                mediaLinksHtml += mediaLinks.map(link => `
+            if (streamingLinks.length > 0) {
+                linksHtml += streamingLinks.map(link => `
                     <a href="${link.url}" target="_blank" rel="noopener" class="artist-link ${link.platform}">
                         <i class="${link.icon}"></i>
                         <span class="artist-link-text">${link.name}</span>
                         <i class="fas fa-chevron-right artist-link-arrow"></i>
                     </a>
                 `).join('');
+            }
+            
+            if (mediaLinks.length > 0) {
+                linksHtml += `<h3 class="link-section-title">Медиуми</h3>`;
+                linksHtml += mediaLinks.map(link => `
+                    <a href="${link.url}" target="_blank" rel="noopener" class="artist-link ${link.platform}">
+                        <i class="${link.icon}"></i>
+                        <span class="artist-link-text">${link.name}</span>
+                        <i class="fas fa-chevron-right artist-link-arrow"></i>
+                    </a>
+                `).join('');
+            }
+            
+            if (streamingLinks.length === 0 && mediaLinks.length === 0) {
+                linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">Нема достапни линкови</p>`;
             }
             
             // Build edit URL and add to header nav
@@ -1646,20 +1605,19 @@ a.chart-history-item {
             contentEl.innerHTML = `
                 <div class="artist-header">
                     <div class="artist-avatar">${avatarHtml}</div>
-                    <div class="artist-name-row">
-                        <h1 class="artist-name">
-                            ${artist.name}
-                            ${artist.confirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
-                            <span class="status-dot ${statusClass}" title="${statusText}"></span>
-                        </h1>
-                        ${inlineLinksHtml ? `<div class="artist-inline-links">${inlineLinksHtml}</div>` : ''}
-                    </div>
+                    <h1 class="artist-name">
+                        ${artist.name}
+                        ${artist.confirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
+                        <span class="status-dot ${statusClass}" title="${statusText}"></span>
+                    </h1>
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
                     ${labelsHtml}
                     ${soundsLikeHtml}
                 </div>
                 
-                ${mediaLinksHtml ? `<div class="artist-links">${mediaLinksHtml}</div>` : ''}
+                <div class="artist-links">
+                    ${linksHtml}
+                </div>
                 
                 <div id="popularity-graph-container"></div>
                 
