@@ -124,6 +124,48 @@ export default {
       }
     }
 
+    // ==================== INSTAGRAM PROFILE PIC PROXY ====================
+    if (request.method === 'GET' && url.pathname.startsWith('/ig-pic/')) {
+      const username = url.pathname.replace('/ig-pic/', '').replace(/\//g, '');
+      if (!username || !/^[a-zA-Z0-9_.]+$/.test(username)) {
+        return json({ error: 'Invalid username' }, 400, corsHeaders);
+      }
+      const igIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const igRl = rateLimitCheck('ig:' + igIp, 30, 60000);
+      if (!igRl.allowed) {
+        return json({ error: 'Rate limit exceeded' }, 429, corsHeaders);
+      }
+      try {
+        const igResp = await fetch(`https://www.instagram.com/${username}/`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+            'Accept': 'text/html,application/xhtml+xml'
+          },
+          cf: { cacheTtl: 86400, cacheEverything: true },
+        });
+        if (!igResp.ok) {
+          return json({ error: 'Instagram fetch failed' }, 502, corsHeaders);
+        }
+        const html = await igResp.text();
+        const m = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+               || html.match(/<meta\s+content="([^"]+)"\s+property="og:image"/i);
+        if (!m || !m[1]) {
+          return json({ error: 'No profile image found' }, 404, corsHeaders);
+        }
+        // Redirect to the actual image URL with long cache
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            'Location': m[1],
+            'Cache-Control': 'public, max-age=86400',
+          },
+        });
+      } catch (e) {
+        return json({ error: 'Failed to fetch IG profile', detail: e.message }, 502, corsHeaders);
+      }
+    }
+
     if (request.method !== 'POST') {
       return json({ error: 'Method Not Allowed' }, 405, corsHeaders);
     }

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кустоси | Македонска Музичка Мастер Листа</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="Кустоси | Македонска Музичка Мастер Листа">
+    <meta name="description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти, музичари и познавачи.">
+    <meta name="keywords" content="кустоси, плејлисти, македонска музика, курирани плејлисти, македонски артисти">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <link rel="canonical" href="https://toplista.mk/curators.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/curators.html">
+    <meta property="og:title" content="Кустоси | Македонска Музичка Мастер Листа">
+    <meta property="og:description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти, музичари и познавачи.">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+    <meta property="og:site_name" content="Топ Листа МК">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://toplista.mk/curators.html">
+    <meta property="twitter:title" content="Кустоси">
+    <meta property="twitter:description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти и познавачи.">
+    <meta property="twitter:image" content="https://toplista.mk/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
+    <!-- Preconnect to external origins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <style>
+        /* ==================== PAGE LAYOUT ==================== */
+        body.curators-page {
+            height: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        body.curators-page main {
+            height: auto;
+            overflow: visible;
+        }
+
+        .curators-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem 2rem;
+        }
+
+        /* ==================== PAGE HEADER ==================== */
+        .curators-page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .curators-page-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary, #1a1a2e);
+            margin: 0;
+        }
+
+        body.dark-mode .curators-page-header h2 {
+            color: #e8e8f0;
+        }
+
+        /* ==================== SEARCH ==================== */
+        .curators-search {
+            padding: 0.55rem 0.85rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #1a1a2e;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 200px;
+        }
+
+        .curators-search:focus {
+            border-color: #5b8fb9;
+        }
+
+        body.dark-mode .curators-search {
+            background: #1e2028;
+            border-color: rgba(255,255,255,0.1);
+            color: #e8e8f0;
+        }
+
+        body.dark-mode .curators-search:focus {
+            border-color: #5b8fb9;
+        }
+
+        .curators-search::placeholder {
+            color: #999;
+        }
+
+        body.dark-mode .curators-search::placeholder {
+            color: #666;
+        }
+
+        /* ==================== GRID ==================== */
+        .curators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            max-width: 100%;
+            gap: 1.25rem;
+        }
+
+        /* Cap at 3 columns on wide screens */
+        @media (min-width: 1000px) {
+            .curators-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ==================== CARD ==================== */
+        .custos-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .custos-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .custos-card.hidden {
+            display: none;
+        }
+
+        body.dark-mode .custos-card {
+            background: #1e2028;
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .custos-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Card header */
+        .custos-header {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .custos-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea33, #764ba233);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .custos-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .custos-avatar i {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        body.dark-mode .custos-avatar {
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+        }
+
+        body.dark-mode .custos-avatar i {
+            color: #8b9cf7;
+        }
+
+        .custos-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .custos-name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+            margin: 0 0 0.2rem;
+        }
+
+        .custos-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary, #1a1a2e);
+            margin: 0;
+        }
+
+        body.dark-mode .custos-name {
+            color: #e8e8f0;
+        }
+
+        .custos-relevance {
+            font-size: 0.82rem;
+            color: #666;
+            line-height: 1.35;
+        }
+
+        .custos-relevance a {
+            color: #5b8fb9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .custos-relevance a:hover {
+            text-decoration: underline;
+        }
+
+        .custos-relevance .sep {
+            margin: 0 0.25em;
+            opacity: 0.5;
+        }
+
+        body.dark-mode .custos-relevance {
+            color: #999;
+        }
+
+        body.dark-mode .custos-relevance a {
+            color: #7db8e0;
+        }
+
+        /* Social links – inline next to name */
+        .custos-socials {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .custos-socials a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #f0f1f3;
+            color: #555;
+            font-size: 0.75rem;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            text-decoration: none;
+        }
+
+        .custos-socials a:hover {
+            background: #5b8fb9;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        body.dark-mode .custos-socials a {
+            background: #2a2d36;
+            color: #aaa;
+        }
+
+        body.dark-mode .custos-socials a:hover {
+            background: #5b8fb9;
+            color: #fff;
+        }
+
+        /* Playlist embed */
+        .custos-embed {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .custos-embed iframe {
+            display: block;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+
+        /* Playlist link fallback */
+        .custos-playlist-link {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #667eea11, #764ba211);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary, #1a1a2e);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .custos-playlist-link:hover {
+            background: linear-gradient(135deg, #667eea22, #764ba222);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        body.dark-mode .custos-playlist-link {
+            background: linear-gradient(135deg, #667eea0d, #764ba20d);
+            border-color: rgba(102, 126, 234, 0.1);
+            color: #e8e8f0;
+        }
+
+        body.dark-mode .custos-playlist-link:hover {
+            background: linear-gradient(135deg, #667eea1a, #764ba21a);
+            border-color: rgba(102, 126, 234, 0.25);
+        }
+
+        .custos-playlist-link .pl-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .custos-playlist-link .pl-icon.spotify { color: #1DB954; }
+        .custos-playlist-link .pl-icon.youtube { color: #FF0000; }
+        .custos-playlist-link .pl-icon.apple { color: #FA243C; }
+        .custos-playlist-link .pl-icon.tidal { color: #000; }
+        body.dark-mode .custos-playlist-link .pl-icon.tidal { color: #fff; }
+        .custos-playlist-link .pl-icon.deezer { color: #A238FF; }
+        .custos-playlist-link .pl-icon.soundcloud { color: #FF5500; }
+        .custos-playlist-link .pl-icon.default { color: #5b8fb9; }
+
+        .custos-playlist-link .pl-text {
+            flex: 1;
+            min-width: 0;
+            font-weight: 600;
+            font-size: 0.88rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .custos-playlist-link .pl-arrow {
+            color: #aaa;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        body.dark-mode .custos-playlist-link .pl-arrow {
+            color: #666;
+        }
+
+        /* ==================== LOADING / EMPTY / NO-RESULTS ==================== */
+        .curators-loading {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .curators-loading i {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            animation: spin 1s linear infinite;
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .curators-empty,
+        .curators-no-results {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .curators-empty i,
+        .curators-no-results i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            opacity: 0.5;
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 700px) {
+            .curators-container {
+                padding: 1rem 0.75rem 1.5rem;
+            }
+
+            .curators-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .curators-search {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .custos-card {
+                padding: 1.15rem;
+            }
+
+            .custos-avatar {
+                width: 48px;
+                height: 48px;
+            }
+
+            .custos-avatar i {
+                font-size: 1.25rem;
+            }
+
+            .custos-name {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="compact curators-page">
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="nastani.html"><i class="fas fa-calendar-days"></i> Настани</a>
+                    <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="curators.html" class="active"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="surprise.html"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="help.html"><i class="fas fa-question-circle"></i> Помош</a>
+                </div>
+                <div class="title-group">
+                    <h1>Кустоси</h1>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <span class="header-info">
+                    Сакаш да бидеш музички кустос? <a class="xotel-link" href="https://discord.gg/fj6dJGhM" target="_blank">Придружи се на Discord</a>
+                </span>
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="curators-container">
+            <div class="curators-page-header">
+                <h2>Кустоси</h2>
+                <input type="text" id="curators-search" class="curators-search" placeholder="Пребарај кустоси...">
+            </div>
+            <div id="curators-loading" class="curators-loading">
+                <div><i class="fas fa-spinner"></i></div>
+                <div>Се вчитуваат кустосите...</div>
+            </div>
+            <div id="curators-grid" class="curators-grid" style="display:none;"></div>
+            <div id="curators-no-results" class="curators-no-results">
+                <i class="fas fa-search"></i>
+                <p>Нема резултати за пребарувањето.</p>
+            </div>
+            <div id="curators-empty" class="curators-empty">
+                <i class="fas fa-headphones"></i>
+                <p>Нема кустоси во моментов.</p>
+            </div>
+        </div>
+    </main>
+    <script>
+        // ==================== DARK MODE ====================
+        function initDarkMode() {
+            const toggle = document.getElementById('dark-mode-toggle');
+            if (!toggle) return;
+            const savedMode = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
+            if (savedMode === 'true') {
+                document.body.classList.add('dark-mode');
+                toggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('mmm-dark-mode', isDark);
+                toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+        }
+        initDarkMode();
+
+        // ==================== NAV MENU ====================
+        function initNavMenu() {
+            const trigger = document.querySelector('.site-nav-trigger');
+            const menu = document.getElementById('site-nav-menu');
+            if (!trigger || !menu) return;
+            
+            trigger.addEventListener('click', (e) => {
+                if (window.innerWidth <= 600) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    menu.classList.toggle('open');
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                    menu.classList.remove('open');
+                }
+            });
+        }
+        initNavMenu();
+
+        // ==================== AUTO-DETECT HELPERS ====================
+
+        /** Detect social/link service from URL and return icon class + label */
+        function detectLinkInfo(url) {
+            const u = url.toLowerCase();
+            if (u.includes('instagram.com'))   return { icon: 'fab fa-instagram',    label: 'Instagram' };
+            if (u.includes('twitter.com') || u.includes('x.com'))
+                                               return { icon: 'fab fa-x-twitter',    label: 'X / Twitter' };
+            if (u.includes('facebook.com'))     return { icon: 'fab fa-facebook-f',   label: 'Facebook' };
+            if (u.includes('tiktok.com'))       return { icon: 'fab fa-tiktok',       label: 'TikTok' };
+            if (u.includes('music.youtube.com'))return { icon: 'fab fa-youtube',      label: 'YouTube Music' };
+            if (u.includes('youtube.com') || u.includes('youtu.be'))
+                                               return { icon: 'fab fa-youtube',       label: 'YouTube' };
+            if (u.includes('open.spotify.com')) return { icon: 'fab fa-spotify',      label: 'Spotify' };
+            if (u.includes('bandcamp.com'))     return { icon: 'fab fa-bandcamp',     label: 'Bandcamp' };
+            if (u.includes('soundcloud.com'))   return { icon: 'fab fa-soundcloud',   label: 'SoundCloud' };
+            if (u.includes('music.apple.com'))  return { icon: 'fab fa-apple',        label: 'Apple Music' };
+            if (u.includes('tidal.com'))        return { icon: 'fas fa-water',        label: 'Tidal' };
+            if (u.includes('deezer.com'))       return { icon: 'fab fa-deezer',       label: 'Deezer' };
+            if (u.includes('discord.gg') || u.includes('discord.com'))
+                                               return { icon: 'fab fa-discord',       label: 'Discord' };
+            if (u.includes('linkedin.com'))     return { icon: 'fab fa-linkedin-in',  label: 'LinkedIn' };
+            if (u.includes('linktr.ee'))        return { icon: 'fas fa-link',         label: 'Linktree' };
+            return { icon: 'fas fa-globe', label: 'Линк' };
+        }
+
+        /** Build an embed for a playlist URL. Returns HTML string or null. */
+        function buildPlaylistEmbed(url) {
+            if (!url) return null;
+            const u = url.toLowerCase();
+
+            // Spotify: playlist, album, track
+            const spotifyMatch = url.match(/open\.spotify\.com\/(playlist|album|track)\/([a-zA-Z0-9]+)/);
+            if (spotifyMatch) {
+                const [, type, id] = spotifyMatch;
+                const h = type === 'track' ? 152 : 500;
+                return `<div class="custos-embed"><iframe src="https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0" height="${h}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>`;
+            }
+
+            // YouTube Music playlist
+            const ytMusicPl = url.match(/music\.youtube\.com\/playlist\?list=([a-zA-Z0-9_-]+)/);
+            if (ytMusicPl) {
+                return `<div class="custos-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=${ytMusicPl[1]}" height="380" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div>`;
+            }
+
+            // YouTube playlist
+            const ytPl = url.match(/youtube\.com\/playlist\?list=([a-zA-Z0-9_-]+)/);
+            if (ytPl) {
+                return `<div class="custos-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=${ytPl[1]}" height="380" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div>`;
+            }
+
+            // YouTube single video
+            const ytVideo = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+            if (ytVideo) {
+                return `<div class="custos-embed"><iframe src="https://www.youtube.com/embed/${ytVideo[1]}" height="200" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe></div>`;
+            }
+
+            // Apple Music (embed via embed.music.apple.com)
+            const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(playlist|album)\/[^/]+\/([a-z]{2}\.[a-zA-Z0-9.-]+)/);
+            if (appleMatch) {
+                const [, country, type, id] = appleMatch;
+                return `<div class="custos-embed"><iframe src="https://embed.music.apple.com/${country}/${type}/${id}" height="380" allow="autoplay *; encrypted-media *;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation" loading="lazy" style="background: transparent;"></iframe></div>`;
+            }
+
+            // SoundCloud
+            if (u.includes('soundcloud.com')) {
+                const encoded = encodeURIComponent(url);
+                return `<div class="custos-embed"><iframe src="https://w.soundcloud.com/player/?url=${encoded}&color=%235b8fb9&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false" height="380" allow="autoplay" loading="lazy"></iframe></div>`;
+            }
+
+            // No embeddable service detected
+            return null;
+        }
+
+        /** Build a fallback link for a playlist URL */
+        function buildPlaylistLink(url) {
+            const info = detectLinkInfo(url);
+            const cls = info.label.toLowerCase().replace(/[\s\/]/g, '-');
+            return `<a href="${url}" target="_blank" rel="noopener" class="custos-playlist-link">
+                <span class="pl-icon ${cls}"><i class="${info.icon}"></i></span>
+                <span class="pl-text">${info.label} — Отвори плејлиста</span>
+                <span class="pl-arrow"><i class="fas fa-arrow-up-right-from-square"></i></span>
+            </a>`;
+        }
+
+        // ==================== BAND NAME LOOKUP ====================
+        let bandNameSet = new Set(); // lowercase → original name
+
+        async function loadBandNames() {
+            try {
+                const resp = await fetch('bands.json');
+                const data = await resp.json();
+                const bands = data.muzickaMasterLista || [];
+                bands.forEach(b => {
+                    if (b.name) bandNameSet.add(b.name);
+                });
+            } catch (err) {
+                console.warn('Failed to load bands.json for relevance linking:', err);
+            }
+        }
+
+        function renderRelevance(items) {
+            if (!items || items.length === 0) return '';
+            const parts = items.map(item => {
+                // Strip text in parentheses for band name matching
+                const nameOnly = item.replace(/\s*\([^)]*\)/g, '').trim();
+                const extra = item.slice(nameOnly.length).trim(); // e.g. "(гитара)"
+                // Check if the name part matches a band name (case-insensitive)
+                const match = [...bandNameSet].find(n => n.toLowerCase() === nameOnly.toLowerCase());
+                if (match) {
+                    const href = 'artist.html?name=' + encodeURIComponent(match);
+                    return `<a href="${href}">${match}</a>${extra ? ' <span style="opacity:.65">' + extra + '</span>' : ''}`;
+                }
+                return item;
+            });
+            return parts.join('<span class="sep">·</span>');
+        }
+
+        // ==================== RENDER ====================
+        async function loadCurators() {
+            const loadingEl   = document.getElementById('curators-loading');
+            const gridEl      = document.getElementById('curators-grid');
+            const emptyEl     = document.getElementById('curators-empty');
+            const noResultsEl = document.getElementById('curators-no-results');
+
+            await loadBandNames();
+
+            try {
+                const resp = await fetch('curators.json');
+                const data = await resp.json();
+                const curators = data.curators || [];
+
+                loadingEl.style.display = 'none';
+
+                if (curators.length === 0) {
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+
+                gridEl.style.display = '';
+                gridEl.innerHTML = curators.map(c => renderCard(c)).join('');
+
+                // Search
+                initSearch(curators);
+            } catch (err) {
+                console.error('Failed to load curators.json:', err);
+                loadingEl.style.display = 'none';
+                emptyEl.style.display = 'block';
+            }
+        }
+
+        const WORKER_BASE = 'https://muzichka-master-lista.martinpetkovski.workers.dev';
+
+        /** Get Instagram profile pic URL via Cloudflare Worker proxy */
+        function getInstagramPic(links) {
+            if (!links) return null;
+            for (const url of links) {
+                const m = url.match(/instagram\.com\/([a-zA-Z0-9_.]+)/);
+                if (m && m[1]) {
+                    return `${WORKER_BASE}/ig-pic/${m[1]}`;
+                }
+            }
+            return null;
+        }
+
+        function renderCard(c) {
+            // Avatar: prefer Instagram profile pic (via worker proxy), then provided image, then fallback icon
+            const igPic = getInstagramPic(c.links);
+            const fallbackImg = c.image || null;
+            const primarySrc = igPic || fallbackImg;
+
+            let avatarInner;
+            if (primarySrc) {
+                let onerror;
+                if (igPic && fallbackImg) {
+                    // IG fails → try provided image → fails → icon
+                    const escaped = fallbackImg.replace(/'/g, "\\'");
+                    onerror = "this.onerror=function(){this.onerror=null;this.parentElement.innerHTML='<i class=&quot;fas fa-user&quot;></i>';};this.src='" + escaped + "';";
+                } else {
+                    onerror = "this.onerror=null;this.parentElement.innerHTML='<i class=&quot;fas fa-user&quot;></i>';";
+                }
+                avatarInner = `<img src="${primarySrc}" alt="${c.name}" loading="lazy" referrerpolicy="no-referrer" onerror="${onerror}">`;
+            } else {
+                avatarInner = `<i class="fas fa-user"></i>`;
+            }
+
+            // Relevance
+            const relevanceHtml = renderRelevance(c.relevance);
+
+            // Social links (auto-detected from URLs)
+            const links = c.links || [];
+            const socialLinks = links
+                .map(url => {
+                    const info = detectLinkInfo(url);
+                    return `<a href="${url}" target="_blank" rel="noopener" title="${info.label}"><i class="${info.icon}"></i></a>`;
+                })
+                .join('');
+
+            // Playlist: embed first, fallback link always shown below
+            let playlistHtml = '';
+            if (c.playlist) {
+                const embed = buildPlaylistEmbed(c.playlist);
+                if (embed) {
+                    playlistHtml = embed + buildPlaylistLink(c.playlist);
+                } else {
+                    playlistHtml = buildPlaylistLink(c.playlist);
+                }
+            }
+
+            // searchable data attribute
+            const searchText = [c.name, ...(c.relevance || [])].join(' ').toLowerCase();
+
+            return `
+                <div class="custos-card" data-search="${searchText.replace(/"/g, '&quot;')}">
+                    <div class="custos-header">
+                        <div class="custos-avatar">${avatarInner}</div>
+                        <div class="custos-info">
+                            <div class="custos-name-row">
+                                <div class="custos-name">${c.name}</div>
+                                ${socialLinks ? `<div class="custos-socials">${socialLinks}</div>` : ''}
+                            </div>
+                            ${relevanceHtml ? `<div class="custos-relevance">${relevanceHtml}</div>` : ''}
+                        </div>
+                    </div>
+                    ${playlistHtml}
+                </div>`;
+        }
+
+        // ==================== SEARCH ====================
+        function initSearch() {
+            const searchInput = document.getElementById('curators-search');
+            const gridEl      = document.getElementById('curators-grid');
+            const noResultsEl = document.getElementById('curators-no-results');
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value.trim().toLowerCase();
+                const cards = gridEl.querySelectorAll('.custos-card');
+                let visible = 0;
+
+                cards.forEach(card => {
+                    const text = card.getAttribute('data-search') || '';
+                    const match = !q || text.includes(q);
+                    card.classList.toggle('hidden', !match);
+                    if (match) visible++;
+                });
+
+                noResultsEl.style.display = (visible === 0 && q) ? 'block' : 'none';
+            });
+        }
+
+        // ==================== INIT ====================
+        loadCurators();
+    </script>
+</body>
+</html>

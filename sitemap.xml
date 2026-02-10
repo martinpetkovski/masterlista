@@ -34,6 +34,14 @@
         <priority>0.8</priority>
     </url>
     
+    <!-- Curators - Curated Playlists -->
+    <url>
+        <loc>https://toplista.mk/curators.html</loc>
+        <lastmod>2026-02-10</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
     <!-- Music News Page -->
     <url>
         <loc>https://toplista.mk/vesti.html</loc>
