@@ -1183,36 +1183,76 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 1.4rem;
             font-weight: 800;
-            width: 36px;
-            text-align: center;
+            width: 44px;
+            text-align: left;
+            padding-left: 4px;
             flex-shrink: 0;
             color: var(--text-muted);
             position: relative;
+            overflow: hidden;
         }
         
-        /* Position change indicators via arrow superscript - absolutely positioned */
-        .chart-rank.rank-up::after {
-            content: '▲';
+        /* Shared animated chevron arrows for position & popularity changes */
+        .rank-arrows,
+        .pop-change {
             position: absolute;
-            top: -2px;
-            right: -4px;
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: var(--accent-green);
-            line-height: 1;
-            text-shadow: none;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 22px;
+            pointer-events: none;
+            z-index: 2;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
         }
-        
-        .chart-rank.rank-down::after {
-            content: '▼';
+        /* Pop-change sits to the right of the popularity number */
+        .pop-change {
+            right: auto;
+            left: 100%;
+            margin-left: 2px;
+        }
+        .rank-arrows i,
+        .pop-change i {
             position: absolute;
-            top: -2px;
-            right: -4px;
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: var(--accent-red);
-            line-height: 1;
-            text-shadow: none;
+            left: 50%;
+            display: block !important;
+            width: 7px;
+            height: 7px;
+            border-right: 2.5px solid;
+            border-top: 2.5px solid;
+            opacity: 0;
+        }
+        .rank-arrows.up i,
+        .pop-change.up i {
+            border-color: #16c953;
+            transform: translateX(-50%) rotate(-45deg);
+            animation: chevron-float-up 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .rank-arrows.down i,
+        .pop-change.down i {
+            border-color: #f03e3e;
+            transform: translateX(-50%) rotate(135deg);
+            animation: chevron-float-down 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .rank-arrows i:nth-child(2),
+        .pop-change i:nth-child(2) { animation-delay: 0.4s; }
+        .rank-arrows i:nth-child(3),
+        .pop-change i:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes chevron-float-up {
+            0%   { opacity: 0; top: 18px; }
+            20%  { opacity: 0.7; }
+            50%  { opacity: 0.7; }
+            80%  { opacity: 0; }
+            100% { opacity: 0; top: -2px; }
+        }
+        @keyframes chevron-float-down {
+            0%   { opacity: 0; top: -2px; }
+            20%  { opacity: 0.7; }
+            50%  { opacity: 0.7; }
+            80%  { opacity: 0; }
+            100% { opacity: 0; top: 18px; }
         }
         
         .chart-rank.gold { 
@@ -1364,27 +1404,7 @@
             background: var(--accent-blue); 
         }
         
-        /* Popularity change indicator - arrow overlays the number */
-        .pop-change {
-            position: absolute;
-            top: -4px;
-            left: 30px;
-            font-size: 1rem;
-            font-weight: 900;
-            line-height: 1;
-            color: transparent;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .pop-change.up::before { 
-            content: '▲';
-            color: var(--accent-green);
-        }
-        .pop-change.down::before { 
-            content: '▼';
-            color: var(--accent-red);
-        }
+        /* Pop-change inherits shared styles above, no extra rules needed */
         
         /* New entry highlight */
         .chart-item.is-new {
@@ -1688,14 +1708,22 @@
         
         .chart-section.compact-mode .chart-rank {
             font-size: 0.7rem;
-            width: 16px;
+            width: 22px;
+            padding-left: 2px;
         }
 
-        .chart-section.compact-mode .chart-rank.rank-up::after,
-        .chart-section.compact-mode .chart-rank.rank-down::after {
-            top: -6px;
-            right: -2px;
-            font-size: 0.65rem;
+        .chart-section.compact-mode .rank-arrows,
+        .chart-section.compact-mode .pop-change {
+            width: 7px;
+            height: 12px;
+            margin-left: 0;
+        }
+        .chart-section.compact-mode .rank-arrows i,
+        .chart-section.compact-mode .pop-change i {
+            width: 4px;
+            height: 4px;
+            border-right-width: 1px;
+            border-top-width: 1px;
         }
         
         .chart-section.compact-mode .chart-change {
@@ -1741,15 +1769,7 @@
             min-width: 28px;
         }
         
-        .chart-section.compact-mode .pop-change {
-            font-size: 0.45rem;
-            margin-left: 1px;
-        }
-
-        .chart-section.compact-mode .pop-change.up::before,
-        .chart-section.compact-mode .pop-change.down::before {
-            font-size: 0.45rem;
-        }
+        /* compact pop-change handled above with rank-arrows */
         
         /* Mobile compact - even more compact, single row */
         @media (max-width: 600px) {
@@ -3907,9 +3927,9 @@
                             // Popularity change - only show if changed
                             const popDiff = popularity - prev.popularity;
                             if (popDiff > 0) {
-                                popChangeIndicator = `<span class="pop-change up">+${popDiff}</span>`;
+                                popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
                             } else if (popDiff < 0) {
-                                popChangeIndicator = `<span class="pop-change down">${popDiff}</span>`;
+                                popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
                             } else {
                                 popChangeIndicator = '';
                             }
@@ -3948,9 +3968,11 @@
                     const posTooltipAttr = posTooltipHtml ? ` data-tooltip-html="${escAttr(posTooltipHtml)}"` : '';
                     const popTooltipAttr = popTooltipHtml ? ` data-tooltip-html="${escAttr(popTooltipHtml)}"` : '';
                     
+                    const rankArrowsHtml = changeIndicator === 'rank-up' ? '<span class="rank-arrows up"><i></i><i></i><i></i></span>' : changeIndicator === 'rank-down' ? '<span class="rank-arrows down"><i></i><i></i><i></i></span>' : '';
+
                     return `
                         <li class="chart-item ${itemClass}${hasAccent ? ' has-accent' : ''}" ${accentStyle}>
-                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}</span>` : ''}
+                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}${rankArrowsHtml}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
