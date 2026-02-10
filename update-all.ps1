@@ -548,7 +548,7 @@ function Update-ScrapeArticles {
     Write-Section "TASK 2b: SCRAPE ARTICLES"
     $scrapeStart = Get-Date
 
-    $scrapeScript = Join-Path $scriptRoot "scripts" "scrape-articles.js"
+    $scrapeScript = Join-Path (Join-Path $scriptRoot "scripts") "scrape-articles.js"
     if (-not (Test-Path $scrapeScript)) {
         Write-Step "scripts/scrape-articles.js not found, skipping" "Red"
         return $false
@@ -556,16 +556,29 @@ function Update-ScrapeArticles {
 
     Write-Step "Running article scraper (WP API + HTML)..."
     try {
+        # Temporarily allow stderr (non-fatal site warnings) without terminating
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
         $output = & node $scrapeScript 2>&1
-        $output | ForEach-Object { Write-Host "    $_" -ForegroundColor Gray }
+        $scrapeExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
 
-        if ($LASTEXITCODE -ne 0) {
-            Write-Step "Scraper finished with exit code $LASTEXITCODE" "DarkYellow"
+        foreach ($line in $output) {
+            if ($line -is [System.Management.Automation.ErrorRecord]) {
+                Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
+            } else {
+                Write-Host "    $line" -ForegroundColor Gray
+            }
+        }
+
+        if ($scrapeExit -ne 0) {
+            Write-Step "Scraper finished with exit code $scrapeExit" "DarkYellow"
         } else {
             Write-Step "Scraper completed successfully" "Green"
         }
     }
     catch {
+        $ErrorActionPreference = $prevEAP
         Write-Step "Scraper failed: $_" "Red"
         return $false
     }
@@ -862,8 +875,8 @@ function Update-Instagram {
 
     Write-Step "Running scripts/instagram.ps1 -SkipReview $forceFlag..."
     try {
-        $igArgs = @("-SkipReview")
-        if ($isForced) { $igArgs += "-Force" }
+        $igArgs = @{ SkipReview = $true }
+        if ($isForced) { $igArgs["Force"] = $true }
         & $igScript @igArgs
         if ($LASTEXITCODE -ne 0) {
             Write-Step "Instagram script exited with code $LASTEXITCODE" "Red"

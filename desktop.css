@@ -371,6 +371,11 @@ body.curators-page main { height: auto; overflow: visible; flex: 1; display: fle
 
 #search-name::placeholder { color: var(--text-muted); }
 
+#search-name:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Select2 - Styled like search input */
 .select2-container { width: 150px !important; min-height: 34px; }
 
