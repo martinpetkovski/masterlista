@@ -6,7 +6,7 @@ Allow: /
 
 # Main pages
 Allow: /index.html
-Allow: /list.html
+Allow: /lista.html
 
 # Disallow admin and non-public pages
 Disallow: /admin.html

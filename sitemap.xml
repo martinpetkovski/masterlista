@@ -12,7 +12,7 @@
     
     <!-- Master List - Artist Database -->
     <url>
-        <loc>https://toplista.mk/list</loc>
+        <loc>https://toplista.mk/lista</loc>
         <lastmod>2026-01-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
@@ -20,7 +20,7 @@
     
     <!-- Curators - Curated Playlists -->
     <url>
-        <loc>https://toplista.mk/curators</loc>
+        <loc>https://toplista.mk/kustosi</loc>
         <lastmod>2026-02-10</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -32,6 +32,30 @@
         <lastmod>2026-02-07</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
+    </url>
+    
+    <!-- Events Page -->
+    <url>
+        <loc>https://toplista.mk/nastani</loc>
+        <lastmod>2026-02-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Surprise / Discover Page -->
+    <url>
+        <loc>https://toplista.mk/iznenadi-me</loc>
+        <lastmod>2026-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <!-- Help / Impressum Page -->
+    <url>
+        <loc>https://toplista.mk/pomosh</loc>
+        <lastmod>2026-01-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
     </url>
     
     <!-- Artist Profile Pages use clean URLs like /artist-name -->

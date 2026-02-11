@@ -11,32 +11,79 @@
 
             // Clean URL → .html page mapping
             const pageRoutes = {
-                '/list': '/list.html',
+                '/lista': '/lista.html',
                 '/nastani': '/nastani.html',
                 '/vesti': '/vesti.html',
-                '/curators': '/curators.html',
-                '/surprise': '/surprise.html',
-                '/help': '/help.html',
-                '/event': '/event.html',
-                '/privacy': '/privacy.html',
-                '/terms': '/terms.html',
+                '/kustosi': '/kustosi.html',
+                '/iznenadi-me': '/iznenadi-me.html',
+                '/pomosh': '/pomosh.html',
+                '/privatnost': '/privatnost.html',
+                '/uslovi': '/uslovi.html',
                 '/admin': '/admin.html',
                 '/artist': '/artist.html'
             };
 
-            // Handle clean URL page routes (e.g. /list → /list.html, /event?id=x → /event.html?id=x)
+            // Backward-compat redirects for old clean URLs
+            const legacyRoutes = {
+                '/list': '/lista',
+                '/curators': '/kustosi',
+                '/surprise': '/iznenadi-me',
+                '/help': '/pomosh',
+                '/event': '/nastan',
+                '/privacy': '/privatnost',
+                '/terms': '/uslovi'
+            };
+
+            // Handle legacy routes (redirect to new clean URL)
+            if (legacyRoutes[path]) {
+                window.location.replace(legacyRoutes[path] + search);
+                return;
+            }
+
+            // Handle clean URL page routes
             if (pageRoutes[path]) {
                 window.location.replace(pageRoutes[path] + search);
                 return;
             }
 
+            // Handle /kustos/[name] routes (individual curator page)
+            if (path.startsWith('/kustos/')) {
+                const curatorSlug = decodeURIComponent(path.substring('/kustos/'.length).replace(/\/$/, ''));
+                if (curatorSlug) {
+                    sessionStorage.setItem('curatorSlug', curatorSlug);
+                    sessionStorage.setItem('curatorCleanUrl', 'true');
+                    window.location.replace('/kustos.html?name=' + encodeURIComponent(curatorSlug));
+                    return;
+                }
+                window.location.replace('/kustosi.html');
+                return;
+            }
+
+            // Legacy /curators/[name] → redirect to /kustos/[name]
+            if (path.startsWith('/curators/')) {
+                const curatorSlug = path.substring('/curators/'.length);
+                window.location.replace('/kustos/' + curatorSlug);
+                return;
+            }
+
+            // Handle /nastan/[id] routes (individual event page)
+            if (path.startsWith('/nastan/')) {
+                const eventId = decodeURIComponent(path.substring('/nastan/'.length).replace(/\/$/, ''));
+                if (eventId) {
+                    window.location.replace('/nastan.html?id=' + encodeURIComponent(eventId));
+                    return;
+                }
+                window.location.replace('/nastani.html');
+                return;
+            }
+
             // Known static files to exclude from artist routing
             const staticFiles = [
-                '/', '/index.html', '/list.html', '/admin.html',
-                '/artist.html', '/curator.html', '/404.html',
-                '/nastani.html', '/vesti.html', '/curators.html',
-                '/surprise.html', '/help.html', '/event.html',
-                '/privacy.html', '/terms.html',
+                '/', '/index.html', '/lista.html', '/admin.html',
+                '/artist.html', '/kustos.html', '/404.html',
+                '/nastani.html', '/vesti.html', '/kustosi.html',
+                '/iznenadi-me.html', '/pomosh.html', '/nastan.html',
+                '/privatnost.html', '/uslovi.html',
                 '/robots.txt', '/sitemap.xml', '/CNAME',
                 '/desktop.css', '/mobile.css', '/script.js',
                 '/spotify-api.js', '/bands.json', '/chart-data.json',
@@ -47,19 +94,6 @@
             // Check if path starts with known directories
             const staticDirs = ['/chart-history/', '/scripts/', '/workers/'];
             const isStaticDir = staticDirs.some(dir => path.startsWith(dir));
-
-            // Handle /curators/[name] routes
-            if (path.startsWith('/curators/')) {
-                const curatorSlug = decodeURIComponent(path.substring('/curators/'.length).replace(/\/$/, ''));
-                if (curatorSlug) {
-                    sessionStorage.setItem('curatorSlug', curatorSlug);
-                    sessionStorage.setItem('curatorCleanUrl', 'true');
-                    window.location.replace('/curator.html?name=' + encodeURIComponent(curatorSlug));
-                    return;
-                }
-                window.location.replace('/curators.html');
-                return;
-            }
 
             // If it's not a static file or directory, treat it as an artist page
             if (!staticFiles.includes(path) && !isStaticDir && path !== '/') {

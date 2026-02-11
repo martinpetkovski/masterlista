@@ -6,18 +6,18 @@
     <title>Услови за користење | Македонска Музичка Мастер Листа</title>
 
     <!-- Localhost clean URL interceptor -->
-    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 
     <!-- Primary SEO Meta Tags -->
     <meta name="title" content="Услови за користење | Македонска Музичка Мастер Листа">
     <meta name="description" content="Услови за користење на веб-страницата Македонска Музичка Мастер Листа (toplista.mk).">
     <meta name="author" content="Македонска Музичка Мастер Листа">
     <meta name="robots" content="noindex, follow">
-    <link rel="canonical" href="https://toplista.mk/terms">
+    <link rel="canonical" href="https://toplista.mk/uslovi">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://toplista.mk/terms.html">
+    <meta property="og:url" content="https://toplista.mk/uslovi">
     <meta property="og:title" content="Услови за користење | Македонска Музичка Мастер Листа">
     <meta property="og:description" content="Услови за користење на toplista.mk.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
@@ -112,17 +112,17 @@
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="/help" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                <a href="/pomosh" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
                     <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/list"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
                     <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
                     <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/curators"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/surprise"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/help"><i class="fas fa-question-circle"></i> Помош</a>
+                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="/pomosh"><i class="fas fa-question-circle"></i> Помош</a>
                 </div>
                 <div class="title-group">
                     <h1>Услови за користење</h1>
@@ -223,8 +223,8 @@
             </p>
 
             <p style="margin-top: 2rem; font-size: 0.75rem; opacity: 0.6;">
-                <a href="/help">← Назад кон Помош / Impressum</a> &nbsp;|&nbsp;
-                <a href="/privacy">Политика на приватност</a>
+                <a href="/pomosh">← Назад кон Помош / Impressum</a> &nbsp;|&nbsp;
+                <a href="/privatnost">Политика на приватност</a>
             </p>
         </div>
     </main>
