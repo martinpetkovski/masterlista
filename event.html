@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Настан | Македонска Музичка Мастер Листа</title>
+
+    <meta name="title" id="meta-title" content="Настан | Македонска Музичка Мастер Листа">
+    <meta name="description" id="meta-description" content="Музички настан од македонската музичка сцена.">
+    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <link rel="canonical" id="canonical-url" href="https://toplista.mk/event.html">
+
+    <meta property="og:type" content="event">
+    <meta property="og:url" id="og-url" content="https://toplista.mk/event.html">
+    <meta property="og:title" id="og-title" content="Настан | Македонска Музичка Мастер Листа">
+    <meta property="og:description" id="og-description" content="Музички настан од македонската музичка сцена.">
+    <meta property="og:image" id="og-image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <style>
+        body.event-page {
+            background: #f2f3f5;
+            background-attachment: fixed;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.5s ease;
+        }
+        body.event-page.dark-mode {
+            background: #111318;
+        }
+
+        .event-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 3rem;
+            flex: 1;
+            width: 100%;
+        }
+
+        .event-loading, .event-error {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .event-loading i {
+            font-size: 2rem;
+            color: var(--accent-orange);
+            margin-bottom: 1rem;
+        }
+        .event-error i {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .event-error h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .event-error p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        .event-error a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--accent-orange);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* ========== Event header ========== */
+        .event-header {
+            text-align: center;
+            padding: 0.5rem 0 1.5rem;
+        }
+        .event-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+        .event-icon i {
+            font-size: 1.8rem;
+            color: var(--accent-blue, #4a7fa5);
+        }
+        .event-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .event-countdown-hero {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            margin-top: 0.3rem;
+        }
+        .event-countdown-hero.today-cd { background: rgba(34,197,94,0.15); color: #16a34a; border: 1px solid rgba(34,197,94,0.3); }
+        .event-countdown-hero.soon { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+        .event-countdown-hero.later { background: rgba(74,127,165,0.08); color: var(--accent-blue); border: 1px solid rgba(74,127,165,0.15); }
+        .event-countdown-hero.passed { background: rgba(139,146,154,0.06); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+        .event-date-hero {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        .event-date-hero i { margin-right: 0.3rem; color: var(--accent-blue); }
+
+        /* ========== Info cards ========== */
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-title i { color: var(--text-primary); }
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .info-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255,255,255,0.08);
+        }
+        a.info-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border-color: var(--accent-blue);
+        }
+        .info-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .info-card-icon i { font-size: 1rem; color: var(--accent-blue); }
+        .info-card-text { flex: 1; min-width: 0; }
+        .info-card-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.1rem;
+        }
+        .info-card-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .info-card-arrow {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        /* ========== Artist tags ========== */
+        .artist-link-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .artist-link-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .artist-link-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            border-color: var(--accent-blue);
+        }
+        .artist-link-card i.fa-music {
+            font-size: 1rem;
+            color: var(--accent-purple, var(--accent-blue));
+            width: 24px;
+            text-align: center;
+        }
+        .artist-link-card .info-card-arrow {
+            margin-left: auto;
+        }
+
+        /* ========== Ticket cards ========== */
+        .ticket-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+        }
+        body.dark-mode .ticket-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .ticket-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(74,127,165,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .ticket-card-icon i { font-size: 0.9rem; color: var(--accent-blue); }
+        .ticket-card-info { flex: 1; }
+        .ticket-card-label { font-size: 0.82rem; font-weight: 600; }
+        .ticket-card-price { font-size: 0.72rem; color: var(--text-muted); }
+
+        /* ========== Footer & back ========== */
+        .event-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .event-footer a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: color 0.2s ease;
+        }
+        .event-footer a:hover { color: var(--accent-orange); }
+        .event-footer .mmm-logo-svg { vertical-align: middle; border-radius: 50%; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: var(--text-primary); }
+        .back-link i { font-size: 0.7rem; }
+    </style>
+</head>
+<body class="compact event-page">
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="/help.html" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="index.html"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="list.html"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="nastani.html"><i class="fas fa-calendar"></i> Настани</a>
+                    <a href="releases.html"><i class="fas fa-compact-disc"></i> Изданија</a>
+                    <a href="curators.html"><i class="fas fa-headphones"></i> Куратори</a>
+                    <a href="vesti.html"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="surprise.html"><i class="fas fa-shuffle"></i> Изненадување</a>
+                </div>
+                <div class="title-group">
+                    <h1 id="event-page-title">Настан</h1>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="event-container">
+        <div id="event-content">
+            <div class="event-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Се вчитува...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DARK MODE ====================
+        (function() {
+            var toggle = document.getElementById('dark-mode-toggle');
+            var body = document.body;
+            var icon = toggle ? toggle.querySelector('i') : null;
+            function setDark(on) {
+                if (on) { body.classList.add('dark-mode'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
+                else { body.classList.remove('dark-mode'); if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } }
+                try { localStorage.setItem('darkMode', on ? 'true' : 'false'); } catch(e) {}
+            }
+            try { if (localStorage.getItem('darkMode') === 'true') setDark(true); } catch(e) {}
+            if (toggle) toggle.addEventListener('click', function() { setDark(!body.classList.contains('dark-mode')); });
+        })();
+
+        // ==================== NAV MENU ====================
+        (function() {
+            var trigger = document.querySelector('.site-nav-trigger');
+            var menu = document.getElementById('site-nav-menu');
+            if (!trigger || !menu) return;
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                menu.classList.toggle('active');
+            });
+            document.addEventListener('click', function(e) {
+                if (!trigger.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('active');
+            });
+        })();
+
+        // ==================== HELPERS ====================
+        var MK_MONTHS = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+        var MK_MONTHS_SHORT = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
+        var MK_DAYS = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
+
+        var cyrMap = {
+            'А':'A','а':'a','Б':'B','б':'b','В':'V','в':'v','Г':'G','г':'g',
+            'Д':'D','д':'d','Ѓ':'Gj','ѓ':'gj','Е':'E','е':'e','Ж':'Zh','ж':'zh',
+            'З':'Z','з':'z','Ѕ':'Dz','ѕ':'dz','И':'I','и':'i','Ј':'J','ј':'j',
+            'К':'K','к':'k','Л':'L','л':'l','Љ':'Lj','љ':'lj','М':'M','м':'m',
+            'Н':'N','н':'n','Њ':'Nj','њ':'nj','О':'O','о':'o','П':'P','п':'p',
+            'Р':'R','р':'r','С':'S','с':'s','Т':'T','т':'t','Ќ':'Kj','ќ':'kj',
+            'У':'U','у':'u','Ф':'F','ф':'f','Х':'H','х':'h','Ц':'C','ц':'c',
+            'Ч':'Ch','ч':'ch','Џ':'Dz','џ':'dz','Ш':'Sh','ш':'sh'
+        };
+        function transliterate(t) { return t.split('').map(function(c) { return cyrMap[c] || c; }).join(''); }
+        function artistSlug(name) { return transliterate(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+        function artistPageUrl(name) {
+            var slug = encodeURIComponent(artistSlug(name));
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return 'artist.html?a=' + slug;
+            return '/' + slug;
+        }
+
+        function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+        function escA(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function parseDate(str) {
+            var p = str.split('-');
+            return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+        }
+
+        function daysUntil(dateStr) {
+            var today = new Date(); today.setHours(0,0,0,0);
+            var d = parseDate(dateStr); d.setHours(0,0,0,0);
+            return Math.round((d - today) / 86400000);
+        }
+
+        function countdownInfo(dateStr) {
+            var diff = daysUntil(dateStr);
+            if (diff === 0) return { text: 'ДЕНЕС!', cls: 'today-cd' };
+            if (diff === 1) return { text: 'утре', cls: 'soon' };
+            if (diff > 1 && diff <= 7) return { text: 'за ' + diff + ' дена', cls: 'soon' };
+            if (diff > 7 && diff <= 30) return { text: 'за ' + diff + ' дена', cls: 'later' };
+            if (diff > 30) {
+                var m = Math.floor(diff / 30);
+                return { text: 'за ~' + m + ' мес.', cls: 'later' };
+            }
+            if (diff < 0) {
+                var ago = Math.abs(diff);
+                if (ago === 1) return { text: 'вчера', cls: 'passed' };
+                if (ago <= 30) return { text: 'пред ' + ago + ' дена', cls: 'passed' };
+                var mo = Math.floor(ago / 30);
+                return { text: 'пред ~' + mo + ' мес.', cls: 'passed' };
+            }
+            return { text: '', cls: '' };
+        }
+
+        // ==================== RENDER ====================
+        function renderError() {
+            document.getElementById('event-content').innerHTML =
+                '<div class="event-error">' +
+                    '<i class="fas fa-calendar-xmark"></i>' +
+                    '<h2>Настанот не е пронајден</h2>' +
+                    '<p>Обидете се повторно или вратете се на листата на настани.</p>' +
+                    '<a href="nastani.html"><i class="fas fa-arrow-left"></i> Сите Настани</a>' +
+                '</div>';
+        }
+
+        function renderEvent(evt) {
+            var d = parseDate(evt.date);
+            var cd = countdownInfo(evt.date);
+            var artists = evt.artists || evt.bands || [];
+            var isPast = daysUntil(evt.date) < 0;
+
+            // Update SEO meta
+            var title = evt.title + ' | Македонска Музичка Мастер Листа';
+            document.getElementById('page-title').textContent = title;
+            document.getElementById('event-page-title').textContent = 'Настан';
+            var desc = evt.title + ' — ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + evt.place;
+            try {
+                document.getElementById('meta-title').content = title;
+                document.getElementById('meta-description').content = desc;
+                document.getElementById('og-title').content = title;
+                document.getElementById('og-description').content = desc;
+            } catch(e) {}
+
+            var html = '';
+
+            // Back link
+            html += '<a href="nastani.html" class="back-link"><i class="fas fa-arrow-left"></i> Сите Настани</a>';
+
+            // Header
+            html += '<div class="event-header">';
+            html += '<div class="event-icon"><i class="fas fa-calendar-day"></i></div>';
+            html += '<div class="event-name">' + esc(evt.title) + '</div>';
+            if (cd.text) {
+                html += '<div class="event-countdown-hero ' + cd.cls + '">' + cd.text + '</div>';
+            }
+            html += '<div class="event-date-hero"><i class="fas fa-clock"></i> ' +
+                MK_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() +
+                (evt.time ? ' · ' + esc(evt.time) : '') + '</div>';
+            html += '</div>';
+
+            // Details section
+            html += '<h3 class="section-title"><i class="fas fa-info-circle"></i> Детали</h3>';
+            html += '<div class="info-list">';
+
+            // Place
+            html += '<div class="info-card">';
+            html += '<div class="info-card-icon"><i class="fas fa-location-dot"></i></div>';
+            html += '<div class="info-card-text"><div class="info-card-label">Место</div><div class="info-card-value">' + esc(evt.place) + '</div></div>';
+            html += '</div>';
+
+            // Date
+            html += '<div class="info-card">';
+            html += '<div class="info-card-icon"><i class="fas fa-calendar"></i></div>';
+            html += '<div class="info-card-text"><div class="info-card-label">Датум</div><div class="info-card-value">' +
+                MK_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + '</div></div>';
+            html += '</div>';
+
+            // Time
+            if (evt.time) {
+                html += '<div class="info-card">';
+                html += '<div class="info-card-icon"><i class="fas fa-clock"></i></div>';
+                html += '<div class="info-card-text"><div class="info-card-label">Време</div><div class="info-card-value">' + esc(evt.time) + '</div></div>';
+                html += '</div>';
+            }
+
+            // External link
+            if (evt.link) {
+                html += '<a href="' + escA(evt.link) + '" target="_blank" rel="noopener" class="info-card">';
+                html += '<div class="info-card-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>';
+                html += '<div class="info-card-text"><div class="info-card-label">Линк</div><div class="info-card-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(evt.link) + '</div></div>';
+                html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
+                html += '</a>';
+            }
+
+            html += '</div>'; // .info-list
+
+            // Artists section
+            if (artists.length) {
+                html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-music"></i> Артисти</h3>';
+                html += '<div class="info-list">';
+                for (var i = 0; i < artists.length; i++) {
+                    html += '<a href="' + escA(artistPageUrl(artists[i])) + '" class="artist-link-card">';
+                    html += '<i class="fas fa-music"></i>';
+                    html += '<span>' + esc(artists[i]) + '</span>';
+                    html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
+                    html += '</a>';
+                }
+                html += '</div>';
+            }
+
+            // Tickets section
+            if (evt.tickets && evt.tickets.length) {
+                html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-ticket"></i> Карти</h3>';
+                html += '<div class="info-list">';
+                for (var t = 0; t < evt.tickets.length; t++) {
+                    var tk = evt.tickets[t];
+                    html += '<div class="ticket-card">';
+                    html += '<div class="ticket-card-icon"><i class="fas fa-ticket"></i></div>';
+                    html += '<div class="ticket-card-info"><div class="ticket-card-label">' + esc(tk.label) + '</div><div class="ticket-card-price">' + esc(tk.price) + '</div></div>';
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+
+            // Footer
+            html += '<div class="event-footer">';
+            html += '<a href="index.html"><img src="/logo.png" alt="Македонска Музичка Мастер Листа" class="mmm-logo-svg" width="28" height="28"></a>';
+            html += '</div>';
+
+            document.getElementById('event-content').innerHTML = html;
+        }
+
+        // ==================== INIT ====================
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var eventId = params.get('id');
+            if (!eventId) {
+                renderError();
+                return;
+            }
+            fetch('events.json')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var events = data.events || data || [];
+                    var found = null;
+                    for (var i = 0; i < events.length; i++) {
+                        if (events[i].id === eventId) { found = events[i]; break; }
+                    }
+                    if (found) renderEvent(found);
+                    else renderError();
+                })
+                .catch(function() { renderError(); });
+        })();
+    </script>
+</body>
+</html>

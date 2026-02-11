@@ -315,7 +315,7 @@ export default {
       const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}`, {
         method: 'PUT',
         body: JSON.stringify({
-          message: `MMM: update bands.json via form${contributor ? ` by ${contributor}` : ''}`,
+          message: `MMM: update ${targetPath} via form${contributor ? ` by ${contributor}` : ''}`,
           content: b64encode(bandsJson),
           branch: branchName,
           sha: currentSha,
