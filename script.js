@@ -3576,7 +3576,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Auto-start tour for new users (only on master list page)
-        const isListPage = window.location.pathname.endsWith('list.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
+        const isListPage = window.location.pathname.endsWith('list.html') || window.location.pathname === '/list' || window.location.pathname === '/' || window.location.pathname.endsWith('/');
         const hasViewedTour = localStorage.getItem(TOUR_VIEWED_KEY) === 'true';
         
         // Show a logo pulse hint on mobile for first-time users

@@ -10,17 +10,9 @@
         <priority>1.0</priority>
     </url>
     
-    <!-- Top Lista Chart Page -->
-    <url>
-        <loc>https://toplista.mk/index.html</loc>
-        <lastmod>2026-01-15</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    
     <!-- Master List - Artist Database -->
     <url>
-        <loc>https://toplista.mk/list.html</loc>
+        <loc>https://toplista.mk/list</loc>
         <lastmod>2026-01-15</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
@@ -28,7 +20,7 @@
     
     <!-- Curators - Curated Playlists -->
     <url>
-        <loc>https://toplista.mk/curators.html</loc>
+        <loc>https://toplista.mk/curators</loc>
         <lastmod>2026-02-10</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -36,7 +28,7 @@
     
     <!-- Music News Page -->
     <url>
-        <loc>https://toplista.mk/vesti.html</loc>
+        <loc>https://toplista.mk/vesti</loc>
         <lastmod>2026-02-07</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
