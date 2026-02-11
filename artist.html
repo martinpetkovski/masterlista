@@ -2785,9 +2785,16 @@ a.chart-history-item {
                         const MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
                         const MK_DAYS = ['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];
                         const artistSlug = generateSlug(artist.name);
+                        const artistNameLower = artist.name.toLowerCase();
+                        const artistTranslit = transliterate(artist.name).toLowerCase();
                         const matched = events.filter(e => {
                             const artists = (e.artists || e.bands || []);
-                            return artists.some(a => generateSlug(a) === artistSlug);
+                            return artists.some(a => {
+                                if (generateSlug(a) === artistSlug) return true;
+                                if (a.toLowerCase() === artistNameLower) return true;
+                                if (transliterate(a).toLowerCase() === artistTranslit) return true;
+                                return false;
+                            });
                         });
                         const upcoming = matched.filter(e => {
                             const parts = e.date.split('-');
@@ -2798,7 +2805,7 @@ a.chart-history-item {
                             const parts = e.date.split('-');
                             const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
                             return d < today;
-                        }).sort((a, b) => new Date(b.date) - new Date(a.date));
+                        }).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
                         function renderEventCard(evt, isPast) {
                             const parts = evt.date.split('-');
