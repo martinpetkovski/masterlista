@@ -26,14 +26,6 @@
         <priority>0.9</priority>
     </url>
     
-    <!-- New Releases Page -->
-    <url>
-        <loc>https://toplista.mk/releases.html</loc>
-        <lastmod>2026-01-15</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
     <!-- Curators - Curated Playlists -->
     <url>
         <loc>https://toplista.mk/curators.html</loc>

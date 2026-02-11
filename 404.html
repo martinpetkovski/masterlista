@@ -6,20 +6,44 @@
     <title>Пренасочување... | Топ Листа МК</title>
     <script>
         (function() {
-            // Get the pathname (e.g., /Artist-Name or /artist-name)
             const path = window.location.pathname;
-            
-            // List of known static pages to exclude from artist routing
-            const staticPages = [
-                '/', '/index.html', '/list.html', '/admin.html', 
-                '/releases.html', '/artist.html', '/curator.html', '/404.html',
+            const search = window.location.search;
+
+            // Clean URL → .html page mapping
+            const pageRoutes = {
+                '/list': '/list.html',
+                '/nastani': '/nastani.html',
+                '/vesti': '/vesti.html',
+                '/curators': '/curators.html',
+                '/surprise': '/surprise.html',
+                '/help': '/help.html',
+                '/event': '/event.html',
+                '/privacy': '/privacy.html',
+                '/terms': '/terms.html',
+                '/admin': '/admin.html',
+                '/artist': '/artist.html'
+            };
+
+            // Handle clean URL page routes (e.g. /list → /list.html, /event?id=x → /event.html?id=x)
+            if (pageRoutes[path]) {
+                window.location.replace(pageRoutes[path] + search);
+                return;
+            }
+
+            // Known static files to exclude from artist routing
+            const staticFiles = [
+                '/', '/index.html', '/list.html', '/admin.html',
+                '/artist.html', '/curator.html', '/404.html',
+                '/nastani.html', '/vesti.html', '/curators.html',
+                '/surprise.html', '/help.html', '/event.html',
+                '/privacy.html', '/terms.html',
                 '/robots.txt', '/sitemap.xml', '/CNAME',
                 '/desktop.css', '/mobile.css', '/script.js',
                 '/spotify-api.js', '/bands.json', '/chart-data.json',
                 '/curators-tracklists.json',
                 '/favicon.svg', '/og-image.svg'
             ];
-            
+
             // Check if path starts with known directories
             const staticDirs = ['/chart-history/', '/scripts/', '/workers/'];
             const isStaticDir = staticDirs.some(dir => path.startsWith(dir));
@@ -33,28 +57,15 @@
                     window.location.replace('/curator.html?name=' + encodeURIComponent(curatorSlug));
                     return;
                 }
-                // /curators/ with no name → go to curators list
                 window.location.replace('/curators.html');
                 return;
             }
 
-            // /curators → curators list
-            if (path === '/curators') {
-                window.location.replace('/curators.html');
-                return;
-            }
-            
-            // If it's not a static page or directory, treat it as an artist page
-            if (!staticPages.includes(path) && !isStaticDir && path !== '/') {
-                // Extract artist slug from path (remove leading slash)
+            // If it's not a static file or directory, treat it as an artist page
+            if (!staticFiles.includes(path) && !isStaticDir && path !== '/') {
                 const artistSlug = decodeURIComponent(path.substring(1));
-                
-                // Redirect to artist.html with the slug as a query parameter
-                // Using sessionStorage to pass the clean URL info
                 sessionStorage.setItem('artistSlug', artistSlug);
                 sessionStorage.setItem('cleanUrl', 'true');
-                
-                // Redirect to artist.html (it will read from sessionStorage)
                 window.location.replace('/artist.html?a=' + encodeURIComponent(artistSlug));
             }
         })();
