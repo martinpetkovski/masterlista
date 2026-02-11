@@ -48,14 +48,18 @@ header {
     z-index: 200;
 }
 
-body.dark-mode header {
+body.dark-mode header,
+html.dark-mode body header {
     background: #15181e;
     border-bottom: 1px solid #2a2e36;
 }
 
 body.dark-mode header .title-group h1,
 body.dark-mode header .header-subtitle,
-body.dark-mode header .subtitle-stats {
+body.dark-mode header .subtitle-stats,
+html.dark-mode body header .title-group h1,
+html.dark-mode body header .header-subtitle,
+html.dark-mode body header .subtitle-stats {
     color: #fff;
 }
 
@@ -1776,7 +1780,13 @@ th.edit-hidden { display: table-cell; }
 }
 
 /* ==================== DARK MODE ==================== */
-body.dark-mode {
+html.dark-mode {
+    background: #111318 !important;
+    color-scheme: dark;
+}
+
+body.dark-mode,
+html.dark-mode body {
     --bg-primary: #111318;
     --bg-secondary: #191c22;
     --bg-hover: #22262e;
@@ -1791,6 +1801,7 @@ body.dark-mode {
     --accent-purple: #8a7db5;
     --accent-teal: #5a9e92;
     background: #111318;
+    color: #d5d8de;
 }
 
 body.dark-mode tr:nth-child(even) {

@@ -2,6 +2,7 @@
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Артист | Македонска Музичка Мастер Листа</title>
     
@@ -68,7 +69,8 @@
             transition: background 0.5s ease;
         }
         
-        body.artist-page.dark-mode {
+        body.artist-page.dark-mode,
+        html.dark-mode body.artist-page {
             background: #111318;
             background-attachment: fixed;
         }

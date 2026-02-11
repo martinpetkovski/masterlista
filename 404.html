@@ -2,6 +2,7 @@
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пренасочување... | Топ Листа МК</title>
     <script>
@@ -115,6 +116,10 @@
             margin: 0;
             background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
             color: #374151;
+        }
+        html.dark-mode, html.dark-mode body {
+            background: #111318 !important;
+            color: #d5d8de;
         }
         .container {
             text-align: center;
