@@ -1979,7 +1979,13 @@ th.edit-hidden, td.edit-hidden, .action-buttons { display: table-cell; }
 }
 
 /* ==================== DARK MODE ==================== */
-body.dark-mode {
+html.dark-mode {
+    background: #111318 !important;
+    color-scheme: dark;
+}
+
+body.dark-mode,
+html.dark-mode body {
     --bg-primary: #111318;
     --bg-secondary: #191c22;
     --bg-hover: #22262e;
@@ -1995,15 +2001,19 @@ body.dark-mode {
     --accent-teal: #5a9e92;
     background: #111318;
     background-attachment: fixed;
+    color: #d5d8de;
 }
 
-body.dark-mode header {
+body.dark-mode header,
+html.dark-mode body header {
     background: #15181e;
     border-bottom: 1px solid var(--border-color);
 }
 
 body.dark-mode header .title-group h1,
-body.dark-mode header .header-subtitle {
+body.dark-mode header .header-subtitle,
+html.dark-mode body header .title-group h1,
+html.dark-mode body header .header-subtitle {
     color: #fff;
 }
 

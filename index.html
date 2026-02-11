@@ -2,6 +2,7 @@
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Македонска Музичка Топ Листа | Најпопуларни Македонски Песни</title>
     
@@ -75,7 +76,8 @@
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <style>
         /* Dark mode variables */
-        body.dark-mode {
+        body.dark-mode,
+        html.dark-mode body {
             --bg-primary: #111318;
             --bg-secondary: #191c22;
             --bg-hover: #22262e;
@@ -89,6 +91,8 @@
             --accent-red: #ef4444;
             --accent-purple: #8a7db5;
             --accent-teal: #5a9e92;
+            background: #111318;
+            color: #d5d8de;
         }
         
         body.dark-mode .chart-section-header {
@@ -4110,13 +4114,19 @@
                 // Check localStorage for saved preference
                 const savedMode = localStorage.getItem('mmm-dark-mode');
                 if (savedMode === 'true') {
+                    document.documentElement.classList.add('dark-mode');
                     document.body.classList.add('dark-mode');
                     toggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.documentElement.classList.remove('dark-mode');
+                    document.documentElement.style.backgroundColor = '';
                 }
                 
                 toggle.addEventListener('click', () => {
                     document.body.classList.toggle('dark-mode');
                     const isDark = document.body.classList.contains('dark-mode');
+                    document.documentElement.classList.toggle('dark-mode', isDark);
+                    document.documentElement.style.backgroundColor = isDark ? '#111318' : '';
                     localStorage.setItem('mmm-dark-mode', isDark);
                     toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
                 });
