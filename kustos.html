@@ -790,7 +790,7 @@
 
         async function loadBandNames() {
             try {
-                const resp = await fetch('bands.json');
+                const resp = await fetch('/bands.json');
                 const data = await resp.json();
                 (data.muzickaMasterLista || []).forEach(b => { if (b.name) bandNameSet.add(b.name); });
             } catch (err) {}
@@ -1055,9 +1055,9 @@
 
             // Load data in parallel
             const [curatorsResp, , tracklistResp] = await Promise.allSettled([
-                fetch('curators.json').then(r => r.json()),
+                fetch('/curators.json').then(r => r.json()),
                 loadBandNames(),
-                fetch('curators-tracklists.json').then(r => r.ok ? r.json() : null).catch(() => null)
+                fetch('/curators-tracklists.json').then(r => r.ok ? r.json() : null).catch(() => null)
             ]);
 
             const curatorsData = curatorsResp.status === 'fulfilled' ? curatorsResp.value : null;
