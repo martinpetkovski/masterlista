@@ -461,6 +461,9 @@
                 document.getElementById('meta-description').content = desc;
                 document.getElementById('og-title').content = title;
                 document.getElementById('og-description').content = desc;
+                var cleanEventUrl = 'https://toplista.mk/nastan/' + encodeURIComponent(evt.id);
+                document.getElementById('canonical-url').href = cleanEventUrl;
+                document.getElementById('og-url').content = cleanEventUrl;
             } catch(e) {}
 
             var html = '';
@@ -559,6 +562,13 @@
             if (!eventId) {
                 renderError();
                 return;
+            }
+            // Restore clean URL if redirected via 404.html
+            var cleanPath = sessionStorage.getItem('eventCleanPath');
+            if (cleanPath) {
+                sessionStorage.removeItem('eventCleanPath');
+                var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                if (!isLocal) history.replaceState(null, '', cleanPath);
             }
             fetch('events.json')
                 .then(function(r) { return r.json(); })

@@ -70,6 +70,7 @@
             if (path.startsWith('/nastan/')) {
                 const eventId = decodeURIComponent(path.substring('/nastan/'.length).replace(/\/$/, ''));
                 if (eventId) {
+                    sessionStorage.setItem('eventCleanPath', path);
                     window.location.replace('/nastan.html?id=' + encodeURIComponent(eventId));
                     return;
                 }

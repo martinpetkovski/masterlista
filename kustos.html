@@ -1029,11 +1029,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             let curatorParam = urlParams.get('name') || urlParams.get('c');
 
-            // Check if came from clean URL redirect
+            // Restore clean URL if redirected via 404.html
             const cleanUrl = sessionStorage.getItem('curatorCleanUrl');
             if (cleanUrl) {
                 sessionStorage.removeItem('curatorCleanUrl');
+                const savedSlug = sessionStorage.getItem('curatorSlug');
                 sessionStorage.removeItem('curatorSlug');
+                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                if (!isLocal && savedSlug) {
+                    history.replaceState(null, '', '/kustos/' + encodeURIComponent(savedSlug));
+                }
             }
 
             if (!curatorParam) {
@@ -1082,6 +1087,13 @@
             if (ogTitle) ogTitle.content = title;
             const ogDesc = document.getElementById('og-description');
             if (ogDesc) ogDesc.content = desc;
+            const cleanCuratorUrl = 'https://toplista.mk/kustos/' + encodeURIComponent(curatorParam);
+            const canonicalEl = document.getElementById('canonical-url');
+            if (canonicalEl) canonicalEl.href = cleanCuratorUrl;
+            const ogUrlEl = document.getElementById('og-url');
+            if (ogUrlEl) ogUrlEl.content = cleanCuratorUrl;
+            const twitterUrlEl = document.getElementById('twitter-url');
+            if (twitterUrlEl) twitterUrlEl.content = cleanCuratorUrl;
 
             // Render
             renderCurator(curator);
