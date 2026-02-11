@@ -1,26 +1,45 @@
 {
   "events": [
     {
-      "id": "duper-oh-210326",
-      "title": "Дупер во Охрид LIVE Concert",
-      "date": "2026-03-21",
-      "time": "21:00",
-      "place": "Art Terrazza, Коста Абрас бр. 30, Охрид",
-      "artists": ["Дупер"],
-      "tickets": [
-      ],
-      "link": "https://www.instagram.com/p/DUYjzgHjaXl/"
-    },
-    {
       "id": "duper-st-210226",
       "title": "Дупер во Штип LIVE Concert",
       "date": "2026-02-21",
       "time": "21:00",
       "place": "CLIQUE Cabaret, Штип",
-      "artists": ["Дупер"],
-      "tickets": [
+      "artists": [
+        "Дупер"
       ],
+      "tickets": [],
       "link": "https://www.instagram.com/p/DUOX2YLDcea/"
+    },
+    {
+      "id": "duper-oh-210326",
+      "title": "Дупер во Охрид LIVE Concert",
+      "date": "2026-03-21",
+      "time": "21:00",
+      "place": "Art Terrazza, Коста Абрас бр. 30, Охрид",
+      "artists": [
+        "Дупер"
+      ],
+      "tickets": [],
+      "link": "https://www.instagram.com/p/DUYjzgHjaXl/"
+    },
+    {
+      "id": "evt-20260805-дупер-4hnk",
+      "title": "Дупер",
+      "date": "2026-08-05",
+      "time": "20:00",
+      "place": "Антички Театар, Охрид",
+      "artists": [
+        "Дупер"
+      ],
+      "tickets": [
+        {
+          "label": "Стандард",
+          "price": "700 ден"
+        }
+      ],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5729"
     }
   ]
 }
