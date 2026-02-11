@@ -58,6 +58,22 @@
         font-weight: 700;
         color: var(--text-primary);
     }
+    .nastani-page .event-name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        min-width: 0;
+        max-width: 100%;
+    }
+    .nastani-page .event-name-row .event-title-cell {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+    .nastani-page .event-name-row .countdown-badge {
+        flex-shrink: 0;
+    }
     .nastani-page .event-date-cell {
         font-family: 'Montserrat', sans-serif;
         font-size: 0.72rem;
@@ -77,7 +93,7 @@
         display: none;
     }
     @media (max-width: 600px) {
-        .nastani-page .mobile-meta { display: block; }
+        .nastani-page .mobile-meta { display: flex; }
         .nastani-page .mobile-artists-inline { display: flex; }
     }
 
@@ -434,78 +450,128 @@
         .nastani-page #search-events {
             width: 100%;
             min-width: 0;
-            height: 38px;
-            font-size: 0.85rem;
+            height: 40px;
+            font-size: 0.9rem;
         }
         .nastani-page .filter-btn-group {
             width: 100%;
             display: flex;
         }
-        .nastani-page .evt-filter-btn { flex: 1; text-align: center; padding: 0.4rem 0.3rem; }
+        .nastani-page .evt-filter-btn { flex: 1; text-align: center; padding: 0.45rem 0.3rem; font-size: 0.8rem; }
 
-        /* On mobile, hide Artists, Place, Date, Time, Tickets, Link; show Name+meta, Actions */
+        /* Hide duplicate columns — all data shown inline inside Настан cell */
         .nastani-page td[data-label="Артисти"],
         .nastani-page td[data-label="Место"],
         .nastani-page td[data-label="Датум"],
         .nastani-page td[data-label="Време"],
         .nastani-page td[data-label="Карти"],
-        .nastani-page td[data-label="Линк"] { display: none !important; }
+        .nastani-page td[data-label="Линк"],
+        .nastani-page td[data-label="Акции"] { display: none !important; }
 
+        /* Show mobile helpers */
+        .nastani-page .mobile-meta { display: flex !important; }
+        .nastani-page .mobile-artists-inline { display: flex !important; }
+
+        /* Row as compact card */
+        .nastani-page tr {
+            padding: 0 !important;
+            gap: 0 !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nastani-page tr:nth-child(even) { background: var(--bg-primary); }
+
+        /* Name cell → stacked card content */
         .nastani-page td[data-label="Настан"] {
             flex: 1 1 0;
             min-width: 0;
             flex-direction: column;
-            align-items: flex-start;
-            padding: 0.2rem 0.25rem;
-            gap: 0.15rem;
+            align-items: stretch;
+            padding: 0.5rem 0.75rem;
+            gap: 0.2rem;
+            overflow: hidden;
+        }
+
+        /* Row 1: Title + badge */
+        .nastani-page td[data-label="Настан"] .event-name-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            max-width: 100%;
+            overflow: hidden;
+            width: 100%;
         }
         .nastani-page td[data-label="Настан"] .event-title-cell {
-            font-size: 0.72rem;
+            font-size: 0.88rem;
+            font-weight: 700;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            max-width: 100%;
+            min-width: 0;
+            flex: 1;
         }
         .nastani-page td[data-label="Настан"] .countdown-badge {
-            margin-left: 0;
+            font-size: 0.6rem;
+            padding: 0.08rem 0.35rem;
+            flex-shrink: 0;
         }
+
+        /* Row 2: Meta — place · date · time (icon-prefixed spans) */
         .nastani-page td[data-label="Настан"] .mobile-meta {
-            font-size: 0.58rem;
-            color: var(--text-muted);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-        }
-
-        .nastani-page td[data-label="Акции"] {
-            flex: 0 0 auto;
-            padding: 0 0.2rem;
-        }
-
-        /* Mobile: artists shown inline under title in Настан col */
-        .nastani-page .mobile-artists-inline {
             display: flex;
-            gap: 0.15rem;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            width: 100%;
+            white-space: nowrap;
+        }
+        .nastani-page .mobile-meta .mm-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            white-space: nowrap;
+        }
+        .nastani-page .mobile-meta .mm-item i {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .nastani-page .mobile-meta .mm-sep {
+            color: var(--border-color);
+            font-size: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        /* Row 3: Artist tags */
+        .nastani-page .mobile-artists-inline {
+            gap: 0.2rem;
             flex-wrap: nowrap;
             overflow-x: auto;
-            max-width: 100%;
+            width: 100%;
             scrollbar-width: none;
+            padding-top: 0.1rem;
         }
         .nastani-page .mobile-artists-inline::-webkit-scrollbar { display: none; }
         .nastani-page .mobile-artists-inline .artist-tag {
-            font-size: 0.55rem;
-            padding: 0.04rem 0.3rem;
+            font-size: 0.68rem;
+            padding: 0.08rem 0.35rem;
         }
 
         /* Today separator */
         .nastani-page tr.today-separator {
-            padding: 0;
+            padding: 0 !important;
+            border-bottom: none;
         }
-        .nastani-page tr.today-separator td {
-            flex: 1;
-            max-width: 100%;
+        .nastani-page tr.today-separator td { flex: 1; max-width: 100%; }
+
+        /* Today event accent */
+        .nastani-page tr.today-event {
+            border-left: 3px solid #22c55e;
         }
+
+        /* Past event on mobile */
+        .nastani-page tr.past-event { opacity: 0.35; }
     }
     </style>
 </head>
@@ -842,10 +908,17 @@
                 html += '<tr class="' + rowCls + '" data-id="' + escA(evt.id) + '">';
 
                 // 1. Name + countdown + mobile meta
-                html += '<td data-label="Настан"><span class="event-title-cell">' + esc(evt.title) + '</span>';
+                html += '<td data-label="Настан"><div class="event-name-row"><span class="event-title-cell">' + esc(evt.title) + '</span>';
                 if (cd.text) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
-                // Mobile: place + date + time inline
-                html += '<span class="mobile-meta">' + esc(evt.place) + ' · ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ' · ' + esc(evt.time) + '</span>';
+                html += '</div>';
+                // Mobile: structured meta with icons
+                html += '<span class="mobile-meta">';
+                html += '<span class="mm-item"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</span>';
+                html += '<span class="mm-sep">·</span>';
+                html += '<span class="mm-item"><i class="fas fa-calendar"></i> ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + '</span>';
+                html += '<span class="mm-sep">·</span>';
+                html += '<span class="mm-item"><i class="fas fa-clock"></i> ' + esc(evt.time) + '</span>';
+                html += '</span>';
                 // Mobile: artists inline
                 if (artists.length) {
                     html += '<span class="mobile-artists-inline">';
