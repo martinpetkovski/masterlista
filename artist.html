@@ -1049,23 +1049,23 @@ a.chart-history-item {
             }
         }
     </style>
-    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="artist-page">
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="/help" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                <a href="/pomosh" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
                     <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/list"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
                     <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
                     <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/curators"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/surprise"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/help"><i class="fas fa-question-circle"></i> Помош</a>
+                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="/pomosh"><i class="fas fa-question-circle"></i> Помош</a>
                 </div>
                 <div class="title-group">
                     <h1 id="artist-page-title">Артист</h1>
@@ -1597,7 +1597,7 @@ a.chart-history-item {
             
             // Build edit URL and add to header nav
             const artistSlug = generateSlug(artist.name);
-            const editUrl = `list.html?edit=${encodeURIComponent(artistSlug)}`;
+            const editUrl = `/lista?edit=${encodeURIComponent(artistSlug)}`;
             const headerButtons = document.querySelector('.header-buttons');
             if (headerButtons && !headerButtons.querySelector('.header-edit-btn')) {
                 const editLink = document.createElement('a');
@@ -2483,7 +2483,7 @@ a.chart-history-item {
                     <i class="fas fa-question-circle"></i>
                     <h2>Артистот не е пронајден</h2>
                     <p>Не можевме да го пронајдеме бараниот артист.</p>
-                    <a href="/list">
+                    <a href="/lista">
                         <i class="fas fa-list"></i>
                         Прегледај ја листата
                     </a>
@@ -2821,7 +2821,7 @@ a.chart-history-item {
                             const dateStr = d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
                             const dayStr = MK_DAYS[d.getDay()];
                             const item = document.createElement('a');
-                            item.href = 'event.html?id=' + encodeURIComponent(evt.id);
+                            item.href = '/nastan/' + encodeURIComponent(evt.id);
                             item.className = 'artist-link';
                             item.style.textDecoration = 'none';
                             if (isPast) item.style.opacity = '0.55';

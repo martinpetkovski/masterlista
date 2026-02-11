@@ -12,11 +12,11 @@
     <meta name="author" content="Македонска Музичка Мастер Листа">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
-    <link rel="canonical" href="https://toplista.mk/curators">
+    <link rel="canonical" href="https://toplista.mk/kustosi">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://toplista.mk/curators.html">
+    <meta property="og:url" content="https://toplista.mk/kustosi">
     <meta property="og:title" content="Кустоси | Македонска Музичка Мастер Листа">
     <meta property="og:description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти, музичари и познавачи.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
@@ -25,7 +25,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://toplista.mk/curators.html">
+    <meta property="twitter:url" content="https://toplista.mk/kustosi">
     <meta property="twitter:title" content="Кустоси">
     <meta property="twitter:description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти и познавачи.">
     <meta property="twitter:image" content="https://toplista.mk/og-image.png">
@@ -956,23 +956,23 @@
             .custos-playlist-tabs::-webkit-scrollbar { display: none; }
         }
     </style>
-    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact curators-page curators-compact">
     <header>
         <div class="header-content">
             <div class="logo-title-group">
-                <a href="/help" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
+                <a href="/pomosh" class="site-logo-link site-nav-trigger" title="Помош / Impressum">
                   <img src="/logo.png" alt="MMM" class="site-logo-svg">
                 </a>
                 <div class="site-nav-menu" id="site-nav-menu">
                     <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/list"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
                     <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
                     <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/curators" class="active"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/surprise"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/help"><i class="fas fa-question-circle"></i> Помош</a>
+                    <a href="/kustosi" class="active"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="/pomosh"><i class="fas fa-question-circle"></i> Помош</a>
                 </div>
                 <div class="title-group">
                     <h1>Кустоси</h1>
@@ -1415,7 +1415,7 @@
 
             const remaining = allTracks.length - visibleTracks.length;
             const seeMoreHtml = limited && curatorName
-                ? `<a class="tracklist-see-more" href="curator.html?name=${curatorSlug(curatorName)}"><i class="fas fa-list"></i> Прикажи ги сите ${trackCount} песни</a>`
+                ? `<a class="tracklist-see-more" href="/kustos/${curatorSlug(curatorName)}"><i class="fas fa-list"></i> Прикажи ги сите ${trackCount} песни</a>`
                 : '';
 
             return `<div class="tracklist-wrapper tracklist-service-${service}" data-curator-playlist>
@@ -1562,7 +1562,7 @@
             }
 
             // Curator profile link
-            const curatorLink = 'curator.html?name=' + curatorSlug(c.name);
+            const curatorLink = '/kustos/' + curatorSlug(c.name);
 
             // searchable data attribute – include original + Latin transliterations for Cyrillic-insensitive search
             const rawParts = [c.name, ...(c.relevance || [])];
