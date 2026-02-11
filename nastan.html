@@ -357,11 +357,14 @@
             var body = document.body;
             var icon = toggle ? toggle.querySelector('i') : null;
             function setDark(on) {
-                if (on) { body.classList.add('dark-mode'); if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); } }
-                else { body.classList.remove('dark-mode'); if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); } }
-                try { localStorage.setItem('darkMode', on ? 'true' : 'false'); } catch(e) {}
+                body.classList.toggle('dark-mode', on);
+                document.documentElement.classList.toggle('dark-mode', on);
+                document.documentElement.style.backgroundColor = on ? '#111318' : '';
+                if (icon) icon.className = on ? 'fas fa-sun' : 'fas fa-moon';
+                try { localStorage.setItem('mmm-dark-mode', on ? 'true' : 'false'); } catch(e) {}
             }
-            try { if (localStorage.getItem('darkMode') === 'true') setDark(true); } catch(e) {}
+            var s = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
+            if (s === 'true') setDark(true);
             if (toggle) toggle.addEventListener('click', function() { setDark(!body.classList.contains('dark-mode')); });
         })();
 

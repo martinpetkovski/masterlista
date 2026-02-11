@@ -1124,9 +1124,10 @@ a.chart-history-item {
 
             function setDarkMode(enabled) {
                 body.classList.toggle('dark-mode', enabled);
+                document.documentElement.classList.toggle('dark-mode', enabled);
+                document.documentElement.style.backgroundColor = enabled ? '#111318' : '';
                 if (icon) icon.className = enabled ? 'fas fa-sun' : 'fas fa-moon';
                 localStorage.setItem('mmm-dark-mode', enabled ? 'true' : 'false');
-                localStorage.setItem('darkMode', enabled ? 'true' : 'false');
             }
 
             const saved = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');

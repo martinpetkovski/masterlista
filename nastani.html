@@ -740,11 +740,13 @@
             var icon = toggle ? toggle.querySelector('i') : null;
             function setDark(on) {
                 body.classList.toggle('dark-mode', on);
+                document.documentElement.classList.toggle('dark-mode', on);
+                document.documentElement.style.backgroundColor = on ? '#111318' : '';
                 if (icon) icon.className = on ? 'fas fa-sun' : 'fas fa-moon';
                 localStorage.setItem('mmm-dark-mode', on ? 'true' : 'false');
             }
             var s = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
-            if (s === 'true' || (!s && window.matchMedia('(prefers-color-scheme: dark)').matches)) setDark(true);
+            if (s === 'true') setDark(true);
             if (toggle) toggle.addEventListener('click', function() { setDark(!body.classList.contains('dark-mode')); });
         })();
 

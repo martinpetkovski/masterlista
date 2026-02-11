@@ -906,12 +906,18 @@
             if (!toggle) return;
             const savedMode = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
             if (savedMode === 'true') {
+                document.documentElement.classList.add('dark-mode');
                 document.body.classList.add('dark-mode');
                 toggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.classList.remove('dark-mode');
+                document.documentElement.style.backgroundColor = '';
             }
             toggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
                 const isDark = document.body.classList.contains('dark-mode');
+                document.documentElement.classList.toggle('dark-mode', isDark);
+                document.documentElement.style.backgroundColor = isDark ? '#111318' : '';
                 localStorage.setItem('mmm-dark-mode', isDark);
                 toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             });
