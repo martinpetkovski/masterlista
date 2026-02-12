@@ -804,25 +804,46 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Cool-toned city color palettes for light and dark modes
+    const cityPaletteLight = [
+        '#4a8fa8',  // steel blue
+        '#6b7fa5',  // slate blue
+        '#5a9a8f',  // sage teal
+        '#7889a0',  // dusty blue
+        '#5c8d76',  // muted seafoam
+        '#6880b0',  // periwinkle
+        '#4f9b9b',  // teal
+        '#7a7da8',  // lavender steel
+        '#5a8a6e',  // eucalyptus
+        '#5b85b5',  // cornflower
+        '#6d95a0',  // cadet blue
+        '#7b8e78',  // sage
+    ];
+    const cityPaletteDark = [
+        '#3a7a92',  // deep steel
+        '#5a6d90',  // dark slate
+        '#4a867a',  // dark sage
+        '#66778e',  // dark dusty
+        '#4d7a66',  // dark seafoam
+        '#576e9a',  // dark periwinkle
+        '#3f8585',  // dark teal
+        '#68698e',  // dark lavender
+        '#4a785e',  // dark eucalyptus
+        '#4a729e',  // dark cornflower
+        '#5c8290',  // dark cadet
+        '#6a7c68',  // dark sage
+    ];
+
     function generateCityColor(city) {
         const asciiSum = city.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-        // Saturated, clearly distinct colors for each city
-        const colorPalette = [
-            '#0e8a7d',  // teal
-            '#7c3aed',  // vivid purple
-            '#16803c',  // forest green
-            '#b45309',  // amber
-            '#2563eb',  // bright blue
-            '#be185d',  // deep pink
-            '#0d9488',  // cyan-teal
-            '#7e22ce',  // grape purple  
-            '#4d7c0f',  // lime green
-            '#c2410c',  // burnt orange
-            '#0369a1',  // ocean blue
-            '#9f1239',  // crimson
-        ];
-        const paletteIndex = asciiSum % colorPalette.length;
-        return colorPalette[paletteIndex];
+        const isDark = document.documentElement.classList.contains('dark-mode');
+        const palette = isDark ? cityPaletteDark : cityPaletteLight;
+        return palette[asciiSum % palette.length];
+    }
+
+    function getCityTagStyle(city) {
+        const bg = generateCityColor(city);
+        return `background: ${bg}; color: #fff; border-color: ${bg}`;
     }
 
     // Initialize scroll shadows for scrollable containers
@@ -2779,7 +2800,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const regularLinks = sortedPlatforms.filter(p => !reviewPlatforms.includes(p));
                 const reviewLinks = sortedPlatforms.filter(p => reviewPlatforms.includes(p));
                 
-                linksHtml = regularLinks
+                linksHtml = '';
+                if (band.contact !== 'недостигаат податоци') {
+                    linksHtml += `<a href="mailto:${band.contact}" class="contact-link"><i class="fa-solid fa-envelope"></i></a>`;
+                }
+                linksHtml += regularLinks
                     .flatMap(platform => {
                         const urlOrUrls = band.links[platform];
                         const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
@@ -2792,9 +2817,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     })
                     .join('');
-                if (band.contact !== 'недостигаат податоци') {
-                    linksHtml += `<a href="mailto:${band.contact}" class="contact-link"><i class="fa-solid fa-envelope"></i></a>`;
-                }
                 
                 // Build reviews/media HTML from manual links
                 let manualReviewsHtml = '';
@@ -2827,13 +2849,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             let cityHtml = band.city === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="background: ${generateCityColor(c)}">${c}</span>`).join('');
+                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="${getCityTagStyle(c)}"><i class="fas fa-map-marker-alt"></i>${c}</span>`).join('');
             let genreHtml = band.genre === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}">${g}</span>`).join('');
+                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${g}</span>`).join('');
             let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
                 ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}">${s}</span>`).join('');
+                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}"><i class="fas fa-headphones"></i>${s}</span>`).join('');
             
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
