@@ -225,9 +225,53 @@
       "date": "2026-06-26",
       "time": "12:00",
       "place": "Штип",
-      "artists": [
-        "GURUVOODOO"
+      "artists": [],
+      "tickets": [
+        {
+          "label": "Фестивалски Билет",
+          "price": "2000"
+        },
+        {
+          "label": "Фестивалски Билет + Камп",
+          "price": "2300"
+        },
+        {
+          "label": "Еднодневен Билет",
+          "price": "1500"
+        }
       ],
+      "link": "https://mktickets.mk/event/d-festival-2026/"
+    },
+    {
+      "id": "evt-20260627-д-фест-ден-2-cxh3",
+      "title": "Д ФЕСТ - Ден 2",
+      "date": "2026-06-27",
+      "time": "12:00",
+      "place": "Штип",
+      "artists": [],
+      "tickets": [
+        {
+          "label": "Фестивалски Билет",
+          "price": "2000"
+        },
+        {
+          "label": "Фестивалски Билет + Камп",
+          "price": "2300"
+        },
+        {
+          "label": "Еднодневен Билет",
+          "price": "1500"
+        }
+      ],
+      "link": "https://mktickets.mk/event/d-festival-2026/"
+    },
+    {
+      "id": "evt-20260628-д-фест-ден-3-cxh3",
+      "title": "Д ФЕСТ - Ден 3",
+      "date": "2026-06-28",
+      "time": "12:00",
+      "place": "Штип",
+      "artists": [],
       "tickets": [
         {
           "label": "Фестивалски Билет",
