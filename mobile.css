@@ -2188,3 +2188,180 @@ body.dark-mode .site-footer-content a {
 body.guide-page .site-footer {
     position: static;
 }
+
+/* ==================== MMM Draft Bar (Mobile) ==================== */
+.mmm-draft-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+.mmm-draft-bar.visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.mmm-draft-bar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--bg-secondary, #16213e);
+    border-top: 1px solid var(--border-color, #2a3a5a);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+.mmm-draft-bar-info {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--text-primary, #eee);
+    min-width: 0;
+}
+.mmm-draft-bar-info > i {
+    color: var(--accent-orange, #ff9113);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.mmm-draft-bar-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+.mmm-draft-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: var(--accent-orange, #ff9113);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.mmm-draft-bar-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+.mmm-draft-btn {
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: background 0.15s, opacity 0.15s;
+    font-family: inherit;
+    flex: 1;
+    justify-content: center;
+}
+.mmm-draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.mmm-draft-btn.discard {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--accent-red, #ff6b6b);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+}
+.mmm-draft-btn.submit {
+    background: var(--accent-orange, #ff9113);
+    color: #fff;
+}
+.mmm-btn-danger {
+    background: var(--accent-red, #ff6b6b) !important;
+    color: #fff !important;
+}
+
+/* Draft overlay / dialogs (mobile) */
+.mmm-draft-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+.mmm-draft-dialog {
+    background: var(--bg-secondary, #16213e);
+    border: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 12px 12px 0 0;
+    padding: 1.2rem;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+.mmm-draft-dialog h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-primary, #eee);
+}
+.mmm-draft-dialog h2 i { color: var(--accent-orange, #ff9113); }
+.mmm-draft-dialog-sm { max-width: 100%; }
+.mmm-draft-dialog-info {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 0.4rem;
+}
+.mmm-draft-file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.8rem 0;
+}
+.mmm-draft-file-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.72rem;
+    color: var(--text-primary, #eee);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    margin-bottom: 0.2rem;
+}
+.mmm-draft-file-list li i { color: var(--accent-blue, #4da6ff); font-size: 0.65rem; }
+.mmm-draft-field { margin-bottom: 0.6rem; }
+.mmm-draft-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 0.2rem;
+}
+.mmm-draft-field input,
+.mmm-draft-field textarea {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    background: var(--bg-primary, #1a1a2e);
+    border: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 6px;
+    color: var(--text-primary, #eee);
+    font-size: 0.78rem;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+.mmm-draft-field input:focus,
+.mmm-draft-field textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange, #ff9113);
+}
+.mmm-draft-dialog-buttons {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+    margin-top: 0.8rem;
+}
