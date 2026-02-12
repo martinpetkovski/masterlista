@@ -781,8 +781,7 @@ td[data-label="Статус"] > span.status-content {
 }
 .sounds-like-item i { color: #4a7fa5; }
 
-.city-item { color: #fff; }
-.city-item i { color: #fff; }
+.city-item i { color: inherit; }
 
 .band-label {
     background: var(--accent-red);

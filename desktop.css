@@ -866,11 +866,10 @@ tr:hover .missing-data { opacity: 0.6; }
 
 .city-item {
     flex-shrink: 0;
-    color: #fff;
 }
-.city-item i { color: #fff; }
+.city-item i { color: inherit; }
 .city-item:hover {
-    filter: brightness(0.88);
+    filter: brightness(0.92);
 }
 
 /* Dark mode tag colors */
