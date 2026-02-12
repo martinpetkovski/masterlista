@@ -149,6 +149,102 @@
       "link": "https://tix.mk/event/128/conquering-lion-one-world"
     },
     {
+      "id": "evt-20260329-љубојна-25-години-xad1",
+      "title": "Љубојна - 25 Години",
+      "date": "2026-03-29",
+      "time": "20:00",
+      "place": "Македонска Филхармонија, Скопје",
+      "artists": [
+        "Љубојна"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "1000"
+        },
+        {
+          "label": "Билет",
+          "price": "1200"
+        },
+        {
+          "label": "Билет",
+          "price": "1500"
+        }
+      ],
+      "link": "https://mktickets.mk/event/ljubojna-25-godini/"
+    },
+    {
+      "id": "evt-20260606-јован-јованов-елвир-мекиќ-и-пријателите-5f1g",
+      "title": "Јован Јованов, Елвир Мекиќ и пријателите",
+      "date": "2026-06-06",
+      "time": "20:00",
+      "place": "А1 Арена Борис Трајковски, Скопје",
+      "artists": [
+        "Елвир Меќиќ",
+        "Јован Јованов"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "800"
+        },
+        {
+          "label": "Билет",
+          "price": "1000"
+        },
+        {
+          "label": "Билет",
+          "price": "1200"
+        },
+        {
+          "label": "Билет",
+          "price": "1500"
+        },
+        {
+          "label": "Билет",
+          "price": "1800"
+        },
+        {
+          "label": "Билет",
+          "price": "2000"
+        },
+        {
+          "label": "ВИП Високи Маси 1",
+          "price": "11000"
+        },
+        {
+          "label": "ВИП Високи Маси 2",
+          "price": "11000"
+        }
+      ],
+      "link": "https://mktickets.mk/event/jovan-jovanov-elvir-mekic-i-prijateli/"
+    },
+    {
+      "id": "evt-20260626-д-фест-ден-1-cxh3",
+      "title": "Д ФЕСТ - Ден 1",
+      "date": "2026-06-26",
+      "time": "12:00",
+      "place": "Штип",
+      "artists": [
+        "GURUVOODOO"
+      ],
+      "tickets": [
+        {
+          "label": "Фестивалски Билет",
+          "price": "2000"
+        },
+        {
+          "label": "Фестивалски Билет + Камп",
+          "price": "2300"
+        },
+        {
+          "label": "Еднодневен Билет",
+          "price": "1500"
+        }
+      ],
+      "link": "https://mktickets.mk/event/d-festival-2026/"
+    },
+    {
       "id": "evt-20260726-2bona-odhv",
       "title": "2bona",
       "date": "2026-07-26",
@@ -193,7 +289,7 @@
       ],
       "tickets": [
         {
-          "label": "Стандард",
+          "label": "Билет",
           "price": "700 ден"
         }
       ],
