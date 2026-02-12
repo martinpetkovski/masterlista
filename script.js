@@ -199,34 +199,143 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 30000); // Save every 30 seconds
     
-    // ==================== DARK MODE ====================
-    function initDarkMode() {
-        const toggle = document.getElementById('dark-mode-toggle');
-        if (!toggle) return;
-        
-        // Check localStorage for saved preference
-        const savedMode = localStorage.getItem('mmm-dark-mode');
-        if (savedMode === 'true') {
-            document.documentElement.classList.add('dark-mode');
-            document.body.classList.add('dark-mode');
-            toggle.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            document.documentElement.classList.remove('dark-mode');
-            document.documentElement.style.backgroundColor = '';
+    // ==================== SETTINGS MENU ====================
+    function initSettingsMenu() {
+        const settingsBtn = document.getElementById('settings-btn');
+        if (!settingsBtn) return;
+
+        const svcDefs = {
+            spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+            youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+            youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+            appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
+            deezer: { name: 'Deezer', icon: 'fas fa-headphones', color: '#A238FF' },
+            tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#000000' },
+            amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
+        };
+
+        let overlay = document.getElementById('settings-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'settings-overlay';
+            overlay.className = 'settings-overlay';
+
+            const currentService = localStorage.getItem('mmm-preferred-service');
+            const isDark = document.documentElement.classList.contains('dark-mode');
+
+            overlay.innerHTML = `
+                <div class="settings-panel">
+                    <h3><i class="fas fa-gear"></i> Поставки</h3>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Тема</div>
+                        <div class="settings-theme-toggle">
+                            <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light">
+                                <i class="fas fa-sun"></i> Светла
+                            </button>
+                            <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark">
+                                <i class="fas fa-moon"></i> Темна
+                            </button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Стриминг сервис</div>
+                        <div class="settings-service-options">
+                            <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service="">
+                                <i class="fas fa-question"></i> Секогаш прашувај
+                            </button>
+                            ${Object.entries(svcDefs).map(([id, svc]) => `
+                                <button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}">
+                                    <i class="${svc.icon}"></i> ${svc.name}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="settings-section settings-tour-section">
+                        <button class="settings-tour-btn" id="settings-start-tour">
+                            <i class="fas fa-route"></i> Тура на сајтот
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('visible');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const ov = document.getElementById('settings-overlay');
+                    if (ov) ov.classList.remove('visible');
+                }
+            });
+
+            // Theme toggle
+            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dark = btn.dataset.theme === 'dark';
+                    document.body.classList.toggle('dark-mode', dark);
+                    document.documentElement.classList.toggle('dark-mode', dark);
+                    document.documentElement.style.backgroundColor = dark ? '#111318' : '';
+                    localStorage.setItem('mmm-dark-mode', dark);
+                    overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+
+            // Service selection
+            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const serviceId = btn.dataset.service;
+                    if (serviceId) {
+                        localStorage.setItem('mmm-preferred-service', serviceId);
+                    } else {
+                        localStorage.removeItem('mmm-preferred-service');
+                    }
+                    overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // Update any visible service preference indicators
+                    document.querySelectorAll('.service-pref-current').forEach(el => {
+                        if (serviceId && svcDefs[serviceId]) {
+                            el.innerHTML = `<i class="${svcDefs[serviceId].icon}"></i>`;
+                            el.title = svcDefs[serviceId].name;
+                        }
+                    });
+                });
+            });
+
+            // Tour button
+            const tourBtn = overlay.querySelector('#settings-start-tour');
+            if (tourBtn) {
+                tourBtn.addEventListener('click', () => {
+                    overlay.classList.remove('visible');
+                    if (typeof window.startGlobalTour === 'function') {
+                        window.startGlobalTour();
+                    }
+                });
+            }
         }
-        
-        toggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.documentElement.classList.toggle('dark-mode', isDark);
-            document.documentElement.style.backgroundColor = isDark ? '#111318' : '';
-            localStorage.setItem('mmm-dark-mode', isDark);
-            toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+        // Open settings
+        settingsBtn.addEventListener('click', () => {
+            // Refresh active states
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark);
+            });
+            const currentSvc = localStorage.getItem('mmm-preferred-service');
+            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                const svcId = btn.dataset.service;
+                btn.classList.toggle('active', svcId === (currentSvc || ''));
+            });
+            overlay.classList.add('visible');
         });
     }
-    
-    // Initialize dark mode early
-    initDarkMode();
+
+    // Initialize settings menu
+    initSettingsMenu();
 
     // ==================== NAV MENU ====================
     function initNavMenu() {
@@ -390,6 +499,41 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Start loading RSS feeds early (non-blocking)
     const rssLoadPromise = loadRssFeeds();
+
+    // Start loading events early (non-blocking)
+    let cachedEvents = null;
+    async function loadEvents() {
+        if (cachedEvents !== null) return cachedEvents;
+        try {
+            const resp = await fetch('events.json');
+            if (!resp.ok) throw new Error(`Failed to load events.json: ${resp.status}`);
+            const data = await resp.json();
+            cachedEvents = (data.events || []).map(e => ({
+                id: e.id,
+                title: e.title || '',
+                date: e.date || '',
+                time: e.time || '',
+                place: e.place || '',
+                artists: e.artists || [],
+                link: e.link || ''
+            }));
+            return cachedEvents;
+        } catch (err) {
+            console.warn('Failed to load events:', err);
+            cachedEvents = [];
+            return [];
+        }
+    }
+    const eventsLoadPromise = loadEvents();
+
+    function findMatchingEvents(bandName) {
+        if (!cachedEvents || !bandName) return [];
+        const lower = bandName.toLowerCase();
+        const today = new Date().toISOString().slice(0, 10);
+        return cachedEvents.filter(e =>
+            e.artists.some(a => a.toLowerCase() === lower) && e.date >= today
+        );
+    }
 
     function deepClone(obj) {
         return JSON.parse(JSON.stringify(obj));
@@ -958,108 +1102,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Handle preview button clicks - shows Spotify embed player
+    // Handle preview button clicks - opens on preferred service
     async function handlePreviewClick(btn) {
         const albumId = btn.dataset.albumId;
         const releaseCard = btn.closest('.new-release-card');
         const releaseUrl = releaseCard?.querySelector('.release-thumbnail-link')?.href;
         
-        // Extract Spotify ID and type from URL
-        let spotifyId = albumId;
-        let spotifyType = 'artist'; // default
-        
-        if (releaseUrl && releaseUrl.includes('spotify.com')) {
-            // Parse the URL to get type and ID
-            // Format: https://open.spotify.com/artist/XXXX or /album/XXXX or /track/XXXX
-            const match = releaseUrl.match(/spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
-            if (match) {
-                spotifyType = match[1];
-                spotifyId = match[2];
-            }
-        }
-        
-        showSpotifyEmbed(spotifyId, spotifyType);
-    }
-    
-    // Show Spotify embed player in modal
-    function showSpotifyEmbed(spotifyId, type = 'artist') {
-        const modal = document.getElementById('spotify-embed-modal');
-        const container = document.getElementById('spotify-embed-container');
-        
-        if (!modal || !container) return;
-        
-        // Clean up previous Spotify embed controller
-        if (spotifyEmbedController) {
-            spotifyEmbedController.destroy();
-            spotifyEmbedController = null;
-        }
-        
-        // Try Spotify IFrame API for autoplay
-        if (spotifyIframeAPI) {
-            container.innerHTML = '';
-            const target = document.createElement('div');
-            container.appendChild(target);
-            spotifyIframeAPI.createController(target, {
-                uri: `spotify:${type}:${spotifyId}`,
-                autoplay: true
-            }, (controller) => {
-                spotifyEmbedController = controller;
-            });
-        } else {
-            // Fallback to regular iframe
-            const embedUrl = `https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0`;
-            container.innerHTML = `
-                <iframe 
-                    src="${embedUrl}" 
-                    width="100%" 
-                    height="${type === 'track' ? '152' : '352'}" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy"
-                ></iframe>
-            `;
-        }
-        
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        
-        // Close on backdrop click
-        modal.onclick = (e) => {
-            if (e.target === modal) {
-                closeSpotifyEmbed();
-            }
-        };
-        
-        // Close on Escape key
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                closeSpotifyEmbed();
-                document.removeEventListener('keydown', escHandler);
-            }
-        };
-        document.addEventListener('keydown', escHandler);
-    }
-    
-    // Close Spotify embed modal
-    function closeSpotifyEmbed() {
-        const modal = document.getElementById('spotify-embed-modal');
-        const container = document.getElementById('spotify-embed-container');
-        
-        if (modal) {
-            modal.style.display = 'none';
-            document.body.style.overflow = '';
-        }
-        if (container) {
-            container.innerHTML = ''; // Clear iframe to stop playback
-        }
-    }
-    
-    // Initialize Spotify embed modal close button
-    function initializeSpotifyEmbedModal() {
-        const closeBtn = document.querySelector('.spotify-modal-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeSpotifyEmbed);
+        if (releaseUrl) {
+            openOnPreferredService(releaseUrl);
         }
     }
 
@@ -1217,12 +1267,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Loaded ${bandsData.length} bands`);
             
             // Render the table first (highest priority)
-            // Ensure RSS feeds are loaded before rendering (for МЕДИУМИ column)
+            // Ensure RSS feeds and events are loaded before rendering
             try {
                 await rssLoadPromise;
                 console.log(`RSS feeds loaded: ${(cachedRssArticles || []).length} articles`);
             } catch (rssErr) {
                 console.warn('RSS feeds not available:', rssErr);
+            }
+            try {
+                await eventsLoadPromise;
+                console.log(`Events loaded: ${(cachedEvents || []).length} events`);
+            } catch (evtErr) {
+                console.warn('Events not available:', evtErr);
             }
             
             renderBands(bandsData, { progressive: true });
@@ -2863,9 +2919,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const activityStatus = getActivityStatus(band.name);
             const statusClass = activityStatus === 'Непознато' ? 'missing-data' : '';
             
+            // Build events column
+            const matchedEvents = findMatchingEvents(band.name);
+            let eventsHtml = '';
+            if (matchedEvents.length > 0) {
+                eventsHtml = matchedEvents.map(evt => {
+                    const d = evt.date ? new Date(evt.date + 'T00:00:00') : null;
+                    const dateStr = d ? d.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short' }) : '';
+                    const escapedTitle = (evt.title + (dateStr ? ` (${dateStr})` : '') + (evt.place ? ` — ${evt.place}` : '')).replace(/"/g, '&quot;');
+                    const href = evt.link || `/nastan/${evt.id}`;
+                    return `<a href="${href}" target="_blank" title="${escapedTitle}" class="event-icon-link"><i class="fas fa-calendar-day"></i></a>`;
+                }).join('');
+            }
+            
             // On mobile, merge media links into the links column
             const isMobile = window.innerWidth <= 600;
-            const combinedLinksHtml = isMobile && reviewsHtml ? linksHtml + reviewsHtml : linksHtml;
+            const combinedLinksHtml = isMobile && (reviewsHtml || eventsHtml) ? linksHtml + reviewsHtml + eventsHtml : linksHtml;
             
             bandRow.innerHTML = `
                 <td data-label="Име" class="name">${nameHtml}</td>
@@ -2874,6 +2943,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Звучи како"><div class="cell-scroll">${soundsLikeHtml}</div></td>
                 <td data-label="Линкови" class="links"><div class="cell-scroll">${combinedLinksHtml}</div></td>
                 <td data-label="Медиуми" class="links reviews"><div class="cell-scroll">${reviewsHtml}</div></td>
+                <td data-label="Настани" class="links events"><div class="cell-scroll">${eventsHtml}</div></td>
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
@@ -2952,426 +3022,199 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
     
-    // ==================== INLINE MUSIC PLAYER ====================
-    // Service definitions with icons and embed support
+    // ==================== SERVICE PREFERENCE & OPEN ON SERVICE ====================
+    // Service definitions for the "open on" feature
     const serviceDefinitions = {
-        spotify: { name: 'Spotify', icon: 'fab fa-spotify', hasEmbed: true, linkKey: 'spotify' },
-        youtube: { name: 'YouTube', icon: 'fab fa-youtube', hasEmbed: true, linkKey: 'youtube' },
-        youtube_music: { name: 'YouTube Music', icon: 'fab fa-youtube', hasEmbed: false, linkKey: 'youtube_music' },
-        apple: { name: 'Apple Music', icon: 'fab fa-apple', hasEmbed: true, linkKey: 'apple' },
-        itunes: { name: 'Apple Music', icon: 'fab fa-itunes-note', hasEmbed: true, linkKey: 'itunes' },
-        deezer: { name: 'Deezer', icon: 'fab fa-deezer', hasEmbed: true, linkKey: 'deezer' },
-        tidal: { name: 'Tidal', icon: 'fas fa-water', hasEmbed: false, linkKey: 'tidal' },
-        amazon_music: { name: 'Amazon Music', icon: 'fab fa-amazon', hasEmbed: false, linkKey: 'amazon_music' },
-        napster: { name: 'Napster', icon: 'fab fa-napster', hasEmbed: false, linkKey: 'napster' },
-        audiomack: { name: 'Audiomack', icon: 'fas fa-headphones', hasEmbed: false, linkKey: 'audiomack' },
-        bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', hasEmbed: true, linkKey: 'bandcamp' },
-        soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', hasEmbed: true, linkKey: 'soundcloud' }
+        spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+        youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+        youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+        appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
+        deezer: { name: 'Deezer', icon: 'fab fa-deezer', color: '#FEAA2D' },
+        tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#00FFFF' },
+        amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+        soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+        bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
     };
-    
-    let currentTrackData = null;
-    
-    // Spotify IFrame API for autoplay support
-    let spotifyIframeAPI = null;
-    let spotifyEmbedController = null;
-    
-    (function loadSpotifyIframeApi() {
-        const script = document.createElement('script');
-        script.src = 'https://open.spotify.com/embed/iframe-api/v1';
-        script.async = true;
-        document.head.appendChild(script);
-    })();
-    
-    window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        spotifyIframeAPI = IFrameAPI;
-    };
-    
-    // Songlink API cache and resolver - gets correct track URLs for all platforms
+
+    // Songlink API cache
     const songlinkCache = {};
-    const songlinkPlatformMap = {
-        spotify: 'spotify',
-        appleMusic: 'itunes',
-        youtubeMusic: 'youtube_music',
-        youtube: 'youtube',
-        amazonMusic: 'amazon_music',
-        deezer: 'deezer',
-        tidal: 'tidal',
-        soundcloud: 'soundcloud',
-        napster: 'napster',
-        audiomack: 'audiomack'
-    };
-    
-    async function fetchSonglinkData(spotifyId, type) {
-        const spotifyUrl = `https://open.spotify.com/${type}/${spotifyId}`;
-        if (songlinkCache[spotifyUrl]) return songlinkCache[spotifyUrl];
-        
+
+    function getPreferredService() {
+        return localStorage.getItem('mmm-preferred-service') || null;
+    }
+
+    function setPreferredService(serviceId) {
+        localStorage.setItem('mmm-preferred-service', serviceId);
+        // Update any visible service preference indicators
+        document.querySelectorAll('.service-pref-current').forEach(el => {
+            const svc = serviceDefinitions[serviceId];
+            if (svc) {
+                el.innerHTML = `<i class="${svc.icon}"></i>`;
+                el.title = svc.name;
+            }
+        });
+    }
+
+    async function fetchSonglinkUrls(sourceUrl) {
+        if (songlinkCache[sourceUrl]) return songlinkCache[sourceUrl];
         try {
-            const response = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(spotifyUrl)}`);
-            if (!response.ok) return null;
-            const data = await response.json();
-            
-            // Extract track-specific URLs from Songlink response
-            const trackLinks = {};
+            const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`);
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            const links = {};
             if (data.linksByPlatform) {
                 for (const [platform, linkData] of Object.entries(data.linksByPlatform)) {
-                    const ourKey = songlinkPlatformMap[platform];
-                    if (ourKey && linkData.url) {
-                        trackLinks[ourKey] = linkData.url;
+                    if (serviceDefinitions[platform] && linkData.url) {
+                        links[platform] = linkData.url;
                     }
                 }
             }
-            
-            songlinkCache[spotifyUrl] = trackLinks;
-            return trackLinks;
+            songlinkCache[sourceUrl] = links;
+            return links;
         } catch (err) {
             console.warn('Songlink API error:', err);
             return null;
         }
     }
-    
-    function findBandByName(artistName) {
-        if (!bandsData) return null;
-        
-        // Try exact match first
-        let band = bandsData.find(b => b.name.toLowerCase() === artistName.toLowerCase());
-        if (band) return band;
-        
-        // Try first artist in collab (split by comma)
-        const firstArtist = artistName.split(',')[0].trim();
-        band = bandsData.find(b => b.name.toLowerCase() === firstArtist.toLowerCase());
-        if (band) return band;
-        
-        // Try partial match
-        band = bandsData.find(b => artistName.toLowerCase().includes(b.name.toLowerCase()));
-        return band;
-    }
-    
-    function getPreferredService() {
-        return localStorage.getItem('mmm-preferred-player') || 'spotify';
-    }
-    
-    function setPreferredService(serviceId) {
-        localStorage.setItem('mmm-preferred-player', serviceId);
-    }
-    
-    function showMusicPlayer(spotifyId, type = 'artist', title = '', artist = '', thumbnail = '') {
-        let player = document.getElementById('music-player');
-        
-        // Find band links from bands.json
-        const band = findBandByName(artist);
-        const artistLinks = band?.links || {};
-        
-        // Use artist thumbnail from chart data if available
-        const artistThumbnail = getArtistThumbnail(artist) || thumbnail;
-        
-        currentTrackData = { spotifyId, type, title, artist, thumbnail: artistThumbnail, artistLinks };
-        
-        if (!player) {
-            // Create player if it doesn't exist
-            player = document.createElement('div');
-            player.id = 'music-player';
-            player.className = 'music-player';
-            player.innerHTML = `
-                <div class="music-player-bar">
-                    <div class="music-player-cover">
-                        <img src="" alt="">
-                    </div>
-                    <div class="music-player-info">
-                        <div class="music-player-title"></div>
-                        <div class="music-player-artist"></div>
-                    </div>
-                    <div class="music-player-tabs"></div>
-                    <button class="music-player-close" title="Затвори"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="music-player-embed"></div>
-            `;
-            document.body.appendChild(player);
-            
-            // Close button
-            player.querySelector('.music-player-close').addEventListener('click', closeMusicPlayer);
-            
-            // Close on Escape
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && player.classList.contains('active')) {
-                    closeMusicPlayer();
-                }
-            });
+
+    // Open a song/release URL on the user's preferred streaming service
+    async function openOnPreferredService(releaseUrl, title) {
+        if (!releaseUrl) return;
+
+        const preferred = getPreferredService();
+
+        // If the URL already belongs to the preferred service, open directly
+        if (preferred && urlMatchesService(releaseUrl, preferred)) {
+            window.open(releaseUrl, '_blank');
+            return;
         }
-        
-        // Update player content
-        const coverContainer = player.querySelector('.music-player-cover');
-        const coverImg = coverContainer?.querySelector('img');
-        if (artistThumbnail) {
-            if (coverImg) coverImg.src = artistThumbnail;
-            coverContainer.style.display = '';
+
+        // Show a quick loading toast
+        showServiceToast(preferred ? 'Се бара на ' + (serviceDefinitions[preferred]?.name || preferred) + '...' : 'Се бараат линкови…', 'loading');
+
+        const links = await fetchSonglinkUrls(releaseUrl);
+        hideServiceToast();
+        if (!links || Object.keys(links).length === 0) {
+            window.open(releaseUrl, '_blank');
+            return;
+        }
+        if (preferred && links[preferred]) {
+            window.open(links[preferred], '_blank');
         } else {
-            coverContainer.style.display = 'none';
-        }
-        player.querySelector('.music-player-title').textContent = title;
-        player.querySelector('.music-player-artist').textContent = artist;
-        
-        // Render service tabs - separate embeddable from external
-        renderServiceTabs(player, artistLinks);
-        
-        // Always default to Spotify when opening a new song
-        if (spotifyId) {
-            activateService('spotify');
-            
-            // Fetch track-specific URLs from Songlink API in background
-            fetchSonglinkData(spotifyId, type).then(trackLinks => {
-                if (trackLinks && currentTrackData && currentTrackData.spotifyId === spotifyId) {
-                    // Merge track-specific URLs (override artist profile URLs)
-                    currentTrackData.trackLinks = trackLinks;
-                    // Re-render tabs with correct song links
-                    const player = document.getElementById('music-player');
-                    if (player) {
-                        renderServiceTabs(player, artistLinks, trackLinks);
-                    }
-                }
-            });
-        } else {
-            // Fallback to first available service with embed
-            const firstEmbeddable = Object.keys(artistLinks).find(k => 
-                serviceDefinitions[k]?.hasEmbed && artistLinks[k]
-            );
-            if (firstEmbeddable) {
-                activateService(firstEmbeddable);
-            }
-        }
-        
-        player.classList.add('active');
-    }
-    
-    // Helper function to check if a URL can be embedded
-    function canEmbed(serviceId, url) {
-        if (!url) return false;
-        switch (serviceId) {
-            case 'youtube':
-                return /(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/.test(url);
-            case 'soundcloud':
-                return /soundcloud\.com\/[^\/]+\/[^\/]+/.test(url); // Must be a track, not just artist
-            case 'apple':
-            case 'itunes':
-                return /music\.apple\.com\/[a-z]{2}\/(?:album|playlist)\//.test(url);
-            case 'deezer':
-                return /deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/\d+/.test(url);
-            case 'tidal':
-                return /tidal\.com\/(?:browse\/)?(album|track|video)\/\d+/.test(url);
-            case 'bandcamp':
-                return /bandcamp\.com\/(track|album)\//.test(url);
-            default:
-                return false;
+            showServiceChooserDialog(links, releaseUrl, title);
         }
     }
 
-    function renderServiceTabs(player, artistLinks, trackLinks = null) {
-        const tabsContainer = player.querySelector('.music-player-tabs');
+    function urlMatchesService(url, serviceId) {
+        const patterns = {
+            spotify: /open\.spotify\.com/i,
+            youtube: /youtube\.com|youtu\.be/i,
+            youtubeMusic: /music\.youtube\.com/i,
+            appleMusic: /music\.apple\.com/i,
+            deezer: /deezer\.com/i,
+            tidal: /tidal\.com/i,
+            amazonMusic: /music\.amazon/i,
+            soundcloud: /soundcloud\.com/i,
+            bandcamp: /bandcamp\.com/i
+        };
+        return patterns[serviceId]?.test(url);
+    }
+
+    // Small toast notification for loading state
+    function showServiceToast(message, type) {
+        let toast = document.getElementById('service-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'service-toast';
+            toast.className = 'service-toast';
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = type === 'loading'
+            ? `<i class="fas fa-spinner fa-spin"></i> ${message}`
+            : message;
+        toast.classList.add('visible');
+    }
+
+    function hideServiceToast() {
+        const toast = document.getElementById('service-toast');
+        if (toast) toast.classList.remove('visible');
+    }
+
+    // Service chooser dialog (fallback when preferred service unavailable)
+    function showServiceChooserDialog(links, fallbackUrl, title) {
+        let overlay = document.getElementById('service-chooser-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'service-chooser-overlay';
+            overlay.className = 'service-chooser-overlay';
+            overlay.innerHTML = `
+                <div class="service-chooser">
+                    <h3 id="service-chooser-title"></h3>
+                    <div class="service-chooser-links" id="service-chooser-links"></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('visible');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') overlay.classList.remove('visible');
+            });
+        }
         
-        // Use track-specific links when available, fall back to artist profile links
-        const effectiveLinks = {};
-        
-        // Start with artist profile links as base
-        Object.entries(artistLinks).forEach(([key, url]) => {
-            if (key !== 'spotify' && serviceDefinitions[key]) {
-                effectiveLinks[key] = { url, isTrackLink: false };
-            }
-        });
-        
-        // Override/add with track-specific links from Songlink
-        if (trackLinks) {
-            Object.entries(trackLinks).forEach(([key, url]) => {
-                if (key !== 'spotify' && serviceDefinitions[key]) {
-                    effectiveLinks[key] = { url, isTrackLink: true };
+        const titleEl = document.getElementById('service-chooser-title');
+        const linksEl = document.getElementById('service-chooser-links');
+        titleEl.textContent = title || 'Отвори во...';
+
+        // Always include original URL
+        if (fallbackUrl && !Object.values(links).includes(fallbackUrl)) {
+            // Determine which service the fallback URL belongs to
+            for (const [id, svc] of Object.entries(serviceDefinitions)) {
+                if (urlMatchesService(fallbackUrl, id) && !links[id]) {
+                    links[id] = fallbackUrl;
+                    break;
                 }
-            });
-        }
-        
-        // Build available services - separate embeddable from external
-        const embeddableServices = [];
-        const externalServices = [];
-        
-        // Spotify is always embeddable if we have spotifyId (with correct song)
-        if (currentTrackData.spotifyId) {
-            embeddableServices.push({ id: 'spotify', ...serviceDefinitions.spotify, url: null, hasEmbed: true });
-        }
-        
-        // Add other services - use track-specific URL if available
-        Object.entries(effectiveLinks).forEach(([key, { url, isTrackLink }]) => {
-            const service = { id: key, ...serviceDefinitions[key], url, isTrackLink };
-            if (isTrackLink && canEmbed(key, url)) {
-                embeddableServices.push(service);
-            } else if (!isTrackLink && canEmbed(key, url)) {
-                // Artist profile URL that happens to be embeddable - still external since wrong content
-                externalServices.push(service);
-            } else {
-                externalServices.push(service);
             }
-        });
-        
-        if (embeddableServices.length === 0 && externalServices.length === 0) {
-            tabsContainer.innerHTML = '';
-            return;
         }
         
-        // Build HTML with separator between embeddable and external
-        let html = '';
-        
-        // Embeddable services
-        if (embeddableServices.length > 0) {
-            html += embeddableServices.map(service => `
-                <button class="music-player-tab embeddable" 
-                        data-service="${service.id}" 
-                        data-url="${service.url || ''}"
-                        data-has-embed="true"
-                        title="${service.name} (плеер)">
-                    <i class="${service.icon}"></i>
-                </button>
-            `).join('');
-        }
-        
-        // Separator and external services (non-embeddable links)
-        if (externalServices.length > 0) {
-            if (embeddableServices.length > 0) {
-                html += '<span class="music-player-separator"></span>';
-            }
-            html += externalServices.map(service => `
-                <a class="music-player-tab external" 
-                   href="${service.url}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   data-service="${service.id}" 
-                   title="${service.name} (профил)">
-                    <i class="${service.icon}"></i>
-                    <i class="fas fa-external-link-alt external-icon"></i>
-                </a>
-            `).join('');
-        }
-        
-        tabsContainer.innerHTML = html;
-        
-        // Add click handlers only for embeddable tabs
-        tabsContainer.querySelectorAll('.music-player-tab.embeddable').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const serviceId = tab.dataset.service;
-                activateService(serviceId);
-            });
-        });
+        const html = Object.entries(links)
+            .filter(([id]) => serviceDefinitions[id])
+            .map(([id, url]) => {
+                const svc = serviceDefinitions[id];
+                const isPreferred = id === getPreferredService();
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
+                    <i class="${svc.icon}"></i> ${svc.name}
+                    ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
+                </a>`;
+            }).join('');
+
+        linksEl.innerHTML = html || `<a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
+        overlay.classList.add('visible');
     }
-    
-    function activateService(serviceId) {
-        const player = document.getElementById('music-player');
-        if (!player || !currentTrackData) return;
-        
-        // Clean up previous Spotify embed controller
-        if (spotifyEmbedController) {
-            spotifyEmbedController.destroy();
-            spotifyEmbedController = null;
-        }
-        
-        const tabsContainer = player.querySelector('.music-player-tabs');
-        const embedContainer = player.querySelector('.music-player-embed');
-        const { spotifyId, type, artistLinks, trackLinks } = currentTrackData;
-        // Prefer track-specific URL, fall back to artist profile URL
-        const url = (trackLinks && trackLinks[serviceId]) || artistLinks[serviceId];
-        
-        // Update active tab
-        tabsContainer.querySelectorAll('.music-player-tab').forEach(t => t.classList.remove('active'));
-        const activeTab = tabsContainer.querySelector(`[data-service="${serviceId}"]`);
-        if (activeTab) activeTab.classList.add('active');
-        
-        // Use Spotify IFrame API for autoplay
-        if (serviceId === 'spotify' && spotifyId && spotifyIframeAPI) {
-            const target = document.createElement('div');
-            embedContainer.innerHTML = '';
-            embedContainer.appendChild(target);
-            embedContainer.classList.add('expanded');
-            spotifyIframeAPI.createController(target, {
-                uri: `spotify:${type}:${spotifyId}`,
-                autoplay: true
-            }, (controller) => {
-                spotifyEmbedController = controller;
-            });
-            return;
-        }
-        
-        // Generate embed HTML based on service
-        let embedHtml = '';
-        
-        if (serviceId === 'spotify' && spotifyId) {
-            // Fallback when IFrame API not loaded yet
-            embedHtml = `<iframe src="https://open.spotify.com/embed/${type}/${spotifyId}?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-        } else if (serviceId === 'youtube' && url) {
-            const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            if (ytMatch) {
-                embedHtml = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
-            }
-        } else if (serviceId === 'soundcloud' && url) {
-            const encodedUrl = encodeURIComponent(url);
-            embedHtml = `<iframe class="soundcloud-embed" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=${encodedUrl}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false" allow="autoplay" loading="lazy"></iframe>`;
-        } else if ((serviceId === 'apple' || serviceId === 'itunes') && url) {
-            const appleMatch = url.match(/music\.apple\.com\/([a-z]{2})\/(?:album|playlist)\/[^\/]+\/([0-9]+)/);
-            if (appleMatch) {
-                const country = appleMatch[1];
-                const albumId = appleMatch[2];
-                embedHtml = `<iframe class="apple-embed" src="https://embed.music.apple.com/${country}/album/${albumId}?theme=dark" allow="autoplay *; encrypted-media *; fullscreen *" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy"></iframe>`;
-            }
-        } else if (serviceId === 'deezer' && url) {
-            const deezerMatch = url.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|artist)\/(\d+)/);
-            if (deezerMatch) {
-                const deezerType = deezerMatch[1];
-                const deezerId = deezerMatch[2];
-                embedHtml = `<iframe class="deezer-embed" scrolling="no" frameborder="0" src="https://widget.deezer.com/widget/dark/${deezerType}/${deezerId}" allow="encrypted-media; clipboard-write" loading="lazy"></iframe>`;
-            }
-        } else if (serviceId === 'tidal' && url) {
-            const tidalMatch = url.match(/tidal\.com\/(?:browse\/)?(album|track|video)\/(\d+)/);
-            if (tidalMatch) {
-                const tidalType = tidalMatch[1];
-                const tidalId = tidalMatch[2];
-                embedHtml = `<iframe class="tidal-embed" src="https://embed.tidal.com/${tidalType}s/${tidalId}?layout=gridify" allow="encrypted-media" loading="lazy"></iframe>`;
-            }
-        } else if (serviceId === 'bandcamp' && url) {
-            // Bandcamp requires fetching the page to get embed code, use oEmbed
-            embedHtml = `<iframe class="bandcamp-embed" src="https://bandcamp.com/EmbeddedPlayer/size=large/bgcol=333333/linkcol=e99708/tracklist=false/artwork=small/transparent=true/" seamless loading="lazy"><a href="${url}">Open on Bandcamp</a></iframe>`;
-        }
-        
-        // Update embed
-        if (embedHtml) {
-            embedContainer.innerHTML = embedHtml;
-            embedContainer.classList.add('expanded');
-        } else {
-            embedContainer.innerHTML = `<div class="music-player-no-embed">Нема достапен плеер за оваа услуга</div>`;
-            embedContainer.classList.add('expanded');
-        }
+
+    // Service preference picker UI
+    function showServicePreferencePicker() {
+        const ov = document.getElementById('settings-overlay');
+        if (ov) ov.classList.add('visible');
     }
-    
-    function closeMusicPlayer() {
-        const player = document.getElementById('music-player');
-        
-        // Clean up Spotify embed controller
-        if (spotifyEmbedController) {
-            spotifyEmbedController.destroy();
-            spotifyEmbedController = null;
-        }
-        
-        if (player) {
-            player.classList.remove('active');
-            // Stop playback by clearing embed
-            const embedContainer = player.querySelector('.music-player-embed');
-            if (embedContainer) {
-                embedContainer.innerHTML = '';
-                embedContainer.classList.remove('expanded');
-            }
-            currentTrackData = null;
-        }
-    }
-    
-    // Keep old function name for compatibility
+
+    // Backward compatibility wrappers
     function showSpotifyEmbed(spotifyId, type = 'artist') {
-        showMusicPlayer(spotifyId, type, '', '', '');
+        const url = `https://open.spotify.com/${type}/${spotifyId}`;
+        openOnPreferredService(url);
     }
     
     function closeSpotifyEmbed() {
-        closeMusicPlayer();
+        // No-op: no player to close
+    }
+
+    function showMusicPlayer(spotifyId, type = 'artist', title = '', artist = '', thumbnail = '') {
+        const url = `https://open.spotify.com/${type}/${spotifyId}`;
+        openOnPreferredService(url, title || artist);
+    }
+
+    function closeMusicPlayer() {
+        // No-op: no player to close
     }
 
     // ==================== TOUR FUNCTIONALITY ====================
@@ -3411,14 +3254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             element: '.link-icon',
-            title: 'Линкови',
-            description: 'Кликни на иконата и директно те носи на профилот - Spotify, YouTube, Instagram, што има.',
-            position: 'bottom'
-        },
-        {
-            element: '.artist-preview-btn',
-            title: 'Преслушај',
-            description: 'Ова зелено копче <i class="fas fa-play" style="color: #4a9c6d;"></i> ти пушта песна директно тука, без да одиш на друг сајт. Практично за брзо да чуеш како звучи некој.',
+            title: 'Отвори на сервис',
+            description: 'Кликни на иконата и директно те носи на профилот - Spotify, YouTube, Instagram, што има. Кликни на <i class="fas fa-headphones" style="color: var(--accent-orange);"></i> за да го избереш твојот омилен сервис за слушање.',
             position: 'bottom'
         },
         {
@@ -3547,9 +3384,69 @@ document.addEventListener('DOMContentLoaded', () => {
     let tourActive = false;
     const TOUR_VIEWED_KEY = 'mmm-tour-viewed';
 
+    // ==================== GLOBAL SITE TOUR ====================
+    (function() {
+        const gTourSteps = [
+            { element: null, title: 'Здраво! 👋', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
+            { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници: Топ Листа, Мастер Листа, Настани, Вести, Кустоси...', position: 'bottom' },
+            { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong> (Spotify, YouTube, Deezer...). Кога ќе кликнеш на песна, директно се отвора таму.', position: 'bottom' },
+            { element: null, title: 'Топ Листа 📊', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти, рангирани по Spotify популарност. Се ажурира автоматски секој ден. <a href="/">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Мастер Листа 📋', description: 'Комплетна база на <strong>сите македонски артисти</strong> со линкови, жанрови, градови и медиуми. Секој може да додаде нов артист. <a href="/lista">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Настани 📅', description: 'Претстојни <strong>концерти и настани</strong> со датуми, локации и карти. <a href="/nastani">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Вести 📰', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена од разни извори. <a href="/vesti">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Кустоси 🎧', description: 'Музички <strong>кустоси</strong> со нивните плејлисти и тракслисти. Може и ти да станеш кустос! <a href="/kustosi">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Тоа е сè! 🎸', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! 🙌', position: 'center' }
+        ];
+        let gStep = 0, gActive = false, gOverlay = null;
+        function gCreateOverlay() {
+            if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
+            const el = document.createElement('div'); el.id = 'tour-overlay'; el.className = 'tour-overlay';
+            el.innerHTML = '<div class="tour-highlight"></div><div class="tour-tooltip"><div class="tour-tooltip-content"><h3 class="tour-title"></h3><p class="tour-description"></p></div><div class="tour-footer"><span class="tour-progress"></span><div class="tour-buttons"><button class="tour-btn-skip">Прескокни</button><button class="tour-btn-prev"><i class="fas fa-arrow-left"></i></button><button class="tour-btn-next">Следно <i class="fas fa-arrow-right"></i></button></div></div></div>';
+            document.body.appendChild(el);
+            el.querySelector('.tour-btn-skip').addEventListener('click', gEndTour);
+            el.querySelector('.tour-btn-prev').addEventListener('click', function() { if (gStep > 0) { gStep--; gShowStep(); } });
+            el.querySelector('.tour-btn-next').addEventListener('click', function() { if (gStep < gTourSteps.length - 1) { gStep++; gShowStep(); } else { gEndTour(); } });
+            el.addEventListener('click', function(e) { if (e.target === el || e.target.classList.contains('tour-highlight')) gEndTour(); });
+            document.addEventListener('keydown', function(e) { if (!gActive) return; if (e.key === 'Escape') gEndTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (gStep < gTourSteps.length - 1) { gStep++; gShowStep(); } else gEndTour(); } if (e.key === 'ArrowLeft' && gStep > 0) { gStep--; gShowStep(); } });
+            return el;
+        }
+        function gStartTour() { gOverlay = gCreateOverlay(); gActive = true; gStep = 0; gOverlay.classList.add('active'); if (window.innerWidth > 600) document.body.style.overflow = 'hidden'; gShowStep(); }
+        function gEndTour() { gActive = false; if (gOverlay) gOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+        function gShowStep() {
+            var step = gTourSteps[gStep]; if (!step || !gOverlay) return;
+            var highlight = gOverlay.querySelector('.tour-highlight'), tooltip = gOverlay.querySelector('.tour-tooltip');
+            tooltip.querySelector('.tour-title').textContent = step.title;
+            tooltip.querySelector('.tour-description').innerHTML = step.description;
+            tooltip.querySelector('.tour-progress').textContent = (gStep + 1) + ' / ' + gTourSteps.length;
+            tooltip.querySelector('.tour-btn-prev').disabled = gStep === 0;
+            tooltip.querySelector('.tour-btn-next').innerHTML = gStep === gTourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
+            tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
+            if (step.position === 'center' || !step.element) {
+                highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = '';
+            } else {
+                var targetEl = document.querySelector(step.element);
+                if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(function() {
+                    var rect = targetEl.getBoundingClientRect(), p = 4;
+                    highlight.style.display = 'block'; highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
+                    highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
+                    highlight.style.left = (rect.left - p) + 'px'; highlight.style.width = (rect.width + p * 2) + 'px'; highlight.style.height = (rect.height + p * 2) + 'px';
+                    if (window.innerWidth > 600) {
+                        var tr = tooltip.getBoundingClientRect(); var top = rect.bottom + 16, left = rect.left + rect.width / 2 - tr.width / 2;
+                        if (left < 10) left = 10; if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
+                        if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
+                        tooltip.style.top = top + 'px'; tooltip.style.left = left + 'px'; tooltip.classList.add('arrow-top');
+                    }
+                }, 150);
+            }
+        }
+        window.startGlobalTour = gStartTour;
+    })();
+
     function initTour() {
-        const tourBtn = document.getElementById('start-tour-btn');
         const overlay = document.getElementById('tour-overlay');
+        if (!overlay) return;
         const highlight = overlay.querySelector('.tour-highlight');
         const tooltip = overlay.querySelector('.tour-tooltip');
         const titleEl = tooltip.querySelector('.tour-title');
@@ -3559,9 +3456,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = tooltip.querySelector('.tour-btn-next');
         const skipBtn = tooltip.querySelector('.tour-btn-skip');
 
-        if (!tourBtn || !overlay) return;
-
-        tourBtn.addEventListener('click', startTour);
         prevBtn.addEventListener('click', prevStep);
         nextBtn.addEventListener('click', nextStep);
         skipBtn.addEventListener('click', endTour);

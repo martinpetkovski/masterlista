@@ -609,8 +609,8 @@
                 <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
                     <i class="fas fa-filter"></i>
                 </button>
-                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
-                    <i class="fas fa-moon"></i>
+                <button id="settings-btn" class="header-btn" title="Поставки">
+                    <i class="fas fa-gear"></i>
                 </button>
             </div>
         </div>
@@ -733,21 +733,140 @@
         var searchQuery = '';
         var editingEventId = null;
 
-        // ==================== DARK MODE ====================
+        // ==================== SETTINGS MENU ====================
         (function() {
-            var toggle = document.getElementById('dark-mode-toggle');
-            var body = document.body;
-            var icon = toggle ? toggle.querySelector('i') : null;
-            function setDark(on) {
-                body.classList.toggle('dark-mode', on);
-                document.documentElement.classList.toggle('dark-mode', on);
-                document.documentElement.style.backgroundColor = on ? '#111318' : '';
-                if (icon) icon.className = on ? 'fas fa-sun' : 'fas fa-moon';
-                localStorage.setItem('mmm-dark-mode', on ? 'true' : 'false');
+            const settingsBtn = document.getElementById('settings-btn');
+            if (!settingsBtn) return;
+            const svcDefs = {
+                spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+                youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+                youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+                appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
+                deezer: { name: 'Deezer', icon: 'fas fa-headphones', color: '#A238FF' },
+                tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#000000' },
+                amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
+            };
+            const overlay = document.createElement('div');
+            overlay.id = 'settings-overlay';
+            overlay.className = 'settings-overlay';
+            const currentService = localStorage.getItem('mmm-preferred-service');
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            overlay.innerHTML = `
+                <div class="settings-panel">
+                    <h3><i class="fas fa-gear"></i> Поставки</h3>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Тема</div>
+                        <div class="settings-theme-toggle">
+                            <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light"><i class="fas fa-sun"></i> Светла</button>
+                            <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark"><i class="fas fa-moon"></i> Темна</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Стриминг сервис</div>
+                        <div class="settings-service-options">
+                            <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service=""><i class="fas fa-question"></i> Секогаш прашувај</button>
+                            ${Object.entries(svcDefs).map(([id, svc]) => `<button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}"><i class="${svc.icon}"></i> ${svc.name}</button>`).join('')}
+                        </div>
+                    </div>
+                    <div class="settings-section settings-tour-section">
+                        <button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> Тура на сајтот</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('visible'); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const ov = document.getElementById('settings-overlay'); if (ov) ov.classList.remove('visible'); } });
+            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dark = btn.dataset.theme === 'dark';
+                    document.body.classList.toggle('dark-mode', dark);
+                    document.documentElement.classList.toggle('dark-mode', dark);
+                    document.documentElement.style.backgroundColor = dark ? '#111318' : '';
+                    localStorage.setItem('mmm-dark-mode', dark);
+                    overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const serviceId = btn.dataset.service;
+                    if (serviceId) { localStorage.setItem('mmm-preferred-service', serviceId); }
+                    else { localStorage.removeItem('mmm-preferred-service'); }
+                    overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            const tourBtnEl = overlay.querySelector('#settings-start-tour');
+            if (tourBtnEl) { tourBtnEl.addEventListener('click', () => { overlay.classList.remove('visible'); if (typeof window.startGlobalTour === 'function') window.startGlobalTour(); }); }
+            settingsBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark-mode');
+                overlay.querySelectorAll('.settings-theme-btn').forEach(btn => { btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark); });
+                const currentSvc = localStorage.getItem('mmm-preferred-service');
+                overlay.querySelectorAll('.settings-service-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.service === (currentSvc || '')); });
+                overlay.classList.add('visible');
+            });
+        })();
+
+        // ==================== GLOBAL SITE TOUR ====================
+        (function() {
+            const tourSteps = [
+                { element: null, title: 'Здраво! \ud83d\udc4b', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
+                { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници: Топ Листа, Мастер Листа, Настани, Вести, Кустоси...', position: 'bottom' },
+                { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong> (Spotify, YouTube, Deezer...).', position: 'bottom' },
+                { element: null, title: 'Топ Листа \ud83d\udcca', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти. <a href="/">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Мастер Листа \ud83d\udccb', description: 'Комплетна база на <strong>сите македонски артисти</strong>. <a href="/lista">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Настани \ud83d\udcc5', description: 'Претстојни <strong>концерти и настани</strong> со датуми, локации и карти. <a href="/nastani">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Вести \ud83d\udcf0', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена. <a href="/vesti">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Кустоси \ud83c\udfa7', description: 'Музички <strong>кустоси</strong> со нивните плејлисти. <a href="/kustosi">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Тоа е сè! \ud83c\udfb8', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! \ud83d\ude4c', position: 'center' }
+            ];
+            let currentStep = 0, active = false, tourOverlay = null;
+            function createOverlay() {
+                if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
+                const el = document.createElement('div'); el.id = 'tour-overlay'; el.className = 'tour-overlay';
+                el.innerHTML = '<div class="tour-highlight"></div><div class="tour-tooltip"><div class="tour-tooltip-content"><h3 class="tour-title"></h3><p class="tour-description"></p></div><div class="tour-footer"><span class="tour-progress"></span><div class="tour-buttons"><button class="tour-btn-skip">Прескокни</button><button class="tour-btn-prev"><i class="fas fa-arrow-left"></i></button><button class="tour-btn-next">Следно <i class="fas fa-arrow-right"></i></button></div></div></div>';
+                document.body.appendChild(el);
+                el.querySelector('.tour-btn-skip').addEventListener('click', endTour);
+                el.querySelector('.tour-btn-prev').addEventListener('click', function() { if (currentStep > 0) { currentStep--; showStep(); } });
+                el.querySelector('.tour-btn-next').addEventListener('click', function() { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else { endTour(); } });
+                el.addEventListener('click', function(e) { if (e.target === el || e.target.classList.contains('tour-highlight')) endTour(); });
+                document.addEventListener('keydown', function(e) { if (!active) return; if (e.key === 'Escape') endTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else endTour(); } if (e.key === 'ArrowLeft' && currentStep > 0) { currentStep--; showStep(); } });
+                return el;
             }
-            var s = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
-            if (s === 'true') setDark(true);
-            if (toggle) toggle.addEventListener('click', function() { setDark(!body.classList.contains('dark-mode')); });
+            function startTour() { tourOverlay = createOverlay(); active = true; currentStep = 0; tourOverlay.classList.add('active'); if (window.innerWidth > 600) document.body.style.overflow = 'hidden'; showStep(); }
+            function endTour() { active = false; if (tourOverlay) tourOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+            function showStep() {
+                var step = tourSteps[currentStep]; if (!step || !tourOverlay) return;
+                var highlight = tourOverlay.querySelector('.tour-highlight'), tooltip = tourOverlay.querySelector('.tour-tooltip');
+                tooltip.querySelector('.tour-title').textContent = step.title;
+                tooltip.querySelector('.tour-description').innerHTML = step.description;
+                tooltip.querySelector('.tour-progress').textContent = (currentStep + 1) + ' / ' + tourSteps.length;
+                tooltip.querySelector('.tour-btn-prev').disabled = currentStep === 0;
+                tooltip.querySelector('.tour-btn-next').innerHTML = currentStep === tourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
+                tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
+                if (step.position === 'center' || !step.element) {
+                    highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = '';
+                } else {
+                    var targetEl = document.querySelector(step.element);
+                    if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(function() {
+                        var rect = targetEl.getBoundingClientRect(), p = 4;
+                        highlight.style.display = 'block'; highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
+                        highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
+                        highlight.style.left = (rect.left - p) + 'px'; highlight.style.width = (rect.width + p * 2) + 'px'; highlight.style.height = (rect.height + p * 2) + 'px';
+                        if (window.innerWidth > 600) {
+                            var tr = tooltip.getBoundingClientRect(); var top = rect.bottom + 16, left = rect.left + rect.width / 2 - tr.width / 2;
+                            if (left < 10) left = 10; if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
+                            if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
+                            tooltip.style.top = top + 'px'; tooltip.style.left = left + 'px'; tooltip.classList.add('arrow-top');
+                        }
+                    }, 150);
+                }
+            }
+            window.startGlobalTour = startTour;
         })();
 
         // ==================== NAV MENU ====================
