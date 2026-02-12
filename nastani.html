@@ -45,14 +45,15 @@
     /* === Events-specific overrides === */
 
     /* Column sizing: Name, Artists, Place, Date, Time, Tickets, Link, Actions */
-    .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) { width: auto; padding: 0.25rem 0.5rem; }  /* Name */
-    .nastani-page th:nth-child(2), .nastani-page td:nth-child(2) { width: 1%; white-space: nowrap; } /* Artists */
-    .nastani-page th:nth-child(3), .nastani-page td:nth-child(3) { width: 1%; white-space: nowrap; } /* Place */
-    .nastani-page th:nth-child(4), .nastani-page td:nth-child(4) { width: 1%; white-space: nowrap; padding: 0.25rem 0.5rem; } /* Date */
-    .nastani-page th:nth-child(5), .nastani-page td:nth-child(5) { width: 1%; white-space: nowrap; text-align: center; } /* Time */
-    .nastani-page th:nth-child(6), .nastani-page td:nth-child(6) { width: 1%; white-space: nowrap; } /* Tickets */
-    .nastani-page th:nth-child(7), .nastani-page td:nth-child(7) { width: 1%; white-space: nowrap; text-align: center; padding: 0 0.3rem; } /* Link */
-    .nastani-page th:nth-child(8), .nastani-page td:nth-child(8) { width: 1%; white-space: nowrap; text-align: center; } /* Actions */
+    .nastani-page table { width: 100%; table-layout: fixed; }
+    .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) { width: auto; padding: 0.25rem 0.5rem; }  /* Name - takes remaining space */
+    .nastani-page th:nth-child(2), .nastani-page td:nth-child(2) { width: 180px; white-space: nowrap; overflow: hidden; } /* Artists */
+    .nastani-page th:nth-child(3), .nastani-page td:nth-child(3) { width: 120px; white-space: nowrap; overflow: hidden; } /* Place */
+    .nastani-page th:nth-child(4), .nastani-page td:nth-child(4) { width: 110px; white-space: nowrap; padding: 0.25rem 0.5rem; } /* Date */
+    .nastani-page th:nth-child(5), .nastani-page td:nth-child(5) { width: 50px; white-space: nowrap; text-align: center; } /* Time */
+    .nastani-page th:nth-child(6), .nastani-page td:nth-child(6) { width: 150px; white-space: nowrap; overflow: hidden; } /* Tickets */
+    .nastani-page th:nth-child(7), .nastani-page td:nth-child(7) { width: 36px; white-space: nowrap; text-align: center; padding: 0 0.3rem; } /* Link */
+    .nastani-page th:nth-child(8), .nastani-page td:nth-child(8) { width: 36px; white-space: nowrap; text-align: center; } /* Actions */
 
     .nastani-page .event-title-cell {
         font-family: 'Montserrat', sans-serif;
@@ -465,49 +466,100 @@
         }
         .nastani-page .evt-filter-btn { flex: 1; text-align: center; padding: 0.45rem 0.3rem; font-size: 0.8rem; }
 
-        /* Hide duplicate columns — all data shown inline inside Настан cell */
-        .nastani-page td[data-label="Артисти"],
-        .nastani-page td[data-label="Место"],
-        .nastani-page td[data-label="Датум"],
-        .nastani-page td[data-label="Време"],
-        .nastani-page td[data-label="Карти"],
-        .nastani-page td[data-label="Линк"],
-        .nastani-page td[data-label="Акции"] { display: none !important; }
-
-        /* Show mobile helpers */
-        .nastani-page .mobile-meta { display: flex !important; }
-        .nastani-page .mobile-artists-inline { display: flex !important; }
-
-        /* Row as compact card */
-        .nastani-page tr {
-            padding: 0 !important;
-            gap: 0 !important;
-            border-bottom: 1px solid var(--border-color);
+        /* Table fills full width */
+        .nastani-page thead { display: table-header-group !important; }
+        .nastani-page table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; }
+        .nastani-page .table-wrapper {
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 !important;
         }
-        .nastani-page tr:nth-child(even) { background: var(--bg-primary); }
+        .nastani-page .table-scroll-container {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            width: 100% !important;
+            flex: 1 !important;
+        }
 
-        /* Name cell → stacked card content */
+        /* Hide: Artists(2), Date(4), Time(5), Tickets(6) */
+        .nastani-page th:nth-child(2), .nastani-page td:nth-child(2),
+        .nastani-page th:nth-child(4), .nastani-page td:nth-child(4),
+        .nastani-page th:nth-child(5), .nastani-page td:nth-child(5),
+        .nastani-page th:nth-child(6), .nastani-page td:nth-child(6) {
+            display: none !important;
+            width: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+
+        /* Visible: Name(1) — takes all remaining space */
+        .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) {
+            display: table-cell !important;
+            width: 100% !important;
+        }
+        /* Place(3) — compact with ellipsis */
+        .nastani-page th:nth-child(3), .nastani-page td:nth-child(3) {
+            display: table-cell !important;
+            width: 1px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
+        }
+        /* Link(7) — single icon */
+        .nastani-page th:nth-child(7), .nastani-page td:nth-child(7) {
+            display: table-cell !important;
+            width: 1px !important;
+            white-space: nowrap;
+            text-align: center;
+            padding: 0 0.15rem !important;
+        }
+        /* Actions(8) — single icon */
+        .nastani-page th:nth-child(8), .nastani-page td:nth-child(8) {
+            display: table-cell !important;
+            width: 1px !important;
+            white-space: nowrap;
+            text-align: center;
+            padding: 0 0.15rem !important;
+        }
+
+        /* Reset mobile.css flex-based row styles back to table layout */
+        .nastani-page tr {
+            display: table-row !important;
+            padding: 0;
+            padding-right: 0;
+            gap: 0;
+            opacity: 1 !important;
+            animation: none !important;
+            flex-wrap: initial;
+            content-visibility: visible;
+            contain-intrinsic-size: auto;
+            transform: none;
+        }
+        .nastani-page td {
+            display: table-cell !important;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.75rem;
+        }
+        .nastani-page th {
+            display: table-cell !important;
+        }
+
+        /* Name cell: single line, no stacking */
         .nastani-page td[data-label="Настан"] {
-            flex: 1 1 0;
-            min-width: 0;
-            flex-direction: column;
-            align-items: stretch;
-            padding: 0.3rem 0.5rem;
-            gap: 0.1rem;
+            padding: 0.3rem 0.4rem;
             overflow: hidden;
         }
-
-        /* Row 1: Title + badge */
         .nastani-page td[data-label="Настан"] .event-name-row {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
-            max-width: 100%;
+            gap: 0.25rem;
             overflow: hidden;
-            width: 100%;
         }
         .nastani-page td[data-label="Настан"] .event-title-cell {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -516,68 +568,66 @@
             flex: 1;
         }
         .nastani-page td[data-label="Настан"] .countdown-badge {
-            font-size: 0.55rem;
-            padding: 0.05rem 0.3rem;
+            font-size: 0.5rem;
+            padding: 0.04rem 0.25rem;
             flex-shrink: 0;
         }
 
-        /* Row 2: Meta — place · date · time (icon-prefixed spans) */
-        .nastani-page td[data-label="Настан"] .mobile-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.68rem;
-            color: var(--text-secondary);
+        /* Hide the mobile-only meta and artist rows */
+        .nastani-page .mobile-meta { display: none !important; }
+        .nastani-page .mobile-artists-inline { display: none !important; }
+
+        /* Place cell — ellipsis */
+        .nastani-page td[data-label="Место"] {
+            padding: 0.2rem 0.3rem !important;
             overflow: hidden;
-            width: 100%;
+            text-overflow: ellipsis;
             white-space: nowrap;
+            max-width: 90px;
         }
-        .nastani-page .mobile-meta .mm-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.15rem;
+        .nastani-page td[data-label="Место"] .event-place-cell {
+            font-size: 0.68rem;
             white-space: nowrap;
-        }
-        .nastani-page .mobile-meta .mm-item i {
-            font-size: 0.55rem;
-            color: var(--text-muted);
-            flex-shrink: 0;
-        }
-        .nastani-page .mobile-meta .mm-sep {
-            color: var(--border-color);
-            font-size: 0.55rem;
-            flex-shrink: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
-        /* Row 3: Artist tags */
-        .nastani-page .mobile-artists-inline {
-            gap: 0.15rem;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            width: 100%;
-            scrollbar-width: none;
-            padding-top: 0;
+        /* Link and Actions cells — compact icon columns */
+        .nastani-page td[data-label="Линк"],
+        .nastani-page td[data-label="Акции"] {
+            padding: 0 !important;
+            font-size: 0.7rem;
         }
-        .nastani-page .mobile-artists-inline::-webkit-scrollbar { display: none; }
-        .nastani-page .mobile-artists-inline .artist-tag {
-            font-size: 0.62rem;
-            padding: 0.04rem 0.3rem;
+        .nastani-page td[data-label="Акции"] .action-btn {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
         }
 
         /* Today separator */
         .nastani-page tr.today-separator {
-            padding: 0 !important;
-            border-bottom: none;
+            display: table-row !important;
+            padding: 0;
         }
-        .nastani-page tr.today-separator td { flex: 1; max-width: 100%; }
+        .nastani-page tr.today-separator td {
+            padding: 0.15rem 0.4rem;
+            display: table-cell !important;
+        }
 
         /* Today event accent */
-        .nastani-page tr.today-event {
+        .nastani-page tr.today-event td:first-child {
             border-left: 3px solid #22c55e;
         }
 
         /* Past event on mobile */
         .nastani-page tr.past-event { opacity: 0.35; }
+
+        /* Table header styling */
+        .nastani-page th {
+            font-size: 0.6rem;
+            padding: 0.4rem;
+        }
     }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -645,7 +695,7 @@
                             <th>Време</th>
                             <th>Карти</th>
                             <th><i class="fas fa-link"></i></th>
-                            <th>Акции</th>
+                            <th><i class="fas fa-pen" style="font-size:0.6rem"></i></th>
                         </tr>
                     </thead>
                     <tbody id="events-table-body"></tbody>
