@@ -408,7 +408,7 @@
             transition: opacity 0.15s;
         }
 
-        a.tracklist-header:hover {
+        .tracklist-header:hover {
             opacity: 0.8;
         }
 
@@ -644,24 +644,13 @@
         }
 
         .track-play-btn:hover {
-            background: #1DB95433;
-            color: #1DB954;
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
             transform: scale(1.15);
         }
 
-        .track-play-btn.playing {
-            background: #1DB95433;
-            color: #1DB954;
-            animation: pulse-play 1.5s ease infinite;
-        }
-
-        @keyframes pulse-play {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
         body.dark-mode .track-play-btn:hover {
-            background: #1DB95422;
+            background: rgba(102, 126, 234, 0.12);
         }
 
         /* ==================== VIEW TOGGLE (header) ==================== */
@@ -747,118 +736,54 @@
             color: #666;
         }
 
-        /* ==================== AUDIO PLAYER (global mini) ==================== */
-        .mini-player {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            font-family: 'Inter', sans-serif;
+        /* ==================== SERVICE CHOOSER ==================== */
+        .service-chooser-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.2s ease;
         }
-
-        .mini-player.visible {
-            display: flex;
+        .service-chooser-dialog {
+            background: #fff; border-radius: 16px; padding: 1.5rem; width: 340px;
+            max-width: 92vw; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
-        body.dark-mode .mini-player {
-            background: #1a1c24;
-            border-top-color: rgba(255,255,255,0.08);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+        body.dark-mode .service-chooser-dialog { background: #1e2030; }
+        .service-chooser-dialog h3 {
+            margin: 0 0 0.25rem; font-size: 1rem; color: var(--text-primary, #1a1a2e);
         }
-
-        .mini-player-art {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            object-fit: cover;
-            flex-shrink: 0;
+        body.dark-mode .service-chooser-dialog h3 { color: #e8e8f0; }
+        .service-chooser-dialog .subtitle {
+            font-size: 0.8rem; color: #888; margin-bottom: 1rem;
         }
-
-        .mini-player-info {
-            flex: 1;
-            min-width: 0;
+        .service-chooser-links {
+            display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem;
         }
-
-        .mini-player-title {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-primary, #1a1a2e);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .service-chooser-links a {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+            border-radius: 10px; text-decoration: none; font-size: 0.88rem; font-weight: 500;
+            color: var(--text-primary, #1a1a2e); background: rgba(0,0,0,0.03);
+            transition: background 0.15s, transform 0.1s;
         }
-
-        body.dark-mode .mini-player-title {
-            color: #e8e8f0;
+        body.dark-mode .service-chooser-links a { color: #e8e8f0; background: rgba(255,255,255,0.05); }
+        .service-chooser-links a:hover { background: rgba(0,0,0,0.07); transform: translateX(2px); }
+        body.dark-mode .service-chooser-links a:hover { background: rgba(255,255,255,0.1); }
+        .service-chooser-links a i { width: 24px; text-align: center; font-size: 1.1rem; }
+        .service-chooser-links a .pref-badge {
+            margin-left: auto; font-size: 0.65rem; background: #667eea22; color: #667eea;
+            padding: 2px 6px; border-radius: 4px;
         }
-
-        .mini-player-artist {
-            font-size: 0.72rem;
-            color: #888;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .service-chooser-footer {
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .mini-player-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-shrink: 0;
+        .service-chooser-footer button {
+            background: none; border: none; font-size: 0.82rem; color: #888; cursor: pointer;
         }
+        .service-chooser-footer button:hover { color: #667eea; }
 
-        .mini-player-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            color: var(--text-primary, #1a1a2e);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        body.dark-mode .mini-player-btn {
-            color: #e8e8f0;
-        }
-
-        .mini-player-btn:hover {
-            background: rgba(0,0,0,0.06);
-        }
-
-        body.dark-mode .mini-player-btn:hover {
-            background: rgba(255,255,255,0.06);
-        }
-
-        .mini-player-btn.play-pause {
-            background: #1DB954;
-            color: #fff;
-        }
-
-        .mini-player-btn.play-pause:hover {
-            background: #1ed760;
-        }
-
-        .mini-player-progress {
-            position: absolute;
-            top: -2px;
-            left: 0;
-            height: 3px;
-            background: #1DB954;
-            border-radius: 2px;
-            transition: width 0.3s linear;
+        .service-toast {
+            position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; padding: 0.6rem 1.2rem; border-radius: 10px;
+            font-size: 0.82rem; z-index: 10001; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            animation: fadeIn 0.2s ease;
         }
 
         /* ==================== LOADING / EMPTY / NO-RESULTS ==================== */
@@ -986,8 +911,8 @@
                 <button id="curators-compact-toggle" class="header-btn" title="Компактен/Проширен приказ">
                     <i class="fas fa-compress-alt"></i>
                 </button>
-                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
-                    <i class="fas fa-moon"></i>
+                <button id="settings-btn" class="header-btn" title="Поставки">
+                    <i class="fas fa-gear"></i>
                 </button>
             </div>
         </div>
@@ -1012,47 +937,144 @@
             </div>
         </div>
     </main>
-    <!-- Mini player (fixed bottom bar) -->
-    <div class="mini-player" id="mini-player">
-        <div class="mini-player-progress" id="mini-player-progress"></div>
-        <img class="mini-player-art" id="mini-player-art" src="" alt="">
-        <div class="mini-player-info">
-            <div class="mini-player-title" id="mini-player-title"></div>
-            <div class="mini-player-artist" id="mini-player-artist"></div>
-        </div>
-        <div class="mini-player-controls">
-            <button class="mini-player-btn" id="mini-player-prev" title="Претходна"><i class="fas fa-backward-step"></i></button>
-            <button class="mini-player-btn play-pause" id="mini-player-play" title="Пушти/Пауза"><i class="fas fa-play"></i></button>
-            <button class="mini-player-btn" id="mini-player-next" title="Следна"><i class="fas fa-forward-step"></i></button>
-            <button class="mini-player-btn" id="mini-player-close" title="Затвори"><i class="fas fa-xmark"></i></button>
-        </div>
-    </div>
-    <audio id="audio-player" preload="none"></audio>
 
     <script>
-        // ==================== DARK MODE ====================
-        function initDarkMode() {
-            const toggle = document.getElementById('dark-mode-toggle');
-            if (!toggle) return;
-            const savedMode = localStorage.getItem('mmm-dark-mode') || localStorage.getItem('darkMode');
-            if (savedMode === 'true') {
-                document.documentElement.classList.add('dark-mode');
-                document.body.classList.add('dark-mode');
-                toggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.documentElement.classList.remove('dark-mode');
-                document.documentElement.style.backgroundColor = '';
-            }
-            toggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const isDark = document.body.classList.contains('dark-mode');
-                document.documentElement.classList.toggle('dark-mode', isDark);
-                document.documentElement.style.backgroundColor = isDark ? '#111318' : '';
-                localStorage.setItem('mmm-dark-mode', isDark);
-                toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        // ==================== SETTINGS MENU ====================
+        function initSettingsMenu() {
+            const settingsBtn = document.getElementById('settings-btn');
+            if (!settingsBtn) return;
+            const svcDefs = {
+                spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+                youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+                youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+                appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
+                deezer: { name: 'Deezer', icon: 'fas fa-headphones', color: '#A238FF' },
+                tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#000000' },
+                amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
+            };
+            const overlay = document.createElement('div');
+            overlay.id = 'settings-overlay';
+            overlay.className = 'settings-overlay';
+            const currentService = localStorage.getItem('mmm-preferred-service');
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            overlay.innerHTML = `
+                <div class="settings-panel">
+                    <h3><i class="fas fa-gear"></i> Поставки</h3>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Тема</div>
+                        <div class="settings-theme-toggle">
+                            <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light"><i class="fas fa-sun"></i> Светла</button>
+                            <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark"><i class="fas fa-moon"></i> Темна</button>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="settings-section-title">Стриминг сервис</div>
+                        <div class="settings-service-options">
+                            <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service=""><i class="fas fa-question"></i> Секогаш прашувај</button>
+                            ${Object.entries(svcDefs).map(([id, svc]) => `<button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}"><i class="${svc.icon}"></i> ${svc.name}</button>`).join('')}
+                        </div>
+                    </div>
+                    <div class="settings-section settings-tour-section">
+                        <button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> Тура на сајтот</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('visible'); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const ov = document.getElementById('settings-overlay'); if (ov) ov.classList.remove('visible'); } });
+            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dark = btn.dataset.theme === 'dark';
+                    document.body.classList.toggle('dark-mode', dark);
+                    document.documentElement.classList.toggle('dark-mode', dark);
+                    document.documentElement.style.backgroundColor = dark ? '#111318' : '';
+                    localStorage.setItem('mmm-dark-mode', dark);
+                    overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const serviceId = btn.dataset.service;
+                    if (serviceId) { localStorage.setItem('mmm-preferred-service', serviceId); }
+                    else { localStorage.removeItem('mmm-preferred-service'); }
+                    overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            const tourBtnEl = overlay.querySelector('#settings-start-tour');
+            if (tourBtnEl) { tourBtnEl.addEventListener('click', () => { overlay.classList.remove('visible'); if (typeof window.startGlobalTour === 'function') window.startGlobalTour(); }); }
+            settingsBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark-mode');
+                overlay.querySelectorAll('.settings-theme-btn').forEach(btn => { btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark); });
+                const currentSvc = localStorage.getItem('mmm-preferred-service');
+                overlay.querySelectorAll('.settings-service-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.service === (currentSvc || '')); });
+                overlay.classList.add('visible');
             });
         }
-        initDarkMode();
+        initSettingsMenu();
+
+        // ==================== GLOBAL SITE TOUR ====================
+        (function() {
+            const tourSteps = [
+                { element: null, title: 'Здраво! \ud83d\udc4b', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
+                { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници.', position: 'bottom' },
+                { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong>.', position: 'bottom' },
+                { element: null, title: 'Топ Листа \ud83d\udcca', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти. <a href="/">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Мастер Листа \ud83d\udccb', description: 'Комплетна база на <strong>сите македонски артисти</strong>. <a href="/lista">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Настани \ud83d\udcc5', description: 'Претстојни <strong>концерти и настани</strong>. <a href="/nastani">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Вести \ud83d\udcf0', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена. <a href="/vesti">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Кустоси \ud83c\udfa7', description: 'Музички <strong>кустоси</strong> со нивните плејлисти. <a href="/kustosi">Отвори →</a>', position: 'center' },
+                { element: null, title: 'Тоа е сè! \ud83c\udfb8', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! \ud83d\ude4c', position: 'center' }
+            ];
+            let currentStep = 0, active = false, tourOverlay = null;
+            function createOverlay() {
+                if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
+                const el = document.createElement('div'); el.id = 'tour-overlay'; el.className = 'tour-overlay';
+                el.innerHTML = '<div class="tour-highlight"></div><div class="tour-tooltip"><div class="tour-tooltip-content"><h3 class="tour-title"></h3><p class="tour-description"></p></div><div class="tour-footer"><span class="tour-progress"></span><div class="tour-buttons"><button class="tour-btn-skip">Прескокни</button><button class="tour-btn-prev"><i class="fas fa-arrow-left"></i></button><button class="tour-btn-next">Следно <i class="fas fa-arrow-right"></i></button></div></div></div>';
+                document.body.appendChild(el);
+                el.querySelector('.tour-btn-skip').addEventListener('click', endTour);
+                el.querySelector('.tour-btn-prev').addEventListener('click', function() { if (currentStep > 0) { currentStep--; showStep(); } });
+                el.querySelector('.tour-btn-next').addEventListener('click', function() { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else { endTour(); } });
+                el.addEventListener('click', function(e) { if (e.target === el || e.target.classList.contains('tour-highlight')) endTour(); });
+                document.addEventListener('keydown', function(e) { if (!active) return; if (e.key === 'Escape') endTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else endTour(); } if (e.key === 'ArrowLeft' && currentStep > 0) { currentStep--; showStep(); } });
+                return el;
+            }
+            function startTour() { tourOverlay = createOverlay(); active = true; currentStep = 0; tourOverlay.classList.add('active'); if (window.innerWidth > 600) document.body.style.overflow = 'hidden'; showStep(); }
+            function endTour() { active = false; if (tourOverlay) tourOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+            function showStep() {
+                var step = tourSteps[currentStep]; if (!step || !tourOverlay) return;
+                var highlight = tourOverlay.querySelector('.tour-highlight'), tooltip = tourOverlay.querySelector('.tour-tooltip');
+                tooltip.querySelector('.tour-title').textContent = step.title;
+                tooltip.querySelector('.tour-description').innerHTML = step.description;
+                tooltip.querySelector('.tour-progress').textContent = (currentStep + 1) + ' / ' + tourSteps.length;
+                tooltip.querySelector('.tour-btn-prev').disabled = currentStep === 0;
+                tooltip.querySelector('.tour-btn-next').innerHTML = currentStep === tourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
+                tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
+                if (step.position === 'center' || !step.element) {
+                    highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = '';
+                } else {
+                    var targetEl = document.querySelector(step.element);
+                    if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(function() {
+                        var rect = targetEl.getBoundingClientRect(), p = 4;
+                        highlight.style.display = 'block'; highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
+                        highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
+                        highlight.style.left = (rect.left - p) + 'px'; highlight.style.width = (rect.width + p * 2) + 'px'; highlight.style.height = (rect.height + p * 2) + 'px';
+                        if (window.innerWidth > 600) {
+                            var tr = tooltip.getBoundingClientRect(); var top = rect.bottom + 16, left = rect.left + rect.width / 2 - tr.width / 2;
+                            if (left < 10) left = 10; if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
+                            if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
+                            tooltip.style.top = top + 'px'; tooltip.style.left = left + 'px'; tooltip.classList.add('arrow-top');
+                        }
+                    }, 150);
+                }
+            }
+            window.startGlobalTour = startTour;
+        })();
 
         // ==================== NAV MENU ====================
         function initNavMenu() {
@@ -1119,7 +1141,7 @@
             return { icon: 'fas fa-globe', label: 'Линк', service: 'default' };
         }
 
-        /** Build a compact link for opening the playlist in external service */
+        /** Build a compact link for opening the playlist on its native service */
         function buildPlaylistLink(url) {
             const info = detectLinkInfo(url);
             const cls = info.service;
@@ -1130,134 +1152,120 @@
             </a>`;
         }
 
-        // ==================== AUDIO PLAYER ====================
-        const AUDIO_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/audio-proxy';
-        function proxyAudioUrl(url) {
-            if (url && url.includes('.dzcdn.net')) return `${AUDIO_PROXY}?url=${encodeURIComponent(url)}`;
-            return url;
+        // ==================== SERVICE PREFERENCE & OPEN ON SERVICE ====================
+        const serviceDefinitions = {
+            spotify:      { name: 'Spotify',       icon: 'fab fa-spotify',        color: '#1DB954' },
+            youtube:      { name: 'YouTube',        icon: 'fab fa-youtube',        color: '#FF0000' },
+            youtubeMusic: { name: 'YouTube Music',  icon: 'fab fa-youtube',        color: '#FF0000' },
+            appleMusic:   { name: 'Apple Music',    icon: 'fab fa-apple',          color: '#FA2D48' },
+            deezer:       { name: 'Deezer',         icon: 'fas fa-headphones',     color: '#A238FF' },
+            tidal:        { name: 'Tidal',          icon: 'fas fa-water',          color: '#000000' },
+            amazonMusic:  { name: 'Amazon Music',   icon: 'fab fa-amazon',         color: '#00A8E1' },
+            soundcloud:   { name: 'SoundCloud',     icon: 'fab fa-soundcloud',     color: '#FF5500' },
+            bandcamp:     { name: 'Bandcamp',       icon: 'fab fa-bandcamp',       color: '#629AA9' }
+        };
+        const songlinkCache = {};
+
+        function getPreferredService() { return localStorage.getItem('mmm-preferred-service'); }
+        function setPreferredService(s) { localStorage.setItem('mmm-preferred-service', s); }
+
+        async function fetchSonglinkUrls(url) {
+            if (!url) return null;
+            if (songlinkCache[url]) return songlinkCache[url];
+            try {
+                const r = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(url)}`);
+                if (!r.ok) return null;
+                const data = await r.json();
+                const links = {};
+                const map = { spotify: 'spotify', youtube: 'youtube', youtubeMusic: 'youtubeMusic',
+                    appleMusic: 'appleMusic', deezer: 'deezer', tidal: 'tidal',
+                    amazonMusic: 'amazonMusic', soundcloud: 'soundcloud', bandcamp: 'bandcamp' };
+                for (const [key, svc] of Object.entries(map)) {
+                    if (data.linksByPlatform?.[key]?.url) links[svc] = data.linksByPlatform[key].url;
+                }
+                songlinkCache[url] = links;
+                return links;
+            } catch { return null; }
         }
-        const audioPlayer = document.getElementById('audio-player');
-        const miniPlayer = document.getElementById('mini-player');
-        const miniPlayerArt = document.getElementById('mini-player-art');
-        const miniPlayerTitle = document.getElementById('mini-player-title');
-        const miniPlayerArtist = document.getElementById('mini-player-artist');
-        const miniPlayerPlay = document.getElementById('mini-player-play');
-        const miniPlayerPrev = document.getElementById('mini-player-prev');
-        const miniPlayerNext = document.getElementById('mini-player-next');
-        const miniPlayerClose = document.getElementById('mini-player-close');
-        const miniPlayerProgress = document.getElementById('mini-player-progress');
 
-        let currentPlaylist = []; // Array of track objects for sequential play
-        let currentTrackIndex = -1;
-        let activePlayBtn = null;
+        function urlMatchesService(url, serviceKey) {
+            if (!url) return false;
+            const patterns = {
+                spotify: 'open.spotify.com', youtube: 'youtube.com', youtubeMusic: 'music.youtube.com',
+                appleMusic: 'music.apple.com', deezer: 'deezer.com', tidal: 'tidal.com',
+                amazonMusic: 'music.amazon', soundcloud: 'soundcloud.com', bandcamp: 'bandcamp.com'
+            };
+            return url.includes(patterns[serviceKey] || '___');
+        }
 
-        function playTrack(track, playlist, index) {
-            if (!track.previewUrl) {
-                // No preview – open track URL instead
-                if (track.trackUrl) window.open(track.trackUrl, '_blank');
+        async function openOnPreferredService(releaseUrl, title) {
+            if (!releaseUrl) return;
+            const pref = getPreferredService();
+            if (pref && urlMatchesService(releaseUrl, pref)) {
+                window.open(releaseUrl, '_blank');
                 return;
             }
-
-            // Update active state on buttons
-            document.querySelectorAll('.track-play-btn.playing').forEach(b => {
-                b.classList.remove('playing');
-                b.innerHTML = '<i class="fas fa-play"></i>';
-            });
-
-            currentPlaylist = playlist || [];
-            currentTrackIndex = index >= 0 ? index : -1;
-
-            audioPlayer.src = proxyAudioUrl(track.previewUrl);
-            audioPlayer.play().catch(() => {});
-
-            // Show mini player
-            miniPlayer.classList.add('visible');
-            miniPlayerTitle.textContent = track.title || '';
-            miniPlayerArtist.textContent = track.artist || '';
-            miniPlayerArt.src = track.image || '';
-            miniPlayerArt.style.display = track.image ? '' : 'none';
-            miniPlayerPlay.innerHTML = '<i class="fas fa-pause"></i>';
-
-            // Highlight the current track button
-            const btn = document.querySelector(`.track-play-btn[data-track-id="${CSS.escape(track.trackId || '')}"]`);
-            if (btn) {
-                btn.classList.add('playing');
-                btn.innerHTML = '<i class="fas fa-pause"></i>';
-                activePlayBtn = btn;
+            showServiceToast('Се бараат линкови…');
+            const links = await fetchSonglinkUrls(releaseUrl);
+            hideServiceToast();
+            if (!links || Object.keys(links).length === 0) {
+                window.open(releaseUrl, '_blank');
+                return;
             }
+            if (pref && links[pref]) {
+                window.open(links[pref], '_blank');
+                return;
+            }
+            showServiceChooser(links, releaseUrl, title);
         }
 
-        audioPlayer.addEventListener('timeupdate', () => {
-            if (audioPlayer.duration) {
-                const pct = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                miniPlayerProgress.style.width = pct + '%';
-            }
-        });
+        function showServiceToast(msg) {
+            hideServiceToast();
+            const t = document.createElement('div');
+            t.className = 'service-toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+        }
+        function hideServiceToast() {
+            document.querySelectorAll('.service-toast').forEach(t => t.remove());
+        }
 
-        audioPlayer.addEventListener('ended', () => {
-            miniPlayerPlay.innerHTML = '<i class="fas fa-play"></i>';
-            if (activePlayBtn) {
-                activePlayBtn.classList.remove('playing');
-                activePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
+        function showServiceChooser(links, fallbackUrl, title) {
+            const overlay = document.createElement('div');
+            overlay.className = 'service-chooser-overlay';
+            const pref = getPreferredService();
+            let linksHtml = '';
+            for (const [key, url] of Object.entries(links)) {
+                const svc = serviceDefinitions[key];
+                if (!svc) continue;
+                const badge = key === pref ? '<span class="pref-badge">★</span>' : '';
+                linksHtml += `<a href="${url}" target="_blank" rel="noopener" data-service="${key}"><i class="${svc.icon}" style="color:${svc.color}"></i>${svc.name}${badge}</a>`;
             }
-            // Auto-play next track
-            if (currentPlaylist.length > 0 && currentTrackIndex < currentPlaylist.length - 1) {
-                const nextIdx = currentTrackIndex + 1;
-                const nextTrack = currentPlaylist[nextIdx];
-                if (nextTrack && nextTrack.previewUrl) {
-                    playTrack(nextTrack, currentPlaylist, nextIdx);
-                }
-            }
-        });
+            overlay.innerHTML = `<div class="service-chooser-dialog">
+                <h3>${title ? escHtml(title) : 'Отвори во сервис'}</h3>
+                <p class="subtitle">Избери сервис за слушање</p>
+                <div class="service-chooser-links">${linksHtml}</div>
+                <div class="service-chooser-footer">
+                    <button class="chooser-cancel">Откажи</button>
+                    <button class="chooser-set-default">Постави стандарден</button>
+                </div>
+            </div>`;
+            document.body.appendChild(overlay);
+            overlay.querySelector('.chooser-cancel').addEventListener('click', () => overlay.remove());
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            overlay.querySelector('.chooser-set-default').addEventListener('click', () => {
+                overlay.remove();
+                showServicePreferencePicker();
+            });
+            overlay.querySelectorAll('.service-chooser-links a').forEach(a => {
+                a.addEventListener('click', () => overlay.remove());
+            });
+        }
 
-        audioPlayer.addEventListener('pause', () => {
-            miniPlayerPlay.innerHTML = '<i class="fas fa-play"></i>';
-            if (activePlayBtn) {
-                activePlayBtn.classList.remove('playing');
-                activePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
-            }
-        });
-
-        audioPlayer.addEventListener('play', () => {
-            miniPlayerPlay.innerHTML = '<i class="fas fa-pause"></i>';
-            if (activePlayBtn) {
-                activePlayBtn.classList.add('playing');
-                activePlayBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-        });
-
-        miniPlayerPlay.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play().catch(() => {});
-            } else {
-                audioPlayer.pause();
-            }
-        });
-
-        miniPlayerPrev.addEventListener('click', () => {
-            if (currentTrackIndex > 0) {
-                playTrack(currentPlaylist[currentTrackIndex - 1], currentPlaylist, currentTrackIndex - 1);
-            }
-        });
-
-        miniPlayerNext.addEventListener('click', () => {
-            if (currentTrackIndex < currentPlaylist.length - 1) {
-                playTrack(currentPlaylist[currentTrackIndex + 1], currentPlaylist, currentTrackIndex + 1);
-            }
-        });
-
-        miniPlayerClose.addEventListener('click', () => {
-            audioPlayer.pause();
-            audioPlayer.src = '';
-            miniPlayer.classList.remove('visible');
-            miniPlayerProgress.style.width = '0%';
-            if (activePlayBtn) {
-                activePlayBtn.classList.remove('playing');
-                activePlayBtn.innerHTML = '<i class="fas fa-play"></i>';
-            }
-            currentPlaylist = [];
-            currentTrackIndex = -1;
-        });
+        function showServicePreferencePicker() {
+            const ov = document.getElementById('settings-overlay');
+            if (ov) ov.classList.add('visible');
+        }
 
         // ==================== CYRILLIC TRANSLITERATION ====================
         const cyrillicToLatinMap = {
@@ -1395,9 +1403,8 @@
             const visibleTracks = limited ? allTracks.slice(0, maxTracks) : allTracks;
 
             const trackItems = visibleTracks.map((t, i) => {
-                const hasPreview = !!t.previewUrl;
-                const playBtnTitle = hasPreview ? 'Пушти преглед' : (t.trackUrl ? 'Отвори' : '');
-                const playBtnClass = hasPreview ? '' : ' no-preview';
+                const hasUrl = !!t.trackUrl;
+                const playBtnTitle = hasUrl ? 'Отвори во сервис' : '';
 
                 return `<li class="track-item" data-track-index="${i}" data-track-url="${escAttr(t.trackUrl || '')}">
                     <span class="track-num">${i + 1}</span>
@@ -1407,8 +1414,8 @@
                         <div class="track-artist">${renderArtistName(t.artist || '')}</div>
                     </div>
                     <span class="track-duration">${t.duration || ''}</span>
-                    <button class="track-play-btn${playBtnClass}" data-track-id="${escAttr(t.trackId || i.toString())}" data-track-index="${i}" title="${playBtnTitle}">
-                        <i class="fas ${hasPreview ? 'fa-play' : 'fa-external-link-alt'}"></i>
+                    <button class="track-play-btn" data-track-id="${escAttr(t.trackId || i.toString())}" data-track-index="${i}" title="${playBtnTitle}">
+                        <i class="fas fa-external-link-alt"></i>
                     </button>
                 </li>`;
             }).join('');
@@ -1418,7 +1425,6 @@
             const totalMs = allTracks.reduce((s, t) => s + (t.durationMs || 0), 0);
             const totalMin = Math.round(totalMs / 60000);
             const metaText = `${trackCount} песни` + (totalMin > 0 ? ` · ${totalMin} мин.` : '');
-            const hasAnyPreview = visibleTracks.some(t => t.previewUrl);
 
             const remaining = allTracks.length - visibleTracks.length;
             const seeMoreHtml = limited && curatorName
@@ -1618,85 +1624,25 @@
                 const playBtn = e.target.closest('.track-play-btn');
                 if (playBtn) {
                     e.preventDefault();
-                    const wrapper = playBtn.closest('.tracklist-wrapper') || playBtn.closest('[data-curator-playlist]');
-                    const trackIndex = parseInt(playBtn.dataset.trackIndex);
-                    const playlist = getPlaylistTracksFromDom(wrapper);
-                    const track = playlist[trackIndex];
-
-                    if (!track) return;
-
-                    // If already playing this track, toggle pause
-                    if (activePlayBtn === playBtn && !audioPlayer.paused) {
-                        audioPlayer.pause();
-                        return;
-                    }
-                    if (activePlayBtn === playBtn && audioPlayer.paused && audioPlayer.src) {
-                        audioPlayer.play().catch(() => {});
-                        return;
-                    }
-
-                    playTrack(track, playlist, trackIndex);
+                    const trackItem = playBtn.closest('.track-item');
+                    const trackUrl = trackItem?.dataset.trackUrl;
+                    const nameEl = trackItem?.querySelector('.track-name');
+                    const title = nameEl?.textContent || '';
+                    if (trackUrl) openOnPreferredService(trackUrl, title);
                     return;
                 }
 
-                // Clicking on a track row plays it in the player
+                // Clicking on a track row opens it on preferred service
                 const trackItem = e.target.closest('.track-item');
                 if (trackItem && !e.target.closest('a')) {
                     e.preventDefault();
-                    const wrapper = trackItem.closest('.tracklist-wrapper') || trackItem.closest('[data-curator-playlist]');
-                    const trackIndex = parseInt(trackItem.dataset.trackIndex);
-                    const playlist = getPlaylistTracksFromDom(wrapper);
-                    const track = playlist[trackIndex];
-                    if (!track) return;
-
-                    const btn = trackItem.querySelector('.track-play-btn');
-                    if (btn && activePlayBtn === btn && !audioPlayer.paused) {
-                        audioPlayer.pause();
-                        return;
-                    }
-                    if (btn && activePlayBtn === btn && audioPlayer.paused && audioPlayer.src) {
-                        audioPlayer.play().catch(() => {});
-                        return;
-                    }
-                    playTrack(track, playlist, trackIndex);
+                    const trackUrl = trackItem.dataset.trackUrl;
+                    const nameEl = trackItem.querySelector('.track-name');
+                    const title = nameEl?.textContent || '';
+                    if (trackUrl) openOnPreferredService(trackUrl, title);
                     return;
                 }
             });
-        }
-
-        /** Extract track data from DOM for playback */
-        function getPlaylistTracksFromDom(wrapper) {
-            if (!wrapper) return [];
-            const items = wrapper.querySelectorAll('.track-item');
-            return Array.from(items).map((li, i) => {
-                const nameEl = li.querySelector('.track-name a') || li.querySelector('.track-name');
-                const artistEl = li.querySelector('.track-artist');
-                const artEl = li.querySelector('.track-art');
-                const btn = li.querySelector('.track-play-btn');
-                return {
-                    title: nameEl?.textContent || '',
-                    artist: artistEl?.textContent || '',
-                    image: artEl?.src || '',
-                    trackUrl: li.dataset.trackUrl || nameEl?.href || '',
-                    previewUrl: btn?.classList.contains('no-preview') ? null : (tracklistData ? findPreviewUrl(btn?.dataset.trackId) : null),
-                    trackId: btn?.dataset.trackId || i.toString()
-                };
-            });
-        }
-
-        /** Find preview URL from tracklist data by trackId */
-        function findPreviewUrl(trackId) {
-            if (!tracklistData?.curators || !trackId) return null;
-            for (const name of Object.keys(tracklistData.curators)) {
-                const cur = tracklistData.curators[name];
-                if (!cur.playlists) continue;
-                for (const pl of cur.playlists) {
-                    if (!pl.tracks) continue;
-                    const track = pl.tracks.find(t => t.trackId === trackId);
-                    if (track?.previewUrl) return track.previewUrl;
-                }
-            }
-            return null;
         }
 
         // ==================== SEARCH ====================

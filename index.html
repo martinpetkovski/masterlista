@@ -1825,66 +1825,6 @@
         }
         
         /* ==================== MINI PLAYER ==================== */
-        .mini-player {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .mini-player.visible { display: flex; }
-
-        body.dark-mode .mini-player {
-            background: #1a1c24;
-            border-top-color: rgba(255,255,255,0.08);
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-        }
-
-        .mini-player-art { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
-
-        .mini-player-info { flex: 1; min-width: 0; }
-
-        .mini-player-title {
-            font-size: 0.82rem; font-weight: 600; color: var(--text-primary, #1a1a2e);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        body.dark-mode .mini-player-title { color: #e8e8f0; }
-
-        .mini-player-artist {
-            font-size: 0.72rem; color: #888;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .mini-player-controls { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-
-        .mini-player-btn {
-            display: flex; align-items: center; justify-content: center;
-            width: 36px; height: 36px; border-radius: 50%; border: none;
-            background: transparent; color: var(--text-primary, #1a1a2e); font-size: 1rem; cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        body.dark-mode .mini-player-btn { color: #e8e8f0; }
-        .mini-player-btn:hover { background: rgba(0,0,0,0.06); }
-        body.dark-mode .mini-player-btn:hover { background: rgba(255,255,255,0.06); }
-        .mini-player-btn.play-pause { background: #1DB954; color: #fff; }
-        .mini-player-btn.play-pause:hover { background: #1ed760; }
-
-        .mini-player-progress {
-            position: absolute; top: -2px; left: 0; height: 3px;
-            background: #1DB954; border-radius: 2px; transition: width 0.3s linear;
-        }
-
         /* ==================== SERVICE CHOOSER ==================== */
         .service-chooser-overlay {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
@@ -1916,6 +1856,36 @@
         body.dark-mode .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
         .service-chooser-links a i { width: 20px; text-align: center; font-size: 1.1rem; }
         .service-chooser-links .loading { text-align: center; padding: 1rem; color: #888; font-size: 0.8rem; }
+        .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
+        .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
+
+        .service-pref-picker .service-pref-desc { font-size: 0.78rem; color: #888; margin: 0 0 0.75rem; }
+        .service-pref-options { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .service-pref-option {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem;
+            border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: transparent;
+            color: #333; cursor: pointer; font-size: 0.82rem; transition: all 0.15s;
+        }
+        body.dark-mode .service-pref-option { color: #e8e8f0; border-color: rgba(255,255,255,0.1); }
+        .service-pref-option:hover { background: rgba(0,0,0,0.04); }
+        body.dark-mode .service-pref-option:hover { background: rgba(255,255,255,0.06); }
+        .service-pref-option.active { background: var(--svc-color, var(--accent-orange)); color: #fff; border-color: transparent; }
+
+        .service-toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: #1a1c24; color: #fff; padding: 0.5rem 1rem; border-radius: 8px;
+            font-size: 0.78rem; z-index: 10001; display: none; align-items: center; gap: 0.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .service-toast.visible { display: flex; }
+
+        /* Chart title clickable - open on service */
+        .chart-title[data-release-url] {
+            cursor: pointer;
+        }
+        .chart-title[data-release-url]:hover {
+            text-decoration: underline;
+        }
         
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -1954,10 +1924,9 @@
                 <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" title="Сподели">
                     <i class="fas fa-share-alt"></i>
                 </button>
-                <button id="dark-mode-toggle" class="header-btn dark-mode-toggle" title="Темен/Светол режим">
-                    <i class="fas fa-moon"></i>
+                <button id="settings-btn" class="header-btn" title="Поставки">
+                    <i class="fas fa-gear"></i>
                 </button>
-                <button id="start-tour-btn" class="header-btn tour-btn" title="Тура"><i class="fas fa-globe"></i></button>
             </div>
         </div>
     </header>
@@ -2172,24 +2141,6 @@
             <div class="service-chooser-links" id="service-chooser-links"></div>
         </div>
     </div>
-
-    <!-- Mini Player -->
-    <div class="mini-player" id="mini-player">
-        <div class="mini-player-progress"><div class="mini-player-progress-bar" id="mini-player-progress-bar"></div></div>
-        <img class="mini-player-art" id="mini-player-art" src="" alt="">
-        <div class="mini-player-info">
-            <div class="mini-player-title" id="mini-player-title"></div>
-            <div class="mini-player-artist" id="mini-player-artist"></div>
-        </div>
-        <div class="mini-player-controls">
-            <button class="mini-player-btn" id="mini-player-prev" title="Претходна">⏮</button>
-            <button class="mini-player-btn" id="mini-player-play" title="Play/Pause">▶</button>
-            <button class="mini-player-btn" id="mini-player-next" title="Следна">⏭</button>
-            <button class="mini-player-btn" id="mini-player-open" title="Отвори во..."><i class="fas fa-external-link-alt"></i></button>
-            <button class="mini-player-btn" id="mini-player-close" title="Затвори">✕</button>
-        </div>
-    </div>
-    <audio id="audio-player" preload="none"></audio>
     
     <script>
         // ==================== NAV MENU ====================
@@ -3799,7 +3750,7 @@
                                 }
                             </div>
                             <div class="chart-info">
-                                <div class="chart-title" data-preview-url="${release.previewUrl || ''}" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="Кликни за преслушување">${release.releaseTitle}</div>
+                                <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="Кликни за отворање">${release.releaseTitle}</div>
                                 <div class="chart-artist">
                                     ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
@@ -3812,27 +3763,14 @@
                     `;
                 }).join('');
                 
-                // Add click listeners for track titles to play
+                // Add click listeners for track titles to open on preferred service
                 const allTitles = container.querySelectorAll('.chart-title');
-                const titlesList = Array.from(allTitles);
-                allTitles.forEach((title, idx) => {
+                allTitles.forEach((title) => {
                     title.addEventListener('click', (e) => {
                         e.preventDefault();
-                        const previewUrl = title.dataset.previewUrl;
-                        if (previewUrl) {
-                            // Build playlist from all visible titles with previews
-                            const playlist = titlesList.filter(t => t.dataset.previewUrl).map(t => ({
-                                previewUrl: t.dataset.previewUrl,
-                                releaseUrl: t.dataset.releaseUrl || '',
-                                title: t.textContent,
-                                artist: t.dataset.artist || '',
-                                thumbnail: t.dataset.thumbnail || ''
-                            }));
-                            const playlistIndex = playlist.findIndex(t => t.previewUrl === previewUrl);
-                            openMusicPlayer(playlist, playlistIndex >= 0 ? playlistIndex : 0);
-                        } else {
-                            const url = title.dataset.releaseUrl;
-                            if (url) showServiceChooser(url, title.textContent);
+                        const releaseUrl = title.dataset.releaseUrl;
+                        if (releaseUrl) {
+                            openOnPreferredService(releaseUrl, title.textContent);
                         }
                     });
                 });
@@ -3968,240 +3906,311 @@
                 }).join('');
             }
             
-            // ==================== SERVICE CHOOSER ====================
-            const serviceChooserOverlay = document.getElementById('service-chooser-overlay');
-            const serviceChooserTitle = document.getElementById('service-chooser-title');
-            const serviceChooserLinks = document.getElementById('service-chooser-links');
-
-            const streamingServices = {
-                spotify: { name: 'Spotify', icon: 'fab fa-spotify' },
-                youtube: { name: 'YouTube', icon: 'fab fa-youtube' },
-                youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube' },
-                appleMusic: { name: 'Apple Music', icon: 'fab fa-itunes-note' },
-                deezer: { name: 'Deezer', icon: 'fab fa-deezer' },
-                tidal: { name: 'Tidal', icon: 'fas fa-water' },
-                amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon' },
-                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud' },
-                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp' }
+            // ==================== OPEN ON PREFERRED SERVICE ====================
+            const serviceDefinitions = {
+                spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+                youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+                youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+                appleMusic: { name: 'Apple Music', icon: 'fab fa-itunes-note', color: '#fc3c44' },
+                deezer: { name: 'Deezer', icon: 'fab fa-deezer', color: '#FEAA2D' },
+                tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#00FFFF' },
+                amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
             };
 
             const songlinkCache = {};
 
-            async function showServiceChooser(releaseUrl, title) {
-                serviceChooserTitle.textContent = title || 'Отвори во...';
-                serviceChooserLinks.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Барам линкови...</div>';
-                serviceChooserOverlay.classList.add('visible');
+            function getPreferredService() {
+                return localStorage.getItem('mmm-preferred-service') || null;
+            }
 
-                let links = {};
-                // Always include the original Spotify link
-                if (releaseUrl) links.spotify = releaseUrl;
+            function setPreferredService(serviceId) {
+                localStorage.setItem('mmm-preferred-service', serviceId);
+            }
 
-                // Try song.link / Odesli API
-                if (releaseUrl && !songlinkCache[releaseUrl]) {
-                    try {
-                        const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(releaseUrl)}`);
-                        if (resp.ok) {
-                            const data = await resp.json();
-                            if (data.linksByPlatform) {
-                                songlinkCache[releaseUrl] = data.linksByPlatform;
+            function urlMatchesService(url, serviceId) {
+                const patterns = {
+                    spotify: /open\.spotify\.com/i,
+                    youtube: /youtube\.com|youtu\.be/i,
+                    youtubeMusic: /music\.youtube\.com/i,
+                    appleMusic: /music\.apple\.com/i,
+                    deezer: /deezer\.com/i,
+                    tidal: /tidal\.com/i,
+                    amazonMusic: /music\.amazon/i,
+                    soundcloud: /soundcloud\.com/i,
+                    bandcamp: /bandcamp\.com/i
+                };
+                return patterns[serviceId]?.test(url);
+            }
+
+            async function fetchSonglinkUrls(sourceUrl) {
+                if (songlinkCache[sourceUrl]) return songlinkCache[sourceUrl];
+                try {
+                    const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`);
+                    if (!resp.ok) return null;
+                    const data = await resp.json();
+                    const links = {};
+                    if (data.linksByPlatform) {
+                        for (const [platform, linkData] of Object.entries(data.linksByPlatform)) {
+                            if (serviceDefinitions[platform] && linkData.url) {
+                                links[platform] = linkData.url;
                             }
                         }
-                    } catch (e) { /* skip */ }
-                }
+                    }
+                    songlinkCache[sourceUrl] = links;
+                    return links;
+                } catch (err) { return null; }
+            }
 
-                if (songlinkCache[releaseUrl]) {
-                    for (const [platform, linkData] of Object.entries(songlinkCache[releaseUrl])) {
-                        if (streamingServices[platform] && linkData.url) {
-                            links[platform] = linkData.url;
+            function showServiceToast(message) {
+                let toast = document.getElementById('service-toast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'service-toast';
+                    toast.className = 'service-toast';
+                    document.body.appendChild(toast);
+                }
+                toast.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${message}`;
+                toast.classList.add('visible');
+            }
+            function hideServiceToast() {
+                const toast = document.getElementById('service-toast');
+                if (toast) toast.classList.remove('visible');
+            }
+
+            async function openOnPreferredService(releaseUrl, title) {
+                if (!releaseUrl) return;
+                const preferred = getPreferredService();
+                if (preferred && urlMatchesService(releaseUrl, preferred)) {
+                    window.open(releaseUrl, '_blank');
+                    return;
+                }
+                showServiceToast(preferred ? 'Се бара на ' + (serviceDefinitions[preferred]?.name || preferred) + '...' : 'Се бараат линкови…');
+                const links = await fetchSonglinkUrls(releaseUrl);
+                hideServiceToast();
+                if (!links || Object.keys(links).length === 0) {
+                    window.open(releaseUrl, '_blank');
+                    return;
+                }
+                if (preferred && links[preferred]) {
+                    window.open(links[preferred], '_blank');
+                } else {
+                    showServiceChooser(links, releaseUrl, title);
+                }
+            }
+
+            function showServiceChooser(links, fallbackUrl, title) {
+                const overlay = document.getElementById('service-chooser-overlay');
+                const titleEl = document.getElementById('service-chooser-title');
+                const linksEl = document.getElementById('service-chooser-links');
+                titleEl.textContent = title || 'Отвори во...';
+
+                if (fallbackUrl && !Object.values(links).includes(fallbackUrl)) {
+                    for (const [id] of Object.entries(serviceDefinitions)) {
+                        if (urlMatchesService(fallbackUrl, id) && !links[id]) {
+                            links[id] = fallbackUrl;
+                            break;
                         }
                     }
                 }
 
-                // Render links
                 const html = Object.entries(links)
-                    .filter(([id]) => streamingServices[id])
+                    .filter(([id]) => serviceDefinitions[id])
                     .map(([id, url]) => {
-                        const svc = streamingServices[id];
-                        return `<a href="${url}" target="_blank" rel="noopener noreferrer"><i class="${svc.icon}"></i> ${svc.name}</a>`;
+                        const svc = serviceDefinitions[id];
+                        const isPreferred = id === getPreferredService();
+                        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
+                            <i class="${svc.icon}"></i> ${svc.name}
+                            ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
+                        </a>`;
                     }).join('');
-                
-                serviceChooserLinks.innerHTML = html || `<a href="${releaseUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
+
+                linksEl.innerHTML = html || `<a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
+                overlay.classList.add('visible');
             }
 
-            serviceChooserOverlay.addEventListener('click', (e) => {
-                if (e.target === serviceChooserOverlay) serviceChooserOverlay.classList.remove('visible');
+            document.getElementById('service-chooser-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('service-chooser-overlay')) document.getElementById('service-chooser-overlay').classList.remove('visible');
             });
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') serviceChooserOverlay.classList.remove('visible');
-            });
-
-            // ==================== MINI PLAYER ====================
-            const AUDIO_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/audio-proxy';
-            function proxyAudioUrl(url) {
-                if (url && url.includes('.dzcdn.net')) return `${AUDIO_PROXY}?url=${encodeURIComponent(url)}`;
-                return url;
-            }
-            const audioPlayer = document.getElementById('audio-player');
-            const miniPlayer = document.getElementById('mini-player');
-            const miniPlayerArt = document.getElementById('mini-player-art');
-            const miniPlayerTitle = document.getElementById('mini-player-title');
-            const miniPlayerArtist = document.getElementById('mini-player-artist');
-            const miniPlayerPlayBtn = document.getElementById('mini-player-play');
-            const miniPlayerProgressBar = document.getElementById('mini-player-progress-bar');
-
-            let currentPlaylist = [];
-            let currentTrackIndex = -1;
-
-            function playTrack(index) {
-                if (index < 0 || index >= currentPlaylist.length) return;
-                currentTrackIndex = index;
-                const track = currentPlaylist[index];
-                miniPlayerArt.src = track.thumbnail || '';
-                miniPlayerTitle.textContent = track.title || '';
-                miniPlayerArtist.textContent = track.artist || '';
-                audioPlayer.src = proxyAudioUrl(track.previewUrl);
-                audioPlayer.play();
-                miniPlayer.classList.add('visible');
-            }
-
-            function openMusicPlayer(playlist, index) {
-                currentPlaylist = playlist || [];
-                playTrack(index || 0);
-            }
-
-            audioPlayer.addEventListener('timeupdate', () => {
-                if (audioPlayer.duration) {
-                    miniPlayerProgressBar.style.width = (audioPlayer.currentTime / audioPlayer.duration * 100) + '%';
-                }
-            });
-            audioPlayer.addEventListener('ended', () => {
-                if (currentTrackIndex < currentPlaylist.length - 1) {
-                    playTrack(currentTrackIndex + 1);
-                } else {
-                    miniPlayerPlayBtn.textContent = '▶';
-                }
-            });
-            audioPlayer.addEventListener('pause', () => { miniPlayerPlayBtn.textContent = '▶'; });
-            audioPlayer.addEventListener('play', () => { miniPlayerPlayBtn.textContent = '⏸'; });
-
-            miniPlayerPlayBtn.addEventListener('click', () => {
-                if (audioPlayer.paused) audioPlayer.play(); else audioPlayer.pause();
-            });
-            document.getElementById('mini-player-prev').addEventListener('click', () => {
-                if (currentTrackIndex > 0) playTrack(currentTrackIndex - 1);
-            });
-            document.getElementById('mini-player-next').addEventListener('click', () => {
-                if (currentTrackIndex < currentPlaylist.length - 1) playTrack(currentTrackIndex + 1);
-            });
-            document.getElementById('mini-player-open').addEventListener('click', () => {
-                const track = currentPlaylist[currentTrackIndex];
-                if (track?.releaseUrl) showServiceChooser(track.releaseUrl, track.title);
-            });
-            document.getElementById('mini-player-close').addEventListener('click', () => {
-                audioPlayer.pause();
-                audioPlayer.src = '';
-                miniPlayer.classList.remove('visible');
-                miniPlayerProgressBar.style.width = '0%';
+                if (e.key === 'Escape') document.getElementById('service-chooser-overlay').classList.remove('visible');
             });
             
             loadChartData();
             
-            // ==================== DARK MODE ====================
-            function initDarkMode() {
-                const toggle = document.getElementById('dark-mode-toggle');
-                if (!toggle) return;
-                
-                // Check localStorage for saved preference
-                const savedMode = localStorage.getItem('mmm-dark-mode');
-                if (savedMode === 'true') {
-                    document.documentElement.classList.add('dark-mode');
-                    document.body.classList.add('dark-mode');
-                    toggle.innerHTML = '<i class="fas fa-sun"></i>';
-                } else {
-                    document.documentElement.classList.remove('dark-mode');
-                    document.documentElement.style.backgroundColor = '';
+            // ==================== SETTINGS MENU ====================
+            function initSettingsMenu() {
+                const settingsBtn = document.getElementById('settings-btn');
+                if (!settingsBtn) return;
+
+                let overlay = document.getElementById('settings-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'settings-overlay';
+                    overlay.className = 'settings-overlay';
+
+                    const currentService = localStorage.getItem('mmm-preferred-service');
+                    const isDark = document.documentElement.classList.contains('dark-mode');
+
+                    overlay.innerHTML = `
+                        <div class="settings-panel">
+                            <h3><i class="fas fa-gear"></i> Поставки</h3>
+                            <div class="settings-section">
+                                <div class="settings-section-title">Тема</div>
+                                <div class="settings-theme-toggle">
+                                    <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light">
+                                        <i class="fas fa-sun"></i> Светла
+                                    </button>
+                                    <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark">
+                                        <i class="fas fa-moon"></i> Темна
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="settings-section">
+                                <div class="settings-section-title">Стриминг сервис</div>
+                                <div class="settings-service-options">
+                                    <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service="">
+                                        <i class="fas fa-question"></i> Секогаш прашувај
+                                    </button>
+                                    ${Object.entries(serviceDefinitions).map(([id, svc]) => `
+                                        <button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}">
+                                            <i class="${svc.icon}"></i> ${svc.name}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="settings-section settings-tour-section">
+                                <button class="settings-tour-btn" id="settings-start-tour">
+                                    <i class="fas fa-route"></i> Тура на сајтот
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(overlay);
+                    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('visible'); });
+                    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const ov = document.getElementById('settings-overlay'); if (ov) ov.classList.remove('visible'); } });
+
+                    overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const dark = btn.dataset.theme === 'dark';
+                            document.body.classList.toggle('dark-mode', dark);
+                            document.documentElement.classList.toggle('dark-mode', dark);
+                            document.documentElement.style.backgroundColor = dark ? '#111318' : '';
+                            localStorage.setItem('mmm-dark-mode', dark);
+                            overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                        });
+                    });
+
+                    overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const serviceId = btn.dataset.service;
+                            if (serviceId) { localStorage.setItem('mmm-preferred-service', serviceId); }
+                            else { localStorage.removeItem('mmm-preferred-service'); }
+                            overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                        });
+                    });
+
+                    // Tour button handler
+                    const tourStartBtn = overlay.querySelector('#settings-start-tour');
+                    if (tourStartBtn) {
+                        tourStartBtn.addEventListener('click', () => {
+                            overlay.classList.remove('visible');
+                            if (typeof window.startGlobalTour === 'function') window.startGlobalTour();
+                        });
+                    }
                 }
-                
-                toggle.addEventListener('click', () => {
-                    document.body.classList.toggle('dark-mode');
-                    const isDark = document.body.classList.contains('dark-mode');
-                    document.documentElement.classList.toggle('dark-mode', isDark);
-                    document.documentElement.style.backgroundColor = isDark ? '#111318' : '';
-                    localStorage.setItem('mmm-dark-mode', isDark);
-                    toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+                settingsBtn.addEventListener('click', () => {
+                    const isDark = document.documentElement.classList.contains('dark-mode');
+                    overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
+                        btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark);
+                    });
+                    const currentSvc = localStorage.getItem('mmm-preferred-service');
+                    overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.service === (currentSvc || ''));
+                    });
+                    overlay.classList.add('visible');
                 });
             }
-            
-            initDarkMode();
+
+            initSettingsMenu();
             
             // Initialize view modes after DOM is ready
             initViewModes();
             
-            // ==================== TOUR FUNCTIONALITY ====================
-            // Check if mobile
-            const isMobile = () => window.innerWidth <= 600;
-            
-            const tourSteps = [
-                {
-                    element: null,
-                    title: 'Македонска Музичка Топ Листа',
-                    description: 'Преглед на најновите изданија од македонски артисти. Листите се ажурираат автоматски секој ден врз основа на Spotify податоци.',
-                    position: 'center'
-                },
-                {
-                    element: '.site-nav-trigger',
-                    title: 'Мени ☰',
-                    description: 'Кликни на <strong>логото</strong> за да отвориш мени. Таму ги имаш Топ Листа, Мастер Листа, Вести и Помош. Секоја страница има своја тура.',
-                    position: 'bottom'
-                },
-                {
-                    element: '.chart-filter-bar',
-                    title: 'Специјални листи',
-                    description: 'Изберете тип на листа: Стандардна, На сите времиња, или филтрирајте по жанр (Алтернативна, Рап/Трап, Електронска) и град (Скопје, Битола).',
-                    position: 'bottom'
-                },
-                {
-                    element: isMobile() ? '#mobile-chart-tabs' : '#singles-section .chart-section-header',
-                    title: 'Синглови / Албуми / Најнови',
-                    description: isMobile()
-                        ? 'Користи ги копчињата за да менуваш помеѓу Синглови, Албуми и Најнови изданија.'
-                        : 'Најпопуларни синглови од последните два месеци, рангирани според популарност на Spotify.',
-                    position: 'bottom'
-                },
-                {
-                    element: '.chart-item',
-                    title: 'Детали за издание',
-                    description: 'Секое издание содржи корица, наслов, артист и популарност. Стрелките покажуваат промена во позицијата од минатата недела.',
-                    position: 'bottom'
-                },
-                {
-                    element: '#header-share-btn',
-                    title: 'Сподели',
-                    description: 'Кликни за да генерираш слика од тековната листа и да ја споделиш на социјални мрежи или да ја зачуваш.',
-                    position: 'bottom'
-                },
-                {
-                    element: isMobile() ? null : '.view-mode-toggle',
-                    title: 'Компактен приказ',
-                    description: 'Менувајте помеѓу компактен и проширен приказ. На мобилни стандардно е компактен.',
-                    position: isMobile() ? 'center' : 'bottom',
-                    mobileSkip: true
-                }
-            ];
+            // ==================== GLOBAL SITE TOUR ====================
+            (function() {
+                const tourSteps = [
+                    {
+                        element: null,
+                        title: 'Здраво! 👋',
+                        description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.',
+                        position: 'center'
+                    },
+                    {
+                        element: '.site-nav-trigger',
+                        title: 'Навигација',
+                        description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници: Топ Листа, Мастер Листа, Настани, Вести, Кустоси...',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#settings-btn',
+                        title: 'Поставки ⚙',
+                        description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong> (Spotify, YouTube, Deezer...). Кога ќе кликнеш на песна, директно се отвора таму.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: null,
+                        title: 'Топ Листа 📊',
+                        description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти, рангирани по Spotify популарност. Се ажурира автоматски секој ден. <a href="/">Отвори →</a>',
+                        position: 'center'
+                    },
+                    {
+                        element: null,
+                        title: 'Мастер Листа 📋',
+                        description: 'Комплетна база на <strong>сите македонски артисти</strong> со линкови, жанрови, градови и медиуми. Секој може да додаде нов артист. <a href="/lista">Отвори →</a>',
+                        position: 'center'
+                    },
+                    {
+                        element: null,
+                        title: 'Настани 📅',
+                        description: 'Претстојни <strong>концерти и настани</strong> со датуми, локации и карти. <a href="/nastani">Отвори →</a>',
+                        position: 'center'
+                    },
+                    {
+                        element: null,
+                        title: 'Вести 📰',
+                        description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена од разни извори. <a href="/vesti">Отвори →</a>',
+                        position: 'center'
+                    },
+                    {
+                        element: null,
+                        title: 'Кустоси 🎧',
+                        description: 'Музички <strong>кустоси</strong> со нивните плејлисти и тракслисти. Може и ти да станеш кустос! <a href="/kustosi">Отвори →</a>',
+                        position: 'center'
+                    },
+                    {
+                        element: null,
+                        title: 'Тоа е сè! 🎸',
+                        description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! 🙌',
+                        position: 'center'
+                    }
+                ];
 
-            let currentTourStep = 0;
-            let tourActive = false;
+                let currentStep = 0;
+                let active = false;
+                let tourOverlay = null;
 
-            function initTour() {
-                const tourBtn = document.getElementById('start-tour-btn');
-                if (!tourBtn) return;
-
-                // Create tour overlay if not exists
-                if (!document.getElementById('tour-overlay')) {
-                    const overlay = document.createElement('div');
-                    overlay.id = 'tour-overlay';
-                    overlay.className = 'tour-overlay';
-                    overlay.innerHTML = `
+                function createOverlay() {
+                    if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
+                    const el = document.createElement('div');
+                    el.id = 'tour-overlay';
+                    el.className = 'tour-overlay';
+                    el.innerHTML = `
                         <div class="tour-highlight"></div>
                         <div class="tour-tooltip">
                             <div class="tour-tooltip-content">
@@ -4218,219 +4227,77 @@
                             </div>
                         </div>
                     `;
-                    document.body.appendChild(overlay);
+                    document.body.appendChild(el);
+                    el.querySelector('.tour-btn-skip').addEventListener('click', endTour);
+                    el.querySelector('.tour-btn-prev').addEventListener('click', () => { if (currentStep > 0) { currentStep--; showStep(); } });
+                    el.querySelector('.tour-btn-next').addEventListener('click', () => { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else { endTour(); } });
+                    el.addEventListener('click', (e) => { if (e.target === el || e.target.classList.contains('tour-highlight')) endTour(); });
+                    document.addEventListener('keydown', (e) => { if (!active) return; if (e.key === 'Escape') endTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else endTour(); } if (e.key === 'ArrowLeft' && currentStep > 0) { currentStep--; showStep(); } });
+                    return el;
                 }
 
-                const overlay = document.getElementById('tour-overlay');
-                const tooltip = overlay.querySelector('.tour-tooltip');
-                const prevBtn = tooltip.querySelector('.tour-btn-prev');
-                const nextBtn = tooltip.querySelector('.tour-btn-next');
-                const skipBtn = tooltip.querySelector('.tour-btn-skip');
-
-                tourBtn.addEventListener('click', startTour);
-                prevBtn.addEventListener('click', prevStep);
-                nextBtn.addEventListener('click', nextStep);
-                skipBtn.addEventListener('click', endTour);
-
-                overlay.addEventListener('click', (e) => {
-                    if (e.target === overlay || e.target.classList.contains('tour-highlight')) {
-                        endTour();
-                    }
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (!tourActive) return;
-                    if (e.key === 'Escape') endTour();
-                    if (e.key === 'ArrowRight' || e.key === 'Enter') nextStep();
-                    if (e.key === 'ArrowLeft') prevStep();
-                });
-
-                // Show a logo pulse hint on mobile for first-time users
-                if (isMobile()) {
-                    const logoTrigger = document.querySelector('.site-nav-trigger');
-                    if (logoTrigger) {
-                        logoTrigger.classList.add('nav-hint-pulse');
-                        logoTrigger.addEventListener('animationend', () => {
-                            logoTrigger.classList.remove('nav-hint-pulse');
-                        }, { once: true });
-                    }
+                function startTour() {
+                    tourOverlay = createOverlay();
+                    active = true;
+                    currentStep = 0;
+                    tourOverlay.classList.add('active');
+                    if (window.innerWidth > 600) document.body.style.overflow = 'hidden';
+                    showStep();
                 }
-            }
 
-            function getActiveTourSteps() {
-                if (isMobile()) {
-                    return tourSteps.filter(s => !s.mobileSkip);
+                function endTour() {
+                    active = false;
+                    if (tourOverlay) tourOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
-                return tourSteps;
-            }
 
-            function startTour() {
-                tourActive = true;
-                currentTourStep = 0;
-                document.getElementById('tour-overlay').classList.add('active');
-                // On mobile, allow scrolling to see elements; on desktop, prevent scroll
-                if (!isMobile()) {
-                    document.body.style.overflow = 'hidden';
-                }
-                showTourStep(currentTourStep);
-            }
-
-            function endTour() {
-                tourActive = false;
-                document.getElementById('tour-overlay').classList.remove('active');
-                document.body.style.overflow = '';
-            }
-
-            function prevStep() {
-                if (currentTourStep > 0) {
-                    currentTourStep--;
-                    showTourStep(currentTourStep);
-                }
-            }
-
-            function nextStep() {
-                const steps = getActiveTourSteps();
-                if (currentTourStep < steps.length - 1) {
-                    currentTourStep++;
-                    showTourStep(currentTourStep);
-                } else {
-                    endTour();
-                }
-            }
-
-            function showTourStep(stepIndex) {
-                const steps = getActiveTourSteps();
-                const step = steps[stepIndex];
-                if (!step) return;
-                const overlay = document.getElementById('tour-overlay');
-                const highlight = overlay.querySelector('.tour-highlight');
-                const tooltip = overlay.querySelector('.tour-tooltip');
-                const titleEl = tooltip.querySelector('.tour-title');
-                const descEl = tooltip.querySelector('.tour-description');
-                const progressEl = tooltip.querySelector('.tour-progress');
-                const prevBtn = tooltip.querySelector('.tour-btn-prev');
-                const nextBtn = tooltip.querySelector('.tour-btn-next');
-
-                titleEl.textContent = step.title;
-                descEl.innerHTML = step.description;
-                progressEl.textContent = `${stepIndex + 1} / ${steps.length}`;
-
-                prevBtn.disabled = stepIndex === 0;
-                nextBtn.innerHTML = stepIndex === steps.length - 1 
-                    ? 'Заврши <i class="fas fa-check"></i>' 
-                    : 'Следно <i class="fas fa-arrow-right"></i>';
-
-                tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
-
-                // On mobile, use bottom sheet tooltip but still highlight elements
-                if (isMobile()) {
-                    tooltip.style.top = '';
-                    tooltip.style.left = '';
+                function showStep() {
+                    const step = tourSteps[currentStep];
+                    if (!step || !tourOverlay) return;
+                    const highlight = tourOverlay.querySelector('.tour-highlight');
+                    const tooltip = tourOverlay.querySelector('.tour-tooltip');
+                    tooltip.querySelector('.tour-title').textContent = step.title;
+                    tooltip.querySelector('.tour-description').innerHTML = step.description;
+                    tooltip.querySelector('.tour-progress').textContent = `${currentStep + 1} / ${tourSteps.length}`;
+                    tooltip.querySelector('.tour-btn-prev').disabled = currentStep === 0;
+                    tooltip.querySelector('.tour-btn-next').innerHTML = currentStep === tourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
+                    tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
 
                     if (step.position === 'center' || !step.element) {
                         highlight.style.display = 'none';
+                        tooltip.classList.add('tour-center');
+                        tooltip.style.top = '';
+                        tooltip.style.left = '';
                     } else {
                         const targetEl = document.querySelector(step.element);
-                        if (targetEl) {
-                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            setTimeout(() => {
-                                const rect = targetEl.getBoundingClientRect();
-                                const padding = 4;
-                                highlight.style.display = 'block';
-                                highlight.style.position = 'fixed';
-                                highlight.style.top = (rect.top - padding) + 'px';
-                                highlight.style.left = (rect.left - padding) + 'px';
-                                highlight.style.width = (rect.width + padding * 2) + 'px';
-                                highlight.style.height = (rect.height + padding * 2) + 'px';
-                            }, 350);
-                        } else {
-                            highlight.style.display = 'none';
-                        }
+                        if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => {
+                            const rect = targetEl.getBoundingClientRect();
+                            const p = 4;
+                            highlight.style.display = 'block';
+                            highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
+                            highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
+                            highlight.style.left = (rect.left - p) + 'px';
+                            highlight.style.width = (rect.width + p * 2) + 'px';
+                            highlight.style.height = (rect.height + p * 2) + 'px';
+                            if (window.innerWidth > 600) {
+                                const tr = tooltip.getBoundingClientRect();
+                                let top = rect.bottom + 16;
+                                let left = rect.left + rect.width / 2 - tr.width / 2;
+                                if (left < 10) left = 10;
+                                if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
+                                if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
+                                tooltip.style.top = top + 'px';
+                                tooltip.style.left = left + 'px';
+                                tooltip.classList.add('arrow-top');
+                            }
+                        }, 150);
                     }
-                    return;
                 }
 
-                if (step.position === 'center' || !step.element) {
-                    highlight.style.display = 'none';
-                    tooltip.classList.add('tour-center');
-                    tooltip.style.top = '';
-                    tooltip.style.left = '';
-                } else {
-                    const targetEl = document.querySelector(step.element);
-                    if (!targetEl) {
-                        if (stepIndex < steps.length - 1) {
-                            currentTourStep++;
-                            showTourStep(currentTourStep);
-                        }
-                        return;
-                    }
-
-                    setTimeout(() => {
-                        positionHighlight(targetEl, highlight);
-                        positionTooltip(targetEl, tooltip, step.position);
-                    }, 50);
-                }
-            }
-
-            function positionHighlight(element, highlight) {
-                const rect = element.getBoundingClientRect();
-                const padding = 4;
-                highlight.style.display = 'block';
-                highlight.style.top = (rect.top - padding) + 'px';
-                highlight.style.left = (rect.left - padding) + 'px';
-                highlight.style.width = (rect.width + padding * 2) + 'px';
-                highlight.style.height = (rect.height + padding * 2) + 'px';
-            }
-
-            function positionTooltip(element, tooltip, position) {
-                const rect = element.getBoundingClientRect();
-                const tooltipRect = tooltip.getBoundingClientRect();
-                const gap = 16;
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
-
-                if (viewportWidth <= 600) {
-                    tooltip.classList.add('arrow-top');
-                    return;
-                }
-
-                let top, left;
-                let arrowClass = '';
-
-                switch (position) {
-                    case 'bottom':
-                        top = rect.bottom + gap;
-                        left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-                        arrowClass = 'arrow-top';
-                        break;
-                    case 'top':
-                        top = rect.top - tooltipRect.height - gap;
-                        left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-                        arrowClass = 'arrow-bottom';
-                        break;
-                    case 'left':
-                        top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-                        left = rect.left - tooltipRect.width - gap;
-                        arrowClass = 'arrow-right';
-                        break;
-                    case 'right':
-                        top = rect.top + rect.height / 2 - tooltipRect.height / 2;
-                        left = rect.right + gap;
-                        arrowClass = 'arrow-left';
-                        break;
-                }
-
-                if (left < 10) left = 10;
-                if (left + tooltipRect.width > viewportWidth - 10) left = viewportWidth - tooltipRect.width - 10;
-                if (top < 10) top = 10;
-                if (top + tooltipRect.height > viewportHeight - 10) top = viewportHeight - tooltipRect.height - 10;
-
-                tooltip.style.top = top + 'px';
-                tooltip.style.left = left + 'px';
-                tooltip.classList.add(arrowClass);
-            }
-
-            initTour();
+                window.startGlobalTour = startTour;
+            })();
         });
     </script>
 </body>
