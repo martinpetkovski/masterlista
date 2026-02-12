@@ -806,32 +806,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cool-toned city color palettes for light and dark modes
     const cityPaletteLight = [
-        '#4a8fa8',  // steel blue
-        '#6b7fa5',  // slate blue
-        '#5a9a8f',  // sage teal
-        '#7889a0',  // dusty blue
-        '#5c8d76',  // muted seafoam
-        '#6880b0',  // periwinkle
-        '#4f9b9b',  // teal
-        '#7a7da8',  // lavender steel
-        '#5a8a6e',  // eucalyptus
-        '#5b85b5',  // cornflower
-        '#6d95a0',  // cadet blue
-        '#7b8e78',  // sage
+        '#2a769e',  // strong blue
+        '#2c8c82',  // peacock teal
+        '#3e8c65',  // jungle green
+        '#3b6ba5',  // royal blue tint
+        '#4b6f96',  // steel blue
+        '#2e80a0',  // ocean blue
+        '#267d8f',  // deep cyan
+        '#4a6fa5',  // cool blue
+        '#358579',  // sea green
+        '#566e9e',  // medium slate
+        '#3a808c',  // teal blue
+        '#468058',  // forest green
     ];
     const cityPaletteDark = [
-        '#3a7a92',  // deep steel
-        '#5a6d90',  // dark slate
-        '#4a867a',  // dark sage
-        '#66778e',  // dark dusty
-        '#4d7a66',  // dark seafoam
-        '#576e9a',  // dark periwinkle
-        '#3f8585',  // dark teal
-        '#68698e',  // dark lavender
-        '#4a785e',  // dark eucalyptus
-        '#4a729e',  // dark cornflower
-        '#5c8290',  // dark cadet
-        '#6a7c68',  // dark sage
+        '#6ec6e8',  // bright sky
+        '#7bb0df',  // soft blue
+        '#65dcb2',  // bright mint
+        '#8ab0de',  // periwinkle
+        '#6edbb3',  // seafoam
+        '#78aadb',  // cornflower
+        '#5fcbc2',  // bright teal
+        '#9cacd8',  // lavender blue
+        '#68d4b8',  // turquoise
+        '#7bb5e8',  // light blue
+        '#82c9d6',  // ice blue
+        '#8ed6a8',  // pale green
     ];
 
     function generateCityColor(city) {
@@ -842,8 +842,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCityTagStyle(city) {
-        const bg = generateCityColor(city);
-        return `background: ${bg}; color: #fff; border-color: ${bg}`;
+        const hex = generateCityColor(city);
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const isDark = document.documentElement.classList.contains('dark-mode');
+        if (isDark) {
+            // Dark mode: use bright palette color directly for text
+            return `background: rgba(${r},${g},${b},0.15); color: rgb(${r},${g},${b}); border-color: rgba(${r},${g},${b},0.3)`;
+        } else {
+            // Light mode: use saturated palette color directly for text
+            return `background: rgba(${r},${g},${b},0.1); color: rgb(${r},${g},${b}); border-color: rgba(${r},${g},${b},0.25)`;
+        }
     }
 
     // Initialize scroll shadows for scrollable containers
