@@ -2725,17 +2725,7 @@ a.chart-history-item {
                 try {
                     const chartHistory = await loadChartHistory(artist.name);
                     
-                    // Enrich releases with previewUrl from current chart-data.json
-                    try {
-                        const chartResp = await fetch('chart-data.json');
-                        const chartJson = await chartResp.json();
-                        const previewMap = {};
-                        (chartJson.releases || []).forEach(r => { if (r.previewUrl) previewMap[r.releaseId] = r.previewUrl; });
-                        chartHistory.releases.forEach((rel, id) => {
-                            if (!rel.previewUrl && previewMap[id]) rel.previewUrl = previewMap[id];
-                        });
-                    } catch (e) {}
-                    
+                    // Enrich releases from current chart-data.json (no preview URLs needed)
                     renderPopularityGraph(chartHistory);
                     renderReleases(chartHistory, artist.links);
                 } catch (e) {

@@ -696,16 +696,6 @@ async function main() {
               const fullAlbum = fullAlbumDetails[album.id];
               const albumPopularity = fullAlbum?.popularity || 0;
               
-              // Extract preview URL from the first track that has one
-              let previewUrl = null;
-              const tracks = fullAlbum?.tracks?.items || [];
-              for (const track of tracks) {
-                if (track.preview_url) {
-                  previewUrl = track.preview_url;
-                  break;
-                }
-              }
-              
               return {
                 bandName: band.name,
                 artistId,
@@ -720,8 +710,7 @@ async function main() {
                 totalTracks: album.total_tracks,
                 popularity: albumPopularity, // Spotify album/single popularity (0-100)
                 followers: artistInfo?.followers?.total || 0,
-                spotifyUrl: band.links.spotify,
-                previewUrl: previewUrl
+                spotifyUrl: band.links.spotify
               };
           });
           
@@ -743,97 +732,6 @@ async function main() {
   }
   
   console.log(`Collected ${releases.length} releases`);
-  
-  // Macedonian Cyrillic → Latin transliteration map
-  const cyrToLat = {
-    'а':'a','б':'b','в':'v','г':'g','д':'d','ѓ':'gj','е':'e','ж':'zh','з':'z',
-    'ѕ':'dz','и':'i','ј':'j','к':'k','л':'l','љ':'lj','м':'m','н':'n','њ':'nj',
-    'о':'o','п':'p','р':'r','с':'s','т':'t','ќ':'kj','у':'u','ф':'f','х':'h',
-    'ц':'c','ч':'ch','џ':'dj','ш':'sh',
-    'А':'A','Б':'B','В':'V','Г':'G','Д':'D','Ѓ':'Gj','Е':'E','Ж':'Zh','З':'Z',
-    'Ѕ':'Dz','И':'I','Ј':'J','К':'K','Л':'L','Љ':'Lj','М':'M','Н':'N','Њ':'Nj',
-    'О':'O','П':'P','Р':'R','С':'S','Т':'T','Ќ':'Kj','У':'U','Ф':'F','Х':'H',
-    'Ц':'C','Ч':'Ch','Џ':'Dj','Ш':'Sh',
-    // Serbian/Russian extras that may appear
-    'ы':'i','э':'e','ю':'ju','я':'ja','ъ':'','ь':'',
-    'Ы':'I','Э':'E','Ю':'Ju','Я':'Ja','Ъ':'','Ь':''
-  };
-  function transliterate(text) {
-    return text.replace(/[а-яА-ЯѓѕљњќџЃЅЉЊЌЏ]/g, ch => cyrToLat[ch] || ch);
-  }
-  function hasCyrillic(text) {
-    return /[\u0400-\u04FF]/.test(text);
-  }
-  
-  // Search Deezer for a preview URL with multiple query strategies
-  async function searchDeezerPreview(bandName, releaseTitle) {
-    const queries = [];
-    const raw = `${bandName} ${releaseTitle}`;
-    
-    // Strategy 1: Original text (preserving Cyrillic)
-    queries.push(raw.replace(/\s+/g, ' ').trim());
-    
-    // Strategy 2: Transliterated if Cyrillic present
-    if (hasCyrillic(raw)) {
-      queries.push(transliterate(raw).replace(/\s+/g, ' ').trim());
-    }
-    
-    // Strategy 3: Title only (transliterated if needed)
-    const titleOnly = hasCyrillic(releaseTitle) ? transliterate(releaseTitle) : releaseTitle;
-    queries.push(titleOnly.replace(/\s+/g, ' ').trim());
-    
-    for (const q of queries) {
-      if (!q) continue;
-      try {
-        const url = `https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=5`;
-        const resp = await fetch(url);
-        if (!resp.ok) {
-          await new Promise(r => setTimeout(r, 300));
-          continue;
-        }
-        const data = await resp.json();
-        if (data.data) {
-          // Try to find a result that matches the artist name
-          const nameLower = transliterate(bandName).toLowerCase();
-          const titleLower = transliterate(releaseTitle).toLowerCase();
-          // Best match: both artist and title match
-          let best = data.data.find(d => d.preview && 
-            d.artist?.name?.toLowerCase().includes(nameLower) &&
-            d.title?.toLowerCase().includes(titleLower));
-          // Good match: just has a preview from the results
-          if (!best) best = data.data.find(d => d.preview);
-          if (best?.preview) return best.preview;
-        }
-      } catch (e) { /* skip */ }
-    }
-    return null;
-  }
-
-  // Fill missing preview URLs via Deezer search (Spotify often returns null previews)
-  const missingPreviews = releases.filter(r => !r.previewUrl);
-  if (missingPreviews.length > 0) {
-    console.log(`${missingPreviews.length} releases missing previews, searching Deezer...`);
-    let found = 0;
-    const DEEZER_BATCH = 15;
-    for (let i = 0; i < missingPreviews.length; i += DEEZER_BATCH) {
-      const batch = missingPreviews.slice(i, i + DEEZER_BATCH);
-      const results = await Promise.all(batch.map(async (release) => {
-        const previewUrl = await searchDeezerPreview(release.bandName, release.releaseTitle);
-        return previewUrl ? { release, previewUrl } : null;
-      }));
-      for (const r of results) {
-        if (r) {
-          r.release.previewUrl = r.previewUrl;
-          found++;
-        }
-      }
-      if (i + DEEZER_BATCH < missingPreviews.length) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-      console.log(`  Deezer batch ${Math.floor(i / DEEZER_BATCH) + 1}/${Math.ceil(missingPreviews.length / DEEZER_BATCH)} (found ${found} so far)`);
-    }
-    console.log(`Found Deezer previews for ${found}/${missingPreviews.length} tracks`);
-  }
   
   // Generate chart data
   const now = new Date();

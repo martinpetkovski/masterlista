@@ -24,6 +24,13 @@
                 '/artist': '/artist.html'
             };
 
+            // Chart preset routes → redirect to index with preset param
+            const chartRoutes = {
+                '/alternativna': 'alt',
+                '/site-vreminja': 'alltime',
+                '/napredno': 'advanced'
+            };
+
             // Backward-compat redirects for old clean URLs
             const legacyRoutes = {
                 '/list': '/lista',
@@ -38,6 +45,13 @@
             // Handle legacy routes (redirect to new clean URL)
             if (legacyRoutes[path]) {
                 window.location.replace(legacyRoutes[path] + search);
+                return;
+            }
+
+            // Handle chart preset routes (/alternativna, /site-vreminja, /napredno)
+            if (chartRoutes[path]) {
+                sessionStorage.setItem('chartPreset', chartRoutes[path]);
+                window.location.replace('/index.html');
                 return;
             }
 
