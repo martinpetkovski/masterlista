@@ -3216,6 +3216,24 @@
                 // Initialize filter buttons first
                 initFilterButtons();
                 
+                // Apply preset from URL if navigated via /alternativna, /site-vreminja, /napredno
+                const urlPreset = sessionStorage.getItem('chartPreset');
+                if (urlPreset) {
+                    sessionStorage.removeItem('chartPreset');
+                    const advancedPanel = document.getElementById('advanced-filters');
+                    if (urlPreset === 'alt') {
+                        currentFilters = { chart: 'standard', genre: 'alt', city: 'all' };
+                    } else if (urlPreset === 'alltime') {
+                        currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
+                    } else if (urlPreset === 'advanced') {
+                        currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
+                        if (advancedPanel) advancedPanel.style.display = 'flex';
+                    }
+                    syncPresetButtons(urlPreset === 'advanced' ? 'advanced' : urlPreset === 'alt' ? 'alt' : urlPreset === 'alltime' ? 'alltime' : 'toplista');
+                    syncAdvancedButtons();
+                    updateUrlForPreset(urlPreset);
+                }
+                
                 // Apply current filters and render
                 applyFilters();
                 
@@ -3510,6 +3528,21 @@
                 });
             }
 
+            // Map preset names to clean URLs
+            const presetUrls = {
+                'toplista': '/',
+                'alt': '/alternativna',
+                'alltime': '/site-vreminja',
+                'advanced': '/napredno'
+            };
+            
+            function updateUrlForPreset(preset) {
+                const cleanUrl = presetUrls[preset];
+                if (cleanUrl && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                    history.replaceState({ preset }, '', cleanUrl);
+                }
+            }
+
             // Initialize filter buttons (radio-button style per group)
             function initFilterButtons() {
                 const advancedPanel = document.getElementById('advanced-filters');
@@ -3529,7 +3562,10 @@
                                 currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
                                 syncAdvancedButtons();
                                 syncPresetButtons('toplista');
+                                updateUrlForPreset('toplista');
                                 applyFilters();
+                            } else {
+                                updateUrlForPreset('advanced');
                             }
                             return;
                         }
@@ -3547,6 +3583,7 @@
                         
                         syncPresetButtons(preset);
                         syncAdvancedButtons();
+                        updateUrlForPreset(preset);
                         applyFilters();
                         
                         // Scroll charts into view on mobile
