@@ -1,6 +1,34 @@
 {
   "events": [
     {
+      "id": "evt-20260206-re-start-festival-ден-1-6z31",
+      "title": "Re:Start Festival: Ден 1",
+      "date": "2026-02-06",
+      "time": "20:00",
+      "place": "Лабораториум, Скопје",
+      "artists": [
+        "Член 16",
+        "Mallard",
+        "Корка",
+        "Големата Вода"
+      ],
+      "tickets": [
+        {
+          "label": "Блок Карта",
+          "price": "500"
+        },
+        {
+          "label": "Еднодневна Карта",
+          "price": "300"
+        },
+        {
+          "label": "Денот на настапот",
+          "price": "400"
+        }
+      ],
+      "link": "https://www.instagram.com/restartfestivalsk/"
+    },
+    {
       "id": "duper-st-210226",
       "title": "Дупер во Штип LIVE Concert",
       "date": "2026-02-21",
