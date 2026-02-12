@@ -2552,3 +2552,197 @@ body.guide-page .site-footer {
         height: 30px;
     }
 }
+
+/* ==================== MMM Draft Bar ==================== */
+.mmm-draft-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+.mmm-draft-bar.visible {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.mmm-draft-bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.7rem 1.2rem;
+    background: var(--bg-secondary, #16213e);
+    border-top: 1px solid var(--border-color, #2a3a5a);
+    border-left: 1px solid var(--border-color, #2a3a5a);
+    border-right: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+}
+.mmm-draft-bar-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-primary, #eee);
+    min-width: 0;
+}
+.mmm-draft-bar-info > i {
+    color: var(--accent-orange, #ff9113);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.mmm-draft-bar-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mmm-draft-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: var(--accent-orange, #ff9113);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.mmm-draft-bar-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.mmm-draft-btn {
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s, transform 0.1s, opacity 0.15s;
+    font-family: inherit;
+}
+.mmm-draft-btn:hover { transform: translateY(-1px); }
+.mmm-draft-btn:active { transform: translateY(0); }
+.mmm-draft-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.mmm-draft-btn.discard {
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--accent-red, #ff6b6b);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+}
+.mmm-draft-btn.discard:hover { background: rgba(255, 107, 107, 0.2); }
+.mmm-draft-btn.submit {
+    background: var(--accent-orange, #ff9113);
+    color: #fff;
+}
+.mmm-draft-btn.submit:hover { background: #e07f00; }
+.mmm-btn-danger {
+    background: var(--accent-red, #ff6b6b) !important;
+    color: #fff !important;
+}
+.mmm-btn-danger:hover { background: #e05555 !important; }
+
+/* Draft overlay / dialogs */
+.mmm-draft-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: mmm-fade-in 0.15s ease-out;
+}
+@keyframes mmm-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.mmm-draft-dialog {
+    background: var(--bg-secondary, #16213e);
+    border: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 480px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+.mmm-draft-dialog h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary, #eee);
+}
+.mmm-draft-dialog h2 i { color: var(--accent-orange, #ff9113); }
+.mmm-draft-dialog-sm { max-width: 380px; }
+.mmm-draft-dialog-info {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 0.5rem;
+}
+.mmm-draft-file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+.mmm-draft-file-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+    color: var(--text-primary, #eee);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+}
+.mmm-draft-file-list li i { color: var(--accent-blue, #4da6ff); font-size: 0.75rem; }
+.mmm-draft-field {
+    margin-bottom: 0.75rem;
+}
+.mmm-draft-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 0.3rem;
+}
+.mmm-draft-field input,
+.mmm-draft-field textarea {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    background: var(--bg-primary, #1a1a2e);
+    border: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 6px;
+    color: var(--text-primary, #eee);
+    font-size: 0.82rem;
+    font-family: inherit;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+}
+.mmm-draft-field input:focus,
+.mmm-draft-field textarea:focus {
+    outline: none;
+    border-color: var(--accent-orange, #ff9113);
+}
+.mmm-draft-dialog-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}

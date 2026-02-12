@@ -40,6 +40,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="mmm-drafts.js?v=1"></script>
     <style>
     /* === Events-specific overrides === */
 
@@ -940,6 +941,8 @@
         }
 
         // ==================== LOAD DATA ====================
+        var originalEventsJSON = null; // keep original for diff comparison
+
         async function loadData() {
             var loadingBar = document.getElementById('loading-bar');
             loadingBar.classList.add('active');
@@ -951,12 +954,22 @@
                 if (!evtRes.ok) throw new Error('events load fail');
                 var evtData = await evtRes.json();
                 allEvents = evtData.events || [];
+                originalEventsJSON = JSON.stringify(allEvents);
 
                 if (bandsRes.ok) {
                     var bandsData = await bandsRes.json();
                     masterArtists = (bandsData.muzickaMasterLista || []).map(function(b) {
                         return { name: b.name, city: b.city || '' };
                     }).sort(function(a, b) { return a.name.localeCompare(b.name); });
+                }
+
+                // Restore any pending event drafts from localStorage
+                if (window.MMMDrafts) {
+                    var draft = window.MMMDrafts.load('events.json');
+                    if (draft && draft.events && Array.isArray(draft.events)) {
+                        allEvents = draft.events;
+                        notify('Вчитани се незачувани промени од претходно. Кликнете "Испрати промени" за да ги поднесете.', 'info');
+                    }
                 }
 
                 updateStats();
@@ -969,6 +982,22 @@
                 loadingBar.classList.remove('active');
             }
         }
+
+        // Listen for draft discard events (from the floating bar)
+        window.addEventListener('mmm-drafts-discarded', function() {
+            // Reload original data
+            if (originalEventsJSON) {
+                allEvents = JSON.parse(originalEventsJSON);
+                updateStats();
+                renderTable();
+            }
+        });
+
+        // Listen for successful draft submission
+        window.addEventListener('mmm-drafts-submitted', function() {
+            // The submitted data becomes the new baseline
+            originalEventsJSON = JSON.stringify(allEvents);
+        });
 
         function updateStats() {
             var t = getToday(), up = 0, pa = 0;
@@ -1379,37 +1408,23 @@
             submitUpdate(updated, desc);
         });
 
-        async function submitUpdate(updatedEvents, description) {
-            var btn = document.getElementById('save-event-btn');
-            btn.disabled = true;
-            btn.textContent = 'Се испраќа...';
-
+        /** Save changes to localStorage drafts instead of immediately submitting. */
+        function submitUpdate(updatedEvents, description) {
             updatedEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
-            var json = JSON.stringify({ events: updatedEvents }, null, 2);
 
-            try {
-                var res = await fetch(PR_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bandsJson: json, path: EVENTS_FILE_PATH, description: description })
-                });
-                var data = await res.json();
-                if (data.ok) {
-                    notify('Промените се испратени! Ќе бидат видливи откако ќе бидат одобрени.', 'success');
-                    closeModal();
-                    allEvents = updatedEvents;
-                    updateStats();
-                    renderTable();
-                } else {
-                    throw new Error(data.error || 'Unknown error');
-                }
-            } catch (err) {
-                console.error('Submit error:', err);
-                notify('Грешка при испраќање. Обидете се повторно.', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Зачувај';
+            // Save to unified draft system
+            if (window.MMMDrafts) {
+                var origEvents = originalEventsJSON ? JSON.parse(originalEventsJSON) : { events: [] };
+                window.MMMDrafts.save('events.json', { events: updatedEvents }, origEvents);
             }
+
+            // Update local state so the table reflects the change
+            allEvents = updatedEvents;
+            updateStats();
+            renderTable();
+            closeModal();
+
+            notify('Промените се зачувани локално. Кликнете "Испрати промени" за да ги поднесете.', 'info');
         }
 
         // ==================== INIT ====================

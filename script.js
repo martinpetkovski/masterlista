@@ -147,16 +147,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ==================== PERSISTENT STORAGE ====================
-    const STORAGE_KEY = 'mmm-pending-changes';
+    const STORAGE_KEY = 'mmm-pending-changes'; // legacy key (migrated by mmm-drafts.js)
     
-    // Load any pending changes from localStorage
+    // Load any pending changes from localStorage (uses unified draft system if available)
     function loadPendingChanges() {
+        // Try unified draft system first
+        if (window.MMMDrafts) {
+            const draft = window.MMMDrafts.load('bands.json');
+            if (draft && draft.muzickaMasterLista && Array.isArray(draft.muzickaMasterLista)) {
+                console.log('Found pending changes via MMMDrafts');
+                return { bandsData: draft.muzickaMasterLista, savedAt: (window.MMMDrafts.getMeta('bands.json') || {}).savedAt };
+            }
+        }
+        // Fallback: legacy format
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 const data = JSON.parse(stored);
                 if (data && data.bandsData && Array.isArray(data.bandsData)) {
-                    console.log('Found pending changes in localStorage');
+                    console.log('Found pending changes in localStorage (legacy)');
                     return data;
                 }
             }
@@ -166,20 +175,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
     
-    // Save pending changes to localStorage
+    // Save pending changes to localStorage (uses unified draft system)
     function savePendingChanges() {
         if (!hasUnsavedChanges) {
-            // Clear storage if no changes
+            // Clear draft if no changes
+            if (window.MMMDrafts) {
+                window.MMMDrafts.clear('bands.json');
+            }
             localStorage.removeItem(STORAGE_KEY);
             return;
         }
         try {
-            const data = {
-                bandsData: bandsData,
-                savedAt: new Date().toISOString()
+            const exportData = {
+                muzickaMasterLista: bandsData.map(band => ({
+                    name: band.name, city: band.city, genre: band.genre,
+                    soundsLike: band.soundsLike, links: band.links,
+                    contact: band.contact, label: band.label,
+                    accentColors: band.accentColors || null,
+                    confirmed: band.confirmed || false
+                }))
             };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            console.log('Saved pending changes to localStorage');
+            if (window.MMMDrafts) {
+                const originalExport = {
+                    muzickaMasterLista: originalBandsData.map(band => ({
+                        name: band.name, city: band.city, genre: band.genre,
+                        soundsLike: band.soundsLike, links: band.links,
+                        contact: band.contact, label: band.label,
+                        accentColors: band.accentColors || null,
+                        confirmed: band.confirmed || false
+                    }))
+                };
+                window.MMMDrafts.save('bands.json', exportData, originalExport);
+            } else {
+                // Fallback to legacy format
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    bandsData: bandsData,
+                    savedAt: new Date().toISOString()
+                }));
+            }
+            console.log('Saved pending changes');
         } catch (err) {
             console.warn('Failed to save pending changes:', err);
         }
@@ -198,6 +232,24 @@ document.addEventListener('DOMContentLoaded', () => {
             savePendingChanges();
         }
     }, 30000); // Save every 30 seconds
+    
+    // Listen for draft discard from the floating bar
+    window.addEventListener('mmm-drafts-discarded', () => {
+        bandsData = JSON.parse(JSON.stringify(originalBandsData));
+        hasUnsavedChanges = false;
+        localStorage.removeItem(STORAGE_KEY);
+        updateSubmitButtonState();
+        invalidateBandCache();
+        renderBands(bandsData);
+    });
+    
+    // Listen for successful draft submission
+    window.addEventListener('mmm-drafts-submitted', () => {
+        originalBandsData = JSON.parse(JSON.stringify(bandsData));
+        hasUnsavedChanges = false;
+        localStorage.removeItem(STORAGE_KEY);
+        updateSubmitButtonState();
+    });
     
     // ==================== SETTINGS MENU ====================
     function initSettingsMenu() {
@@ -2159,132 +2211,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeSubmitPR() {
-        // Minimal init (debug logs removed for production cleanliness)
         const submitBtn = document.getElementById('submit-pr-btn');
-        if (!submitBtn) {
-            return;
-        }
+        if (!submitBtn) return;
 
-        const resolveEndpoint = () => {
-            if (typeof window.MMM_PR_ENDPOINT === 'string' && window.MMM_PR_ENDPOINT.trim()) return window.MMM_PR_ENDPOINT.trim();
-            const attr = submitBtn.getAttribute('data-endpoint');
-            if (attr && attr.trim()) return attr.trim();
-            const stored = localStorage.getItem('mmm_pr_endpoint');
-            if (stored && stored.trim()) return stored.trim();
-            return '';
-        };
-
-        // Inject status container after button (now used for notifications instead)
-        let statusEl = document.getElementById('pr-submit-status');
-        if (!statusEl) {
-            statusEl = document.createElement('div');
-            statusEl.id = 'pr-submit-status';
-            statusEl.style.display = 'none'; // Hide the old status element
-            submitBtn.insertAdjacentElement('afterend', statusEl);
-        }
-
-        submitBtn.addEventListener('click', async () => {
-            try {
-                    // Edit mode no longer required; allow submission anytime
-                if (!hasUnsavedChanges) {
-                    showNotification('Нема промени за поднесување.', 'info');
-                    return;
-                }
-
-                let endpoint = resolveEndpoint();
-                if (!endpoint) {
-                    endpoint = await showCustomDialog(
-                        'Worker Endpoint',
-                        'Внесете URL на worker endpoint за PR (ќе се зачува локално):',
-                        'https://example.com/worker'
-                    );
-                    if (!endpoint) return;
-                    localStorage.setItem('mmm_pr_endpoint', endpoint);
-                }
-
-                // Compute and prefill summary of changes
-                const diff = computeChangesSummary(originalBandsData, bandsData);
-                const diffText = summarizeChangesText(diff) || 'Без промени';
-
-                const prFormPromise = showCustomDialog(
-                    'Поднесување на промени',
-                    'Пополнете ги информациите за поднесување на вашите промени:',
-                    '',
-                    '',
-                    true
-                );
-                // Prefill the PR description with a summary of changes
-                setTimeout(() => {
-                    const desc = document.getElementById('pr-description');
-                    if (desc) {
-                        const header = 'Предлог промени од MMM формуларот\n\n';
-                        desc.value = `${header}${diffText}\n`;
-                    }
-                }, 0);
-
-                const formData = await prFormPromise;
-                if (!formData) return; // User canceled
-
-                const exportData = {
-                    muzickaMasterLista: bandsData.map(band => ({
-                        name: band.name,
-                        city: band.city,
-                        genre: band.genre,
-                        soundsLike: band.soundsLike,
-                        links: band.links,
-                        contact: band.contact,
-                        label: band.label,
-                        accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false
-                    }))
-                };
-
-                const json = JSON.stringify(exportData, null, 2);
-
-                submitBtn.disabled = true;
-                const originalHtml = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Испраќање...';
-                showNotification('Испраќање...', 'info');
-
-                const resp = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        bandsJson: json,
-                        contributor: formData.contributor,
-                        description: formData.description,
-                        path: 'bands.json'
-                    })
-                });
-
-                if (!resp.ok) {
-                    const text = await resp.text();
-                    throw new Error(`Worker error (${resp.status}): ${text}`);
-                }
-
-                const result = await resp.json();
-                const prUrl = result.pr_url || result.html_url || '';
-                if (prUrl) {
-                    showNotification('Успешно поднесено! Отворен е PR.', 'success');
-                    window.open(prUrl, '_blank');
-                } else {
-                    showNotification('Успешно поднесено!', 'success');
-                }
-
-            } catch (err) {
-                console.error('Submit PR failed:', err);
-                showNotification('Грешка при поднесување: ' + (err?.message || err), 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Побарај промена';
-                // Reset change tracking after successful submission
-                try {
-                    originalBandsData = JSON.parse(JSON.stringify(bandsData));
-                    hasUnsavedChanges = false;
-                    updateSubmitButtonState();
-                    // Clear pending changes from localStorage after successful submission
-                    localStorage.removeItem(STORAGE_KEY);
-                } catch (_) {}
+        // Make sure current changes are saved to the draft system before showing the dialog
+        submitBtn.addEventListener('click', () => {
+            if (!hasUnsavedChanges) {
+                showNotification('Нема промени за поднесување.', 'info');
+                return;
+            }
+            // Ensure latest data is saved to drafts
+            savePendingChanges();
+            // Trigger the unified submit dialog from mmm-drafts.js
+            if (window.MMMDrafts && document.getElementById('mmm-draft-submit')) {
+                document.getElementById('mmm-draft-submit').click();
             }
         });
     }
