@@ -68,6 +68,23 @@
       "link": "https://www.instagram.com/p/DUOX2YLDcea/"
     },
     {
+      "id": "evt-20260221-afterparty-so-2-bona-ylc3",
+      "title": "AFTERPARTY СО 2BONA",
+      "date": "2026-02-21",
+      "time": "21:00",
+      "place": "Станица 26, Скопје",
+      "artists": [
+        "2bona"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "700"
+        }
+      ],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5727"
+    },
+    {
       "id": "evt-20260228-my-tear-и-side-quest-nfxp",
       "title": "My Tear и Side Quest",
       "date": "2026-02-28",
@@ -86,6 +103,23 @@
       "link": "https://www.instagram.com/p/DUoVSo0jbeo/"
     },
     {
+      "id": "evt-20260307-лозано-километри-љубов-xulu",
+      "title": "Лозано - Километри Љубов",
+      "date": "2026-03-07",
+      "time": "21:00",
+      "place": "А1 Арена Борис Трајковски, Скопје",
+      "artists": [
+        "Лозано"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "700"
+        }
+      ],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5714"
+    },
+    {
       "id": "duper-oh-210326",
       "title": "Дупер во Охрид LIVE Concert",
       "date": "2026-03-21",
@@ -96,6 +130,57 @@
       ],
       "tickets": [],
       "link": "https://www.instagram.com/p/DUYjzgHjaXl/"
+    },
+    {
+      "id": "evt-20260321-conquering-lion-one-world-gmnf",
+      "title": "Conquering Lion: One World",
+      "date": "2026-03-21",
+      "time": "21:00",
+      "place": "Public Room, Скопје",
+      "artists": [
+        "Conquering Lion"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "500"
+        }
+      ],
+      "link": "https://tix.mk/event/128/conquering-lion-one-world"
+    },
+    {
+      "id": "evt-20260726-2bona-odhv",
+      "title": "2bona",
+      "date": "2026-07-26",
+      "time": "20:00",
+      "place": "Антички Театар, Охрид",
+      "artists": [
+        "2bona"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "700"
+        }
+      ],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5730"
+    },
+    {
+      "id": "evt-20260802-slatkaristika-friends-6sy4",
+      "title": "SLATKARISTIKA & Friends",
+      "date": "2026-08-02",
+      "time": "20:00",
+      "place": "Стадион Билјанини Извори, Охрид",
+      "artists": [
+        "Слаткаристика"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "600"
+        }
+      ],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5728"
     },
     {
       "id": "evt-20260805-дупер-4hnk",
@@ -113,6 +198,18 @@
         }
       ],
       "link": "https://kupikarta.com/event-details.nspx?eventid=5729"
+    },
+    {
+      "id": "evt-20261127-next-time-r9k2",
+      "title": "NEXT TIME",
+      "date": "2026-11-27",
+      "time": "20:00",
+      "place": "А1 Арена Борис Трајковски, Скопје",
+      "artists": [
+        "Next Time"
+      ],
+      "tickets": [],
+      "link": "https://kupikarta.com/event-details.nspx?eventid=5732"
     }
   ]
 }
