@@ -629,8 +629,27 @@
                 (evt.time ? ' · ' + esc(evt.time) : '') + '</div>';
             html += '</div>';
 
+            // Artists section
+            if (artists.length) {
+                html += '<h3 class="section-title"><i class="fas fa-music"></i> Артисти</h3>';
+                html += '<div class="info-list">';
+                for (var i = 0; i < artists.length; i++) {
+                    var thumb = getArtistThumb(artists[i]);
+                    html += '<a href="' + escA(artistPageUrl(artists[i])) + '" class="artist-link-card">';
+                    if (thumb) {
+                        html += '<img src="' + escA(thumb) + '" alt="" class="artist-link-thumb" loading="lazy" decoding="async">';
+                    } else {
+                        html += '<i class="fas fa-music"></i>';
+                    }
+                    html += '<span>' + esc(artists[i]) + '</span>';
+                    html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
+                    html += '</a>';
+                }
+                html += '</div>';
+            }
+
             // Details section
-            html += '<h3 class="section-title"><i class="fas fa-info-circle"></i> Детали</h3>';
+            html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-info-circle"></i> Детали</h3>';
             html += '<div class="info-list">';
 
             // Place
@@ -664,25 +683,6 @@
             }
 
             html += '</div>'; // .info-list
-
-            // Artists section
-            if (artists.length) {
-                html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-music"></i> Артисти</h3>';
-                html += '<div class="info-list">';
-                for (var i = 0; i < artists.length; i++) {
-                    var thumb = getArtistThumb(artists[i]);
-                    html += '<a href="' + escA(artistPageUrl(artists[i])) + '" class="artist-link-card">';
-                    if (thumb) {
-                        html += '<img src="' + escA(thumb) + '" alt="" class="artist-link-thumb" loading="lazy" decoding="async">';
-                    } else {
-                        html += '<i class="fas fa-music"></i>';
-                    }
-                    html += '<span>' + esc(artists[i]) + '</span>';
-                    html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
-                    html += '</a>';
-                }
-                html += '</div>';
-            }
 
             // Tickets section
             if (evt.tickets && evt.tickets.length) {

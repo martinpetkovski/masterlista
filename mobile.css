@@ -523,11 +523,20 @@ tr.has-accent .links a.contact-link {
     color: var(--accent-text, #fff);
 }
 tr.has-accent .city-item {
-    color: #fff;
+    color: var(--accent-text, #fff) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 tr.has-accent .genre-item,
 tr.has-accent .sounds-like-item {
-    color: #fff;
+    color: var(--accent-text, #fff) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+tr.has-accent .city-item i,
+tr.has-accent .genre-item i,
+tr.has-accent .sounds-like-item i {
+    color: var(--accent-text, #fff) !important;
 }
 tr.has-accent .verified-badge {
     color: var(--accent-text, #fff);
@@ -738,20 +747,42 @@ td[data-label="Статус"] > span.status-content {
 
 /* Tags */
 .genre-item, .sounds-like-item, .city-item {
-    background: var(--accent-purple);
-    color: #fff;
-    padding: 0.15rem 0.35rem;
-    font-size: 0.85rem; /* ~30% larger than 0.65rem */
-    font-weight: 700;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     margin: 0;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    gap: 0.15rem;
     height: 24px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: border-color 0.15s, background 0.15s;
+    border: 1px solid transparent;
 }
 
-.sounds-like-item { background: var(--accent-blue); }
-.city-item { background: var(--accent-teal); }
+.genre-item i, .sounds-like-item i, .city-item i {
+    font-size: 0.55rem;
+}
+
+/* Light mode tag colors */
+.genre-item {
+    background: rgba(123, 110, 158, 0.12);
+    color: #5e5280;
+    border-color: rgba(123, 110, 158, 0.25);
+}
+.genre-item i { color: #7b6e9e; }
+
+.sounds-like-item {
+    background: rgba(74, 127, 165, 0.1);
+    color: #3a6d8f;
+    border-color: rgba(74, 127, 165, 0.22);
+}
+.sounds-like-item i { color: #4a7fa5; }
+
+.city-item { color: #fff; }
+.city-item i { color: #fff; }
 
 .band-label {
     background: var(--accent-red);
@@ -1921,6 +1952,24 @@ body.dark-mode tr:nth-child(even) {
 body.dark-mode tr:hover {
     background: var(--bg-hover);
 }
+
+body.dark-mode .genre-item,
+html.dark-mode .genre-item {
+    background: rgba(138, 125, 181, 0.15);
+    color: #b0a4d4;
+    border-color: rgba(138, 125, 181, 0.3);
+}
+body.dark-mode .genre-item i,
+html.dark-mode .genre-item i { color: #a99ccc; }
+
+body.dark-mode .sounds-like-item,
+html.dark-mode .sounds-like-item {
+    background: rgba(90, 138, 181, 0.15);
+    color: #8bb8db;
+    border-color: rgba(90, 138, 181, 0.3);
+}
+body.dark-mode .sounds-like-item i,
+html.dark-mode .sounds-like-item i { color: #7daccf; }
 
 body.dark-mode #search-name {
     background: var(--bg-secondary);
