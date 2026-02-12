@@ -3037,7 +3037,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const links = await fetchSonglinkUrls(releaseUrl);
         hideServiceToast();
         if (!links || Object.keys(links).length === 0) {
-            window.open(releaseUrl, '_blank');
+            if (!preferred) {
+                // "Always ask" mode - show chooser with original URL
+                const fallbackLinks = {};
+                for (const [id] of Object.entries(serviceDefinitions)) {
+                    if (urlMatchesService(releaseUrl, id)) {
+                        fallbackLinks[id] = releaseUrl;
+                        break;
+                    }
+                }
+                showServiceChooserDialog(fallbackLinks, releaseUrl, title);
+            } else {
+                window.open(releaseUrl, '_blank');
+            }
             return;
         }
         if (preferred && links[preferred]) {
