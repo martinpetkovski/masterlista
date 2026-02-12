@@ -655,6 +655,11 @@ td[data-label="Медиуми"] {
     display: none !important;
 }
 
+/* Hide Настани column on mobile - content merged into Линкови via JS */
+td[data-label="Настани"] {
+    display: none !important;
+}
+
 td[data-label="Линкови"] a {
     font-size: 0.8rem;
     color: var(--text-secondary);
