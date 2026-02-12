@@ -529,9 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function findMatchingEvents(bandName) {
         if (!cachedEvents || !bandName) return [];
         const lower = bandName.toLowerCase();
-        const today = new Date().toISOString().slice(0, 10);
         return cachedEvents.filter(e =>
-            e.artists.some(a => a.toLowerCase() === lower) && e.date >= today
+            e.artists.some(a => a.toLowerCase() === lower)
         );
     }
 
@@ -2923,12 +2922,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const matchedEvents = findMatchingEvents(band.name);
             let eventsHtml = '';
             if (matchedEvents.length > 0) {
-                eventsHtml = matchedEvents.map(evt => {
+                const today = new Date().toISOString().slice(0, 10);
+                const sorted = [...matchedEvents].sort((a, b) => a.date.localeCompare(b.date));
+                eventsHtml = sorted.map(evt => {
                     const d = evt.date ? new Date(evt.date + 'T00:00:00') : null;
                     const dateStr = d ? d.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short' }) : '';
+                    const isPast = evt.date < today;
                     const escapedTitle = (evt.title + (dateStr ? ` (${dateStr})` : '') + (evt.place ? ` — ${evt.place}` : '')).replace(/"/g, '&quot;');
                     const href = evt.link || `/nastan/${evt.id}`;
-                    return `<a href="${href}" target="_blank" title="${escapedTitle}" class="event-icon-link"><i class="fas fa-calendar-day"></i></a>`;
+                    return `<a href="${href}" target="_blank" title="${escapedTitle}" class="event-icon-link${isPast ? ' past-event-icon' : ''}"><i class="fas fa-calendar-day"></i></a>`;
                 }).join('');
             }
             
