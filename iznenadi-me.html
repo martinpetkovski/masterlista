@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="mmm-drafts.js?v=1"></script>
+    <script src="/tour.js?v=1" defer></script>
     <style>
         body.surprise-page {
             height: auto;
@@ -432,66 +433,6 @@
                 overlay.querySelectorAll('.settings-service-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.service === (currentSvc || '')); });
                 overlay.classList.add('visible');
             });
-        })();
-
-        // ==================== GLOBAL SITE TOUR ====================
-        (function() {
-            const tourSteps = [
-                { element: null, title: 'Здраво! 👋', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
-                { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници.', position: 'bottom' },
-                { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong>.', position: 'bottom' },
-                { element: null, title: 'Топ Листа 📊', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти. <a href="/">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Мастер Листа 📋', description: 'Комплетна база на <strong>сите македонски артисти</strong>. <a href="/lista">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Настани 📅', description: 'Претстојни <strong>концерти и настани</strong>. <a href="/nastani">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Вести 📰', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена. <a href="/vesti">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Кустоси 🎧', description: 'Музички <strong>кустоси</strong> со нивните плејлисти. <a href="/kustosi">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Тоа е сè! 🎸', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! 🙌', position: 'center' }
-            ];
-            let currentStep = 0, active = false, tourOverlay = null;
-            function createOverlay() {
-                if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
-                const el = document.createElement('div'); el.id = 'tour-overlay'; el.className = 'tour-overlay';
-                el.innerHTML = '<div class="tour-highlight"></div><div class="tour-tooltip"><div class="tour-tooltip-content"><h3 class="tour-title"></h3><p class="tour-description"></p></div><div class="tour-footer"><span class="tour-progress"></span><div class="tour-buttons"><button class="tour-btn-skip">Прескокни</button><button class="tour-btn-prev"><i class="fas fa-arrow-left"></i></button><button class="tour-btn-next">Следно <i class="fas fa-arrow-right"></i></button></div></div></div>';
-                document.body.appendChild(el);
-                el.querySelector('.tour-btn-skip').addEventListener('click', endTour);
-                el.querySelector('.tour-btn-prev').addEventListener('click', function() { if (currentStep > 0) { currentStep--; showStep(); } });
-                el.querySelector('.tour-btn-next').addEventListener('click', function() { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else { endTour(); } });
-                el.addEventListener('click', function(e) { if (e.target === el || e.target.classList.contains('tour-highlight')) endTour(); });
-                document.addEventListener('keydown', function(e) { if (!active) return; if (e.key === 'Escape') endTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else endTour(); } if (e.key === 'ArrowLeft' && currentStep > 0) { currentStep--; showStep(); } });
-                return el;
-            }
-            function startTour() { tourOverlay = createOverlay(); active = true; currentStep = 0; tourOverlay.classList.add('active'); if (window.innerWidth > 600) document.body.style.overflow = 'hidden'; showStep(); }
-            function endTour() { active = false; if (tourOverlay) tourOverlay.classList.remove('active'); document.body.style.overflow = ''; }
-            function showStep() {
-                var step = tourSteps[currentStep]; if (!step || !tourOverlay) return;
-                var highlight = tourOverlay.querySelector('.tour-highlight'), tooltip = tourOverlay.querySelector('.tour-tooltip');
-                tooltip.querySelector('.tour-title').textContent = step.title;
-                tooltip.querySelector('.tour-description').innerHTML = step.description;
-                tooltip.querySelector('.tour-progress').textContent = (currentStep + 1) + ' / ' + tourSteps.length;
-                tooltip.querySelector('.tour-btn-prev').disabled = currentStep === 0;
-                tooltip.querySelector('.tour-btn-next').innerHTML = currentStep === tourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
-                tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
-                if (step.position === 'center' || !step.element) {
-                    highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = '';
-                } else {
-                    var targetEl = document.querySelector(step.element);
-                    if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(function() {
-                        var rect = targetEl.getBoundingClientRect(), p = 4;
-                        highlight.style.display = 'block'; highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
-                        highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
-                        highlight.style.left = (rect.left - p) + 'px'; highlight.style.width = (rect.width + p * 2) + 'px'; highlight.style.height = (rect.height + p * 2) + 'px';
-                        if (window.innerWidth > 600) {
-                            var tr = tooltip.getBoundingClientRect(); var top = rect.bottom + 16, left = rect.left + rect.width / 2 - tr.width / 2;
-                            if (left < 10) left = 10; if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
-                            if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
-                            tooltip.style.top = top + 'px'; tooltip.style.left = left + 'px'; tooltip.classList.add('arrow-top');
-                        }
-                    }, 150);
-                }
-            }
-            window.startGlobalTour = startTour;
         })();
 
     (function() {

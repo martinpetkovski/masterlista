@@ -3427,7 +3427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 150);
             }
         }
-        window.startGlobalTour = gStartTour;
+        // window.startGlobalTour moved to tour.js
     })();
 
     function initTour() {
@@ -3709,8 +3709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tooltip.classList.add(arrowClass);
     }
 
-    // Initialize tour
-    initTour();
+    // Tour initialization moved to tour.js
     
     // Handle ?edit= URL parameter to open edit modal for specific artist
     function handleEditUrlParam() {

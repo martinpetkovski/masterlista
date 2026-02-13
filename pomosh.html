@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="mmm-drafts.js?v=1"></script>
+    <script src="/tour.js?v=1" defer></script>
     <style>
         .help-container {
             max-width: 680px;
@@ -178,10 +179,43 @@
                 и е целосно отворен за придонеси.
             </p>
 
+            <h2><i class="fas fa-list"></i> Како функционира Мастер Листата</h2>
+            <p>
+                Мастер Листата е <strong>рачно курирана база</strong> на македонски музички артисти, зачувана во JSON формат
+                (bands.json). Секој артист има: име, град, жанр, слични артисти, линкови кон стриминг платформи и социјални мрежи,
+                контакт и статус на активност.
+            </p>
+            <p>
+                <strong>Додавање и уредување:</strong> Секој посетител може да предложи промени преку формуларот на сајтот.
+                Кога ќе се испрати промена, таа автоматски патува до GitHub каде се отвора барање за промена.
+                По рачна проверка (проверката се прави од <a href="mailto:deeeeelay@gmail.com">Мартин</a>), промената се одобрува и се појавува на сајтот.
+            </p>
+            <p>
+                <strong>Статус на активност:</strong> Системот автоматски го одредува статусот врз основа на последното издание —
+                „Активен" (издание во последните 2 години), „Можеби" (2–3 години) или „Неактивен" (над 3 години без издание).
+            </p>
+
             <h2><i class="fas fa-user-plus"></i> Критериуми за додавање артист</h2>
             <p>
                 За да биде додаден артист на Мастер Листата, потребно е да постои некаков <strong>доказ дека артистот/бендот навистина постоел</strong> —
                 достапна музика на стриминг платформи, објавени вести или статии, постери од настапи, или самите членови да потврдат дека артистот постоел.
+            </p>
+
+            <h2><i class="fas fa-pen-fancy"></i> Формат за внесување</h2>
+            <ul>
+                <li><strong>Име на артист:</strong> Мора да биде напишано на кирилица и на македонски јазик, освен ако тоа не е логично (на пример, ако името на бендот е на англиски јазик).</li>
+                <li><strong>Град:</strong> Треба да биде градот на потекло на било кој член на бендот — не градот каде живеат тековно или каде бендот бил формиран.</li>
+                <li><strong>Звучи како:</strong> Треба да биде очигледно влијание на артистот, или наведено некаде (интервју, биографија итн.).</li>
+                <li><strong>YouTube:</strong> Преферираме YouTube канал наместо поединечни линкови. Линкови се исто прифатливи ако не постои канал. Каналот мора да содржи <strong>само содржини од артистот</strong> — не наведувајте канали на издавачки куќи (labels).</li>
+                <li><strong>Википедија:</strong> Линкот до Википедија мора да биде на <strong>македонски јазик</strong> (mk.wikipedia.org).</li>
+                <li><strong>Жанр:</strong> Жанрот треба да биде напишан на <strong>македонски кирилица</strong>.</li>
+            </ul>
+
+            <h2><i class="fas fa-circle-check"></i> Како да потврдиш артист</h2>
+            <p>
+                Ако си артист или член на бенд кој е веќе на Мастер Листата и сакаш да го потврдиш профилот —
+                доволно е да кликнеш на <strong>„Потврден"</strong> и да избереш <strong>бои за твојот бенд</strong>, толку.
+                По поднесувањето, ние ќе ве контактираме преку вашите официјални страници за верификација.
             </p>
 
             <h2><i class="fas fa-chart-line"></i> Како функционира Топ Листата</h2>
@@ -230,40 +264,6 @@
                 останува видлив како и секој друг. Единствено алтернативната листа го исклучува.
             </p>
 
-            <h2><i class="fas fa-headphones"></i> Како да станеш кустос?</h2>
-            <p>
-                Во свет каде содржините сè повеќе се генерираат автоматски, <strong>проблемот на курирање</strong>
-                станува сè поважен. Алгоритмите може да ти препорачаат музика врз основа на бројки и трендови,
-                но ништо не може да го замени вкусот на човек кој те познава — пријател, познаник, или некој чиј вкус
-                го цениш.
-            </p>
-            <p>
-                Затоа на оваа платформа постои улогата на <strong>кустос</strong> — човек кој рачно составува листа
-                на песни и ја споделува со заедницата. Идејата е едноставна: наместо алгоритам да одлучува
-                што ќе слушаш, дозволи некој <em>вистински</em> да ти препорача музика.
-            </p>
-            <p>
-                Ако сакаш да станеш кустос, приклучи се на
-                <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord серверот</a> и јави се.
-                Предуслов е да си некако вклучен во музичката сцена (повеќе детали подолу).
-            </p>
-
-            <h2><i class="fas fa-list"></i> Како функционира Мастер Листата</h2>
-            <p>
-                Мастер Листата е <strong>рачно курирана база</strong> на македонски музички артисти, зачувана во JSON формат
-                (bands.json). Секој артист има: име, град, жанр, слични артисти, линкови кон стриминг платформи и социјални мрежи,
-                контакт и статус на активност.
-            </p>
-            <p>
-                <strong>Додавање и уредување:</strong> Секој посетител може да предложи промени преку формуларот на сајтот.
-                Кога ќе се испрати промена, таа автоматски патува до GitHub каде се отвора барање за промена.
-                По рачна проверка (проверката се прави од <a href="mailto:deeeeelay@gmail.com">Мартин</a>), промената се одобрува и се појавува на сајтот.
-            </p>
-            <p>
-                <strong>Статус на активност:</strong> Системот автоматски го одредува статусот врз основа на последното издание —
-                „Активен" (издание во последните 2 години), „Можеби" (2–3 години) или „Неактивен" (над 3 години без издание).
-            </p>
-
             <h2><i class="fas fa-newspaper"></i> Како функционираат Вестите</h2>
             <p>
                 Страницата за вести агрегира содржини од <strong>македонски медиумски извори</strong> преку нивните RSS feeds.
@@ -279,15 +279,11 @@
                 Статиите се чуваат во отворена архива (articles.json) која се ажурира секој ден.
             </p>
 
-            <h2><i class="fas fa-pen-fancy"></i> Формат за внесување</h2>
-            <ul>
-                <li><strong>Име на артист:</strong> Мора да биде напишано на кирилица и на македонски јазик, освен ако тоа не е логично (на пример, ако името на бендот е на англиски јазик).</li>
-                <li><strong>Град:</strong> Треба да биде градот на потекло на било кој член на бендот — не градот каде живеат тековно или каде бендот бил формиран.</li>
-                <li><strong>Звучи како:</strong> Треба да биде очигледно влијание на артистот, или наведено некаде (интервју, биографија итн.).</li>
-                <li><strong>YouTube:</strong> Преферираме YouTube канал наместо поединечни линкови. Линкови се исто прифатливи ако не постои канал. Каналот мора да содржи <strong>само содржини од артистот</strong> — не наведувајте канали на издавачки куќи (labels).</li>
-                <li><strong>Википедија:</strong> Линкот до Википедија мора да биде на <strong>македонски јазик</strong> (mk.wikipedia.org).</li>
-                <li><strong>Жанр:</strong> Жанрот треба да биде напишан на <strong>македонски кирилица</strong>.</li>
-            </ul>
+            <h2><i class="fas fa-calendar-plus"></i> Настани</h2>
+            <p>
+                Секој може да додаде настан на страницата за настани, но настанот мора да биде <strong>верифициран</strong>
+                по истиот принцип како и промените во Мастер Листата — по рачна проверка, настанот се одобрува и се појавува на сајтот.
+            </p>
 
             <h2><i class="fas fa-headphones"></i> Кустоси</h2>
             <p>
@@ -296,17 +292,21 @@
                 Ова е основниот предуслов — целта е кустосите да бидат луѓе кои навистина ја познаваат музиката.
             </p>
 
-            <h2><i class="fas fa-circle-check"></i> Како да потврдиш артист</h2>
+            <h2><i class="fas fa-headphones"></i> Како да станеш кустос?</h2>
             <p>
-                Ако си артист или член на бенд кој е веќе на Мастер Листата и сакаш да го потврдиш профилот —
-                доволно е да кликнеш на <strong>„Потврден"</strong> и да избереш <strong>бои за твојот бенд</strong>, толку.
-                По поднесувањето, ние ќе ве контактираме преку вашите официјални страници за верификација.
+                Во свет каде содржините сè повеќе се генерираат автоматски, <strong>проблемот на курирање</strong>
+                станува сè поважен. Алгоритмите може да ти препорачаат музика врз основа на бројки и трендови,
+                но ништо не може да го замени вкусот на човек кој те познава — пријател, познаник, или некој чиј вкус
+                го цениш.
             </p>
-
-            <h2><i class="fas fa-calendar-plus"></i> Настани</h2>
             <p>
-                Секој може да додаде настан на страницата за настани, но настанот мора да биде <strong>верифициран</strong>
-                по истиот принцип како и промените во Мастер Листата — по рачна проверка, настанот се одобрува и се појавува на сајтот.
+                Затоа на оваа платформа постои улогата на <strong>кустос</strong> — човек кој рачно составува листа
+                на песни и ја споделува со заедницата. Идејата е едноставна: наместо алгоритам да одлучува
+                што ќе слушаш, дозволи некој <em>вистински</em> да ти препорача музика.
+            </p>
+            <p>
+                Ако сакаш да станеш кустос, приклучи се на
+                <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord серверот</a> и јави се.
             </p>
 
             <h2><i class="fas fa-code-branch"></i> Код / инженерски придонеси</h2>
@@ -315,18 +315,18 @@
                 Целиот код е отворен и достапен на <a href="https://github.com/martinpetkovski/masterlista" target="_blank">GitHub</a>.
             </p>
 
-            <h2><i class="fas fa-scale-balanced"></i> Лиценца</h2>
-            <p>
-                Податоците за артистите и за статиите се лиценцирани со
-                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 (CC BY 4.0)</a>.
-                Слободно можете да ги користите, споделувате и адаптирате податоците доколку го наведете изворот.
-            </p>
-
             <h2><i class="fas fa-code"></i> Технологии</h2>
             <p>
                 Сајтот е статичен (HTML/CSS/JS), хостиран на GitHub Pages.
                 Податоците се чуваат во JSON формат на GitHub и се од отворен тип.
                 Стриминг податоците доаѓаат од Spotify API, а кратките прегледи на песните од Deezer.
+            </p>
+
+            <h2><i class="fas fa-scale-balanced"></i> Лиценца</h2>
+            <p>
+                Податоците за артистите и за статиите се лиценцирани со
+                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 (CC BY 4.0)</a>.
+                Слободно можете да ги користите, споделувате и адаптирате податоците доколку го наведете изворот.
             </p>
 
             <h2><i class="fas fa-envelope"></i> Контакт</h2>
@@ -421,66 +421,6 @@
                 overlay.querySelectorAll('.settings-service-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.service === (currentSvc || '')); });
                 overlay.classList.add('visible');
             });
-        })();
-
-        // ==================== GLOBAL SITE TOUR ====================
-        (function() {
-            const tourSteps = [
-                { element: null, title: 'Здраво! \ud83d\udc4b', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
-                { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници.', position: 'bottom' },
-                { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong>.', position: 'bottom' },
-                { element: null, title: 'Топ Листа \ud83d\udcca', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти. <a href="/">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Мастер Листа \ud83d\udccb', description: 'Комплетна база на <strong>сите македонски артисти</strong>. <a href="/lista">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Настани \ud83d\udcc5', description: 'Претстојни <strong>концерти и настани</strong>. <a href="/nastani">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Вести \ud83d\udcf0', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена. <a href="/vesti">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Кустоси \ud83c\udfa7', description: 'Музички <strong>кустоси</strong> со нивните плејлисти. <a href="/kustosi">Отвори →</a>', position: 'center' },
-                { element: null, title: 'Тоа е сè! \ud83c\udfb8', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! \ud83d\ude4c', position: 'center' }
-            ];
-            let currentStep = 0, active = false, tourOverlay = null;
-            function createOverlay() {
-                if (document.getElementById('tour-overlay')) return document.getElementById('tour-overlay');
-                const el = document.createElement('div'); el.id = 'tour-overlay'; el.className = 'tour-overlay';
-                el.innerHTML = '<div class="tour-highlight"></div><div class="tour-tooltip"><div class="tour-tooltip-content"><h3 class="tour-title"></h3><p class="tour-description"></p></div><div class="tour-footer"><span class="tour-progress"></span><div class="tour-buttons"><button class="tour-btn-skip">Прескокни</button><button class="tour-btn-prev"><i class="fas fa-arrow-left"></i></button><button class="tour-btn-next">Следно <i class="fas fa-arrow-right"></i></button></div></div></div>';
-                document.body.appendChild(el);
-                el.querySelector('.tour-btn-skip').addEventListener('click', endTour);
-                el.querySelector('.tour-btn-prev').addEventListener('click', function() { if (currentStep > 0) { currentStep--; showStep(); } });
-                el.querySelector('.tour-btn-next').addEventListener('click', function() { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else { endTour(); } });
-                el.addEventListener('click', function(e) { if (e.target === el || e.target.classList.contains('tour-highlight')) endTour(); });
-                document.addEventListener('keydown', function(e) { if (!active) return; if (e.key === 'Escape') endTour(); if (e.key === 'ArrowRight' || e.key === 'Enter') { if (currentStep < tourSteps.length - 1) { currentStep++; showStep(); } else endTour(); } if (e.key === 'ArrowLeft' && currentStep > 0) { currentStep--; showStep(); } });
-                return el;
-            }
-            function startTour() { tourOverlay = createOverlay(); active = true; currentStep = 0; tourOverlay.classList.add('active'); if (window.innerWidth > 600) document.body.style.overflow = 'hidden'; showStep(); }
-            function endTour() { active = false; if (tourOverlay) tourOverlay.classList.remove('active'); document.body.style.overflow = ''; }
-            function showStep() {
-                var step = tourSteps[currentStep]; if (!step || !tourOverlay) return;
-                var highlight = tourOverlay.querySelector('.tour-highlight'), tooltip = tourOverlay.querySelector('.tour-tooltip');
-                tooltip.querySelector('.tour-title').textContent = step.title;
-                tooltip.querySelector('.tour-description').innerHTML = step.description;
-                tooltip.querySelector('.tour-progress').textContent = (currentStep + 1) + ' / ' + tourSteps.length;
-                tooltip.querySelector('.tour-btn-prev').disabled = currentStep === 0;
-                tooltip.querySelector('.tour-btn-next').innerHTML = currentStep === tourSteps.length - 1 ? 'Заврши <i class="fas fa-check"></i>' : 'Следно <i class="fas fa-arrow-right"></i>';
-                tooltip.classList.remove('arrow-top', 'arrow-bottom', 'arrow-left', 'arrow-right', 'tour-center');
-                if (step.position === 'center' || !step.element) {
-                    highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = '';
-                } else {
-                    var targetEl = document.querySelector(step.element);
-                    if (!targetEl) { highlight.style.display = 'none'; tooltip.classList.add('tour-center'); tooltip.style.top = ''; tooltip.style.left = ''; return; }
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(function() {
-                        var rect = targetEl.getBoundingClientRect(), p = 4;
-                        highlight.style.display = 'block'; highlight.style.position = window.innerWidth <= 600 ? 'fixed' : 'absolute';
-                        highlight.style.top = (rect.top - p + (window.innerWidth > 600 ? window.scrollY : 0)) + 'px';
-                        highlight.style.left = (rect.left - p) + 'px'; highlight.style.width = (rect.width + p * 2) + 'px'; highlight.style.height = (rect.height + p * 2) + 'px';
-                        if (window.innerWidth > 600) {
-                            var tr = tooltip.getBoundingClientRect(); var top = rect.bottom + 16, left = rect.left + rect.width / 2 - tr.width / 2;
-                            if (left < 10) left = 10; if (left + tr.width > window.innerWidth - 10) left = window.innerWidth - tr.width - 10;
-                            if (top + tr.height > window.innerHeight - 10) top = rect.top - tr.height - 16;
-                            tooltip.style.top = top + 'px'; tooltip.style.left = left + 'px'; tooltip.classList.add('arrow-top');
-                        }
-                    }, 150);
-                }
-            }
-            window.startGlobalTour = startTour;
         })();
 
         // ==================== NAV MENU ====================
