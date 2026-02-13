@@ -61,6 +61,31 @@
         return window.innerWidth <= 600;
     }
 
+    function applyMobileHeaderTitle() {
+        if (!isMobile()) return;
+
+        var titleEl = document.querySelector('.logo-title-group .title-group h1');
+        if (!titleEl) return;
+
+        var pageTitles = {
+            '/': 'Топ Листа',
+            '/lista': 'Мастер Листа',
+            '/nastani': 'Настани',
+            '/vesti': 'Вести',
+            '/kustosi': 'Кустоси',
+            '/iznenadi-me': 'Изненади ме',
+            '/pomosh': 'Помош',
+            '/uslovi': 'Услови',
+            '/privatnost': 'Приватност',
+            '/nastan': 'Настан'
+        };
+
+        var shortTitle = pageTitles[curPage()];
+        if (shortTitle) {
+            titleEl.textContent = shortTitle;
+        }
+    }
+
     // ---- overlay DOM ----
 
     function buildOverlay() {
@@ -261,6 +286,8 @@
     // ---- initialisation ----
 
     function onReady() {
+        applyMobileHeaderTitle();
+
         // 1. Resume an active tour (e.g. after page navigation)
         if (sessionStorage.getItem(KEY_ACTIVE) === 'true') {
             var resumeIdx = getIdx();
