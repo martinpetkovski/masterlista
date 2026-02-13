@@ -3301,7 +3301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: null,
             title: 'Тоа е сè!',
-            description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш! 🎸',
+            description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш! 🎸',
             position: 'center'
         }
     ];
@@ -3361,7 +3361,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: null,
             title: 'Тоа е сè! 🎸',
-            description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш!',
+            description: 'Ако сакаш да помогнеш:<br><br>• Додај артист што го нема<br>• Поправи ако нешто не е точно<br>• Јави се на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord</a> ако имаш прашања<br><br>Фала што помагаш!',
             position: 'center'
         }
     ];
@@ -3381,7 +3381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { element: null, title: 'Настани 📅', description: 'Претстојни <strong>концерти и настани</strong> со датуми, локации и карти. <a href="/nastani">Отвори →</a>', position: 'center' },
             { element: null, title: 'Вести 📰', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена од разни извори. <a href="/vesti">Отвори →</a>', position: 'center' },
             { element: null, title: 'Кустоси 🎧', description: 'Музички <strong>кустоси</strong> со нивните плејлисти и тракслисти. Може и ти да станеш кустос! <a href="/kustosi">Отвори →</a>', position: 'center' },
-            { element: null, title: 'Тоа е сè! 🎸', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/fj6dJGhM" target="_blank">Xotel Discord</a><br><br>Фала! 🙌', position: 'center' }
+            { element: null, title: 'Тоа е сè! 🎸', description: 'Ако сакаш да помогнеш:<br><br>• Додај артист во Мастер Листата<br>• Додај настан<br>• Јави се на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord</a><br><br>Фала! 🙌', position: 'center' }
         ];
         let gStep = 0, gActive = false, gOverlay = null;
         function gCreateOverlay() {

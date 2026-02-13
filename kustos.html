@@ -633,6 +633,7 @@
                     <a href="/kustosi" class="active"><i class="fas fa-headphones"></i> Кустоси</a>
                     <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
                     <a href="/pomosh"><i class="fas fa-question-circle"></i> Помош</a>
+                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
                 </div>
                 <div class="title-group">
                     <h1 id="header-title">Кустос</h1>
@@ -979,9 +980,9 @@
 
         function buildPlaylistLink(url) {
             const info = detectLinkInfo(url);
-            return `<a href="${url}" target="_blank" rel="noopener" class="curator-playlist-link">
+            return `<a href="#" class="curator-playlist-link" data-playlist-url="${escAttr(url)}" onclick="event.preventDefault();openOnPreferredService('${escAttr(url)}','Плејлиста')">
                 <span class="pl-icon ${info.service}"><i class="${info.icon}"></i></span>
-                <span class="pl-text">Отвори во ${info.label}</span>
+                <span class="pl-text">Отвори плејлиста</span>
                 <span class="pl-arrow"><i class="fas fa-arrow-up-right-from-square"></i></span>
             </a>`;
         }
@@ -1011,7 +1012,7 @@
             const metaText = `${trackCount} песни` + (totalMin > 0 ? ` · ${totalMin} мин.` : '');
 
             return `<div class="tracklist-wrapper tracklist-service-${service}" data-curator-playlist>
-                <a class="tracklist-header" href="${playlistUrl}" target="_blank" rel="noopener">
+                <a class="tracklist-header" href="#" onclick="event.preventDefault();openOnPreferredService('${escAttr(playlistUrl)}','Плејлиста')">
                     ${playlist.image ? `<img class="tracklist-cover" src="${playlist.image}" alt="" loading="lazy">` : ''}
                     <div class="tracklist-info">
                         <div class="tracklist-title">${escHtml(playlist.name || 'Playlist')}</div>
