@@ -4857,7 +4857,7 @@
       "confirmed": false
     },
     {
-      "name": "Red Sails Below",
+      "name": "Red Sails Billow",
       "city": "Битола",
       "genre": "Мет Рок, Алтернативен Рок",
       "soundsLike": "недостигаат податоци",
@@ -4866,7 +4866,10 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a02020",
+        "#802020"
+      ],
       "confirmed": false
     },
     {
