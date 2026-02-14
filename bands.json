@@ -5565,8 +5565,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#ffc000",
+        "#e0c020"
+      ],
+      "confirmed": true
     },
     {
       "name": "Speysd",
