@@ -534,6 +534,15 @@
             margin-left: auto; font-size: 0.65rem; background: #667eea22; color: #667eea;
             padding: 2px 6px; border-radius: 4px;
         }
+        .service-chooser-links .service-loading {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+            border-radius: 10px; font-size: 0.88rem; font-weight: 500;
+            color: #888; background: rgba(0,0,0,0.02);
+            opacity: 0.7;
+        }
+        body.dark-mode .service-chooser-links .service-loading { 
+            color: #999; background: rgba(255,255,255,0.03); 
+        }
         .service-chooser-footer {
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -907,25 +916,16 @@
             return url.includes(patterns[serviceKey] || '___');
         }
 
-        async function openOnPreferredService(releaseUrl, title) {
+        async function openOnPreferredService(releaseUrl, title, forceChooser = false) {
             if (!releaseUrl) return;
-            const pref = getPreferredService();
-            if (pref && urlMatchesService(releaseUrl, pref)) {
-                window.open(releaseUrl, '_blank');
-                return;
+            
+            if (forceChooser) {
+                // For tracks: show chooser immediately with available link, then load others
+                showServiceChooserProgressive(releaseUrl, title);
+            } else {
+                // For playlists: also show chooser immediately with progressive loading
+                showServiceChooserProgressive(releaseUrl, title);
             }
-            showServiceToast('Се бараат линкови…');
-            const links = await fetchSonglinkUrls(releaseUrl);
-            hideServiceToast();
-            if (!links || Object.keys(links).length === 0) {
-                window.open(releaseUrl, '_blank');
-                return;
-            }
-            if (pref && links[pref]) {
-                window.open(links[pref], '_blank');
-                return;
-            }
-            showServiceChooser(links, releaseUrl, title);
         }
 
         function showServiceToast(msg) {
@@ -966,6 +966,89 @@
                 overlay.remove();
                 showServicePreferencePicker();
             });
+            overlay.querySelectorAll('.service-chooser-links a').forEach(a => {
+                a.addEventListener('click', () => overlay.remove());
+            });
+        }
+        
+        async function showServiceChooserProgressive(releaseUrl, title) {
+            const overlay = document.createElement('div');
+            overlay.className = 'service-chooser-overlay';
+            const pref = getPreferredService();
+            
+            // Determine source service from URL
+            const sourceService = Object.keys(serviceDefinitions).find(key => urlMatchesService(releaseUrl, key));
+            
+            // Show immediate link + loading indicators for others
+            let linksHtml = '';
+            if (sourceService && serviceDefinitions[sourceService]) {
+                const svc = serviceDefinitions[sourceService];
+                const badge = sourceService === pref ? '<span class="pref-badge">★</span>' : '';
+                linksHtml += `<a href="${releaseUrl}" target="_blank" rel="noopener" data-service="${sourceService}"><i class="${svc.icon}" style="color:${svc.color}"></i>${svc.name}${badge}</a>`;
+            }
+            
+            // Add loading placeholders for other services
+            for (const [key, svc] of Object.entries(serviceDefinitions)) {
+                if (key === sourceService) continue;
+                const badge = key === pref ? '<span class="pref-badge">★</span>' : '';
+                linksHtml += `<div class="service-loading" data-service="${key}"><i class="fas fa-spinner fa-spin"></i> ${svc.name}${badge}</div>`;
+            }
+            
+            overlay.innerHTML = `<div class="service-chooser-dialog">
+                <h3>${title ? escHtml(title) : 'Отвори во сервис'}</h3>
+                <p class="subtitle">Избери сервис за слушање</p>
+                <div class="service-chooser-links">${linksHtml}</div>
+                <div class="service-chooser-footer">
+                    <button class="chooser-cancel">Откажи</button>
+                    <button class="chooser-set-default">Постави стандарден</button>
+                </div>
+            </div>`;
+            
+            document.body.appendChild(overlay);
+            overlay.querySelector('.chooser-cancel').addEventListener('click', () => overlay.remove());
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            overlay.querySelector('.chooser-set-default').addEventListener('click', () => {
+                overlay.remove();
+                showServicePreferencePicker();
+            });
+            
+            // Load additional links in background
+            try {
+                const links = await fetchSonglinkUrls(releaseUrl);
+                if (links && overlay.parentNode) { // Check if overlay still exists
+                    const linksContainer = overlay.querySelector('.service-chooser-links');
+                    
+                    for (const [key, url] of Object.entries(links)) {
+                        if (key === sourceService) continue; // Skip source service, already shown
+                        const svc = serviceDefinitions[key];
+                        if (!svc) continue;
+                        
+                        const badge = key === pref ? '<span class="pref-badge">★</span>' : '';
+                        const loadingEl = overlay.querySelector(`.service-loading[data-service="${key}"]`);
+                        if (loadingEl) {
+                            const newLink = document.createElement('a');
+                            newLink.href = url;
+                            newLink.target = '_blank';
+                            newLink.rel = 'noopener';
+                            newLink.dataset.service = key;
+                            newLink.innerHTML = `<i class="${svc.icon}" style="color:${svc.color}"></i>${svc.name}${badge}`;
+                            newLink.addEventListener('click', () => overlay.remove());
+                            
+                            loadingEl.replaceWith(newLink);
+                        }
+                    }
+                    
+                    // Remove any remaining loading placeholders
+                    overlay.querySelectorAll('.service-loading').forEach(el => el.remove());
+                }
+            } catch (err) {
+                // Remove loading indicators on error
+                if (overlay.parentNode) {
+                    overlay.querySelectorAll('.service-loading').forEach(el => el.remove());
+                }
+            }
+            
+            // Add click handler to existing links
             overlay.querySelectorAll('.service-chooser-links a').forEach(a => {
                 a.addEventListener('click', () => overlay.remove());
             });
@@ -1043,7 +1126,7 @@
                     const trackUrl = trackItem?.dataset.trackUrl;
                     const nameEl = trackItem?.querySelector('.track-name');
                     const title = nameEl?.textContent || '';
-                    if (trackUrl) openOnPreferredService(trackUrl, title);
+                    if (trackUrl) openOnPreferredService(trackUrl, title, true); // Force chooser for tracks
                     return;
                 }
                 const trackItem = e.target.closest('.track-item');
@@ -1052,7 +1135,7 @@
                     const trackUrl = trackItem.dataset.trackUrl;
                     const nameEl = trackItem.querySelector('.track-name');
                     const title = nameEl?.textContent || '';
-                    if (trackUrl) openOnPreferredService(trackUrl, title);
+                    if (trackUrl) openOnPreferredService(trackUrl, title, true); // Force chooser for tracks
                     return;
                 }
             });

@@ -2353,34 +2353,76 @@ a.chart-history-item {
 
         async function openOnPreferredService(releaseUrl, title) {
             if (!releaseUrl) return;
-            const preferred = getPreferredService();
-            if (preferred && urlMatchesService(releaseUrl, preferred)) {
-                window.open(releaseUrl, '_blank');
-                return;
+            // Always show progressive chooser immediately
+            showServiceChooserProgressive(releaseUrl, title);
+        }
+        
+        async function showServiceChooserProgressive(releaseUrl, title) {
+            const overlay = document.getElementById('service-chooser-overlay');
+            const titleEl = document.getElementById('service-chooser-title');
+            const linksEl = document.getElementById('service-chooser-links');
+            const pref = getPreferredService();
+            
+            titleEl.textContent = title || 'Отвори во...';
+            
+            // Determine source service from URL
+            const sourceService = Object.keys(serviceDefinitions).find(key => urlMatchesService(releaseUrl, key));
+            
+            // Show immediate link + loading indicators for others
+            let linksHtml = '';
+            if (sourceService && serviceDefinitions[sourceService]) {
+                const svc = serviceDefinitions[sourceService];
+                const isPreferred = sourceService === pref;
+                linksHtml += `<a href="${releaseUrl}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
+                    <i class="${svc.icon}"></i> ${svc.name}
+                    ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
+                </a>`;
             }
-            showServiceToast(preferred ? 'Се бара на ' + (serviceDefinitions[preferred]?.name || preferred) + '...' : 'Се бараат линкови…');
-            const links = await fetchSonglinkUrls(releaseUrl);
-            hideServiceToast();
-            if (!links || Object.keys(links).length === 0) {
-                if (!preferred) {
-                    // "Always ask" mode - show chooser with original URL
-                    const fallbackLinks = {};
-                    for (const [id] of Object.entries(serviceDefinitions)) {
-                        if (urlMatchesService(releaseUrl, id)) {
-                            fallbackLinks[id] = releaseUrl;
-                            break;
+            
+            // Add loading placeholders for other services
+            for (const [key, svc] of Object.entries(serviceDefinitions)) {
+                if (key === sourceService) continue;
+                const isPreferred = key === pref;
+                linksHtml += `<div class="loading" data-service="${key}">
+                    <i class="fas fa-spinner fa-spin"></i> ${svc.name}
+                    ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
+                </div>`;
+            }
+            
+            linksEl.innerHTML = linksHtml;
+            overlay.classList.add('visible');
+            
+            // Load additional links in background
+            try {
+                const links = await fetchSonglinkUrls(releaseUrl);
+                if (links && overlay.classList.contains('visible')) {
+                    for (const [key, url] of Object.entries(links)) {
+                        if (key === sourceService) continue; // Skip source service, already shown
+                        const svc = serviceDefinitions[key];
+                        if (!svc) continue;
+                        
+                        const isPreferred = key === pref;
+                        const loadingEl = overlay.querySelector(`.loading[data-service="${key}"]`);
+                        if (loadingEl) {
+                            const newLink = document.createElement('a');
+                            newLink.href = url;
+                            newLink.target = '_blank';
+                            newLink.rel = 'noopener noreferrer';
+                            newLink.className = isPreferred ? 'preferred' : '';
+                            newLink.innerHTML = `<i class="${svc.icon}"></i> ${svc.name}${isPreferred ? '<span class="pref-badge">★</span>' : ''}`;
+                            
+                            loadingEl.replaceWith(newLink);
                         }
                     }
-                    showServiceChooser(fallbackLinks, releaseUrl, title);
-                } else {
-                    window.open(releaseUrl, '_blank');
+                    
+                    // Remove any remaining loading placeholders
+                    overlay.querySelectorAll('.loading').forEach(el => el.remove());
                 }
-                return;
-            }
-            if (preferred && links[preferred]) {
-                window.open(links[preferred], '_blank');
-            } else {
-                showServiceChooser(links, releaseUrl, title);
+            } catch (err) {
+                // Remove loading indicators on error
+                if (overlay.classList.contains('visible')) {
+                    overlay.querySelectorAll('.loading').forEach(el => el.remove());
+                }
             }
         }
 
