@@ -18,8 +18,8 @@
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": [
-        "#c40808",
-        "#403f3f"
+        "#f7c500",
+        "#000000"
       ],
       "confirmed": true
     },
@@ -2579,6 +2579,22 @@
         "#402020"
       ],
       "confirmed": false
+    },
+    {
+      "name": "Haze",
+      "city": "Битола",
+      "genre": "Алтернативна, Експериментална",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@haze_mk"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": [
+        "#000000",
+        "#808080"
+      ],
+      "confirmed": true
     },
     {
       "name": "Herzel",
