@@ -403,9 +403,9 @@ window.MMMDrafts = (function () {
         // Also update any legacy header button (lista.html's #submit-pr-btn)
         var legacyBtn = document.getElementById('submit-pr-btn');
         if (legacyBtn) {
-            legacyBtn.disabled = !count;
-            legacyBtn.title = count ? 'Испрати барање за промена' : 'Нема промени за поднесување';
-            if (count) legacyBtn.classList.add('has-changes');
+            legacyBtn.disabled = !changeCount;
+            legacyBtn.title = changeCount ? 'Испрати барање за промена' : 'Нема промени за поднесување';
+            if (changeCount) legacyBtn.classList.add('has-changes');
             else legacyBtn.classList.remove('has-changes');
         }
     }
