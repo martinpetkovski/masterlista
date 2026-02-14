@@ -504,8 +504,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#663399",
+        "#f8e2d4"
+      ],
+      "confirmed": true
     },
     {
       "name": "Aspirin Moon",
@@ -2133,12 +2136,16 @@
         "spotify": "https://open.spotify.com/artist/1hYFpzHdZsnwAZ8HzilLBO?si=CMofs8n4T0OUut9L3h-PzA",
         "tidal": "https://listen.tidal.com/track/257821312",
         "itunes": "https://geo.music.apple.com/us/album/_/1652325371?i=1652325373&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "youtube_music": "https://music.youtube.com/watch?v=NRXAfRxF1Gg"
+        "youtube_music": "https://music.youtube.com/watch?v=NRXAfRxF1Gg",
+        "bandcamp": "https://fkbasket.bandcamp.com/track/ajvar"
       },
-      "contact": "недостигаат податоци",
+      "contact": "fkbasketofficial@gmail.com",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#d43b02",
+        "#346e62"
+      ],
+      "confirmed": true
     },
     {
       "name": "Фолтин",
@@ -4065,21 +4072,6 @@
       "links": {
         "instagram": "https://www.instagram.com/milicarizzo/",
         "youtube": "https://www.youtube.com/watch?v=UG4-QfBhPTI"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Millko",
-      "city": "Скопје",
-      "genre": "Алтернативен Рок, Инди",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "youtube": "https://www.youtube.com/watch?v=xkYi_gZghsI",
-        "spotify": "https://open.spotify.com/artist/7nGNq9uFLfNaTitHCQ7jDL?si=hYre72M6Q0eKXaucery30g",
-        "instagram": "https://www.instagram.com/millkomkd/"
       },
       "contact": "недостигаат податоци",
       "label": null,
