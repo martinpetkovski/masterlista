@@ -17,8 +17,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#c40808",
+        "#403f3f"
+      ],
+      "confirmed": true
     },
     {
       "name": "21 Век",
