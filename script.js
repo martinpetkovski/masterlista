@@ -1249,51 +1249,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Check if we should restore pending changes
             if (pendingChanges && pendingChanges.bandsData) {
-                const savedAt = new Date(pendingChanges.savedAt);
-                const timeAgo = Math.round((Date.now() - savedAt.getTime()) / 60000); // minutes
-                
-                // Show notification about pending changes with discard option
-                setTimeout(() => {
-                    const notificationArea = document.getElementById('notification-area');
-                    const notification = document.createElement('div');
-                    notification.className = 'notification info';
-                    notification.style.display = 'flex';
-                    notification.style.alignItems = 'center';
-                    notification.style.gap = '10px';
-                    notification.style.cursor = 'default';
-                    
-                    const msgSpan = document.createElement('span');
-                    msgSpan.textContent = `Вратени се зачувани промени од пред ${timeAgo} мин.`;
-                    notification.appendChild(msgSpan);
-                    
-                    const discardBtn = document.createElement('button');
-                    discardBtn.textContent = 'Отфрли';
-                    discardBtn.style.cssText = 'background:#e74c3c;color:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:0.85em;white-space:nowrap;';
-                    discardBtn.addEventListener('click', (ev) => {
-                        ev.stopPropagation();
-                        // Discard saved changes: revert to original server data
-                        bandsData = JSON.parse(JSON.stringify(originalBandsData));
-                        hasUnsavedChanges = false;
-                        localStorage.removeItem(STORAGE_KEY);
-                        updateSubmitButtonState();
-                        invalidateBandCache();
-                        renderBands(bandsData);
-                        // Remove notification
-                        if (notification.parentNode) notification.parentNode.removeChild(notification);
-                        showNotification('Зачуваните промени се отфрлени.', 'info', 3000);
-                    });
-                    notification.appendChild(discardBtn);
-                    
-                    notificationArea.appendChild(notification);
-                    
-                    // Auto-dismiss after 15 seconds
-                    setTimeout(() => {
-                        notification.classList.add('fade-out');
-                        setTimeout(() => {
-                            if (notification.parentNode) notification.parentNode.removeChild(notification);
-                        }, 300);
-                    }, 15000);
-                }, 500);
+                // The floating draft bar (mmm-drafts.js) already indicates pending changes
+                // No separate notification needed
                 
                 // Use the saved data
                 bandsData = pendingChanges.bandsData;

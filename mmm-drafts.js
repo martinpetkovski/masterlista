@@ -323,13 +323,70 @@ window.MMMDrafts = (function () {
         });
     }
 
+    function _countIndividualChanges() {
+        var all = _readAll();
+        var files = Object.keys(all);
+        var total = 0;
+
+        files.forEach(function (filePath) {
+            var entry = all[filePath];
+            var data = entry.data;
+            var original = entry.original;
+            if (!original) {
+                // No original stored — count as 1 change per file
+                total += 1;
+                return;
+            }
+
+            if (filePath === 'bands.json') {
+                var origList = (original && original.muzickaMasterLista) || [];
+                var modList = (data && data.muzickaMasterLista) || [];
+                var origMap = {}; origList.forEach(function (b) { origMap[b.name] = b; });
+                var modMap = {}; modList.forEach(function (b) { modMap[b.name] = b; });
+
+                modList.forEach(function (b) {
+                    if (!origMap[b.name]) { total++; return; }
+                    var o = origMap[b.name];
+                    if (b.city !== o.city || b.genre !== o.genre || b.soundsLike !== o.soundsLike ||
+                        b.contact !== o.contact || b.label !== o.label || b.confirmed !== o.confirmed ||
+                        JSON.stringify(b.links) !== JSON.stringify(o.links) ||
+                        JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) {
+                        total++;
+                    }
+                });
+                origList.forEach(function (b) { if (!modMap[b.name]) total++; });
+            } else if (filePath === 'events.json') {
+                var origEvts = (original && original.events) || [];
+                var modEvts = (data && data.events) || [];
+                var origEvtMap = {}; origEvts.forEach(function (e) { origEvtMap[e.id] = e; });
+                var modEvtMap = {}; modEvts.forEach(function (e) { modEvtMap[e.id] = e; });
+
+                modEvts.forEach(function (e) {
+                    if (!origEvtMap[e.id]) { total++; return; }
+                    var o = origEvtMap[e.id];
+                    if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
+                        e.place !== o.place || e.link !== o.link ||
+                        JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
+                        JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
+                        total++;
+                    }
+                });
+                origEvts.forEach(function (e) { if (!modEvtMap[e.id]) total++; });
+            } else {
+                total += 1;
+            }
+        });
+
+        return total;
+    }
+
     function _refreshUI() {
         if (!_barEl) return;
         var files = getPendingFiles();
-        var count = files.length;
-        if (count > 0) {
+        var changeCount = _countIndividualChanges();
+        if (changeCount > 0) {
             _barEl.classList.add('visible');
-            _badgeEl.textContent = count;
+            _badgeEl.textContent = changeCount;
 
             // Build descriptive text
             var labels = files.map(function (f) {
@@ -425,17 +482,14 @@ window.MMMDrafts = (function () {
 
             try {
                 var results = await submitAll(contributor, description);
-                overlay.remove();
 
-                // Open PR URLs if returned
-                var opened = false;
-                results.forEach(function (r) {
-                    var url = r.result.pr_url || r.result.html_url;
-                    if (url && !opened) {
-                        window.open(url, '_blank');
-                        opened = true;
-                    }
-                });
+                // Show success state in the dialog before closing
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
+                submitBtn.classList.add('mmm-btn-success');
+
+                setTimeout(function () {
+                    overlay.remove();
+                }, 1200);
 
                 _showNotification('Успешно поднесено! Промените ќе бидат видливи откако ќе бидат одобрени.', 'success');
                 window.dispatchEvent(new CustomEvent('mmm-drafts-submitted', { detail: results }));
@@ -537,6 +591,17 @@ window.MMMDrafts = (function () {
     // (individual pages call save() on changes, this is a safety net)
     window.addEventListener('beforeunload', function () {
         // Nothing extra needed - each page calls save() in real-time
+    });
+
+    // Cross-tab / cross-page sync: when another tab writes to localStorage,
+    // update the floating bar so changes made in the master list appear
+    // on all other open pages without a manual refresh.
+    window.addEventListener('storage', function (e) {
+        if (e.key === STORAGE_KEY) {
+            _refreshUI();
+            // Let page-specific code react too (e.g. reload data)
+            window.dispatchEvent(new CustomEvent('mmm-drafts-changed'));
+        }
     });
 
     // Auto-init when DOM is ready

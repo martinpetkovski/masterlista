@@ -1026,6 +1026,9 @@
                     }).sort(function(a, b) { return a.name.localeCompare(b.name); });
                 }
 
+                // Overlay draft bands so newly-added artists are immediately selectable
+                _refreshMasterArtistsFromDrafts();
+
                 // Restore any pending event drafts from localStorage
                 if (window.MMMDrafts) {
                     var draft = window.MMMDrafts.load('events.json');
@@ -1046,6 +1049,20 @@
             }
         }
 
+        /**
+         * Merge draft bands into masterArtists so that bands added/edited
+         * via the master list are immediately available in the artist autocomplete.
+         */
+        function _refreshMasterArtistsFromDrafts() {
+            if (!window.MMMDrafts) return;
+            var draft = window.MMMDrafts.load('bands.json');
+            if (draft && draft.muzickaMasterLista && Array.isArray(draft.muzickaMasterLista)) {
+                masterArtists = draft.muzickaMasterLista.map(function(b) {
+                    return { name: b.name, city: b.city || '' };
+                }).sort(function(a, b) { return a.name.localeCompare(b.name); });
+            }
+        }
+
         // Listen for draft discard events (from the floating bar)
         window.addEventListener('mmm-drafts-discarded', function() {
             // Reload original data
@@ -1054,12 +1071,20 @@
                 updateStats();
                 renderTable();
             }
+            // Revert artist list to server baseline
+            _refreshMasterArtistsFromDrafts();
         });
 
         // Listen for successful draft submission
         window.addEventListener('mmm-drafts-submitted', function() {
             // The submitted data becomes the new baseline
             originalEventsJSON = JSON.stringify(allEvents);
+        });
+
+        // When drafts change in another tab (cross-page sync),
+        // refresh the artist autocomplete list immediately.
+        window.addEventListener('mmm-drafts-changed', function() {
+            _refreshMasterArtistsFromDrafts();
         });
 
         function updateStats() {

@@ -2353,6 +2353,10 @@ body.guide-page .site-footer {
     background: var(--accent-red, #ff6b6b) !important;
     color: #fff !important;
 }
+.mmm-btn-success {
+    background: #27ae60 !important;
+    color: #fff !important;
+}
 
 /* Draft overlay / dialogs (mobile) */
 .mmm-draft-overlay {

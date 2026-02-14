@@ -2731,6 +2731,11 @@ body.guide-page .site-footer {
     color: #fff !important;
 }
 .mmm-btn-danger:hover { background: #e05555 !important; }
+.mmm-btn-success {
+    background: #27ae60 !important;
+    color: #fff !important;
+}
+.mmm-btn-success:hover { background: #219a52 !important; }
 
 /* Draft overlay / dialogs */
 .mmm-draft-overlay {
