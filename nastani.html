@@ -1563,7 +1563,7 @@
 
             // Save to unified draft system
             if (window.MMMDrafts) {
-                var origEvents = originalEventsJSON ? JSON.parse(originalEventsJSON) : { events: [] };
+                var origEvents = originalEventsJSON ? { events: JSON.parse(originalEventsJSON) } : { events: [] };
                 window.MMMDrafts.save('events.json', { events: updatedEvents }, origEvents);
             }
 
