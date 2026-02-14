@@ -3480,11 +3480,15 @@
         "youtube_music": "https://music.youtube.com/watch?v=1Xfa-Swl3BA",
         "tidal": "https://listen.tidal.com/track/117825001",
         "amazon_music": "https://music.amazon.com/albums/B0DH237XT8?trackAsin=B0DH1WP838",
-        "itunes": "https://geo.music.apple.com/us/album/_/391219886?i=391219890&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/391219886?i=391219890&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "website": "https://lebisolofficial.com"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#404040",
+        "#202020"
+      ],
       "confirmed": false
     },
     {
