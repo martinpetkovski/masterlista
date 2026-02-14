@@ -191,6 +191,7 @@ export default {
     try {
       const body = await request.json();
       const bandsJson = body?.bandsJson;
+      const originalJson = body?.originalJson || null;
       const description = body?.description || 'Automated PR from MMM form';
       const contributor = body?.contributor || '';
       const targetPath = body?.path || 'bands.json';
@@ -258,20 +259,37 @@ export default {
         return json({ error: 'Failed to create branch', detail: text }, 500, corsHeaders);
       }
 
-      // 3) Get current file SHA (for update)
+      // 3) Get current file SHA and content (for update + merge)
       const contentsRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}?ref=${encodeURIComponent(baseBranch)}`);
       let currentSha = undefined;
+      let currentContent = null;
       if (contentsRes.ok) {
         const contents = await contentsRes.json();
         currentSha = contents.sha;
+        if (contents.content) {
+          currentContent = b64decode(contents.content);
+        }
       } // If not ok, file might not exist; treat as create
+
+      // 3b) Three-way merge if the user's baseline differs from current repo content
+      let finalJson = bandsJson;
+      let mergeNotes = [];
+      if (originalJson && currentContent) {
+        const normalizeJson = (s) => { try { return JSON.stringify(JSON.parse(s)); } catch { return s; } };
+        if (normalizeJson(currentContent) !== normalizeJson(originalJson)) {
+          // Repo changed since user's baseline — attempt auto-merge
+          const mergeResult = threeWayMerge(targetPath, originalJson, currentContent, bandsJson);
+          finalJson = mergeResult.merged;
+          mergeNotes = mergeResult.notes;
+        }
+      }
 
       // 4) Create or update file on new branch
       const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}`, {
         method: 'PUT',
         body: JSON.stringify({
           message: `MMM: update ${targetPath} via form${contributor ? ` by ${contributor}` : ''}`,
-          content: b64encode(bandsJson),
+          content: b64encode(finalJson),
           branch: branchName,
           sha: currentSha,
         }),
@@ -283,7 +301,10 @@ export default {
 
       // 5) Create PR
       const title = `MMM: Предлог промени${contributor ? ` од ${contributor}` : ''}`;
-      const bodyText = `${description}\n\nАвтоматски генерирано од MMM формуларот.$${contributor ? `\nПоднесено од: ${contributor}` : ''}`.replace('$', '');
+      const mergeNotice = mergeNotes.length
+        ? `\n\n---\n🔀 **Авто-спојување:** Основата беше застарена, промените се споени автоматски.\n${mergeNotes.map(n => '• ' + n).join('\n')}\n`
+        : '';
+      const bodyText = `${description}\n\nАвтоматски генерирано од MMM формуларот.${mergeNotice}${contributor ? `\nПоднесено од: ${contributor}` : ''}`;
       const prRes = await gh(`/repos/${owner}/${repo}/pulls`, {
         method: 'POST',
         body: JSON.stringify({
@@ -314,6 +335,148 @@ function pad(n) { return String(n).padStart(2, '0'); }
 function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 32); }
 function b64encode(str) {
   return btoa(unescape(encodeURIComponent(str)));
+}
+function b64decode(b64) {
+  return decodeURIComponent(escape(atob((b64 || '').replace(/\n/g, '').replace(/\r/g, ''))));
+}
+
+// ---------------- Three-way Merge Helpers ----------------
+
+/**
+ * Perform a three-way merge: original (user's baseline) + current (repo HEAD) + modified (user's edits).
+ * Returns { merged: string, notes: string[] }
+ */
+function threeWayMerge(filePath, originalJson, currentJson, modifiedJson) {
+  try {
+    const original = JSON.parse(originalJson);
+    const current  = JSON.parse(currentJson);
+    const modified = JSON.parse(modifiedJson);
+
+    if (filePath === 'bands.json' && original.muzickaMasterLista && current.muzickaMasterLista) {
+      return threeWayMergeBands(original, current, modified);
+    }
+    if (filePath === 'events.json' && original.events && current.events) {
+      return threeWayMergeEvents(original, current, modified);
+    }
+  } catch (_) { /* parse error — fall through */ }
+
+  // Unknown file type or parse error — use user's version as-is
+  return { merged: modifiedJson, notes: ['Непозната структура — користена верзијата на корисникот'] };
+}
+
+function threeWayMergeBands(original, current, modified) {
+  const origList = original.muzickaMasterLista || [];
+  const currList = current.muzickaMasterLista  || [];
+  const modList  = modified.muzickaMasterLista || [];
+
+  const toMap = (list) => { const m = new Map(); list.forEach(a => m.set(a.name, a)); return m; };
+  const origMap = toMap(origList);
+  const currMap = toMap(currList);
+  const modMap  = toMap(modList);
+
+  const merged = [];
+  const notes = [];
+  const seen = new Set();
+
+  // Walk current (repo HEAD) list to preserve its ordering
+  for (const artist of currList) {
+    const name = artist.name;
+    seen.add(name);
+    const inOrig = origMap.has(name);
+    const inMod  = modMap.has(name);
+
+    if (inOrig && !inMod) {
+      // User deleted this artist — honour the deletion
+      notes.push(`Избришан: ${name}`);
+      continue;
+    }
+    if (inOrig && inMod) {
+      const oJson = JSON.stringify(origMap.get(name));
+      const cJson = JSON.stringify(artist);
+      const mJson = JSON.stringify(modMap.get(name));
+      if (mJson !== oJson && cJson === oJson) {
+        // Only user changed → take user's version
+        merged.push(modMap.get(name));
+        notes.push(`Изменет (корисник): ${name}`);
+      } else if (mJson !== oJson && cJson !== oJson) {
+        // Both changed → take user's version, flag conflict
+        merged.push(modMap.get(name));
+        notes.push(`⚠️ Конфликт (земена верзија на корисникот): ${name}`);
+      } else {
+        // User didn't change (or identical changes) → keep repo version
+        merged.push(artist);
+      }
+    } else {
+      // Not in original — added by repo after user's baseline
+      merged.push(artist);
+    }
+  }
+
+  // Append artists added by user (in modified but not in original and not already seen)
+  for (const artist of modList) {
+    if (!seen.has(artist.name) && !origMap.has(artist.name)) {
+      merged.push(artist);
+      notes.push(`Додаден: ${artist.name}`);
+      seen.add(artist.name);
+    }
+  }
+
+  const result = { ...current, muzickaMasterLista: merged };
+  return { merged: JSON.stringify(result, null, 2), notes };
+}
+
+function threeWayMergeEvents(original, current, modified) {
+  const origList = original.events || [];
+  const currList = current.events  || [];
+  const modList  = modified.events || [];
+
+  const toMap = (list) => { const m = new Map(); list.forEach(e => m.set(e.id, e)); return m; };
+  const origMap = toMap(origList);
+  const currMap = toMap(currList);
+  const modMap  = toMap(modList);
+
+  const merged = [];
+  const notes = [];
+  const seen = new Set();
+
+  for (const event of currList) {
+    const id = event.id;
+    seen.add(id);
+    const inOrig = origMap.has(id);
+    const inMod  = modMap.has(id);
+
+    if (inOrig && !inMod) {
+      notes.push(`Избришан настан: ${event.title || id}`);
+      continue;
+    }
+    if (inOrig && inMod) {
+      const oJson = JSON.stringify(origMap.get(id));
+      const cJson = JSON.stringify(event);
+      const mJson = JSON.stringify(modMap.get(id));
+      if (mJson !== oJson && cJson === oJson) {
+        merged.push(modMap.get(id));
+        notes.push(`Изменет настан (корисник): ${event.title || id}`);
+      } else if (mJson !== oJson && cJson !== oJson) {
+        merged.push(modMap.get(id));
+        notes.push(`⚠️ Конфликт настан (земена верзија на корисникот): ${event.title || id}`);
+      } else {
+        merged.push(event);
+      }
+    } else {
+      merged.push(event);
+    }
+  }
+
+  for (const event of modList) {
+    if (!seen.has(event.id) && !origMap.has(event.id)) {
+      merged.push(event);
+      notes.push(`Нов настан: ${event.title || event.id}`);
+      seen.add(event.id);
+    }
+  }
+
+  const result = { ...current, events: merged };
+  return { merged: JSON.stringify(result, null, 2), notes };
 }
 
 // ---------------- GitHub App Helpers ----------------

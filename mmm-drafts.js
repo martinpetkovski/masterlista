@@ -246,12 +246,14 @@ window.MMMDrafts = (function () {
             var filePath = files[i];
             var draft = all[filePath];
             var json = JSON.stringify(draft.data, null, 2);
+            var originalJson = draft.original ? JSON.stringify(draft.original, null, 2) : null;
 
             var resp = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     bandsJson: json,
+                    originalJson: originalJson,
                     contributor: contributor || '',
                     description: description || '',
                     path: filePath
