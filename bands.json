@@ -3215,11 +3215,15 @@
         "instagram": "https://www.instagram.com/kristijan_magdenovski/",
         "tidal": "https://listen.tidal.com/track/462701149",
         "itunes": "https://geo.music.apple.com/us/album/_/1842120258?i=1842120263&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "youtube_music": "https://music.youtube.com/watch?v=EPPLHUa-HKI"
+        "youtube_music": "https://music.youtube.com/watch?v=EPPLHUa-HKI",
+        "website": "https://kristijanmagdenovski.mk"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#604040",
+        "#402020"
+      ],
       "confirmed": false
     },
     {
