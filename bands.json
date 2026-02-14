@@ -2215,6 +2215,20 @@
       "confirmed": false
     },
     {
+      "name": "Fudge",
+      "city": "Битола",
+      "genre": "Алтернативен Рок, Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "facebook": "https://www.facebook.com/p/FUDGE-100083946551220/",
+        "youtube": "https://www.youtube.com/watch?v=HOHEjku6FgE"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Fundament",
       "city": "Кочани",
       "genre": "Рап",
@@ -5209,12 +5223,11 @@
       "confirmed": false
     },
     {
-      "name": "Saso Popovski Trio",
+      "name": "Saso Popovski",
       "city": "Битола, Скопје",
       "genre": "Џез",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "website": "https://sasopopovski.com/",
         "instagram": "https://www.instagram.com/saso_popovski/",
         "facebook": "https://www.facebook.com/saso.popovski.9/",
         "spotify": "https://open.spotify.com/artist/5GpYUuGVfChD5p5JmuaTcw",
@@ -5225,10 +5238,10 @@
         "tidal": "https://listen.tidal.com/track/447126718",
         "youtube_music": "https://music.youtube.com/watch?v=x3_hsxUnE-0"
       },
-      "contact": "недостигаат податоци",
+      "contact": "booking@jff.mk",
       "label": null,
       "accentColors": null,
-      "confirmed": false
+      "confirmed": true
     },
     {
       "name": "Saso Recyd",
@@ -5747,7 +5760,7 @@
     },
     {
       "name": "Sunneater",
-      "city": "Скопје, Битола",
+      "city": "Скопје",
       "genre": "Стонер Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
