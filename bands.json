@@ -6360,8 +6360,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#EFAE30",
+        "#175EB0"
+      ],
+      "confirmed": true
     },
     {
       "name": "Two Sides",
