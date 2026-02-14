@@ -2858,7 +2858,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dateStr = d ? d.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short' }) : '';
                     const isPast = evt.date < today;
                     const escapedTitle = (evt.title + (dateStr ? ` (${dateStr})` : '') + (evt.place ? ` — ${evt.place}` : '')).replace(/"/g, '&quot;');
-                    const href = evt.link || `/nastan/${evt.id}`;
+                    const href = (evt.links && evt.links.length ? evt.links[0].url : evt.link) || `/nastan/${evt.id}`;
                     return `<a href="${href}" target="_blank" title="${escapedTitle}" class="event-icon-link${isPast ? ' past-event-icon' : ''}"><i class="fas fa-calendar-day"></i></a>`;
                 }).join('');
             }

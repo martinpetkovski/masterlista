@@ -320,6 +320,90 @@
         }
         .back-link:hover { color: var(--text-primary); }
         .back-link i { font-size: 0.7rem; }
+
+        /* ========== Edit Modal ========== */
+        .modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 1.5rem; max-width: 480px; width: 90%;
+            max-height: 85vh; overflow-y: auto; position: relative;
+        }
+        body.dark-mode .modal-content { background: var(--bg-secondary); }
+        .modal-close {
+            position: absolute; top: 0.5rem; right: 0.75rem;
+            font-size: 1.5rem; cursor: pointer; color: var(--text-muted);
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-content h2 {
+            font-family: 'Montserrat', sans-serif; font-size: 1rem;
+            font-weight: 700; margin-bottom: 1rem;
+        }
+        .form-group { margin-bottom: 0.75rem; }
+        .form-group label {
+            display: block; font-size: 0.72rem; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 0.25rem;
+        }
+        .form-group input {
+            width: 100%; padding: 0.4rem 0.6rem; font-family: 'Inter', sans-serif;
+            font-size: 0.8rem; border: 1px solid var(--border-color); border-radius: 4px;
+            background: var(--bg-primary); color: var(--text-primary); box-sizing: border-box;
+        }
+        body.dark-mode .form-group input { background: var(--bg-primary); color: var(--text-primary); }
+        .form-group input:focus { outline: none; border-color: var(--accent-blue); }
+        .artist-entries-list, .ticket-entries-list, .link-entries-list { display: flex; flex-direction: column; gap: 0.3rem; }
+        .artist-entry-row, .ticket-entry-row, .link-entry-row { display: flex; gap: 0.3rem; align-items: center; }
+        .artist-entry-row input, .ticket-entry-row input, .link-entry-row input { flex: 1; }
+        .entry-remove { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.78rem; padding: 0.2rem; }
+        .add-entry-btn {
+            font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 600;
+            color: var(--accent-blue); background: none; border: 1px dashed var(--accent-blue);
+            border-radius: 4px; padding: 0.25rem 0.6rem; cursor: pointer;
+            margin-top: 0.25rem; transition: background 0.15s;
+        }
+        .add-entry-btn:hover { background: rgba(74, 127, 165, 0.06); }
+        .artist-ac-wrapper { position: relative; }
+        .artist-ac-list {
+            position: absolute; left: 0; right: 0; top: 100%;
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 4px; max-height: 180px; overflow-y: auto;
+            z-index: 50; box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: none;
+        }
+        .artist-ac-list.open { display: block; }
+        .artist-ac-item {
+            padding: 0.35rem 0.6rem; font-size: 0.75rem; color: var(--text-primary);
+            cursor: pointer; transition: background 0.1s;
+        }
+        .artist-ac-item:hover, .artist-ac-item.hl { background: var(--bg-hover); }
+        .artist-ac-item .ac-city { font-size: 0.62rem; color: var(--text-muted); margin-left: 0.3rem; }
+        body.dark-mode .artist-ac-list { background: var(--bg-secondary); }
+        .form-help { font-size: 0.65rem; color: var(--text-muted); margin-top: 0.15rem; display: block; }
+
+        /* Notification */
+        .nastani-notification {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 0.65rem 1rem; font-size: 0.78rem;
+            font-weight: 500; color: var(--text-primary); z-index: 2000;
+            max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            display: flex; align-items: center; gap: 0.5rem; transition: opacity 0.3s ease;
+            animation: notifIn 0.25s ease;
+        }
+        .nastani-notification.success { border-color: #22c55e; }
+        .nastani-notification.success i { color: #22c55e; }
+        .nastani-notification.error { border-color: #ef4444; }
+        .nastani-notification.error i { color: #ef4444; }
+        .nastani-notification.info { border-color: var(--accent-blue); }
+        .nastani-notification.info i { color: var(--accent-blue); }
+        @keyframes notifIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        body.dark-mode .nastani-notification { background: var(--bg-secondary); }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
@@ -345,6 +429,9 @@
                 </div>
             </div>
             <div class="header-buttons">
+                <button id="edit-event-btn" class="header-btn" title="Уреди настан" style="display:none">
+                    <i class="fas fa-pen"></i>
+                </button>
                 <button id="settings-btn" class="header-btn" title="Поставки">
                     <i class="fas fa-gear"></i>
                 </button>
@@ -359,6 +446,53 @@
             </div>
         </div>
     </div>
+
+    <!-- Event Edit Modal -->
+    <div id="event-edit-modal" class="modal" style="display:none">
+        <div class="modal-content">
+            <span class="modal-close" id="edit-modal-close">&times;</span>
+            <h2>Уреди настан</h2>
+            <form id="event-edit-form">
+                <div class="form-group">
+                    <label for="edit-evt-title">Наслов *</label>
+                    <input type="text" id="edit-evt-title" required>
+                </div>
+                <div class="form-group" style="display:flex;gap:0.5rem">
+                    <div style="flex:1">
+                        <label for="edit-evt-date">Датум *</label>
+                        <input type="date" id="edit-evt-date" required>
+                    </div>
+                    <div style="flex:1">
+                        <label for="edit-evt-time">Време *</label>
+                        <input type="time" id="edit-evt-time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-evt-place">Место / Локација *</label>
+                    <input type="text" id="edit-evt-place" required>
+                </div>
+                <div class="form-group">
+                    <label>Артисти</label>
+                    <div id="edit-artist-entries" class="artist-entries-list"></div>
+                    <button type="button" class="add-entry-btn" id="edit-add-artist-btn"><i class="fas fa-plus"></i> Додај артист</button>
+                </div>
+                <div class="form-group">
+                    <label>Карти / Влезници</label>
+                    <div id="edit-ticket-entries" class="ticket-entries-list"></div>
+                    <button type="button" class="add-entry-btn" id="edit-add-ticket-btn"><i class="fas fa-plus"></i> Додај карта</button>
+                </div>
+                <div class="form-group">
+                    <label>Линкови</label>
+                    <div id="edit-link-entries" class="link-entries-list"></div>
+                    <button type="button" class="add-entry-btn" id="edit-add-link-btn"><i class="fas fa-plus"></i> Додај линк</button>
+                </div>
+                <button type="submit" id="edit-save-btn" style="width:100%;margin-top:0.75rem;padding:0.5rem 1rem;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;color:#fff;background:var(--accent-green,#22c55e);border:none;border-radius:4px;cursor:pointer">Зачувај</button>
+                <button type="button" id="edit-delete-btn" style="display:none;width:100%;margin-top:0.5rem;padding:0.5rem;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;border:1px solid rgba(239,68,68,0.3);border-radius:4px;background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer"><i class="fas fa-trash"></i> Избриши настан</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="nastani-notifications"></div>
 
     <script>
         // ==================== SETTINGS MENU ====================
@@ -476,6 +610,13 @@
 
         function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
         function escA(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        /** Normalize event links: supports legacy .link (string) and new .links (array of {label,url}) */
+        function getEventLinks(evt) {
+            if (evt.links && Array.isArray(evt.links) && evt.links.length) return evt.links;
+            if (evt.link) return [{ label: '', url: evt.link }];
+            return [];
+        }
 
         function parseDate(str) {
             var p = str.split('-');
@@ -615,13 +756,17 @@
                 html += '</div>';
             }
 
-            // External link
-            if (evt.link) {
-                html += '<a href="' + escA(evt.link) + '" target="_blank" rel="noopener" class="info-card">';
-                html += '<div class="info-card-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>';
-                html += '<div class="info-card-text"><div class="info-card-label">Линк</div><div class="info-card-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(evt.link) + '</div></div>';
-                html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
-                html += '</a>';
+            // External links (support both legacy .link and new .links array)
+            var evtLinks = getEventLinks(evt);
+            if (evtLinks.length) {
+                for (var li = 0; li < evtLinks.length; li++) {
+                    var lnk = evtLinks[li];
+                    html += '<a href="' + escA(lnk.url) + '" target="_blank" rel="noopener" class="info-card">';
+                    html += '<div class="info-card-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>';
+                    html += '<div class="info-card-text"><div class="info-card-label">' + esc(lnk.label || 'Линк') + '</div><div class="info-card-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(lnk.url) + '</div></div>';
+                    html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
+                    html += '</a>';
+                }
             }
 
             html += '</div>'; // .info-list
@@ -648,6 +793,268 @@
             document.getElementById('event-content').innerHTML = html;
         }
 
+        // ==================== NOTIFICATION ====================
+        function notify(msg, type) {
+            type = type || 'info';
+            var c = document.getElementById('nastani-notifications');
+            if (!c) return;
+            var el = document.createElement('div');
+            el.className = 'nastani-notification ' + type;
+            var ic = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            el.innerHTML = '<i class="fas ' + (ic[type]||ic.info) + '"></i> ' + msg;
+            c.appendChild(el);
+            setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.remove(); }, 300); }, 4000);
+        }
+
+        // ==================== EDIT MODAL LOGIC ====================
+        var allEvents = [];
+        var originalEventsJSON = null;
+        var masterArtists = [];
+        var currentEvent = null;
+
+        function loadAllEventsAndBands() {
+            return Promise.all([
+                fetch('/events.json?v=' + Date.now()).then(function(r) { return r.ok ? r.json() : { events: [] }; }),
+                fetch('/bands.json?v=' + Date.now()).then(function(r) { return r.ok ? r.json() : { muzickaMasterLista: [] }; })
+            ]).then(function(results) {
+                allEvents = results[0].events || [];
+                originalEventsJSON = JSON.stringify(allEvents);
+                masterArtists = (results[1].muzickaMasterLista || []).map(function(b) {
+                    return { name: b.name, city: b.city || '' };
+                }).sort(function(a, b) { return a.name.localeCompare(b.name); });
+
+                // Overlay drafts
+                if (window.MMMDrafts) {
+                    var draft = window.MMMDrafts.load('events.json');
+                    if (draft && draft.events && Array.isArray(draft.events)) allEvents = draft.events;
+                    var bandsDraft = window.MMMDrafts.load('bands.json');
+                    if (bandsDraft && bandsDraft.muzickaMasterLista && Array.isArray(bandsDraft.muzickaMasterLista)) {
+                        masterArtists = bandsDraft.muzickaMasterLista.map(function(b) {
+                            return { name: b.name, city: b.city || '' };
+                        }).sort(function(a, b) { return a.name.localeCompare(b.name); });
+                    }
+                }
+            });
+        }
+
+        // Artist autocomplete for edit modal
+        function createEditArtistEntry(value) {
+            var row = document.createElement('div');
+            row.className = 'artist-entry-row artist-ac-wrapper';
+            var input = document.createElement('input');
+            input.type = 'text'; input.placeholder = 'Пребарај артист...';
+            input.className = 'artist-input'; input.value = value || '';
+            input.readOnly = !!value;
+            if (value) input.style.fontWeight = '600';
+            var acList = document.createElement('div');
+            acList.className = 'artist-ac-list';
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button'; removeBtn.className = 'entry-remove';
+            removeBtn.title = 'Отстрани'; removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+
+            row.appendChild(input); row.appendChild(acList); row.appendChild(removeBtn);
+            removeBtn.addEventListener('click', function() { row.remove(); });
+
+            var hlIdx = -1;
+            input.addEventListener('input', function() {
+                var q = input.value.trim().toLowerCase();
+                input.readOnly = false; input.style.fontWeight = '';
+                hlIdx = -1;
+                if (q.length < 1) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
+                var matches = masterArtists.filter(function(a) { return a.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
+                if (!matches.length) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
+                acList.innerHTML = matches.map(function(a) {
+                    return '<div class="artist-ac-item" data-name="' + escA(a.name) + '">' +
+                        esc(a.name) + (a.city ? '<span class="ac-city">' + esc(a.city) + '</span>' : '') + '</div>';
+                }).join('');
+                acList.classList.add('open');
+                acList.querySelectorAll('.artist-ac-item').forEach(function(item) {
+                    item.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        input.value = item.dataset.name; input.readOnly = true;
+                        input.style.fontWeight = '600'; acList.classList.remove('open'); acList.innerHTML = '';
+                    });
+                });
+            });
+            input.addEventListener('keydown', function(e) {
+                var items = acList.querySelectorAll('.artist-ac-item');
+                if (!items.length) return;
+                if (e.key === 'ArrowDown') { e.preventDefault(); hlIdx = Math.min(hlIdx + 1, items.length - 1); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); hlIdx = Math.max(hlIdx - 1, 0); }
+                else if (e.key === 'Enter' && hlIdx >= 0) {
+                    e.preventDefault(); input.value = items[hlIdx].dataset.name;
+                    input.readOnly = true; input.style.fontWeight = '600';
+                    acList.classList.remove('open'); acList.innerHTML = ''; return;
+                }
+                items.forEach(function(it, i) { it.classList.toggle('hl', i === hlIdx); });
+            });
+            input.addEventListener('blur', function() { setTimeout(function() { acList.classList.remove('open'); }, 150); });
+            return row;
+        }
+
+        function addEditTicketEntry(label, price) {
+            var c = document.getElementById('edit-ticket-entries');
+            var row = document.createElement('div'); row.className = 'ticket-entry-row';
+            row.innerHTML =
+                '<input type="text" placeholder="Тип (пр. Стандард)" class="ticket-label-input" value="' + escA(label) + '">' +
+                '<input type="text" placeholder="Цена (пр. 300 ден)" class="ticket-price-input" value="' + escA(price) + '">' +
+                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+            row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
+            c.appendChild(row);
+        }
+
+        function addEditLinkEntry(label, url) {
+            var c = document.getElementById('edit-link-entries');
+            var row = document.createElement('div'); row.className = 'link-entry-row';
+            row.innerHTML =
+                '<input type="text" placeholder="Опис (пр. Билети, Инстаграм)" class="link-label-input" value="' + escA(label) + '">' +
+                '<input type="url" placeholder="https://..." class="link-url-input" value="' + escA(url) + '">' +
+                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+            row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
+            c.appendChild(row);
+        }
+
+        function openEditModal(evt) {
+            if (!evt) return;
+            var modal = document.getElementById('event-edit-modal');
+            var deleteBtn = document.getElementById('edit-delete-btn');
+
+            document.getElementById('edit-evt-title').value = evt.title || '';
+            document.getElementById('edit-evt-date').value = evt.date || '';
+            document.getElementById('edit-evt-time').value = evt.time || '';
+            document.getElementById('edit-evt-place').value = evt.place || '';
+
+            // Artists
+            var artists = evt.artists || evt.bands || [];
+            var ac = document.getElementById('edit-artist-entries'); ac.innerHTML = '';
+            (artists.length ? artists : ['']).forEach(function(v) { ac.appendChild(createEditArtistEntry(v)); });
+
+            // Tickets
+            var tickets = evt.tickets || [];
+            var tc = document.getElementById('edit-ticket-entries'); tc.innerHTML = '';
+            (tickets.length ? tickets : [{ label: '', price: '' }]).forEach(function(t) { addEditTicketEntry(t.label || '', t.price || ''); });
+
+            // Links
+            var links = getEventLinks(evt);
+            var lc = document.getElementById('edit-link-entries'); lc.innerHTML = '';
+            (links.length ? links : [{ label: '', url: '' }]).forEach(function(l) { addEditLinkEntry(l.label || '', l.url || ''); });
+
+            deleteBtn.style.display = '';
+            modal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('event-edit-modal').style.display = 'none';
+        }
+
+        (function initEditModal() {
+            var modal = document.getElementById('event-edit-modal');
+            if (!modal) return;
+
+            document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
+            modal.addEventListener('click', function(e) { if (e.target === modal) closeEditModal(); });
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeEditModal(); });
+
+            document.getElementById('edit-add-artist-btn').addEventListener('click', function() {
+                var entry = createEditArtistEntry('');
+                document.getElementById('edit-artist-entries').appendChild(entry);
+                entry.querySelector('input').focus();
+            });
+            document.getElementById('edit-add-ticket-btn').addEventListener('click', function() {
+                addEditTicketEntry('', '');
+            });
+            document.getElementById('edit-add-link-btn').addEventListener('click', function() {
+                addEditLinkEntry('', '');
+                var entries = document.querySelectorAll('#edit-link-entries .link-entry-row');
+                if (entries.length) entries[entries.length - 1].querySelector('.link-url-input').focus();
+            });
+
+            // Delete button
+            document.getElementById('edit-delete-btn').addEventListener('click', function() {
+                if (!currentEvent) return;
+                if (!confirm('Дали сте сигурни дека сакате да го избришете овој настан?')) return;
+                var updated = allEvents.filter(function(e) { return e.id !== currentEvent.id; });
+                submitEventUpdate(updated);
+                // Redirect to events list
+                window.location.href = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'nastani.html' : '/nastani';
+            });
+
+            // Form submit
+            document.getElementById('event-edit-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (!currentEvent) return;
+
+                var title = document.getElementById('edit-evt-title').value.trim();
+                var date = document.getElementById('edit-evt-date').value;
+                var time = document.getElementById('edit-evt-time').value;
+                var place = document.getElementById('edit-evt-place').value.trim();
+
+                // Collect artists
+                var artists = [];
+                var valid = true;
+                document.querySelectorAll('#edit-artist-entries .artist-input').forEach(function(input) {
+                    var v = input.value.trim();
+                    if (!v) return;
+                    var found = masterArtists.some(function(a) { return a.name === v; });
+                    if (!found) {
+                        input.style.borderColor = '#ef4444';
+                        notify('"' + v + '" не е на Мастер Листата.', 'error');
+                        valid = false; return;
+                    }
+                    input.style.borderColor = '';
+                    artists.push(v);
+                });
+                if (!valid) return;
+
+                // Collect tickets
+                var tickets = [];
+                document.querySelectorAll('#edit-ticket-entries .ticket-entry-row').forEach(function(row) {
+                    var l = (row.querySelector('.ticket-label-input') || {}).value || '';
+                    var p = (row.querySelector('.ticket-price-input') || {}).value || '';
+                    l = l.trim(); p = p.trim();
+                    if (l || p) tickets.push({ label: l || 'Влез', price: p });
+                });
+
+                // Collect links
+                var links = [];
+                document.querySelectorAll('#edit-link-entries .link-entry-row').forEach(function(row) {
+                    var lbl = (row.querySelector('.link-label-input') || {}).value || '';
+                    var u = (row.querySelector('.link-url-input') || {}).value || '';
+                    lbl = lbl.trim(); u = u.trim();
+                    if (u) links.push({ label: lbl, url: u });
+                });
+
+                if (!title || !date || !time || !place) {
+                    notify('Пополнете ги сите задолжителни полиња.', 'error');
+                    return;
+                }
+
+                var updatedEvt = {
+                    id: currentEvent.id,
+                    title: title, date: date, time: time, place: place,
+                    artists: artists, tickets: tickets, links: links
+                };
+
+                var updated = allEvents.map(function(e) { return e.id === currentEvent.id ? updatedEvt : e; });
+                submitEventUpdate(updated);
+
+                // Re-render the page with updated data
+                currentEvent = updatedEvt;
+                renderEvent(updatedEvt);
+                closeEditModal();
+                notify('Промените се зачувани локално. Кликнете "Испрати промени" за да ги поднесете.', 'info');
+            });
+        })();
+
+        function submitEventUpdate(updatedEvents) {
+            updatedEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
+            if (window.MMMDrafts) {
+                var origEvents = originalEventsJSON ? JSON.parse(originalEventsJSON) : { events: [] };
+                window.MMMDrafts.save('events.json', { events: updatedEvents }, origEvents);
+            }
+            allEvents = updatedEvents;
+        }
+
         // ==================== INIT ====================
         (function() {
             var params = new URLSearchParams(window.location.search);
@@ -664,17 +1071,24 @@
                 if (!isLocal) history.replaceState(null, '', cleanPath);
             }
             Promise.all([
-                fetch('/events.json').then(function(r) { return r.json(); }),
+                loadAllEventsAndBands(),
                 loadChartData()
             ])
-                .then(function(results) {
-                    var data = results[0];
-                    var events = data.events || data || [];
+                .then(function() {
                     var found = null;
-                    for (var i = 0; i < events.length; i++) {
-                        if (events[i].id === eventId) { found = events[i]; break; }
+                    for (var i = 0; i < allEvents.length; i++) {
+                        if (allEvents[i].id === eventId) { found = allEvents[i]; break; }
                     }
-                    if (found) renderEvent(found);
+                    if (found) {
+                        currentEvent = found;
+                        renderEvent(found);
+                        // Show edit button
+                        var editBtn = document.getElementById('edit-event-btn');
+                        editBtn.style.display = '';
+                        editBtn.addEventListener('click', function() {
+                            openEditModal(currentEvent);
+                        });
+                    }
                     else renderError();
                 })
                 .catch(function() { renderError(); });

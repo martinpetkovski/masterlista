@@ -333,6 +333,9 @@
     .nastani-page .ticket-entries-list { display: flex; flex-direction: column; gap: 0.3rem; }
     .nastani-page .ticket-entry-row { display: flex; gap: 0.3rem; align-items: center; }
     .nastani-page .ticket-entry-row input { flex: 1; }
+    .nastani-page .link-entries-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .nastani-page .link-entry-row { display: flex; gap: 0.3rem; align-items: center; }
+    .nastani-page .link-entry-row input { flex: 1; }
 
     .nastani-page .add-entry-btn {
         font-family: 'Inter', sans-serif;
@@ -813,9 +816,10 @@
                     <button type="button" class="add-entry-btn" id="add-ticket-btn"><i class="fas fa-plus"></i> Додај карта</button>
                 </div>
                 <div class="form-group">
-                    <label for="evt-link">Надворешен линк</label>
-                    <input type="url" id="evt-link" placeholder="https://...">
-                    <small class="form-help">Линк за карти или повеќе информации</small>
+                    <label>Линкови</label>
+                    <div class="link-entries-list" id="link-entries"></div>
+                    <button type="button" class="add-entry-btn" id="add-link-btn"><i class="fas fa-plus"></i> Додај линк</button>
+                    <small class="form-help">Линкови за карти, Инстаграм, или повеќе информации</small>
                 </div>
                 <button type="submit" id="save-event-btn">Зачувај</button>
                 <button type="button" class="delete-event-btn" id="delete-event-btn"><i class="fas fa-trash"></i> Избриши настан</button>
@@ -985,6 +989,13 @@
 
         function esc(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
         function escA(str) { return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        /** Normalize event links: supports legacy .link (string) and new .links (array of {label,url}) */
+        function getEventLinks(evt) {
+            if (evt.links && Array.isArray(evt.links) && evt.links.length) return evt.links;
+            if (evt.link) return [{ label: '', url: evt.link }];
+            return [];
+        }
 
         function generateId(title, date) {
             var slug = title.toLowerCase().replace(/[^a-z0-9\u0400-\u04FF]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
@@ -1204,10 +1215,15 @@
                 }
                 html += '</div></td>';
 
-                // Link
+                // Link (support both legacy .link and new .links array)
+                var evtLinks = getEventLinks(evt);
                 html += '<td data-label="Линк" style="text-align:center">';
-                if (evt.link) {
-                    html += '<a href="' + escA(evt.link) + '" target="_blank" rel="noopener" class="event-link-btn" onclick="event.stopPropagation()" title="' + escA(evt.link) + '"><i class="fas fa-arrow-up-right-from-square"></i></a>';
+                if (evtLinks.length === 1) {
+                    html += '<a href="' + escA(evtLinks[0].url) + '" target="_blank" rel="noopener" class="event-link-btn" onclick="event.stopPropagation()" title="' + escA(evtLinks[0].label || evtLinks[0].url) + '"><i class="fas fa-arrow-up-right-from-square"></i></a>';
+                } else if (evtLinks.length > 1) {
+                    html += '<span class="event-link-btn" style="cursor:pointer" title="' + evtLinks.length + ' линкови">';
+                    html += '<i class="fas fa-arrow-up-right-from-square"></i><sup style="font-size:0.55rem;margin-left:1px">' + evtLinks.length + '</sup>';
+                    html += '</span>';
                 } else {
                     html += '<span style="color:var(--text-muted);font-size:0.7rem">—</span>';
                 }
@@ -1373,6 +1389,7 @@
             form.reset();
             resetArtists(['']);
             resetTickets([{ label: '', price: '' }]);
+            resetLinks([{ label: '', url: '' }]);
             modal.style.display = 'block';
             setTimeout(function() { document.getElementById('evt-title').focus(); }, 100);
         }
@@ -1388,7 +1405,9 @@
             document.getElementById('evt-date').value = evt.date || '';
             document.getElementById('evt-time').value = evt.time || '';
             document.getElementById('evt-place').value = evt.place || '';
-            document.getElementById('evt-link').value = evt.link || '';
+
+            var evtLinks = getEventLinks(evt);
+            resetLinks(evtLinks.length ? evtLinks : [{ label: '', url: '' }]);
 
             var artists = evt.artists || evt.bands || [];
             resetArtists(artists.length ? artists : ['']);
@@ -1410,6 +1429,24 @@
             tickets.forEach(function(t) { addTicketEntry(t.label || '', t.price || ''); });
         }
 
+        function addLinkEntry(label, url) {
+            var c = document.getElementById('link-entries');
+            var row = document.createElement('div');
+            row.className = 'link-entry-row';
+            row.innerHTML =
+                '<input type="text" placeholder="Опис (пр. Билети, Инстаграм)" class="link-label-input" value="' + escA(label) + '">' +
+                '<input type="url" placeholder="https://..." class="link-url-input" value="' + escA(url) + '">' +
+                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+            row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
+            c.appendChild(row);
+        }
+
+        function resetLinks(links) {
+            var c = document.getElementById('link-entries');
+            c.innerHTML = '';
+            links.forEach(function(l) { addLinkEntry(l.label || '', l.url || ''); });
+        }
+
         function addTicketEntry(label, price) {
             var c = document.getElementById('ticket-entries');
             var row = document.createElement('div');
@@ -1423,6 +1460,12 @@
         }
 
         function closeModal() { modal.style.display = 'none'; editingEventId = null; }
+
+        document.getElementById('add-link-btn').addEventListener('click', function() {
+            addLinkEntry('', '');
+            var entries = document.querySelectorAll('#link-entries .link-entry-row');
+            if (entries.length) entries[entries.length - 1].querySelector('.link-url-input').focus();
+        });
 
         document.getElementById('add-event-btn').addEventListener('click', openAddModal);
         document.getElementById('modal-close-btn').addEventListener('click', closeModal);
@@ -1457,7 +1500,6 @@
             var date = document.getElementById('evt-date').value;
             var time = document.getElementById('evt-time').value;
             var place = document.getElementById('evt-place').value.trim();
-            var link = document.getElementById('evt-link').value.trim();
 
             var artists = [];
             var valid = true;
@@ -1484,6 +1526,14 @@
                 if (l || p) tickets.push({ label: l || 'Влез', price: p });
             });
 
+            var links = [];
+            document.querySelectorAll('#link-entries .link-entry-row').forEach(function(row) {
+                var lbl = (row.querySelector('.link-label-input') || {}).value || '';
+                var u = (row.querySelector('.link-url-input') || {}).value || '';
+                lbl = lbl.trim(); u = u.trim();
+                if (u) links.push({ label: lbl, url: u });
+            });
+
             if (!title || !date || !time || !place || !artists.length) {
                 notify('Пополнете ги сите задолжителни полиња.', 'error');
                 return;
@@ -1492,7 +1542,7 @@
             var eventObj = {
                 id: editingEventId || generateId(title, date),
                 title: title, date: date, time: time, place: place,
-                artists: artists, tickets: tickets, link: link
+                artists: artists, tickets: tickets, links: links
             };
 
             var updated;
