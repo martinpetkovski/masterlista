@@ -1,4 +1,4 @@
-﻿{
+{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -3246,7 +3246,7 @@
     {
       "name": "Кристијан Магденовски",
       "city": "Битола",
-      "genre": "Прогресивен Метал",
+      "genre": "Хард рок/Хеви метал",
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/@kristijanmagdenovski6721",
@@ -3260,10 +3260,10 @@
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": [
-        "#604040",
+        "#000000",
         "#402020"
       ],
-      "confirmed": false
+      "confirmed": true
     },
     {
       "name": "Крсто Роџевски",
@@ -4685,7 +4685,7 @@
         "apple_music": "https://music.apple.com/mk/artist/peppermint/1840033373"
       },
       "contact": "pajakzajak@yahoo.com",
-      "label": "",
+      "label": null,
       "accentColors": [
         "#00ffff",
         "#ff0000"
