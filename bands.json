@@ -17,11 +17,8 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#f7c500",
-        "#000000"
-      ],
-      "confirmed": true
+      "accentColors": null,
+      "confirmed": false
     },
     {
       "name": "21 Век",
@@ -2581,22 +2578,6 @@
       "confirmed": false
     },
     {
-      "name": "Haze",
-      "city": "Битола",
-      "genre": "Алтернативна, Експериментална",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "youtube": "https://www.youtube.com/@haze_mk"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": [
-        "#000000",
-        "#808080"
-      ],
-      "confirmed": true
-    },
-    {
       "name": "Herzel",
       "city": "Битола",
       "genre": "Електронска",
@@ -4674,18 +4655,23 @@
       "confirmed": false
     },
     {
-      "name": "Пеперминт",
+      "name": "Peppermint",
       "city": "Скопје",
-      "genre": "Рок, Инди",
-      "soundsLike": "недостигаат податоци",
+      "genre": "Рок, Инди, Панк Рок, Пост-панк, Алтернативен Рок",
+      "soundsLike": "Peppermint , Presidents of the Usa , Bad Religion , Bloodhound Gang , Ramones , Weezer , Green Day, The Clash",
       "links": {
         "instagram": "https://www.instagram.com/peperminttheband/",
-        "youtube": "https://www.youtube.com/@pajakzajak/videos"
+        "youtube": "https://www.youtube.com/@pajakzajak/videos",
+        "spotify": "https://open.spotify.com/artist/3XcPoGvwhtkPoIg0yGaKs3?si=J2C9nrENR36RMgXxJqERPw",
+        "apple_music": "https://music.apple.com/mk/artist/peppermint/1840033373"
       },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "contact": "pajakzajak@yahoo.com",
+      "label": "Peppermint",
+      "accentColors": [
+        "#00ffff",
+        "#ff0000"
+      ],
+      "confirmed": true
     },
     {
       "name": "Персеида",
