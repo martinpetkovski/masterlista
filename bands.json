@@ -772,15 +772,21 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/@BlackstateMusic",
-        "spotify": "https://open.spotify.com/artist/5nFdyYU2XG46rm1q2yoFFG?si=49hvs9alTwKnBqdoGPB_lw",
-        "instagram": "https://www.instagram.com/mynameisfitz/",
+        "spotify": "https://open.spotify.com/artist/5nFdyYU2XG46rm1q2yoFFG",
+        "instagram": "https://www.instagram.com/iamblackstate",
         "tidal": "https://listen.tidal.com/track/471885078",
-        "youtube_music": "https://music.youtube.com/watch?v=TyZxA9NDolY"
+        "youtube_music": "https://music.youtube.com/watch?v=TyZxA9NDolY",
+        "bandcamp": "https://blackstate.bandcamp.com",
+        "facebook": "https://www.facebook.com/iamblackstate",
+        "apple_music": "https://music.apple.com/us/artist/blackstate/1448203678"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#312156",
+        "#AA63FD"
+      ],
+      "confirmed": true
     },
     {
       "name": "Благојче Томевски",
