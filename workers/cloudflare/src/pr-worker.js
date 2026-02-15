@@ -166,6 +166,38 @@ export default {
       }
     }
 
+    // Song.link API proxy to avoid CORS
+    if (request.method === 'GET' && url.pathname === '/songlink-proxy') {
+      const targetUrl = url.searchParams.get('url');
+      if (!targetUrl) {
+        return json({ error: 'Missing url parameter' }, 400, corsHeaders);
+      }
+      
+      try {
+        const songlinkUrl = `https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(targetUrl)}`;
+        const resp = await fetch(songlinkUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; ToplistaMK-Bot/1.0)',
+          }
+        });
+        
+        if (!resp.ok) {
+          return json({ error: `Song.link API returned ${resp.status}` }, resp.status, corsHeaders);
+        }
+        
+        const data = await resp.json();
+        return new Response(JSON.stringify(data), {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+          },
+        });
+      } catch (e) {
+        return json({ error: 'Failed to proxy Song.link request', detail: e.message }, 502, corsHeaders);
+      }
+    }
+
     if (request.method !== 'POST') {
       return json({ error: 'Method Not Allowed' }, 405, corsHeaders);
     }

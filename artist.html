@@ -2321,7 +2321,9 @@ a.chart-history-item {
         async function fetchSonglinkUrls(sourceUrl) {
             if (songlinkCache[sourceUrl]) return songlinkCache[sourceUrl];
             try {
-                const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`);
+                // Use proxy to avoid CORS issues
+                const proxyUrl = `https://muzichka-master-lista.deeeeelay.workers.dev/songlink-proxy?url=${encodeURIComponent(sourceUrl)}`;
+                const resp = await fetch(proxyUrl);
                 if (!resp.ok) return null;
                 const data = await resp.json();
                 const links = {};
@@ -2480,54 +2482,31 @@ a.chart-history-item {
         }
         
         // Main initialization
-        // ==================== RSS FEED LOADING & MATCHING ====================
-        const RSS_PROXY = 'https://muzichka-master-lista.deeeeelay.workers.dev/rss-proxy';
+        // ==================== ARTICLE LOADING & MATCHING ====================
+        let cachedArticles = null;
         
-        async function loadRssFeeds() {
+        async function loadArticles() {
+            if (cachedArticles !== null) return cachedArticles;
             try {
-                const feedsResp = await fetch('rss-feeds.json');
-                const feeds = await feedsResp.json();
-                const allArticles = [];
-                
-                const feedPromises = feeds.map(async (feed) => {
-                    try {
-                        const proxyUrl = `${RSS_PROXY}?url=${encodeURIComponent(feed.feedUrl)}`;
-                        const resp = await fetch(proxyUrl);
-                        if (!resp.ok) throw new Error(`Proxy returned ${resp.status}`);
-                        const text = await resp.text();
-                        const parser = new DOMParser();
-                        const xml = parser.parseFromString(text, 'text/xml');
-                        const items = xml.querySelectorAll('item');
-                        
-                        items.forEach(item => {
-                            const title = item.querySelector('title')?.textContent || '';
-                            const link = item.querySelector('link')?.textContent || '';
-                            const description = item.querySelector('description')?.textContent || '';
-                            const content = item.querySelector('content\\:encoded, encoded')?.textContent || '';
-                            const pubDateStr = item.querySelector('pubDate')?.textContent || '';
-                            const pubDate = pubDateStr ? new Date(pubDateStr) : new Date(0);
-                            
-                            allArticles.push({
-                                title,
-                                link,
-                                description: description.replace(/<[^>]*>/g, '').trim(),
-                                content: content.replace(/<[^>]*>/g, '').trim(),
-                                pubDate,
-                                source: feed.name,
-                                sourceIcon: feed.iconUrl,
-                                siteUrl: feed.siteUrl
-                            });
-                        });
-                    } catch (err) {
-                        console.warn(`Failed to fetch RSS feed ${feed.name}:`, err);
-                    }
-                });
-                
-                await Promise.all(feedPromises);
+                const resp = await fetch('articles.json');
+                if (!resp.ok) throw new Error(`Failed to load articles.json: ${resp.status}`);
+                const archive = await resp.json();
+                const allArticles = (archive.articles || []).map(a => ({
+                    title: a.title || '',
+                    link: a.link || '',
+                    description: a.description || '',
+                    content: '',
+                    pubDate: a.date ? new Date(a.date) : new Date(0),
+                    source: a.source || '',
+                    sourceIcon: a.iconUrl || '',
+                    siteUrl: a.siteUrl || ''
+                }));
                 allArticles.sort((a, b) => b.pubDate - a.pubDate);
+                cachedArticles = allArticles;
                 return allArticles;
             } catch (err) {
-                console.warn('Failed to load RSS feeds:', err);
+                console.warn('Failed to load articles:', err);
+                cachedArticles = [];
                 return [];
             }
         }
@@ -2571,10 +2550,11 @@ a.chart-history-item {
             });
         }
         
-        // Start loading RSS feeds early (non-blocking)
-        const rssLoadPromise = loadRssFeeds();
-
         async function init() {
+            // Start loading articles and events early (in parallel)
+            const articlesLoadPromise = loadArticles();
+            const eventsLoadPromise = fetch('events.json').then(r => r.ok ? r.json() : { events: [] });
+            
             const urlParams = new URLSearchParams(window.location.search);
             let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
             
@@ -2716,9 +2696,9 @@ a.chart-history-item {
                     console.warn('Could not load chart history:', e);
                 }
                 
-                // Load and render RSS media articles
+                // Load and render media articles
                 try {
-                    const allArticles = await rssLoadPromise;
+                    const allArticles = await articlesLoadPromise;
                     const matched = findMatchingArticles(allArticles, artist.name);
                     if (matched.length > 0) {
                         const mediaContainer = document.getElementById('rss-media-container');
@@ -2751,14 +2731,12 @@ a.chart-history-item {
                         }
                     }
                 } catch (e) {
-                    console.warn('Could not load RSS articles:', e);
+                    console.warn('Could not load articles:', e);
                 }
                 
                 // Load and render upcoming events for this artist
                 try {
-                    const evtResp = await fetch('events.json');
-                    if (evtResp.ok) {
-                        const eventsData = await evtResp.json();
+                    const eventsData = await eventsLoadPromise;
                         const events = eventsData.events || eventsData || [];
                         const today = new Date(); today.setHours(0,0,0,0);
                         const MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
@@ -2842,7 +2820,6 @@ a.chart-history-item {
                                 past.forEach(evt => list.appendChild(renderEventCard(evt, true)));
                             }
                         }
-                    }
                 } catch (e) {
                     console.warn('Could not load events:', e);
                 }
