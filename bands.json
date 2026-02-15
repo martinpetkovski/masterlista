@@ -4516,20 +4516,23 @@
       "genre": "Панк Рок, Панк",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "website": "https://thebeginnings.band/",
-        "youtube": "https://www.youtube.com/user/noviotpochetok",
+        "website": "https://noviotpochetok.com",
+        "youtube": "https://www.youtube.com/noviotpochetok",
         "bandcamp": "https://thebeginnings.bandcamp.com/",
         "facebook": "https://www.facebook.com/noviotpochetok/",
         "spotify": "https://open.spotify.com/artist/1zh325ExvsVAMnfMLtIwVb",
         "instagram": "https://www.instagram.com/noviotpochetok/",
-        "tidal": "https://listen.tidal.com/track/273793530",
-        "amazon_music": "https://music.amazon.com/albums/B0BT8FN76N?trackAsin=B0BT8GCCTK",
-        "itunes": "https://geo.music.apple.com/us/album/_/1668427722?i=1668428206&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "tidal": "https://tidal.com/artist/17344989",
+        "apple_music": "https://music.apple.com/mk/artist/noviot-pochetok/1000853439",
+        "twitter": "https://x.com/noviotpochetok"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#202020",
+        "#60a0c0"
+      ],
+      "confirmed": true
     },
     {
       "name": "Новоградска",
