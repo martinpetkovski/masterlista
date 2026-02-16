@@ -423,20 +423,22 @@ function threeWayMergeBands(original, current, modified) {
       continue;
     }
     if (inOrig && inMod) {
-      const oJson = JSON.stringify(origMap.get(name));
-      const cJson = JSON.stringify(artist);
-      const mJson = JSON.stringify(modMap.get(name));
+      // Strip server-managed image fields before comparing so ps1-driven
+      // image updates never cause false conflicts or change detection.
+      const strip = (obj) => {
+        const { image, imageSource, ...rest } = obj;
+        return rest;
+      };
+      const oJson = JSON.stringify(strip(origMap.get(name)));
+      const cJson = JSON.stringify(strip(artist));
+      const mJson = JSON.stringify(strip(modMap.get(name)));
       if (mJson !== oJson && cJson === oJson) {
-        // Only user changed → take user's version but preserve server-managed image fields
-        const userVersion = { ...modMap.get(name) };
-        delete userVersion.image; delete userVersion.imageSource;
-        merged.push({ ...userVersion, image: artist.image, imageSource: artist.imageSource });
+        // Only user changed → take user's version, keep HEAD images
+        merged.push({ ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
         notes.push(`Изменет (корисник): ${name}`);
       } else if (mJson !== oJson && cJson !== oJson) {
-        // Both changed → take user's version, flag conflict, preserve server-managed image fields
-        const userVersion = { ...modMap.get(name) };
-        delete userVersion.image; delete userVersion.imageSource;
-        merged.push({ ...userVersion, image: artist.image, imageSource: artist.imageSource });
+        // Both changed non-image fields → take user's version, flag conflict, keep HEAD images
+        merged.push({ ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
         notes.push(`⚠️ Конфликт (земена верзија на корисникот): ${name}`);
       } else {
         // User didn't change (or identical changes) → keep repo version
