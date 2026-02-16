@@ -218,7 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     soundsLike: band.soundsLike, links: band.links,
                     contact: band.contact, label: band.label,
                     accentColors: band.accentColors || null,
-                    confirmed: band.confirmed || false
+                    confirmed: band.confirmed || false,
+                    image: band.image || null,
+                    imageSource: band.imageSource || null
                 }))
             };
             if (window.MMMDrafts) {
@@ -228,7 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         soundsLike: band.soundsLike, links: band.links,
                         contact: band.contact, label: band.label,
                         accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false
+                        confirmed: band.confirmed || false,
+                        image: band.image || null,
+                        imageSource: band.imageSource || null
                     }))
                 };
                 window.MMMDrafts.save('bands.json', exportData, originalExport);
