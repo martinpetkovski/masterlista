@@ -1090,7 +1090,7 @@
         function buildPlaylistLink(url) {
             const info = detectLinkInfo(url);
             const cls = info.service;
-            return `<a href="#" class="custos-playlist-link" data-playlist-url="${escAttr(url)}" onclick="event.preventDefault();openOnPreferredService('${escAttr(url)}','Плејлиста')">
+            return `<a href="${escAttr(url)}" class="custos-playlist-link" target="_blank" rel="noopener">
                 <span class="pl-icon ${cls}"><i class="${info.icon}"></i></span>
                 <span class="pl-text">Отвори плејлиста</span>
                 <span class="pl-arrow"><i class="fas fa-arrow-up-right-from-square"></i></span>
@@ -1145,8 +1145,7 @@
 
         async function openOnPreferredService(releaseUrl, title) {
             if (!releaseUrl) return;
-            // Open the playlist URL directly in a new tab
-            window.open(releaseUrl, '_blank');
+            showServiceChooserProgressive(releaseUrl, title);
         }
         
         async function showServiceChooserProgressive(releaseUrl, title) {
@@ -1450,7 +1449,7 @@
                 : '';
 
             return `<div class="tracklist-wrapper tracklist-service-${service}" data-curator-playlist>
-                <a class="tracklist-header" href="#" onclick="event.preventDefault();openOnPreferredService('${escAttr(playlistUrl)}','Плејлиста')">
+                <a class="tracklist-header" href="${escAttr(playlistUrl)}" target="_blank" rel="noopener">
                     ${playlist.image ? `<img class="tracklist-cover" src="${playlist.image}" alt="" loading="lazy">` : ''}
                     <div class="tracklist-info">
                         <div class="tracklist-title">${escHtml(playlist.name || serviceInfo.label + ' Playlist')}</div>

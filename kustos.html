@@ -825,15 +825,66 @@
             return null;
         }
 
+        // ==================== CYRILLIC TRANSLITERATION ====================
+        const cyrillicToLatinMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'Gj', 'ѓ': 'gj', 'Е': 'E', 'е': 'e', 'Ж': 'Zh', 'ж': 'zh',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'Dz', 'ѕ': 'dz', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'Lj', 'љ': 'lj', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'Nj', 'њ': 'nj', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'Kj', 'ќ': 'kj',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'Ch', 'ч': 'ch', 'Џ': 'Dz', 'џ': 'dz', 'Ш': 'Sh', 'ш': 'sh'
+        };
+        const cyrillicToLatinShorthandMap = {
+            'А': 'A', 'а': 'a', 'Б': 'B', 'б': 'b', 'В': 'V', 'в': 'v', 'Г': 'G', 'г': 'g',
+            'Д': 'D', 'д': 'd', 'Ѓ': 'G', 'ѓ': 'g', 'Е': 'E', 'е': 'e', 'Ж': 'Z', 'ж': 'z',
+            'З': 'Z', 'з': 'z', 'Ѕ': 'D', 'ѕ': 'd', 'И': 'I', 'и': 'i', 'Ј': 'J', 'ј': 'j',
+            'К': 'K', 'к': 'k', 'Л': 'L', 'л': 'l', 'Љ': 'L', 'љ': 'l', 'М': 'M', 'м': 'm',
+            'Н': 'N', 'н': 'n', 'Њ': 'N', 'њ': 'n', 'О': 'O', 'о': 'o', 'П': 'P', 'п': 'p',
+            'Р': 'R', 'р': 'r', 'С': 'S', 'с': 's', 'Т': 'T', 'т': 't', 'Ќ': 'K', 'ќ': 'k',
+            'У': 'U', 'у': 'u', 'Ф': 'F', 'ф': 'f', 'Х': 'H', 'х': 'h', 'Ц': 'C', 'ц': 'c',
+            'Ч': 'C', 'ч': 'c', 'Џ': 'D', 'џ': 'd', 'Ш': 'S', 'ш': 's'
+        };
+        function transliterateCyrToLat(text) {
+            return text.split('').map(ch => cyrillicToLatinMap[ch] || ch).join('');
+        }
+        function transliterateCyrToLatShort(text) {
+            return text.split('').map(ch => cyrillicToLatinShorthandMap[ch] || ch).join('');
+        }
+
         // ==================== BAND NAME LOOKUP ====================
         let bandNameSet = new Set();
+        let bandNameLookup = new Map();
 
         async function loadBandNames() {
             try {
                 const resp = await fetch('/bands.json');
                 const data = await resp.json();
-                (data.muzickaMasterLista || []).forEach(b => { if (b.name) bandNameSet.add(b.name); });
+                const bands = data.muzickaMasterLista || [];
+                bands.forEach(b => {
+                    if (!b.name) return;
+                    bandNameSet.add(b.name);
+                    const lower = b.name.toLowerCase();
+                    const latinFull = transliterateCyrToLat(b.name).toLowerCase();
+                    const latinShort = transliterateCyrToLatShort(b.name).toLowerCase();
+                    bandNameLookup.set(lower, b.name);
+                    if (!bandNameLookup.has(latinFull)) bandNameLookup.set(latinFull, b.name);
+                    if (!bandNameLookup.has(latinShort)) bandNameLookup.set(latinShort, b.name);
+                });
             } catch (err) {}
+        }
+
+        /** Find a band name match using Cyrillic + Latin transliteration (case-insensitive) */
+        function findBandMatch(text) {
+            if (!text) return null;
+            const lower = text.toLowerCase();
+            if (bandNameLookup.has(lower)) return bandNameLookup.get(lower);
+            const latinFull = transliterateCyrToLat(text).toLowerCase();
+            if (bandNameLookup.has(latinFull)) return bandNameLookup.get(latinFull);
+            const latinShort = transliterateCyrToLatShort(text).toLowerCase();
+            if (bandNameLookup.has(latinShort)) return bandNameLookup.get(latinShort);
+            return null;
         }
 
         function renderArtistName(artist) {
@@ -843,7 +894,7 @@
             let result = '';
             parts.forEach((part, i) => {
                 const trimmed = part.trim();
-                const match = [...bandNameSet].find(n => n.toLowerCase() === trimmed.toLowerCase());
+                const match = findBandMatch(trimmed);
                 if (match) {
                     result += `<a href="/artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(trimmed)}</a>`;
                 } else {
@@ -856,14 +907,20 @@
 
         function renderRelevance(items) {
             if (!items || !items.length) return '';
-            const parts = items.map(item => {
+            const flatItems = [];
+            items.forEach(item => {
+                const subItems = item.split(/,(?![^(]*\))/g).map(s => s.trim()).filter(Boolean);
+                flatItems.push(...subItems);
+            });
+            const parts = flatItems.map(item => {
                 const nameOnly = item.replace(/\s*\([^)]*\)/g, '').trim();
                 const extra = item.slice(nameOnly.length).trim();
-                const match = [...bandNameSet].find(n => n.toLowerCase() === nameOnly.toLowerCase());
+                const match = findBandMatch(nameOnly);
                 if (match) {
-                    return `<a href="/artist.html?name=${encodeURIComponent(match)}">${match}</a>${extra ? ' <span style="opacity:.65">' + extra + '</span>' : ''}`;
+                    const href = '/artist.html?name=' + encodeURIComponent(match);
+                    return `<a href="${href}">${escHtml(match)}</a>${extra ? ' <span style="opacity:.65">' + escHtml(extra) + '</span>' : ''}`;
                 }
-                return item;
+                return escHtml(item);
             });
             return parts.join('<span class="sep">·</span>');
         }
@@ -918,8 +975,7 @@
 
         async function openOnPreferredService(releaseUrl, title, forceChooser = false) {
             if (!releaseUrl) return;
-            // Open the URL directly in a new tab
-            window.open(releaseUrl, '_blank');
+            showServiceChooserProgressive(releaseUrl, title);
         }
 
         function showServiceToast(msg) {
@@ -1057,7 +1113,7 @@
 
         function buildPlaylistLink(url) {
             const info = detectLinkInfo(url);
-            return `<a href="#" class="curator-playlist-link" data-playlist-url="${escAttr(url)}" onclick="event.preventDefault();openOnPreferredService('${escAttr(url)}','Плејлиста')">
+            return `<a href="${escAttr(url)}" class="curator-playlist-link" target="_blank" rel="noopener">
                 <span class="pl-icon ${info.service}"><i class="${info.icon}"></i></span>
                 <span class="pl-text">Отвори плејлиста</span>
                 <span class="pl-arrow"><i class="fas fa-arrow-up-right-from-square"></i></span>
@@ -1089,7 +1145,7 @@
             const metaText = `${trackCount} песни` + (totalMin > 0 ? ` · ${totalMin} мин.` : '');
 
             return `<div class="tracklist-wrapper tracklist-service-${service}" data-curator-playlist>
-                <a class="tracklist-header" href="#" onclick="event.preventDefault();openOnPreferredService('${escAttr(playlistUrl)}','Плејлиста')">
+                <a class="tracklist-header" href="${escAttr(playlistUrl)}" target="_blank" rel="noopener">
                     ${playlist.image ? `<img class="tracklist-cover" src="${playlist.image}" alt="" loading="lazy">` : ''}
                     <div class="tracklist-info">
                         <div class="tracklist-title">${escHtml(playlist.name || 'Playlist')}</div>
