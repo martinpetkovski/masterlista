@@ -758,11 +758,13 @@
             html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-info-circle"></i> Детали</h3>';
             html += '<div class="info-list">';
 
-            // Place
-            html += '<div class="info-card">';
+            // Place (links to Google Maps)
+            var mapsUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place || '');
+            html += '<a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="info-card">';
             html += '<div class="info-card-icon"><i class="fas fa-location-dot"></i></div>';
             html += '<div class="info-card-text"><div class="info-card-label">Место</div><div class="info-card-value">' + esc(evt.place) + '</div></div>';
-            html += '</div>';
+            html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
+            html += '</a>';
 
             // Date
             html += '<div class="info-card">';
