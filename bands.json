@@ -372,8 +372,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#263e0f",
+        "#b18cfe"
+      ],
+      "confirmed": true
     },
     {
       "name": "Андреј Татарчевски",
