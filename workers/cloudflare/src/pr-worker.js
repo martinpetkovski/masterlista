@@ -427,12 +427,16 @@ function threeWayMergeBands(original, current, modified) {
       const cJson = JSON.stringify(artist);
       const mJson = JSON.stringify(modMap.get(name));
       if (mJson !== oJson && cJson === oJson) {
-        // Only user changed → take user's version
-        merged.push(modMap.get(name));
+        // Only user changed → take user's version but preserve server-managed image fields
+        const userVersion = { ...modMap.get(name) };
+        delete userVersion.image; delete userVersion.imageSource;
+        merged.push({ ...userVersion, image: artist.image, imageSource: artist.imageSource });
         notes.push(`Изменет (корисник): ${name}`);
       } else if (mJson !== oJson && cJson !== oJson) {
-        // Both changed → take user's version, flag conflict
-        merged.push(modMap.get(name));
+        // Both changed → take user's version, flag conflict, preserve server-managed image fields
+        const userVersion = { ...modMap.get(name) };
+        delete userVersion.image; delete userVersion.imageSource;
+        merged.push({ ...userVersion, image: artist.image, imageSource: artist.imageSource });
         notes.push(`⚠️ Конфликт (земена верзија на корисникот): ${name}`);
       } else {
         // User didn't change (or identical changes) → keep repo version
@@ -447,7 +451,10 @@ function threeWayMergeBands(original, current, modified) {
   // Append artists added by user (in modified but not in original and not already seen)
   for (const artist of modList) {
     if (!seen.has(artist.name) && !origMap.has(artist.name)) {
-      merged.push(artist);
+      // Strip any image fields the client may have sent
+      const cleaned = { ...artist };
+      delete cleaned.image; delete cleaned.imageSource;
+      merged.push(cleaned);
       notes.push(`Додаден: ${artist.name}`);
       seen.add(artist.name);
     }
