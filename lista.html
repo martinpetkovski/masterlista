@@ -67,13 +67,13 @@
         .greeting-play-btn {
             display: inline-flex; align-items: center; justify-content: center;
             width: 18px; height: 18px; border-radius: 50%; border: none;
-            background: transparent; color: var(--text-secondary, #666); cursor: pointer;
+            background: var(--accent-2); color: var(--accent-text); cursor: pointer;
             font-size: 0.55rem; transition: color 0.2s, transform 0.2s;
             padding: 0;
         }
-        .greeting-play-btn:hover { color: var(--text-primary, #1a1a2e); transform: scale(1.15); }
+        .greeting-play-btn:hover { color: var(--accent-text); }
         .greeting-play-btn.greeting-playing { color: #e8590c; }
-        html.dark-mode .greeting-play-btn { color: var(--text-secondary, #888); }
+        html.dark-mode .greeting-play-btn { color: var(--accent-text); }
         html.dark-mode .greeting-play-btn:hover { color: #e8e8f0; }
         html.dark-mode .greeting-play-btn.greeting-playing { color: #e8590c; }
     </style>
