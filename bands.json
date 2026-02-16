@@ -1351,6 +1351,23 @@
       "confirmed": false
     },
     {
+      "name": "Дарко Гелев - Брејк",
+      "city": "Скопје",
+      "genre": "Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%94%D0%B0%D1%80%D0%BA%D0%BE_%D0%93%D0%B5%D0%BB%D0%B5%D0%B2_%E2%80%93_%D0%91%D1%80%D0%B5%D1%98%D0%BA"
+        ],
+        "facebook": "https://www.facebook.com/profile.php?id=100026420546085&locale=ga_IE",
+        "youtube": "https://www.youtube.com/@darkogelevbrejk"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
       "name": "Давид Темелков",
       "city": "Скопје",
       "genre": "Поп",
@@ -2641,6 +2658,24 @@
         "tidal": "https://listen.tidal.com/track/212669123",
         "itunes": "https://geo.music.apple.com/us/album/_/1605182462?i=1605182463&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
         "youtube_music": "https://music.youtube.com/watch?v=OMhvo_Ro5EQ"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Игор Џамбазов",
+      "city": "Скопје",
+      "genre": "Блуз, Рок, Поп",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%98%D0%B3%D0%BE%D1%80_%D0%8F%D0%B0%D0%BC%D0%B1%D0%B0%D0%B7%D0%BE%D0%B2"
+        ],
+        "youtube": "https://www.youtube.com/@igordzambazov1",
+        "facebook": "https://www.facebook.com/p/Igor-Dzambazov-100044293726366/",
+        "spotify": "https://open.spotify.com/artist/7mabMUnBdmURFPehZc33b1?si=sgFxHT6dTdKHn-flKEgp_g"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4332,13 +4367,15 @@
     },
     {
       "name": "Нема лабаво",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Панк, Панк Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/@nemalabavo",
+        "spotify": "https://open.spotify.com/artist/100cDA1p2I7qg4lq3ZtOp8?si=lG6xR4qmQC-t5RSu9pPFcA",
+        "instagram": "https://www.instagram.com/nemalabavo_/"
       },
-      "contact": "недостигаат податоци",
+      "contact": "zafirovski001@gmail.com",
       "label": null,
       "accentColors": null,
       "confirmed": false
