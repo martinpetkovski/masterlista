@@ -132,17 +132,10 @@
         /* ==================== GRID ==================== */
         .curators-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
             max-width: 100%;
             gap: 1.25rem;
             align-items: start;
-        }
-
-        /* Cap at 3 columns on wide screens */
-        @media (min-width: 1100px) {
-            .curators-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
         }
 
         /* ==================== CARD ==================== */
@@ -1373,15 +1366,22 @@
 
         function renderRelevance(items) {
             if (!items || items.length === 0) return '';
-            const parts = items.map(item => {
+            // Flatten: split each item by commas to handle "Artist1 (role), Artist2 (role)" in a single string
+            const flatItems = [];
+            items.forEach(item => {
+                // Split by comma but keep parenthesized content with its preceding name
+                const subItems = item.split(/,(?![^(]*\))/g).map(s => s.trim()).filter(Boolean);
+                flatItems.push(...subItems);
+            });
+            const parts = flatItems.map(item => {
                 const nameOnly = item.replace(/\s*\([^)]*\)/g, '').trim();
                 const extra = item.slice(nameOnly.length).trim();
                 const match = findBandMatch(nameOnly);
                 if (match) {
                     const href = 'artist.html?name=' + encodeURIComponent(match);
-                    return `<a href="${href}">${match}</a>${extra ? ' <span style="opacity:.65">' + extra + '</span>' : ''}`;
+                    return `<a href="${href}">${escHtml(match)}</a>${extra ? ' <span style="opacity:.65">' + escHtml(extra) + '</span>' : ''}`;
                 }
-                return item;
+                return escHtml(item);
             });
             return parts.join('<span class="sep">·</span>');
         }

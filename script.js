@@ -552,6 +552,91 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start loading RSS feeds early (non-blocking)
     const rssLoadPromise = loadRssFeeds();
 
+    // ==================== GREETING AUDIO ====================
+    const greetingCache = {}; // slug → audioUrl or null
+    const GREETING_EXTS = ['mp3', 'm4a', 'wav', 'ogg', 'webm', 'aac'];
+    let activeGreetingAudio = null;
+    let activeGreetingBtn = null;
+
+    async function checkGreeting(slug) {
+        if (slug in greetingCache) return greetingCache[slug];
+        for (const ext of GREETING_EXTS) {
+            const url = `/greetings/${slug}.${ext}`;
+            try {
+                const resp = await fetch(url, { method: 'HEAD' });
+                if (resp.ok) {
+                    greetingCache[slug] = url;
+                    return url;
+                }
+            } catch (_) {}
+        }
+        greetingCache[slug] = null;
+        return null;
+    }
+
+    function toggleGreeting(btn, audioUrl) {
+        if (activeGreetingAudio && activeGreetingBtn === btn) {
+            // Stop current
+            activeGreetingAudio.pause();
+            activeGreetingAudio.currentTime = 0;
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+            btn.classList.remove('greeting-playing');
+            activeGreetingAudio = null;
+            activeGreetingBtn = null;
+            return;
+        }
+        // Stop any other playing greeting
+        if (activeGreetingAudio) {
+            activeGreetingAudio.pause();
+            activeGreetingAudio.currentTime = 0;
+            if (activeGreetingBtn) {
+                activeGreetingBtn.innerHTML = '<i class="fas fa-play"></i>';
+                activeGreetingBtn.classList.remove('greeting-playing');
+            }
+        }
+        const audio = new Audio(audioUrl);
+        activeGreetingAudio = audio;
+        activeGreetingBtn = btn;
+        btn.innerHTML = '<i class="fas fa-pause"></i>';
+        btn.classList.add('greeting-playing');
+        audio.play();
+        audio.addEventListener('ended', () => {
+            btn.innerHTML = '<i class="fas fa-play"></i>';
+            btn.classList.remove('greeting-playing');
+            activeGreetingAudio = null;
+            activeGreetingBtn = null;
+        });
+    }
+
+    /**
+     * For confirmed artists, asynchronously check if a greeting exists
+     * and insert a play button into the greeting cell.
+     */
+    function loadGreetingsForVisibleRows() {
+        const rows = document.querySelectorAll('#band-table-body tr');
+        rows.forEach(row => {
+            const greetingCell = row.querySelector('.greeting-cell');
+            if (!greetingCell) return;
+            const slug = greetingCell.dataset.slug;
+            if (!slug) return;
+            // Already has a button
+            if (greetingCell.querySelector('.greeting-play-btn')) return;
+            checkGreeting(slug).then(audioUrl => {
+                if (audioUrl && !greetingCell.querySelector('.greeting-play-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'greeting-play-btn';
+                    btn.title = 'Порака од артистот';
+                    btn.innerHTML = '<i class="fas fa-play"></i>';
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleGreeting(btn, audioUrl);
+                    });
+                    greetingCell.appendChild(btn);
+                }
+            });
+        });
+    }
+
     // Start loading events early (non-blocking)
     let cachedEvents = null;
     async function loadEvents() {
@@ -1730,19 +1815,71 @@ document.addEventListener('DOMContentLoaded', () => {
             openModal('add');
         });
 
-        closeModal.addEventListener('click', () => {
-            console.log('Close modal clicked');
+        function closeModalWithAutoSave() {
+            // Auto-save if in edit mode and the form has data
+            const editIndex = form.dataset.editIndex;
+            if (editIndex !== undefined && editIndex !== '') {
+                const name = document.getElementById('band-name').value.trim();
+                if (name) {
+                    // Silently save the current form data
+                    const band = {
+                        name,
+                        city: document.getElementById('band-city').value.trim() || 'недостигаат податоци',
+                        genre: document.getElementById('band-genre').value.trim() || 'недостигаат податоци',
+                        soundsLike: document.getElementById('band-sounds-like').value.trim() || 'недостигаат податоци',
+                        label: document.getElementById('band-label').value.trim() || null,
+                        contact: document.getElementById('band-contact').value.trim() || 'недостигаат податоци',
+                        accentColors: (() => {
+                            const c1 = document.getElementById('band-accent-color-1').value.trim();
+                            const c2 = document.getElementById('band-accent-color-2').value.trim();
+                            return (c1 || c2) ? [c1 || null, c2 || null] : null;
+                        })(),
+                        confirmed: document.getElementById('band-confirmed')?.checked || false,
+                        links: {}
+                    };
+                    const linkSelects = linksContainer.querySelectorAll('select');
+                    const linkInputs = linksContainer.querySelectorAll('input[type="url"]');
+                    const multiLinkPlatforms = ['review', 'interview', 'article', 'wikipedia', 'generic'];
+                    for (let i = 0; i < linkSelects.length; i++) {
+                        const platform = linkSelects[i].value;
+                        const url = linkInputs[i].value.trim();
+                        if (url && platform !== 'none') {
+                            if (multiLinkPlatforms.includes(platform)) {
+                                if (!band.links[platform]) band.links[platform] = [];
+                                band.links[platform].push(url);
+                            } else {
+                                band.links[platform] = url;
+                            }
+                        }
+                    }
+                    if (Object.keys(band.links).length === 0) {
+                        band.links = { none: 'недостигаат податоци' };
+                    }
+                    bandsData[parseInt(editIndex)] = band;
+                    invalidateBandCache();
+                    populateFilters(bandsData);
+                    filterBands();
+                    hasUnsavedChanges = true;
+                    updateSubmitButtonState();
+                    savePendingChanges();
+                }
+            }
             modal.style.display = 'none';
+            form.reset();
+            linksContainer.innerHTML = '';
             clearErrors();
             clearTags();
+        }
+
+        closeModal.addEventListener('click', () => {
+            console.log('Close modal clicked');
+            closeModalWithAutoSave();
         });
 
         window.addEventListener('click', (e) => {
             if (e.target === modal) {
                 console.log('Clicked outside modal');
-                modal.style.display = 'none';
-                clearErrors();
-                clearTags();
+                closeModalWithAutoSave();
             }
         });
 
@@ -1910,6 +2047,7 @@ document.addEventListener('DOMContentLoaded', () => {
             populateFilters(bandsData);
             filterBands();
             modal.style.display = 'none';
+            delete form.dataset.editIndex;
             form.reset();
             linksContainer.innerHTML = '';
             clearTags();
@@ -2051,12 +2189,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     showNotification('Грешка: нема податоци за артистот за уредување.', 'error');
                     return;
                 }
-                document.getElementById('band-name').value = band.name !== 'недостигаат податоци' ? band.name : '';
-                document.getElementById('band-city').value = band.city !== 'недостигаат податоци' ? band.city : '';
-                document.getElementById('band-genre').value = band.genre !== 'недостигаат податоци' ? band.genre : '';
-                document.getElementById('band-sounds-like').value = band.soundsLike !== 'недостигаат податоци' ? band.soundsLike : '';
-                document.getElementById('band-label').value = band.label !== 'недостигаат податоци' ? band.label : '';
-                document.getElementById('band-contact').value = band.contact !== 'недостигаат податоци' ? band.contact : '';
+                document.getElementById('band-name').value = (band.name && band.name !== 'недостигаат податоци') ? band.name : '';
+                document.getElementById('band-city').value = (band.city && band.city !== 'недостигаат податоци') ? band.city : '';
+                document.getElementById('band-genre').value = (band.genre && band.genre !== 'недостигаат податоци') ? band.genre : '';
+                document.getElementById('band-sounds-like').value = (band.soundsLike && band.soundsLike !== 'недостигаат податоци') ? band.soundsLike : '';
+                document.getElementById('band-label').value = (band.label && band.label !== 'недостигаат податоци') ? band.label : '';
+                document.getElementById('band-contact').value = (band.contact && band.contact !== 'недостигаат податоци') ? band.contact : '';
                 document.getElementById('band-accent-color-1').value = (band.accentColors && band.accentColors[0]) || '';
                 document.getElementById('band-accent-color-2').value = (band.accentColors && band.accentColors[1]) || '';
                 // Update color picker previews and native pickers
@@ -2365,7 +2503,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const passGenre = !hasGenre || cached.genres.has(filters.genre);
             const passSoundsLike = !hasSoundsLike || cached.soundsLike.has(filters.soundsLike);
             const passStatus = !hasStatus || cached.status === filters.status;
-            const passLabel = !hasLabel || cached.labels.has(filters.label);
+            const passLabel = !hasLabel || (filters.label === '__verified__' ? cached.band.confirmed : cached.labels.has(filters.label));
 
             // For each filter, count options from items that pass ALL OTHER filters
             if (passGenre && passSoundsLike && passStatus && passLabel) {
@@ -2395,6 +2533,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const v = cached.labelsArray[j];
                     labelCounts[v] = (labelCounts[v] || 0) + 1;
                 }
+                if (cached.band.confirmed) {
+                    labelCounts['__verified__'] = (labelCounts['__verified__'] || 0) + 1;
+                }
             }
         }
 
@@ -2413,7 +2554,10 @@ document.addEventListener('DOMContentLoaded', () => {
         selectElement._optionSig = newSig;
         
         selectElement.innerHTML = '<option value=""></option>' +
-            sortedValues.map(v => `<option value="${v}">${v} (${counts[v]})</option>`).join('');
+            sortedValues.map(v => {
+                const label = v === '__verified__' ? `✓ Потврден` : v;
+                return `<option value="${v}">${label} (${counts[v]})</option>`;
+            }).join('');
         
         if (currentValue && counts[currentValue]) {
             selectElement.value = currentValue;
@@ -2512,7 +2656,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Label
         const labelCounts = {};
         const labelSet = new Set();
+        let verifiedCount = 0;
         data.forEach(band => {
+            if (band.confirmed) verifiedCount++;
             if (band.label && band.label !== 'недостигаат податоци' && band.label !== null) {
                 String(band.label).split(',').map(l => l.trim()).filter(Boolean).forEach(l => {
                     labelCounts[l] = (labelCounts[l] || 0) + 1;
@@ -2523,6 +2669,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const labels = [...labelSet].sort((a, b) => 
             transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
         labelSelect.innerHTML = '<option value=""></option>' +
+            `<option value="__verified__">✓ Потврден (${verifiedCount})</option>` +
             labels.map(label => `<option value="${label}">${label} (${labelCounts[label] || 0})</option>`).join('');
     }
 
@@ -2580,7 +2727,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (hasGenre && !cached.genres.has(filters.genre)) continue;
             if (hasSoundsLike && !cached.soundsLike.has(filters.soundsLike)) continue;
             if (hasStatus && cached.status !== filters.status) continue;
-            if (hasLabel && !cached.labels.has(filters.label)) continue;
+            if (hasLabel) {
+                if (filters.label === '__verified__') {
+                    if (!cached.band.confirmed) continue;
+                } else if (!cached.labels.has(filters.label)) continue;
+            }
             
             filteredBands.push(cached.band);
         }
@@ -2651,13 +2802,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (wasCapped) {
                 const infoRow = document.createElement('tr');
                 infoRow.className = 'search-cap-row';
-                infoRow.innerHTML = `<td colspan="8" style="text-align:center;padding:12px;color:var(--text-secondary);font-size:0.82rem;">Прикажани ${cap} од ${totalCount} резултати. <a href="#" style="color:var(--accent-blue);cursor:pointer;">Прикажи ги сите</a></td>`;
+                infoRow.innerHTML = `<td colspan="9" style="text-align:center;padding:12px;color:var(--text-secondary);font-size:0.82rem;">Прикажани ${cap} од ${totalCount} резултати. <a href="#" style="color:var(--accent-blue);cursor:pointer;">Прикажи ги сите</a></td>`;
                 infoRow.querySelector('a').addEventListener('click', (e) => {
                     e.preventDefault();
                     renderBands(bands); // re-render without cap
                 });
                 bandTableBody.appendChild(infoRow);
             }
+            loadGreetingsForVisibleRows();
             return;
         }
         
@@ -2679,6 +2831,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 requestAnimationFrame(renderChunk);
             } else {
                 renderAbortController = null;
+                loadGreetingsForVisibleRows();
             }
         }
         renderChunk();
@@ -2867,6 +3020,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const isMobile = window.innerWidth <= 600;
             const combinedLinksHtml = isMobile && (reviewsHtml || eventsHtml) ? linksHtml + reviewsHtml + eventsHtml : linksHtml;
             
+            // Greeting slug for confirmed artists
+            const greetingSlug = band.confirmed ? generateArtistSlug(band.name) : '';
+            
             bandRow.innerHTML = `
                 <td data-label="Име" class="name">${nameHtml}</td>
                 <td data-label="Град"><div class="cell-scroll">${cityHtml}</div></td>
@@ -2878,6 +3034,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
+                <td class="greeting-cell" data-slug="${greetingSlug}"></td>
                 <td data-label="Акции" class="action-buttons edit-hidden">
                     <button class="action-btn edit-btn" data-index="${originalIndex}"><i class="fas fa-edit"></i></button>
                 </td>

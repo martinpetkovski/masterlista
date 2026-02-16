@@ -63,6 +63,19 @@
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
         input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+        .greeting-cell { text-align: center; width: 20px; max-width: 20px; padding: 0 1px !important; }
+        .greeting-play-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 18px; height: 18px; border-radius: 50%; border: none;
+            background: transparent; color: var(--text-secondary, #666); cursor: pointer;
+            font-size: 0.55rem; transition: color 0.2s, transform 0.2s;
+            padding: 0;
+        }
+        .greeting-play-btn:hover { color: var(--text-primary, #1a1a2e); transform: scale(1.15); }
+        .greeting-play-btn.greeting-playing { color: #e8590c; }
+        html.dark-mode .greeting-play-btn { color: var(--text-secondary, #888); }
+        html.dark-mode .greeting-play-btn:hover { color: #e8e8f0; }
+        html.dark-mode .greeting-play-btn.greeting-playing { color: #e8590c; }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
@@ -95,9 +108,6 @@
 
                 </span>
                 <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
-                <button id="submit-pr-btn" class="header-btn request-change edit-hidden" title="Побарај промена" data-endpoint="https://muzichka-master-lista.deeeeelay.workers.dev">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
                 <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
                     <i class="fas fa-filter"></i>
                 </button>
@@ -138,6 +148,7 @@
                             <th>Медиуми</th>
                             <th>Настани</th>
                             <th><i class="fas fa-circle status-header-icon"></i></th>
+                            <th><i class="fas fa-microphone" style="font-size:0.6rem" title="Порака"></i></th>
                             <th class="edit-hidden"><i class="fas fa-pen" style="font-size:0.6rem"></i></th>
                         </tr>
                     </thead>

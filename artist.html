@@ -226,11 +226,51 @@
             font-size: 0.75rem;
             color: var(--text-secondary);
             margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
         }
         
         .artist-sounds-like strong {
             color: var(--text-primary);
             font-weight: 600;
+        }
+
+        .artist-sounds-like-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 12px;
+            background: rgba(91, 143, 185, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .artist-sounds-like-item:hover {
+            background: rgba(91, 143, 185, 0.2);
+            color: var(--text-primary);
+        }
+
+        .artist-sounds-like-item i {
+            font-size: 0.6rem;
+            opacity: 0.7;
+        }
+
+        body.dark-mode .artist-sounds-like-item {
+            background: rgba(91, 143, 185, 0.15);
+        }
+
+        body.dark-mode .artist-sounds-like-item:hover {
+            background: rgba(91, 143, 185, 0.25);
+            color: #e8e8f0;
         }
 
         /* Greeting Audio Player */
@@ -1420,7 +1460,7 @@ a.chart-history-item {
         }
         
         // Render artist page
-        function renderArtist(artist, thumbnail) {
+        function renderArtist(artist, thumbnail, bandsData) {
             const contentEl = document.getElementById('artist-content');
             
             // Update page metadata
@@ -1480,7 +1520,16 @@ a.chart-history-item {
             // Build sounds like section
             let soundsLikeHtml = '';
             if (artist.soundsLike && artist.soundsLike !== 'недостигаат податоци') {
-                soundsLikeHtml = `<p class="artist-sounds-like"><strong>Звучи како:</strong> ${artist.soundsLike}</p>`;
+                const soundsLikeItems = artist.soundsLike.split(',').map(s => s.trim()).filter(Boolean);
+                const soundsLikeLinks = soundsLikeItems.map(s => {
+                    const match = bandsData.find(b => b.name.toLowerCase() === s.toLowerCase());
+                    if (match) {
+                        const slug = generateSlug(match.name);
+                        return `<a href="artist.html?a=${encodeURIComponent(slug)}" class="artist-sounds-like-item"><i class="fas fa-headphones"></i>${match.name}</a>`;
+                    }
+                    return `<span class="artist-sounds-like-item"><i class="fas fa-headphones"></i>${s}</span>`;
+                }).join('');
+                soundsLikeHtml = `<div class="artist-sounds-like"><strong>Звучи како:</strong> ${soundsLikeLinks}</div>`;
             }
             
             // Build labels
@@ -2616,7 +2665,7 @@ a.chart-history-item {
                 artist._activityStatus = computeActivityStatus(latestReleaseDate);
                 
                 // Render artist page
-                renderArtist(artist, thumbnail);
+                renderArtist(artist, thumbnail, bandsData);
                 
                 // Store artist links globally for the music player
                 window.artistLinks = artist.links || {};
@@ -2651,7 +2700,7 @@ a.chart-history-item {
                         const secondaryCol = textCol === '#ffffff' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.7)';
                         // Sounds like
                         const soundsLike = document.querySelector('.artist-sounds-like');
-                        if (soundsLike) { soundsLike.style.color = mutedCol; const strong = soundsLike.querySelector('strong'); if (strong) strong.style.color = secondaryCol; }
+                        if (soundsLike) { soundsLike.style.color = mutedCol; const strong = soundsLike.querySelector('strong'); if (strong) strong.style.color = secondaryCol; document.querySelectorAll('.artist-sounds-like-item').forEach(el => { el.style.color = mutedCol; }); }
                         // Meta badges
                         document.querySelectorAll('.artist-city, .artist-genre').forEach(el => { el.style.color = '#fff'; });
                         // Labels
