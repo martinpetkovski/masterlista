@@ -352,7 +352,8 @@ function Test-ArtistMatchesAlt {
     return $true
 }
 
-# Get singles chart: filter singles, take 20 most recent by date, sort by popularity
+# Get singles chart: filter singles, prefer last 2 months, backfill if needed, sort by popularity
+# (Matches the website index.html logic exactly)
 function Get-SinglesChart {
     param($allReleases, [int]$count = 10, [string]$genreFilter = "all", $bandsData = $null)
 
@@ -378,13 +379,24 @@ function Get-SinglesChart {
         })
     }
 
-    # Sort by release date descending, take 20 most recent
-    $recent = @($singles | Sort-Object {
+    # Sort by release date descending
+    $sortedByDate = @($singles | Sort-Object {
         try { [DateTime]::Parse($_.releaseDate) } catch { [DateTime]::MinValue }
-    } -Descending | Select-Object -First 20)
+    } -Descending)
 
-    # Sort by popularity descending
-    $ranked = @($recent | Sort-Object { [int]$_.popularity } -Descending | Select-Object -First $count)
+    # Prefer last 2 months, backfill with older if pool < 20 (matches website logic)
+    $twoMonthsAgo = (Get-Date).AddMonths(-2).ToString("yyyy-MM-dd")
+    $recentSingles = @($sortedByDate | Where-Object { $_.releaseDate -ge $twoMonthsAgo })
+    $pool = [System.Collections.ArrayList]@($recentSingles)
+    if ($pool.Count -lt 20) {
+        $olderSingles = @($sortedByDate | Where-Object { $_.releaseDate -lt $twoMonthsAgo })
+        $needed = 20 - $pool.Count
+        $backfill = @($olderSingles | Select-Object -First $needed)
+        foreach ($r in $backfill) { [void]$pool.Add($r) }
+    }
+
+    # Sort by popularity descending, take top $count
+    $ranked = @($pool | Sort-Object { [int]$_.popularity } -Descending | Select-Object -First $count)
 
     return $ranked
 }

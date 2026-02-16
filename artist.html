@@ -1421,12 +1421,13 @@ a.chart-history-item {
         
         /**
          * Compute activity status from latest release date.
-         * active  - published work in the past 2 years
-         * inactive - no published work in the past 3 years
+         * active  - published work in the past 2 years OR event in the past year
+         * inactive - no published work in the past 3 years (and no recent event)
          * maybe   - published work in the 2-3 years range
          * unknown - no data available
          */
-        function computeActivityStatus(latestReleaseDate) {
+        function computeActivityStatus(latestReleaseDate, hasRecentEvent) {
+            if (hasRecentEvent) return 'active';
             if (!latestReleaseDate) return 'unknown';
             const now = new Date();
             const parts = latestReleaseDate.split('-');
@@ -2661,8 +2662,21 @@ a.chart-history-item {
                     console.warn('Could not load chart data:', e);
                 }
                 
-                // Compute activity status from release dates
-                artist._activityStatus = computeActivityStatus(latestReleaseDate);
+                // Compute activity status from release dates AND events
+                let hasRecentEvent = false;
+                try {
+                    const eventsData = await eventsLoadPromise;
+                    const events = eventsData.events || eventsData || [];
+                    const now = new Date();
+                    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                    const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+                    const artistNameLower = artist.name.toLowerCase();
+                    hasRecentEvent = events.some(e =>
+                        e.date >= oneYearAgoStr &&
+                        (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
+                    );
+                } catch (e) {}
+                artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
                 
                 // Render artist page
                 renderArtist(artist, thumbnail, bandsData);

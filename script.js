@@ -20,15 +20,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
     /**
-     * Calculate activity status based on chart data release dates.
-     * active  - published work in the past 2 years
-     * inactive - no published work in the past 3 years
+     * Calculate activity status based on chart data release dates AND events.
+     * active  - published work in the past 2 years OR event in the past year
+     * inactive - no published work in the past 3 years (and no recent event)
      * maybe   - published work in the 2-3 years range
      * unknown - no data available
      */
     function getActivityStatus(bandName) {
         if (!bandName) return 'Непознато';
         const normalizedName = bandName.toLowerCase().trim();
+        
+        // Check if the band has had an event in the past year
+        const hasRecentEvent = checkRecentEvent(bandName);
+        if (hasRecentEvent) return 'Активен';
+        
         const dateStr = latestReleaseDateByArtist[normalizedName];
         if (!dateStr) return 'Непознато';
         
@@ -41,6 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (diffYears <= 2) return 'Активен';
         if (diffYears <= 3) return 'Можеби';
         return 'Неактивен';
+    }
+    
+    /**
+     * Check if a band has had an event in the past year.
+     */
+    function checkRecentEvent(bandName) {
+        if (!cachedEvents || !bandName) return false;
+        const lower = bandName.toLowerCase();
+        const now = new Date();
+        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+        return cachedEvents.some(e =>
+            e.date >= oneYearAgoStr &&
+            e.artists.some(a => a.toLowerCase() === lower)
+        );
     }
     
     /**

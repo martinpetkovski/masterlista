@@ -629,12 +629,19 @@
             return Math.round((d - today) / 86400000);
         }
 
+        function getDayName(dateStr) {
+            var days = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            var d = parseDate(dateStr);
+            return days[d.getDay()];
+        }
+
         function countdownInfo(dateStr) {
             var diff = daysUntil(dateStr);
+            var day = getDayName(dateStr);
             if (diff === 0) return { text: 'ДЕНЕС!', cls: 'today-cd' };
-            if (diff === 1) return { text: 'утре', cls: 'soon' };
-            if (diff > 1 && diff <= 7) return { text: 'за ' + diff + ' дена', cls: 'soon' };
-            if (diff > 7 && diff <= 30) return { text: 'за ' + diff + ' дена', cls: 'later' };
+            if (diff === 1) return { text: 'утре, во ' + day, cls: 'soon' };
+            if (diff > 1 && diff <= 7) return { text: 'за ' + diff + ' дена, во ' + day, cls: 'soon' };
+            if (diff > 7 && diff <= 30) return { text: 'за ' + diff + ' дена, во ' + day, cls: 'later' };
             if (diff > 30) {
                 var m = Math.floor(diff / 30);
                 return { text: 'за ~' + m + ' мес.', cls: 'later' };

@@ -974,12 +974,20 @@
         function parseDate(s) { var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
         function daysUntil(s) { return Math.ceil((parseDate(s) - getToday()) / 86400000); }
 
+        function getDayName(dateStr) {
+            var days = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            var p = dateStr.split('-');
+            var d = new Date(+p[0], +p[1]-1, +p[2]);
+            return days[d.getDay()];
+        }
+
         function countdownText(dateStr) {
             var d = daysUntil(dateStr);
+            var day = getDayName(dateStr);
             if (d === 0) return { text: 'Денес', cls: 'today-cd' };
-            if (d === 1) return { text: 'Утре', cls: 'soon' };
-            if (d > 1 && d <= 7) return { text: 'За ' + d + ' дена', cls: 'soon' };
-            if (d > 7 && d <= 30) return { text: 'За ' + d + ' дена', cls: 'later' };
+            if (d === 1) return { text: 'Утре, во ' + day, cls: 'soon' };
+            if (d > 1 && d <= 7) return { text: 'За ' + d + ' дена, во ' + day, cls: 'soon' };
+            if (d > 7 && d <= 30) return { text: 'За ' + d + ' дена, во ' + day, cls: 'later' };
             if (d > 30) { var m = Math.floor(d / 30); return { text: m === 1 ? 'За ~1 месец' : 'За ~' + m + ' месеци', cls: 'later' }; }
             if (d === -1) return { text: 'Вчера', cls: 'passed' };
             if (d < -1 && d >= -30) return { text: 'Пред ' + Math.abs(d) + ' дена', cls: 'passed' };

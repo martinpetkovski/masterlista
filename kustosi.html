@@ -1145,8 +1145,8 @@
 
         async function openOnPreferredService(releaseUrl, title) {
             if (!releaseUrl) return;
-            // Always show progressive chooser immediately
-            showServiceChooserProgressive(releaseUrl, title);
+            // Open the playlist URL directly in a new tab
+            window.open(releaseUrl, '_blank');
         }
         
         async function showServiceChooserProgressive(releaseUrl, title) {
@@ -1355,7 +1355,7 @@
                 const trimmed = part.trim();
                 const match = findBandMatch(trimmed);
                 if (match) {
-                    result += `<a href="artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(trimmed)}</a>`;
+                    result += `<a href="/artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(trimmed)}</a>`;
                 } else {
                     result += escHtml(trimmed);
                 }
@@ -1378,7 +1378,7 @@
                 const extra = item.slice(nameOnly.length).trim();
                 const match = findBandMatch(nameOnly);
                 if (match) {
-                    const href = 'artist.html?name=' + encodeURIComponent(match);
+                    const href = '/artist.html?name=' + encodeURIComponent(match);
                     return `<a href="${href}">${escHtml(match)}</a>${extra ? ' <span style="opacity:.65">' + escHtml(extra) + '</span>' : ''}`;
                 }
                 return escHtml(item);
