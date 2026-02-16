@@ -224,61 +224,61 @@ async function fetchFallbackArtistImage(band) {
   if (links.youtube || links.youtube_music) {
     const url = links.youtube || links.youtube_music;
     const img = await fetchYouTubeImage(url);
-    if (img) return img;
+    if (img) return { source: 'youtube', url: img };
   }
 
   // 3. Instagram profile image
   if (links.instagram) {
     const img = await fetchInstagramImage(links.instagram);
-    if (img) return img;
+    if (img) return { source: 'instagram', url: img };
   }
 
   // 4. Deezer link (proper API, returns artist pictures)
   if (links.deezer) {
     const img = await fetchDeezerImage(links.deezer);
-    if (img) return img;
+    if (img) return { source: 'deezer', url: img };
   }
 
   // 5. iTunes / Apple Music (search API by artist name)
   if (links.itunes || links.apple_music) {
     const img = await fetchITunesArtistImage(band.name);
-    if (img) return img;
+    if (img) return { source: 'itunes', url: img };
   }
 
   // 6. Bandcamp (scrape og:image from page)
   if (links.bandcamp) {
     const img = await fetchBandcampImage(links.bandcamp);
-    if (img) return img;
+    if (img) return { source: 'bandcamp', url: img };
   }
 
   // 7. SoundCloud (oembed)
   if (links.soundcloud) {
     const img = await fetchSoundCloudImage(links.soundcloud);
-    if (img) return img;
+    if (img) return { source: 'soundcloud', url: img };
   }
 
   // 8. Last.fm (scrape og:image from artist page)
   if (links.lastfm) {
     const img = await fetchLastFmImage(links.lastfm);
-    if (img) return img;
+    if (img) return { source: 'lastfm', url: img };
   }
 
   // 9. Website (scrape og:image)
   if (links.website) {
     const img = await fetchOgImage(links.website);
-    if (img) return img;
+    if (img) return { source: 'website', url: img };
   }
 
   // 10. Facebook (scrape og:image)
   if (links.facebook) {
     const img = await fetchOgImage(links.facebook);
-    if (img) return img;
+    if (img) return { source: 'facebook', url: img };
   }
 
   // 11. Last resort: Deezer name search (exact match only)
   {
     const img = await fetchDeezerSearchImage(band.name);
-    if (img) return img;
+    if (img) return { source: 'deezer', url: img };
   }
 
   return null;
@@ -636,9 +636,29 @@ async function main() {
   const artistsInfo = await getArtistsBatch(artistIds, spotifyToken);
   console.log(`Got info for ${Object.keys(artistsInfo).length} artists`);
   
-  // Fetch fallback images for artists without any Spotify artist profile image.
-  // These will be used if Spotify has no artist image AND no release thumbnail.
-  const fallbackImages = new Map();
+  // ==================== Update artist images in bands.json ====================
+  // For each Spotify artist, determine the best image and write it to bands.json.
+  // Priority: Spotify artist profile image → most recent release thumbnail → external services
+  console.log('Updating artist images in bands.json...');
+  const bandsByNameLower = new Map();
+  for (const band of bands) {
+    bandsByNameLower.set(band.name.toLowerCase().trim(), band);
+  }
+  let imagesUpdated = 0;
+
+  // First pass: set images for all Spotify artists from Spotify data
+  for (const artistId of artistIds) {
+    const band = artistMap.get(artistId);
+    const artistInfo = artistsInfo[artistId];
+    const spotifyArtistImg = artistInfo?.images?.[0]?.url;
+    if (spotifyArtistImg) {
+      band.image = spotifyArtistImg;
+      band.imageSource = 'spotify';
+      imagesUpdated++;
+    }
+  }
+
+  // Second pass: for artists without a Spotify profile image, try fallback services
   const artistsWithoutImages = artistIds.filter(id => !artistsInfo[id]?.images?.[0]?.url);
   if (artistsWithoutImages.length > 0) {
     console.log(`${artistsWithoutImages.length} artists have no Spotify artist image, trying fallback services...`);
@@ -653,17 +673,21 @@ async function main() {
         })
       );
       for (const { artistId, img, name } of results) {
+        const band = artistMap.get(artistId);
         if (img) {
-          fallbackImages.set(artistId, img);
-          console.log(`  ✓ Fallback image for ${name}`);
+          band.image = img.url;
+          band.imageSource = img.source;
+          console.log(`  ✓ Fallback image for ${name} (${img.source})`);
+          imagesUpdated++;
         }
+        // If no fallback, the image will remain from previous run (or null)
       }
       if (i + FALLBACK_BATCH < artistsWithoutImages.length) {
         await new Promise(r => setTimeout(r, 300));
       }
     }
-    console.log(`Got ${fallbackImages.size} fallback images out of ${artistsWithoutImages.length} needed`);
   }
+  console.log(`Updated ${imagesUpdated} artist images in bands.json`);
   
   // Fetch albums and their track popularity with rate limiting
   const releases = [];
@@ -705,8 +729,6 @@ async function main() {
                 releaseDate: album.release_date,
                 releaseUrl: album.external_urls?.spotify,
                 thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
-                // Priority: Spotify artist image → fallback service image → latest release thumbnail
-                artistImage: artistInfo?.images?.[0]?.url || fallbackImages.get(artistId) || album.images?.[0]?.url || null,
                 totalTracks: album.total_tracks,
                 popularity: albumPopularity, // Spotify album/single popularity (0-100)
                 followers: artistInfo?.followers?.total || 0,
@@ -748,62 +770,9 @@ async function main() {
   // Save weekly historical snapshot
   saveWeeklySnapshot(chartData, historyDir, now);
   
-  // ==================== Non-Spotify Bands ====================
-  // Process bands that have NO Spotify link but have other service links.
-  // Create a stub release entry so that artist.html can still show an image.
-  const bandsWithoutSpotify = bands.filter(b =>
-    (!b.links?.spotify || b.links.spotify === 'недостигаат податоци') &&
-    b.links && Object.keys(b.links).length > 0
-  );
-  if (bandsWithoutSpotify.length > 0) {
-    console.log(`${bandsWithoutSpotify.length} bands have no Spotify link, fetching images from other services...`);
-    const NON_SPOTIFY_BATCH = 5;
-    for (let i = 0; i < bandsWithoutSpotify.length; i += NON_SPOTIFY_BATCH) {
-      const batch = bandsWithoutSpotify.slice(i, i + NON_SPOTIFY_BATCH);
-      const pct = Math.round((i / bandsWithoutSpotify.length) * 100);
-      console.log(`Non-Spotify batch ${Math.floor(i/NON_SPOTIFY_BATCH)+1}/${Math.ceil(bandsWithoutSpotify.length/NON_SPOTIFY_BATCH)} (${pct}%)`);
-      const batchResults = await Promise.all(
-        batch.map(async (band) => {
-          const img = await fetchFallbackArtistImage(band);
-          return { band, img };
-        })
-      );
-      for (const { band, img } of batchResults) {
-        // Use a stable pseudo-ID derived from the band name
-        const pseudoId = 'no-spotify-' + band.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        // Check if this band already has a stub entry from a previous run
-        const existing = chartData.releases.find(r => r.artistId === pseudoId);
-        if (existing) {
-          if (img && !existing.artistImage) existing.artistImage = img;
-          continue;
-        }
-        chartData.releases.push({
-          bandName: band.name,
-          artistId: pseudoId,
-          releaseId: null,
-          releaseTitle: null,
-          releaseType: null,
-          releaseDate: null,
-          releaseUrl: null,
-          thumbnail: img || null,
-          artistImage: img || null,
-          totalTracks: 0,
-          popularity: 0,
-          followers: 0,
-          spotifyUrl: null
-        });
-        if (img) console.log(`  ✓ ${band.name}`);
-      }
-      if (i + NON_SPOTIFY_BATCH < bandsWithoutSpotify.length) {
-        await new Promise(r => setTimeout(r, 300));
-      }
-    }
-    // Update totals
-    chartData.totalReleases = chartData.releases.length;
-    const allArtistIds = new Set(chartData.releases.map(r => r.artistId));
-    chartData.totalArtists = allArtistIds.size;
-    console.log(`Chart now includes ${chartData.totalArtists} artists (${chartData.totalReleases} entries)`);
-  }
+  // ==================== Save updated bands.json ====================
+  fs.writeFileSync(bandsPath, JSON.stringify(bandsData, null, 2), 'utf8');
+  console.log('Saved updated bands.json with artist images');
 
   // Write current chart data
   fs.writeFileSync(outputPath, JSON.stringify(chartData, null, 2));

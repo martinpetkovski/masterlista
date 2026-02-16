@@ -1,15 +1,45 @@
 /**
- * One-time script to patch artistImage in chart-data.json
+ * Post-processing script to patch artist images in bands.json
  * 
- * 1. Finds artists with null artistImage and tries fallback services
- * 2. Adds stub entries for bands without any Spotify link (non-Spotify bands)
- *    so that artist.html can show their image from chart-data.json
+ * 1. Backfills imageSource for bands that have an image but no source
+ * 2. Finds bands without an image and tries fallback services
+ *    (Deezer, YouTube, Bandcamp, SoundCloud, Last.fm, etc.)
+ * 
+ * For active Spotify artists, images are updated by generate-chart-data.js.
+ * This script handles the remaining bands (inactive, non-Spotify, etc.).
  * 
  * Run: node scripts/patch-artist-images.js
+ * Runs automatically after generate-chart-data.js in update-all.ps1
  */
 
 const fs = require('fs');
 const path = require('path');
+
+// ==================== Source detection ====================
+
+/**
+ * Detect the image source from a URL (for backfilling artistImageSource).
+ * Compares against the release thumbnail to detect 'release' fallback.
+ */
+function detectImageSource(imageUrl, thumbnail) {
+  if (!imageUrl) return null;
+  // Spotify artist images use a different path prefix than album art
+  if (/i\.scdn\.co\/image\/ab6761/.test(imageUrl)) return 'spotify';
+  // Spotify album/release images
+  if (/i\.scdn\.co\/image\/ab67616d/.test(imageUrl)) return 'release';
+  // External services (check URL patterns before release-thumbnail match)
+  if (/deezer/.test(imageUrl)) return 'deezer';
+  if (/ytimg|yt\d+\.ggpht|youtube/.test(imageUrl)) return 'youtube';
+  if (/bcbits\.com|bandcamp/.test(imageUrl)) return 'bandcamp';
+  if (/sndcdn\.com|soundcloud/.test(imageUrl)) return 'soundcloud';
+  if (/lastfm|last\.fm/.test(imageUrl)) return 'lastfm';
+  if (/mzstatic\.com|apple/.test(imageUrl)) return 'itunes';
+  if (/cdninstagram|instagram/.test(imageUrl)) return 'instagram';
+  if (/fbcdn|facebook/.test(imageUrl)) return 'facebook';
+  // If the artistImage matches the release thumbnail exactly, it's a release fallback
+  if (thumbnail && imageUrl === thumbnail) return 'release';
+  return 'external';
+}
 
 // ==================== Fetch helpers ====================
 
@@ -227,74 +257,75 @@ async function fetchFallbackArtistImage(band) {
 // ==================== Main ====================
 
 async function main() {
-  const chartPath = path.join(__dirname, '..', 'chart-data.json');
   const bandsPath = path.join(__dirname, '..', 'bands.json');
 
-  const chartData = JSON.parse(fs.readFileSync(chartPath, 'utf8'));
   const bandsRaw = fs.readFileSync(bandsPath, 'utf8').replace(/^\uFEFF/, '');
   const bandsData = JSON.parse(bandsRaw);
   const bands = bandsData.muzickaMasterLista || bandsData;
 
-  // Build band lookup by name (lowercase)
-  const bandsByName = new Map();
+  // ==================== Backfill imageSource ====================
+  // For bands that have an image but no imageSource, detect the source from the URL
+  let backfilled = 0;
   for (const band of bands) {
-    bandsByName.set(band.name.toLowerCase(), band);
-  }
-
-  // Find unique artists who need an image (null artistImage only)
-  const seen = new Set();
-  const artistsToFix = [];
-
-  for (const release of chartData.releases) {
-    if (seen.has(release.artistId)) continue;
-    seen.add(release.artistId);
-
-    if (!release.artistImage) {
-      const band = bandsByName.get(release.bandName.toLowerCase());
-      if (band) {
-        artistsToFix.push({
-          artistId: release.artistId,
-          bandName: release.bandName,
-          band
-        });
-      }
+    if (band.image && !band.imageSource) {
+      band.imageSource = detectImageSource(band.image, null);
+      backfilled++;
     }
   }
+  if (backfilled > 0) {
+    console.log(`Backfilled imageSource for ${backfilled} bands`);
+  }
 
-  console.log(`Found ${artistsToFix.length} artists with null artistImage`);
+  // ==================== Find bands without images ====================
+  // Only process bands that don't yet have an image and have at least one link
+  const bandsToFix = bands.filter(b =>
+    !b.image &&
+    b.links && Object.keys(b.links).some(k => k !== 'none' && b.links[k] && b.links[k] !== 'недостигаат податоци')
+  );
+
+  console.log(`Found ${bandsToFix.length} bands without an image`);
+  if (bandsToFix.length === 0) {
+    // Still save in case backfill changed something
+    if (backfilled > 0) {
+      fs.writeFileSync(bandsPath, JSON.stringify(bandsData, null, 2), 'utf8');
+      console.log('Saved bands.json (backfill only)');
+    }
+    return;
+  }
+
   console.log('');
 
   // Process in batches of 5
   const BATCH = 5;
   let fixed = 0;
   let failed = 0;
-  const results = new Map();
 
-  for (let i = 0; i < artistsToFix.length; i += BATCH) {
-    const batch = artistsToFix.slice(i, i + BATCH);
-    const pct = Math.round((i / artistsToFix.length) * 100);
-    process.stdout.write(`\rProcessing ${i}/${artistsToFix.length} (${pct}%)...`);
+  for (let i = 0; i < bandsToFix.length; i += BATCH) {
+    const batch = bandsToFix.slice(i, i + BATCH);
+    const pct = Math.round((i / bandsToFix.length) * 100);
+    process.stdout.write(`\rProcessing ${i}/${bandsToFix.length} (${pct}%)...`);
 
     const batchResults = await Promise.all(
-      batch.map(async ({ artistId, bandName, band }) => {
+      batch.map(async (band) => {
         const result = await fetchFallbackArtistImage(band);
-        return { artistId, bandName, result };
+        return { band, result };
       })
     );
 
-    for (const { artistId, bandName, result } of batchResults) {
+    for (const { band, result } of batchResults) {
       if (result) {
-        results.set(artistId, result.url);
-        console.log(`\n  ✓ ${bandName} → ${result.source}`);
+        band.image = result.url;
+        band.imageSource = result.source.toLowerCase();
+        console.log(`\n  ✓ ${band.name} → ${result.source}`);
         fixed++;
       } else {
-        console.log(`\n  ✗ ${bandName} → no image found`);
+        console.log(`\n  ✗ ${band.name} → no image found`);
         failed++;
       }
     }
 
     // Small delay between batches
-    if (i + BATCH < artistsToFix.length) {
+    if (i + BATCH < bandsToFix.length) {
       await new Promise(r => setTimeout(r, 400));
     }
   }
@@ -302,89 +333,9 @@ async function main() {
   console.log('\n');
   console.log(`Results: ${fixed} fixed, ${failed} not found`);
 
-  // Patch chart-data.json
-  if (results.size > 0) {
-    let patched = 0;
-    for (const release of chartData.releases) {
-      const newImage = results.get(release.artistId);
-      if (newImage) {
-        release.artistImage = newImage;
-        patched++;
-      }
-    }
-    console.log(`Patched ${patched} release entries across ${results.size} artists`);
-  }
-
-  // ==================== Non-Spotify Bands ====================
-  // Add stub entries for bands that have no Spotify link but have other service links
-  const existingArtistIds = new Set(chartData.releases.map(r => r.artistId));
-  const bandsWithoutSpotify = bands.filter(b =>
-    (!b.links?.spotify || b.links.spotify === '\u043d\u0435\u0434\u043e\u0441\u0442\u0438\u0433\u0430\u0430\u0442 \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438') &&
-    b.links && Object.keys(b.links).length > 0
-  );
-
-  // Filter to only those not already in chart-data
-  const newNonSpotify = bandsWithoutSpotify.filter(b => {
-    const pseudoId = 'no-spotify-' + b.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    return !existingArtistIds.has(pseudoId);
-  });
-
-  if (newNonSpotify.length > 0) {
-    console.log(`\n${newNonSpotify.length} non-Spotify bands to add...`);
-    let nsFixed = 0;
-    for (let i = 0; i < newNonSpotify.length; i += BATCH) {
-      const batch = newNonSpotify.slice(i, i + BATCH);
-      const batchResults = await Promise.all(
-        batch.map(async (band) => {
-          const result = await fetchFallbackArtistImage(band);
-          return { band, result };
-        })
-      );
-      for (const { band, result: res } of batchResults) {
-        const pseudoId = 'no-spotify-' + band.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const img = res?.url || null;
-        chartData.releases.push({
-          bandName: band.name,
-          artistId: pseudoId,
-          releaseId: null,
-          releaseTitle: null,
-          releaseType: null,
-          releaseDate: null,
-          releaseUrl: null,
-          thumbnail: img,
-          artistImage: img,
-          totalTracks: 0,
-          popularity: 0,
-          topTrackName: null,
-          topTrackId: null,
-          topTrackUrl: null,
-          followers: 0,
-          spotifyUrl: null
-        });
-        if (img) {
-          console.log(`  \u2713 ${band.name} \u2192 ${res.source}`);
-          nsFixed++;
-        } else {
-          console.log(`  \u2717 ${band.name} \u2192 no image found`);
-        }
-      }
-      if (i + BATCH < newNonSpotify.length) {
-        await new Promise(r => setTimeout(r, 400));
-      }
-    }
-    console.log(`Added ${newNonSpotify.length} non-Spotify bands (${nsFixed} with images)`);
-  } else {
-    console.log('\nNo new non-Spotify bands to add.');
-  }
-
-  // Update totals and write
-  chartData.totalReleases = chartData.releases.length;
-  const allArtistIds = new Set(chartData.releases.map(r => r.artistId));
-  chartData.totalArtists = allArtistIds.size;
-  chartData.generatedAt = new Date().toISOString();
-
-  fs.writeFileSync(chartPath, JSON.stringify(chartData, null, 2));
-  console.log(`\nChart data saved: ${chartData.totalArtists} artists, ${chartData.totalReleases} entries`);
+  // Save updated bands.json
+  fs.writeFileSync(bandsPath, JSON.stringify(bandsData, null, 2), 'utf8');
+  console.log(`Saved bands.json (${bands.length} bands, ${bands.filter(b => b.image).length} with images)`);
 }
 
 main().catch(err => {

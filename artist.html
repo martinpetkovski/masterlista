@@ -2635,7 +2635,8 @@ a.chart-history-item {
                 }
                 
                 // Try to get artist thumbnail and activity status from chart-data.json
-                let thumbnail = null;
+                // Artist image comes from bands.json (image field), with chart-data release thumbnail as fallback
+                let thumbnail = artist.image || null;
                 let latestReleaseDate = null;
                 let latestReleaseThumbnail = null;
                 try {
@@ -2644,10 +2645,8 @@ a.chart-history-item {
                     const releases = chartData.releases || [];
                     const artistNameLower = artist.name.toLowerCase();
                     
-                    let artistImage = null;
                     releases.forEach(r => {
                         if (r.bandName && r.bandName.toLowerCase() === artistNameLower) {
-                            if (!artistImage && r.artistImage) artistImage = r.artistImage;
                             if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
                             if (r.releaseDate && (!latestReleaseDate || r.releaseDate > latestReleaseDate)) {
                                 latestReleaseDate = r.releaseDate;
@@ -2655,9 +2654,8 @@ a.chart-history-item {
                             }
                         }
                     });
-                    // Prefer artist profile image, fall back to latest release thumbnail
-                    if (artistImage) thumbnail = artistImage;
-                    else if (latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
+                    // If no image from bands.json, fall back to latest release thumbnail
+                    if (!thumbnail && latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
                 } catch (e) {
                     console.warn('Could not load chart data:', e);
                 }

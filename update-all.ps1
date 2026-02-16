@@ -263,6 +263,23 @@ function Update-ChartData {
     }
 
     Write-Step "Chart data updated successfully" "Green"
+
+    # --- Post-process: Patch artist images from external services ---
+    Write-Step "Patching artist images from external services..."
+    $patchScript = Join-Path $scriptRoot "scripts\patch-artist-images.js"
+    try {
+        $patchOutput = & node $patchScript 2>&1
+        foreach ($line in $patchOutput) {
+            if ($line) {
+                Write-Host "    [patch] $line" -ForegroundColor DarkGray
+            }
+        }
+        Write-Step "Artist images patched" "Green"
+    }
+    catch {
+        Write-Step "Patch artist images failed (non-critical): $_" "Yellow"
+    }
+
     Write-Elapsed $chartStart
     return $true
 }

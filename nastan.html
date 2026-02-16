@@ -657,20 +657,36 @@
         }
 
         // ==================== ARTIST THUMBNAILS ====================
+        var bandsImageCache = null;
         var chartDataCache = null;
-        function loadChartData() {
-            return fetch('/chart-data.json?v=' + Date.now())
-                .then(function(r) { return r.ok ? r.json() : { releases: [] }; })
-                .then(function(d) { chartDataCache = d; })
-                .catch(function() { chartDataCache = { releases: [] }; });
+        function loadArtistImageData() {
+            return Promise.all([
+                fetch('/bands.json?v=' + Date.now())
+                    .then(function(r) { return r.ok ? r.json() : { muzickaMasterLista: [] }; })
+                    .then(function(d) {
+                        bandsImageCache = {};
+                        (d.muzickaMasterLista || []).forEach(function(b) {
+                            if (b.image) bandsImageCache[b.name.toLowerCase().trim()] = b.image;
+                        });
+                    })
+                    .catch(function() { bandsImageCache = {}; }),
+                fetch('/chart-data.json?v=' + Date.now())
+                    .then(function(r) { return r.ok ? r.json() : { releases: [] }; })
+                    .then(function(d) { chartDataCache = d; })
+                    .catch(function() { chartDataCache = { releases: [] }; })
+            ]);
         }
         function getArtistThumb(artistName) {
-            if (!chartDataCache || !chartDataCache.releases || !artistName) return null;
+            if (!artistName) return null;
             var lower = artistName.toLowerCase().trim();
+            // Prefer image from bands.json
+            if (bandsImageCache && bandsImageCache[lower]) return bandsImageCache[lower];
+            // Fallback to release thumbnail from chart-data
+            if (!chartDataCache || !chartDataCache.releases) return null;
             var release = chartDataCache.releases.find(function(r) {
                 return r.bandName && r.bandName.toLowerCase().trim() === lower;
             });
-            return release ? (release.artistImage || release.thumbnail || null) : null;
+            return release ? (release.thumbnail || null) : null;
         }
 
         // ==================== RENDER ====================
@@ -1079,7 +1095,7 @@
             }
             Promise.all([
                 loadAllEventsAndBands(),
-                loadChartData()
+                loadArtistImageData()
             ])
                 .then(function() {
                     var found = null;

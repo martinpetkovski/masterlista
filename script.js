@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return luminance > 0.55 ? '#000' : '#fff';
     }
     
-    // Get artist profile image from chart-data.json (prefers Spotify artist image over release thumbnail)
+    // Get artist profile image from bands.json (image field), with chart-data release thumbnail fallback
     function getArtistThumbnail(artistName) {
         if (!artistName) return null;
         
@@ -100,21 +100,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return artistThumbnailCache[artistName];
         }
         
-        if (!cachedChartData?.releases) {
-            artistThumbnailCache[artistName] = null;
-            return null;
+        // Look up band in bandsData for the image field
+        const normalizedName = artistName.toLowerCase().trim();
+        const band = bandsData.find(b => b.name && b.name.toLowerCase().trim() === normalizedName);
+        if (band?.image) {
+            artistThumbnailCache[artistName] = band.image;
+            return band.image;
         }
         
-        // Find the most recent release for this artist (case-insensitive match)
-        const normalizedName = artistName.toLowerCase().trim();
-        const release = cachedChartData.releases.find(r => 
-            r.bandName && r.bandName.toLowerCase().trim() === normalizedName
-        );
+        // Fallback: try release thumbnail from chart-data
+        if (cachedChartData?.releases) {
+            const release = cachedChartData.releases.find(r => 
+                r.bandName && r.bandName.toLowerCase().trim() === normalizedName
+            );
+            if (release?.thumbnail) {
+                artistThumbnailCache[artistName] = release.thumbnail;
+                return release.thumbnail;
+            }
+        }
         
-        // Prefer artist profile image, fall back to release thumbnail
-        const thumbnail = release?.artistImage || release?.thumbnail || null;
-        artistThumbnailCache[artistName] = thumbnail;
-        return thumbnail;
+        artistThumbnailCache[artistName] = null;
+        return null;
     }
     
     // Extract two dominant colors from an image URL, returns promise of [hex1, hex2] or null
@@ -1375,7 +1381,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         contact: band.contact || 'недостигаат податоци',
                         label,
                         accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false
+                        confirmed: band.confirmed || false,
+                        image: band.image || null,
+                        imageSource: band.imageSource || null
                     };
                 });
                 originalBandsData = JSON.parse(JSON.stringify(originalFromServer));
@@ -1395,7 +1403,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         contact: band.contact || 'недостигаат податоци',
                         label,
                         accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false
+                        confirmed: band.confirmed || false,
+                        image: band.image || null,
+                        imageSource: band.imageSource || null
                     };
                 });
                 originalBandsData = JSON.parse(JSON.stringify(bandsData));
