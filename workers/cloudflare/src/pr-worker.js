@@ -299,7 +299,7 @@ export default {
         const contents = await contentsRes.json();
         currentSha = contents.sha;
         if (contents.content) {
-          currentContent = b64decode(contents.content);
+          currentContent = b64decode(contents.content).replace(/^\uFEFF/, '');
         }
       } // If not ok, file might not exist; treat as create
 
