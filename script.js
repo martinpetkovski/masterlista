@@ -1369,6 +1369,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Use the saved data
                 bandsData = pendingChanges.bandsData;
+
+                // Always overlay server-managed image fields from fresh server data.
+                // Drafts may have been saved before image fields existed, or with stale values.
+                const serverImageMap = new Map();
+                data.muzickaMasterLista.forEach(b => serverImageMap.set(b.name, { image: b.image || null, imageSource: b.imageSource || null }));
+                bandsData.forEach(b => {
+                    const srv = serverImageMap.get(b.name);
+                    if (srv) { b.image = srv.image; b.imageSource = srv.imageSource; }
+                    else { b.image = null; b.imageSource = null; }
+                });
+
                 invalidateBandCache(); // Clear cache since data changed
                 hasUnsavedChanges = true;
                 
