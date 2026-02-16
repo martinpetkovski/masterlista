@@ -316,6 +316,39 @@ export default {
         }
       }
 
+      // 3c) Always preserve server-managed image fields from repo HEAD for bands.json.
+      // The three-way merge handles this when it runs, but when the merge is skipped
+      // (baseline == current), we still need to overlay images from repo HEAD.
+      if (targetPath === 'bands.json' && currentContent) {
+        try {
+          const repoData = JSON.parse(currentContent);
+          const userData = JSON.parse(finalJson);
+          if (repoData.muzickaMasterLista && userData.muzickaMasterLista) {
+            const repoImageMap = new Map();
+            repoData.muzickaMasterLista.forEach(b => {
+              if (b.image || b.imageSource) repoImageMap.set(b.name, { image: b.image, imageSource: b.imageSource });
+            });
+            let patched = false;
+            userData.muzickaMasterLista.forEach(b => {
+              const repo = repoImageMap.get(b.name);
+              if (repo) {
+                if (b.image !== repo.image || b.imageSource !== repo.imageSource) patched = true;
+                b.image = repo.image;
+                b.imageSource = repo.imageSource;
+              } else {
+                // New artist or not in repo — strip any client-sent image fields
+                if (b.image || b.imageSource) patched = true;
+                delete b.image;
+                delete b.imageSource;
+              }
+            });
+            if (patched) {
+              finalJson = JSON.stringify(userData, null, 2);
+            }
+          }
+        } catch (_) { /* if parsing fails, leave finalJson as-is */ }
+      }
+
       // 4) Create or update file on new branch
       const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}`, {
         method: 'PUT',
