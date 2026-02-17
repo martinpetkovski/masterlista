@@ -4454,32 +4454,6 @@
       "imageSource": "spotify"
     },
     {
-      "name": "МЕНКА",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Mev",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Миа Перевска",
       "city": "Скопје",
       "genre": "недостигаат податоци",
@@ -4583,14 +4557,17 @@
     {
       "name": "Misanthrope",
       "city": "Битола",
-      "genre": "недостигаат податоци",
+      "genre": "Метал",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=BYp11eBBghI"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#e0e0c0",
+        "#e0c0c0"
+      ],
       "confirmed": false,
       "image": "https://cdn-images.dzcdn.net/images/artist/8bed62246180480218bcd9f082a3b5fe/1000x1000-000000-80-0-0.jpg",
       "imageSource": "release"
@@ -4674,10 +4651,10 @@
     {
       "name": "Морал",
       "city": "Скопје",
-      "genre": "недостигаат податоци",
+      "genre": "Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=USUmheN1m08"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4727,23 +4704,15 @@
     {
       "name": "Мугер Фугер",
       "city": "Скопје",
-      "genre": "недостигаат податоци",
+      "genre": "Шугејз, Рок, Инди",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Музак",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=viyleCKUwRg",
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%9C%D1%83%D0%B3%D0%B5%D1%80_%D0%A4%D1%83%D0%B3%D0%B5%D1%80"
+        ],
+        "bandcamp": "https://moogerfooger.bandcamp.com/track/pesna-za-pesot",
+        "soundcloud": "https://soundcloud.com/mooger-fooger"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4789,15 +4758,21 @@
     },
     {
       "name": "Nascor San",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "soundcloud": "https://soundcloud.com/nascor_san",
+        "youtube": "https://www.youtube.com/channel/UCZ6M7Fu8aG1dkC_FSzF6WoQ",
+        "instagram": "https://www.instagram.com/nascor_san/",
+        "spotify": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#406020",
+        "#204020"
+      ],
       "confirmed": false,
       "image": "https://cdn-images.dzcdn.net/images/artist/0782d4e5c84eb6fe761a036bff207ea3/1000x1000-000000-80-0-0.jpg",
       "imageSource": "release"
@@ -4852,11 +4827,12 @@
     },
     {
       "name": "New Police State",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Панк",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=AiK1LiL-anE&list=PL7C99B871C18A3392",
+        "bandcamp": "https://lavidaesunmus.bandcamp.com/track/new-police-state"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4890,24 +4866,17 @@
     },
     {
       "name": "Nickarth",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Инди Поп, Денс, Електронска",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
-      "name": "Ние Запирка Другарите",
-      "city": "Битола",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
+        "spotify": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/Nickarth"
+        ],
+        "instagram": "https://www.instagram.com/nickarthmusic/?hl=en",
+        "facebook": "https://www.facebook.com/nickarthmusic/",
+        "youtube": "https://www.youtube.com/@NICKARTHMUSIC"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4917,10 +4886,11 @@
     {
       "name": "Никеја",
       "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "genre": "Алтернативен Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=I_-w1foH0C4",
+        "spotify": "https://open.spotify.com/artist/3Pf8ft0IHy44B53qegm2yJ?si=Qz4c4MOYTbK5DMPQ2cO89g"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4945,11 +4915,11 @@
     },
     {
       "name": "Нинослав Спировски",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Џез",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sharla.bandcamp.com/album/sloboda-lp"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -4958,11 +4928,12 @@
     },
     {
       "name": "Нискоградба",
-      "city": "Скопје",
+      "city": "Битола",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sharla.bandcamp.com/album/rainmaker-ep",
+        "spotify": "https://open.spotify.com/artist/4ABCmWMyT14PDKJcIeZZqe?si=PeGO5mkWTAK2FehvVa2wtw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5013,21 +4984,6 @@
       "imageSource": "spotify"
     },
     {
-      "name": "Nora",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false,
-      "image": "https://cdn-images.dzcdn.net/images/artist/3468c35d141616a56e9ba6fdfab706e8/1000x1000-000000-80-0-0.jpg",
-      "imageSource": "release"
-    },
-    {
       "name": "Новиот Почеток",
       "city": "Скопје",
       "genre": "Панк Рок, Панк",
@@ -5056,10 +5012,16 @@
     {
       "name": "Новоградска",
       "city": "Куманово",
-      "genre": "недостигаат податоци",
+      "genre": "Рок",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%98%D0%B3%D0%BE%D1%80_%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D0%B5%D0%B2-%D0%9D%D0%BE%D0%B2%D0%BE%D0%B3%D1%80%D0%B0%D0%B4%D1%81%D0%BA%D0%B0"
+        ],
+        "facebook": "https://www.facebook.com/novogradska/?locale=mk_MK",
+        "bandcamp": "https://novogradska.bandcamp.com/",
+        "soundcloud": "https://soundcloud.com/novogradska",
+        "spotify": "https://open.spotify.com/artist/4aXJZ9hC6hGZ2nBdpZMJw7?si=RouwCJdTSaGOCo0MulOpkw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5110,7 +5072,8 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "soundcloud": "https://soundcloud.com/oliver-dimitrov",
+        "spotify": "https://open.spotify.com/artist/6VEWsITTHDPMfPK6k8UKIp?si=qaqDVZSaRPC82WqzP_rtCw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5192,19 +5155,6 @@
       "confirmed": false,
       "image": "https://i.ytimg.com/vi/Z5bLSNhJLXA/hqdefault.jpg",
       "imageSource": "youtube"
-    },
-    {
-      "name": "Павел Ренџов",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
     },
     {
       "name": "Peach Vice",
@@ -5333,11 +5283,13 @@
     },
     {
       "name": "Пики",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Рап",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=7LG46Ya8-3s",
+        "spotify": "https://open.spotify.com/artist/2R3qPa9TedkJ2vs2bac4w1?si=hm7q4pK6Rb2hhwSvaU_PUQ",
+        "instagram": "https://www.instagram.com/pikixvuisah/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5350,7 +5302,9 @@
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "bandcamp": "https://sharla.bandcamp.com/album/moze-i-taka-dragi-lp",
+        "youtube": "https://www.youtube.com/watch?v=57xuyDIJtBU",
+        "spotify": "https://open.spotify.com/artist/5UVtvjKkpRuMTqZ7Py2klN?si=wRu7uIlMQ8C4nglJUSb2WA"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5419,11 +5373,11 @@
     },
     {
       "name": "Poetronika",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Електронска",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=j23sOZue0ec"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5528,7 +5482,8 @@
       "genre": "Поп",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "youtube": "https://www.youtube.com/watch?v=3I4kIM8IRFo",
+        "instagram": "https://www.instagram.com/rebekamakedonija/"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5784,11 +5739,13 @@
     },
     {
       "name": "Сарацени",
-      "city": "недостигаат податоци",
+      "city": "Скопје",
       "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "generic": [
+          "https://www.discogs.com/artist/1902201-Saraceni"
+        ]
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5797,11 +5754,15 @@
     },
     {
       "name": "Сашка Петковска",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Битола",
+      "genre": "Поп, Евергрин",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%A1%D0%B0%D1%88%D0%BA%D0%B0_%D0%9F%D0%B5%D1%82%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B0"
+        ],
+        "youtube": "https://www.youtube.com/watch?v=pUDzaj1Irrw",
+        "spotify": "https://open.spotify.com/artist/55mwO2ROlX3JSLIEJyzYuL?si=hb5yBhSTQLuXgfl4f_NpTw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5829,11 +5790,15 @@
     },
     {
       "name": "Sasho Uzun",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Електронска",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "instagram": "https://www.instagram.com/sasho.uzun/",
+        "linktree": "https://linktr.ee/sasho.uzun",
+        "soundcloud": "https://soundcloud.com/sasho-uzun",
+        "youtube": "https://www.youtube.com/watch?v=J95E0PB6MII",
+        "spotify": "https://open.spotify.com/artist/6UkAbHBUIN82htBZSpPztE?si=bAbJVTZ7Ts2bqV7qED2BFw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -5881,40 +5846,36 @@
       "imageSource": "spotify"
     },
     {
-      "name": "Satanhord",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "none": "недостигаат податоци"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false
-    },
-    {
       "name": "Scattered",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Струга",
+      "genre": "Метал",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "facebook": "https://www.facebook.com/ScatteredOfficial/",
+        "bandcamp": "https://scatteredband.bandcamp.com/",
+        "spotify": "https://open.spotify.com/artist/6jCUS8osVbGkAlvh4iFBsu?si=bgS9yfBlSwKaDNFJX4Vzvg",
+        "instagram": "https://www.instagram.com/scatteredofficial/",
+        "youtube": "https://www.youtube.com/@ScatteredBandOfficial"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#404060",
+        "#404040"
+      ],
       "confirmed": false,
       "image": "https://cdn-images.dzcdn.net/images/artist/fba6c9f1c36fc975af7e17e3de1d6f14/1000x1000-000000-80-0-0.jpg",
       "imageSource": "release"
     },
     {
       "name": "Schoiroideairis",
-      "city": "недостигаат податоци",
-      "genre": "недостигаат податоци",
+      "city": "Скопје",
+      "genre": "Транс, Електронска",
       "soundsLike": "недостигаат податоци",
       "links": {
-        "none": "недостигаат податоци"
+        "soundcloud": "https://soundcloud.com/schoiroideairis",
+        "bandcamp": "https://chronicleofmysteryrecords.bandcamp.com/album/schoiroideairis-echoes-of-infinity",
+        "spotify": "https://open.spotify.com/artist/5ggR3LUEGpUSJumzhIMGnf?si=ZDU2yGksQV2KuRFfPnn1qw"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -8157,6 +8118,19 @@
         "#202020",
         "#202040"
       ],
+      "confirmed": false
+    },
+    {
+      "name": "H:N:C",
+      "city": "Битола",
+      "genre": "Шугејз",
+      "soundsLike": "Slowdive",
+      "links": {
+        "soundcloud": "https://soundcloud.com/h_n_c"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
       "confirmed": false
     }
   ]
