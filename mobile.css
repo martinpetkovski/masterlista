@@ -493,7 +493,6 @@ tr {
     align-items: center;
     flex-wrap: nowrap;
     background: var(--bg-primary);
-    padding-right: 0.8rem;
     gap: 0.25rem;
     animation: fadeInUp 0.3s ease forwards;
     opacity: 0;
