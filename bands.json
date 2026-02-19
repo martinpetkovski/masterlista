@@ -6523,7 +6523,7 @@
         "#001e26",
         "#0267ff"
       ],
-      "confirmed": true,
+      "confirmed": false,
       "image": "https://yt3.googleusercontent.com/ytc/AIdro_l14dv9drDVldJa6XoacoDmR0-keZBOOz0ftkFOAOuveQ=s900-c-k-c0x00ffffff-no-rj",
       "imageSource": "release"
     },
@@ -9015,7 +9015,7 @@
         "#009904",
         "#000000"
       ],
-      "confirmed": true,
+      "confirmed": false,
       "image": "https://soundcloud.com/images/fb_placeholder.png",
       "imageSource": "soundcloud"
     },
@@ -9627,6 +9627,90 @@
         "youtube": "https://www.youtube.com/watch?v=FybjHDbhn38"
       },
       "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Горан Тодоровски",
+      "city": "Скопје",
+      "genre": "Фолк, Староградска",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=z22TocdpLUA",
+        "spotify": "https://open.spotify.com/artist/7jxHlXwevlBI8nSatVCAQb?si=FNcMnC7ZR96j0kDraaKtjw"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Heart on Sleeve",
+      "city": "Битола",
+      "genre": "Алтернативен Рок",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://www.instagram.com/heart.on.sleeve.mk/?hl=en",
+        "linktree": "https://linktr.ee/heartonsleeve",
+        "facebook": "https://www.facebook.com/centarjadro/videos/788795125281773/",
+        "bandcamp": "https://heartonsleeve.bandcamp.com/album/live-at-trnovo"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Сив Дом",
+      "city": "Битола",
+      "genre": "Рап",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@sivdom"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Стиховно Војување",
+      "city": "Битола",
+      "genre": "Рап",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/@vasko1sv",
+        "facebook": "https://www.facebook.com/stihovnovojuvanje/?fref=ts"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Стрес",
+      "city": "Битола",
+      "genre": "Рап",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=UbxCH7RUb1s"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "TV Rage",
+      "city": "Куманово",
+      "genre": "Гранџ",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "facebook": "https://www.facebook.com/tv.rage.band/",
+        "bandcamp": "https://tvrage.bandcamp.com/album/riot-from-the-ground-ep"
+      },
+      "contact": "tv.rage.band@gmail.com",
       "label": null,
       "accentColors": null,
       "confirmed": false
