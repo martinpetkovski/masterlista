@@ -48,7 +48,8 @@ function Invoke-WebRequestSafe {
         [string]$Uri,
         [hashtable]$Headers = @{},
         [int]$Retries = 3,
-        [int]$RetryDelaySec = 2
+        [int]$RetryDelaySec = 2,
+        [switch]$SkipRateLimitWait
     )
     for ($i = 0; $i -lt $Retries; $i++) {
         try {
@@ -60,6 +61,10 @@ function Invoke-WebRequestSafe {
             if ($statusCode -eq 429) {
                 $retryAfter = 5
                 try { $retryAfter = [int]$_.Exception.Response.Headers["Retry-After"] } catch {}
+                if ($SkipRateLimitWait) {
+                    Write-Step "Rate limited (429), skipping immediately (no wait mode)" "DarkYellow"
+                    return $null
+                }
                 Write-Step "Rate limited, waiting ${retryAfter}s..." "DarkYellow"
                 Start-Sleep -Seconds $retryAfter
                 continue
@@ -98,6 +103,163 @@ function Invoke-PageRequest {
     }
 }
 
+function ConvertTo-JsonSafe {
+    param([string]$JsonText)
+    if (-not $JsonText) { return $null }
+    try {
+        return $JsonText | ConvertFrom-Json
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-JsonObjectAfterMarker {
+    param(
+        [string]$Text,
+        [string]$Marker
+    )
+
+    if (-not $Text -or -not $Marker) { return $null }
+
+    $markerIndex = $Text.IndexOf($Marker)
+    if ($markerIndex -lt 0) { return $null }
+
+    $start = $Text.IndexOf('{', $markerIndex + $Marker.Length)
+    if ($start -lt 0) { return $null }
+
+    return Get-JsonObjectAtIndex -Text $Text -StartIndex $start
+}
+
+function Get-JsonObjectAtIndex {
+    param(
+        [string]$Text,
+        [int]$StartIndex
+    )
+
+    if (-not $Text) { return $null }
+    if ($StartIndex -lt 0 -or $StartIndex -ge $Text.Length) { return $null }
+
+    $start = $StartIndex
+    if ($start -lt 0) { return $null }
+
+    $depth = 0
+    $inString = $false
+    $escaped = $false
+
+    for ($i = $start; $i -lt $Text.Length; $i++) {
+        $ch = $Text[$i]
+
+        if ($inString) {
+            if ($escaped) {
+                $escaped = $false
+                continue
+            }
+            if ($ch -eq '\') {
+                $escaped = $true
+                continue
+            }
+            if ($ch -eq '"') {
+                $inString = $false
+            }
+            continue
+        }
+
+        if ($ch -eq '"') {
+            $inString = $true
+            continue
+        }
+
+        if ($ch -eq '{') {
+            $depth++
+            continue
+        }
+
+        if ($ch -eq '}') {
+            $depth--
+            if ($depth -eq 0) {
+                return $Text.Substring($start, ($i - $start + 1))
+            }
+        }
+    }
+
+    return $null
+}
+
+function Get-YouTubeRenderersFromHtml {
+    param([string]$Html)
+
+    $renderers = @()
+    $marker = '"playlistVideoRenderer":'
+    $offset = 0
+
+    while ($true) {
+        $idx = $Html.IndexOf($marker, $offset, [System.StringComparison]::Ordinal)
+        if ($idx -lt 0) { break }
+
+        $objStart = $Html.IndexOf('{', $idx + $marker.Length)
+        if ($objStart -lt 0) { break }
+
+        $objJson = Get-JsonObjectAtIndex -Text $Html -StartIndex $objStart
+        if ($objJson) {
+            $obj = ConvertTo-JsonSafe -JsonText $objJson
+            if ($obj) {
+                $renderers += $obj
+            }
+            $offset = $objStart + $objJson.Length
+        }
+        else {
+            $offset = $idx + $marker.Length
+        }
+
+        if ($renderers.Count -ge 500) { break }
+    }
+
+    return @($renderers)
+}
+
+function Find-PlaylistVideoRenderers {
+    param($Node)
+
+    $found = New-Object System.Collections.Generic.List[object]
+
+    function Traverse {
+        param($Current)
+
+        if ($null -eq $Current) { return }
+
+        if ($Current -is [System.Collections.IDictionary]) {
+            if ($Current.Contains("playlistVideoRenderer")) {
+                $found.Add($Current.playlistVideoRenderer)
+            }
+            foreach ($key in $Current.Keys) {
+                Traverse -Current $Current[$key]
+            }
+            return
+        }
+
+        if ($Current -is [System.Management.Automation.PSObject]) {
+            $videoProp = $Current.PSObject.Properties.Match("playlistVideoRenderer") | Select-Object -First 1
+            if ($videoProp -and $videoProp.Value) {
+                $found.Add($videoProp.Value)
+            }
+            foreach ($prop in $Current.PSObject.Properties) {
+                Traverse -Current $prop.Value
+            }
+            return
+        }
+
+        if ($Current -is [System.Collections.IEnumerable] -and -not ($Current -is [string])) {
+            foreach ($item in $Current) {
+                Traverse -Current $item
+            }
+        }
+    }
+
+    Traverse -Current $Node
+    return @($found)
+}
+
 # ============================================================================
 #  SPOTIFY — scrape embed page for anonymous token, then fetch via v1 API
 # ============================================================================
@@ -129,10 +291,14 @@ function Get-SpotifyPlaylistTracks {
     }
 
     try {
-        $playlist = Invoke-WebRequestSafe -Uri "https://api.spotify.com/v1/playlists/$PlaylistId" -Headers $headers
+        $playlist = Invoke-WebRequestSafe -Uri "https://api.spotify.com/v1/playlists/$PlaylistId" -Headers $headers -SkipRateLimitWait
     }
     catch {
         Write-Step "Failed to fetch Spotify playlist data: $($_.Exception.Message)" "Red"
+        return $null
+    }
+    if (-not $playlist) {
+        Write-Step "Spotify playlist request was rate-limited; skipping without waiting" "DarkYellow"
         return $null
     }
 
@@ -162,7 +328,11 @@ function Get-SpotifyPlaylistTracks {
     # Paginate remaining tracks
     $nextUrl = $playlist.tracks.next
     while ($nextUrl) {
-        try { $page = Invoke-WebRequestSafe -Uri $nextUrl -Headers $headers } catch { break }
+        try { $page = Invoke-WebRequestSafe -Uri $nextUrl -Headers $headers -SkipRateLimitWait } catch { break }
+        if (-not $page) {
+            Write-Step "  Spotify pagination rate-limited; stopping further pages" "DarkYellow"
+            break
+        }
         foreach ($item in $page.items) {
             $track = $item.track
             if (-not $track -or -not $track.name) { continue }
@@ -277,12 +447,18 @@ function Get-YouTubePlaylistTracks {
         }
     }
 
-    # YouTube embeds playlist data in a ytInitialData JSON blob
+    # YouTube embeds playlist data in a ytInitialData JSON blob (assignment format varies)
     $ytData = $null
-    if ($html -match 'var\s+ytInitialData\s*=\s*(\{.+?\});\s*</script>') {
-        try { $ytData = $Matches[1] | ConvertFrom-Json -Depth 50 } catch {
-            Write-Step "  Failed to parse YouTube initial data" "Red"
-        }
+    $candidates = @(
+        "var ytInitialData =",
+        "window['ytInitialData'] =",
+        'window["ytInitialData"] =',
+        "ytInitialData ="
+    )
+    foreach ($marker in $candidates) {
+        $jsonBlob = Get-JsonObjectAfterMarker -Text $html -Marker $marker
+        $ytData = ConvertTo-JsonSafe -JsonText $jsonBlob
+        if ($ytData) { break }
     }
 
     if (-not $ytData) {
@@ -298,24 +474,44 @@ function Get-YouTubePlaylistTracks {
     $tracks = @()
 
     try {
-        # Get playlist title from header
+        # Get playlist title/image if available
         $header = $ytData.header
         if ($header.playlistHeaderRenderer) {
-            $playlistName = $header.playlistHeaderRenderer.title.simpleText
+            if ($header.playlistHeaderRenderer.title.simpleText) {
+                $playlistName = $header.playlistHeaderRenderer.title.simpleText
+            }
             try {
                 $playlistImage = ($header.playlistHeaderRenderer.playlistHeaderBanner.heroPlaylistThumbnailRenderer.thumbnail.thumbnails | Select-Object -Last 1).url
             } catch {}
         }
+        if ($playlistName -eq "YouTube Playlist") {
+            try {
+                if ($ytData.metadata.playlistMetadataRenderer.title) {
+                    $playlistName = $ytData.metadata.playlistMetadataRenderer.title
+                }
+            } catch {}
+        }
+        if (($playlistName -eq "YouTube Playlist") -and ($html -match '<meta\s+property="og:title"\s+content="([^"]+)"')) {
+            $playlistName = [System.Web.HttpUtility]::HtmlDecode($Matches[1])
+        }
+        if (-not $playlistImage -and ($html -match '<meta\s+property="og:image"\s+content="([^"]+)"')) {
+            $playlistImage = $Matches[1]
+        }
 
-        # Navigate to video list
-        $tabs = $ytData.contents.twoColumnBrowseResultsRenderer.tabs
-        $tabContent = $tabs[0].tabRenderer.content
-        $sectionList = $tabContent.sectionListRenderer.contents
-        $itemSection = $sectionList[0].itemSectionRenderer.contents[0]
-        $playlistRenderer = $itemSection.playlistVideoListRenderer
-
-        foreach ($vi in $playlistRenderer.contents) {
-            $v = $vi.playlistVideoRenderer
+        $videoRenderers = @()
+        $structuredFailed = $false
+        try {
+            $videoRenderers = Find-PlaylistVideoRenderers -Node $ytData
+        }
+        catch {
+            $structuredFailed = $true
+            Write-Step "  YouTube structured traversal failed, using HTML fallback" "DarkYellow"
+        }
+        if ($structuredFailed -or -not $videoRenderers -or $videoRenderers.Count -eq 0) {
+            $videoRenderers = Get-YouTubeRenderersFromHtml -Html $html
+        }
+        $seenTrackIds = @{}
+        foreach ($v in $videoRenderers) {
             if (-not $v) { continue }
 
             $title = if ($v.title.runs) { ($v.title.runs | ForEach-Object { $_.text }) -join "" } else { $v.title.simpleText }
@@ -333,6 +529,10 @@ function Get-YouTubePlaylistTracks {
                 $durationMs = ([int]$Matches[1] * 60 + [int]$Matches[2]) * 1000
             }
 
+            if (-not $title -or -not $videoId) { continue }
+            if ($seenTrackIds.ContainsKey($videoId)) { continue }
+            $seenTrackIds[$videoId] = $true
+
             $tracks += @{
                 title = $title; artist = $artist; album = ""
                 durationMs = $durationMs; duration = $lengthText
@@ -341,6 +541,7 @@ function Get-YouTubePlaylistTracks {
                 image = $thumb; trackId = $videoId
             }
         }
+
     }
     catch {
         Write-Step "  Error parsing YouTube data: $($_.Exception.Message)" "Red"
@@ -450,7 +651,7 @@ function Get-TidalPlaylistTracks {
     # Tidal embed pages have a __NEXT_DATA__ JSON blob
     if ($html -match '<script\s+id="__NEXT_DATA__"[^>]*>(.+?)</script>') {
         try {
-            $nextData = $Matches[1] | ConvertFrom-Json -Depth 50
+            $nextData = $Matches[1] | ConvertFrom-Json
             $pageProps = $nextData.props.pageProps
 
             if ($pageProps.playlist) {
@@ -640,6 +841,16 @@ if (-not (Test-Path $curatorsPath)) {
 $curatorsData = Get-Content $curatorsPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $curators = $curatorsData.curators
 
+$existingOutput = $null
+if (Test-Path $outputPath) {
+    try {
+        $existingOutput = Get-Content $outputPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    }
+    catch {
+        Write-Step "Existing curators-tracklists.json could not be parsed, proceeding without fallback" "DarkYellow"
+    }
+}
+
 if (-not $curators -or $curators.Count -eq 0) {
     Write-Host "No curators found in curators.json" -ForegroundColor Yellow
     exit 0
@@ -655,11 +866,56 @@ $output = @{
 
 $totalPlaylists = 0
 $successPlaylists = 0
+$preservedPlaylists = 0
+
+function Get-ExistingPlaylistForUrl {
+    param(
+        [object[]]$ExistingPlaylists,
+        [string]$Url,
+        [hashtable]$ParsedCurrent
+    )
+
+    if (-not $ExistingPlaylists -or $ExistingPlaylists.Count -eq 0) { return $null }
+
+    $exact = $ExistingPlaylists | Where-Object { $_.url -eq $Url } | Select-Object -First 1
+    if ($exact) { return $exact }
+
+    if (-not $ParsedCurrent) { return $null }
+
+    foreach ($pl in $ExistingPlaylists) {
+        if (-not $pl.url) { continue }
+        $parsedExisting = Parse-PlaylistUrl $pl.url
+        if (-not $parsedExisting) { continue }
+        if ($parsedExisting.service -ne $ParsedCurrent.service) { continue }
+
+        if ($ParsedCurrent.id -and $parsedExisting.id -and $parsedExisting.id -eq $ParsedCurrent.id) {
+            return $pl
+        }
+        if ($ParsedCurrent.url -and $parsedExisting.url -and $parsedExisting.url -eq $ParsedCurrent.url) {
+            return $pl
+        }
+    }
+
+    return $null
+}
 
 foreach ($curator in $curators) {
     $name = $curator.name
     Write-Host ""
     Write-Step "Processing: $name" "White"
+
+    $existingCurator = $null
+    $existingCuratorProperty = $null
+    if ($existingOutput -and $existingOutput.curators) {
+        $existingCuratorProperty = $existingOutput.curators.PSObject.Properties | Where-Object { $_.Name -eq $name } | Select-Object -First 1
+        if ($existingCuratorProperty) {
+            $existingCurator = $existingCuratorProperty.Value
+        }
+    }
+    $existingCuratorPlaylists = @()
+    if ($existingCurator -and $existingCurator.playlists) {
+        $existingCuratorPlaylists = @($existingCurator.playlists)
+    }
 
     $playlistUrls = @()
     if ($curator.playlists) {
@@ -691,13 +947,18 @@ foreach ($curator in $curators) {
         Write-Step "  Fetching $($parsed.service) playlist: $($parsed.id)..." "Cyan"
 
         $result = $null
-        switch ($parsed.service) {
-            "spotify"    { $result = Get-SpotifyPlaylistTracks -PlaylistId $parsed.id }
-            "deezer"     { $result = Get-DeezerPlaylistTracks -PlaylistId $parsed.id }
-            "youtube"    { $result = Get-YouTubePlaylistTracks -PlaylistId $parsed.id }
-            "apple"      { $result = Get-AppleMusicPlaylistTracks -Country $parsed.country -PlaylistId $parsed.id }
-            "tidal"      { $result = Get-TidalPlaylistTracks -PlaylistId $parsed.id }
-            "soundcloud" { $result = Get-SoundCloudPlaylistTracks -PlaylistUrl $parsed.url }
+        try {
+            switch ($parsed.service) {
+                "spotify"    { $result = Get-SpotifyPlaylistTracks -PlaylistId $parsed.id }
+                "deezer"     { $result = Get-DeezerPlaylistTracks -PlaylistId $parsed.id }
+                "youtube"    { $result = Get-YouTubePlaylistTracks -PlaylistId $parsed.id }
+                "apple"      { $result = Get-AppleMusicPlaylistTracks -Country $parsed.country -PlaylistId $parsed.id }
+                "tidal"      { $result = Get-TidalPlaylistTracks -PlaylistId $parsed.id }
+                "soundcloud" { $result = Get-SoundCloudPlaylistTracks -PlaylistUrl $parsed.url }
+            }
+        }
+        catch {
+            Write-Step "  Fetch error, skipping update for this playlist: $($_.Exception.Message)" "DarkYellow"
         }
 
         if ($result) {
@@ -708,9 +969,14 @@ foreach ($curator in $curators) {
             Write-Step "  Got $trackCount tracks" "Green"
         }
         else {
-            Write-Step "  Failed to fetch playlist" "Red"
-            $curatorPlaylists += @{
-                url = $url; service = $parsed.service; name = "$($parsed.service) Playlist"; image = $null; tracks = @()
+            $existingPlaylist = Get-ExistingPlaylistForUrl -ExistingPlaylists $existingCuratorPlaylists -Url $url -ParsedCurrent $parsed
+            if ($existingPlaylist) {
+                Write-Step "  Failed to fetch playlist, keeping previous successful data" "DarkYellow"
+                $curatorPlaylists += $existingPlaylist
+                $preservedPlaylists++
+            }
+            else {
+                Write-Step "  Failed to fetch playlist, no previous data found - skipped" "DarkYellow"
             }
         }
     }
@@ -731,6 +997,9 @@ $fileSize = [math]::Round((Get-Item $outputPath).Length / 1024, 1)
 Write-Host ""
 Write-Host "======================================================================" -ForegroundColor Green
 Write-Host "  DONE! $successPlaylists/$totalPlaylists playlists fetched successfully" -ForegroundColor Green
-Write-Host "  Output: curators-tracklists.json ($($fileSize)KB)" -ForegroundColor Green
+if ($preservedPlaylists -gt 0) {
+    Write-Host "  Preserved from previous run: $preservedPlaylists" -ForegroundColor DarkYellow
+}
+Write-Host (("  Output: curators-tracklists.json ({0}KB)" -f $fileSize)) -ForegroundColor Green
 Write-Host "======================================================================" -ForegroundColor Green
 Write-Host ""

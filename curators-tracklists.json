@@ -1,138 +1,116 @@
 ﻿{
     "curators":  {
-                     "Петар Котевски":  {
-                                            "playlists":  [
-                                                              {
-                                                                  "image":  "https://cdn-images.dzcdn.net/images/playlist/903a355fa26b03d1555fba72192858a9/250x250-000000-80-0-0.jpg",
-                                                                  "url":  "https://www.deezer.com/playlist/14897847623",
-                                                                  "tracks":  [
-                                                                                 {
-                                                                                     "artist":  "BÜYÜK EV ABLUKADA",
-                                                                                     "album":  "FIRTINAYT",
-                                                                                     "durationMs":  312000,
-                                                                                     "trackId":  "411391712",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/411391712",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/ee716c92e2233b8306a28832e9920239/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "HEPSİNE NE FENA",
-                                                                                     "duration":  "5:12",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3?hdnea=exp=1771260061~acl=/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3*~data=user_id=0,application_id=42~hmac=05b4afdccdcae9eb11c8cb16bc0bb9fc17072a30aa32406ab38cdf4cb3d1bc80"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Roosevelt",
-                                                                                     "album":  "Roosevelt",
-                                                                                     "durationMs":  283000,
-                                                                                     "trackId":  "2596525632",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/2596525632",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/33135d9b1d144723bb582d9ed00759ba/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Moving On",
-                                                                                     "duration":  "4:43",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3?hdnea=exp=1771260061~acl=/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3*~data=user_id=0,application_id=42~hmac=d3bd480f20cc6506fa7ebc710d8cf49e59b45e9901763bcc2cd5a1a7f59f3a0e"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "SG Lewis",
-                                                                                     "album":  "Chemicals",
-                                                                                     "durationMs":  254000,
-                                                                                     "trackId":  "935293762",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/935293762",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/f938eac462a99c9246555a572c6429c7/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Chemicals",
-                                                                                     "duration":  "4:14",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3?hdnea=exp=1771260061~acl=/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3*~data=user_id=0,application_id=42~hmac=b33f6d74bb10935107a3d886b1b2cd285c76520e3e88bb92cee4e09c683523f9"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Hiatus Kaiyote",
-                                                                                     "album":  "Choose Your Weapon",
-                                                                                     "durationMs":  344000,
-                                                                                     "trackId":  "96315838",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/96315838",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/7b665539d2220a492f1ab13a8e27291b/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Breathing Underwater",
-                                                                                     "duration":  "5:44",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3?hdnea=exp=1771260061~acl=/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3*~data=user_id=0,application_id=42~hmac=9671952990902cbbb7fc72b9ab8b6354e88a907ea153ad8994d57becd79b3f3e"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Nicolas Godin",
-                                                                                     "album":  "Concrete and Glass",
-                                                                                     "durationMs":  250000,
-                                                                                     "trackId":  "804279372",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/804279372",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/96591b3c5bbddf62cce195e0d905669c/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Catch Yourself Falling (feat. Alexis Taylor)",
-                                                                                     "duration":  "4:10",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3?hdnea=exp=1771260061~acl=/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3*~data=user_id=0,application_id=42~hmac=f17af9d27b4e78ef8009b5e0718f44a4950c31f5dd61b3ee859eef0ddf23b959"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Little Dragon",
-                                                                                     "album":  "Ritual Union",
-                                                                                     "durationMs":  210000,
-                                                                                     "trackId":  "12756253",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/12756253",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/d9546a24a944fbbe7ef20bb390bd3cc3/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Ritual Union",
-                                                                                     "duration":  "3:30",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3?hdnea=exp=1771260061~acl=/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3*~data=user_id=0,application_id=42~hmac=1fe25926094f13a71892e824b5281ce51dd148f0b27e59f3b2260db6139e7ff5"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Santino Surfers",
-                                                                                     "album":  "Santino Surfers",
-                                                                                     "durationMs":  377000,
-                                                                                     "trackId":  "2289085615",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/2289085615",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/8596d35ad5529c6057db3963f668e53f/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Sun Rise Swell",
-                                                                                     "duration":  "6:17",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3?hdnea=exp=1771260061~acl=/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3*~data=user_id=0,application_id=42~hmac=e16a292c60b562ffaffeb8a8c3d24df4bcc8042368c2af70d76636fcc43bc7c9"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Gonza",
-                                                                                     "album":  "Relax Your Mind",
-                                                                                     "durationMs":  217000,
-                                                                                     "trackId":  "962648752",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/962648752",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/71df701eb57e80265738eeefb735993c/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Relax Your Mind",
-                                                                                     "duration":  "3:37",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3?hdnea=exp=1771260061~acl=/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3*~data=user_id=0,application_id=42~hmac=7d75c56ac26d029753355b441eeac057c7bb0104e5947100ba9f5dee33783583"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Crystal Murray",
-                                                                                     "album":  "Princess",
-                                                                                     "durationMs":  191000,
-                                                                                     "trackId":  "737056062",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/737056062",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/701efb2b72d83c6cfdf05ac78a22ff08/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Princess",
-                                                                                     "duration":  "3:11",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3?hdnea=exp=1771260061~acl=/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3*~data=user_id=0,application_id=42~hmac=025ddbad1a5cea62178261dbef3b494e468ff9251f3cb7ecfd7d45380ac6afad"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "The Midnight",
-                                                                                     "album":  "Syndicate",
-                                                                                     "durationMs":  177000,
-                                                                                     "trackId":  "3575353981",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/3575353981",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/723396585e6510e9922298e1fdcf92bc/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "First Night In Paris (feat. Carpenter Brut)",
-                                                                                     "duration":  "2:57",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3?hdnea=exp=1771260061~acl=/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3*~data=user_id=0,application_id=42~hmac=c06f9871a52df9f98de8ed07c8966a2d7010e6e79d17c8a86b1c18fa9772b23a"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Big Black Delta",
-                                                                                     "album":  "Big Black Delta",
-                                                                                     "durationMs":  265000,
-                                                                                     "trackId":  "65408646",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/65408646",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/5b07bf6426f3d3c15ef7280ea72a50f1/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Huggin \u0026 Kissin",
-                                                                                     "duration":  "4:25",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3?hdnea=exp=1771260061~acl=/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3*~data=user_id=0,application_id=42~hmac=eb23a72d61da755e45857294f0ad66f432d64d77b5930ae8fbb3f33bf676c6d0"
-                                                                                 }
-                                                                             ],
-                                                                  "name":  "Pero\u0027sBangers",
-                                                                  "service":  "deezer"
-                                                              }
-                                                          ]
-                                        },
+                     "Горан Пајак Трифуновски ":  {
+                                                      "playlists":  [
+                                                                        {
+                                                                            "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20504",
+                                                                            "url":  "https://youtube.com/playlist?list=PL1qijBqGdIrPlCWyF8_BkTYQ3M4uJOHeV\u0026si=a7qQlYxYIaUr88Ny",
+                                                                            "tracks":  [
+                                                                                           {
+                                                                                               "artist":  "diegodobini2",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  2529000,
+                                                                                               "trackId":  "IRNUc4iYYv4",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=IRNUc4iYYv4",
+                                                                                               "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHWBIAC2ASKAgwIABABGGUgYChaMA8=\u0026rs=AOn4CLCae7m9WEjr5bs-5xaCQFP1nEX7FA",
+                                                                                               "title":  "Ph̲a̲r̲o̲a̲h̲ S̲a̲n̲d̲e̲r̲s̲ – T̲h̲e̲m̲b̲i̲ ̲(̲1̲9̲7̲1̲)̲",
+                                                                                               "duration":  "42:09",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "bemyweakness",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  436000,
+                                                                                               "trackId":  "nEpv8U4k4OE",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=nEpv8U4k4OE",
+                                                                                               "image":  "https://i.ytimg.com/vi/nEpv8U4k4OE/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHeAoAChgKKAgwIABABGGUgYShVMA8=\u0026rs=AOn4CLDq7DSCBdsrmqCcaeVzBcPW8dmC7Q",
+                                                                                               "title":  "Scott Henderson Lady P",
+                                                                                               "duration":  "7:16",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "Lalo Schifrin",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  186000,
+                                                                                               "trackId":  "GlPbKtu21Qk",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=GlPbKtu21Qk",
+                                                                                               "image":  "https://i.ytimg.com/vi/GlPbKtu21Qk/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLCSNLkOxKsud-mbTQcHdHHFgvkmPg",
+                                                                                               "title":  "Cantata for Combo",
+                                                                                               "duration":  "3:06",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "J Diggs",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  601000,
+                                                                                               "trackId":  "PwzrKFKzkAI",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=PwzrKFKzkAI",
+                                                                                               "image":  "https://i.ytimg.com/vi/PwzrKFKzkAI/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC6AKKAgwIABABGH8gNSgvMA8=\u0026rs=AOn4CLBDxHZ7wf6mlw8Ih2xoloMpsJ5xeA",
+                                                                                               "title":  "Miles Davis - Guinnevere",
+                                                                                               "duration":  "10:01",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "Eerie - Heavy Echo (L\u0027osservatore osservato)",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  41000,
+                                                                                               "trackId":  "M88L5e2fQ0g",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=M88L5e2fQ0g",
+                                                                                               "image":  "https://i.ytimg.com/vi/M88L5e2fQ0g/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDUpDClqSSngRmUdO6_mhwEuZ2a4Q",
+                                                                                               "title":  "9M2 (The Black Windmill soundtrack, 1974, Roy Budd)",
+                                                                                               "duration":  "0:41",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "KEXP",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  405000,
+                                                                                               "trackId":  "Te1HkBx7rDw",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=Te1HkBx7rDw",
+                                                                                               "image":  "https://i.ytimg.com/vi/Te1HkBx7rDw/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLA2Zmf-cdjilQ0cA6plo6fZzcYO_g",
+                                                                                               "title":  "Angine de Poitrine - Mata Zyklek (Live on KEXP)",
+                                                                                               "duration":  "6:45",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "ClownC0re",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  125000,
+                                                                                               "trackId":  "sR_rPd_ufK4",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=sR_rPd_ufK4",
+                                                                                               "image":  "https://i.ytimg.com/vi/sR_rPd_ufK4/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDm8P7WUuD48c_J7O16SoMywmhZ8w",
+                                                                                               "title":  "Earth - Clown Core",
+                                                                                               "duration":  "2:05",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "Igorrr",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  289000,
+                                                                                               "trackId":  "TGIvO4eh190",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=TGIvO4eh190",
+                                                                                               "image":  "https://i.ytimg.com/vi/TGIvO4eh190/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLC_eIf3UD8UZE-FvSLbfA2KnCOB3g",
+                                                                                               "title":  "IGORRR - ADHD",
+                                                                                               "duration":  "4:49",
+                                                                                               "previewUrl":  null
+                                                                                           },
+                                                                                           {
+                                                                                               "artist":  "Marginales",
+                                                                                               "album":  "",
+                                                                                               "durationMs":  467000,
+                                                                                               "trackId":  "FbJ63spk48s",
+                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=FbJ63spk48s",
+                                                                                               "image":  "https://i.ytimg.com/vi/FbJ63spk48s/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC4AOKAgwIABABGGUgZShlMA8=\u0026rs=AOn4CLBXLNsh2ZFm6uYgGHcNXVIESwF_ig",
+                                                                                               "title":  "Venetian Snares - Hajnal",
+                                                                                               "duration":  "7:47",
+                                                                                               "previewUrl":  null
+                                                                                           }
+                                                                                       ],
+                                                                            "name":  "Pajak top",
+                                                                            "service":  "youtube"
+                                                                        }
+                                                                    ]
+                                                  },
                      "Мартин Петковски":  {
                                               "playlists":  [
                                                                 {
@@ -915,7 +893,140 @@
                                                                  "service":  "spotify"
                                                              }
                                                          ]
-                                       }
+                                       },
+                     "Петар Котевски":  {
+                                            "playlists":  [
+                                                              {
+                                                                  "image":  "https://cdn-images.dzcdn.net/images/playlist/903a355fa26b03d1555fba72192858a9/250x250-000000-80-0-0.jpg",
+                                                                  "url":  "https://www.deezer.com/playlist/14897847623",
+                                                                  "tracks":  [
+                                                                                 {
+                                                                                     "artist":  "BÜYÜK EV ABLUKADA",
+                                                                                     "album":  "FIRTINAYT",
+                                                                                     "durationMs":  312000,
+                                                                                     "trackId":  "411391712",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/411391712",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/ee716c92e2233b8306a28832e9920239/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "HEPSİNE NE FENA",
+                                                                                     "duration":  "5:12",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3?hdnea=exp=1771609646~acl=/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3*~data=user_id=0,application_id=42~hmac=8adc534b56faadf8354efa8b5f0aac43fae3887873e760294c9f62cdb6788860"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Roosevelt",
+                                                                                     "album":  "Roosevelt",
+                                                                                     "durationMs":  283000,
+                                                                                     "trackId":  "2596525632",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/2596525632",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/33135d9b1d144723bb582d9ed00759ba/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Moving On",
+                                                                                     "duration":  "4:43",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3?hdnea=exp=1771609646~acl=/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3*~data=user_id=0,application_id=42~hmac=be28bfa0d01ef5b487c5a9decf9867d9814f2db3589b794c145b0aa720be5265"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "SG Lewis",
+                                                                                     "album":  "Chemicals",
+                                                                                     "durationMs":  254000,
+                                                                                     "trackId":  "935293762",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/935293762",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/f938eac462a99c9246555a572c6429c7/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Chemicals",
+                                                                                     "duration":  "4:14",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3?hdnea=exp=1771609646~acl=/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3*~data=user_id=0,application_id=42~hmac=559c9e6a46eca78ee34e8916dc18b169885262fa892ebb46d7fc254ed4a7552f"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Hiatus Kaiyote",
+                                                                                     "album":  "Choose Your Weapon",
+                                                                                     "durationMs":  344000,
+                                                                                     "trackId":  "96315838",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/96315838",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/7b665539d2220a492f1ab13a8e27291b/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Breathing Underwater",
+                                                                                     "duration":  "5:44",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3?hdnea=exp=1771609646~acl=/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3*~data=user_id=0,application_id=42~hmac=4ad6faab7c80c639ffc79ec44e4ca80e589ab67bdb87690353504cdb40e15375"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Nicolas Godin",
+                                                                                     "album":  "Concrete and Glass",
+                                                                                     "durationMs":  250000,
+                                                                                     "trackId":  "804279372",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/804279372",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/96591b3c5bbddf62cce195e0d905669c/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Catch Yourself Falling (feat. Alexis Taylor)",
+                                                                                     "duration":  "4:10",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3?hdnea=exp=1771609646~acl=/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3*~data=user_id=0,application_id=42~hmac=2881782c507056625eebfc93651f954270723311ab18d4bdb4f46344714de606"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Little Dragon",
+                                                                                     "album":  "Ritual Union",
+                                                                                     "durationMs":  210000,
+                                                                                     "trackId":  "12756253",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/12756253",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/d9546a24a944fbbe7ef20bb390bd3cc3/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Ritual Union",
+                                                                                     "duration":  "3:30",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3?hdnea=exp=1771609646~acl=/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3*~data=user_id=0,application_id=42~hmac=aeda8707ef15f620cfcbb1169f8d620bbc4d6698ca9c503bda1c731741094a4a"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Santino Surfers",
+                                                                                     "album":  "Santino Surfers",
+                                                                                     "durationMs":  377000,
+                                                                                     "trackId":  "2289085615",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/2289085615",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/8596d35ad5529c6057db3963f668e53f/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Sun Rise Swell",
+                                                                                     "duration":  "6:17",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3?hdnea=exp=1771609646~acl=/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3*~data=user_id=0,application_id=42~hmac=6a722f8ca7f89b671833b2a0645b1db9f57834e2863aeb9df3437044a613d4de"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Gonza",
+                                                                                     "album":  "Relax Your Mind",
+                                                                                     "durationMs":  217000,
+                                                                                     "trackId":  "962648752",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/962648752",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/71df701eb57e80265738eeefb735993c/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Relax Your Mind",
+                                                                                     "duration":  "3:37",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3?hdnea=exp=1771609646~acl=/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3*~data=user_id=0,application_id=42~hmac=e09b50f7d6dbae45c7a0c7829aebdc66ffaa72deae8e7aa17032fa8b243ac6a1"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Crystal Murray",
+                                                                                     "album":  "Princess",
+                                                                                     "durationMs":  191000,
+                                                                                     "trackId":  "737056062",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/737056062",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/701efb2b72d83c6cfdf05ac78a22ff08/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Princess",
+                                                                                     "duration":  "3:11",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3?hdnea=exp=1771609646~acl=/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3*~data=user_id=0,application_id=42~hmac=e6e9252fc1ead497844b4a287d7786f0978fb5c980c6b64c5d4cbc5dad8069eb"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "The Midnight",
+                                                                                     "album":  "Syndicate",
+                                                                                     "durationMs":  177000,
+                                                                                     "trackId":  "3575353981",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/3575353981",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/723396585e6510e9922298e1fdcf92bc/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "First Night In Paris (feat. Carpenter Brut)",
+                                                                                     "duration":  "2:57",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3?hdnea=exp=1771609646~acl=/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3*~data=user_id=0,application_id=42~hmac=3745cbf582a4616121a568a2f6cbbaa895d898434135d6e537632afa39650083"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Big Black Delta",
+                                                                                     "album":  "Big Black Delta",
+                                                                                     "durationMs":  265000,
+                                                                                     "trackId":  "65408646",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/65408646",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/5b07bf6426f3d3c15ef7280ea72a50f1/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Huggin \u0026 Kissin",
+                                                                                     "duration":  "4:25",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3?hdnea=exp=1771609646~acl=/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3*~data=user_id=0,application_id=42~hmac=1ee6c9a517e65bf1365d402f78169d5dbaefdb753b6986e48ab7fb4b880b9ada"
+                                                                                 }
+                                                                             ],
+                                                                  "name":  "Pero\u0027sBangers",
+                                                                  "service":  "deezer"
+                                                              }
+                                                          ]
+                                        }
                  },
-    "generatedAt":  "2026-02-16T16:25:37Z"
+    "generatedAt":  "2026-02-20T17:32:21Z"
 }
