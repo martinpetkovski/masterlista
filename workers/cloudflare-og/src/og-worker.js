@@ -206,16 +206,16 @@ export default {
     const path = decodeURIComponent(rawPath);
 
     try {
-      // ==================== CURATOR: /kustos/{name} ====================
+      // ==================== CURATOR: /kustos/{slug} ====================
       if (path.startsWith('/kustos/')) {
-        const name = path.substring('/kustos/'.length).replace(/\/$/, '');
-        if (!name) return fetch(request);
+        const slug = path.substring('/kustos/'.length).replace(/\/$/, '');
+        if (!slug) return fetch(request);
 
         const data = await getCurators();
         const curators = data.curators || [];
-        const curator = curators.find(c =>
-          c.name === name || c.name.toLowerCase() === name.toLowerCase()
-        );
+        // Match by transliterated slug, then fallback to exact/case-insensitive name
+        const curator = curators.find(c => generateSlug(c.name) === slug)
+          || curators.find(c => c.name === slug || c.name.toLowerCase() === slug.toLowerCase());
 
         if (!curator) return fetch(request);
 
@@ -224,7 +224,7 @@ export default {
             title: `${curator.name} — Кустос | Македонска Музичка Мастер Листа`,
             description: `Курирана плејлиста од ${curator.name}`,
             image: curator.image || DEFAULT_OG_IMAGE,
-            url: `${SITE_URL}/kustos/${encodeURIComponent(curator.name)}`,
+            url: `${SITE_URL}/kustos/${generateSlug(curator.name)}`,
             type: 'profile',
           }),
           { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } },

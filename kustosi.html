@@ -1465,9 +1465,12 @@
         function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function escAttr(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-        /** Create curator slug from name */
+        /** Create curator slug from name (transliterated latin, no spaces) */
         function curatorSlug(name) {
-            return encodeURIComponent(name);
+            return transliterateCyrToLat(name)
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
         }
 
         // ==================== RENDER ====================

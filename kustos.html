@@ -853,6 +853,14 @@
             return text.split('').map(ch => cyrillicToLatinShorthandMap[ch] || ch).join('');
         }
 
+        /** Generate URL-safe slug from curator name (transliterated latin, no spaces) */
+        function generateCuratorSlug(name) {
+            return transliterateCyrToLat(name)
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
         // ==================== BAND NAME LOOKUP ====================
         let bandNameSet = new Set();
         let bandNameLookup = new Map();
@@ -1204,7 +1212,7 @@
                 sessionStorage.removeItem('curatorSlug');
                 const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
                 if (!isLocal && savedSlug) {
-                    history.replaceState(null, '', '/kustos/' + encodeURIComponent(savedSlug));
+                    history.replaceState(null, '', '/kustos/' + savedSlug);
                 }
             }
 
@@ -1233,8 +1241,10 @@
                 return;
             }
 
-            // Find curator (case-insensitive match)
+            // Find curator (by slug match, then case-insensitive name match)
             const curator = curatorsData.curators.find(c =>
+                generateCuratorSlug(c.name) === curatorParam
+            ) || curatorsData.curators.find(c =>
                 c.name.toLowerCase() === curatorParam.toLowerCase()
             );
 
@@ -1254,13 +1264,23 @@
             if (ogTitle) ogTitle.content = title;
             const ogDesc = document.getElementById('og-description');
             if (ogDesc) ogDesc.content = desc;
-            const cleanCuratorUrl = 'https://toplista.mk/kustos/' + encodeURIComponent(curatorParam);
+            const curatorSlug = generateCuratorSlug(curator.name);
+            const cleanCuratorUrl = 'https://toplista.mk/kustos/' + curatorSlug;
             const canonicalEl = document.getElementById('canonical-url');
             if (canonicalEl) canonicalEl.href = cleanCuratorUrl;
             const ogUrlEl = document.getElementById('og-url');
             if (ogUrlEl) ogUrlEl.content = cleanCuratorUrl;
             const twitterUrlEl = document.getElementById('twitter-url');
             if (twitterUrlEl) twitterUrlEl.content = cleanCuratorUrl;
+
+            // Update browser URL to clean slug URL (if not already)
+            const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            if (!isLocalhost) {
+                const cleanPath = '/kustos/' + curatorSlug;
+                if (window.location.pathname !== cleanPath) {
+                    window.history.replaceState({}, '', cleanPath);
+                }
+            }
 
             // Render
             renderCurator(curator);

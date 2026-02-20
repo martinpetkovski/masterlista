@@ -19,7 +19,7 @@ This worker sits in front of the GitHub Pages origin (as a Cloudflare Worker Rou
 | Pattern | Data source | Example |
 |---|---|---|
 | `/{artist-slug}` | `bands.json` | `/guruvoodoo` |
-| `/kustos/{name}` | `curators.json` | `/kustos/Мартин%20Петковски` |
+| `/kustos/{slug}` | `curators.json` | `/kustos/martin-petkovski` |
 | `/nastan/{id}` | `events.json` | `/nastan/evt-20260206-re-start-festival-ден-1-6z31` |
 
 ## Deployment
