@@ -9752,6 +9752,50 @@
       "label": null,
       "accentColors": null,
       "confirmed": false
+    },
+    {
+      "name": "Гримус",
+      "city": "Струга",
+      "genre": "Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=f1B0PqHox4I"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Стагнатор",
+      "city": "недостигаат податоци",
+      "genre": "Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=6oGqIWMtpe0",
+        "bandcamp": "https://stagnatormk.bandcamp.com/album/cena-na-nezavisnost",
+        "facebook": "https://www.facebook.com/stagnator1234"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
+    },
+    {
+      "name": "Титаниум",
+      "city": "Струга",
+      "genre": "Метал",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "youtube": "https://www.youtube.com/watch?v=XidM30QDdyw",
+        "generic": [
+          "https://www.myspace.com/titaniummk"
+        ]
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
     }
   ]
 }
