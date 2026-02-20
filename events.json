@@ -162,6 +162,35 @@
       ]
     },
     {
+      "id": "evt-20260221-galoski-9zb3",
+      "title": "GALOSKI",
+      "date": "2026-02-21",
+      "time": "12:00",
+      "place": "Трифкова Колиба, Маврово",
+      "artists": [
+        "Galoski"
+      ],
+      "tickets": [],
+      "links": []
+    },
+    {
+      "id": "evt-20260221-herzel-jagoda-w3wb",
+      "title": "Herzel @ Jagoda",
+      "date": "2026-02-21",
+      "time": "21:00",
+      "place": "Јагода Мезе Бар, Битола",
+      "artists": [
+        "Herzel"
+      ],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DU6Auh0gm6e/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260223-next-to-silence-промоција-на-албум-rqnv",
       "title": "Next to Silence промоција на албум",
       "date": "2026-02-23",
@@ -333,6 +362,28 @@
         }
       ],
       "link": "https://mktickets.mk/event/ljubojna-25-godini/"
+    },
+    {
+      "id": "evt-20260418-кристијан-магденовски-промоција-на-албум-sbjq",
+      "title": "Кристијан Магденовски промоција на албум",
+      "date": "2026-04-18",
+      "time": "22:00",
+      "place": "Public Room, Скопје",
+      "artists": [
+        "Кристијан Магденовски"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "250"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://tix.mk/event/154/promocija-na-album-hard-edged"
+        }
+      ]
     },
     {
       "id": "evt-20260509-30-години-нокаут-m2qi",
