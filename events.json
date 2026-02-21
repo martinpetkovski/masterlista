@@ -381,6 +381,40 @@
       "link": "https://mktickets.mk/event/ljubojna-25-godini/"
     },
     {
+      "id": "evt-20260417-devangelic-u10c",
+      "title": "Devangelic",
+      "date": "2026-04-17",
+      "time": "19:30",
+      "place": "МКЦ, Скопје",
+      "artists": [
+        "Sinful Glare"
+      ],
+      "tickets": [
+        {
+          "label": "Early Bird",
+          "price": "600"
+        },
+        {
+          "label": "Стандард",
+          "price": "800"
+        },
+        {
+          "label": "На денот на концертот",
+          "price": "1000"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DU8KpM0Cg48/"
+        },
+        {
+          "label": "",
+          "url": "https://tix.mk/event/156/devangelic"
+        }
+      ]
+    },
+    {
       "id": "evt-20260418-кристијан-магденовски-промоција-на-албум-sbjq",
       "title": "Кристијан Магденовски промоција на албум",
       "date": "2026-04-18",
@@ -647,6 +681,36 @@
         }
       ],
       "link": "https://kupikarta.com/event-details.nspx?eventid=5729"
+    },
+    {
+      "id": "evt-20260919-skopje-fury-festival-nwg9",
+      "title": "Skopje Fury Festival",
+      "date": "2026-09-19",
+      "time": "12:00",
+      "place": "МКЦ Парк, Скопје",
+      "artists": [
+        "Sinful Glare"
+      ],
+      "tickets": [
+        {
+          "label": "Early Bird",
+          "price": "1500"
+        },
+        {
+          "label": "Билет",
+          "price": "1800"
+        },
+        {
+          "label": "На денот на настанот",
+          "price": "2000"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://tix.mk/event/136/skopje-fury-festival"
+        }
+      ]
     },
     {
       "id": "evt-20261127-next-time-r9k2",
