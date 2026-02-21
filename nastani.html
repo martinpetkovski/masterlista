@@ -45,6 +45,45 @@
     <style>
     /* === Events-specific overrides === */
 
+    /* Masked date/time input wrapper */
+    .masked-input-wrap {
+        position: relative;
+        display: block;
+    }
+    .masked-input-wrap input {
+        font-family: 'Montserrat', 'Courier New', monospace;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        background: transparent;
+        position: relative;
+        z-index: 1;
+        caret-color: var(--text-primary);
+        color: var(--text-primary);
+    }
+    .masked-input-wrap .mask-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        padding: 0.45rem 0.6rem;
+        font-family: 'Montserrat', 'Courier New', monospace;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        font-size: 0.8rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+    .masked-input-wrap .mask-overlay .filled { visibility: hidden; }
+    .masked-input-wrap .mask-overlay .placeholder { color: var(--text-muted); opacity: 0.45; }
+    .masked-input-wrap .mask-overlay .separator {
+        color: var(--text-muted);
+        opacity: 0.5;
+        visibility: hidden;
+    }
+    .masked-input-wrap input.mask-invalid {
+        color: #ef4444 !important;
+    }
+
     /* Column sizing: Name, Artists, Place, Date, Time, Tickets, Link, Actions */
     .nastani-page table { width: 100%; table-layout: auto; }
     .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) { width: auto; padding: 0.25rem 0.5rem; }  /* Name - takes remaining space */
@@ -772,11 +811,17 @@
                 <div class="form-group" style="display:flex;gap:0.5rem">
                     <div style="flex:1">
                         <label for="evt-date">Датум *</label>
-                        <input type="date" id="evt-date" required>
+                        <div class="masked-input-wrap">
+                            <input type="text" id="evt-date" maxlength="10" inputmode="numeric" autocomplete="off" required>
+                            <div class="mask-overlay" id="evt-date-overlay"></div>
+                        </div>
                     </div>
                     <div style="flex:1">
                         <label for="evt-time">Време *</label>
-                        <input type="time" id="evt-time" required>
+                        <div class="masked-input-wrap">
+                            <input type="text" id="evt-time" maxlength="5" inputmode="numeric" autocomplete="off" required>
+                            <div class="mask-overlay" id="evt-time-overlay"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -784,7 +829,7 @@
                     <input type="text" id="evt-place" placeholder="пр. МКЦ, Скопје" required>
                 </div>
                 <div class="form-group">
-                    <label>Артисти *</label>
+                    <label>Артисти</label>
                     <div class="artist-entries-list" id="artist-entries"></div>
                     <button type="button" class="add-entry-btn" id="add-artist-btn"><i class="fas fa-plus"></i> Додај артист</button>
                     <small class="form-help">Артистите мора да бидат од Мастер Листата</small>
@@ -1164,7 +1209,7 @@
                 html += '<span class="mobile-meta">';
                 html += '<span class="mm-item"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</span>';
                 html += '<span class="mm-sep">·</span>';
-                html += '<span class="mm-item"><i class="fas fa-calendar"></i> ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + '</span>';
+                html += '<span class="mm-item"><i class="fas fa-calendar"></i> ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '</span>';
                 html += '<span class="mm-sep">·</span>';
                 html += '<span class="mm-item"><i class="fas fa-clock"></i> ' + esc(evt.time) + '</span>';
                 html += '</span>';
@@ -1192,7 +1237,7 @@
 
                 // 4. Date (single line)
                 html += '<td data-label="Датум"><div class="event-date-cell">' +
-                    d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() +
+                    String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear() +
                     '</div></td>';
 
                 // 5. Time
@@ -1387,6 +1432,8 @@
             resetArtists(['']);
             resetTickets([{ label: '', price: '' }]);
             resetLinks([{ label: '', url: '' }]);
+            document.getElementById('evt-date').dispatchEvent(new Event('input'));
+            document.getElementById('evt-time').dispatchEvent(new Event('input'));
             modal.style.display = 'block';
             setTimeout(function() { document.getElementById('evt-title').focus(); }, 100);
         }
@@ -1399,9 +1446,18 @@
             deleteBtn.style.display = '';
 
             document.getElementById('evt-title').value = evt.title || '';
-            document.getElementById('evt-date').value = evt.date || '';
+            // Convert ISO date (YYYY-MM-DD) to European (dd.mm.yyyy)
+            var isoDate = evt.date || '';
+            if (isoDate && isoDate.indexOf('-') !== -1) {
+                var dp = isoDate.split('-');
+                document.getElementById('evt-date').value = dp[2] + '.' + dp[1] + '.' + dp[0];
+            } else {
+                document.getElementById('evt-date').value = isoDate;
+            }
             document.getElementById('evt-time').value = evt.time || '';
             document.getElementById('evt-place').value = evt.place || '';
+            document.getElementById('evt-date').dispatchEvent(new Event('input'));
+            document.getElementById('evt-time').dispatchEvent(new Event('input'));
 
             var evtLinks = getEventLinks(evt);
             resetLinks(evtLinks.length ? evtLinks : [{ label: '', url: '' }]);
@@ -1481,6 +1537,92 @@
             if (entries.length) entries[entries.length - 1].querySelector('.ticket-label-input').focus();
         });
 
+        // ==================== MASKED DATE/TIME INPUTS WITH VALIDATION ====================
+        (function() {
+            function clampDateDigits(digits) {
+                var d = digits.split('');
+                // Day: 0-3 for first digit
+                if (d[0] && parseInt(d[0]) > 3) d[0] = '3';
+                if (d[0] === '3' && d[1] && parseInt(d[1]) > 1) d[1] = '1';
+                if (d[0] === '0' && d[1] === '0') d[1] = '1';
+                // Month: 0-1 for first digit
+                if (d[2] && parseInt(d[2]) > 1) d[2] = '1';
+                if (d[2] === '1' && d[3] && parseInt(d[3]) > 2) d[3] = '2';
+                if (d[2] === '0' && d[3] === '0') d[3] = '1';
+                return d.join('');
+            }
+            function clampTimeDigits(digits) {
+                var d = digits.split('');
+                // Hour: 0-2 for first digit
+                if (d[0] && parseInt(d[0]) > 2) d[0] = '2';
+                if (d[0] === '2' && d[1] && parseInt(d[1]) > 3) d[1] = '3';
+                // Minute: 0-5 for first digit
+                if (d[2] && parseInt(d[2]) > 5) d[2] = '5';
+                return d.join('');
+            }
+            function renderOverlay(overlayEl, value, template, sepChar) {
+                var digits = value.replace(/\D/g, '');
+                var datePlaceholders = ['Д','Д','М','М','Г','Г','Г','Г'];
+                var timePlaceholders = ['Ч','Ч','М','М'];
+                var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
+                var html = '';
+                var di = 0;
+                for (var i = 0; i < template.length; i++) {
+                    if (template[i] === '_') {
+                        if (di < digits.length) {
+                            html += '<span class="filled">' + digits[di] + '</span>';
+                        } else {
+                            html += '<span class="placeholder">' + phs[di] + '</span>';
+                        }
+                        di++;
+                    } else {
+                        html += '<span class="separator">' + sepChar + '</span>';
+                    }
+                }
+                overlayEl.innerHTML = html;
+            }
+
+            function setupMaskedInput(inputEl, overlayEl, template, sepChar, maxDigits, clampFn) {
+                function update() {
+                    var raw = inputEl.value.replace(/\D/g, '').slice(0, maxDigits);
+                    raw = clampFn(raw);
+                    var formatted = '';
+                    for (var i = 0; i < raw.length; i++) {
+                        if (template[formatted.length] !== '_') formatted += sepChar;
+                        formatted += raw[i];
+                    }
+                    inputEl.value = formatted;
+                    renderOverlay(overlayEl, formatted, template, sepChar);
+                    // Validate complete value
+                    if (raw.length === maxDigits) {
+                        var valid = true;
+                        if (maxDigits === 8) {
+                            var dd = parseInt(raw.slice(0,2)), mm = parseInt(raw.slice(2,4));
+                            if (dd < 1 || dd > 31 || mm < 1 || mm > 12) valid = false;
+                        } else {
+                            var hh = parseInt(raw.slice(0,2)), mi = parseInt(raw.slice(2,4));
+                            if (hh > 23 || mi > 59) valid = false;
+                        }
+                        inputEl.classList.toggle('mask-invalid', !valid);
+                    } else {
+                        inputEl.classList.remove('mask-invalid');
+                    }
+                }
+                inputEl.addEventListener('input', update);
+                // Render initial overlay
+                update();
+                return update;
+            }
+
+            var dateInput = document.getElementById('evt-date');
+            var timeInput = document.getElementById('evt-time');
+            var dateOverlay = document.getElementById('evt-date-overlay');
+            var timeOverlay = document.getElementById('evt-time-overlay');
+
+            window._evtDateUpdate = setupMaskedInput(dateInput, dateOverlay, '__.__.____', '.', 8, clampDateDigits);
+            window._evtTimeUpdate = setupMaskedInput(timeInput, timeOverlay, '__:__', ':', 4, clampTimeDigits);
+        })();
+
         // ==================== DELETE ====================
         deleteBtn.addEventListener('click', function() {
             if (!editingEventId) return;
@@ -1494,9 +1636,27 @@
             e.preventDefault();
 
             var title = document.getElementById('evt-title').value.trim();
-            var date = document.getElementById('evt-date').value;
-            var time = document.getElementById('evt-time').value;
+            var dateRaw = document.getElementById('evt-date').value.trim();
+            var time = document.getElementById('evt-time').value.trim();
             var place = document.getElementById('evt-place').value.trim();
+
+            // Convert European date (dd.mm.yyyy) to ISO (YYYY-MM-DD)
+            var date = '';
+            if (dateRaw) {
+                var dp = dateRaw.split('.');
+                if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
+                    date = dp[2] + '-' + dp[1] + '-' + dp[0];
+                } else {
+                    notify('Форматот на датумот треба да биде дд.мм.гггг', 'error');
+                    return;
+                }
+            }
+
+            // Validate time format HH:MM
+            if (time && !/^\d{2}:\d{2}$/.test(time)) {
+                notify('Форматот на времето треба да биде чч:мм', 'error');
+                return;
+            }
 
             var artists = [];
             var valid = true;
@@ -1531,7 +1691,7 @@
                 if (u) links.push({ label: lbl, url: u });
             });
 
-            if (!title || !date || !time || !place || !artists.length) {
+            if (!title || !date || !time || !place) {
                 notify('Пополнете ги сите задолжителни полиња.', 'error');
                 return;
             }
@@ -1550,7 +1710,7 @@
                 updated.push(eventObj);
             }
 
-            var desc = (editingEventId ? 'Уреден' : 'Нов') + ' настан: ' + title + ' (' + date + ')\nМесто: ' + place + '\nАртисти: ' + artists.join(', ');
+            var desc = (editingEventId ? 'Уреден' : 'Нов') + ' настан: ' + title + ' (' + date + ')\nМесто: ' + place + (artists.length ? '\nАртисти: ' + artists.join(', ') : '');
             submitUpdate(updated, desc);
         });
 

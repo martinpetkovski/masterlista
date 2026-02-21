@@ -2481,16 +2481,14 @@
             
             let weekStr;
             if (monday.getMonth() === sunday.getMonth()) {
-                // Same month: "2-8 Февруари 2026"
-                weekStr = `${monday.getDate()}-${sunday.getDate()} ${mkMonths[monday.getMonth()]} ${monday.getFullYear()}`;
+                // Same month: "02.02 - 08.02.2026"
+                weekStr = `${String(monday.getDate()).padStart(2,'0')}.${String(monday.getMonth()+1).padStart(2,'0')} - ${String(sunday.getDate()).padStart(2,'0')}.${String(sunday.getMonth()+1).padStart(2,'0')}.${monday.getFullYear()}`;
             } else if (monday.getFullYear() === sunday.getFullYear()) {
-                // Different months, same year: "28 Јан - 3 Фев 2026"
-                const mkShort = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
-                weekStr = `${monday.getDate()} ${mkShort[monday.getMonth()]} - ${sunday.getDate()} ${mkShort[sunday.getMonth()]} ${sunday.getFullYear()}`;
+                // Different months, same year: "28.01 - 03.02.2026"
+                weekStr = `${String(monday.getDate()).padStart(2,'0')}.${String(monday.getMonth()+1).padStart(2,'0')} - ${String(sunday.getDate()).padStart(2,'0')}.${String(sunday.getMonth()+1).padStart(2,'0')}.${sunday.getFullYear()}`;
             } else {
                 // Different years
-                const mkShort = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
-                weekStr = `${monday.getDate()} ${mkShort[monday.getMonth()]} ${monday.getFullYear()} - ${sunday.getDate()} ${mkShort[sunday.getMonth()]} ${sunday.getFullYear()}`;
+                weekStr = `${String(monday.getDate()).padStart(2,'0')}.${String(monday.getMonth()+1).padStart(2,'0')}.${monday.getFullYear()} - ${String(sunday.getDate()).padStart(2,'0')}.${String(sunday.getMonth()+1).padStart(2,'0')}.${sunday.getFullYear()}`;
             }
             
             // Use custom title or fallback to default
@@ -3701,7 +3699,7 @@
                     
                     // Format release date for display
                     const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
-                    const releaseDateStr = `${releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]}`;
+                    const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}`;
                     
                     // Check for changes from previous chart (skip for date-sorted)
                     let changeIndicator = '';

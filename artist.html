@@ -521,16 +521,23 @@
             font-size: 0.85rem;
         }
         
-        /* Loading state */
-        .artist-loading {
-            text-align: center;
-            padding: 3rem 1rem;
+        /* Per-section fade-in transitions */
+        #popularity-graph-container,
+        #chart-history-container,
+        #rss-media-container,
+        #events-container {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease, max-height 0.5s ease;
         }
-        
-        .artist-loading i {
-            font-size: 2rem;
-            color: var(--accent-orange);
-            margin-bottom: 1rem;
+        #popularity-graph-container.section-loaded,
+        #chart-history-container.section-loaded,
+        #rss-media-container.section-loaded,
+        #events-container.section-loaded {
+            opacity: 1;
+            max-height: 5000px;
+            overflow: visible;
         }
         
         /* Play button on releases */
@@ -1064,10 +1071,6 @@ a.chart-history-item {
     </header>
     <div class="artist-container">
         <div id="artist-content">
-            <div class="artist-loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Се вчитува...</p>
-            </div>
         </div>
     </div>
     
@@ -1663,25 +1666,9 @@ a.chart-history-item {
                     ${linksHtml}
                 </div>
                 
-                <div id="popularity-graph-container">
-                    <div class="popularity-graph-section">
-                        <h3 class="section-title"><i class="fas fa-chart-area"></i> Кумулативна Популарност</h3>
-                        <div class="popularity-graph-container" style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.8rem;">
-                            <i class="fas fa-spinner fa-spin" style="font-size:1.2rem;margin-bottom:0.5rem;display:block;"></i>
-                            Се вчитува...
-                        </div>
-                    </div>
-                </div>
+                <div id="popularity-graph-container"></div>
                 
-                <div id="chart-history-container">
-                    <div class="chart-history-section">
-                        <h3 class="section-title"><i class="fas fa-compact-disc"></i> Изданија</h3>
-                        <div class="chart-history-list" style="text-align:center;padding:2rem 1rem;color:var(--text-muted);font-size:0.8rem;">
-                            <i class="fas fa-spinner fa-spin" style="font-size:1.2rem;margin-bottom:0.5rem;display:block;"></i>
-                            Се вчитуваат изданијата...
-                        </div>
-                    </div>
-                </div>
+                <div id="chart-history-container"></div>
                 
                 <div id="rss-media-container"></div>
                 
@@ -2132,6 +2119,8 @@ a.chart-history-item {
                 container.innerHTML = '';
                 return;
             }
+            // Will fade in after rendering
+            container.classList.remove('section-loaded');
             
             const maxPopularity = Math.max(...weeklyData.map(d => d.popularity));
             const minPopularity = Math.min(...weeklyData.map(d => d.popularity));
@@ -2226,6 +2215,9 @@ a.chart-history-item {
                     </div>
                 </div>
             `;
+            // Fade in the section
+            void container.offsetWidth;
+            container.classList.add('section-loaded');
         }
         
         // Render releases section
@@ -2255,7 +2247,7 @@ a.chart-history-item {
                 // Format release date
                 const releaseDate = new Date(release.releaseDate);
                 const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
-                const dateStr = `${releaseDate.getDate()} ${monthNames[releaseDate.getMonth()]} ${releaseDate.getFullYear()}`;
+                const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                 
                 // Show open button if there's a release URL
                 const hasLink = !!release.releaseUrl;
@@ -2318,6 +2310,9 @@ a.chart-history-item {
                     </div>
                 </div>
             `;
+            // Fade in the section
+            void container.offsetWidth;
+            container.classList.add('section-loaded');
             
             // Add click handlers for release buttons - open on preferred service
             container.querySelectorAll('.release-play-btn').forEach(btn => {
@@ -2518,7 +2513,8 @@ a.chart-history-item {
         
         // Render error state
         function renderError() {
-            document.getElementById('artist-content').innerHTML = `
+            const el = document.getElementById('artist-content');
+            el.innerHTML = `
                 <div class="artist-error">
                     <i class="fas fa-question-circle"></i>
                     <h2>Артистот не е пронајден</h2>
@@ -2679,6 +2675,8 @@ a.chart-history-item {
                 // Render artist page
                 renderArtist(artist, thumbnail, bandsData);
                 
+                // (per-section fade-in handled by each render function)
+                
                 // Store artist links globally for the music player
                 window.artistLinks = artist.links || {};
                 
@@ -2774,8 +2772,8 @@ a.chart-history-item {
                             mediaContainer.appendChild(articlesList);
                             
                             matched.forEach(article => {
-                                const dateStr = article.pubDate.getTime() > 0 
-                                    ? article.pubDate.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short', year: 'numeric' })
+                            const dateStr = article.pubDate.getTime() > 0 
+                                    ? String(article.pubDate.getDate()).padStart(2,'0') + '.' + String(article.pubDate.getMonth()+1).padStart(2,'0') + '.' + article.pubDate.getFullYear()
                                     : '';
                                 const a = document.createElement('a');
                                 a.href = article.link;
@@ -2789,6 +2787,9 @@ a.chart-history-item {
                                 `;
                                 articlesList.appendChild(a);
                             });
+                            // Fade in media section
+                            void mediaContainer.offsetWidth;
+                            mediaContainer.classList.add('section-loaded');
                         }
                     }
                 } catch (e) {
@@ -2835,7 +2836,7 @@ a.chart-history-item {
                                 else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">за ${daysDiff} ден${daysDiff === 1 ? '' : 'а'}</span>`;
                                 else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">за ${daysDiff} дена</span>`;
                             }
-                            const dateStr = d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+                            const dateStr = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
                             const dayStr = MK_DAYS[d.getDay()];
                             const item = document.createElement('a');
                             item.href = '/nastan/' + encodeURIComponent(evt.id);
@@ -2880,6 +2881,9 @@ a.chart-history-item {
                                 evtContainer.appendChild(list);
                                 past.forEach(evt => list.appendChild(renderEventCard(evt, true)));
                             }
+                            // Fade in events section
+                            void evtContainer.offsetWidth;
+                            evtContainer.classList.add('section-loaded');
                         }
                 } catch (e) {
                     console.warn('Could not load events:', e);

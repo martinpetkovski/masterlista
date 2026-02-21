@@ -323,6 +323,12 @@
                     <button class="option-btn" data-genre="electronic">
                         <i class="fas fa-headphones"></i> Електронска
                     </button>
+                    <button class="option-btn" data-genre="jazz">
+                        <i class="fas fa-saxophone"></i> Џез
+                    </button>
+                    <button class="option-btn" data-genre="metal">
+                        <i class="fas fa-skull-crossbones"></i> Метал
+                    </button>
                 </div>
             </div>
 
@@ -341,6 +347,28 @@
                     </button>
                     <button class="option-btn" data-era="old">
                         <i class="fas fa-record-vinyl"></i> Стари (10+ години)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Filters -->
+            <div class="surprise-step" id="step-filters">
+                <div class="step-label">
+                    <span class="step-number" id="step-num-3">3</span>
+                    Филтри (опционално)
+                </div>
+                <div class="option-grid">
+                    <button class="option-btn" data-filter="verified">
+                        <i class="fas fa-circle-check"></i> Потврдени
+                    </button>
+                    <button class="option-btn" data-filter="spotify">
+                        <i class="fab fa-spotify"></i> Со Spotify
+                    </button>
+                    <button class="option-btn" data-filter="active">
+                        <i class="fas fa-bolt"></i> Активни
+                    </button>
+                    <button class="option-btn" data-filter="inactive">
+                        <i class="fas fa-moon"></i> Неактивни
                     </button>
                 </div>
             </div>
@@ -460,7 +488,7 @@
             'alt': {
                 genres: ['Алтернативен', 'Инди', 'Пост-панк', 'Панк', 'Шугејз', 'Дрим Поп', 'Пост-рок',
                          'Гранџ', 'Експериментален', 'Мат Рок', 'Арт Рок', 'Алтернативен Рок', 'Инди Рок', 'Пост-Панк'],
-                excludeIfContains: ['поп']
+                excludeIfContains: ['поп', 'метал', 'хардкор', 'трешкор', 'металкор', 'џез']
             },
             'rap': {
                 genres: ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап'],
@@ -470,14 +498,26 @@
                 genres: ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп',
                          'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв'],
                 excludeIfContains: []
+            },
+            'jazz': {
+                genres: ['Џез', 'Џез Фјужн', 'Џез Рок', 'Ацид Џез', 'Фјужн'],
+                excludeIfContains: []
+            },
+            'metal': {
+                genres: ['Метал', 'Хеви Метал', 'Треш Метал', 'Пауер Метал', 'Прогресивен Метал',
+                         'Спид Метал', 'Металкор', 'Кросовер Треш', 'Дет Метал', 'Блек Метал',
+                         'Стонер', 'Хардкор', 'Трешкор', 'Пост-Хардкор'],
+                excludeIfContains: []
             }
         };
 
         // ==================== STATE ====================
         let selectedGenre = 'all';
         let selectedEra = 'any';
+        let activeFilters = new Set();
         let bandsData = [];
         let releasesData = [];
+        let eventsData = [];
         let dataLoaded = false;
 
         // ==================== OPTION BUTTON LOGIC ====================
@@ -499,18 +539,36 @@
             });
         });
 
+        // Filter buttons (toggle, multi-select)
+        document.querySelectorAll('#step-filters .option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+                if (activeFilters.has(filter)) {
+                    activeFilters.delete(filter);
+                    btn.classList.remove('selected');
+                } else {
+                    activeFilters.add(filter);
+                    btn.classList.add('selected');
+                }
+                updateGoButton();
+            });
+        });
+
         // ==================== LOAD DATA ====================
         async function loadData() {
             try {
-                const [bandsResp, chartResp] = await Promise.all([
+                const [bandsResp, chartResp, eventsResp] = await Promise.all([
                     fetch('bands.json'),
-                    fetch('chart-data.json')
+                    fetch('chart-data.json'),
+                    fetch('events.json')
                 ]);
                 const bandsJson = await bandsResp.json();
                 const chartJson = await chartResp.json();
+                const eventsJson = await eventsResp.json();
 
                 bandsData = bandsJson.muzickaMasterLista || [];
                 releasesData = chartJson.releases || [];
+                eventsData = eventsJson.events || [];
                 dataLoaded = true;
                 updateGoButton();
             } catch (err) {
@@ -573,6 +631,29 @@
             return true;
         }
 
+        // ==================== ACTIVITY STATUS ====================
+        function getArtistActivity(artistName, eraMap) {
+            const now = new Date();
+            // Check recent event (past year)
+            const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+            const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+            const lower = artistName.toLowerCase();
+            const hasRecentEvent = eventsData.some(e =>
+                e.date >= oneYearAgoStr &&
+                (e.artists || []).some(a => a.toLowerCase() === lower)
+            );
+            if (hasRecentEvent) return 'active';
+
+            // Check release dates
+            const latestYear = eraMap[artistName];
+            if (!latestYear) return 'unknown';
+
+            const diffYears = (now - new Date(latestYear, 0, 1)) / (365.25 * 24 * 60 * 60 * 1000);
+            if (diffYears <= 2) return 'active';
+            if (diffYears <= 3) return 'maybe';
+            return 'inactive';
+        }
+
         // ==================== GO! ====================
         const goBtn = document.getElementById('surprise-go');
         goBtn.addEventListener('click', () => {
@@ -582,8 +663,19 @@
 
             // Filter artists
             const candidates = bandsData.filter(artist => {
-                return artistMatchesGenre(artist, selectedGenre) &&
-                       artistMatchesEra(artist, selectedEra, eraMap);
+                if (!artistMatchesGenre(artist, selectedGenre)) return false;
+                if (!artistMatchesEra(artist, selectedEra, eraMap)) return false;
+                if (activeFilters.has('verified') && !artist.confirmed) return false;
+                if (activeFilters.has('spotify') && !(artist.links && artist.links.spotify)) return false;
+                if (activeFilters.has('active')) {
+                    const status = getArtistActivity(artist.name, eraMap);
+                    if (status !== 'active' && status !== 'maybe') return false;
+                }
+                if (activeFilters.has('inactive')) {
+                    const status = getArtistActivity(artist.name, eraMap);
+                    if (status !== 'inactive') return false;
+                }
+                return true;
             });
 
             const noResultsEl = document.getElementById('no-results');

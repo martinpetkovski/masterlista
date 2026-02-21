@@ -33,6 +33,44 @@
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
+        /* Masked date/time input wrapper */
+        .masked-input-wrap {
+            position: relative;
+            display: block;
+        }
+        .masked-input-wrap input {
+            font-family: 'Montserrat', 'Courier New', monospace;
+            letter-spacing: 0.12em;
+            font-weight: 600;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+            caret-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+        .masked-input-wrap .mask-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            padding: 0.45rem 0.6rem;
+            font-family: 'Montserrat', 'Courier New', monospace;
+            letter-spacing: 0.12em;
+            font-weight: 600;
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .masked-input-wrap .mask-overlay .filled { visibility: hidden; }
+        .masked-input-wrap .mask-overlay .placeholder { color: var(--text-muted); opacity: 0.45; }
+        .masked-input-wrap .mask-overlay .separator {
+            color: var(--text-muted);
+            opacity: 0.5;
+            visibility: hidden;
+        }
+        .masked-input-wrap input.mask-invalid {
+            color: #ef4444 !important;
+        }
         body.event-page {
             background: #f2f3f5;
             background-attachment: fixed;
@@ -460,11 +498,17 @@
                 <div class="form-group" style="display:flex;gap:0.5rem">
                     <div style="flex:1">
                         <label for="edit-evt-date">Датум *</label>
-                        <input type="date" id="edit-evt-date" required>
+                        <div class="masked-input-wrap">
+                            <input type="text" id="edit-evt-date" maxlength="10" inputmode="numeric" autocomplete="off" required>
+                            <div class="mask-overlay" id="edit-evt-date-overlay"></div>
+                        </div>
                     </div>
                     <div style="flex:1">
                         <label for="edit-evt-time">Време *</label>
-                        <input type="time" id="edit-evt-time" required>
+                        <div class="masked-input-wrap">
+                            <input type="text" id="edit-evt-time" maxlength="5" inputmode="numeric" autocomplete="off" required>
+                            <div class="mask-overlay" id="edit-evt-time-overlay"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -731,7 +775,7 @@
                 html += '<div class="event-countdown-hero ' + cd.cls + '">' + cd.text + '</div>';
             }
             html += '<div class="event-date-hero"><i class="fas fa-clock"></i> ' +
-                MK_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() +
+                MK_DAYS[d.getDay()] + ', ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear() +
                 (evt.time ? ' · ' + esc(evt.time) : '') + '</div>';
             html += '</div>';
 
@@ -770,7 +814,7 @@
             html += '<div class="info-card">';
             html += '<div class="info-card-icon"><i class="fas fa-calendar"></i></div>';
             html += '<div class="info-card-text"><div class="info-card-label">Датум</div><div class="info-card-value">' +
-                MK_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + '</div></div>';
+                MK_DAYS[d.getDay()] + ', ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear() + '</div></div>';
             html += '</div>';
 
             // Time
@@ -945,9 +989,18 @@
             var deleteBtn = document.getElementById('edit-delete-btn');
 
             document.getElementById('edit-evt-title').value = evt.title || '';
-            document.getElementById('edit-evt-date').value = evt.date || '';
+            // Convert ISO date (YYYY-MM-DD) to European (dd.mm.yyyy)
+            var isoDate = evt.date || '';
+            if (isoDate && isoDate.indexOf('-') !== -1) {
+                var dp = isoDate.split('-');
+                document.getElementById('edit-evt-date').value = dp[2] + '.' + dp[1] + '.' + dp[0];
+            } else {
+                document.getElementById('edit-evt-date').value = isoDate;
+            }
             document.getElementById('edit-evt-time').value = evt.time || '';
             document.getElementById('edit-evt-place').value = evt.place || '';
+            document.getElementById('edit-evt-date').dispatchEvent(new Event('input'));
+            document.getElementById('edit-evt-time').dispatchEvent(new Event('input'));
 
             // Artists
             var artists = evt.artists || evt.bands || [];
@@ -975,6 +1028,83 @@
         (function initEditModal() {
             var modal = document.getElementById('event-edit-modal');
             if (!modal) return;
+
+            // ==================== MASKED DATE/TIME INPUTS WITH VALIDATION ====================
+            function clampDateDigits(digits) {
+                var d = digits.split('');
+                if (d[0] && parseInt(d[0]) > 3) d[0] = '3';
+                if (d[0] === '3' && d[1] && parseInt(d[1]) > 1) d[1] = '1';
+                if (d[0] === '0' && d[1] === '0') d[1] = '1';
+                if (d[2] && parseInt(d[2]) > 1) d[2] = '1';
+                if (d[2] === '1' && d[3] && parseInt(d[3]) > 2) d[3] = '2';
+                if (d[2] === '0' && d[3] === '0') d[3] = '1';
+                return d.join('');
+            }
+            function clampTimeDigits(digits) {
+                var d = digits.split('');
+                if (d[0] && parseInt(d[0]) > 2) d[0] = '2';
+                if (d[0] === '2' && d[1] && parseInt(d[1]) > 3) d[1] = '3';
+                if (d[2] && parseInt(d[2]) > 5) d[2] = '5';
+                return d.join('');
+            }
+            function renderOverlay(overlayEl, value, template, sepChar) {
+                var digits = value.replace(/\D/g, '');
+                var datePlaceholders = ['Д','Д','М','М','Г','Г','Г','Г'];
+                var timePlaceholders = ['Ч','Ч','М','М'];
+                var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
+                var html = '';
+                var di = 0;
+                for (var i = 0; i < template.length; i++) {
+                    if (template[i] === '_') {
+                        if (di < digits.length) {
+                            html += '<span class="filled">' + digits[di] + '</span>';
+                        } else {
+                            html += '<span class="placeholder">' + phs[di] + '</span>';
+                        }
+                        di++;
+                    } else {
+                        html += '<span class="separator">' + sepChar + '</span>';
+                    }
+                }
+                overlayEl.innerHTML = html;
+            }
+            function setupMaskedInput(inputEl, overlayEl, template, sepChar, maxDigits, clampFn) {
+                function update() {
+                    var raw = inputEl.value.replace(/\D/g, '').slice(0, maxDigits);
+                    raw = clampFn(raw);
+                    var formatted = '';
+                    for (var i = 0; i < raw.length; i++) {
+                        if (template[formatted.length] !== '_') formatted += sepChar;
+                        formatted += raw[i];
+                    }
+                    inputEl.value = formatted;
+                    renderOverlay(overlayEl, formatted, template, sepChar);
+                    if (raw.length === maxDigits) {
+                        var valid = true;
+                        if (maxDigits === 8) {
+                            var dd = parseInt(raw.slice(0,2)), mm = parseInt(raw.slice(2,4));
+                            if (dd < 1 || dd > 31 || mm < 1 || mm > 12) valid = false;
+                        } else {
+                            var hh = parseInt(raw.slice(0,2)), mi = parseInt(raw.slice(2,4));
+                            if (hh > 23 || mi > 59) valid = false;
+                        }
+                        inputEl.classList.toggle('mask-invalid', !valid);
+                    } else {
+                        inputEl.classList.remove('mask-invalid');
+                    }
+                }
+                inputEl.addEventListener('input', update);
+                update();
+                return update;
+            }
+
+            var dateInput = document.getElementById('edit-evt-date');
+            var timeInput = document.getElementById('edit-evt-time');
+            var dateOverlay = document.getElementById('edit-evt-date-overlay');
+            var timeOverlay = document.getElementById('edit-evt-time-overlay');
+
+            setupMaskedInput(dateInput, dateOverlay, '__.__.____', '.', 8, clampDateDigits);
+            setupMaskedInput(timeInput, timeOverlay, '__:__', ':', 4, clampTimeDigits);
 
             document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
             modal.addEventListener('click', function(e) { if (e.target === modal) closeEditModal(); });
@@ -1010,9 +1140,27 @@
                 if (!currentEvent) return;
 
                 var title = document.getElementById('edit-evt-title').value.trim();
-                var date = document.getElementById('edit-evt-date').value;
-                var time = document.getElementById('edit-evt-time').value;
+                var dateRaw = document.getElementById('edit-evt-date').value.trim();
+                var time = document.getElementById('edit-evt-time').value.trim();
                 var place = document.getElementById('edit-evt-place').value.trim();
+
+                // Convert European date (dd.mm.yyyy) to ISO (YYYY-MM-DD)
+                var date = '';
+                if (dateRaw) {
+                    var dp = dateRaw.split('.');
+                    if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
+                        date = dp[2] + '-' + dp[1] + '-' + dp[0];
+                    } else {
+                        notify('Форматот на датумот треба да биде дд.мм.гггг', 'error');
+                        return;
+                    }
+                }
+
+                // Validate time format HH:MM
+                if (time && !/^\d{2}:\d{2}$/.test(time)) {
+                    notify('Форматот на времето треба да биде чч:мм', 'error');
+                    return;
+                }
 
                 // Collect artists
                 var artists = [];
