@@ -364,6 +364,36 @@ export default {
         return json({ error: 'Failed to commit file', detail: text }, 500, corsHeaders);
       }
 
+      // 4b) Commit additional binary/text files (e.g. greeting audio)
+      const additionalFiles = body?.additionalFiles || [];
+      const failedFiles = [];
+      for (const af of additionalFiles) {
+        if (!af.path || !af.contentBase64) continue;
+        // Encode each path segment individually to preserve slashes
+        const safePath = af.path.split('/').map(encodeURIComponent).join('/');
+        // Check if file already exists to get its SHA
+        const afContentsRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}?ref=${encodeURIComponent(branchName)}`);
+        let afSha = undefined;
+        if (afContentsRes.ok) {
+          const afContents = await afContentsRes.json();
+          afSha = afContents.sha;
+        }
+        const afPutRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: `MMM: add ${af.path}${contributor ? ` by ${contributor}` : ''}`,
+            content: af.contentBase64,
+            branch: branchName,
+            sha: afSha,
+          }),
+        });
+        if (!afPutRes.ok) {
+          const text = await afPutRes.text();
+          console.warn(`Failed to commit additional file ${af.path}: ${text}`);
+          failedFiles.push({ path: af.path, error: text });
+        }
+      }
+
       // 5) Create PR
       const title = `MMM: Предлог промени${contributor ? ` од ${contributor}` : ''}`;
       const mergeNotice = mergeNotes.length
@@ -385,7 +415,7 @@ export default {
       }
       const pr = await prRes.json();
 
-      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName }, 200, corsHeaders);
+      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, failedFiles }, 200, corsHeaders);
     } catch (err) {
       return json({ error: 'Unhandled error', detail: err?.message || String(err) }, 500, corsHeaders);
     }

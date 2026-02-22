@@ -76,6 +76,118 @@
         html.dark-mode .greeting-play-btn { color: var(--accent-text); }
         html.dark-mode .greeting-play-btn:hover { color: #e8e8f0; }
         html.dark-mode .greeting-play-btn.greeting-playing { color: #e8590c; }
+
+        /* Greeting edit zone in modal */
+        .greeting-edit-zone {
+            background: var(--bg-secondary, #f5f5f5);
+            border: 2px dashed var(--border-color, #ddd);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        html.dark-mode .greeting-edit-zone {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .greeting-edit-zone.has-audio {
+            border-color: #22c55e;
+            border-style: solid;
+            background: rgba(34,197,94,0.05);
+        }
+        .greeting-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .greeting-edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 18px;
+            border: 1px solid var(--border-color, #ddd);
+            background: var(--bg-primary, #fff);
+            color: var(--text-primary, #333);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        html.dark-mode .greeting-edit-btn {
+            background: var(--bg-secondary, #22252d);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .greeting-edit-btn:hover {
+            border-color: #1d9bf0;
+            color: #1d9bf0;
+        }
+        .greeting-edit-btn.recording {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.08);
+            color: #ef4444;
+            animation: greetingRecordPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes greetingRecordPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+        }
+        .greeting-edit-timer {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #ef4444;
+            margin-top: 0.35rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .greeting-edit-preview-area {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+            padding: 0.4rem 0.6rem;
+            background: var(--bg-primary, #fff);
+            border-radius: 18px;
+            border: 1px solid var(--border-color, #ddd);
+        }
+        html.dark-mode .greeting-edit-preview-area {
+            background: var(--bg-secondary, #22252d);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .greeting-edit-preview-area audio {
+            flex: 1;
+            height: 32px;
+            max-width: 100%;
+        }
+        .greeting-edit-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.2rem;
+            flex-shrink: 0;
+        }
+        .greeting-edit-remove:hover { opacity: 0.7; }
+        .greeting-edit-existing-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.3rem 0;
+        }
+        .greeting-edit-existing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #22c55e;
+        }
+        .greeting-edit-replace-btn {
+            font-size: 0.72rem !important;
+            padding: 0.3rem 0.7rem !important;
+        }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
@@ -204,6 +316,11 @@
                     <input type="email" id="band-contact">
                 </div>
                 <div class="form-group">
+                    <label>Линкови</label>
+                    <div id="links-container"></div>
+                    <button type="button" id="add-link-btn" class="add-link-btn">Додај линк</button>
+                </div>
+                <div class="form-group">
                     <label>Акцент бои</label>
                     <div style="display:flex;gap:0.5rem;align-items:center">
                         <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
@@ -218,9 +335,35 @@
                     <small class="form-help">Два хекс кода за акцент бои (пр. #e94560, #ffa502)</small>
                 </div>
                 <div class="form-group">
-                    <label>Линкови</label>
-                    <div id="links-container"></div>
-                    <button type="button" id="add-link-btn" class="add-link-btn">Додај линк</button>
+                    <label>Порака за фановите <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem">(опционално)</span></label>
+                    <div class="greeting-edit-zone" id="greeting-edit-zone">
+                        <div class="greeting-edit-actions" id="greeting-edit-actions">
+                            <button type="button" class="greeting-edit-btn" id="greeting-edit-record-btn">
+                                <i class="fas fa-microphone"></i> Сними
+                            </button>
+                            <button type="button" class="greeting-edit-btn" id="greeting-edit-upload-btn">
+                                <i class="fas fa-upload"></i> Прикачи
+                            </button>
+                            <input type="file" id="greeting-edit-file" accept="audio/*" style="display:none">
+                        </div>
+                        <div id="greeting-edit-timer" class="greeting-edit-timer" style="display:none"></div>
+                        <div id="greeting-edit-preview" class="greeting-edit-preview-area" style="display:none">
+                            <audio id="greeting-edit-audio" controls></audio>
+                            <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" title="Отстрани">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </div>
+                        <div id="greeting-edit-existing" class="greeting-edit-existing-area" style="display:none">
+                            <div class="greeting-edit-existing-badge">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Постои порака</span>
+                            </div>
+                            <button type="button" class="greeting-edit-btn greeting-edit-replace-btn" id="greeting-edit-replace-btn">
+                                <i class="fas fa-sync-alt"></i> Замени
+                            </button>
+                        </div>
+                        <small class="form-help" style="margin-top:0.4rem;display:block">Кратка звучна порака до 60 секунди (mp3, m4a, wav, ogg, webm)</small>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">

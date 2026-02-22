@@ -77,6 +77,7 @@ window.MMMDrafts = (function () {
     /** Clear all drafts. */
     function clearAll() {
         localStorage.removeItem(STORAGE_KEY);
+        clearAdditionalFiles();
         _refreshUI();
     }
 
@@ -94,6 +95,75 @@ window.MMMDrafts = (function () {
     function getMeta(filePath) {
         var all = _readAll();
         return all[filePath] || null;
+    }
+
+    // ── Additional files (e.g. greeting audio) ──────────────────
+    var ADDITIONAL_FILES_KEY = 'mmm-pending-additional-files';
+
+    function _readAdditionalFiles() {
+        try {
+            var raw = localStorage.getItem(ADDITIONAL_FILES_KEY);
+            if (raw) {
+                var parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') return parsed;
+            }
+        } catch (_) {}
+        return {};
+    }
+
+    function _writeAdditionalFiles(obj) {
+        try {
+            localStorage.setItem(ADDITIONAL_FILES_KEY, JSON.stringify(obj));
+        } catch (e) {
+            console.warn('Failed to save additional files:', e);
+        }
+    }
+
+    /**
+     * Save an additional file to be submitted alongside a draft.
+     * @param {string} draftPath - the draft file this is associated with (e.g. 'bands.json')
+     * @param {string} filePath - target path in the repo (e.g. 'greetings/slug.webm')
+     * @param {string} contentBase64 - base64-encoded file content
+     */
+    function saveAdditionalFile(draftPath, filePath, contentBase64) {
+        var all = _readAdditionalFiles();
+        if (!all[draftPath]) all[draftPath] = [];
+        // Replace if same path already pending
+        all[draftPath] = all[draftPath].filter(function (f) { return f.path !== filePath; });
+        all[draftPath].push({ path: filePath, content: contentBase64 });
+        _writeAdditionalFiles(all);
+    }
+
+    /**
+     * Remove a pending additional file.
+     */
+    function removeAdditionalFile(draftPath, filePath) {
+        var all = _readAdditionalFiles();
+        if (!all[draftPath]) return;
+        all[draftPath] = all[draftPath].filter(function (f) { return f.path !== filePath; });
+        if (all[draftPath].length === 0) delete all[draftPath];
+        _writeAdditionalFiles(all);
+    }
+
+    /**
+     * Get all additional files for a draft.
+     */
+    function getAdditionalFiles(draftPath) {
+        var all = _readAdditionalFiles();
+        return all[draftPath] || [];
+    }
+
+    /**
+     * Clear all additional files for a draft (or all).
+     */
+    function clearAdditionalFiles(draftPath) {
+        if (draftPath) {
+            var all = _readAdditionalFiles();
+            delete all[draftPath];
+            _writeAdditionalFiles(all);
+        } else {
+            localStorage.removeItem(ADDITIONAL_FILES_KEY);
+        }
     }
 
     // ── Legacy migration ─────────────────────────────────────────
@@ -248,16 +318,23 @@ window.MMMDrafts = (function () {
             var json = JSON.stringify(draft.data, null, 2);
             var originalJson = draft.original ? JSON.stringify(draft.original, null, 2) : null;
 
+            // Include any additional files (e.g. greeting audio)
+            var extras = getAdditionalFiles(filePath);
+            var bodyObj = {
+                bandsJson: json,
+                originalJson: originalJson,
+                contributor: contributor || '',
+                description: description || '',
+                path: filePath
+            };
+            if (extras.length) {
+                bodyObj.additionalFiles = extras;
+            }
+
             var resp = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    bandsJson: json,
-                    originalJson: originalJson,
-                    contributor: contributor || '',
-                    description: description || '',
-                    path: filePath
-                })
+                body: JSON.stringify(bodyObj)
             });
 
             if (!resp.ok) {
@@ -269,7 +346,7 @@ window.MMMDrafts = (function () {
             results.push({ file: filePath, result: result });
         }
 
-        // Clear all drafts on success
+        // Clear all drafts and additional files on success
         clearAll();
         return results;
     }
@@ -625,6 +702,10 @@ window.MMMDrafts = (function () {
         getMeta: getMeta,
         submitAll: submitAll,
         initUI: initUI,
-        _refreshUI: _refreshUI
+        _refreshUI: _refreshUI,
+        saveAdditionalFile: saveAdditionalFile,
+        removeAdditionalFile: removeAdditionalFile,
+        getAdditionalFiles: getAdditionalFiles,
+        clearAdditionalFiles: clearAdditionalFiles
     };
 })();

@@ -273,6 +273,330 @@
             color: #e8e8f0;
         }
 
+        /* Verify Artist Button */
+        .verify-artist-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem auto 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(29, 155, 240, 0.3);
+        }
+        .verify-artist-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(29, 155, 240, 0.4);
+            filter: brightness(1.08);
+        }
+        .verify-artist-btn:active {
+            transform: translateY(0);
+        }
+        .verify-artist-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Verify Modal */
+        .verify-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 1rem;
+        }
+        .verify-modal-overlay.visible {
+            display: flex;
+        }
+        .verify-modal {
+            background: var(--bg-primary, #fff);
+            border-radius: 16px;
+            border: 1px solid var(--border-color, #e0e0e0);
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.75rem 1.5rem;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            animation: verifyModalIn 0.25s ease;
+        }
+        @keyframes verifyModalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        body.dark-mode .verify-modal,
+        html.dark-mode .verify-modal {
+            background: var(--bg-secondary, #1c1f26);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .verify-modal-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-muted, #888);
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+        .verify-modal h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0 0 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .verify-modal h2 i { color: #1d9bf0; }
+        .verify-modal-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted, #888);
+            margin-bottom: 1.25rem;
+        }
+
+        .verify-field {
+            margin-bottom: 1.25rem;
+        }
+        .verify-field label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-secondary, #555);
+        }
+        .verify-field label .required {
+            color: #ef4444;
+            margin-left: 0.15rem;
+        }
+        .verify-field label .optional-tag {
+            color: var(--text-muted, #999);
+            font-weight: 400;
+            font-size: 0.7rem;
+        }
+
+        /* Color Pickers */
+        .verify-colors {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .verify-color-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .verify-color-group span {
+            font-size: 0.7rem;
+            color: var(--text-muted, #888);
+        }
+        .verify-color-input-wrapper {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-color, #e0e0e0);
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+        .verify-color-input-wrapper:hover {
+            border-color: #1d9bf0;
+        }
+        .verify-color-input-wrapper input[type="color"] {
+            position: absolute;
+            inset: -8px;
+            width: calc(100% + 16px);
+            height: calc(100% + 16px);
+            border: none;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+        .verify-color-preview {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+            align-items: center;
+            justify-content: center;
+        }
+        .verify-color-preview-swatch {
+            width: 100%;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+        }
+
+        /* Greeting Recording / Upload */
+        .verify-greeting-zone {
+            background: var(--bg-secondary, #f5f5f5);
+            border: 2px dashed var(--border-color, #ddd);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        body.dark-mode .verify-greeting-zone,
+        html.dark-mode .verify-greeting-zone {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .verify-greeting-zone.has-audio {
+            border-color: #22c55e;
+            border-style: solid;
+            background: rgba(34, 197, 94, 0.05);
+        }
+        .verify-greeting-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+        .verify-greeting-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color, #ddd);
+            background: var(--bg-primary, #fff);
+            color: var(--text-primary, #333);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        body.dark-mode .verify-greeting-btn,
+        html.dark-mode .verify-greeting-btn {
+            background: var(--bg-secondary, #22252d);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .verify-greeting-btn:hover {
+            border-color: #1d9bf0;
+            color: #1d9bf0;
+        }
+        .verify-greeting-btn.recording {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+            animation: recordPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes recordPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        }
+        .verify-greeting-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted, #999);
+            margin-top: 0.5rem;
+        }
+        .verify-greeting-preview {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-primary, #fff);
+            border-radius: 20px;
+            border: 1px solid var(--border-color, #ddd);
+        }
+        body.dark-mode .verify-greeting-preview,
+        html.dark-mode .verify-greeting-preview {
+            background: var(--bg-secondary, #22252d);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .verify-greeting-preview audio {
+            flex: 1;
+            height: 32px;
+            max-width: 100%;
+        }
+        .verify-greeting-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.2rem;
+            flex-shrink: 0;
+        }
+        .verify-greeting-remove:hover { opacity: 0.7; }
+
+        /* Submit area */
+        .verify-submit-area {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        .verify-cancel-btn {
+            flex: 1;
+            padding: 0.65rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color, #ddd);
+            background: transparent;
+            color: var(--text-secondary, #666);
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .verify-cancel-btn:hover { background: var(--bg-secondary, #f5f5f5); }
+        .verify-submit-btn {
+            flex: 2;
+            padding: 0.65rem;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #1d9bf0, #0d8ae0);
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        .verify-submit-btn:hover { filter: brightness(1.08); box-shadow: 0 2px 12px rgba(29, 155, 240, 0.3); }
+        .verify-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: none;
+            box-shadow: none;
+        }
+
+        /* Recording timer */
+        .verify-record-timer {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #ef4444;
+            margin-top: 0.4rem;
+            font-variant-numeric: tabular-nums;
+        }
+
         /* Greeting Audio Player */
         .artist-greeting {
             display: flex;
@@ -1655,6 +1979,7 @@ a.chart-history-item {
                         ${artist.confirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
                         <span class="status-dot ${statusClass}" title="${statusText}"></span>
                     </h1>
+                    ${!artist.confirmed ? `<button class="verify-artist-btn" id="verify-artist-btn" title="Потврди го овој артист"><i class="fas fa-check-circle"></i> Потврди го артистот</button>` : ''}
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
                     ${labelsHtml}
                     ${soundsLikeHtml}
@@ -2896,6 +3221,386 @@ a.chart-history-item {
         }
         
         init();
+
+        // ==================== ARTIST VERIFICATION MODAL ====================
+        (function setupVerifyModal() {
+            const PR_ENDPOINT = (window.MMMDrafts && window.MMMDrafts._resolveEndpoint)
+                ? window.MMMDrafts._resolveEndpoint()
+                : (localStorage.getItem('mmm_pr_endpoint') || 'https://muzichka-master-lista.deeeeelay.workers.dev');
+
+            // Create modal DOM
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'verify-modal-overlay';
+            modalOverlay.id = 'verify-modal-overlay';
+            modalOverlay.innerHTML = `
+                <div class="verify-modal">
+                    <button class="verify-modal-close" id="verify-modal-close" aria-label="Затвори">&times;</button>
+                    <h2><i class="fas fa-check-circle"></i> Потврди го артистот</h2>
+                    <p class="verify-modal-subtitle">Потврдените артисти добиваат значка, визуелни акцент бои и можат да додадат звучна порака за фановите.</p>
+
+                    <div class="verify-field">
+                        <label>Акцент бои <span class="required">*</span></label>
+                        <div class="verify-colors">
+                            <div class="verify-color-group">
+                                <span>Примарна</span>
+                                <div class="verify-color-input-wrapper">
+                                    <input type="color" id="verify-color-1" value="#1d9bf0">
+                                </div>
+                            </div>
+                            <div class="verify-color-group">
+                                <span>Секундарна</span>
+                                <div class="verify-color-input-wrapper">
+                                    <input type="color" id="verify-color-2" value="#ff922b">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="verify-color-preview" id="verify-color-preview">
+                            <div class="verify-color-preview-swatch" id="verify-preview-swatch">Преглед</div>
+                        </div>
+                    </div>
+
+                    <div class="verify-field">
+                        <label>Порака за фановите <span class="optional-tag">(опционално)</span></label>
+                        <div class="verify-greeting-zone" id="verify-greeting-zone">
+                            <div class="verify-greeting-actions" id="verify-greeting-actions">
+                                <button type="button" class="verify-greeting-btn" id="verify-record-btn">
+                                    <i class="fas fa-microphone"></i> Сними
+                                </button>
+                                <button type="button" class="verify-greeting-btn" id="verify-upload-btn">
+                                    <i class="fas fa-upload"></i> Прикачи
+                                </button>
+                                <input type="file" id="verify-greeting-file" accept="audio/*" style="display:none">
+                            </div>
+                            <div id="verify-record-timer" class="verify-record-timer" style="display:none"></div>
+                            <div id="verify-greeting-preview-area" style="display:none">
+                                <div class="verify-greeting-preview">
+                                    <audio id="verify-greeting-audio" controls></audio>
+                                    <button type="button" class="verify-greeting-remove" id="verify-greeting-remove" title="Отстрани">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="verify-greeting-hint">Кратка звучна порака до 60 секунди. Форматите mp3, m4a, wav, ogg, webm се поддржани.</p>
+                        </div>
+                    </div>
+
+                    <div class="verify-submit-area">
+                        <button type="button" class="verify-cancel-btn" id="verify-cancel-btn">Откажи</button>
+                        <button type="button" class="verify-submit-btn" id="verify-submit-btn">
+                            <i class="fas fa-paper-plane"></i> Испрати за одобрување
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalOverlay);
+
+            // State
+            let greetingBlob = null;
+            let greetingFilename = null;
+            let mediaRecorder = null;
+            let recordingChunks = [];
+            let recordingTimer = null;
+            let recordingSeconds = 0;
+            let currentArtist = null;
+            let currentBandsData = null;
+
+            // Elements
+            const overlay = document.getElementById('verify-modal-overlay');
+            const closeBtn = document.getElementById('verify-modal-close');
+            const cancelBtn = document.getElementById('verify-cancel-btn');
+            const submitBtn = document.getElementById('verify-submit-btn');
+            const color1Input = document.getElementById('verify-color-1');
+            const color2Input = document.getElementById('verify-color-2');
+            const previewSwatch = document.getElementById('verify-preview-swatch');
+            const greetingZone = document.getElementById('verify-greeting-zone');
+            const recordBtn = document.getElementById('verify-record-btn');
+            const uploadBtn = document.getElementById('verify-upload-btn');
+            const fileInput = document.getElementById('verify-greeting-file');
+            const timerEl = document.getElementById('verify-record-timer');
+            const previewArea = document.getElementById('verify-greeting-preview-area');
+            const audioEl = document.getElementById('verify-greeting-audio');
+            const removeBtn = document.getElementById('verify-greeting-remove');
+
+            function updateColorPreview() {
+                const c1 = color1Input.value;
+                const c2 = color2Input.value;
+                previewSwatch.style.background = `linear-gradient(135deg, ${c1}, ${c2})`;
+            }
+            color1Input.addEventListener('input', updateColorPreview);
+            color2Input.addEventListener('input', updateColorPreview);
+            updateColorPreview();
+
+            function openModal(artist, bandsData) {
+                currentArtist = artist;
+                currentBandsData = bandsData;
+                // Set default colors from existing accent or sensible defaults
+                if (artist.accentColors && artist.accentColors[0]) {
+                    color1Input.value = artist.accentColors[0];
+                }
+                if (artist.accentColors && artist.accentColors[1]) {
+                    color2Input.value = artist.accentColors[1];
+                }
+                updateColorPreview();
+                clearGreeting();
+                overlay.classList.add('visible');
+            }
+
+            function closeModal() {
+                overlay.classList.remove('visible');
+                stopRecording();
+                currentArtist = null;
+                currentBandsData = null;
+            }
+
+            // Close handlers
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && overlay.classList.contains('visible')) closeModal();
+            });
+
+            // ---- Greeting Recording ----
+            function clearGreeting() {
+                greetingBlob = null;
+                greetingFilename = null;
+                previewArea.style.display = 'none';
+                audioEl.src = '';
+                greetingZone.classList.remove('has-audio');
+                document.getElementById('verify-greeting-actions').style.display = 'flex';
+            }
+
+            function setGreetingBlob(blob, filename) {
+                greetingBlob = blob;
+                greetingFilename = filename;
+                const url = URL.createObjectURL(blob);
+                audioEl.src = url;
+                previewArea.style.display = 'block';
+                greetingZone.classList.add('has-audio');
+                document.getElementById('verify-greeting-actions').style.display = 'none';
+            }
+
+            removeBtn.addEventListener('click', clearGreeting);
+
+            // Upload
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|m4a|wav|ogg|webm|aac|flac|opus|aiff|wma)$/i)) {
+                    alert('Ве молиме изберете аудио фајл.');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Фајлот е преголем. Максимум 10MB.');
+                    return;
+                }
+                const ext = file.name.split('.').pop().toLowerCase();
+                setGreetingBlob(file, ext);
+                fileInput.value = '';
+            });
+
+            // Record
+            function formatTime(s) {
+                const m = Math.floor(s / 60);
+                const sec = s % 60;
+                return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
+                recordBtn.classList.remove('recording');
+                recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Сними';
+                timerEl.style.display = 'none';
+                recordingSeconds = 0;
+            }
+
+            recordBtn.addEventListener('click', async () => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Stop recording
+                    stopRecording();
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    recordingChunks = [];
+                    
+                    // Prefer webm, fallback to other formats
+                    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+                        : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+                        : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4'
+                        : '';
+                    
+                    mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordingChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        stream.getTracks().forEach(t => t.stop());
+                        if (recordingChunks.length > 0) {
+                            const blob = new Blob(recordingChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                            const ext = (mediaRecorder.mimeType || '').includes('mp4') ? 'm4a' : 'webm';
+                            setGreetingBlob(blob, ext);
+                        }
+                    };
+
+                    mediaRecorder.start(100);
+                    recordBtn.classList.add('recording');
+                    recordBtn.innerHTML = '<i class="fas fa-stop"></i> Запри';
+                    timerEl.style.display = 'block';
+                    recordingSeconds = 0;
+                    timerEl.textContent = formatTime(0);
+
+                    recordingTimer = setInterval(() => {
+                        recordingSeconds++;
+                        timerEl.textContent = formatTime(recordingSeconds);
+                        if (recordingSeconds >= 60) {
+                            stopRecording();
+                        }
+                    }, 1000);
+
+                } catch (err) {
+                    console.error('Microphone access denied:', err);
+                    alert('Не може да се пристапи до микрофонот. Проверете ги дозволите на прелистувачот.');
+                }
+            });
+
+            // ---- Submit ----
+            submitBtn.addEventListener('click', async () => {
+                if (!currentArtist || !currentBandsData) return;
+
+                const c1 = color1Input.value;
+                const c2 = color2Input.value;
+                if (!c1 || !c2) {
+                    alert('Ве молиме изберете две акцент бои.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Испраќање...';
+
+                try {
+                    // Build updated bands data
+                    const updatedBands = JSON.parse(JSON.stringify({ muzickaMasterLista: currentBandsData }));
+                    const bandEntry = updatedBands.muzickaMasterLista.find(b => b.name === currentArtist.name);
+                    if (!bandEntry) throw new Error('Артистот не е пронајден во листата.');
+
+                    bandEntry.confirmed = true;
+                    bandEntry.accentColors = [c1, c2];
+
+                    const bandsJsonStr = JSON.stringify(updatedBands, null, 2);
+
+                    // Prepare original (current server version) for 3-way merge
+                    const origResp = await fetch('bands.json?v=' + Date.now());
+                    const origData = await origResp.json();
+                    const originalJsonStr = JSON.stringify(origData, null, 2);
+
+                    // Prepare additional files (greeting audio)
+                    const additionalFiles = [];
+                    if (greetingBlob) {
+                        const slug = generateSlug(currentArtist.name);
+                        const ext = greetingFilename || 'webm';
+                        const greetingPath = `greetings/${slug}.${ext}`;
+
+                        // Convert blob to base64
+                        const arrayBuffer = await greetingBlob.arrayBuffer();
+                        const bytes = new Uint8Array(arrayBuffer);
+                        let binary = '';
+                        for (let i = 0; i < bytes.length; i++) {
+                            binary += String.fromCharCode(bytes[i]);
+                        }
+                        const base64 = btoa(binary);
+
+                        additionalFiles.push({
+                            path: greetingPath,
+                            contentBase64: base64
+                        });
+                    }
+
+                    // Submit directly to PR worker
+                    const endpoint = localStorage.getItem('mmm_pr_endpoint') || 'https://muzichka-master-lista.deeeeelay.workers.dev';
+                    const resp = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            bandsJson: bandsJsonStr,
+                            originalJson: originalJsonStr,
+                            contributor: currentArtist.name,
+                            description: `Верификација на артист: ${currentArtist.name}\n\nПотврдено со акцент бои: ${c1}, ${c2}${greetingBlob ? '\nВклучена звучна порака за фановите.' : ''}`,
+                            path: 'bands.json',
+                            additionalFiles: additionalFiles
+                        })
+                    });
+
+                    if (!resp.ok) {
+                        const text = await resp.text();
+                        throw new Error(`Грешка од серверот (${resp.status}): ${text}`);
+                    }
+
+                    const result = await resp.json();
+
+                    // Show success
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
+                    submitBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+
+                    setTimeout(() => {
+                        closeModal();
+                        // Show a toast notification
+                        const toast = document.createElement('div');
+                        toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:0.75rem 1.5rem;border-radius:12px;font-size:0.85rem;font-weight:600;z-index:10001;box-shadow:0 4px 20px rgba(34,197,94,0.4);display:flex;align-items:center;gap:0.5rem;animation:verifyModalIn 0.3s ease;';
+                        toast.innerHTML = '<i class="fas fa-check-circle"></i> Верификацијата е испратена за одобрување!';
+                        document.body.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.transition = 'opacity 0.3s';
+                            toast.style.opacity = '0';
+                            setTimeout(() => toast.remove(), 300);
+                        }, 4000);
+                    }, 1200);
+
+                } catch (err) {
+                    console.error('Verify submit failed:', err);
+                    alert('Грешка при испраќање: ' + (err.message || err));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Испрати за одобрување';
+                    submitBtn.style.background = '';
+                }
+            });
+
+            // Wire up the verify button (after init renders the page)
+            // Use event delegation since the button is rendered dynamically
+            document.addEventListener('click', (e) => {
+                const verifyBtn = e.target.closest('#verify-artist-btn');
+                if (!verifyBtn) return;
+                // Find the artist and bands data from the page context
+                // We need to re-fetch or use the globally stored data
+                (async () => {
+                    try {
+                        const resp = await fetch('bands.json?v=' + Date.now());
+                        const data = await resp.json();
+                        const bandsData = data.muzickaMasterLista;
+                        const urlParams = new URLSearchParams(window.location.search);
+                        let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+                        if (!artistParam) return;
+                        const artist = findArtist(bandsData, decodeURIComponent(artistParam));
+                        if (!artist) return;
+                        openModal(artist, bandsData);
+                    } catch (err) {
+                        console.error('Failed to load data for verify modal:', err);
+                    }
+                })();
+            });
+        })();
     </script>
 </body>
 </html>

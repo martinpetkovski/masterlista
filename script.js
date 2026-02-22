@@ -1907,6 +1907,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     hasUnsavedChanges = true;
                     updateSubmitButtonState();
                     savePendingChanges();
+
+                    // Store greeting audio as additional file for the PR
+                    if (greetingEditBlob && greetingEditExt) {
+                        try {
+                            const slug = generateArtistSlug(name);
+                            const greetingPath = 'greetings/' + slug + '.' + greetingEditExt;
+                            const reader = new FileReader();
+                            reader.onload = function () {
+                                const base64 = reader.result.split(',')[1];
+                                if (window.MMMDrafts && window.MMMDrafts.saveAdditionalFile) {
+                                    window.MMMDrafts.saveAdditionalFile('bands.json', greetingPath, base64);
+                                }
+                            };
+                            reader.readAsDataURL(greetingEditBlob);
+                        } catch (err) {
+                            console.warn('Failed to save greeting file:', err);
+                        }
+                    }
                 }
             }
             modal.style.display = 'none';
@@ -1914,6 +1932,7 @@ document.addEventListener('DOMContentLoaded', () => {
             linksContainer.innerHTML = '';
             clearErrors();
             clearTags();
+            greetingEditReset();
         }
 
         closeModal.addEventListener('click', () => {
@@ -2100,8 +2119,184 @@ document.addEventListener('DOMContentLoaded', () => {
             hasUnsavedChanges = true;
             updateSubmitButtonState();
             savePendingChanges(); // Save to localStorage
+
+            // Store greeting audio as additional file for the PR
+            if (greetingEditBlob && greetingEditExt) {
+                try {
+                    const slug = generateArtistSlug(name);
+                    const greetingPath = 'greetings/' + slug + '.' + greetingEditExt;
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        const base64 = reader.result.split(',')[1];
+                        if (window.MMMDrafts && window.MMMDrafts.saveAdditionalFile) {
+                            window.MMMDrafts.saveAdditionalFile('bands.json', greetingPath, base64);
+                            console.log('Saved greeting additional file:', greetingPath);
+                        }
+                    };
+                    reader.readAsDataURL(greetingEditBlob);
+                } catch (err) {
+                    console.warn('Failed to save greeting file:', err);
+                }
+            }
+
+            greetingEditReset();
             console.log('Form submission successful');
         });
+
+        // ==================== GREETING RECORD/UPLOAD IN MODAL ====================
+        let greetingEditBlob = null;
+        let greetingEditExt = null;
+        let greetingEditRecorder = null;
+        let greetingEditRecordingChunks = [];
+        let greetingEditTimer = null;
+        let greetingEditSeconds = 0;
+
+        const geRecordBtn = document.getElementById('greeting-edit-record-btn');
+        const geUploadBtn = document.getElementById('greeting-edit-upload-btn');
+        const geFileInput = document.getElementById('greeting-edit-file');
+        const geTimerEl = document.getElementById('greeting-edit-timer');
+        const gePreview = document.getElementById('greeting-edit-preview');
+        const geAudioEl = document.getElementById('greeting-edit-audio');
+        const geRemoveBtn = document.getElementById('greeting-edit-remove');
+        const geZone = document.getElementById('greeting-edit-zone');
+        const geActions = document.getElementById('greeting-edit-actions');
+        const geExisting = document.getElementById('greeting-edit-existing');
+        const geReplaceBtn = document.getElementById('greeting-edit-replace-btn');
+
+        function greetingEditReset() {
+            greetingEditBlob = null;
+            greetingEditExt = null;
+            gePreview.style.display = 'none';
+            geAudioEl.src = '';
+            geZone.classList.remove('has-audio');
+            geActions.style.display = 'flex';
+            geExisting.style.display = 'none';
+            geTimerEl.style.display = 'none';
+            greetingEditStopRecording();
+        }
+
+        function greetingEditSetBlob(blob, ext) {
+            greetingEditBlob = blob;
+            greetingEditExt = ext;
+            geAudioEl.src = URL.createObjectURL(blob);
+            gePreview.style.display = 'flex';
+            geZone.classList.add('has-audio');
+            geActions.style.display = 'none';
+            geExisting.style.display = 'none';
+        }
+
+        function greetingEditShowExisting() {
+            geExisting.style.display = 'flex';
+            geActions.style.display = 'none';
+            gePreview.style.display = 'none';
+            geZone.classList.add('has-audio');
+        }
+
+        if (geRemoveBtn) geRemoveBtn.addEventListener('click', () => {
+            greetingEditReset();
+        });
+
+        if (geReplaceBtn) geReplaceBtn.addEventListener('click', () => {
+            geExisting.style.display = 'none';
+            geActions.style.display = 'flex';
+            geZone.classList.remove('has-audio');
+        });
+
+        // Upload
+        if (geUploadBtn) geUploadBtn.addEventListener('click', () => geFileInput.click());
+        if (geFileInput) geFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|m4a|wav|ogg|webm|aac|flac|opus)$/i)) {
+                showNotification('Ве молиме изберете аудио фајл.', 'error');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('Фајлот е преголем. Максимум 10MB.', 'error');
+                return;
+            }
+            const ext = file.name.split('.').pop().toLowerCase();
+            greetingEditSetBlob(file, ext);
+            geFileInput.value = '';
+        });
+
+        // Record
+        function greetingEditFormatTime(s) {
+            return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        }
+
+        function greetingEditStopRecording() {
+            if (greetingEditRecorder && greetingEditRecorder.state !== 'inactive') {
+                greetingEditRecorder.stop();
+            }
+            if (greetingEditTimer) {
+                clearInterval(greetingEditTimer);
+                greetingEditTimer = null;
+            }
+            if (geRecordBtn) {
+                geRecordBtn.classList.remove('recording');
+                geRecordBtn.innerHTML = '<i class="fas fa-microphone"></i> Сними';
+            }
+            if (geTimerEl) geTimerEl.style.display = 'none';
+            greetingEditSeconds = 0;
+        }
+
+        if (geRecordBtn) geRecordBtn.addEventListener('click', async () => {
+            if (greetingEditRecorder && greetingEditRecorder.state === 'recording') {
+                greetingEditStopRecording();
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                greetingEditRecordingChunks = [];
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+                    : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+                    : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '';
+                greetingEditRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+                greetingEditRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) greetingEditRecordingChunks.push(e.data);
+                };
+                greetingEditRecorder.onstop = () => {
+                    stream.getTracks().forEach(t => t.stop());
+                    if (greetingEditRecordingChunks.length > 0) {
+                        const blob = new Blob(greetingEditRecordingChunks, { type: greetingEditRecorder.mimeType || 'audio/webm' });
+                        const ext = (greetingEditRecorder.mimeType || '').includes('mp4') ? 'm4a' : 'webm';
+                        greetingEditSetBlob(blob, ext);
+                    }
+                };
+                greetingEditRecorder.start(100);
+                geRecordBtn.classList.add('recording');
+                geRecordBtn.innerHTML = '<i class="fas fa-stop"></i> Запри';
+                greetingEditSeconds = 0;
+                geTimerEl.textContent = greetingEditFormatTime(0);
+                geTimerEl.style.display = 'block';
+                greetingEditTimer = setInterval(() => {
+                    greetingEditSeconds++;
+                    geTimerEl.textContent = greetingEditFormatTime(greetingEditSeconds);
+                    if (greetingEditSeconds >= 60) greetingEditStopRecording();
+                }, 1000);
+            } catch (err) {
+                console.error('Microphone access denied:', err);
+                showNotification('Не може да се пристапи до микрофонот.', 'error');
+            }
+        });
+
+        // Expose greeting state for openModal and save
+        function getGreetingEditState() {
+            return { blob: greetingEditBlob, ext: greetingEditExt };
+        }
+
+        // Check if a greeting audio exists on the server for a given slug
+        async function checkGreetingExists(slug) {
+            const exts = ['mp3', 'm4a', 'wav', 'ogg', 'webm', 'aac'];
+            for (const ext of exts) {
+                try {
+                    const resp = await fetch(`/greetings/${slug}.${ext}`, { method: 'HEAD' });
+                    if (resp.ok) return true;
+                } catch (_) {}
+            }
+            return false;
+        }
 
         function addLinkInput(platform = 'none', url = '') {
             console.log('Adding link input:', { platform, url });
@@ -2220,6 +2415,7 @@ document.addEventListener('DOMContentLoaded', () => {
             form.reset();
             clearErrors();
             clearTags();
+            greetingEditReset();
             if (mode === 'add') {
                 title.textContent = 'Додај артист';
                 delete form.dataset.editIndex;
@@ -2267,6 +2463,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const confirmedEl = document.getElementById('band-confirmed');
                 if (confirmedEl) confirmedEl.checked = band.confirmed || false;
+                // Check for existing greeting audio
+                const editSlug = generateArtistSlug(band.name);
+                checkGreetingExists(editSlug).then(exists => {
+                    if (exists) greetingEditShowExisting();
+                });
                 if (band.links && band.links.none !== 'недостигаат податоци') {
                     Object.entries(band.links).forEach(([platform, urlOrUrls]) => {
                         // Handle both single URLs (string) and multiple URLs (array)
