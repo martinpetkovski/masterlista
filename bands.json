@@ -1,4 +1,4 @@
-{
+﻿{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -5329,8 +5329,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#435f6a",
+        "#ca537f"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab67616d0000b2734bd2cc28f1555aca08c54400",
       "imageSource": "spotify"
     },
