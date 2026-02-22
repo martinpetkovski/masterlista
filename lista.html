@@ -77,6 +77,37 @@
         html.dark-mode .greeting-play-btn:hover { color: #e8e8f0; }
         html.dark-mode .greeting-play-btn.greeting-playing { color: #e8590c; }
 
+        /* Form sections */
+        .form-section {
+            border: 1px solid var(--border-color, #e0e0e0);
+            border-radius: 10px;
+            padding: 0.8rem 0.9rem 0.5rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        html.dark-mode .form-section {
+            border-color: #2a2d35;
+        }
+        .form-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted, #888);
+            background: var(--bg-primary, #fff);
+            position: absolute;
+            top: -0.5em;
+            left: 0.75rem;
+            padding: 0 0.4rem;
+            line-height: 1;
+        }
+        html.dark-mode .form-section-title {
+            background: var(--bg-secondary, #1a1d24);
+        }
+        .form-section .form-group:last-child {
+            margin-bottom: 0.3rem;
+        }
+
         /* Greeting edit zone in modal */
         .greeting-edit-zone {
             background: var(--bg-secondary, #f5f5f5);
@@ -275,103 +306,109 @@
             <span class="modal-close">×</span>
             <h2 id="modal-title">Додај артист</h2>
             <form id="band-form">
-                <div class="form-group">
-                    <label for="band-name">Име</label>
-                    <input type="text" id="band-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="band-city">Град (одделени со запирки)</label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="band-city" autocomplete="off">
-                        <div id="band-city-autocomplete" class="autocomplete-dropdown"></div>
+                <div class="form-section">
+                    <div class="form-section-title">Општи информации</div>
+                    <div class="form-group">
+                        <label for="band-name">Име</label>
+                        <input type="text" id="band-name" required>
                     </div>
-                    <div id="band-city-tags" class="tag-container"></div>
-                </div>
-                <div class="form-group">
-                    <label for="band-genre">Жанр (одделени со запирки)</label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="band-genre" autocomplete="off">
-                        <div id="band-genre-autocomplete" class="autocomplete-dropdown"></div>
-                    </div>
-                    <div id="band-genre-tags" class="tag-container"></div>
-                </div>
-                <div class="form-group">
-                    <label for="band-sounds-like">Звучи како (одделени со запирки)</label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="band-sounds-like" autocomplete="off">
-                        <div id="band-sounds-like-autocomplete" class="autocomplete-dropdown"></div>
-                    </div>
-                    <div id="band-sounds-like-tags" class="tag-container"></div>
-                </div>
-                <div class="form-group">
-                    <label for="band-label">Ознака (одделени со запирки)</label>
-                    <div class="autocomplete-wrapper">
-                        <input type="text" id="band-label" autocomplete="off">
-                        <div id="band-label-autocomplete" class="autocomplete-dropdown"></div>
-                    </div>
-                    <div id="band-label-tags" class="tag-container"></div>
-                </div>
-                <div class="form-group">
-                    <label for="band-contact">Контакт (е-пошта)</label>
-                    <input type="email" id="band-contact">
-                </div>
-                <div class="form-group">
-                    <label>Линкови</label>
-                    <div id="links-container"></div>
-                    <button type="button" id="add-link-btn" class="add-link-btn">Додај линк</button>
-                </div>
-                <div class="form-group">
-                    <label>Акцент бои</label>
-                    <div style="display:flex;gap:0.5rem;align-items:center">
-                        <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
-                            <input type="color" id="accent-picker-1" value="#e94560" style="width:32px;height:32px;padding:0;border:2px solid var(--border-color);border-radius:50%;background:none;cursor:pointer;flex-shrink:0;overflow:hidden" oninput="document.getElementById('band-accent-color-1').value=this.value;document.getElementById('band-accent-color-1').dispatchEvent(new Event('input'))">
-                            <input type="text" id="band-accent-color-1" placeholder="#e94560" style="flex:1" oninput="this.value=this.value.replace(/[^#0-9a-fA-F]/g,'');if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('accent-picker-1').value=this.value">
+                    <div class="form-group">
+                        <label for="band-city">Град (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="band-city" autocomplete="off">
+                            <div id="band-city-autocomplete" class="autocomplete-dropdown"></div>
                         </div>
-                        <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
-                            <input type="color" id="accent-picker-2" value="#ffa502" style="width:32px;height:32px;padding:0;border:2px solid var(--border-color);border-radius:50%;background:none;cursor:pointer;flex-shrink:0;overflow:hidden" oninput="document.getElementById('band-accent-color-2').value=this.value;document.getElementById('band-accent-color-2').dispatchEvent(new Event('input'))">
-                            <input type="text" id="band-accent-color-2" placeholder="#ffa502" style="flex:1" oninput="this.value=this.value.replace(/[^#0-9a-fA-F]/g,'');if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('accent-picker-2').value=this.value">
-                        </div>
+                        <div id="band-city-tags" class="tag-container"></div>
                     </div>
-                    <small class="form-help">Два хекс кода за акцент бои (пр. #e94560, #ffa502)</small>
+                    <div class="form-group">
+                        <label for="band-genre">Жанр (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="band-genre" autocomplete="off">
+                            <div id="band-genre-autocomplete" class="autocomplete-dropdown"></div>
+                        </div>
+                        <div id="band-genre-tags" class="tag-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="band-sounds-like">Звучи како (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="band-sounds-like" autocomplete="off">
+                            <div id="band-sounds-like-autocomplete" class="autocomplete-dropdown"></div>
+                        </div>
+                        <div id="band-sounds-like-tags" class="tag-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="band-label">Ознака (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper">
+                            <input type="text" id="band-label" autocomplete="off">
+                            <div id="band-label-autocomplete" class="autocomplete-dropdown"></div>
+                        </div>
+                        <div id="band-label-tags" class="tag-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="band-contact">Контакт (е-пошта)</label>
+                        <input type="email" id="band-contact">
+                    </div>
+                    <div class="form-group">
+                        <label>Линкови</label>
+                        <div id="links-container"></div>
+                        <button type="button" id="add-link-btn" class="add-link-btn">Додај линк</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Порака за фановите <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem">(опционално)</span></label>
-                    <div class="greeting-edit-zone" id="greeting-edit-zone">
-                        <div class="greeting-edit-actions" id="greeting-edit-actions">
-                            <button type="button" class="greeting-edit-btn" id="greeting-edit-record-btn">
-                                <i class="fas fa-microphone"></i> Сними
-                            </button>
-                            <button type="button" class="greeting-edit-btn" id="greeting-edit-upload-btn">
-                                <i class="fas fa-upload"></i> Прикачи
-                            </button>
-                            <input type="file" id="greeting-edit-file" accept="audio/*" style="display:none">
-                        </div>
-                        <div id="greeting-edit-timer" class="greeting-edit-timer" style="display:none"></div>
-                        <div id="greeting-edit-preview" class="greeting-edit-preview-area" style="display:none">
-                            <audio id="greeting-edit-audio" controls></audio>
-                            <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" title="Отстрани">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                        </div>
-                        <div id="greeting-edit-existing" class="greeting-edit-existing-area" style="display:none">
-                            <div class="greeting-edit-existing-badge">
-                                <i class="fas fa-volume-up"></i>
-                                <span>Постои порака</span>
+                <div class="form-section">
+                    <div class="form-section-title">Потврда на артист</div>
+                    <div class="form-group">
+                        <label>Акцент бои</label>
+                        <div style="display:flex;gap:0.5rem;align-items:center">
+                            <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
+                                <input type="color" id="accent-picker-1" value="#e94560" style="width:32px;height:32px;padding:0;border:2px solid var(--border-color);border-radius:50%;background:none;cursor:pointer;flex-shrink:0;overflow:hidden" oninput="document.getElementById('band-accent-color-1').value=this.value;document.getElementById('band-accent-color-1').dispatchEvent(new Event('input'))">
+                                <input type="text" id="band-accent-color-1" placeholder="#e94560" style="flex:1" oninput="this.value=this.value.replace(/[^#0-9a-fA-F]/g,'');if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('accent-picker-1').value=this.value">
                             </div>
-                            <button type="button" class="greeting-edit-btn greeting-edit-replace-btn" id="greeting-edit-replace-btn">
-                                <i class="fas fa-sync-alt"></i> Замени
-                            </button>
+                            <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
+                                <input type="color" id="accent-picker-2" value="#ffa502" style="width:32px;height:32px;padding:0;border:2px solid var(--border-color);border-radius:50%;background:none;cursor:pointer;flex-shrink:0;overflow:hidden" oninput="document.getElementById('band-accent-color-2').value=this.value;document.getElementById('band-accent-color-2').dispatchEvent(new Event('input'))">
+                                <input type="text" id="band-accent-color-2" placeholder="#ffa502" style="flex:1" oninput="this.value=this.value.replace(/[^#0-9a-fA-F]/g,'');if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('accent-picker-2').value=this.value">
+                            </div>
                         </div>
-                        <small class="form-help" style="margin-top:0.4rem;display:block">Кратка звучна порака до 60 секунди (mp3, m4a, wav, ogg, webm)</small>
+                        <small class="form-help">Два хекс кода за акцент бои (пр. #e94560, #ffa502)</small>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                        <input type="checkbox" id="band-confirmed" style="width:18px;height:18px;cursor:pointer">
-                        <span>Потврдено од артистот</span>
-                        <i class="fas fa-check-circle" style="color:#1d9bf0;font-size:0.9rem"></i>
-                    </label>
-                    <small class="form-help">Означи ако информациите се потврдени од самиот артист</small>
+                    <div class="form-group">
+                        <label>Порака за фановите <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem">(опционално)</span></label>
+                        <div class="greeting-edit-zone" id="greeting-edit-zone">
+                            <div class="greeting-edit-actions" id="greeting-edit-actions">
+                                <button type="button" class="greeting-edit-btn" id="greeting-edit-record-btn">
+                                    <i class="fas fa-microphone"></i> Сними
+                                </button>
+                                <button type="button" class="greeting-edit-btn" id="greeting-edit-upload-btn">
+                                    <i class="fas fa-upload"></i> Прикачи
+                                </button>
+                                <input type="file" id="greeting-edit-file" accept="audio/*" style="display:none">
+                            </div>
+                            <div id="greeting-edit-timer" class="greeting-edit-timer" style="display:none"></div>
+                            <div id="greeting-edit-preview" class="greeting-edit-preview-area" style="display:none">
+                                <audio id="greeting-edit-audio" controls></audio>
+                                <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" title="Отстрани">
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                            <div id="greeting-edit-existing" class="greeting-edit-existing-area" style="display:none">
+                                <div class="greeting-edit-existing-badge">
+                                    <i class="fas fa-volume-up"></i>
+                                    <span>Постои порака</span>
+                                </div>
+                                <button type="button" class="greeting-edit-btn greeting-edit-replace-btn" id="greeting-edit-replace-btn">
+                                    <i class="fas fa-sync-alt"></i> Замени
+                                </button>
+                            </div>
+                            <small class="form-help" style="margin-top:0.4rem;display:block">Кратка звучна порака до 60 секунди (mp3, m4a, wav, ogg, webm)</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+                            <input type="checkbox" id="band-confirmed" style="width:18px;height:18px;cursor:pointer">
+                            <span>Потврдено од артистот</span>
+                            <i class="fas fa-check-circle" style="color:#1d9bf0;font-size:0.9rem"></i>
+                        </label>
+                        <small class="form-help">Означи ако информациите се потврдени од самиот артист</small>
+                    </div>
                 </div>
                 <button type="submit" id="save-band-btn">Зачувај</button>
                 <button type="button" id="delete-band-btn" class="delete-band-btn" style="display:none"><i class="fas fa-trash"></i> Избриши артист</button>

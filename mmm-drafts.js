@@ -328,7 +328,9 @@ window.MMMDrafts = (function () {
                 path: filePath
             };
             if (extras.length) {
-                bodyObj.additionalFiles = extras;
+                bodyObj.additionalFiles = extras.map(function (f) {
+                    return { path: f.path, contentBase64: f.content };
+                });
             }
 
             var resp = await fetch(endpoint, {

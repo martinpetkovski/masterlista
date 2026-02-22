@@ -3582,15 +3582,20 @@ a.chart-history-item {
             document.addEventListener('click', (e) => {
                 const verifyBtn = e.target.closest('#verify-artist-btn');
                 if (!verifyBtn) return;
-                // Find the artist and bands data from the page context
-                // We need to re-fetch or use the globally stored data
+                // Find the artist from the page context
                 (async () => {
                     try {
                         const resp = await fetch('bands.json?v=' + Date.now());
                         const data = await resp.json();
                         const bandsData = data.muzickaMasterLista;
+                        // Try query param first, then pathname slug (URL may have been cleaned)
                         const urlParams = new URLSearchParams(window.location.search);
                         let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+                        if (!artistParam) {
+                            // Extract slug from clean URL pathname (e.g. /artist-slug)
+                            const pathSlug = decodeURIComponent(window.location.pathname.replace(/^\//, '').replace(/\/$/, ''));
+                            if (pathSlug) artistParam = pathSlug;
+                        }
                         if (!artistParam) return;
                         const artist = findArtist(bandsData, decodeURIComponent(artistParam));
                         if (!artist) return;
