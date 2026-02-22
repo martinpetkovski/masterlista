@@ -1,392 +1,249 @@
 ﻿{
     "curators":  {
+                     "Петар Котевски":  {
+                                            "playlists":  [
+                                                              {
+                                                                  "image":  "https://cdn-images.dzcdn.net/images/playlist/903a355fa26b03d1555fba72192858a9/250x250-000000-80-0-0.jpg",
+                                                                  "url":  "https://www.deezer.com/playlist/14897847623",
+                                                                  "tracks":  [
+                                                                                 {
+                                                                                     "artist":  "BÜYÜK EV ABLUKADA",
+                                                                                     "album":  "FIRTINAYT",
+                                                                                     "durationMs":  312000,
+                                                                                     "trackId":  "411391712",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/411391712",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/ee716c92e2233b8306a28832e9920239/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "HEPSİNE NE FENA",
+                                                                                     "duration":  "5:12",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3?hdnea=exp=1771768466~acl=/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3*~data=user_id=0,application_id=42~hmac=474ddcc2276943be4d77b3c740565d0020cb491e4aefaaa8dbc308f66107951c"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Roosevelt",
+                                                                                     "album":  "Roosevelt",
+                                                                                     "durationMs":  283000,
+                                                                                     "trackId":  "2596525632",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/2596525632",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/33135d9b1d144723bb582d9ed00759ba/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Moving On",
+                                                                                     "duration":  "4:43",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3?hdnea=exp=1771768466~acl=/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3*~data=user_id=0,application_id=42~hmac=5ea49477cf69f9c9460506457ce7a552f2be02cc7c43ff149383b7d8e96029f8"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "SG Lewis",
+                                                                                     "album":  "Chemicals",
+                                                                                     "durationMs":  254000,
+                                                                                     "trackId":  "935293762",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/935293762",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/f938eac462a99c9246555a572c6429c7/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Chemicals",
+                                                                                     "duration":  "4:14",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3?hdnea=exp=1771768466~acl=/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3*~data=user_id=0,application_id=42~hmac=f8c446ae475774f1d0be9538fe775c26897f814025b3cb509056317564dcc2a4"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Hiatus Kaiyote",
+                                                                                     "album":  "Choose Your Weapon",
+                                                                                     "durationMs":  344000,
+                                                                                     "trackId":  "96315838",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/96315838",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/7b665539d2220a492f1ab13a8e27291b/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Breathing Underwater",
+                                                                                     "duration":  "5:44",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3?hdnea=exp=1771768466~acl=/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3*~data=user_id=0,application_id=42~hmac=e5af54b85aff86a5e1784a35c6357938b9cfb1f5799b71534897f317293c9bd8"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Nicolas Godin",
+                                                                                     "album":  "Concrete and Glass",
+                                                                                     "durationMs":  250000,
+                                                                                     "trackId":  "804279372",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/804279372",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/96591b3c5bbddf62cce195e0d905669c/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Catch Yourself Falling (feat. Alexis Taylor)",
+                                                                                     "duration":  "4:10",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3?hdnea=exp=1771768466~acl=/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3*~data=user_id=0,application_id=42~hmac=b7308562e8663b3522e393aad07729ae7a15b99783fe736b22de995f0a974906"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Little Dragon",
+                                                                                     "album":  "Ritual Union",
+                                                                                     "durationMs":  210000,
+                                                                                     "trackId":  "12756253",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/12756253",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/d9546a24a944fbbe7ef20bb390bd3cc3/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Ritual Union",
+                                                                                     "duration":  "3:30",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3?hdnea=exp=1771768466~acl=/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3*~data=user_id=0,application_id=42~hmac=ebcb6c7aa9d12bf511a36abcc68dc5ca091d057944dac892f5bb35b2759a1b1b"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Santino Surfers",
+                                                                                     "album":  "Santino Surfers",
+                                                                                     "durationMs":  377000,
+                                                                                     "trackId":  "2289085615",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/2289085615",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/8596d35ad5529c6057db3963f668e53f/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Sun Rise Swell",
+                                                                                     "duration":  "6:17",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3?hdnea=exp=1771768466~acl=/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3*~data=user_id=0,application_id=42~hmac=5fa4086b16b8ab9127664ba798cdc291b75aa1c82966432fa0bceae1ecf38104"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Gonza",
+                                                                                     "album":  "Relax Your Mind",
+                                                                                     "durationMs":  217000,
+                                                                                     "trackId":  "962648752",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/962648752",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/71df701eb57e80265738eeefb735993c/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Relax Your Mind",
+                                                                                     "duration":  "3:37",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3?hdnea=exp=1771768466~acl=/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3*~data=user_id=0,application_id=42~hmac=da872b362013026aecf6d786052982e834826590923f7ccdbf4b2b442d3413e9"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Crystal Murray",
+                                                                                     "album":  "Princess",
+                                                                                     "durationMs":  191000,
+                                                                                     "trackId":  "737056062",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/737056062",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/701efb2b72d83c6cfdf05ac78a22ff08/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Princess",
+                                                                                     "duration":  "3:11",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3?hdnea=exp=1771768466~acl=/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3*~data=user_id=0,application_id=42~hmac=714abe5be0dbe8a2178f0b64ce5e31da75f7b81cef12356391642da8f767b2c2"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "The Midnight",
+                                                                                     "album":  "Syndicate",
+                                                                                     "durationMs":  177000,
+                                                                                     "trackId":  "3575353981",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/3575353981",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/723396585e6510e9922298e1fdcf92bc/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "First Night In Paris (feat. Carpenter Brut)",
+                                                                                     "duration":  "2:57",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3?hdnea=exp=1771768466~acl=/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3*~data=user_id=0,application_id=42~hmac=c3bb95c5c78c7674aa5bf11bffcf0f7c55cd1ccf3a7e0c5de17e3d57cff6cf96"
+                                                                                 },
+                                                                                 {
+                                                                                     "artist":  "Big Black Delta",
+                                                                                     "album":  "Big Black Delta",
+                                                                                     "durationMs":  265000,
+                                                                                     "trackId":  "65408646",
+                                                                                     "trackUrl":  "https://www.deezer.com/track/65408646",
+                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/5b07bf6426f3d3c15ef7280ea72a50f1/56x56-000000-80-0-0.jpg",
+                                                                                     "title":  "Huggin \u0026 Kissin",
+                                                                                     "duration":  "4:25",
+                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3?hdnea=exp=1771768466~acl=/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3*~data=user_id=0,application_id=42~hmac=86064297ba87947384b3ce52b73568189431af968e0ea829bc3474c6f063ca69"
+                                                                                 }
+                                                                             ],
+                                                                  "name":  "Pero\u0027sBangers",
+                                                                  "service":  "deezer"
+                                                              }
+                                                          ]
+                                        },
                      "Горан Пајак Трифуновски":  {
-                                                      "playlists":  [
-                                                                        {
-                                                                            "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20504",
-                                                                            "url":  "https://youtube.com/playlist?list=PL1qijBqGdIrPlCWyF8_BkTYQ3M4uJOHeV\u0026si=a7qQlYxYIaUr88Ny",
-                                                                            "tracks":  [
-                                                                                           {
-                                                                                               "artist":  "diegodobini2",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  2529000,
-                                                                                               "trackId":  "IRNUc4iYYv4",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=IRNUc4iYYv4",
-                                                                                               "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHWBIAC2ASKAgwIABABGGUgYChaMA8=\u0026rs=AOn4CLCae7m9WEjr5bs-5xaCQFP1nEX7FA",
-                                                                                               "title":  "Ph̲a̲r̲o̲a̲h̲ S̲a̲n̲d̲e̲r̲s̲ – T̲h̲e̲m̲b̲i̲ ̲(̲1̲9̲7̲1̲)̲",
-                                                                                               "duration":  "42:09",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "bemyweakness",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  436000,
-                                                                                               "trackId":  "nEpv8U4k4OE",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=nEpv8U4k4OE",
-                                                                                               "image":  "https://i.ytimg.com/vi/nEpv8U4k4OE/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHeAoAChgKKAgwIABABGGUgYShVMA8=\u0026rs=AOn4CLDq7DSCBdsrmqCcaeVzBcPW8dmC7Q",
-                                                                                               "title":  "Scott Henderson Lady P",
-                                                                                               "duration":  "7:16",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "Lalo Schifrin",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  186000,
-                                                                                               "trackId":  "GlPbKtu21Qk",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=GlPbKtu21Qk",
-                                                                                               "image":  "https://i.ytimg.com/vi/GlPbKtu21Qk/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLCSNLkOxKsud-mbTQcHdHHFgvkmPg",
-                                                                                               "title":  "Cantata for Combo",
-                                                                                               "duration":  "3:06",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "J Diggs",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  601000,
-                                                                                               "trackId":  "PwzrKFKzkAI",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=PwzrKFKzkAI",
-                                                                                               "image":  "https://i.ytimg.com/vi/PwzrKFKzkAI/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC6AKKAgwIABABGH8gNSgvMA8=\u0026rs=AOn4CLBDxHZ7wf6mlw8Ih2xoloMpsJ5xeA",
-                                                                                               "title":  "Miles Davis - Guinnevere",
-                                                                                               "duration":  "10:01",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "Eerie - Heavy Echo (L\u0027osservatore osservato)",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  41000,
-                                                                                               "trackId":  "M88L5e2fQ0g",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=M88L5e2fQ0g",
-                                                                                               "image":  "https://i.ytimg.com/vi/M88L5e2fQ0g/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDUpDClqSSngRmUdO6_mhwEuZ2a4Q",
-                                                                                               "title":  "9M2 (The Black Windmill soundtrack, 1974, Roy Budd)",
-                                                                                               "duration":  "0:41",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "KEXP",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  405000,
-                                                                                               "trackId":  "Te1HkBx7rDw",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=Te1HkBx7rDw",
-                                                                                               "image":  "https://i.ytimg.com/vi/Te1HkBx7rDw/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLA2Zmf-cdjilQ0cA6plo6fZzcYO_g",
-                                                                                               "title":  "Angine de Poitrine - Mata Zyklek (Live on KEXP)",
-                                                                                               "duration":  "6:45",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "ClownC0re",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  125000,
-                                                                                               "trackId":  "sR_rPd_ufK4",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=sR_rPd_ufK4",
-                                                                                               "image":  "https://i.ytimg.com/vi/sR_rPd_ufK4/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDm8P7WUuD48c_J7O16SoMywmhZ8w",
-                                                                                               "title":  "Earth - Clown Core",
-                                                                                               "duration":  "2:05",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "Igorrr",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  289000,
-                                                                                               "trackId":  "TGIvO4eh190",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=TGIvO4eh190",
-                                                                                               "image":  "https://i.ytimg.com/vi/TGIvO4eh190/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLC_eIf3UD8UZE-FvSLbfA2KnCOB3g",
-                                                                                               "title":  "IGORRR - ADHD",
-                                                                                               "duration":  "4:49",
-                                                                                               "previewUrl":  null
-                                                                                           },
-                                                                                           {
-                                                                                               "artist":  "Marginales",
-                                                                                               "album":  "",
-                                                                                               "durationMs":  467000,
-                                                                                               "trackId":  "FbJ63spk48s",
-                                                                                               "trackUrl":  "https://music.youtube.com/watch?v=FbJ63spk48s",
-                                                                                               "image":  "https://i.ytimg.com/vi/FbJ63spk48s/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC4AOKAgwIABABGGUgZShlMA8=\u0026rs=AOn4CLBXLNsh2ZFm6uYgGHcNXVIESwF_ig",
-                                                                                               "title":  "Venetian Snares - Hajnal",
-                                                                                               "duration":  "7:47",
-                                                                                               "previewUrl":  null
-                                                                                           }
-                                                                                       ],
-                                                                            "name":  "Pajak top",
-                                                                            "service":  "youtube"
-                                                                        }
-                                                                    ]
-                                                  },
-                     "Мартин Петковски":  {
-                                              "playlists":  [
-                                                                {
-                                                                    "image":  "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da843cc40ceb56459c3b21b24374",
-                                                                    "url":  "https://open.spotify.com/playlist/5vQzZPh4pekw1VGyNqVzl9?si=6b0321c0ec1d4aa1",
-                                                                    "tracks":  [
-                                                                                   {
-                                                                                       "artist":  "Curve",
-                                                                                       "album":  "Doppelgänger",
-                                                                                       "durationMs":  281426,
-                                                                                       "trackId":  "2mSaim2gy4fbyjIWXyfIiw",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/2mSaim2gy4fbyjIWXyfIiw",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048519376f5c46e91830b423e9209",
-                                                                                       "title":  "Fait Accompli",
-                                                                                       "duration":  "4:41",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/8/d/0/b8d8d1ea260cc04d6c3516952c680abe.mp3?hdnea=exp=1771260063~acl=/api/1/1/b/8/d/0/b8d8d1ea260cc04d6c3516952c680abe.mp3*~data=user_id=0,application_id=42~hmac=b1ffaceacb5f46dac86543db1c6d9ba5e9852b2a1b0d06318c3756f0a9a114f1"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Jamiroquai",
-                                                                                       "album":  "Dynamite",
-                                                                                       "durationMs":  278240,
-                                                                                       "trackId":  "5RCqpfWW51P98Ljj1NoK8Q",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/5RCqpfWW51P98Ljj1NoK8Q",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851951fbcfd4b08a3a19f158ab5",
-                                                                                       "title":  "Hot Tequila Brown",
-                                                                                       "duration":  "4:38",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/a/d/0/dad26062c0c7fda16789de3302393fec.mp3?hdnea=exp=1771260063~acl=/api/1/1/d/a/d/0/dad26062c0c7fda16789de3302393fec.mp3*~data=user_id=0,application_id=42~hmac=b6da5d8a50f2d1a3b9135bf926623e0e6b8565cee4e4c36394b14de6f845ab18"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "The Stone Roses",
-                                                                                       "album":  "The Stone Roses",
-                                                                                       "durationMs":  253453,
-                                                                                       "trackId":  "2erQ477GekpdP5l3xp5adl",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/2erQ477GekpdP5l3xp5adl",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851cf1f6466a493eb73d6d9d280",
-                                                                                       "title":  "Shoot You Down - Remastered 2009",
-                                                                                       "duration":  "4:13",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/1/e/0/d1e224cc7cbd7eb343bcfaa8bfa0edea.mp3?hdnea=exp=1771260064~acl=/api/1/1/d/1/e/0/d1e224cc7cbd7eb343bcfaa8bfa0edea.mp3*~data=user_id=0,application_id=42~hmac=2fb73793fc468329417ad40aceb3296e144bcd1e5554ce126cbfbad48bcede87"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "The Beths",
-                                                                                       "album":  "Expert In A Dying Field",
-                                                                                       "durationMs":  251213,
-                                                                                       "trackId":  "21IuxxrTCrp7DqP9RhPZkx",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/21IuxxrTCrp7DqP9RhPZkx",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851616f0764c2a5b80ba46f5a82",
-                                                                                       "title":  "Expert In A Dying Field",
-                                                                                       "duration":  "4:11",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/4/3/0/d435b6e9c500d02377b75ffeeffdef0b.mp3?hdnea=exp=1771260065~acl=/api/1/1/d/4/3/0/d435b6e9c500d02377b75ffeeffdef0b.mp3*~data=user_id=0,application_id=42~hmac=bed9b78203cf86c2d78530408093654771a754d97e50645e0a5c1da1940d4b5e"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Pavement",
-                                                                                       "album":  "Terror Twilight",
-                                                                                       "durationMs":  184293,
-                                                                                       "trackId":  "6qmFqZpBMbPEDw4vniOdMv",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/6qmFqZpBMbPEDw4vniOdMv",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048518dd01f5c9071f55fd7c7471b",
-                                                                                       "title":  "Spit on a Stranger",
-                                                                                       "duration":  "3:04",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/e/d/0/3ed2999af1ca4f60d6599b9ad41658ea.mp3?hdnea=exp=1771260065~acl=/api/1/1/3/e/d/0/3ed2999af1ca4f60d6599b9ad41658ea.mp3*~data=user_id=0,application_id=42~hmac=0f644dc86aafd593937eb45df2b71b03b93dab7eadf2482263be5b9652964ea4"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Stephen Malkmus",
-                                                                                       "album":  "Stephen Malkmus",
-                                                                                       "durationMs":  165133,
-                                                                                       "trackId":  "2lyI7mUmPe6DN6oTKjuKFP",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/2lyI7mUmPe6DN6oTKjuKFP",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851cce35624143c8b4c285ee5d8",
-                                                                                       "title":  "Jenny \u0026 The Ess-Dog",
-                                                                                       "duration":  "2:45",
-                                                                                       "previewUrl":  null
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "SuperHiks",
-                                                                                       "album":  "Trumano",
-                                                                                       "durationMs":  227578,
-                                                                                       "trackId":  "0P8RwO5CdeUXxmWUlQkb4D",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/0P8RwO5CdeUXxmWUlQkb4D",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851b7ccc3d9003209680e720def",
-                                                                                       "title":  "Zaminuvanje",
-                                                                                       "duration":  "3:47",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/8/e/0/58e7946f7dc5505acf49062695c39521.mp3?hdnea=exp=1771260066~acl=/api/1/1/5/8/e/0/58e7946f7dc5505acf49062695c39521.mp3*~data=user_id=0,application_id=42~hmac=e4130afa8ba48f9df469bceaafe0c358d15a2b0c3158532a90739047e8301ff7"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "The Presidents Of The United States Of America",
-                                                                                       "album":  "The Presidents of The United States of America: Ten Year Super Bonus Special Anniversary Edition",
-                                                                                       "durationMs":  177960,
-                                                                                       "trackId":  "6WqF3VQrv87RWCm6oJvb5q",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/6WqF3VQrv87RWCm6oJvb5q",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851ec96ce38f636ef7b49460079",
-                                                                                       "title":  "Feather Pluckn",
-                                                                                       "duration":  "2:57",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/f/e/0/6fe66b79378dbb95e8413cd2100a4a00.mp3?hdnea=exp=1771260066~acl=/api/1/1/6/f/e/0/6fe66b79378dbb95e8413cd2100a4a00.mp3*~data=user_id=0,application_id=42~hmac=b8e25b5f2aae3a880364774d960c2f73d22bd499c149ecbed772cd7fb127e628"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "SuperHiks",
-                                                                                       "album":  "Trumano",
-                                                                                       "durationMs":  195970,
-                                                                                       "trackId":  "0JY0Vi2U1rP8XQP6ygF8Fw",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/0JY0Vi2U1rP8XQP6ygF8Fw",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851b7ccc3d9003209680e720def",
-                                                                                       "title":  "Kolku vreme",
-                                                                                       "duration":  "3:15",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/2/c/0/12c66be60d310d3754664f1487020a87.mp3?hdnea=exp=1771260068~acl=/api/1/1/1/2/c/0/12c66be60d310d3754664f1487020a87.mp3*~data=user_id=0,application_id=42~hmac=e2eb2d96ec4ece189b323cab4ea21c2c557ac82f67a3f6680585a00c3a5dd964"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Oasis",
-                                                                                       "album":  "(What\u0027s The Story) Morning Glory? [Remastered]",
-                                                                                       "durationMs":  242920,
-                                                                                       "trackId":  "6d1Ic5JjnFCJ1mOISnGxA1",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/6d1Ic5JjnFCJ1mOISnGxA1",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485185e5dcc05cc216a10f141480",
-                                                                                       "title":  "Bonehead\u0027s Bank Holiday - Remastered",
-                                                                                       "duration":  "4:02",
-                                                                                       "previewUrl":  null
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Dido",
-                                                                                       "album":  "Life For Rent",
-                                                                                       "durationMs":  299173,
-                                                                                       "trackId":  "4ObePnl5sf02pKfYUeGpkp",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/4ObePnl5sf02pKfYUeGpkp",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851d41b79f27ef8d8df5a191219",
-                                                                                       "title":  "Sand in My Shoes",
-                                                                                       "duration":  "4:59",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/d/0/acda4e0d6d840dfc2bacdc2f551b552a.mp3?hdnea=exp=1771260069~acl=/api/1/1/a/c/d/0/acda4e0d6d840dfc2bacdc2f551b552a.mp3*~data=user_id=0,application_id=42~hmac=e7a65522904d56e176f7c54cb494ac1e237836157fb30e6df4136ba44f96b320"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Mondo Grosso, Hikari Mitsushima",
-                                                                                       "album":  "ラビリンス",
-                                                                                       "durationMs":  294000,
-                                                                                       "trackId":  "3K2zyJhcnMMA6yOdR6hOW7",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/3K2zyJhcnMMA6yOdR6hOW7",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048511607d3aa3a69ca0e1ffbe26b",
-                                                                                       "title":  "ラビリンス",
-                                                                                       "duration":  "4:54",
-                                                                                       "previewUrl":  null
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Boksa, Lara Ivanova",
-                                                                                       "album":  "Lutam",
-                                                                                       "durationMs":  186666,
-                                                                                       "trackId":  "5FxEEjQ7fcqMQDhTFkRR9E",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/5FxEEjQ7fcqMQDhTFkRR9E",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c9a5d8cc8db6661afc24048f",
-                                                                                       "title":  "Lutam",
-                                                                                       "duration":  "3:06",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/5/a/0/a5a07af42037be2853c4d8b928a75c5f.mp3?hdnea=exp=1771260070~acl=/api/1/1/a/5/a/0/a5a07af42037be2853c4d8b928a75c5f.mp3*~data=user_id=0,application_id=42~hmac=6f97e6bbdb4025a8bcb989df180fbc282b1d8c6e98b7ba8064b5ffb46eb9d7c5"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Kazdoura",
-                                                                                       "album":  "Ghoyoum",
-                                                                                       "durationMs":  206187,
-                                                                                       "trackId":  "2CWsTZRHy24PwrtQSPfXCn",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/2CWsTZRHy24PwrtQSPfXCn",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485185e6ea92faaa988d303e3185",
-                                                                                       "title":  "Khayal",
-                                                                                       "duration":  "3:26",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/c/6/0/3c675eb60c431c1d0d4b8d74cfcfa0c2.mp3?hdnea=exp=1771260070~acl=/api/1/1/3/c/6/0/3c675eb60c431c1d0d4b8d74cfcfa0c2.mp3*~data=user_id=0,application_id=42~hmac=7a4fe93112c51862dbe519636a6b57badb6b122f694fd01d094b3cfdad825d21"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Antypas",
-                                                                                       "album":  "Apagorevete Na S\u0027 Agapo",
-                                                                                       "durationMs":  198000,
-                                                                                       "trackId":  "33yZyeBwPHZiX6GQXf2nrQ",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/33yZyeBwPHZiX6GQXf2nrQ",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048517322c15958752a1eac0cee73",
-                                                                                       "title":  "Apagorevete Na S\u0027 Agapao",
-                                                                                       "duration":  "3:18",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/9/5/0/6952c31fdccca5c44173d43d6c95cec8.mp3?hdnea=exp=1771260071~acl=/api/1/1/6/9/5/0/6952c31fdccca5c44173d43d6c95cec8.mp3*~data=user_id=0,application_id=42~hmac=1cdc7359b38e6ae41727923319f706b48be922879af0aa07e53c8a3c575dfe45"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Madonna",
-                                                                                       "album":  "Ray of Light",
-                                                                                       "durationMs":  300600,
-                                                                                       "trackId":  "5EozWxc0G7mMAHgQdGDlHm",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/5EozWxc0G7mMAHgQdGDlHm",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485191d080c66f2425c23c6eadf8",
-                                                                                       "title":  "Swim",
-                                                                                       "duration":  "5:00",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/d/0/d8da9486987962abc23db4ac16a96651.mp3?hdnea=exp=1771260071~acl=/api/1/1/d/8/d/0/d8da9486987962abc23db4ac16a96651.mp3*~data=user_id=0,application_id=42~hmac=8425a4ff0a3a00e6de77ed269f11d70b56a89ebecd035db5a66cb0d661173f6a"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Coldplay",
-                                                                                       "album":  "X\u0026Y",
-                                                                                       "durationMs":  250668,
-                                                                                       "trackId":  "1wQXj5bgxyZQ2XmE2X9s6n",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/1wQXj5bgxyZQ2XmE2X9s6n",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048514e0362c225863f6ae2432651",
-                                                                                       "title":  "Til Kingdom Come",
-                                                                                       "duration":  "4:10",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/5/9/0/a594f9a02a18179be1b0d1a3c5c225a6.mp3?hdnea=exp=1771260072~acl=/api/1/1/a/5/9/0/a594f9a02a18179be1b0d1a3c5c225a6.mp3*~data=user_id=0,application_id=42~hmac=4f625caca98af58b7f6804b4b3c17bae738485a52bd9e0395b0d9f261c79ba3a"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Death Cab for Cutie",
-                                                                                       "album":  "Transatlanticism (10th Anniversary Edition)",
-                                                                                       "durationMs":  246373,
-                                                                                       "trackId":  "4Y2cR1AEADE6FyNVnuaWhZ",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/4Y2cR1AEADE6FyNVnuaWhZ",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c306113cf2eea54867337da2",
-                                                                                       "title":  "The New Year",
-                                                                                       "duration":  "4:06",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/c/0/0/1c0a71619769ec877cd2b122491b4730.mp3?hdnea=exp=1771260072~acl=/api/1/1/1/c/0/0/1c0a71619769ec877cd2b122491b4730.mp3*~data=user_id=0,application_id=42~hmac=da7c4bf13f2ec532a4d5a71a6fec9fa5d8c5c0e24505e71a53477345c714870b"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Brand New",
-                                                                                       "album":  "Science Fiction",
-                                                                                       "durationMs":  334080,
-                                                                                       "trackId":  "48uJhKG2MEAmuuHVbYlQeI",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/48uJhKG2MEAmuuHVbYlQeI",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048511c4702942e2a0b462e72ad6a",
-                                                                                       "title":  "Same Logic/Teeth",
-                                                                                       "duration":  "5:34",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/3/4/0/234f3ff7f4d849c9f9b8e0574d0a8d13.mp3?hdnea=exp=1771260073~acl=/api/1/1/2/3/4/0/234f3ff7f4d849c9f9b8e0574d0a8d13.mp3*~data=user_id=0,application_id=42~hmac=6a00cf5da3834c9e281f0387054cdb54cd4b654c171dc639f174f2783c6e878f"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Chicane, Justine Suissa",
-                                                                                       "album":  "Behind The Sun",
-                                                                                       "durationMs":  295693,
-                                                                                       "trackId":  "3WZibXUdz3eR5UfnLZJcqM",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/3WZibXUdz3eR5UfnLZJcqM",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851da7e957496c81e01515946b5",
-                                                                                       "title":  "Autumn Tactics",
-                                                                                       "duration":  "4:55",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/a/f/0/5af53e8ab2e8f99268271cc62529f340.mp3?hdnea=exp=1771260073~acl=/api/1/1/5/a/f/0/5af53e8ab2e8f99268271cc62529f340.mp3*~data=user_id=0,application_id=42~hmac=01b83cf7d10c0cee4f04c0ec3d86dc025750abb154d087c366bcca1698f34f27"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "The National",
-                                                                                       "album":  "High Violet",
-                                                                                       "durationMs":  340186,
-                                                                                       "trackId":  "1z5E84ZZQP5o0k00oqpt13",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/1z5E84ZZQP5o0k00oqpt13",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048514fb2bd6896a902c5432a6de5",
-                                                                                       "title":  "England",
-                                                                                       "duration":  "5:40",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/6/e/0/a6ef0a2656a03ed7a18e095a4c0c7593.mp3?hdnea=exp=1771260074~acl=/api/1/1/a/6/e/0/a6ef0a2656a03ed7a18e095a4c0c7593.mp3*~data=user_id=0,application_id=42~hmac=874d7628d16e1c7cfb0b4c1d2328544a58a81dc910485ba5902a65bbc1e24545"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Duke Bojadziev",
-                                                                                       "album":  "To the Hilt (Original Motion Picture Soundtrack)",
-                                                                                       "durationMs":  234577,
-                                                                                       "trackId":  "1odXR57amOA1DbsHkS6ld9",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/1odXR57amOA1DbsHkS6ld9",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851f7f73eea61ead4a61939deb1",
-                                                                                       "title":  "Tango Do Balchak",
-                                                                                       "duration":  "3:54",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/e/a/0/1ea3e86aa70e54717b3a8a649fd485fc.mp3?hdnea=exp=1771260074~acl=/api/1/1/1/e/a/0/1ea3e86aa70e54717b3a8a649fd485fc.mp3*~data=user_id=0,application_id=42~hmac=95b39cb4f8396ac2c71fa3854e65453d73a2088b26e4847b2cbe172323125e3b"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Death Cab for Cutie",
-                                                                                       "album":  "Transatlanticism (10th Anniversary Edition)",
-                                                                                       "durationMs":  215920,
-                                                                                       "trackId":  "7eODmTZh5wkd032bW1xK4l",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/7eODmTZh5wkd032bW1xK4l",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c988bbfb15aca7928323d2ff",
-                                                                                       "title":  "A Lack of Color",
-                                                                                       "duration":  "3:35",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/0/b/0/a0b4c1d54687a2b371ba6e83d7899569.mp3?hdnea=exp=1771260075~acl=/api/1/1/a/0/b/0/a0b4c1d54687a2b371ba6e83d7899569.mp3*~data=user_id=0,application_id=42~hmac=e2ac1e81ed6c8534cabdab4129b54ad363b5b0cc7fb36ba62de09be7e3e70af3"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "Modern Baseball",
-                                                                                       "album":  "You\u0027re Gonna Miss It All",
-                                                                                       "durationMs":  156010,
-                                                                                       "trackId":  "3E4xjPntrRPA7hFTVktqc9",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/3E4xjPntrRPA7hFTVktqc9",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485198890ab31b06f44bcc40db75",
-                                                                                       "title":  "Pothole",
-                                                                                       "duration":  "2:36",
-                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/2/2/0/422f6c41e33a29e462d5234aa4e14991.mp3?hdnea=exp=1771260075~acl=/api/1/1/4/2/2/0/422f6c41e33a29e462d5234aa4e14991.mp3*~data=user_id=0,application_id=42~hmac=35b6b7b141105584506464ed8bb5b2574135ba9dc58e751e58d308063976a1fe"
-                                                                                   }
-                                                                               ],
-                                                                    "name":  "Дијаманти",
-                                                                    "service":  "spotify"
-                                                                }
-                                                            ]
-                                          },
+                                                     "playlists":  [
+                                                                       {
+                                                                           "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20506",
+                                                                           "url":  "https://youtube.com/playlist?list=PL1qijBqGdIrPlCWyF8_BkTYQ3M4uJOHeV\u0026si=a7qQlYxYIaUr88Ny",
+                                                                           "tracks":  [
+                                                                                          {
+                                                                                              "artist":  "diegodobini2",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  2529000,
+                                                                                              "trackId":  "IRNUc4iYYv4",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=IRNUc4iYYv4",
+                                                                                              "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHWBIAC2ASKAgwIABABGGUgYChaMA8=\u0026rs=AOn4CLCae7m9WEjr5bs-5xaCQFP1nEX7FA",
+                                                                                              "title":  "Ph̲a̲r̲o̲a̲h̲ S̲a̲n̲d̲e̲r̲s̲ – T̲h̲e̲m̲b̲i̲ ̲(̲1̲9̲7̲1̲)̲",
+                                                                                              "duration":  "42:09",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "bemyweakness",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  436000,
+                                                                                              "trackId":  "nEpv8U4k4OE",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=nEpv8U4k4OE",
+                                                                                              "image":  "https://i.ytimg.com/vi/nEpv8U4k4OE/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AHeAoAChgKKAgwIABABGGUgYShVMA8=\u0026rs=AOn4CLDq7DSCBdsrmqCcaeVzBcPW8dmC7Q",
+                                                                                              "title":  "Scott Henderson Lady P",
+                                                                                              "duration":  "7:16",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "Lalo Schifrin",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  186000,
+                                                                                              "trackId":  "GlPbKtu21Qk",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=GlPbKtu21Qk",
+                                                                                              "image":  "https://i.ytimg.com/vi/GlPbKtu21Qk/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLCSNLkOxKsud-mbTQcHdHHFgvkmPg",
+                                                                                              "title":  "Cantata for Combo",
+                                                                                              "duration":  "3:06",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "J Diggs",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  601000,
+                                                                                              "trackId":  "PwzrKFKzkAI",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=PwzrKFKzkAI",
+                                                                                              "image":  "https://i.ytimg.com/vi/PwzrKFKzkAI/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC6AKKAgwIABABGH8gNSgvMA8=\u0026rs=AOn4CLBDxHZ7wf6mlw8Ih2xoloMpsJ5xeA",
+                                                                                              "title":  "Miles Davis - Guinnevere",
+                                                                                              "duration":  "10:01",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "Eerie - Heavy Echo (L\u0027osservatore osservato)",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  41000,
+                                                                                              "trackId":  "M88L5e2fQ0g",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=M88L5e2fQ0g",
+                                                                                              "image":  "https://i.ytimg.com/vi/M88L5e2fQ0g/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDUpDClqSSngRmUdO6_mhwEuZ2a4Q",
+                                                                                              "title":  "9M2 (The Black Windmill soundtrack, 1974, Roy Budd)",
+                                                                                              "duration":  "0:41",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "KEXP",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  405000,
+                                                                                              "trackId":  "Te1HkBx7rDw",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=Te1HkBx7rDw",
+                                                                                              "image":  "https://i.ytimg.com/vi/Te1HkBx7rDw/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLA2Zmf-cdjilQ0cA6plo6fZzcYO_g",
+                                                                                              "title":  "Angine de Poitrine - Mata Zyklek (Live on KEXP)",
+                                                                                              "duration":  "6:45",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "ClownC0re",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  125000,
+                                                                                              "trackId":  "sR_rPd_ufK4",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=sR_rPd_ufK4",
+                                                                                              "image":  "https://i.ytimg.com/vi/sR_rPd_ufK4/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLDm8P7WUuD48c_J7O16SoMywmhZ8w",
+                                                                                              "title":  "Earth - Clown Core",
+                                                                                              "duration":  "2:05",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "Igorrr",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  289000,
+                                                                                              "trackId":  "TGIvO4eh190",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=TGIvO4eh190",
+                                                                                              "image":  "https://i.ytimg.com/vi/TGIvO4eh190/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG\u0026rs=AOn4CLC_eIf3UD8UZE-FvSLbfA2KnCOB3g",
+                                                                                              "title":  "IGORRR - ADHD",
+                                                                                              "duration":  "4:49",
+                                                                                              "previewUrl":  null
+                                                                                          },
+                                                                                          {
+                                                                                              "artist":  "Marginales",
+                                                                                              "album":  "",
+                                                                                              "durationMs":  467000,
+                                                                                              "trackId":  "FbJ63spk48s",
+                                                                                              "trackUrl":  "https://music.youtube.com/watch?v=FbJ63spk48s",
+                                                                                              "image":  "https://i.ytimg.com/vi/FbJ63spk48s/hqdefault.jpg?sqp=-oaymwE1CKgBEF5IVfKriqkDKAgBFQAAiEIYAXABwAEG8AEB-AH-BIAC4AOKAgwIABABGGUgZShlMA8=\u0026rs=AOn4CLBXLNsh2ZFm6uYgGHcNXVIESwF_ig",
+                                                                                              "title":  "Venetian Snares - Hajnal",
+                                                                                              "duration":  "7:47",
+                                                                                              "previewUrl":  null
+                                                                                          }
+                                                                                      ],
+                                                                           "name":  "Pajak top",
+                                                                           "service":  "youtube"
+                                                                       }
+                                                                   ]
+                                                 },
                      "Сашо Поповски":  {
                                            "playlists":  [
                                                              {
@@ -402,7 +259,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "22 Days to Spring",
                                                                                     "duration":  "6:30",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/e/0/6be67720b14ee78b2a86699e697791f8.mp3?hdnea=exp=1771260037~acl=/api/1/1/6/b/e/0/6be67720b14ee78b2a86699e697791f8.mp3*~data=user_id=0,application_id=42~hmac=270b88d9469b54c5537289d333ce2703683a29533cf8533f3f057a216b9882f2"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/e/0/6be67720b14ee78b2a86699e697791f8.mp3?hdnea=exp=1771768441~acl=/api/1/1/6/b/e/0/6be67720b14ee78b2a86699e697791f8.mp3*~data=user_id=0,application_id=42~hmac=0bca548121c0e7f6e1fc12483e5a40c75e0ce3bce51204f0f36c35a5fb2b96f7"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Toni Kitanovski, Cherkezi Orchestra",
@@ -413,7 +270,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048511774019f8b180e8a0da21848",
                                                                                     "title":  "Ed Blackwell",
                                                                                     "duration":  "4:30",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/6/1/0/261fd4cc24d39b91c082de511d461460.mp3?hdnea=exp=1771260038~acl=/api/1/1/2/6/1/0/261fd4cc24d39b91c082de511d461460.mp3*~data=user_id=0,application_id=42~hmac=18459aaeadcc374a4e80778929e7109a01ec153e4ec902de30c8b42d306f2146"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/6/1/0/261fd4cc24d39b91c082de511d461460.mp3?hdnea=exp=1771768441~acl=/api/1/1/2/6/1/0/261fd4cc24d39b91c082de511d461460.mp3*~data=user_id=0,application_id=42~hmac=95053af45ad724244d143cbfbcef7d96f4d279c667c8f6beb73cca2c3fa1ac98"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Vasil Hadžimanov Trio",
@@ -424,7 +281,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851736108e2fc81f212c526ebd4",
                                                                                     "title":  "Waltz For John",
                                                                                     "duration":  "5:18",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/8/6/6/0/8665bed59ef8b1dac159ca7bb91c8bc0.mp3?hdnea=exp=1771260039~acl=/api/1/1/8/6/6/0/8665bed59ef8b1dac159ca7bb91c8bc0.mp3*~data=user_id=0,application_id=42~hmac=a4593d52202f3e3479d65b4fc4fc8e47fb3bc5cb6f4c14c63709dfa3f10932e5"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/8/6/6/0/8665bed59ef8b1dac159ca7bb91c8bc0.mp3?hdnea=exp=1771768441~acl=/api/1/1/8/6/6/0/8665bed59ef8b1dac159ca7bb91c8bc0.mp3*~data=user_id=0,application_id=42~hmac=f120a29fc1aae70101385b5e4585a7c4598fd64acc86dc225eba598afb063266"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -457,7 +314,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048515b2a82a5c10c13e20b837b30",
                                                                                     "title":  "Saukko",
                                                                                     "duration":  "9:18",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/2/c/0/52cb5e186dce661ffd034a7005486acd.mp3?hdnea=exp=1771260040~acl=/api/1/1/5/2/c/0/52cb5e186dce661ffd034a7005486acd.mp3*~data=user_id=0,application_id=42~hmac=f441fe3b34cd6dd7fc77e75ead859c6101b61e21576065cadd4fc0c45745d425"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/2/c/0/52cb5e186dce661ffd034a7005486acd.mp3?hdnea=exp=1771768443~acl=/api/1/1/5/2/c/0/52cb5e186dce661ffd034a7005486acd.mp3*~data=user_id=0,application_id=42~hmac=dfdf6aed2068151fce0a44587acc59241cd8f62e36b992a0aa21f2df0b178b21"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski Trio",
@@ -468,7 +325,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048511ebbf39818cbd2b2dd923907",
                                                                                     "title":  "On Mountain Top",
                                                                                     "duration":  "5:28",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/c/b/0/9cb85c8a74f938b33f89e4b0e7615c37.mp3?hdnea=exp=1771260041~acl=/api/1/1/9/c/b/0/9cb85c8a74f938b33f89e4b0e7615c37.mp3*~data=user_id=0,application_id=42~hmac=d3f9477ec156155d48757712076971c3b1bce8edf0deb9b502f26525196e02a7"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/c/b/0/9cb85c8a74f938b33f89e4b0e7615c37.mp3?hdnea=exp=1771768444~acl=/api/1/1/9/c/b/0/9cb85c8a74f938b33f89e4b0e7615c37.mp3*~data=user_id=0,application_id=42~hmac=d20aa6e18ff6c08d02b7e5e0ed48ef8b2f560a2dc7bf0b545b331e65a1887320"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Vasil Hadžimanov Trio",
@@ -479,7 +336,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048518833ba5b93f83e8586427ca8",
                                                                                     "title":  "Ahmad The Terrible",
                                                                                     "duration":  "5:34",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/d/7/0/fd7cab8f1e3e967d6516dc49fb67ef53.mp3?hdnea=exp=1771260041~acl=/api/1/1/f/d/7/0/fd7cab8f1e3e967d6516dc49fb67ef53.mp3*~data=user_id=0,application_id=42~hmac=31b7c4ce5283620b38248a9dc290e932e4d831face4e621b65dc60cb6f51f40e"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/d/7/0/fd7cab8f1e3e967d6516dc49fb67ef53.mp3?hdnea=exp=1771768445~acl=/api/1/1/f/d/7/0/fd7cab8f1e3e967d6516dc49fb67ef53.mp3*~data=user_id=0,application_id=42~hmac=aa4acd2db877e1c18dac142a3fb22808aa7746b3945c0b65b1bb0632ff876355"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Dzijan Emin",
@@ -490,7 +347,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851170427f43fff2cfce9f95567",
                                                                                     "title":  "Hope - Live",
                                                                                     "duration":  "9:25",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/6/7/0/46765aeec9d12c4a88138659f2a6253d.mp3?hdnea=exp=1771260042~acl=/api/1/1/4/6/7/0/46765aeec9d12c4a88138659f2a6253d.mp3*~data=user_id=0,application_id=42~hmac=858b4408ac0845b19991824742059115d82622d3389e5d92c30b3176c85d1164"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/6/7/0/46765aeec9d12c4a88138659f2a6253d.mp3?hdnea=exp=1771768446~acl=/api/1/1/4/6/7/0/46765aeec9d12c4a88138659f2a6253d.mp3*~data=user_id=0,application_id=42~hmac=10b10da1a929f0395f6013538f1cbaa30adb87fb6b0f6bb3dd201b2016b8923e"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Goce Stevkovski Septet",
@@ -501,7 +358,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485125529f9192aeef9c69061db0",
                                                                                     "title":  "Monday",
                                                                                     "duration":  "4:32",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/f/0/0/4f0c95d77344322cfbb3af31e1c5bf8e.mp3?hdnea=exp=1771260042~acl=/api/1/1/4/f/0/0/4f0c95d77344322cfbb3af31e1c5bf8e.mp3*~data=user_id=0,application_id=42~hmac=2aba3ceaf571ae63731c94ec5a4f763891090fdeb8977144b518dd8707487ab1"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/f/0/0/4f0c95d77344322cfbb3af31e1c5bf8e.mp3?hdnea=exp=1771768446~acl=/api/1/1/4/f/0/0/4f0c95d77344322cfbb3af31e1c5bf8e.mp3*~data=user_id=0,application_id=42~hmac=eb3503616b79ec315de032e9ae36fcdf5e3cccb0d4796a16effae150f8ea9010"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -512,7 +369,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "Roads",
                                                                                     "duration":  "6:30",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/f/1/0/ff173a060e4cf7a4e189b20504a6d10a.mp3?hdnea=exp=1771260043~acl=/api/1/1/f/f/1/0/ff173a060e4cf7a4e189b20504a6d10a.mp3*~data=user_id=0,application_id=42~hmac=3aa41e99854cb0b69bdf8da7c157a4aba86d58b1eff1a4dd9157bbe1f15deb1d"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/f/1/0/ff173a060e4cf7a4e189b20504a6d10a.mp3?hdnea=exp=1771768447~acl=/api/1/1/f/f/1/0/ff173a060e4cf7a4e189b20504a6d10a.mp3*~data=user_id=0,application_id=42~hmac=a4779bb4cbba69e5bb39bf85b5f3c864ff0e0f946e1bab53b93a1e4edce8d5ff"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Toni Kitanovski, Cherkezi Orchestra",
@@ -523,7 +380,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485168691c07fe385adf8dfe2089",
                                                                                     "title":  "Addis Abeba",
                                                                                     "duration":  "4:12",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/8/0/d88aeef0562ce725dd5fb4fe05899aba.mp3?hdnea=exp=1771260043~acl=/api/1/1/d/8/8/0/d88aeef0562ce725dd5fb4fe05899aba.mp3*~data=user_id=0,application_id=42~hmac=a352bc01356345b1a52eb01418c435cdb3feba180e2acf4fae4dea89e9adca2e"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/8/0/d88aeef0562ce725dd5fb4fe05899aba.mp3?hdnea=exp=1771768447~acl=/api/1/1/d/8/8/0/d88aeef0562ce725dd5fb4fe05899aba.mp3*~data=user_id=0,application_id=42~hmac=ba726d1b9aa248b19fcf7b30417929367f2d0710a2bdf888396d25e09660c46f"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Filip Dinev, Tilman Oberbeck, Jan Zeimetz",
@@ -534,7 +391,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048514e15cd2da17aeb3c11783ba3",
                                                                                     "title":  "Reindeers Quit",
                                                                                     "duration":  "5:08",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/c/0/cac4da009798076d0613316bc668cf0a.mp3?hdnea=exp=1771260044~acl=/api/1/1/c/a/c/0/cac4da009798076d0613316bc668cf0a.mp3*~data=user_id=0,application_id=42~hmac=fa5acd0f5530620bfbaae97fceee73ec55d9f995b01da150aea3436b161c1748"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/c/0/cac4da009798076d0613316bc668cf0a.mp3?hdnea=exp=1771768448~acl=/api/1/1/c/a/c/0/cac4da009798076d0613316bc668cf0a.mp3*~data=user_id=0,application_id=42~hmac=3b14bd37be85c0bd4c59409de9d30a38b823213c3abb2c6a3bc0f75322ab04cb"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Sethstat",
@@ -545,7 +402,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048515abf4e3f7acb2b1491a47bf8",
                                                                                     "title":  "Afyon",
                                                                                     "duration":  "7:36",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/5/0/1a59aadaf1cc05dbd53273e9ee41f657.mp3?hdnea=exp=1771260044~acl=/api/1/1/1/a/5/0/1a59aadaf1cc05dbd53273e9ee41f657.mp3*~data=user_id=0,application_id=42~hmac=1a3e43940e96792e056e02d0bb90508bd51eb398722904930585d22dab1eb578"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/5/0/1a59aadaf1cc05dbd53273e9ee41f657.mp3?hdnea=exp=1771768448~acl=/api/1/1/1/a/5/0/1a59aadaf1cc05dbd53273e9ee41f657.mp3*~data=user_id=0,application_id=42~hmac=924bc06848ffd110c3bd3979a2049aeaf7c023b82c5d8f33da213ce3c7e49e25"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -556,7 +413,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048513681b0b7d5d70321dd925b38",
                                                                                     "title":  "Steps",
                                                                                     "duration":  "4:53",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/1/b/0/d1b7d433d13754cbb56628179394b05b.mp3?hdnea=exp=1771260045~acl=/api/1/1/d/1/b/0/d1b7d433d13754cbb56628179394b05b.mp3*~data=user_id=0,application_id=42~hmac=45382478865a28e3fb4b3375a2e09716684186e8c56fb722b448df003ba230f2"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3?hdnea=exp=1771768449~acl=/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3*~data=user_id=0,application_id=42~hmac=dda11af1925cd47f37ac704ae121a6f07bce133ff11b7cd259c607f6263cbee6"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Mihail Parushev",
@@ -578,7 +435,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485172617360c49cbc0adf178136",
                                                                                     "title":  "OCD",
                                                                                     "duration":  "7:31",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/0/a/0/a0a09a8af14a511e580d5eee95410963.mp3?hdnea=exp=1771260046~acl=/api/1/1/a/0/a/0/a0a09a8af14a511e580d5eee95410963.mp3*~data=user_id=0,application_id=42~hmac=1313b18bef52ab78ffd76e105952e4e04d79f84386848f7446eb557f4b7b428f"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/0/a/0/a0a09a8af14a511e580d5eee95410963.mp3?hdnea=exp=1771768450~acl=/api/1/1/a/0/a/0/a0a09a8af14a511e580d5eee95410963.mp3*~data=user_id=0,application_id=42~hmac=dec0a177e2731f753b4bcab5bb41afb1493aa3c05e6dea139550c31dff9b622b"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Vasil Hadžimanov Trio",
@@ -589,7 +446,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048518833ba5b93f83e8586427ca8",
                                                                                     "title":  "Good Old Story",
                                                                                     "duration":  "4:35",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/4/e/0/94ef08157c82d5b9e2929f9e2c7f75bb.mp3?hdnea=exp=1771260046~acl=/api/1/1/9/4/e/0/94ef08157c82d5b9e2929f9e2c7f75bb.mp3*~data=user_id=0,application_id=42~hmac=8d93da0b32d3dc06c0694d82eeb0fbdeee8427ff24fa541b20cba8d5bd0c216e"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/4/e/0/94ef08157c82d5b9e2929f9e2c7f75bb.mp3?hdnea=exp=1771768450~acl=/api/1/1/9/4/e/0/94ef08157c82d5b9e2929f9e2c7f75bb.mp3*~data=user_id=0,application_id=42~hmac=871ba16f1c5a266f9c653053276b3567dd0c432704e0642eab4308655b829315"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -600,7 +457,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "Lost in Shanghai",
                                                                                     "duration":  "7:46",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/0/0/4/0/004a191b40baeec83d3de7b817865cf4.mp3?hdnea=exp=1771260047~acl=/api/1/1/0/0/4/0/004a191b40baeec83d3de7b817865cf4.mp3*~data=user_id=0,application_id=42~hmac=9cc3ce21a8bad4093a18256eba266b5e5dd2da14d2c09eb1ed42ad56d2aa6aca"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/0/0/4/0/004a191b40baeec83d3de7b817865cf4.mp3?hdnea=exp=1771768451~acl=/api/1/1/0/0/4/0/004a191b40baeec83d3de7b817865cf4.mp3*~data=user_id=0,application_id=42~hmac=2de7e69b266c5d729134ba3f3fe85c8d9ea1a9652b43486d59f22f58c01504e5"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Next to Silence",
@@ -611,7 +468,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851ca3b1bb4a5d709311d965baa",
                                                                                     "title":  "Hannya",
                                                                                     "duration":  "6:32",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/0/6/0/9062a1daadef292019389676df5d54a9.mp3?hdnea=exp=1771260047~acl=/api/1/1/9/0/6/0/9062a1daadef292019389676df5d54a9.mp3*~data=user_id=0,application_id=42~hmac=cbcf88118ec396f8084ba25baeba507b41316b0393035e23ecd0c193a5f52e65"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/0/6/0/9062a1daadef292019389676df5d54a9.mp3?hdnea=exp=1771768451~acl=/api/1/1/9/0/6/0/9062a1daadef292019389676df5d54a9.mp3*~data=user_id=0,application_id=42~hmac=1c6b50c458345b9a1c469adcdfaa71fac02cff2ce82edffa8fd15bba32e34829"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Filip Dinev, Pierre Martin, Dani Arday",
@@ -622,7 +479,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048512ab410aa0a587274128174d6",
                                                                                     "title":  "Balkan Blues",
                                                                                     "duration":  "7:52",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/9/7/0/c976624be29b34b329b3b24ae29e2ba5.mp3?hdnea=exp=1771260048~acl=/api/1/1/c/9/7/0/c976624be29b34b329b3b24ae29e2ba5.mp3*~data=user_id=0,application_id=42~hmac=4b31176832e5c4c5d66adf6aa0bd1d34760b877f4749a186acc901088345472b"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/9/7/0/c976624be29b34b329b3b24ae29e2ba5.mp3?hdnea=exp=1771768451~acl=/api/1/1/c/9/7/0/c976624be29b34b329b3b24ae29e2ba5.mp3*~data=user_id=0,application_id=42~hmac=28cdf06d445743ab8ef16026ba0257370f6db34c2130a8e0e05a0b0484da7af3"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Panda 5",
@@ -633,7 +490,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048513b14356d3b631b7145810220",
                                                                                     "title":  "Tale",
                                                                                     "duration":  "8:00",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/d/0/cad66c36722f53f94bda3b8c04b4e66a.mp3?hdnea=exp=1771260048~acl=/api/1/1/c/a/d/0/cad66c36722f53f94bda3b8c04b4e66a.mp3*~data=user_id=0,application_id=42~hmac=0d203702be3dd994f649412ca0076c568a5775d61f0aa9d0c0d9ff9b679bda69"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/d/0/cad66c36722f53f94bda3b8c04b4e66a.mp3?hdnea=exp=1771768452~acl=/api/1/1/c/a/d/0/cad66c36722f53f94bda3b8c04b4e66a.mp3*~data=user_id=0,application_id=42~hmac=119c665cc2b43093724aad6bca61069e0c356b640fec6a4778d265e004116dbf"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -644,7 +501,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "Point Blues",
                                                                                     "duration":  "4:20",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/2/7/0/4275925c64e4d35293743271b644a648.mp3?hdnea=exp=1771260049~acl=/api/1/1/4/2/7/0/4275925c64e4d35293743271b644a648.mp3*~data=user_id=0,application_id=42~hmac=0667073f5975e3d13afc6a3aa1fbfbd20bd946d7871996eec01fd23a99a82bec"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/2/7/0/4275925c64e4d35293743271b644a648.mp3?hdnea=exp=1771768452~acl=/api/1/1/4/2/7/0/4275925c64e4d35293743271b644a648.mp3*~data=user_id=0,application_id=42~hmac=87067e8d4d19eff6587ab98dccc512f519ac7ff02e752dce040be0307e25d154"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Djole Grujovski",
@@ -655,7 +512,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851b34fe872d21d38e149d6b0da",
                                                                                     "title":  "Water Mirror",
                                                                                     "duration":  "10:51",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/1/d/0/f1de5b3ac270ee7628f0676771f6218b.mp3?hdnea=exp=1771260049~acl=/api/1/1/f/1/d/0/f1de5b3ac270ee7628f0676771f6218b.mp3*~data=user_id=0,application_id=42~hmac=831d396d413d819295903c49aa90bb18ebb5a1f48ff3fe7658e4a5e5903704cb"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/f/1/d/0/f1de5b3ac270ee7628f0676771f6218b.mp3?hdnea=exp=1771768453~acl=/api/1/1/f/1/d/0/f1de5b3ac270ee7628f0676771f6218b.mp3*~data=user_id=0,application_id=42~hmac=de3b00ce75ded2a6062a301231f026c6b189c8f109e64387aea101bafd576c8d"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Goce Stevkovski Septet",
@@ -666,7 +523,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048514cf6c28b4b9f5c51ed83ba16",
                                                                                     "title":  "7 Stories",
                                                                                     "duration":  "5:09",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/0/e/1/0/0e1c7dd2ae62a08d0b7bd37b2a6df50e.mp3?hdnea=exp=1771260050~acl=/api/1/1/0/e/1/0/0e1c7dd2ae62a08d0b7bd37b2a6df50e.mp3*~data=user_id=0,application_id=42~hmac=75cbc7812942aed93661878e17c273c33d76df352c47177c27534846d4b066b4"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/0/e/1/0/0e1c7dd2ae62a08d0b7bd37b2a6df50e.mp3?hdnea=exp=1771768454~acl=/api/1/1/0/e/1/0/0e1c7dd2ae62a08d0b7bd37b2a6df50e.mp3*~data=user_id=0,application_id=42~hmac=1e2263ce0838e3b7d8a7532a1a0e2187f487ab4061a59a7e26f54eb16753bf5e"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Dzijan Emin",
@@ -688,7 +545,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048513681b0b7d5d70321dd925b38",
                                                                                     "title":  "Night in the Desert",
                                                                                     "duration":  "6:45",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3?hdnea=exp=1771260051~acl=/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3*~data=user_id=0,application_id=42~hmac=43b80e7e8660ac36774baae3b214d65761dd0485774d18858106c0115d69e432"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3?hdnea=exp=1771768455~acl=/api/1/1/5/c/e/0/5ce7f26ac4dc239df76943b1bedb5ad6.mp3*~data=user_id=0,application_id=42~hmac=72988e27d21c036c12fc9396cc9ba118760e4aa358e82c48d5587d2b83030e69"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Toni Kitanovski, Cherkezi Orchestra",
@@ -699,7 +556,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851c9e21ed1f1ad965c95a6569f",
                                                                                     "title":  "I Daj Devrijal",
                                                                                     "duration":  "2:57",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/6/6/0/66679d8530f9f3fb3cd77f5bc1fb0fa7.mp3?hdnea=exp=1771260051~acl=/api/1/1/6/6/6/0/66679d8530f9f3fb3cd77f5bc1fb0fa7.mp3*~data=user_id=0,application_id=42~hmac=4331d5ed778209eea702a1dfbc14caa8218de741b2c44dfe987e1d997953683d"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/6/6/0/66679d8530f9f3fb3cd77f5bc1fb0fa7.mp3?hdnea=exp=1771768455~acl=/api/1/1/6/6/6/0/66679d8530f9f3fb3cd77f5bc1fb0fa7.mp3*~data=user_id=0,application_id=42~hmac=e4a20c7de0b78983bdd86f610f5416f8364d2bab9cbd3c88ff01c6ce91ba412b"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Vasil Hadžimanov Trio",
@@ -710,7 +567,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851736108e2fc81f212c526ebd4",
                                                                                     "title":  "Mr. Gone",
                                                                                     "duration":  "6:22",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/c/d/0/ecd7458ab87bdc6387540b266448462e.mp3?hdnea=exp=1771260052~acl=/api/1/1/e/c/d/0/ecd7458ab87bdc6387540b266448462e.mp3*~data=user_id=0,application_id=42~hmac=ec2d4e164caa321ce4e7e3d343a84ddd6476eeadb53ae383a80a8470b5df56ed"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/c/d/0/ecd7458ab87bdc6387540b266448462e.mp3?hdnea=exp=1771768456~acl=/api/1/1/e/c/d/0/ecd7458ab87bdc6387540b266448462e.mp3*~data=user_id=0,application_id=42~hmac=81f74bc47f70978c5af3caf499e8e3b5a56af157bfd4a52c4a98a2890b4a971a"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Aleksandar Boshkov",
@@ -721,7 +578,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048510fa4b7816026637559a256c0",
                                                                                     "title":  "The Things We Used To Do",
                                                                                     "duration":  "4:39",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/d/4/0/6d46ce3d01f1085dd5f40dd408af389a.mp3?hdnea=exp=1771260052~acl=/api/1/1/6/d/4/0/6d46ce3d01f1085dd5f40dd408af389a.mp3*~data=user_id=0,application_id=42~hmac=c8b73b7280550754d16b6dabb8693fbd15a77fd70a384da8b46bd0a9927d610f"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/d/4/0/6d46ce3d01f1085dd5f40dd408af389a.mp3?hdnea=exp=1771768457~acl=/api/1/1/6/d/4/0/6d46ce3d01f1085dd5f40dd408af389a.mp3*~data=user_id=0,application_id=42~hmac=16ab128aa73682cb3881039c6301a88ca1f1c406bd25cfb370ecbaf7da00aeb6"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -732,7 +589,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "Fuente de la Salud",
                                                                                     "duration":  "5:40",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/2/0/ca29cdde643e44f96584529fc75f9c1b.mp3?hdnea=exp=1771260053~acl=/api/1/1/c/a/2/0/ca29cdde643e44f96584529fc75f9c1b.mp3*~data=user_id=0,application_id=42~hmac=e301091d3fd634927633a761d279af583e0e583396497cef7a8172b301ff08d6"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/2/0/ca29cdde643e44f96584529fc75f9c1b.mp3?hdnea=exp=1771768458~acl=/api/1/1/c/a/2/0/ca29cdde643e44f96584529fc75f9c1b.mp3*~data=user_id=0,application_id=42~hmac=308cf6c05c1369aba6ce2c5831edbc2cca57ef7e7f6271cba1c456513a2a8645"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Georgi Sareski, Marko Jovanovic",
@@ -743,7 +600,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851c7436f28cc02afe60c673f38",
                                                                                     "title":  "Big Love",
                                                                                     "duration":  "3:44",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/b/7/0/bb71099762b3edf1f81d1ff0973f9c59.mp3?hdnea=exp=1771260053~acl=/api/1/1/b/b/7/0/bb71099762b3edf1f81d1ff0973f9c59.mp3*~data=user_id=0,application_id=42~hmac=8052e51f285429ab19f551e3afdc837f1d723bbf2628061a5932057877c21279"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/b/7/0/bb71099762b3edf1f81d1ff0973f9c59.mp3?hdnea=exp=1771768459~acl=/api/1/1/b/b/7/0/bb71099762b3edf1f81d1ff0973f9c59.mp3*~data=user_id=0,application_id=42~hmac=0659adf4000fc258fe27799b90e6e41291ed35f2bccb3ced0c8ba96f38deb035"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Toni Kitanovski, Cherkezi Orchestra",
@@ -754,7 +611,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485168691c07fe385adf8dfe2089",
                                                                                     "title":  "Blue Genes for Richard",
                                                                                     "duration":  "4:06",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/7/5/6/0/756a8d54ccb0aab5d0a028fecdd98aed.mp3?hdnea=exp=1771260054~acl=/api/1/1/7/5/6/0/756a8d54ccb0aab5d0a028fecdd98aed.mp3*~data=user_id=0,application_id=42~hmac=5dfc05c187a4b14031d79bbf45236535991bbc499822835e7b63651069a16075"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/7/5/6/0/756a8d54ccb0aab5d0a028fecdd98aed.mp3?hdnea=exp=1771768459~acl=/api/1/1/7/5/6/0/756a8d54ccb0aab5d0a028fecdd98aed.mp3*~data=user_id=0,application_id=42~hmac=9cdf0e8235c9111898c7e1100644c887383a89706c178ceb6e40758c0b1b79ab"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Mihail Parushev",
@@ -776,7 +633,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048513681b0b7d5d70321dd925b38",
                                                                                     "title":  "Change of Heart",
                                                                                     "duration":  "5:09",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/3/4/0/93446afd7e9748951558b6acc4eb05ba.mp3?hdnea=exp=1771260055~acl=/api/1/1/9/3/4/0/93446afd7e9748951558b6acc4eb05ba.mp3*~data=user_id=0,application_id=42~hmac=32bad9f131ecc66f36431967fde4af0c1fe6dc6cd34cfe4fdf8ce588079a6ce1"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/9/3/4/0/93446afd7e9748951558b6acc4eb05ba.mp3?hdnea=exp=1771768460~acl=/api/1/1/9/3/4/0/93446afd7e9748951558b6acc4eb05ba.mp3*~data=user_id=0,application_id=42~hmac=090403d549d870ae4926d28e01f464463240c988c62d22e0ebaa661559a3bcfc"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Djole Grujovski",
@@ -787,7 +644,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485172617360c49cbc0adf178136",
                                                                                     "title":  "Zbidnina",
                                                                                     "duration":  "6:55",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/4/8/0/b48dfef67179fd34277c74f317934353.mp3?hdnea=exp=1771260055~acl=/api/1/1/b/4/8/0/b48dfef67179fd34277c74f317934353.mp3*~data=user_id=0,application_id=42~hmac=3fa179e91b7f1e70e74b065963c3094ac0925116998952952fdd6543f5e7f728"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/4/8/0/b48dfef67179fd34277c74f317934353.mp3?hdnea=exp=1771768461~acl=/api/1/1/b/4/8/0/b48dfef67179fd34277c74f317934353.mp3*~data=user_id=0,application_id=42~hmac=38f92db98cad7499cbf92bec3023c55b91468d59197e5eab542f9a2fe6508fbe"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Vasil Hadžimanov Trio",
@@ -798,7 +655,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048518833ba5b93f83e8586427ca8",
                                                                                     "title":  "Addis Abeba",
                                                                                     "duration":  "4:46",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/4/a/0/24a5c1da48721c4a5e7cf083a87acbb7.mp3?hdnea=exp=1771260056~acl=/api/1/1/2/4/a/0/24a5c1da48721c4a5e7cf083a87acbb7.mp3*~data=user_id=0,application_id=42~hmac=1d839d8f6e081bf8a74c0b5785027a9a31fb5f1402b7a0012e978643b95c6577"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/4/a/0/24a5c1da48721c4a5e7cf083a87acbb7.mp3?hdnea=exp=1771768461~acl=/api/1/1/2/4/a/0/24a5c1da48721c4a5e7cf083a87acbb7.mp3*~data=user_id=0,application_id=42~hmac=62f119c6765a87021dcbc9fee2d16433a1f92484a26fc2899d26d0c67d8ab329"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski Trio",
@@ -809,7 +666,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048511ebbf39818cbd2b2dd923907",
                                                                                     "title":  "Fallen Land",
                                                                                     "duration":  "6:23",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/8/5/0/5854d13c4c8486893e5bb5338e6daacc.mp3?hdnea=exp=1771260057~acl=/api/1/1/5/8/5/0/5854d13c4c8486893e5bb5338e6daacc.mp3*~data=user_id=0,application_id=42~hmac=917dd675d8a7280dd3a78542c370034a6e1d5ee0fadc9d2e104eaaa15145bd82"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/8/5/0/5854d13c4c8486893e5bb5338e6daacc.mp3?hdnea=exp=1771768462~acl=/api/1/1/5/8/5/0/5854d13c4c8486893e5bb5338e6daacc.mp3*~data=user_id=0,application_id=42~hmac=369722703d46d025d6618b4f4d33aee64fa9ceb8643fabe4f658cdd2409e6225"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Aleksandar Tausanov",
@@ -820,7 +677,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485188b246cca9aeeea920e6c50e",
                                                                                     "title":  "Balkan funk (Bonus Track)",
                                                                                     "duration":  "3:30",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/7/9/0/d79e04f312dc086bff1daa9127a733b6.mp3?hdnea=exp=1771260057~acl=/api/1/1/d/7/9/0/d79e04f312dc086bff1daa9127a733b6.mp3*~data=user_id=0,application_id=42~hmac=00a9dc297e221011c299f2a0704cf328878eb0b6f3f19574e2759a9dc9afa387"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/7/9/0/d79e04f312dc086bff1daa9127a733b6.mp3?hdnea=exp=1771768462~acl=/api/1/1/d/7/9/0/d79e04f312dc086bff1daa9127a733b6.mp3*~data=user_id=0,application_id=42~hmac=66296665ef672821ee1f289688b9b597839f4df80ef2381356308a597bdab888"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Goce Stevkovski Septet",
@@ -831,7 +688,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485125529f9192aeef9c69061db0",
                                                                                     "title":  "Life",
                                                                                     "duration":  "6:47",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/8/4/d/0/84d93512008b969cf106bc6f9682dbe3.mp3?hdnea=exp=1771260058~acl=/api/1/1/8/4/d/0/84d93512008b969cf106bc6f9682dbe3.mp3*~data=user_id=0,application_id=42~hmac=e9872c7bfcd2665e949a56b8a3553495ec2cf42a8296f9a41d919cc93138d8ec"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/8/4/d/0/84d93512008b969cf106bc6f9682dbe3.mp3?hdnea=exp=1771768463~acl=/api/1/1/8/4/d/0/84d93512008b969cf106bc6f9682dbe3.mp3*~data=user_id=0,application_id=42~hmac=8ebeee6005e4a83b1d55a098cda244d9f1c0a47c0c30446b9ea20f0c4cd09f87"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Toni Kitanovski, Cherkezi Orchestra",
@@ -842,7 +699,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048511774019f8b180e8a0da21848",
                                                                                     "title":  "Gnossienne No.1",
                                                                                     "duration":  "5:41",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/7/c/0/67c950fe760d964dd895476236fefb47.mp3?hdnea=exp=1771260058~acl=/api/1/1/6/7/c/0/67c950fe760d964dd895476236fefb47.mp3*~data=user_id=0,application_id=42~hmac=15ba92864c0f4886fbde5fde54a3328fc2b1873ffa8f1433441768eb0d5b8da5"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/7/c/0/67c950fe760d964dd895476236fefb47.mp3?hdnea=exp=1771768463~acl=/api/1/1/6/7/c/0/67c950fe760d964dd895476236fefb47.mp3*~data=user_id=0,application_id=42~hmac=086afd295b5079a3a00dd9b5ed97ec62ff5bd1112c7cb381a619dfd5a90bb1c7"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Saso Popovski",
@@ -853,7 +710,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851e8516bb757a5a38ac1d1e686",
                                                                                     "title":  "Awakening",
                                                                                     "duration":  "4:20",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/0/0/d806a43bf8c90c27a66414ea95dce1d5.mp3?hdnea=exp=1771260059~acl=/api/1/1/d/8/0/0/d806a43bf8c90c27a66414ea95dce1d5.mp3*~data=user_id=0,application_id=42~hmac=a4e1e6a4ebda675414ee0fa8c3ca491ca926c8b68ceffb1d147a5965dfeabcc7"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/0/0/d806a43bf8c90c27a66414ea95dce1d5.mp3?hdnea=exp=1771768464~acl=/api/1/1/d/8/0/0/d806a43bf8c90c27a66414ea95dce1d5.mp3*~data=user_id=0,application_id=42~hmac=abb840c2d651f75bd32932b2c72fbcf7094eecab6f931a583a9ca5eedd4409a9"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Filip Dinev, Tilman Oberbeck, Jan Zeimetz",
@@ -864,7 +721,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d000048514e15cd2da17aeb3c11783ba3",
                                                                                     "title":  "The Magic Kaval",
                                                                                     "duration":  "3:46",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/1/9/0/2191b3efe093c1b908e2919686a7d43d.mp3?hdnea=exp=1771260059~acl=/api/1/1/2/1/9/0/2191b3efe093c1b908e2919686a7d43d.mp3*~data=user_id=0,application_id=42~hmac=f11c7d774b796e0df4e162c2aad63a8bd4e470c0d9c8ddde96b3159e5bb2f090"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/1/9/0/2191b3efe093c1b908e2919686a7d43d.mp3?hdnea=exp=1771768464~acl=/api/1/1/2/1/9/0/2191b3efe093c1b908e2919686a7d43d.mp3*~data=user_id=0,application_id=42~hmac=d82013689a8daa97266e00146956d3568a3823b4812380aa57b79f7bc41cd3d9"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Svetlost + Odron Ritual Orchestra",
@@ -875,7 +732,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d00004851d3142270a4d8a5274c63c31b",
                                                                                     "title":  "Across the Wall and Down With the Ship",
                                                                                     "duration":  "14:56",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/f/0/cafba67e90b5c52082eee1d79c0442e3.mp3?hdnea=exp=1771260060~acl=/api/1/1/c/a/f/0/cafba67e90b5c52082eee1d79c0442e3.mp3*~data=user_id=0,application_id=42~hmac=56bb6eeb3c825dcd9aeab75db3952f5cba52302d05ae2787a4d541e3918b6107"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/a/f/0/cafba67e90b5c52082eee1d79c0442e3.mp3?hdnea=exp=1771768465~acl=/api/1/1/c/a/f/0/cafba67e90b5c52082eee1d79c0442e3.mp3*~data=user_id=0,application_id=42~hmac=934c2a9e1a8fcd0ca1dfa57f2f447a6c83b3186b17d7ae13c409971f2219b818"
                                                                                 },
                                                                                 {
                                                                                     "artist":  "Aleksandar Tausanov",
@@ -886,7 +743,7 @@
                                                                                     "image":  "https://i.scdn.co/image/ab67616d0000485188b246cca9aeeea920e6c50e",
                                                                                     "title":  "Baster",
                                                                                     "duration":  "4:49",
-                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/4/9/0/549683e4f35bd5358922b038f4c6e9d6.mp3?hdnea=exp=1771260060~acl=/api/1/1/5/4/9/0/549683e4f35bd5358922b038f4c6e9d6.mp3*~data=user_id=0,application_id=42~hmac=49d9a11908e398dbab74c103a2b89139fe8cb23d760efe84345e09d9aa1d094e"
+                                                                                    "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/4/9/0/549683e4f35bd5358922b038f4c6e9d6.mp3?hdnea=exp=1771768465~acl=/api/1/1/5/4/9/0/549683e4f35bd5358922b038f4c6e9d6.mp3*~data=user_id=0,application_id=42~hmac=9e23cf046265b81e1d82c358cb9be3e4700e4a68da29c8181568b48cc1204dbf"
                                                                                 }
                                                                             ],
                                                                  "name":  "🇲🇰 Macedonian Jazz 🇲🇰",
@@ -894,139 +751,282 @@
                                                              }
                                                          ]
                                        },
-                     "Петар Котевски":  {
-                                            "playlists":  [
-                                                              {
-                                                                  "image":  "https://cdn-images.dzcdn.net/images/playlist/903a355fa26b03d1555fba72192858a9/250x250-000000-80-0-0.jpg",
-                                                                  "url":  "https://www.deezer.com/playlist/14897847623",
-                                                                  "tracks":  [
-                                                                                 {
-                                                                                     "artist":  "BÜYÜK EV ABLUKADA",
-                                                                                     "album":  "FIRTINAYT",
-                                                                                     "durationMs":  312000,
-                                                                                     "trackId":  "411391712",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/411391712",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/ee716c92e2233b8306a28832e9920239/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "HEPSİNE NE FENA",
-                                                                                     "duration":  "5:12",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3?hdnea=exp=1771609646~acl=/api/1/1/3/f/5/0/3f5ee1a23325b6ee1aec1a63956545a6.mp3*~data=user_id=0,application_id=42~hmac=8adc534b56faadf8354efa8b5f0aac43fae3887873e760294c9f62cdb6788860"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Roosevelt",
-                                                                                     "album":  "Roosevelt",
-                                                                                     "durationMs":  283000,
-                                                                                     "trackId":  "2596525632",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/2596525632",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/33135d9b1d144723bb582d9ed00759ba/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Moving On",
-                                                                                     "duration":  "4:43",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3?hdnea=exp=1771609646~acl=/api/1/1/a/d/7/0/ad7ccd2a52a7ca0fdac7b2f5793e7361.mp3*~data=user_id=0,application_id=42~hmac=be28bfa0d01ef5b487c5a9decf9867d9814f2db3589b794c145b0aa720be5265"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "SG Lewis",
-                                                                                     "album":  "Chemicals",
-                                                                                     "durationMs":  254000,
-                                                                                     "trackId":  "935293762",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/935293762",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/f938eac462a99c9246555a572c6429c7/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Chemicals",
-                                                                                     "duration":  "4:14",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3?hdnea=exp=1771609646~acl=/api/1/1/c/0/b/0/c0b82c67df43070037ea4af619ecf585.mp3*~data=user_id=0,application_id=42~hmac=559c9e6a46eca78ee34e8916dc18b169885262fa892ebb46d7fc254ed4a7552f"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Hiatus Kaiyote",
-                                                                                     "album":  "Choose Your Weapon",
-                                                                                     "durationMs":  344000,
-                                                                                     "trackId":  "96315838",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/96315838",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/7b665539d2220a492f1ab13a8e27291b/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Breathing Underwater",
-                                                                                     "duration":  "5:44",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3?hdnea=exp=1771609646~acl=/api/1/1/b/7/5/0/b75b9a775d98a2847816c0bbba5467cf.mp3*~data=user_id=0,application_id=42~hmac=4ad6faab7c80c639ffc79ec44e4ca80e589ab67bdb87690353504cdb40e15375"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Nicolas Godin",
-                                                                                     "album":  "Concrete and Glass",
-                                                                                     "durationMs":  250000,
-                                                                                     "trackId":  "804279372",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/804279372",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/96591b3c5bbddf62cce195e0d905669c/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Catch Yourself Falling (feat. Alexis Taylor)",
-                                                                                     "duration":  "4:10",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3?hdnea=exp=1771609646~acl=/api/1/1/d/2/b/0/d2b9ddf368a63bf236aba6ecdf7bca08.mp3*~data=user_id=0,application_id=42~hmac=2881782c507056625eebfc93651f954270723311ab18d4bdb4f46344714de606"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Little Dragon",
-                                                                                     "album":  "Ritual Union",
-                                                                                     "durationMs":  210000,
-                                                                                     "trackId":  "12756253",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/12756253",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/d9546a24a944fbbe7ef20bb390bd3cc3/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Ritual Union",
-                                                                                     "duration":  "3:30",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3?hdnea=exp=1771609646~acl=/api/1/1/a/c/c/0/acc688f4e1f38765048d62cc116dcf4e.mp3*~data=user_id=0,application_id=42~hmac=aeda8707ef15f620cfcbb1169f8d620bbc4d6698ca9c503bda1c731741094a4a"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Santino Surfers",
-                                                                                     "album":  "Santino Surfers",
-                                                                                     "durationMs":  377000,
-                                                                                     "trackId":  "2289085615",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/2289085615",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/8596d35ad5529c6057db3963f668e53f/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Sun Rise Swell",
-                                                                                     "duration":  "6:17",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3?hdnea=exp=1771609646~acl=/api/1/1/3/a/0/0/3a0e6cca2cc45b3f4590cb959e0d4e14.mp3*~data=user_id=0,application_id=42~hmac=6a722f8ca7f89b671833b2a0645b1db9f57834e2863aeb9df3437044a613d4de"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Gonza",
-                                                                                     "album":  "Relax Your Mind",
-                                                                                     "durationMs":  217000,
-                                                                                     "trackId":  "962648752",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/962648752",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/71df701eb57e80265738eeefb735993c/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Relax Your Mind",
-                                                                                     "duration":  "3:37",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3?hdnea=exp=1771609646~acl=/api/1/1/5/e/d/0/5edbf2304093b9fbab3b497adbd4ebc7.mp3*~data=user_id=0,application_id=42~hmac=e09b50f7d6dbae45c7a0c7829aebdc66ffaa72deae8e7aa17032fa8b243ac6a1"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Crystal Murray",
-                                                                                     "album":  "Princess",
-                                                                                     "durationMs":  191000,
-                                                                                     "trackId":  "737056062",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/737056062",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/701efb2b72d83c6cfdf05ac78a22ff08/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Princess",
-                                                                                     "duration":  "3:11",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3?hdnea=exp=1771609646~acl=/api/1/1/e/b/7/0/eb7f309c9ec4e53b6428a7108f8b2919.mp3*~data=user_id=0,application_id=42~hmac=e6e9252fc1ead497844b4a287d7786f0978fb5c980c6b64c5d4cbc5dad8069eb"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "The Midnight",
-                                                                                     "album":  "Syndicate",
-                                                                                     "durationMs":  177000,
-                                                                                     "trackId":  "3575353981",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/3575353981",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/723396585e6510e9922298e1fdcf92bc/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "First Night In Paris (feat. Carpenter Brut)",
-                                                                                     "duration":  "2:57",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3?hdnea=exp=1771609646~acl=/api/1/1/6/b/9/0/6b9066245644896f07068ece6f4a994f.mp3*~data=user_id=0,application_id=42~hmac=3745cbf582a4616121a568a2f6cbbaa895d898434135d6e537632afa39650083"
-                                                                                 },
-                                                                                 {
-                                                                                     "artist":  "Big Black Delta",
-                                                                                     "album":  "Big Black Delta",
-                                                                                     "durationMs":  265000,
-                                                                                     "trackId":  "65408646",
-                                                                                     "trackUrl":  "https://www.deezer.com/track/65408646",
-                                                                                     "image":  "https://cdn-images.dzcdn.net/images/cover/5b07bf6426f3d3c15ef7280ea72a50f1/56x56-000000-80-0-0.jpg",
-                                                                                     "title":  "Huggin \u0026 Kissin",
-                                                                                     "duration":  "4:25",
-                                                                                     "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3?hdnea=exp=1771609646~acl=/api/1/1/1/a/b/0/1ab39bb34d602763c2f7dab750b8ba97.mp3*~data=user_id=0,application_id=42~hmac=1ee6c9a517e65bf1365d402f78169d5dbaefdb753b6986e48ab7fb4b880b9ada"
-                                                                                 }
-                                                                             ],
-                                                                  "name":  "Pero\u0027sBangers",
-                                                                  "service":  "deezer"
-                                                              }
-                                                          ]
-                                        }
+                     "Мартин Петковски":  {
+                                              "playlists":  [
+                                                                {
+                                                                    "image":  "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da843cc40ceb56459c3b21b24374",
+                                                                    "url":  "https://open.spotify.com/playlist/5vQzZPh4pekw1VGyNqVzl9?si=6b0321c0ec1d4aa1",
+                                                                    "tracks":  [
+                                                                                   {
+                                                                                       "artist":  "Curve",
+                                                                                       "album":  "Doppelgänger",
+                                                                                       "durationMs":  281426,
+                                                                                       "trackId":  "2mSaim2gy4fbyjIWXyfIiw",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/2mSaim2gy4fbyjIWXyfIiw",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048519376f5c46e91830b423e9209",
+                                                                                       "title":  "Fait Accompli",
+                                                                                       "duration":  "4:41",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/b/8/d/0/b8d8d1ea260cc04d6c3516952c680abe.mp3?hdnea=exp=1771768467~acl=/api/1/1/b/8/d/0/b8d8d1ea260cc04d6c3516952c680abe.mp3*~data=user_id=0,application_id=42~hmac=baafdb3c7585ae05271205bba7dd4f8b41608eeec297e605b29262b23cef8605"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Jamiroquai",
+                                                                                       "album":  "Dynamite",
+                                                                                       "durationMs":  278240,
+                                                                                       "trackId":  "5RCqpfWW51P98Ljj1NoK8Q",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/5RCqpfWW51P98Ljj1NoK8Q",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851951fbcfd4b08a3a19f158ab5",
+                                                                                       "title":  "Hot Tequila Brown",
+                                                                                       "duration":  "4:38",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/a/d/0/dad26062c0c7fda16789de3302393fec.mp3?hdnea=exp=1771768468~acl=/api/1/1/d/a/d/0/dad26062c0c7fda16789de3302393fec.mp3*~data=user_id=0,application_id=42~hmac=5fdbf1ba56d87feab891e491217aa86387c48ba7fd9d0de1f0aea17684ee2bc0"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "The Stone Roses",
+                                                                                       "album":  "The Stone Roses",
+                                                                                       "durationMs":  253453,
+                                                                                       "trackId":  "2erQ477GekpdP5l3xp5adl",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/2erQ477GekpdP5l3xp5adl",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851cf1f6466a493eb73d6d9d280",
+                                                                                       "title":  "Shoot You Down - Remastered 2009",
+                                                                                       "duration":  "4:13",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/1/e/0/d1e224cc7cbd7eb343bcfaa8bfa0edea.mp3?hdnea=exp=1771768468~acl=/api/1/1/d/1/e/0/d1e224cc7cbd7eb343bcfaa8bfa0edea.mp3*~data=user_id=0,application_id=42~hmac=bc45cfb529093a33fb030e3296e718ffe9e66a57729cb68071d92f6c7407ccd0"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "The Beths",
+                                                                                       "album":  "Expert In A Dying Field",
+                                                                                       "durationMs":  251213,
+                                                                                       "trackId":  "21IuxxrTCrp7DqP9RhPZkx",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/21IuxxrTCrp7DqP9RhPZkx",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851616f0764c2a5b80ba46f5a82",
+                                                                                       "title":  "Expert In A Dying Field",
+                                                                                       "duration":  "4:11",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/4/3/0/d435b6e9c500d02377b75ffeeffdef0b.mp3?hdnea=exp=1771768469~acl=/api/1/1/d/4/3/0/d435b6e9c500d02377b75ffeeffdef0b.mp3*~data=user_id=0,application_id=42~hmac=a31cb7f48a94a4fc966914f6545f556c89d2ec19b083c9aa9a97b815aebf88e9"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Pavement",
+                                                                                       "album":  "Terror Twilight",
+                                                                                       "durationMs":  184293,
+                                                                                       "trackId":  "6qmFqZpBMbPEDw4vniOdMv",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/6qmFqZpBMbPEDw4vniOdMv",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048518dd01f5c9071f55fd7c7471b",
+                                                                                       "title":  "Spit on a Stranger",
+                                                                                       "duration":  "3:04",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/e/d/0/3ed2999af1ca4f60d6599b9ad41658ea.mp3?hdnea=exp=1771768469~acl=/api/1/1/3/e/d/0/3ed2999af1ca4f60d6599b9ad41658ea.mp3*~data=user_id=0,application_id=42~hmac=e94f3f7a5ca02587c50b9644470714a6ab20fde5bb9cce0228d51c011713d55a"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Stephen Malkmus",
+                                                                                       "album":  "Stephen Malkmus",
+                                                                                       "durationMs":  165133,
+                                                                                       "trackId":  "2lyI7mUmPe6DN6oTKjuKFP",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/2lyI7mUmPe6DN6oTKjuKFP",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851cce35624143c8b4c285ee5d8",
+                                                                                       "title":  "Jenny \u0026 The Ess-Dog",
+                                                                                       "duration":  "2:45",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/0/d/0/20d4278ac6b5a01ee62220481ab3c2e4.mp3?hdnea=exp=1771768470~acl=/api/1/1/2/0/d/0/20d4278ac6b5a01ee62220481ab3c2e4.mp3*~data=user_id=0,application_id=42~hmac=fc23cdb8644f2d38b6ca78841e34cc5d27fc5011757ffaa06b9b1d98ce50bccc"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "SuperHiks",
+                                                                                       "album":  "Trumano",
+                                                                                       "durationMs":  227578,
+                                                                                       "trackId":  "0P8RwO5CdeUXxmWUlQkb4D",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/0P8RwO5CdeUXxmWUlQkb4D",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851b7ccc3d9003209680e720def",
+                                                                                       "title":  "Zaminuvanje",
+                                                                                       "duration":  "3:47",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/5/8/e/0/58e7946f7dc5505acf49062695c39521.mp3?hdnea=exp=1771768470~acl=/api/1/1/5/8/e/0/58e7946f7dc5505acf49062695c39521.mp3*~data=user_id=0,application_id=42~hmac=1b6b3742127b2911cffb27b97c4327883c73f9bfd7d7d6459cd9d387c7825cc9"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "The Presidents Of The United States Of America",
+                                                                                       "album":  "The Presidents of The United States of America: Ten Year Super Bonus Special Anniversary Edition",
+                                                                                       "durationMs":  177960,
+                                                                                       "trackId":  "6WqF3VQrv87RWCm6oJvb5q",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/6WqF3VQrv87RWCm6oJvb5q",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851ec96ce38f636ef7b49460079",
+                                                                                       "title":  "Feather Pluckn",
+                                                                                       "duration":  "2:57",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/f/e/0/6fe66b79378dbb95e8413cd2100a4a00.mp3?hdnea=exp=1771768471~acl=/api/1/1/6/f/e/0/6fe66b79378dbb95e8413cd2100a4a00.mp3*~data=user_id=0,application_id=42~hmac=0bc114fb99ba50a3c4711a88c85e00442497d623ef59a406c8131c1a977c7a87"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "SuperHiks",
+                                                                                       "album":  "Trumano",
+                                                                                       "durationMs":  195970,
+                                                                                       "trackId":  "0JY0Vi2U1rP8XQP6ygF8Fw",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/0JY0Vi2U1rP8XQP6ygF8Fw",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851b7ccc3d9003209680e720def",
+                                                                                       "title":  "Kolku vreme",
+                                                                                       "duration":  "3:15",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/2/c/0/12c66be60d310d3754664f1487020a87.mp3?hdnea=exp=1771768471~acl=/api/1/1/1/2/c/0/12c66be60d310d3754664f1487020a87.mp3*~data=user_id=0,application_id=42~hmac=b8f41925fb9650bf37fa7f2c18ee2871cfbd8f31bf813317a74a1ab993b58f14"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Oasis",
+                                                                                       "album":  "(What\u0027s The Story) Morning Glory? [Remastered]",
+                                                                                       "durationMs":  242920,
+                                                                                       "trackId":  "6d1Ic5JjnFCJ1mOISnGxA1",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/6d1Ic5JjnFCJ1mOISnGxA1",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485185e5dcc05cc216a10f141480",
+                                                                                       "title":  "Bonehead\u0027s Bank Holiday - Remastered",
+                                                                                       "duration":  "4:02",
+                                                                                       "previewUrl":  null
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Dido",
+                                                                                       "album":  "Life For Rent",
+                                                                                       "durationMs":  299173,
+                                                                                       "trackId":  "4ObePnl5sf02pKfYUeGpkp",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/4ObePnl5sf02pKfYUeGpkp",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851d41b79f27ef8d8df5a191219",
+                                                                                       "title":  "Sand in My Shoes",
+                                                                                       "duration":  "4:59",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/c/d/0/acda4e0d6d840dfc2bacdc2f551b552a.mp3?hdnea=exp=1771768472~acl=/api/1/1/a/c/d/0/acda4e0d6d840dfc2bacdc2f551b552a.mp3*~data=user_id=0,application_id=42~hmac=1f492bd29d9438907ab8486400895505ec74ada9da3371fee7a46d9a43e249d6"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Mondo Grosso, Hikari Mitsushima",
+                                                                                       "album":  "ラビリンス",
+                                                                                       "durationMs":  294000,
+                                                                                       "trackId":  "3K2zyJhcnMMA6yOdR6hOW7",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/3K2zyJhcnMMA6yOdR6hOW7",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048511607d3aa3a69ca0e1ffbe26b",
+                                                                                       "title":  "ラビリンス",
+                                                                                       "duration":  "4:54",
+                                                                                       "previewUrl":  null
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Boksa, Lara Ivanova",
+                                                                                       "album":  "Lutam",
+                                                                                       "durationMs":  186666,
+                                                                                       "trackId":  "5FxEEjQ7fcqMQDhTFkRR9E",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/5FxEEjQ7fcqMQDhTFkRR9E",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c9a5d8cc8db6661afc24048f",
+                                                                                       "title":  "Lutam",
+                                                                                       "duration":  "3:06",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/5/a/0/a5a07af42037be2853c4d8b928a75c5f.mp3?hdnea=exp=1771768473~acl=/api/1/1/a/5/a/0/a5a07af42037be2853c4d8b928a75c5f.mp3*~data=user_id=0,application_id=42~hmac=4aff2d25fed507d75111511d7ac396e4d34f0b980de4db9dd53bca079e8d3ded"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Kazdoura",
+                                                                                       "album":  "Ghoyoum",
+                                                                                       "durationMs":  206187,
+                                                                                       "trackId":  "2CWsTZRHy24PwrtQSPfXCn",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/2CWsTZRHy24PwrtQSPfXCn",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485185e6ea92faaa988d303e3185",
+                                                                                       "title":  "Khayal",
+                                                                                       "duration":  "3:26",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/3/c/6/0/3c675eb60c431c1d0d4b8d74cfcfa0c2.mp3?hdnea=exp=1771768473~acl=/api/1/1/3/c/6/0/3c675eb60c431c1d0d4b8d74cfcfa0c2.mp3*~data=user_id=0,application_id=42~hmac=d7af5e790a4b7eaf46bbd49f42b6e03937fa31fac6597e98688d4726d6fe593c"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Antypas",
+                                                                                       "album":  "Apagorevete Na S\u0027 Agapo",
+                                                                                       "durationMs":  198000,
+                                                                                       "trackId":  "33yZyeBwPHZiX6GQXf2nrQ",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/33yZyeBwPHZiX6GQXf2nrQ",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048517322c15958752a1eac0cee73",
+                                                                                       "title":  "Apagorevete Na S\u0027 Agapao",
+                                                                                       "duration":  "3:18",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/9/5/0/a954369012dfe4f38fed26fc93e8e722.mp3?hdnea=exp=1771768474~acl=/api/1/1/a/9/5/0/a954369012dfe4f38fed26fc93e8e722.mp3*~data=user_id=0,application_id=42~hmac=560b173a44abb507922692f57243c0c2b45419eb9c273f5550bf0f01ceed068c"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Madonna",
+                                                                                       "album":  "Ray of Light",
+                                                                                       "durationMs":  300600,
+                                                                                       "trackId":  "5EozWxc0G7mMAHgQdGDlHm",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/5EozWxc0G7mMAHgQdGDlHm",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485191d080c66f2425c23c6eadf8",
+                                                                                       "title":  "Swim",
+                                                                                       "duration":  "5:00",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/d/8/d/0/d8da9486987962abc23db4ac16a96651.mp3?hdnea=exp=1771768474~acl=/api/1/1/d/8/d/0/d8da9486987962abc23db4ac16a96651.mp3*~data=user_id=0,application_id=42~hmac=16db94ceb1b090ec963a432b72c2b3ab8f4a20b108ef89c0e2b6afa977274a72"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Coldplay",
+                                                                                       "album":  "X\u0026Y",
+                                                                                       "durationMs":  250668,
+                                                                                       "trackId":  "1wQXj5bgxyZQ2XmE2X9s6n",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/1wQXj5bgxyZQ2XmE2X9s6n",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048514e0362c225863f6ae2432651",
+                                                                                       "title":  "Til Kingdom Come",
+                                                                                       "duration":  "4:10",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/5/9/0/a594f9a02a18179be1b0d1a3c5c225a6.mp3?hdnea=exp=1771768475~acl=/api/1/1/a/5/9/0/a594f9a02a18179be1b0d1a3c5c225a6.mp3*~data=user_id=0,application_id=42~hmac=f304faa92fbb69fe88cc1b0661f92756e29263cab669cb8a8da35b478bc71aa7"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Death Cab for Cutie",
+                                                                                       "album":  "Transatlanticism (10th Anniversary Edition)",
+                                                                                       "durationMs":  246373,
+                                                                                       "trackId":  "4Y2cR1AEADE6FyNVnuaWhZ",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/4Y2cR1AEADE6FyNVnuaWhZ",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c306113cf2eea54867337da2",
+                                                                                       "title":  "The New Year",
+                                                                                       "duration":  "4:06",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/1/c/0/0/1c0a71619769ec877cd2b122491b4730.mp3?hdnea=exp=1771768475~acl=/api/1/1/1/c/0/0/1c0a71619769ec877cd2b122491b4730.mp3*~data=user_id=0,application_id=42~hmac=c91a0477e40d71201edc124133fa7465f76db68f8d60877d7acd5abb2d20d68f"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Brand New",
+                                                                                       "album":  "Science Fiction",
+                                                                                       "durationMs":  334080,
+                                                                                       "trackId":  "48uJhKG2MEAmuuHVbYlQeI",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/48uJhKG2MEAmuuHVbYlQeI",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048511c4702942e2a0b462e72ad6a",
+                                                                                       "title":  "Same Logic/Teeth",
+                                                                                       "duration":  "5:34",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/3/4/0/234f3ff7f4d849c9f9b8e0574d0a8d13.mp3?hdnea=exp=1771768476~acl=/api/1/1/2/3/4/0/234f3ff7f4d849c9f9b8e0574d0a8d13.mp3*~data=user_id=0,application_id=42~hmac=427eff0e9d458531ab8dc25f5c80db4d62be8748d205dc7ce700037aea094833"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Chicane, Justine Suissa",
+                                                                                       "album":  "Behind The Sun",
+                                                                                       "durationMs":  295693,
+                                                                                       "trackId":  "3WZibXUdz3eR5UfnLZJcqM",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/3WZibXUdz3eR5UfnLZJcqM",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851da7e957496c81e01515946b5",
+                                                                                       "title":  "Autumn Tactics",
+                                                                                       "duration":  "4:55",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/e/6/0/2e6b203d82b2836b68110ea54c50589d.mp3?hdnea=exp=1771768477~acl=/api/1/1/2/e/6/0/2e6b203d82b2836b68110ea54c50589d.mp3*~data=user_id=0,application_id=42~hmac=d6263fb51354970afcf74d03c3817aa36b447177301a27794e9607b3b9ad45e8"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "The National",
+                                                                                       "album":  "High Violet",
+                                                                                       "durationMs":  340186,
+                                                                                       "trackId":  "1z5E84ZZQP5o0k00oqpt13",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/1z5E84ZZQP5o0k00oqpt13",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d000048514fb2bd6896a902c5432a6de5",
+                                                                                       "title":  "England",
+                                                                                       "duration":  "5:40",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/6/e/0/a6ef0a2656a03ed7a18e095a4c0c7593.mp3?hdnea=exp=1771768477~acl=/api/1/1/a/6/e/0/a6ef0a2656a03ed7a18e095a4c0c7593.mp3*~data=user_id=0,application_id=42~hmac=ab85bcefd641f984730b0b04ee9733c0fdd85ef91b2af60f3e9a5811d129cef9"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Duke Bojadziev",
+                                                                                       "album":  "To the Hilt (Original Motion Picture Soundtrack)",
+                                                                                       "durationMs":  234577,
+                                                                                       "trackId":  "1odXR57amOA1DbsHkS6ld9",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/1odXR57amOA1DbsHkS6ld9",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851f7f73eea61ead4a61939deb1",
+                                                                                       "title":  "Tango Do Balchak",
+                                                                                       "duration":  "3:54",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/2/6/2/0/262b4a3eeffdca8a0c977ccf935469cb.mp3?hdnea=exp=1771768477~acl=/api/1/1/2/6/2/0/262b4a3eeffdca8a0c977ccf935469cb.mp3*~data=user_id=0,application_id=42~hmac=82e23d7e26d4edd6fd0f28b1b52b827b5406a0044619f8435a864c0326f1526b"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Death Cab for Cutie",
+                                                                                       "album":  "Transatlanticism (10th Anniversary Edition)",
+                                                                                       "durationMs":  215920,
+                                                                                       "trackId":  "7eODmTZh5wkd032bW1xK4l",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/7eODmTZh5wkd032bW1xK4l",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d00004851c988bbfb15aca7928323d2ff",
+                                                                                       "title":  "A Lack of Color",
+                                                                                       "duration":  "3:35",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/a/0/b/0/a0b4c1d54687a2b371ba6e83d7899569.mp3?hdnea=exp=1771768478~acl=/api/1/1/a/0/b/0/a0b4c1d54687a2b371ba6e83d7899569.mp3*~data=user_id=0,application_id=42~hmac=27d432186b1a3a44b70f5b3f012df836391a26769af88344300e7484e69b55d7"
+                                                                                   },
+                                                                                   {
+                                                                                       "artist":  "Modern Baseball",
+                                                                                       "album":  "You\u0027re Gonna Miss It All",
+                                                                                       "durationMs":  156010,
+                                                                                       "trackId":  "3E4xjPntrRPA7hFTVktqc9",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/3E4xjPntrRPA7hFTVktqc9",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000485198890ab31b06f44bcc40db75",
+                                                                                       "title":  "Pothole",
+                                                                                       "duration":  "2:36",
+                                                                                       "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/2/2/0/422f6c41e33a29e462d5234aa4e14991.mp3?hdnea=exp=1771768478~acl=/api/1/1/4/2/2/0/422f6c41e33a29e462d5234aa4e14991.mp3*~data=user_id=0,application_id=42~hmac=abe24c120b556ab670cd724d0e9b299331e4f152ea62d3a2a255f0020cd8e65c"
+                                                                                   }
+                                                                               ],
+                                                                    "name":  "Дијаманти",
+                                                                    "service":  "spotify"
+                                                                }
+                                                            ]
+                                          }
                  },
-    "generatedAt":  "2026-02-20T17:32:21Z"
+    "generatedAt":  "2026-02-22T13:38:50Z"
 }
