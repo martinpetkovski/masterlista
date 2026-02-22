@@ -2440,8 +2440,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#8bbfa9",
+        "#ffffff"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5ebb68422a263889f60c0f33fa1",
       "imageSource": "spotify"
     },
@@ -5326,11 +5329,8 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#435f6a",
-        "#ca537f"
-      ],
-      "confirmed": true,
+      "accentColors": null,
+      "confirmed": false,
       "image": "https://i.scdn.co/image/ab67616d0000b2734bd2cc28f1555aca08c54400",
       "imageSource": "spotify"
     },
