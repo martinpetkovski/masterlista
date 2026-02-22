@@ -367,6 +367,22 @@
             color: var(--text-muted, #888);
             margin-bottom: 1.25rem;
         }
+        .verify-modal-alt-edit {
+            margin: -0.5rem 0 1.1rem;
+            text-align: left;
+        }
+        .verify-modal-alt-edit a {
+            font-size: 0.76rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .verify-modal-alt-edit a:hover {
+            text-decoration: underline;
+        }
 
         .verify-field {
             margin-bottom: 1.25rem;
@@ -3237,6 +3253,11 @@ a.chart-history-item {
                     <button class="verify-modal-close" id="verify-modal-close" aria-label="Затвори">&times;</button>
                     <h2><i class="fas fa-check-circle"></i> Потврди го артистот</h2>
                     <p class="verify-modal-subtitle">Потврдените артисти добиваат значка, визуелни акцент бои и можат да додадат звучна порака за фановите.</p>
+                    <p class="verify-modal-alt-edit">
+                        <a href="/lista" id="verify-full-edit-link">
+                            <i class="fas fa-pen-to-square"></i> Уреди го артистот целосно
+                        </a>
+                    </p>
 
                     <div class="verify-field">
                         <label>Акцент бои <span class="required">*</span></label>
@@ -3320,6 +3341,7 @@ a.chart-history-item {
             const previewArea = document.getElementById('verify-greeting-preview-area');
             const audioEl = document.getElementById('verify-greeting-audio');
             const removeBtn = document.getElementById('verify-greeting-remove');
+            const fullEditLink = document.getElementById('verify-full-edit-link');
 
             function updateColorPreview() {
                 const c1 = color1Input.value;
@@ -3333,6 +3355,10 @@ a.chart-history-item {
             function openModal(artist, bandsData) {
                 currentArtist = artist;
                 currentBandsData = bandsData;
+                const artistSlug = generateSlug(artist.name || '');
+                if (fullEditLink) {
+                    fullEditLink.href = `/lista?edit=${encodeURIComponent(artistSlug)}`;
+                }
                 // Set default colors from existing accent or sensible defaults
                 if (artist.accentColors && artist.accentColors[0]) {
                     color1Input.value = artist.accentColors[0];
