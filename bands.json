@@ -5262,8 +5262,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#1d9bf0",
+        "#ff922b"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb0bb1ac0a3eb6134b469a2194",
       "imageSource": "spotify"
     },
