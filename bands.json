@@ -6578,8 +6578,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#1d9bf0",
+        "#ff922b"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab67616d0000b2732c8ad95c1c461fd7b262ad49",
       "imageSource": "spotify"
     },
