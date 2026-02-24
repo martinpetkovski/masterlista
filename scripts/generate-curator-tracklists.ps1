@@ -1,5 +1,5 @@
 # generate-curator-tracklists.ps1
-# Generates tracklist data from curator playlists via web scraping (no API keys needed)
+# Generates tracklist data from curator playlists via pure HTML scraping (no API calls)
 # Supported: Spotify, Deezer, YouTube Music, Apple Music, Tidal, SoundCloud
 #
 # Usage:
@@ -7,7 +7,9 @@
 #
 # Reads: curators.json
 # Writes: curators-tracklists.json
-# Note: All services use public embed/widget pages — zero API keys required
+# Note: All services use public embed/widget/page scraping — zero API keys or tokens required
+#       Spotify & Deezer: scrape embed/widget HTML directly (no REST API calls)
+#       YouTube/Apple/Tidal/SoundCloud: scrape page HTML + JSON-LD
 
 param(
     [switch]$Verbose
@@ -261,12 +263,13 @@ function Find-PlaylistVideoRenderers {
 }
 
 # ============================================================================
-#  SPOTIFY — scrape embed page for anonymous token, then fetch via v1 API
+#  SPOTIFY — pure HTML scraping (no API calls, no tokens)
 # ============================================================================
 
 function Get-SpotifyPlaylistTracks {
     param([string]$PlaylistId)
 
+    # ── Fetch the embed page (server-rendered, all track data inline) ────
     try {
         $embedHtml = Invoke-PageRequest -Uri "https://open.spotify.com/embed/playlist/$PlaylistId"
     }
@@ -275,83 +278,243 @@ function Get-SpotifyPlaylistTracks {
         return $null
     }
 
-    $accessToken = $null
-    if ($embedHtml -match '"accessToken"\s*:\s*"([^"]+)"') {
-        $accessToken = $Matches[1]
-    }
-    if (-not $accessToken) {
-        Write-Step "Could not extract access token from Spotify embed" "Red"
-        return $null
-    }
-    Write-Step "  Spotify embed token obtained" "Green"
-
-    $headers = @{
-        "Authorization" = "Bearer $accessToken"
-        "User-Agent"    = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    }
-
-    try {
-        $playlist = Invoke-WebRequestSafe -Uri "https://api.spotify.com/v1/playlists/$PlaylistId" -Headers $headers -SkipRateLimitWait
-    }
-    catch {
-        Write-Step "Failed to fetch Spotify playlist data: $($_.Exception.Message)" "Red"
-        return $null
-    }
-    if (-not $playlist) {
-        Write-Step "Spotify playlist request was rate-limited; skipping without waiting" "DarkYellow"
-        return $null
-    }
-
-    $playlistName = $playlist.name
-    $playlistImage = if ($playlist.images -and $playlist.images.Count -gt 0) { $playlist.images[0].url } else { $null }
-    $totalTracks = $playlist.tracks.total
-    Write-Step "  Spotify playlist: $playlistName ($totalTracks tracks)"
-
+    $playlistName = "Spotify Playlist"
+    $playlistImage = $null
     $tracks = @()
+    $parsed = $false
 
-    foreach ($item in $playlist.tracks.items) {
-        $track = $item.track
-        if (-not $track -or -not $track.name) { continue }
-        $artistNames = ($track.artists | ForEach-Object { $_.name }) -join ", "
-        $albumName = if ($track.album) { $track.album.name } else { "" }
-        $trackImage = if ($track.album -and $track.album.images -and $track.album.images.Count -gt 0) {
-            ($track.album.images | Sort-Object { if ($_.width) { $_.width } else { 9999 } } | Select-Object -First 1).url
-        } else { $null }
-        $trackUrl = if ($track.external_urls -and $track.external_urls.spotify) { $track.external_urls.spotify } else { $null }
-        $tracks += @{
-            title = $track.name; artist = $artistNames; album = $albumName
-            durationMs = $track.duration_ms; duration = Format-Duration $track.duration_ms
-            previewUrl = $track.preview_url; trackUrl = $trackUrl; image = $trackImage; trackId = $track.id
-        }
-    }
+    # ── Strategy 1: __NEXT_DATA__ JSON blob ─────────────────────────────
+    if ($embedHtml -match '(?s)<script\s+id="__NEXT_DATA__"[^>]*>(.+?)</script>') {
+        try {
+            $nextData = $Matches[1] | ConvertFrom-Json
+            $entity = $null
 
-    # Paginate remaining tracks
-    $nextUrl = $playlist.tracks.next
-    while ($nextUrl) {
-        try { $page = Invoke-WebRequestSafe -Uri $nextUrl -Headers $headers -SkipRateLimitWait } catch { break }
-        if (-not $page) {
-            Write-Step "  Spotify pagination rate-limited; stopping further pages" "DarkYellow"
-            break
-        }
-        foreach ($item in $page.items) {
-            $track = $item.track
-            if (-not $track -or -not $track.name) { continue }
-            $artistNames = ($track.artists | ForEach-Object { $_.name }) -join ", "
-            $albumName = if ($track.album) { $track.album.name } else { "" }
-            $trackImage = if ($track.album -and $track.album.images -and $track.album.images.Count -gt 0) {
-                ($track.album.images | Sort-Object { if ($_.width) { $_.width } else { 9999 } } | Select-Object -First 1).url
-            } else { $null }
-            $trackUrl = if ($track.external_urls -and $track.external_urls.spotify) { $track.external_urls.spotify } else { $null }
-            $tracks += @{
-                title = $track.name; artist = $artistNames; album = $albumName
-                durationMs = $track.duration_ms; duration = Format-Duration $track.duration_ms
-                previewUrl = $track.preview_url; trackUrl = $trackUrl; image = $trackImage; trackId = $track.id
+            # Try known Next.js paths for the playlist entity
+            try { $entity = $nextData.props.pageProps.state.data.entity } catch {}
+            if (-not $entity) { try { $entity = $nextData.props.pageProps.playlist } catch {} }
+            if (-not $entity) { try { $entity = $nextData.props.pageProps.state.data } catch {} }
+
+            if ($entity) {
+                if ($entity.name) { $playlistName = $entity.name }
+                elseif ($entity.title) { $playlistName = $entity.title }
+
+                try { $playlistImage = ($entity.coverArt.sources | Select-Object -First 1).url } catch {}
+                if (-not $playlistImage) { try { $playlistImage = ($entity.images | Select-Object -First 1).url } catch {} }
+                if (-not $playlistImage) { try { $playlistImage = $entity.image } catch {} }
+
+                $trackItems = $null
+                if ($entity.trackList) { $trackItems = $entity.trackList }
+                elseif ($entity.tracks -and $entity.tracks.items) { $trackItems = $entity.tracks.items }
+                elseif ($entity.tracks -and $entity.tracks -is [array]) { $trackItems = $entity.tracks }
+
+                if ($trackItems -and $trackItems.Count -gt 0) {
+                    foreach ($item in $trackItems) {
+                        $t = if ($item.track) { $item.track } else { $item }
+                        # Embed uses "title" for track name
+                        $trackName = if ($t.title) { $t.title } elseif ($t.name) { $t.name } else { $null }
+                        if (-not $trackName) { continue }
+
+                        # Embed uses "subtitle" for artist name
+                        $artistNames = ""
+                        if ($t.subtitle) { $artistNames = $t.subtitle }
+                        elseif ($t.artists) { $artistNames = ($t.artists | ForEach-Object { $_.name }) -join ", " }
+
+                        $albumName = ""
+                        if ($t.album -and $t.album.name) { $albumName = $t.album.name }
+
+                        # Embed uses "duration" as plain int (milliseconds)
+                        $durationMs = 0
+                        if ($t.duration -is [int] -or $t.duration -is [long] -or $t.duration -is [double]) {
+                            $durationMs = [int]$t.duration
+                        }
+                        elseif ($t.duration -is [string] -and $t.duration -match '^\d+$') {
+                            $durationMs = [int]$t.duration
+                        }
+                        if ($durationMs -eq 0) {
+                            try { if ($t.duration.totalMilliseconds) { $durationMs = [int]$t.duration.totalMilliseconds } } catch {}
+                        }
+                        if ($durationMs -eq 0 -and $t.duration_ms) { $durationMs = [int]$t.duration_ms }
+
+                        $trackImage = $null
+                        try { $trackImage = ($t.albumCover.sources | Select-Object -First 1).url } catch {}
+                        if (-not $trackImage) { try { $trackImage = ($t.album.coverArt.sources | Select-Object -First 1).url } catch {} }
+                        if (-not $trackImage) { try { $trackImage = ($t.album.images | Sort-Object { if ($_.width) { $_.width } else { 9999 } } | Select-Object -First 1).url } catch {} }
+
+                        $trackId = ""
+                        if ($t.id) { $trackId = $t.id }
+                        elseif ($t.uri -match 'spotify:track:(.+)') { $trackId = $Matches[1] }
+
+                        $trackUrl = $null
+                        if ($trackId) { $trackUrl = "https://open.spotify.com/track/$trackId" }
+                        elseif ($t.external_urls -and $t.external_urls.spotify) { $trackUrl = $t.external_urls.spotify }
+
+                        # Embed uses "audioPreview.url" for preview
+                        $previewUrl = $null
+                        if ($t.audioPreview -and $t.audioPreview.url) { $previewUrl = $t.audioPreview.url }
+                        elseif ($t.preview_url) { $previewUrl = $t.preview_url }
+
+                        $tracks += @{
+                            title = $trackName; artist = $artistNames; album = $albumName
+                            durationMs = $durationMs; duration = Format-Duration $durationMs
+                            previewUrl = $previewUrl; trackUrl = $trackUrl; image = $trackImage; trackId = $trackId
+                        }
+                    }
+                    $parsed = $true
+                }
             }
         }
-        $nextUrl = $page.next
+        catch {
+            Write-Step "  __NEXT_DATA__ parsing failed: $($_.Exception.Message)" "DarkYellow"
+        }
     }
 
-    # Fill missing preview URLs via Deezer search (Spotify often returns null previews)
+    # ── Strategy 2: Find embedded entity JSON in <script> tags ──────────
+    if (-not $parsed) {
+        $entityJson = Get-JsonObjectAfterMarker -Text $embedHtml -Marker '"entity":'
+        if ($entityJson) {
+            try {
+                $entity = $entityJson | ConvertFrom-Json
+                if ($entity.name) { $playlistName = $entity.name }
+
+                $trackItems = $null
+                if ($entity.trackList) { $trackItems = $entity.trackList }
+                elseif ($entity.tracks.items) { $trackItems = $entity.tracks.items }
+
+                if ($trackItems) {
+                    foreach ($item in $trackItems) {
+                        $t = if ($item.track) { $item.track } else { $item }
+                        $trackName = if ($t.title) { $t.title } elseif ($t.name) { $t.name } else { $null }
+                        if (-not $trackName) { continue }
+
+                        $artistNames = ""
+                        if ($t.subtitle) { $artistNames = $t.subtitle }
+                        elseif ($t.artists) { $artistNames = ($t.artists | ForEach-Object { $_.name }) -join ", " }
+                        $albumName = if ($t.album -and $t.album.name) { $t.album.name } else { "" }
+                        $durationMs = 0
+                        if ($t.duration -is [int] -or $t.duration -is [long] -or $t.duration -is [double]) {
+                            $durationMs = [int]$t.duration
+                        }
+
+                        $trackId = ""
+                        if ($t.uri -match 'spotify:track:(.+)') { $trackId = $Matches[1] }
+                        elseif ($t.id) { $trackId = $t.id }
+                        $trackUrl = if ($trackId) { "https://open.spotify.com/track/$trackId" } else { $null }
+
+                        $trackImage = $null
+                        try { $trackImage = ($t.albumCover.sources | Select-Object -First 1).url } catch {}
+
+                        $previewUrl = $null
+                        if ($t.audioPreview -and $t.audioPreview.url) { $previewUrl = $t.audioPreview.url }
+
+                        $tracks += @{
+                            title = $trackName; artist = $artistNames; album = $albumName
+                            durationMs = $durationMs; duration = Format-Duration $durationMs
+                            previewUrl = $previewUrl; trackUrl = $trackUrl; image = $trackImage; trackId = $trackId
+                        }
+                    }
+                    $parsed = $true
+                }
+            }
+            catch {
+                Write-Step "  Entity JSON parsing failed" "DarkYellow"
+            }
+        }
+    }
+
+    # ── Strategy 3: Parse server-rendered HTML track elements ───────────
+    if (-not $parsed -or $tracks.Count -eq 0) {
+        # The embed page renders tracks as elements with track title + artist text
+        # Match patterns like: data-testid="tracklist-row" or similar track containers
+        $htmlTracks = @()
+        # Try to extract track/artist pairs from the server-rendered HTML structure
+        # Spotify embed renders: <div ...>track title</div> and <span ...>artist</span>
+        $trackMatches = [regex]::Matches($embedHtml, '(?s)<div[^>]*data-testid="tracklist-row"[^>]*>(.+?)</div>\s*</div>\s*</div>')
+        if ($trackMatches.Count -eq 0) {
+            # Fallback: look for the standard embed track pattern (title in h3/div, artist after)
+            $trackMatches = [regex]::Matches($embedHtml, '(?s)class="[^"]*TrackListRow[^"]*"[^>]*>(.+?</(?:div|li)>)')
+        }
+        if ($trackMatches.Count -gt 0) {
+            foreach ($m in $trackMatches) {
+                $block = $m.Groups[1].Value
+                $title = ""; $artist = ""
+                if ($block -match '<(?:h3|div|span)[^>]*class="[^"]*(?:track-name|TrackName|track_name|ellipsis-one-line)[^"]*"[^>]*>\s*([^<]+)') {
+                    $title = $Matches[1].Trim()
+                }
+                if ($block -match '<(?:span|div)[^>]*class="[^"]*(?:artist|Artist)[^"]*"[^>]*>\s*([^<]+)') {
+                    $artist = $Matches[1].Trim()
+                }
+                if ($title) {
+                    $htmlTracks += @{
+                        title = $title; artist = $artist; album = ""
+                        durationMs = 0; duration = "0:00"
+                        previewUrl = $null; trackUrl = $null; image = $null; trackId = ""
+                    }
+                }
+            }
+            if ($htmlTracks.Count -gt 0) {
+                $tracks = $htmlTracks
+                $parsed = $true
+            }
+        }
+    }
+
+    # ── Strategy 4: Spotify regular page JSON-LD ────────────────────────
+    if (-not $parsed -or $tracks.Count -eq 0) {
+        try {
+            $pageHtml = Invoke-PageRequest -Uri "https://open.spotify.com/playlist/$PlaylistId"
+            if ($pageHtml -match '(?s)<script[^>]+type="application/ld\+json"[^>]*>(.+?)</script>') {
+                $ld = $Matches[1] | ConvertFrom-Json
+                if ($ld.name) { $playlistName = $ld.name }
+                if ($ld.image) { $playlistImage = $ld.image }
+                if ($ld.track) {
+                    $tracks = @()
+                    foreach ($t in $ld.track) {
+                        $durationMs = 0
+                        if ($t.duration -match 'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?') {
+                            $h = if ($Matches[1]) { [int]$Matches[1] } else { 0 }
+                            $m = if ($Matches[2]) { [int]$Matches[2] } else { 0 }
+                            $s = if ($Matches[3]) { [int]$Matches[3] } else { 0 }
+                            $durationMs = ($h * 3600 + $m * 60 + $s) * 1000
+                        }
+                        $trackId = ""
+                        if ($t.url -match '/track/([a-zA-Z0-9]+)') { $trackId = $Matches[1] }
+                        $tracks += @{
+                            title = $t.name
+                            artist = if ($t.byArtist -and $t.byArtist.name) { $t.byArtist.name } else { "" }
+                            album = if ($t.inAlbum -and $t.inAlbum.name) { $t.inAlbum.name } else { "" }
+                            durationMs = $durationMs; duration = Format-Duration $durationMs
+                            previewUrl = $null; trackUrl = $t.url; image = $null; trackId = $trackId
+                        }
+                    }
+                    $parsed = $true
+                }
+            }
+        }
+        catch {
+            Write-Step "  Regular Spotify page scrape also failed" "DarkYellow"
+        }
+    }
+
+    # ── Fallback: playlist metadata from og: tags ───────────────────────
+    if ($playlistName -eq "Spotify Playlist") {
+        if ($embedHtml -match '<meta\s+property="og:title"\s+content="([^"]+)"') {
+            $playlistName = [System.Web.HttpUtility]::HtmlDecode($Matches[1])
+        }
+    }
+    if (-not $playlistImage) {
+        if ($embedHtml -match '<meta\s+property="og:image"\s+content="([^"]+)"') {
+            $playlistImage = $Matches[1]
+        }
+    }
+
+    if ($tracks.Count -eq 0) {
+        Write-Step "  Could not extract any tracks from Spotify page" "Red"
+        return $null
+    }
+
+    Write-Step "  Spotify playlist: $playlistName ($($tracks.Count) tracks)"
+
+    # Fill missing preview URLs via Deezer search (Spotify pages often lack previews)
     $missingCount = ($tracks | Where-Object { -not $_.previewUrl }).Count
     if ($missingCount -gt 0) {
         Write-Step "  $missingCount tracks missing previews, searching Deezer..." "DarkYellow"
@@ -380,51 +543,173 @@ function Get-SpotifyPlaylistTracks {
 }
 
 # ============================================================================
-#  DEEZER — scrape widget page, fallback to public API (no key needed)
+#  DEEZER — pure HTML scraping (widget page + regular page fallback)
 # ============================================================================
 
 function Get-DeezerPlaylistTracks {
     param([string]$PlaylistId)
 
-    # Deezer's public API is free and keyless — use it directly (it's not a rate-limited developer API)
-    try {
-        $playlist = Invoke-WebRequestSafe -Uri "https://api.deezer.com/playlist/$PlaylistId"
-    }
-    catch {
-        Write-Step "Failed to fetch Deezer playlist: $($_.Exception.Message)" "Red"
-        return $null
-    }
-
-    if ($playlist.error) {
-        Write-Step "Deezer error: $($playlist.error.message)" "Red"
-        return $null
-    }
-
-    $playlistName = $playlist.title
-    $playlistImage = $playlist.picture_medium
-    $totalTracks = $playlist.nb_tracks
-    Write-Step "  Deezer playlist: $playlistName ($totalTracks tracks)"
-
+    $playlistName = "Deezer Playlist"
+    $playlistImage = $null
     $tracks = @()
-    $nextUrl = "https://api.deezer.com/playlist/$PlaylistId/tracks?limit=100"
-    while ($nextUrl) {
-        try { $page = Invoke-WebRequestSafe -Uri $nextUrl } catch { break }
-        foreach ($t in $page.data) {
-            if (-not $t -or -not $t.title) { continue }
-            $tracks += @{
-                title      = $t.title
-                artist     = if ($t.artist) { $t.artist.name } else { "" }
-                album      = if ($t.album) { $t.album.title } else { "" }
-                durationMs = $t.duration * 1000
-                duration   = Format-Duration ($t.duration * 1000)
-                previewUrl = $t.preview
-                trackUrl   = $t.link
-                image      = if ($t.album -and $t.album.cover_small) { $t.album.cover_small } else { $null }
-                trackId    = [string]$t.id
+    $parsed = $false
+
+    # ── Strategy 1: Scrape Deezer widget page (__NEXT_DATA__) ───────────
+    try {
+        $widgetHtml = Invoke-PageRequest -Uri "https://widget.deezer.com/widget/dark/playlist/$PlaylistId"
+
+        if ($widgetHtml -match '(?s)<script\s+id="__NEXT_DATA__"[^>]*>(.+?)</script>') {
+            $nextData = $Matches[1] | ConvertFrom-Json
+            $pageData = $nextData.props.pageProps
+
+            if ($pageData) {
+                # Extract playlist metadata
+                $plObj = $null
+                if ($pageData.data -and $pageData.data.DATA) { $plObj = $pageData.data.DATA }
+                elseif ($pageData.data) { $plObj = $pageData.data }
+
+                if ($plObj) {
+                    if ($plObj.TITLE) { $playlistName = $plObj.TITLE }
+                    elseif ($plObj.title) { $playlistName = $plObj.title }
+
+                    if ($plObj.PLAYLIST_PICTURE) {
+                        $playlistImage = "https://e-cdns-images.dzcdn.net/images/playlist/$($plObj.PLAYLIST_PICTURE)/250x250-000000-80-0-0.jpg"
+                    }
+                    elseif ($plObj.picture_medium) { $playlistImage = $plObj.picture_medium }
+                }
+
+                # Extract tracks
+                $songData = $null
+                try { $songData = $pageData.data.SONGS.data } catch {}
+                if (-not $songData) { try { $songData = $pageData.data.DATA.SONGS.data } catch {} }
+
+                if ($songData) {
+                    foreach ($t in $songData) {
+                        $trackTitle = if ($t.SNG_TITLE) { $t.SNG_TITLE } elseif ($t.title) { $t.title } else { $null }
+                        if (-not $trackTitle) { continue }
+
+                        $trackArtist = if ($t.ART_NAME) { $t.ART_NAME } elseif ($t.artist -and $t.artist.name) { $t.artist.name } else { "" }
+                        $trackAlbum = if ($t.ALB_TITLE) { $t.ALB_TITLE } elseif ($t.album -and $t.album.title) { $t.album.title } else { "" }
+                        $durationSec = if ($t.DURATION) { [int]$t.DURATION } elseif ($t.duration) { [int]$t.duration } else { 0 }
+                        $durationMs = $durationSec * 1000
+
+                        $previewUrl = $null
+                        if ($t.MEDIA -and $t.MEDIA.Count -gt 0 -and $t.MEDIA[0].HREF) { $previewUrl = $t.MEDIA[0].HREF }
+                        elseif ($t.preview) { $previewUrl = $t.preview }
+
+                        $trackId = if ($t.SNG_ID) { [string]$t.SNG_ID } elseif ($t.id) { [string]$t.id } else { "" }
+
+                        $trackImage = $null
+                        if ($t.ALB_PICTURE) {
+                            $trackImage = "https://e-cdns-images.dzcdn.net/images/cover/$($t.ALB_PICTURE)/56x56-000000-80-0-0.jpg"
+                        }
+
+                        $tracks += @{
+                            title      = $trackTitle
+                            artist     = $trackArtist
+                            album      = $trackAlbum
+                            durationMs = $durationMs
+                            duration   = Format-Duration $durationMs
+                            previewUrl = $previewUrl
+                            trackUrl   = "https://www.deezer.com/track/$trackId"
+                            image      = $trackImage
+                            trackId    = $trackId
+                        }
+                    }
+                    $parsed = $true
+                }
             }
         }
-        $nextUrl = $page.next
     }
+    catch {
+        Write-Step "  Deezer widget scrape failed: $($_.Exception.Message)" "DarkYellow"
+    }
+
+    # ── Strategy 2: Scrape the regular Deezer playlist page ─────────────
+    if (-not $parsed) {
+        try {
+            $pageHtml = Invoke-PageRequest -Uri "https://www.deezer.com/playlist/$PlaylistId"
+
+            # Try JSON-LD
+            if ($pageHtml -match '(?s)<script[^>]+type="application/ld\+json"[^>]*>(.+?)</script>') {
+                $ld = $Matches[1] | ConvertFrom-Json
+                if ($ld.name) { $playlistName = $ld.name }
+                if ($ld.image) { $playlistImage = $ld.image }
+                if ($ld.track) {
+                    foreach ($t in $ld.track) {
+                        $durationMs = 0
+                        if ($t.duration -match 'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?') {
+                            $h = if ($Matches[1]) { [int]$Matches[1] } else { 0 }
+                            $m = if ($Matches[2]) { [int]$Matches[2] } else { 0 }
+                            $s = if ($Matches[3]) { [int]$Matches[3] } else { 0 }
+                            $durationMs = ($h * 3600 + $m * 60 + $s) * 1000
+                        }
+                        $trackId = if ($t.url -match '/track/(\d+)') { $Matches[1] } else { "" }
+                        $tracks += @{
+                            title      = $t.name
+                            artist     = if ($t.byArtist -and $t.byArtist.name) { $t.byArtist.name } else { "" }
+                            album      = if ($t.inAlbum -and $t.inAlbum.name) { $t.inAlbum.name } else { "" }
+                            durationMs = $durationMs
+                            duration   = Format-Duration $durationMs
+                            previewUrl = $null
+                            trackUrl   = $t.url
+                            image      = $null
+                            trackId    = $trackId
+                        }
+                    }
+                    $parsed = $true
+                }
+            }
+
+            # Fallback: __NEXT_DATA__ on the regular page
+            if (-not $parsed -and $pageHtml -match '(?s)<script\s+id="__NEXT_DATA__"[^>]*>(.+?)</script>') {
+                try {
+                    $nextData = $Matches[1] | ConvertFrom-Json
+                    $songData = $null
+                    try { $songData = $nextData.props.pageProps.data.SONGS.data } catch {}
+                    if (-not $songData) { try { $songData = $nextData.props.pageProps.data.DATA.SONGS.data } catch {} }
+                    if ($songData) {
+                        foreach ($t in $songData) {
+                            $trackTitle = if ($t.SNG_TITLE) { $t.SNG_TITLE } elseif ($t.title) { $t.title } else { $null }
+                            if (-not $trackTitle) { continue }
+                            $trackId = if ($t.SNG_ID) { [string]$t.SNG_ID } elseif ($t.id) { [string]$t.id } else { "" }
+                            $tracks += @{
+                                title      = $trackTitle
+                                artist     = if ($t.ART_NAME) { $t.ART_NAME } else { "" }
+                                album      = if ($t.ALB_TITLE) { $t.ALB_TITLE } else { "" }
+                                durationMs = if ($t.DURATION) { [int]$t.DURATION * 1000 } else { 0 }
+                                duration   = Format-Duration (if ($t.DURATION) { [int]$t.DURATION * 1000 } else { 0 })
+                                previewUrl = $null
+                                trackUrl   = "https://www.deezer.com/track/$trackId"
+                                image      = $null
+                                trackId    = $trackId
+                            }
+                        }
+                        $parsed = $true
+                    }
+                }
+                catch {}
+            }
+
+            # Meta tag fallbacks
+            if ($playlistName -eq "Deezer Playlist" -and $pageHtml -match '<meta\s+property="og:title"\s+content="([^"]+)"') {
+                $playlistName = [System.Web.HttpUtility]::HtmlDecode($Matches[1])
+            }
+            if (-not $playlistImage -and $pageHtml -match '<meta\s+property="og:image"\s+content="([^"]+)"') {
+                $playlistImage = $Matches[1]
+            }
+        }
+        catch {
+            Write-Step "  Deezer page scrape also failed: $($_.Exception.Message)" "DarkYellow"
+        }
+    }
+
+    if ($tracks.Count -eq 0) {
+        Write-Step "  Could not extract tracks from Deezer page" "Red"
+        return $null
+    }
+
+    Write-Step "  Deezer playlist: $playlistName ($($tracks.Count) tracks)"
 
     return @{ url = "https://www.deezer.com/playlist/$PlaylistId"; service = "deezer"; name = $playlistName; image = $playlistImage; tracks = $tracks }
 }
