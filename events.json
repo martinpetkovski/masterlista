@@ -322,6 +322,28 @@
       ]
     },
     {
+      "id": "evt-20260305-концерт-на-taxi-consilium-pv35",
+      "title": "Концерт на Taxi Consilium",
+      "date": "2026-03-05",
+      "time": "21:00",
+      "place": "Porta Jazz, Битола",
+      "artists": [
+        "Taxi Consilium"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "200"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DVJohUoiKny/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260307-лозано-километри-љубов-xulu",
       "title": "Лозано - Километри Љубов",
       "date": "2026-03-07",
@@ -435,6 +457,28 @@
         }
       ],
       "link": "https://mktickets.mk/event/ljubojna-25-godini/"
+    },
+    {
+      "id": "evt-20260404-игор-џамбазов-и-гуру-харе-бенд-1zx5",
+      "title": "Игор Џамбазов и Гуру Харе бенд",
+      "date": "2026-04-04",
+      "time": "21:00",
+      "place": "НУЦК „Марко Цепенков“, Прилеп",
+      "artists": [
+        "Игор Џамбазов"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "600"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://wayin.mk/shop/events/igor-dzambazov-vo-prilep"
+        }
+      ]
     },
     {
       "id": "evt-20260417-devangelic-u10c",
