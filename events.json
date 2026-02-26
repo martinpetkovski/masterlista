@@ -322,6 +322,23 @@
       ]
     },
     {
+      "id": "evt-20260303-јордан-костов-maglota-live-2deu",
+      "title": "Јордан Костов MAGLOTA LIVE",
+      "date": "2026-03-03",
+      "time": "19:00",
+      "place": "Аудиокултура, Скопје",
+      "artists": [
+        "Yordan Kostov"
+      ],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/deunkcroc/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260305-концерт-на-taxi-consilium-pv35",
       "title": "Концерт на Taxi Consilium",
       "date": "2026-03-05",
@@ -379,6 +396,45 @@
         {
           "label": "",
           "url": "https://www.facebook.com/events/1853337125306391"
+        }
+      ]
+    },
+    {
+      "id": "evt-20260307-poison-ivy-персеида-ponder-metal-dischar-7xu7",
+      "title": "Poison Ivy + Персеида (Ponder, Metal Discharge Crew)",
+      "date": "2026-03-07",
+      "time": "20:00",
+      "place": "Центар за Култура, Битола",
+      "artists": [
+        "Персеида"
+      ],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DVOMTHcCBm4/"
+        }
+      ]
+    },
+    {
+      "id": "evt-20260314-дупер-во-скопје-live-concert-k19t",
+      "title": "Дупер во Скопје LIVE Concert",
+      "date": "2026-03-14",
+      "time": "21:00",
+      "place": "Кафе Бар Мартини, Скопје",
+      "artists": [
+        "Дупер"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "600"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DVMKpL8jdgO/"
         }
       ]
     },
@@ -815,45 +871,6 @@
       ],
       "tickets": [],
       "link": "https://kupikarta.com/event-details.nspx?eventid=5732"
-    },
-    {
-      "id": "evt-20260303-јордан-костов-maglota-live-2deu",
-      "title": "Јордан Костов MAGLOTA LIVE",
-      "date": "2026-03-03",
-      "time": "19:00",
-      "place": "Аудиокултура, Скопје",
-      "artists": [
-        "Yordan Kostov"
-      ],
-      "tickets": [],
-      "links": [
-        {
-          "label": "",
-          "url": "https://www.instagram.com/deunkcroc/"
-        }
-      ]
-    },
-    {
-      "id": "evt-20260314-дупер-во-скопје-live-concert-k19t",
-      "title": "Дупер во Скопје LIVE Concert",
-      "date": "2026-03-14",
-      "time": "21:00",
-      "place": "Кафе Бар Мартини, Скопје",
-      "artists": [
-        "Дупер"
-      ],
-      "tickets": [
-        {
-          "label": "Билет",
-          "price": "600"
-        }
-      ],
-      "links": [
-        {
-          "label": "",
-          "url": "https://www.instagram.com/p/DVMKpL8jdgO/"
-        }
-      ]
     }
   ]
 }
