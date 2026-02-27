@@ -361,6 +361,29 @@
       ]
     },
     {
+      "id": "evt-20260305-концертна-промоција-на-албумот-move-your-qpv9",
+      "title": "Концертна промоција на албумот „Move your mindset“",
+      "date": "2026-03-05",
+      "time": "21:00",
+      "place": "View Coffee Bar, Скопје",
+      "artists": [
+        "Александар Таушанов",
+        "Игор Џамбазов"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "200"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DVQ97FGDOEK/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260307-лозано-километри-љубов-xulu",
       "title": "Лозано - Километри Љубов",
       "date": "2026-03-07",
@@ -408,7 +431,12 @@
       "artists": [
         "Персеида"
       ],
-      "tickets": [],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "250"
+        }
+      ],
       "links": [
         {
           "label": "",
