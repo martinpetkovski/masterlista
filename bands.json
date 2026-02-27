@@ -3835,26 +3835,29 @@
     {
       "name": "Лара Иванова",
       "city": "Скопје",
-      "genre": "Поп",
+      "genre": "Поп, РнБ",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/2ZpOVSJ2HAUulYaLZVSutA?si=a1aNmkf9TnuqD-pfLcDopw",
-        "deezer": "https://www.deezer.com/track/1998675667",
-        "youtube": "https://www.youtube.com/watch?v=VgvupSwpjUY",
-        "napster": "https://play.napster.com/track/tra.716718204",
-        "youtube_music": "https://music.youtube.com/watch?v=VgvupSwpjUY",
-        "tidal": "https://listen.tidal.com/track/258074974",
-        "amazon_music": "https://music.amazon.com/albums/B0BL9GNCS7?trackAsin=B0BL9FMJGP",
-        "itunes": "https://geo.music.apple.com/us/album/_/1652735495?i=1652735496&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
-        "instagram": "https://www.instagram.com/_lara.iv_/"
+        "deezer": "https://www.deezer.com/en/artist/110248722",
+        "youtube": "https://www.youtube.com/@_lara.iv_",
+        "youtube_music": "https://music.youtube.com/channel/UC0HMTPKwLgWEJBlshN7KWfA",
+        "tidal": "https://tidal.com/artist/21755151",
+        "amazon_music": "https://music.amazon.com/artists/B08L8281M9/lara-ivanova",
+        "apple_music": "https://music.apple.com/us/artist/lara-ivanova/1535627965",
+        "instagram": "https://www.instagram.com/_lara.iv_/",
+        "facebook": "https://www.facebook.com/lara.ivnv/",
+        "wikipedia": [
+          "https://mk.wikipedia.org/wiki/%D0%9B%D0%B0%D1%80%D0%B0_%D0%98%D0%B2%D0%B0%D0%BD%D0%BE%D0%B2%D0%B0"
+        ]
       },
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": [
-        "#402020",
+        "#dd2727",
         "#202020"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab67616d0000b273d9afe69fa91b494c4093e1a3",
       "imageSource": "spotify"
     },
