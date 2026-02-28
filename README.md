@@ -12,8 +12,6 @@
 [![Лиценца](https://img.shields.io/badge/Лиценца-CC%20BY%204.0-4A90E2?style=for-the-badge)](https://creativecommons.org/licenses/by/4.0/)
 [![Discord](https://img.shields.io/badge/Discord-Xotel-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/DzBQASu7mU)
 
-[![Stars](https://img.shields.io/github/stars/martinpetkovski/masterlista?style=for-the-badge&logo=star&logoColor=ffd700)](https://github.com/martinpetkovski/masterlista/stargazers)
-[![Forks](https://img.shields.io/github/forks/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/network/members)
 [![Issues](https://img.shields.io/github/issues/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/pulls)
 [![Contributors](https://img.shields.io/github/contributors/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/graphs/contributors)
