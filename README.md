@@ -1,22 +1,30 @@
-# Мастер Листа
-
 <div align="center">
 
-![MMM Logo](https://toplista.mk/logo.png)
+<img src="https://toplista.mk/logo.png" alt="MMM Logo" width="172" style="vertical-align: middle; margin-right: 16px;">
 
-**ТопЛиста.мк**  
-<span style="background:#1e88e5;color:white;padding:4px 12px;border-radius:9999px;font-size:0.85em;font-weight:700;">v0.2 БЕТА</span>
+</div>
+
+<br>
+
+<div align="center">
 
 [![Верзија](https://img.shields.io/badge/Верзија-v0.2%20БЕТА-1e88e5?style=for-the-badge)](https://toplista.mk)
 [![Лиценца](https://img.shields.io/badge/Лиценца-CC%20BY%204.0-4A90E2?style=for-the-badge)](https://creativecommons.org/licenses/by/4.0/)
 [![Discord](https://img.shields.io/badge/Discord-Xotel-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/DzBQASu7mU)
-[![GitHub](https://img.shields.io/badge/GitHub-masterlista-181717?style=for-the-badge&logo=github)](https://github.com/martinpetkovski/masterlista)
-[![Статус](https://img.shields.io/badge/Статус-активен-success?style=for-the-badge)](https://toplista.mk)
+
+[![Stars](https://img.shields.io/github/stars/martinpetkovski/masterlista?style=for-the-badge&logo=star&logoColor=ffd700)](https://github.com/martinpetkovski/masterlista/stargazers)
+[![Forks](https://img.shields.io/github/forks/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/network/members)
+[![Issues](https://img.shields.io/github/issues/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/pulls)
+[![Contributors](https://img.shields.io/github/contributors/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/martinpetkovski/masterlista?style=for-the-badge)](https://github.com/martinpetkovski/masterlista/commits/main)
+
+[![GitHub Pages](https://img.shields.io/badge/Hosted%20on-GitHub%20Pages-181717?style=for-the-badge&logo=github&logoColor=white)](https://toplista.mk)
+[![Deployment](https://img.shields.io/badge/Deployment-GitHub%20Pages-success?style=for-the-badge&logo=github)](https://github.com/martinpetkovski/masterlista/actions/workflows/pages-build-deployment.yml)
 
 </div>
 
-**ТопЛиста.мк** е сајт кој автоматски генерира македонска музичка топ листа. Сајтот содржи и отворена база на македонски музички артисти и бендови.  
-Целта е да се документира и промовира македонската музичка сцена на едно место — од етаблирани имиња до нови таленти.
+**ТопЛиста.мк** е сајт кој автоматски генерира македонска музичка топ листа. Сајтот содржи и отворена база на македонски музички артисти и бендови. Целта е да се документира и промовира македонската музичка сцена на едно место — од етаблирани имиња до нови таленти.
 
 Проектот е напојуван од заедницата **[Xotel](https://discord.gg/DzBQASu7mU)** и е целосно отворен за придонеси.
 
@@ -160,4 +168,4 @@
 ---
 
 **⭐ Star-увајте го репото ако ви се допаѓа проектот!**  
-**🛠️ Придонесувајте** — заедно ја правиме македонската музика видлива.
+**🛠️ Отворете Issue или PR** — заедно ја правиме македонската музика видлива.
