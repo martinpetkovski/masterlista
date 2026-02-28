@@ -6239,9 +6239,8 @@
       "name": "Смут",
       "city": "Скопје",
       "genre": "Металкор",
-      "soundsLike": "Killswitch Engage, As I Lay Dying",
+      "soundsLike": "Смут",
       "links": {
-        "lastfm": "https://www.last.fm/music/Smut",
         "youtube": "https://www.youtube.com/channel/UCaFt4IVjMukR6sMK0TRLzVA",
         "spotify": "https://open.spotify.com/artist/0M4zJ08W2SJWr8sgwq1lMX?si=J3V2G_fSRZmuVoBnWW6bXg",
         "instagram": "https://www.instagram.com/smuthardcore/",
@@ -6252,11 +6251,8 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#000000",
-        "#333333"
-      ],
-      "confirmed": true,
+      "accentColors": null,
+      "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5ebbc58306207a860c6e2d0c4b0",
       "imageSource": "spotify"
     },
