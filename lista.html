@@ -230,6 +230,7 @@
             <span>Ажурирано <span id="last-modified">...</span></span>
         </span>
         <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
+        <button id="mobile-search-toggle" class="header-btn mobile-search-toggle-btn" title="Пребарај"><i class="fas fa-search"></i></button>
         <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
             <i class="fas fa-filter"></i>
         </button>
@@ -385,7 +386,10 @@
                         <small class="form-help">Означи ако информациите се потврдени од самиот артист</small>
                     </div>
                 </div>
-                <button type="submit" id="save-band-btn">Зачувај</button>
+                <div style="display:flex;gap:0.5rem;align-items:center">
+                    <button type="submit" id="save-band-btn">Зачувај</button>
+                    <button type="button" id="cancel-band-btn" class="cancel-band-btn">Откажи</button>
+                </div>
                 <button type="button" id="delete-band-btn" class="delete-band-btn" style="display:none"><i class="fas fa-trash"></i> Избриши артист</button>
             </form>
         </div>

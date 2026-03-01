@@ -1888,21 +1888,46 @@
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact chart-page">
-    <header id="site-header" data-active="/" data-title="Македонска Музичка Топ Листа">
-        <span class="header-info">
-            <span>Ажурирано <span id="last-updated">...</span></span>
-            <span class="separator">•</span>
-            <span id="header-week"></span>
-        </span>
-        <span class="mobile-week-label" id="mobile-week-label"></span>
-        <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
-            <i class="fas fa-compress-alt"></i>
-        </button>
-        <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" title="Сподели">
-            <i class="fas fa-share-alt"></i>
-        </button>
+    <header>
+        <div class="header-content">
+            <div class="logo-title-group">
+                <a href="/za" class="site-logo-link site-nav-trigger" title="За проектот / Impressum">
+                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
+                </a>
+                <div class="site-nav-menu" id="site-nav-menu">
+                    <a href="/" class="active"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
+                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
+                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
+                </div>
+                <div class="title-group">
+                    <h1>Македонска Музичка Топ Листа</h1>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <span class="header-info">
+                    <span>Ажурирано <span id="last-updated">...</span></span>
+                    <span class="separator">•</span>
+                    <span id="header-week"></span>
+
+                </span>
+                <span class="mobile-week-label" id="mobile-week-label"></span>
+                <button id="global-compact-toggle" class="header-btn" onclick="toggleGlobalCompact()" title="Компактен/Проширен приказ">
+                    <i class="fas fa-compress-alt"></i>
+                </button>
+                <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" title="Сподели">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <button id="settings-btn" class="header-btn" title="Поставки">
+                    <i class="fas fa-gear"></i>
+                </button>
+            </div>
+        </div>
     </header>
-    <script src="/load-header.js"></script>
     
     <!-- Charts Filter Bar -->
     <div class="chart-filter-bar">
@@ -2746,7 +2771,7 @@
             // Store previous chart data for comparison
             let previousChartData = null;
             
-            // Store chart history for last 5 weeks (for hover tooltips)
+            // Store chart history for last 10 weeks (for hover tooltips)
             let chartHistoryWeeks = []; // Array of { weekId, releases[] } sorted newest first
             let releaseHistoryMap = new Map(); // releaseId -> [{weekId, popularity, position}]
             
@@ -3127,9 +3152,9 @@
                 // Load previous data for comparison
                 previousChartData = await loadPreviousData();
                 
-                // Load chart history for hover tooltips (last 5 weeks)
+                // Load chart history for hover tooltips (last 10 weeks)
                 try {
-                    chartHistoryWeeks = await loadChartHistory(5);
+                    chartHistoryWeeks = await loadChartHistory(10);
                     console.log('Loaded chart history:', chartHistoryWeeks.length, 'weeks');
                 } catch (e) {
                     console.warn('Could not load chart history:', e);

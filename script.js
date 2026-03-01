@@ -323,16 +323,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="settings-section">
                         <div class="settings-section-title">Стриминг сервис</div>
-                        <div class="settings-service-options">
-                            <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service="">
-                                <i class="fas fa-question"></i> Секогаш прашувај
-                            </button>
+                        <select class="settings-service-select">
+                            <option value="" ${!currentService ? 'selected' : ''}>Секогаш прашувај</option>
                             ${Object.entries(svcDefs).map(([id, svc]) => `
-                                <button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}">
-                                    <i class="${svc.icon}"></i> ${svc.name}
-                                </button>
+                                <option value="${id}" ${id === currentService ? 'selected' : ''}>${svc.name}</option>
                             `).join('')}
-                        </div>
+                        </select>
                     </div>
                     <div class="settings-section settings-tour-section">
                         <button class="settings-tour-btn" id="settings-start-tour">
@@ -368,16 +364,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Service selection
-            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const serviceId = btn.dataset.service;
+            const svcSelect = overlay.querySelector('.settings-service-select');
+            if (svcSelect) {
+                svcSelect.addEventListener('change', () => {
+                    const serviceId = svcSelect.value;
                     if (serviceId) {
                         localStorage.setItem('mmm-preferred-service', serviceId);
                     } else {
                         localStorage.removeItem('mmm-preferred-service');
                     }
-                    overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
                     // Update any visible service preference indicators
                     document.querySelectorAll('.service-pref-current').forEach(el => {
                         if (serviceId && svcDefs[serviceId]) {
@@ -386,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                 });
-            });
+            }
 
             // Tour button
             const tourBtn = overlay.querySelector('#settings-start-tour');
@@ -408,10 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark);
             });
             const currentSvc = localStorage.getItem('mmm-preferred-service');
-            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
-                const svcId = btn.dataset.service;
-                btn.classList.toggle('active', svcId === (currentSvc || ''));
-            });
+            const svcSel = overlay.querySelector('.settings-service-select');
+            if (svcSel) svcSel.value = currentSvc || '';
             overlay.classList.add('visible');
         });
     }
@@ -1660,6 +1653,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
+
+        // Mobile search toggle button
+        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+        const mobileSearchBar = document.getElementById('mobile-search-bar');
+        if (mobileSearchToggle && mobileSearchBar) {
+            mobileSearchToggle.addEventListener('click', () => {
+                const isVisible = mobileSearchBar.classList.toggle('visible');
+                mobileSearchToggle.innerHTML = `<i class="fas ${isVisible ? 'fa-times' : 'fa-search'}"></i>`;
+                if (isVisible) {
+                    const input = document.getElementById('mobile-search-input');
+                    if (input) input.focus();
+                } else {
+                    // Clear search when closing
+                    const input = document.getElementById('mobile-search-input');
+                    if (input && input.value) {
+                        input.value = '';
+                        document.getElementById('search-name').value = '';
+                        const clearBtn = document.getElementById('mobile-search-clear');
+                        if (clearBtn) clearBtn.classList.remove('visible');
+                        filterBands();
+                    }
+                }
+            });
+        }
     }
 
     // Autocomplete data cache
@@ -1939,6 +1956,20 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Close modal clicked');
             closeModalWithAutoSave();
         });
+
+        // Cancel button handler
+        const cancelBtn = document.getElementById('cancel-band-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                console.log('Cancel button clicked');
+                modal.style.display = 'none';
+                form.reset();
+                linksContainer.innerHTML = '';
+                clearErrors();
+                clearTags();
+                greetingEditReset();
+            });
+        }
 
         window.addEventListener('click', (e) => {
             if (e.target === modal) {

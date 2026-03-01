@@ -305,6 +305,7 @@ header p {
 
 .toggle-filters-btn { display: none; }
 .mobile-search-bar { display: none; }
+.mobile-search-toggle-btn { display: none; }
 
 /* Main */
 main {
@@ -1196,13 +1197,38 @@ footer { display: none; }
 }
 
 #save-band-btn {
-    width: 100%;
-    margin-top: 0.75rem;
+    flex: 1;
+    margin-top: 0;
     background: var(--accent-green);
 }
 
 #save-band-btn:hover { 
     opacity: 0.9;
+}
+
+.cancel-band-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+.cancel-band-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+body.dark-mode .cancel-band-btn {
+    color: var(--text-secondary);
+    border-color: rgba(255,255,255,0.1);
+}
+body.dark-mode .cancel-band-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e8e8f0;
 }
 
 .delete-band-btn {
@@ -2356,6 +2382,39 @@ body.dark-mode .settings-service-btn:hover {
     color: #fff;
 }
 
+.settings-service-select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+}
+.settings-service-select:focus {
+    border-color: var(--accent-orange, #ff922b);
+}
+body.dark-mode .settings-service-select {
+    color: #e8e8f0;
+    border-color: rgba(255,255,255,0.1);
+    background-color: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
+body.dark-mode .settings-service-select option {
+    background: #1a1d24;
+    color: #e8e8f0;
+}
+
 /* Tour button in settings */
 .settings-tour-section {
     border-top: 1px solid rgba(0,0,0,0.1);
@@ -2469,6 +2528,18 @@ body.dark-mode .site-nav-menu a.active {
 
 body.dark-mode .site-nav-menu a.active i {
     color: #fff;
+}
+
+/* Nav separator between main links and social links */
+.nav-separator {
+    width: 1px;
+    height: 14px;
+    background: var(--border-color);
+    margin: 0 0.2rem;
+    flex-shrink: 0;
+}
+body.dark-mode .nav-separator {
+    background: rgba(255,255,255,0.12);
 }
 
 /* News outlet icon in media column */

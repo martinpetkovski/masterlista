@@ -351,10 +351,10 @@
                     </div>
                     <div class="settings-section">
                         <div class="settings-section-title">Стриминг сервис</div>
-                        <div class="settings-service-options">
-                            <button class="settings-service-btn no-pref ${!currentService ? 'active' : ''}" data-service=""><i class="fas fa-question"></i> Секогаш прашувај</button>
-                            ${Object.entries(svcDefs).map(([id, svc]) => `<button class="settings-service-btn ${id === currentService ? 'active' : ''}" data-service="${id}" style="--svc-color: ${svc.color}"><i class="${svc.icon}"></i> ${svc.name}</button>`).join('')}
-                        </div>
+                        <select class="settings-service-select">
+                            <option value="" ${!currentService ? 'selected' : ''}>Секогаш прашувај</option>
+                            ${Object.entries(svcDefs).map(([id, svc]) => `<option value="${id}" ${id === currentService ? 'selected' : ''}>${svc.name}</option>`).join('')}
+                        </select>
                     </div>
                     <div class="settings-section settings-tour-section">
                         <button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> Тура на сајтот</button>
@@ -375,22 +375,21 @@
                     btn.classList.add('active');
                 });
             });
-            overlay.querySelectorAll('.settings-service-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const serviceId = btn.dataset.service;
+            const svcSelect = overlay.querySelector('.settings-service-select');
+            if (svcSelect) {
+                svcSelect.addEventListener('change', () => {
+                    const serviceId = svcSelect.value;
                     if (serviceId) { localStorage.setItem('mmm-preferred-service', serviceId); }
                     else { localStorage.removeItem('mmm-preferred-service'); }
-                    overlay.querySelectorAll('.settings-service-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
                 });
-            });
+            }
             const tourBtnEl = overlay.querySelector('#settings-start-tour');
             if (tourBtnEl) { tourBtnEl.addEventListener('click', () => { overlay.classList.remove('visible'); if (typeof window.startGlobalTour === 'function') window.startGlobalTour(); }); }
             settingsBtn.addEventListener('click', () => {
                 const isDark = document.documentElement.classList.contains('dark-mode');
                 overlay.querySelectorAll('.settings-theme-btn').forEach(btn => { btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark); });
                 const currentSvc = localStorage.getItem('mmm-preferred-service');
-                overlay.querySelectorAll('.settings-service-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.service === (currentSvc || '')); });
+                const svcSel = overlay.querySelector('.settings-service-select'); if (svcSel) svcSel.value = currentSvc || '';
                 overlay.classList.add('visible');
             });
         })();
