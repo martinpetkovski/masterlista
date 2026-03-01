@@ -673,7 +673,6 @@
         }
 
         .adv-table td {
-            border-bottom: 1px solid var(--border-color);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1316,7 +1315,6 @@
             display: flex;
             align-items: center;
             padding: 0.2rem 0.85rem 0.2rem 0.2rem;
-            border-bottom: 1px solid var(--border-color);
             gap: 0.3rem;
             transition: all 0.15s ease;
             background: transparent;
@@ -1324,6 +1322,10 @@
             position: relative;
             overflow: hidden;
             clip-path: inset(0);
+        }
+
+        .chart-item:nth-child(even) {
+            background: var(--bg-secondary);
         }
         
         /* Accent color for chart items - disabled, show checkmark instead */
@@ -1522,10 +1524,6 @@
         .chart-rank.bronze { 
             color: var(--text-muted, #8b929a); 
         }
-        
-        .chart-item.rank-1,
-        .chart-item.rank-2,
-        .chart-item.rank-3 { background: transparent; }
         
         .chart-cover {
             width: 40px;
