@@ -123,9 +123,9 @@
             color: var(--text-muted);
         }
         
-        body.dark-mode .share-card-rank.gold { color: #ffd700; }
-        body.dark-mode .share-card-rank.silver { color: #c0c0c0; }
-        body.dark-mode .share-card-rank.bronze { color: #cd7f32; }
+        body.dark-mode .share-card-rank.gold,
+        body.dark-mode .share-card-rank.silver,
+        body.dark-mode .share-card-rank.bronze { color: var(--text-muted); }
         
         body.dark-mode .share-card-song {
             color: var(--text-primary);
@@ -967,9 +967,9 @@
             color: #999;
         }
         
-        .share-card-rank.gold { color: #d4a000; }
-        .share-card-rank.silver { color: #888; }
-        .share-card-rank.bronze { color: #a06020; }
+        .share-card-rank.gold,
+        .share-card-rank.silver,
+        .share-card-rank.bronze { color: #999; }
         
         .share-card-cover {
             width: 40px;
@@ -1262,19 +1262,15 @@
             100% { opacity: 0; top: 18px; }
         }
         
-        .chart-rank.gold { 
-            color: #d4a000; 
-        }
-        .chart-rank.silver { 
-            color: #8a8a8a; 
-        }
+        .chart-rank.gold,
+        .chart-rank.silver,
         .chart-rank.bronze { 
-            color: #a86830; 
+            color: var(--text-muted, #8b929a); 
         }
         
-        .chart-item.rank-1 { background: rgba(212, 160, 0, 0.06); }
-        .chart-item.rank-2 { background: rgba(138, 138, 138, 0.05); }
-        .chart-item.rank-3 { background: rgba(168, 104, 48, 0.05); }
+        .chart-item.rank-1,
+        .chart-item.rank-2,
+        .chart-item.rank-3 { background: transparent; }
         
         .chart-cover {
             width: 40px;
@@ -2432,9 +2428,9 @@
                 footerBg: '#1c2428',
                 dateColor: '#5f6368',
                 rankColor: '#5f6368',
-                rankGold: '#ffd700',
-                rankSilver: '#c0c0c0',
-                rankBronze: '#cd7f32',
+                rankGold: '#5f6368',
+                rankSilver: '#5f6368',
+                rankBronze: '#5f6368',
                 coverBg: '#1c2428',
                 headerBg: '#000',
                 headerColor: '#fff',
@@ -2450,9 +2446,9 @@
                 dateColor: '#888',
                 weekColor: '#555',
                 rankColor: '#999',
-                rankGold: '#d4a000',
-                rankSilver: '#888',
-                rankBronze: '#a06020',
+                rankGold: '#999',
+                rankSilver: '#999',
+                rankBronze: '#999',
                 coverBg: '#f0f0f0',
                 headerBg: '#eef0f2',
                 headerColor: '#000',
@@ -2486,9 +2482,6 @@
             
             // Get item background based on position
             const getItemBg = (rank) => {
-                if (rank === 1) return isDarkMode ? 'rgba(212, 160, 0, 0.08)' : 'rgba(212, 160, 0, 0.08)';
-                if (rank === 2) return isDarkMode ? 'rgba(138, 138, 138, 0.06)' : 'rgba(138, 138, 138, 0.06)';
-                if (rank === 3) return isDarkMode ? 'rgba(168, 104, 48, 0.06)' : 'rgba(168, 104, 48, 0.06)';
                 return 'transparent';
             };
             

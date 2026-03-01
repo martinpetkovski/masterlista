@@ -412,3 +412,60 @@ function getISOWeek(date) {
     var weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     return { year: d.getFullYear(), week: weekNum };
 }
+
+// ==================== HEADER COLLAGE ====================
+/**
+ * Adds a scattered album art collage behind the shared header/navbar.
+ * Call this once from any page after DOMContentLoaded (or immediately if DOM ready).
+ * Fetches chart-data.json, extracts thumbnails, and scatters them.
+ */
+function initHeaderCollage() {
+    var headerEl = document.querySelector('header');
+    if (!headerEl) return;
+
+    fetch('/chart-data.json?t=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            if (!data || !data.releases) return;
+
+            // We need bandsData for buildChartRanking – fetch it too
+            return fetch('/bands.json?t=' + Date.now())
+                .then(function(r2) { return r2.ok ? r2.json() : null; })
+                .then(function(bandsJson) {
+                    var bands = bandsJson ? (bandsJson.muzickaMasterLista || []) : [];
+                    var ranked = buildChartRanking(data.releases, {
+                        type: 'single',
+                        genre: 'all',
+                        bandsData: bands,
+                        count: 20
+                    });
+                    var thumbs = ranked.map(function(r) { return r.thumbnail; }).filter(Boolean);
+                    if (thumbs.length === 0) return;
+
+                    var maxUnique = thumbs.length;
+
+                    var collage = document.createElement('div');
+                    collage.className = 'header-collage';
+
+                    // Create enough images to fill 2 rows; excess hidden by overflow
+                    var totalImages = 60;
+                    for (var i = 0; i < totalImages; i++) {
+                        var img = document.createElement('img');
+                        img.src = thumbs[i % maxUnique];
+                        img.alt = '';
+                        img.loading = 'lazy';
+                        collage.appendChild(img);
+                    }
+
+                    headerEl.insertBefore(collage, headerEl.firstChild);
+                });
+        })
+        .catch(function() { /* silently fail */ });
+}
+
+// Auto-init when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeaderCollage);
+} else {
+    initHeaderCollage();
+}

@@ -63,7 +63,73 @@ header {
     top: 0;
     z-index: 200;
     backdrop-filter: blur(6px);
+    overflow: hidden;
 }
+
+/* Header album art collage – 2 neat rows, right-aligned */
+.header-collage {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    overflow: hidden;
+    /* Fade out at right edge so images don't cut off abruptly */
+    mask-image: linear-gradient(to right, black, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black, black 90%, transparent 100%);
+}
+
+.header-collage img {
+    height: 50%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    opacity: 0.18;
+    flex-shrink: 0;
+}
+
+/* Gradient blur: sharp on right, blurry on left */
+.header-collage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    mask-image: linear-gradient(to right, black 0%, transparent 70%);
+    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 70%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, #fff 30%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.4) 75%, transparent 95%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+body.dark-mode header::before {
+    background: linear-gradient(to right, #15181e 30%, rgba(21,24,30,0.85) 50%, rgba(21,24,30,0.4) 75%, transparent 95%);
+}
+
+/* Verified artist pages: no collage overlay needed */
+body.verified-accent header::before {
+    display: none;
+}
+
+
 
 .header-content {
     display: flex;
@@ -71,6 +137,8 @@ header {
     justify-content: space-between;
     width: 100%;
     gap: 1rem;
+    position: relative;
+    z-index: 2;
 }
 
 .logo-title-group {
@@ -2479,7 +2547,8 @@ body.dark-mode .settings-tour-section {
     font-weight: 500;
     color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 0;
+    border: 2px solid transparent;
     transition: all 0.15s ease;
     white-space: nowrap;
 }
@@ -2499,11 +2568,41 @@ body.dark-mode .settings-tour-section {
 .site-nav-menu a.active {
     font-weight: 600;
     color: #fff;
-    background: var(--accent-blue);
+    background: #000;
+    border-color: #000;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.site-nav-menu a.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+}
+
+.site-nav-menu a.active:hover {
+    color: #000;
+    background: #000;
+}
+
+.site-nav-menu a.active:hover::before {
+    transform: translateX(0);
 }
 
 .site-nav-menu a.active i {
     color: #fff;
+}
+
+.site-nav-menu a.active:hover i {
+    color: #000;
 }
 
 body.dark-mode .site-nav-menu {
@@ -2522,11 +2621,24 @@ body.dark-mode .site-nav-menu a:hover {
 }
 
 body.dark-mode .site-nav-menu a.active {
+    color: #000;
+    background: #fff;
+    border-color: #fff;
+}
+
+body.dark-mode .site-nav-menu a.active::before {
+    background: #000;
+}
+
+body.dark-mode .site-nav-menu a.active:hover {
     color: #fff;
-    background: var(--accent-blue);
 }
 
 body.dark-mode .site-nav-menu a.active i {
+    color: #000;
+}
+
+body.dark-mode .site-nav-menu a.active:hover i {
     color: #fff;
 }
 

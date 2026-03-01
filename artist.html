@@ -2052,6 +2052,11 @@ a.chart-history-item {
                 document.body.classList.add('verified-accent');
                 const headerEl = document.querySelector('header');
                 if (headerEl) {
+                    // Remove collage – verified artists get a single solid color header
+                    const hCollage = headerEl.querySelector('.header-collage');
+                    if (hCollage) hCollage.remove();
+                    // Hide the gradient overlay (no longer needed without collage)
+                    headerEl.style.setProperty('--hide-header-before', '1');
                     const isDark = document.body.classList.contains('dark-mode');
                     headerEl.style.background = isDark
                         ? `${c1}cc`

@@ -60,7 +60,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
@@ -95,10 +95,14 @@
             min-height: 100vh;
         }
 
+        body.dashboard-page > header {
+            margin-bottom: -48px;
+        }
+
         .dashboard {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 0.75rem 2.5rem;
+            padding: 0 0.75rem 2.5rem;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
@@ -107,13 +111,13 @@
         .dash-card {
             background: var(--bg-primary, #fff);
             border: 1px solid var(--border-color, #dfe1e5);
-            border-radius: 10px;
             padding: 0.7rem 0.85rem;
             transition: box-shadow 0.15s ease;
             display: flex;
             flex-direction: column;
             height: 100%;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .dash-card:hover {
@@ -157,29 +161,53 @@
         .dash-card-header .more-link {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--accent-blue, #4a7fa5);
+            color: #FFF;
             text-decoration: none;
             white-space: nowrap;
             padding: 0.25rem 0.65rem;
-            border-radius: 20px;
-            border: 1px solid var(--accent-blue, #4a7fa5);
-            transition: all 0.15s ease;
+            border-radius: 0;
+            border: 2px solid #000;
+            background: #000;
+            transition: color 0.25s ease;
             letter-spacing: 0.2px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .dash-card-header .more-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
         }
 
         .dash-card-header .more-link:hover {
-            background: var(--accent-blue, #4a7fa5);
-            color: #fff;
+            color: #000;
             text-decoration: none;
         }
 
+        .dash-card-header .more-link:hover::before {
+            transform: translateX(0);
+        }
+
         body.dark-mode .dash-card-header .more-link {
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
+            border-color: #fff;
+            color: #000;
+            background: #fff;
+        }
+
+        body.dark-mode .dash-card-header .more-link::before {
+            background: #000;
         }
 
         body.dark-mode .dash-card-header .more-link:hover {
-            background: var(--accent-blue);
             color: #fff;
         }
 
@@ -189,6 +217,8 @@
             margin: 0;
             padding: 0;
             flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .mini-chart-item {
@@ -207,7 +237,7 @@
 
         .mini-chart-rank {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--text-muted, #8b929a);
             width: 2.2rem;
@@ -217,9 +247,9 @@
             letter-spacing: -0.03em;
         }
 
-        .mini-chart-rank.gold { color: #d4a017; }
-        .mini-chart-rank.silver { color: #8a8a8a; }
-        .mini-chart-rank.bronze { color: #b5651d; }
+        .mini-chart-rank.gold,
+        .mini-chart-rank.silver,
+        .mini-chart-rank.bronze { color: var(--text-muted, #8b929a); }
 
         .mini-chart-cover {
             width: 80px;
@@ -237,7 +267,7 @@
 
         .mini-chart-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-primary, #1a1d21);
             white-space: nowrap;
@@ -247,7 +277,7 @@
         }
 
         .mini-chart-artist {
-            font-size: 0.85rem;
+            font-size: 1rem;
             color: var(--text-secondary, #555b64);
             white-space: nowrap;
             overflow: hidden;
@@ -343,6 +373,8 @@
             margin: 0;
             padding: 0;
             flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .event-item {
@@ -353,7 +385,7 @@
         }
 
         .event-date-badge {
-            background: var(--accent-blue, #4a7fa5);
+            background: #111;
             color: #fff;
             border-radius: 7px;
             padding: 0.35rem 0.5rem;
@@ -516,6 +548,8 @@
             flex-direction: column;
             gap: 0;
             flex: 1;
+            min-height: 0;
+            overflow: hidden;
             list-style: none;
             margin: 0;
             padding: 0;
@@ -643,6 +677,8 @@
             margin: 0;
             padding: 0;
             flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .sotd-item {
@@ -725,42 +761,59 @@
             justify-content: center;
             gap: 0.5rem;
             padding: 0.75rem 0.85rem;
-            border-radius: 10px;
+            border-radius: 0;
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             font-weight: 600;
-            border: 1px solid var(--border-color, #dfe1e5);
-            background: var(--bg-primary, #fff);
-            color: var(--text-primary, #1a1d21);
+            border: 2px solid #000;
+            background: #000;
+            color: #fff;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.18s ease;
+            transition: color 0.25s ease;
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
         .quick-action-btn i {
             font-size: 1.1rem;
         }
 
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
         .quick-action-btn:hover {
-            background: var(--bg-hover, #eceef1);
-            border-color: var(--accent-blue, #4a7fa5);
-            color: var(--accent-blue, #4a7fa5);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            color: #000;
+        }
+
+        .quick-action-btn:hover::before {
+            transform: translateX(0);
         }
 
         body.dark-mode .quick-action-btn {
-            background: var(--bg-secondary);
-            border-color: var(--border-color);
-            color: var(--text-primary);
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+        }
+
+        body.dark-mode .quick-action-btn::before {
+            background: #000;
         }
 
         body.dark-mode .quick-action-btn:hover {
-            background: var(--bg-hover);
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            color: #fff;
         }
 
 
@@ -818,23 +871,42 @@
             align-items: center;
             gap: 0.3rem;
             padding: 0.35rem 0.75rem;
-            border-radius: 6px;
+            border-radius: 0;
             font-family: 'Inter', sans-serif;
             font-size: 0.7rem;
             font-weight: 600;
-            border: 1px solid var(--accent-green, #22c55e);
-            background: transparent;
-            color: var(--accent-green, #22c55e);
+            border: 2px solid #000;
+            background: #000;
+            color: #fff;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: color 0.25s ease;
             white-space: nowrap;
             flex-shrink: 0;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .verify-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
         }
 
         .verify-btn:hover {
-            background: var(--accent-green, #22c55e);
-            color: #fff;
+            color: #000;
+        }
+
+        .verify-btn:hover::before {
+            transform: translateX(0);
         }
 
         /* ==================== TRENDING CHARTS ==================== */
@@ -843,6 +915,8 @@
             margin: 0;
             padding: 0;
             flex: 1;
+            min-height: 0;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -911,18 +985,26 @@
         }
 
         .trending-badge.hot {
-            background: rgba(239, 68, 68, 0.12);
-            color: var(--accent-red, #ef4444);
+            background: #EEE;
+            color: #000;
         }
 
         .trending-badge.rising {
-            background: rgba(234, 168, 56, 0.12);
-            color: var(--accent-orange, #e8a838);
+            background: #EEE;
+            color: #000;
         }
 
         .trending-badge.fresh {
-            background: rgba(34, 197, 94, 0.12);
-            color: var(--accent-green, #22c55e);
+            background: #EEE;
+            color: #000;
+        }
+
+        /* Verified badge inline */
+        .verified-badge {
+            color: #1d9bf0;
+            font-size: 0.7rem;
+            margin-left: 0.25rem;
+            vertical-align: middle;
         }
 
         /* ==================== YOUTUBE SECTION ==================== */
@@ -958,100 +1040,192 @@
             flex: 1;
         }
 
-        /* ==================== DIGEST STRIP ==================== */
-        .digest-strip {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.75rem;
+        /* ==================== SITE TITLE BAR ==================== */
+        .site-title {
             grid-column: 1 / -1;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.7rem;
+            text-align: left;
+            background-color: #000;
+            color: #FFF;
+            padding: 0.6rem 0.9rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 70px;
         }
 
-        .digest-item {
-            background: var(--bg-primary, #fff);
-            border: 1px solid var(--border-color, #dfe1e5);
-            border-radius: 10px;
-            padding: 0.85rem;
-            text-decoration: none;
+        /* Album art collage – 2 neat rows */
+        .site-title-collage {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
             display: flex;
             flex-direction: column;
-            gap: 0.55rem;
-            transition: box-shadow 0.15s, border-color 0.15s;
-            cursor: pointer;
+            flex-wrap: wrap;
+            align-content: flex-end;
+            overflow: hidden;
+            /* Fade out at right edge so images don't cut off abruptly */
+            mask-image: linear-gradient(to right, black, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black, black 90%, transparent 100%);
         }
 
-        .digest-item:hover {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            border-color: var(--accent-blue, #4a7fa5);
-        }
-
-        body.dark-mode .digest-item {
-            background: var(--bg-secondary);
-            border-color: var(--border-color);
-        }
-
-        body.dark-mode .digest-item:hover {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-            border-color: var(--accent-blue);
-        }
-
-        .digest-top {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .digest-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
+        .site-title-collage img {
+            height: 50%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 2px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+            opacity: 0.7;
             flex-shrink: 0;
-            color: #fff;
         }
 
-        .digest-icon.blue { background: #4a7fa5; }
-        .digest-icon.green { background: #22c55e; }
-        .digest-icon.orange { background: #e8a838; }
-        .digest-icon.purple { background: #8a7db5; }
-
-        .digest-value {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.45rem;
-            font-weight: 800;
-            color: var(--text-primary, #1a1d21);
-            line-height: 1;
-            letter-spacing: -0.03em;
+        /* Gradient blur: sharp on right, blurry on left */
+        .site-title-collage::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            mask-image: linear-gradient(to right, black 0%, transparent 70%);
+            -webkit-mask-image: linear-gradient(to right, black 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .digest-label {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--text-secondary, #555b64);
-            line-height: 1.3;
+        /* Fade to black on the left side */
+        .site-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, #000 20%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.15) 65%, transparent 85%);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .digest-cta {
-            font-size: 0.68rem;
-            font-weight: 600;
-            color: var(--accent-blue, #4a7fa5);
+        .site-title-text {
             display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        .site-title-main {
+            font-family: 'Dela Gothic One', 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .site-title-sub {
+            margin-top: 0.15rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .site-title-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: contain;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            opacity: 0.9;
+        }
+
+        /* Title navigation buttons (right side of site-title bar) */
+        .title-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: auto;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .title-nav-btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #FFF;
+            background: #000;
+            border: 2px solid #000;
+            display: inline-flex;
             align-items: center;
             gap: 0.3rem;
-            margin-top: auto;
+            padding: 0.3rem 0.65rem;
+            border-radius: 0;
+            transition: color 0.25s ease;
+            text-decoration: none;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .digest-cta i {
+        .title-nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .title-nav-btn:hover {
+            color: #000;
+        }
+
+        .title-nav-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .title-nav-btn i {
             font-size: 0.6rem;
+        }
+
+        body.dark-mode .title-nav-btn {
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+        }
+
+        body.dark-mode .title-nav-btn::before {
+            background: #000;
+        }
+
+        body.dark-mode .title-nav-btn:hover {
+            color: #fff;
         }
 
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 800px) {
             .dashboard {
                 grid-template-columns: 1fr;
-                padding: 0.75rem 0.65rem 2rem;
+                padding: 0 0.5rem 2rem;
             }
 
             .dash-card.full-width {
@@ -1077,9 +1251,17 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .digest-strip {
-                grid-template-columns: repeat(2, 1fr);
-                grid-column: 1;
+            .title-nav {
+                gap: 0.3rem;
+            }
+
+            .title-nav-btn {
+                font-size: 0.6rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .title-nav-btn span {
+                display: none;
             }
         }
 
@@ -1100,7 +1282,7 @@
         }
 
         body.dark-mode .event-date-badge {
-            background: var(--accent-blue);
+            background: #1a1a1a;
         }
 
         body.dark-mode .radar-type {
@@ -1109,12 +1291,16 @@
         }
 
         body.dark-mode .verify-btn {
-            border-color: var(--accent-green);
-            color: var(--accent-green);
+            border-color: #fff;
+            background: #fff;
+            color: #000;
+        }
+
+        body.dark-mode .verify-btn::before {
+            background: #000;
         }
 
         body.dark-mode .verify-btn:hover {
-            background: var(--accent-green);
             color: #fff;
         }
 
@@ -1161,40 +1347,20 @@
 
     <div class="dashboard">
 
-        <!-- ==================== DIGEST STRIP ==================== -->
-        <div class="digest-strip" id="digest-strip">
-            <a class="digest-item" href="/lista#dodaj">
-                <div class="digest-top">
-                    <div class="digest-icon blue"><i class="fas fa-music"></i></div>
-                    <div class="digest-value" id="digest-artists">—</div>
-                </div>
-                <div class="digest-label">артисти</div>
-                <span class="digest-cta"><i class="fas fa-plus"></i> Додај артист</span>
-            </a>
-            <a class="digest-item" href="/charts">
-                <div class="digest-top">
-                    <div class="digest-icon green"><i class="fas fa-bolt"></i></div>
-                    <div class="digest-value" id="digest-releases">—</div>
-                </div>
-                <div class="digest-label">нови изданија</div>
-                <span class="digest-cta"><i class="fas fa-chart-bar"></i> Топ Листа</span>
-            </a>
-            <a class="digest-item" href="/nastani#dodaj">
-                <div class="digest-top">
-                    <div class="digest-icon orange"><i class="fas fa-calendar-days"></i></div>
-                    <div class="digest-value" id="digest-events">—</div>
-                </div>
-                <div class="digest-label">настани наскоро</div>
-                <span class="digest-cta"><i class="fas fa-calendar-plus"></i> Додај настан</span>
-            </a>
-            <a class="digest-item" href="/vesti">
-                <div class="digest-top">
-                    <div class="digest-icon purple"><i class="fas fa-newspaper"></i></div>
-                    <div class="digest-value" id="digest-news">—</div>
-                </div>
-                <div class="digest-label">вести (48ч)</div>
-                <span class="digest-cta"><i class="fas fa-rss"></i> Вести</span>
-            </a>
+        <!-- ==================== TITLE BAR WITH NAV ==================== -->
+        <div class="site-title">
+            <img src="/logo.png" alt="" class="site-title-logo">
+            <div class="site-title-text">
+                <span class="site-title-main">Топ Листа</span>
+                <span class="site-title-sub" id="site-last-update">—</span>
+            </div>
+            <nav class="title-nav">
+                <a href="/charts" class="title-nav-btn"><i class="fas fa-chart-line"></i> <span>Топ Листа</span></a>
+                <a href="/lista" class="title-nav-btn"><i class="fas fa-list"></i> <span>Мастер Листа</span></a>
+                <a href="/nastani" class="title-nav-btn"><i class="fas fa-calendar-days"></i> <span>Настани</span></a>
+                <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span>Вести</span></a>
+                <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span>Кустоси</span></a>
+            </nav>
         </div>
 
         <!-- ==================== TOP 3 MAIN CHART ==================== -->
@@ -1344,6 +1510,30 @@
         initSettingsMenu();
         initNavMenu();
 
+        // ==================== NAVBAR: HIDE UNTIL SCROLL ====================
+        (function() {
+            var hdr = document.getElementById('site-header');
+            if (!hdr) return;
+            hdr.style.transform = 'translateY(-100%)';
+            hdr.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            hdr.style.opacity = '0';
+            var shown = false;
+            var scrollThreshold = 80;
+            function onScroll() {
+                var y = window.pageYOffset || document.documentElement.scrollTop;
+                if (!shown && y > scrollThreshold) {
+                    shown = true;
+                    hdr.style.transform = 'translateY(0)';
+                    hdr.style.opacity = '1';
+                } else if (shown && y <= 10) {
+                    shown = false;
+                    hdr.style.transform = 'translateY(-100%)';
+                    hdr.style.opacity = '0';
+                }
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+        })();
+
         // ==================== DATA STORES ====================
         var bandsData = [];
         var chartData = null;
@@ -1351,6 +1541,16 @@
         var articlesData = [];
         var curatorsData = null;
         var curatorTracksData = null;
+
+        // Helper: returns verified badge HTML if artist is confirmed
+        function verifiedBadge(artistName) {
+            for (var i = 0; i < bandsData.length; i++) {
+                if (bandsData[i].name.toLowerCase() === artistName.toLowerCase() && bandsData[i].confirmed) {
+                    return '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+                }
+            }
+            return '';
+        }
 
         // Genre config, escHtml, formatDate, shuffle, deduplicateCollabs,
         // artistMatchesGenre, buildChartRanking, mkMonths, linkIcons
@@ -1379,6 +1579,8 @@
                 console.error('Data load error:', err);
             }
 
+            updateLastUpdateLabel();
+
             renderMainChart();
             renderAltChart();
             renderReleaseRadar();
@@ -1390,38 +1592,63 @@
             renderNews();
             renderVerifyArtists();
             renderYouTube();
-            renderDigest();
+            renderTitleCollage();
         }
 
-        // ==================== RENDER: DIGEST STRIP ====================
-        function renderDigest() {
-            // Total artists
-            document.getElementById('digest-artists').textContent = bandsData.length || '—';
+        function updateLastUpdateLabel() {
+            var label = document.getElementById('site-last-update');
+            if (!label) return;
 
-            // New releases this month
-            if (chartData && chartData.releases) {
-                var oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                var cutoff = oneMonthAgo.toISOString().slice(0, 10);
-                var recent = deduplicateCollabs(chartData.releases).filter(function(r) { return r.releaseDate >= cutoff; });
-                document.getElementById('digest-releases').textContent = recent.length || '0';
+            // Use chart-data generatedAt timestamp
+            var timestamp = chartData && chartData.generatedAt ? new Date(chartData.generatedAt) : null;
+            if (!timestamp || isNaN(timestamp.getTime())) {
+                label.textContent = '';
+                return;
+            }
+            var datePart = timestamp.toLocaleDateString('mk-MK', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            var timePart = timestamp.toLocaleTimeString('mk-MK', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            label.textContent = 'Ажурирано: ' + datePart.replace(/\s*г\.?$/i, '') + ', ' + timePart;
+        }
+
+        // ==================== RENDER: TITLE COLLAGE (scattered album arts) ====================
+        function renderTitleCollage() {
+            if (!chartData || !chartData.releases) return;
+            var titleEl = document.querySelector('.site-title');
+            if (!titleEl) return;
+
+            // Get top releases by popularity, deduplicated, with thumbnails
+            var ranked = buildChartRanking(chartData.releases, {
+                type: 'single',
+                genre: 'all',
+                bandsData: bandsData,
+                count: 20
+            });
+            var thumbs = ranked.map(function(r) { return r.thumbnail; }).filter(Boolean);
+            if (thumbs.length === 0) return;
+
+            var maxThumbs = thumbs.length;
+            var collage = document.createElement('div');
+            collage.className = 'site-title-collage';
+
+            // Create enough images to fill 2 rows; excess hidden by overflow
+            var totalImages = 80;
+            for (var i = 0; i < totalImages; i++) {
+                var img = document.createElement('img');
+                img.src = thumbs[i % maxThumbs];
+                img.alt = '';
+                img.loading = 'eager';
+                collage.appendChild(img);
             }
 
-            // Upcoming events (next 14 days)
-            var todayStr = new Date().toISOString().slice(0, 10);
-            var twoWeeksLater = new Date(); twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
-            var twoWeeksStr = twoWeeksLater.toISOString().slice(0, 10);
-            var upcomingCount = eventsData.filter(function(e) { return e.date >= todayStr && e.date <= twoWeeksStr; }).length;
-            document.getElementById('digest-events').textContent = upcomingCount || '0';
-
-            // News count (last 48 hours)
-            if (articlesData && articlesData.length) {
-                var now48 = new Date();
-                now48.setHours(now48.getHours() - 48);
-                var cutoff48 = now48.toISOString().slice(0, 10);
-                var newsCount = articlesData.filter(function(a) { return a.date >= cutoff48; }).length;
-                document.getElementById('digest-news').textContent = newsCount || '0';
-            }
+            titleEl.insertBefore(collage, titleEl.firstChild);
         }
 
         // ==================== RENDER: MINI CHART (uses buildChartRanking from common.js) ====================
@@ -1435,15 +1662,13 @@
 
             var container = document.getElementById(containerId);
             var loading = document.getElementById(loadingId);
-            var rankClasses = ['gold', 'silver', 'bronze'];
-
             container.innerHTML = top3.map(function(r, i) {
                 return '<li class="mini-chart-item" onclick="window.open(\'' + r.releaseUrl + '\',\'_blank\')" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
-                    '<span class="mini-chart-rank ' + rankClasses[i] + '">' + (i + 1) + '</span>' +
+                    '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="mini-chart-info">' +
                         '<div class="mini-chart-title">' + escHtml(r.releaseTitle) + '</div>' +
-                        '<div class="mini-chart-artist">' + escHtml(r.bandName) + '</div>' +
+                        '<div class="mini-chart-artist">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
                     '</div>' +
                     '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
                 '</li>';
@@ -1483,7 +1708,7 @@
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(r.releaseTitle) + '</div>' +
-                            '<div class="radar-info-artist">' + escHtml(r.bandName) + '</div>' +
+                            '<div class="radar-info-artist">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
                         '</div>' +
                         '<div class="radar-meta">' +
                             '<div class="radar-date">' + formatDate(r.releaseDate) + '</div>' +
@@ -1563,7 +1788,7 @@
                 return '<div class="discover-artist" onclick="location.href=\'' + artistPageUrl + '\'">' +
                     '<img class="discover-img" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" onerror="this.src=\'/logo.png\'">' +
                     '<div class="discover-info">' +
-                        '<div class="discover-name"><a href="' + artistPageUrl + '">' + escHtml(artist.name) + '</a></div>' +
+                        '<div class="discover-name"><a href="' + artistPageUrl + '">' + escHtml(artist.name) + '</a>' + verifiedBadge(artist.name) + '</div>' +
                         '<div class="discover-genre">' + escHtml(artist.genre || '') + ' &bull; <i class="fas fa-location-dot"></i> ' + escHtml(artist.city || 'Непознато') + '</div>' +
                         releaseHtml +
                     '</div>' +
@@ -1699,7 +1924,7 @@
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(r.releaseTitle) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(r.bandName) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
                         relHtml +
                     '</div>' +
                     '<span class="trending-badge ' + badge + '">' + badgeLabels[badge] + '</span>' +
@@ -1714,86 +1939,94 @@
         function renderRisingArtists() {
             if (!chartData || !chartData.releases) return;
 
-            // Find artists with recent releases — only include artists
-            // whose OLDEST release is within the last 2 years (emerging acts)
-            var recentReleases = {};
-            var sixMonthsAgo = new Date();
-            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-            var cutoff = sixMonthsAgo.toISOString().slice(0, 10);
-
+            var now = new Date();
             var twoYearsAgo = new Date();
             twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
             var twoYearCutoff = twoYearsAgo.toISOString().slice(0, 10);
 
-            // First pass: collect all release dates per artist to filter by 2-year window
-            var allArtistDates = {};
             var releases = chartData.releases;
+
+            // Group all releases by artist
+            var artistReleases = {};
             for (var i = 0; i < releases.length; i++) {
                 var r = releases[i];
-                if (!allArtistDates[r.bandName]) allArtistDates[r.bandName] = [];
-                allArtistDates[r.bandName].push(r.releaseDate);
-            }
-
-            // Second pass: build rising candidates from recent releases
-            for (var i = 0; i < releases.length; i++) {
-                var r = releases[i];
-                if (r.releaseDate >= cutoff) {
-                    // Skip artists who have any release older than 2 years
-                    var dates = allArtistDates[r.bandName] || [];
-                    var oldestDate = dates.reduce(function(min, d) { return d < min ? d : min; }, dates[0]);
-                    if (oldestDate < twoYearCutoff) continue;
-
-                    if (!recentReleases[r.bandName]) {
-                        recentReleases[r.bandName] = { count: 0, maxPop: 0, latestDate: '', latestRelease: null };
-                    }
-                    recentReleases[r.bandName].count++;
-                    if ((r.popularity || 0) > recentReleases[r.bandName].maxPop) {
-                        recentReleases[r.bandName].maxPop = r.popularity || 0;
-                    }
-                    if (r.releaseDate > recentReleases[r.bandName].latestDate) {
-                        recentReleases[r.bandName].latestDate = r.releaseDate;
-                        recentReleases[r.bandName].latestRelease = r;
-                    }
-                }
+                if (!artistReleases[r.bandName]) artistReleases[r.bandName] = [];
+                artistReleases[r.bandName].push(r);
             }
 
             var candidates = [];
-            for (var name in recentReleases) {
-                var d = recentReleases[name];
-                // Rising score: release frequency + popularity
-                var score = d.count * 15 + d.maxPop + (d.count >= 2 ? 30 : 0);
+            for (var name in artistReleases) {
+                var rels = artistReleases[name];
+
+                // Sort by release date ascending
+                rels.sort(function(a, b) { return a.releaseDate.localeCompare(b.releaseDate); });
+
+                // Skip if ANY tracked release is older than 2 years
+                if (rels[0].releaseDate < twoYearCutoff) continue;
+
+                // The chart system caps at 10 releases per artist (Spotify API limit).
+                // If an artist has exactly 10 releases, they likely have older ones
+                // that fell off the cap, so we can't verify they're truly new.
+                if (rels.length >= 10) continue;
+
+                // Compute popularity values
+                var latestRelease = rels[rels.length - 1];
+                var latestPop = latestRelease.popularity || 0;
+                var earliestPop = rels[0].popularity || 0;
+                var maxPop = 0;
+                for (var j = 0; j < rels.length; j++) {
+                    var pop = rels[j].popularity || 0;
+                    if (pop > maxPop) maxPop = pop;
+                }
+
+                // Must have minimum popularity to be considered "rising"
+                if (maxPop < 3) continue;
+
+                // Popularity trend: positive means rising
+                var popTrend = rels.length > 1 ? (latestPop - earliestPop) : 0;
+
+                // Recency bonus: days since latest release (more recent = higher)
+                var daysSinceLatest = Math.floor((now - new Date(latestRelease.releaseDate)) / 86400000);
+                var recencyBonus = Math.max(0, 180 - daysSinceLatest);
+
+                // Rising score: current popularity + trend bonus + recency + activity
+                var score = latestPop + Math.max(0, popTrend) * 2 + recencyBonus + (rels.length >= 2 ? 25 : 0);
+
                 var bandInfo = null;
                 for (var j = 0; j < bandsData.length; j++) {
                     if (bandsData[j].name.toLowerCase() === name.toLowerCase()) { bandInfo = bandsData[j]; break; }
                 }
+
                 candidates.push({
                     name: bandInfo ? bandInfo.name : name,
-                    image: bandInfo ? bandInfo.image : (d.latestRelease ? d.latestRelease.thumbnail : ''),
+                    image: bandInfo ? bandInfo.image : latestRelease.thumbnail,
                     genre: bandInfo ? bandInfo.genre : '',
                     score: score,
-                    count: d.count,
-                    maxPop: d.maxPop
+                    count: rels.length,
+                    maxPop: maxPop,
+                    latestPop: latestPop,
+                    popTrend: popTrend
                 });
             }
 
-            // From top pool, pick 5 randomly
-            candidates.sort(function(a, b) { return b.score - a.score; });
-            var topPool = candidates.slice(0, 20);
-            var picked = shuffle(topPool).slice(0, 5);
+            // Shuffle and pick 5 random candidates
+            var picked = shuffle(candidates).slice(0, 5);
 
             var list = document.getElementById('rising-list');
             var loading = document.getElementById('rising-loading');
 
             list.innerHTML = picked.map(function(a, i) {
-                var badge = a.count >= 3 ? 'hot' : a.count >= 2 ? 'rising' : 'fresh';
-                var badgeLabel = a.count >= 3 ? '🔥 АКТИВЕН' : a.count >= 2 ? '📈 ВО ПОДЕМ' : '✨ НОВ';
+                var badge, badgeLabel;
+                if (a.popTrend > 5) { badge = 'hot'; badgeLabel = '📈 ВО ПОДЕМ'; }
+                else if (a.count >= 3) { badge = 'rising'; badgeLabel = '🔥 АКТИВЕН'; }
+                else { badge = 'fresh'; badgeLabel = '✨ НОВ'; }
                 var artistUrl = '/artist.html?name=' + encodeURIComponent(a.name);
                 var releases = getLatestReleases(a.name, 3);
                 var relHtml = buildReleasesHtml(releases);
                 return '<li class="trending-item" onclick="location.href=\'' + artistUrl + '\'">' +
                     '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.src=\'/logo.png\'" style="border-radius:50%">' +
                     '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(a.name) + '</div>' +
+                        '<div class="trending-title">' + escHtml(a.name) + verifiedBadge(a.name) + '</div>' +
                         '<div class="trending-sub">' + escHtml(a.genre || '') + '</div>' +
                         relHtml +
                     '</div>' +
@@ -1826,7 +2059,7 @@
                     var d = new Date(e.date + 'T00:00:00');
                     var day = d.getDate();
                     var month = mkMonths[d.getMonth()];
-                    var link = e.link || (e.links && e.links[0] ? e.links[0].url : '#');
+                    var eventPageUrl = e.id ? '/nastan/' + encodeURIComponent(e.id) : (e.link || (e.links && e.links[0] ? e.links[0].url : '#'));
                     var artistsHtml = '';
                     if (e.artists && e.artists.length) {
                         var artistLinks = e.artists.map(function(name) {
@@ -1836,7 +2069,7 @@
                             }
                             if (match) {
                                 var aUrl = getArtistPageUrl(match);
-                                return '<a href="' + aUrl + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(match) + '</a>';
+                                return '<a href="' + aUrl + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(match) + '</a>' + verifiedBadge(match);
                             }
                             return escHtml(name);
                         });
@@ -1845,7 +2078,7 @@
                     return '<li class="event-item">' +
                         '<div class="event-date-badge"><span class="event-date-day">' + day + '</span><span class="event-date-month">' + month + '</span></div>' +
                         '<div class="event-info">' +
-                            '<div class="event-title"><a href="' + link + '" target="_blank" rel="noopener">' + escHtml(e.title) + '</a></div>' +
+                            '<div class="event-title"><a href="' + eventPageUrl + '">' + escHtml(e.title) + '</a></div>' +
                             '<div class="event-meta"><i class="fas fa-location-dot"></i> ' + escHtml(e.place) + (e.time ? ' &bull; ' + e.time : '') + '</div>' +
                             artistsHtml +
                         '</div>' +
