@@ -105,7 +105,8 @@ header::before {
     pointer-events: none;
 }
 
-body.dark-mode header::before {
+body.dark-mode header::before,
+html.dark-mode header::before {
     background: linear-gradient(to right, #15181e 25%, rgba(21,24,30,0.85) 45%, rgba(21,24,30,0.3) 70%, transparent 90%);
 }
 
