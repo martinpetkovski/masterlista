@@ -446,36 +446,12 @@
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact event-page">
-    <header>
-        <div class="header-content">
-            <div class="logo-title-group">
-                <a href="/za" class="site-logo-link site-nav-trigger" title="За проектот / Impressum">
-                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
-                </a>
-                <div class="site-nav-menu" id="site-nav-menu">
-                    <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
-                    <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
-                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
-                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
-                </div>
-                <div class="title-group">
-                    <h1 id="event-page-title">Настан</h1>
-                </div>
-            </div>
-            <div class="header-buttons">
-                <button id="edit-event-btn" class="header-btn" title="Уреди настан" style="display:none">
-                    <i class="fas fa-pen"></i>
-                </button>
-                <button id="settings-btn" class="header-btn" title="Поставки">
-                    <i class="fas fa-gear"></i>
-                </button>
-            </div>
-        </div>
+    <header id="site-header" data-title="Настан" data-title-id="event-page-title">
+        <button id="edit-event-btn" class="header-btn" title="Уреди настан" style="display:none">
+            <i class="fas fa-pen"></i>
+        </button>
     </header>
+    <script src="/load-header.js"></script>
     <div class="event-container">
         <div id="event-content">
             <div class="event-loading">

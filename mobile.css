@@ -46,6 +46,8 @@ header {
     position: sticky;
     top: 0;
     z-index: 200;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 body.dark-mode header,

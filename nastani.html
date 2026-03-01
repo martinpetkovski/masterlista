@@ -723,44 +723,20 @@
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact nastani-page">
-    <header>
-        <div class="header-content">
-            <div class="logo-title-group">
-                <a href="/za" class="site-logo-link site-nav-trigger" title="За проектот / Impressum">
-                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
-                </a>
-                <div class="site-nav-menu" id="site-nav-menu">
-                    <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
-                    <a href="/nastani" class="active"><i class="fas fa-calendar-days"></i> Настани</a>
-                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
-                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
-                </div>
-                <div class="title-group">
-                    <h1>Настани</h1>
-                </div>
-            </div>
-            <div class="header-buttons">
-                <span class="header-info">
-                    <span><strong id="stat-total">0</strong> настани</span>
-                    <span class="separator">•</span>
-                    <span><strong id="stat-upcoming">0</strong> претстојни</span>
-                    <span class="separator">•</span>
-                    <span><strong id="stat-past">0</strong> минати</span>
-                </span>
-                <button id="add-event-btn" class="header-btn add-band" title="Додај настан"><i class="fas fa-plus"></i></button>
-                <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
-                    <i class="fas fa-filter"></i>
-                </button>
-                <button id="settings-btn" class="header-btn" title="Поставки">
-                    <i class="fas fa-gear"></i>
-                </button>
-            </div>
-        </div>
+    <header id="site-header" data-active="/nastani" data-title="Настани">
+        <span class="header-info">
+            <span><strong id="stat-total">0</strong> настани</span>
+            <span class="separator">•</span>
+            <span><strong id="stat-upcoming">0</strong> претстојни</span>
+            <span class="separator">•</span>
+            <span><strong id="stat-past">0</strong> минати</span>
+        </span>
+        <button id="add-event-btn" class="header-btn add-band" title="Додај настан"><i class="fas fa-plus"></i></button>
+        <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
+            <i class="fas fa-filter"></i>
+        </button>
     </header>
+    <script src="/load-header.js"></script>
     <main>
         <div class="mobile-search-bar events-mobile-search" id="events-mobile-search">
             <input type="text" id="mobile-events-search-input" placeholder="Пребарај настан, артист, место...">

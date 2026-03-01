@@ -628,39 +628,15 @@
 </head>
 <body class="compact curator-page curator-compact">
     <script>if(document.documentElement.classList.contains('dark-mode'))document.body.classList.add('dark-mode')</script>
-    <header>
-        <div class="header-content">
-            <div class="logo-title-group">
-                <a href="/za" class="site-logo-link site-nav-trigger" title="За проектот / Impressum">
-                  <img src="/logo.png" alt="MMM" class="site-logo-svg">
-                </a>
-                <div class="site-nav-menu" id="site-nav-menu">
-                    <a href="/"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
-                    <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
-                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/kustosi" class="active"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
-                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
-                </div>
-                <div class="title-group">
-                    <h1 id="header-title">Кустос</h1>
-                </div>
-            </div>
-            <div class="header-buttons">
-                <a href="/kustosi" class="header-btn" style="text-decoration:none;font-size:0.8rem;font-weight:600;" title="Сите кустоси">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <button id="curator-compact-toggle" class="header-btn" title="Компактен/Проширен приказ">
-                    <i class="fas fa-compress-alt"></i>
-                </button>
-                <button id="settings-btn" class="header-btn" title="Поставки">
-                    <i class="fas fa-gear"></i>
-                </button>
-            </div>
-        </div>
+    <header id="site-header" data-active="/kustosi" data-title="Кустос" data-title-id="header-title">
+        <a href="/kustosi" class="header-btn" style="text-decoration:none;font-size:0.8rem;font-weight:600;" title="Сите кустоси">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <button id="curator-compact-toggle" class="header-btn" title="Компактен/Проширен приказ">
+            <i class="fas fa-compress-alt"></i>
+        </button>
     </header>
+    <script src="/load-header.js"></script>
     <main>
         <div class="curator-container" id="curator-content">
             <div class="curator-loading" id="curator-loading">
