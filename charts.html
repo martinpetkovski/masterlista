@@ -492,9 +492,9 @@
         }
         
         .filter-btn.active {
-            background: var(--accent-orange);
-            border-color: var(--accent-orange);
-            color: #fff;
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
         }
         
         .filter-btn.reset-btn {
@@ -536,9 +536,9 @@
         }
         
         body.dark-mode .filter-btn.active {
-            background: var(--accent-orange);
-            border-color: var(--accent-orange);
-            color: #fff;
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
         }
         
         /* Current filter indicator */
@@ -552,6 +552,257 @@
             padding: 0.25rem 0.5rem;
             background: rgba(224, 120, 0, 0.1);
             border-radius: 4px;
+        }
+
+        /* Advanced table-based chart view */
+        .advanced-chart-view {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .adv-tables-container {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        .adv-table-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            min-width: 0;
+            overflow: hidden;
+            /* allow horizontal scroll from adv-table-scroll to be visible */
+            overflow-x: clip;
+        }
+
+        .adv-table-wrapper + .adv-table-wrapper {
+            border-left: 1px solid var(--border-color);
+        }
+
+        .adv-table-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0.4rem 0.6rem 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .adv-table-scroll {
+            flex: 1;
+            overflow: auto;
+            min-height: 0;
+            /* clip the table within the flex cell on desktop */
+            min-width: 0;
+            width: 100%;
+        }
+
+        .adv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            line-height: 1;
+            table-layout: auto;
+        }
+
+        .adv-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .adv-table th {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 4px 6px;
+            border-bottom: 2px solid var(--border-color);
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background 0.15s ease;
+        }
+
+        .adv-table th:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .adv-table th.sort-active {
+            color: var(--accent-blue);
+        }
+
+        .adv-table th .sort-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 3px;
+            font-size: 0.65rem;
+            vertical-align: middle;
+        }
+
+        .adv-table th .sort-indicator .sort-arrow {
+            font-style: normal;
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+
+        .adv-table th .sort-indicator .sort-priority {
+            font-size: 0.6rem;
+            opacity: 0.7;
+            font-family: 'Courier New', Courier, monospace;
+            font-style: normal;
+        }
+
+        .adv-table td {
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px !important;
+        }
+
+        .adv-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Column widths — release is widest, city/genre fit roughly one item */
+        .adv-table .col-pos     { white-space: nowrap; text-align: left; }
+        .adv-table .col-chg     { white-space: nowrap; text-align: left; }
+        .adv-table .col-release { width: 100%; max-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+        .adv-table .col-city    { width: 1%; max-width: 14ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+        .adv-table .col-genre   { width: 1%; max-width: 16ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+        .adv-table .col-pop     { white-space: nowrap; text-align: left; }
+        .adv-table .col-pdelta  { white-space: nowrap; text-align: left; }
+        .adv-table .col-date    { white-space: nowrap; text-align: left; }
+
+        /* Cell color classes */
+        .adv-table .adv-up { color: #22c55e; }
+        .adv-table .adv-down { color: #ef4444; }
+        .adv-table .adv-same { color: var(--text-muted); }
+        .adv-table .adv-new { color: var(--accent-blue); }
+        .adv-table .adv-pop { font-weight: 600; }
+        .adv-table .adv-date { color: var(--text-muted); }
+        .adv-table .adv-city { color: var(--text-secondary); }
+        .adv-table .adv-genre { color: var(--text-secondary); }
+
+        /* Sort reset button */
+        .adv-sort-reset {
+            display: none;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.6rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-left: 0.5rem;
+        }
+
+        .adv-sort-reset.visible { display: inline-flex; }
+        .adv-sort-reset:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        /* Dark mode overrides */
+        body.dark-mode .advanced-chart-view {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+
+        body.dark-mode .adv-table-label {
+            background: #15181e;
+        }
+
+        body.dark-mode .adv-table th {
+            background: #15181e;
+        }
+
+        body.dark-mode .adv-table th:hover {
+            background: var(--bg-hover);
+        }
+
+        @media (max-width: 600px) {
+            .adv-tables-container {
+                flex-direction: column;
+            }
+
+            .adv-table-wrapper {
+                /* on mobile allow the wrapper to show the scrollbar */
+                overflow: visible;
+            }
+
+            .adv-table-wrapper + .adv-table-wrapper {
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .adv-table-scroll {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .adv-table {
+                /* force desktop-identical layout: scrolls horizontally */
+                table-layout: auto;
+                width: 100%;
+                min-width: 700px;
+            }
+
+            .adv-table thead {
+                display: table-header-group;
+            }
+
+            .adv-table tbody {
+                display: table-row-group;
+            }
+
+            .adv-table tr {
+                display: table-row;
+                align-items: initial;
+                flex-wrap: initial;
+                gap: 0;
+                animation: none;
+                opacity: 1;
+                content-visibility: visible;
+                contain-intrinsic-size: auto;
+                transform: none;
+                background: transparent;
+            }
+
+            .adv-table tbody tr:nth-child(even),
+            .adv-table tbody tr:active {
+                background: transparent;
+                transform: none;
+            }
+
+            .adv-table th,
+            .adv-table td {
+                display: table-cell;
+            }
         }
         
         .chart-filter-indicator.visible {
@@ -692,6 +943,11 @@
             min-height: 0;
             height: 0;
             overflow: hidden;
+        }
+        
+        .chart-sections .advanced-chart-view,
+        .chart-sections .alltime-section {
+            grid-column: 1 / -1;
         }
         
         .chart-section {
@@ -2046,6 +2302,37 @@
                 </div>
             </div>
             
+            <!-- Advanced table view (hidden by default) -->
+            <div class="chart-section advanced-chart-view" id="advanced-section" style="display: none;">
+                <div class="chart-section-header">
+                    <h2><i class="fas fa-sliders-h"></i> Напредно</h2>
+                    <div class="chart-header-right">
+                        <button class="adv-sort-reset" id="adv-sort-reset" title="Ресетирај подредување"><i class="fas fa-undo"></i> Ресетирај</button>
+                        <span class="period" id="advanced-period"></span>
+                    </div>
+                </div>
+                <div class="adv-tables-container">
+                    <div class="adv-table-wrapper" id="adv-singles-wrapper">
+                        <div class="adv-table-label">Синглови <span id="adv-singles-count"></span></div>
+                        <div class="adv-table-scroll">
+                            <table class="adv-table" id="adv-singles-table">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="adv-table-wrapper" id="adv-albums-wrapper">
+                        <div class="adv-table-label">Албуми <span id="adv-albums-count"></span></div>
+                        <div class="adv-table-scroll">
+                            <table class="adv-table" id="adv-albums-table">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- All-Time Artists (hidden by default) -->
             <div class="chart-section alltime-section" id="artists-section" style="display: none;">
                 <div class="chart-section-header artists">
@@ -2725,37 +3012,9 @@
                 const map = new Map();
                 
                 historyWeeks.forEach(({ weekId, releases }) => {
-                    // Deduplicate collabs
-                    const deduped = deduplicateCollabs(releases);
-                    
-                    // Apply genre/city filters
-                    const filtered = deduped.filter(r => 
-                        artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
-                    );
-                    
-                    const sortByPop = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                    const singlesFilter = r => r.releaseType === 'single';
-                    const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
-                    
-                    // Build ranked lists
-                    // Use same logic as applyFilters: last 2 months pool, sort by popularity
-                    const byDate = [...filtered].sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-                    const cutoff = new Date();
-                    cutoff.setMonth(cutoff.getMonth() - 2);
-                    const cutoffStr = cutoff.toISOString().slice(0, 10);
-                    
-                    function buildRankedList(filterFn) {
-                        const recent = byDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
-                        let pool = [...recent];
-                        if (pool.length < 20) {
-                            const older = byDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
-                            pool = pool.concat(older.slice(0, 20 - pool.length));
-                        }
-                        return pool.sort(sortByPop).slice(0, 20);
-                    }
-                    
-                    const rankedSingles = buildRankedList(singlesFilter);
-                    const rankedAlbums = buildRankedList(albumsFilter);
+                    // Rank via shared algorithm
+                    const rankedSingles = buildChartRanking(releases, { type: 'single', genre: genreFilter, city: cityFilter, bandsData: allBandsData, count: 20 });
+                    const rankedAlbums = buildChartRanking(releases, { type: 'album', genre: genreFilter, city: cityFilter, bandsData: allBandsData, count: 20 });
                     
                     // Assign positions
                     const singlesPosMap = new Map();
@@ -2763,6 +3022,12 @@
                     
                     const albumsPosMap = new Map();
                     rankedAlbums.forEach((r, i) => albumsPosMap.set(r.releaseId, i + 1));
+                    
+                    // Get all filtered releases for per-release historical data
+                    const deduped = deduplicateCollabs(releases);
+                    const filtered = deduped.filter(r => 
+                        artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
+                    );
                     
                     // Store per-release data
                     filtered.forEach(r => {
@@ -2921,32 +3186,10 @@
             }
             
             // Build a lookup map for previous chart positions
-            function buildPreviousChartMap(previousReleases, filterFn, sortFn, deduplicateFn, genreFilter = 'all', cityFilter = 'all') {
+            function buildPreviousChartMap(previousReleases, type, genreFilter = 'all', cityFilter = 'all') {
                 if (!previousReleases || previousReleases.length === 0) return {};
                 
-                // Deduplicate collabs in previous data too
-                const dedupedReleases = deduplicateFn ? deduplicateFn(previousReleases) : previousReleases;
-                
-                // Apply genre/city filters
-                const genreCityFiltered = dedupedReleases.filter(r =>
-                    artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
-                );
-                
-                const releasesSortedByDate = [...genreCityFiltered].sort((a, b) => 
-                    new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-                );
-                
-                // Prefer last 2 months, backfill with most recent older if < 20
-                const cutoff = new Date();
-                cutoff.setMonth(cutoff.getMonth() - 2);
-                const cutoffStr = cutoff.toISOString().slice(0, 10);
-                const recent = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
-                let pool = [...recent];
-                if (pool.length < 20) {
-                    const older = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
-                    pool = pool.concat(older.slice(0, 20 - pool.length));
-                }
-                const sorted = pool.sort(sortFn).slice(0, 20);
+                const sorted = buildChartRanking(previousReleases, { type, genre: genreFilter, city: cityFilter, bandsData: allBandsData, count: 20 });
                 
                 const map = {};
                 sorted.forEach((release, index) => {
@@ -3079,8 +3322,7 @@
                     } else if (urlPreset === 'alltime') {
                         currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
                     } else if (urlPreset === 'advanced') {
-                        currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
-                        if (advancedPanel) advancedPanel.style.display = 'flex';
+                        currentFilters = { chart: 'advanced', genre: 'all', city: 'all' };
                     }
                     syncPresetButtons(urlPreset === 'advanced' ? 'advanced' : urlPreset === 'alt' ? 'alt' : urlPreset === 'alltime' ? 'alltime' : 'toplista');
                     syncAdvancedButtons();
@@ -3212,21 +3454,60 @@
                     artistMatchesGenre(r.bandName, genre) && artistMatchesCity(r.bandName, city)
                 );
                 
-                const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                const singlesFilter = r => r.releaseType === 'single';
-                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
-                
                 // Build filter label for display
                 const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
                 const cityLabel = city !== 'all' ? cityConfig[city]?.label : null;
                 const filterSuffix = [genreLabel, cityLabel].filter(Boolean).join(' • ');
                 
-                if (chart === 'alltime') {
+                if (chart === 'advanced') {
+                    // Advanced view: plain monospaced text listing all singles and albums
+                    document.getElementById('singles-section').style.display = 'none';
+                    document.getElementById('albums-section').style.display = 'none';
+                    document.getElementById('latest-section').style.display = 'none';
+                    document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('advanced-section').style.display = 'flex';
+                    
+                    // Mobile: hide chart tabs and show advanced section
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = 'none';
+                        document.getElementById('advanced-section').classList.add('mobile-active');
+                        ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(id => 
+                            document.getElementById(id)?.classList.remove('mobile-active'));
+                    }
+                    
+                    // All singles and albums via shared ranking algorithm (count: 0 = unlimited)
+                    const advSingles = buildChartRanking(allReleasesData, { type: 'single', genre, city, bandsData: allBandsData, count: 0 });
+                    const advAlbums = buildChartRanking(allReleasesData, { type: 'album', genre, city, bandsData: allBandsData, count: 0 });
+                    
+                    // Build last week's chart from chart history for position/popularity changes
+                    // chartHistoryWeeks is sorted newest-first; index 0 = this week, index 1 = last week
+                    const lastWeekData = chartHistoryWeeks.length >= 2 ? chartHistoryWeeks[1] : null;
+                    const prevSinglesMap = {};
+                    const prevAlbumsMap = {};
+                    if (lastWeekData) {
+                        const lwSingles = buildChartRanking(lastWeekData.releases, { type: 'single', genre, city, bandsData: allBandsData, count: 0 });
+                        lwSingles.forEach((r, i) => {
+                            prevSinglesMap[r.releaseId] = { position: i + 1, popularity: r.popularity || 0 };
+                        });
+                        const lwAlbums = buildChartRanking(lastWeekData.releases, { type: 'album', genre, city, bandsData: allBandsData, count: 0 });
+                        lwAlbums.forEach((r, i) => {
+                            prevAlbumsMap[r.releaseId] = { position: i + 1, popularity: r.popularity || 0 };
+                        });
+                    }
+                    
+                    const advPeriod = 'сите изданија' + (filterSuffix ? ' \u2022 ' + filterSuffix : '');
+                    document.getElementById('advanced-period').textContent = advPeriod;
+                    renderAdvancedChart(advSingles, advAlbums, prevSinglesMap, prevAlbumsMap);
+                    
+                    console.log(`Advanced view (${filterSuffix || 'all'}): ${advSingles.length} singles, ${advAlbums.length} albums`);
+                } else if (chart === 'alltime') {
                     // All-time: Show single artists chart sorted by followers
                     document.getElementById('singles-section').style.display = 'none';
                     document.getElementById('albums-section').style.display = 'none';
                     document.getElementById('latest-section').style.display = 'none';
                     document.getElementById('artists-section').style.display = 'block';
+                    document.getElementById('advanced-section').style.display = 'none';
                     
                     // Mobile: hide chart tabs and show artists section
                     if (window.innerWidth <= 600) {
@@ -3283,6 +3564,7 @@
                     document.getElementById('albums-section').style.display = 'block';
                     document.getElementById('latest-section').style.display = 'block';
                     document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('advanced-section').style.display = 'none';
                     
                     // Mobile: restore chart tabs and re-apply active tab
                     if (window.innerWidth <= 600) {
@@ -3298,31 +3580,14 @@
                         });
                     }
                     
-                    // Recent releases sorted by popularity
-                    const releasesSortedByDate = [...filteredReleases].sort((a, b) => 
+                    // Singles and albums charts via shared ranking algorithm
+                    const topSingles = buildChartRanking(allReleasesData, { type: 'single', genre, city, bandsData: allBandsData, count: 20 });
+                    const topAlbums = buildChartRanking(allReleasesData, { type: 'album', genre, city, bandsData: allBandsData, count: 20 });
+                    
+                    // Latest 20 releases sorted by date
+                    const latestReleases = [...filteredReleases].sort((a, b) => 
                         new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-                    );
-                    
-                    // Singles chart: releases with type 'single', prefer last 2 months, backfill if < 20
-                    const twoMonthsCutoff = twoMonthsAgo.toISOString().slice(0, 10);
-                    const recentSingles = releasesSortedByDate.filter(r => singlesFilter(r) && r.releaseDate >= twoMonthsCutoff);
-                    let singlesPool = [...recentSingles];
-                    if (singlesPool.length < 20) {
-                        const olderSingles = releasesSortedByDate.filter(r => singlesFilter(r) && r.releaseDate < twoMonthsCutoff);
-                        singlesPool = singlesPool.concat(olderSingles.slice(0, 20 - singlesPool.length));
-                    }
-                    const topSingles = singlesPool.sort(sortByPopularity).slice(0, 20);
-                    
-                    // Albums chart: prefer last 2 months, backfill with most recent older if < 20
-                    const recentAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate >= twoMonthsCutoff);
-                    let albumPool = [...recentAlbums];
-                    if (albumPool.length < 20) {
-                        const olderAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate < twoMonthsCutoff);
-                        albumPool = albumPool.concat(olderAlbums.slice(0, 20 - albumPool.length));
-                    }
-                    const topAlbums = albumPool.sort(sortByPopularity).slice(0, 20);
-                    
-                    const latestReleases = releasesSortedByDate.slice(0, 20);
+                    ).slice(0, 20);
                     
                     // Set period labels with filter suffix
                     const periodWithFilter = periodText + (filterSuffix ? ' • ' + filterSuffix : '');
@@ -3338,8 +3603,8 @@
                     
                     // Build previous chart maps for comparison (with genre/city filters)
                     const prevReleases = previousChartData?.releases || [];
-                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs, genre, city);
-                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs, genre, city);
+                    const prevSinglesMap = buildPreviousChartMap(prevReleases, 'single', genre, city);
+                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, 'album', genre, city);
                     
                     // Rebuild history map with current genre/city filters for tooltips
                     if (chartHistoryWeeks.length > 0) {
@@ -3402,25 +3667,7 @@
                     btn.addEventListener('click', () => {
                         const preset = btn.dataset.preset;
                         
-                        if (preset === 'advanced') {
-                            // Toggle advanced panel
-                            const isOpen = advancedPanel.style.display !== 'none';
-                            advancedPanel.style.display = isOpen ? 'none' : 'flex';
-                            syncPresetButtons(isOpen ? '_none' : 'advanced');
-                            // If closing, deactivate advanced and go back to toplista
-                            if (isOpen) {
-                                currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
-                                syncAdvancedButtons();
-                                syncPresetButtons('toplista');
-                                updateUrlForPreset('toplista');
-                                applyFilters();
-                            } else {
-                                updateUrlForPreset('advanced');
-                            }
-                            return;
-                        }
-                        
-                        // Hide advanced panel for presets
+                        // Hide advanced panel for all presets
                         advancedPanel.style.display = 'none';
                         
                         if (preset === 'toplista') {
@@ -3429,6 +3676,8 @@
                             currentFilters = { chart: 'standard', genre: 'alt', city: 'all' };
                         } else if (preset === 'alltime') {
                             currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
+                        } else if (preset === 'advanced') {
+                            currentFilters = { chart: 'advanced', genre: 'all', city: 'all' };
                         }
                         
                         syncPresetButtons(preset);
@@ -3496,6 +3745,241 @@
                 }
             }
             
+            // ==================== ADVANCED CHART (TABLE) ====================
+            // Stored data for re-sorting
+            let advChartData = { singles: [], albums: [], prevSinglesMap: {}, prevAlbumsMap: {} };
+            // Sort state per table: array of { column, direction } in priority order
+            let advSortState = { singles: [], albums: [] };
+
+            // Column definitions for the advanced table
+            const advColumns = [
+                { key: 'pos',     label: '#',        cssClass: 'col-pos',     align: 'left',  sortType: 'number' },
+                { key: 'chg',     label: '±',        cssClass: 'col-chg',     align: 'left',  sortType: 'number' },
+                { key: 'release', label: 'Изданија', cssClass: 'col-release', align: 'left',  sortType: 'string' },
+                { key: 'city',    label: 'Град',     cssClass: 'col-city',    align: 'left',  sortType: 'string' },
+                { key: 'genre',   label: 'Жанр',     cssClass: 'col-genre',   align: 'left',  sortType: 'string' },
+                { key: 'pop',     label: 'Pop',      cssClass: 'col-pop',     align: 'left',  sortType: 'number' },
+                { key: 'pdelta',  label: 'Δ',        cssClass: 'col-pdelta',  align: 'left',  sortType: 'number' },
+                { key: 'date',    label: 'Датум',    cssClass: 'col-date',    align: 'left',  sortType: 'date' }
+            ];
+
+            function escHtml(s) {
+                return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            // Enrich release with computed fields for sort/display
+            function enrichRelease(release, index, prevMap) {
+                const curPos = index + 1;
+                const prev = prevMap[release.releaseId];
+                const artistInfo = getArtistInfo(release.bandName);
+
+                let posChange = null, posChangeClass = 'adv-same';
+                if (!prev) {
+                    posChange = null;
+                    posChangeClass = 'adv-new';
+                } else {
+                    posChange = prev.position - curPos;
+                    posChangeClass = posChange > 0 ? 'adv-up' : posChange < 0 ? 'adv-down' : 'adv-same';
+                }
+
+                let popDelta = null, popDeltaClass = 'adv-same';
+                if (!prev) {
+                    popDelta = null;
+                    popDeltaClass = 'adv-new';
+                } else {
+                    popDelta = (release.popularity || 0) - prev.popularity;
+                    popDeltaClass = popDelta > 0 ? 'adv-up' : popDelta < 0 ? 'adv-down' : 'adv-same';
+                }
+
+                return {
+                    ...release,
+                    _pos: curPos,
+                    _posChange: posChange,
+                    _posChangeClass: posChangeClass,
+                    _isNew: !prev,
+                    _pop: release.popularity || 0,
+                    _popDelta: popDelta,
+                    _popDeltaClass: popDeltaClass,
+                    _city: artistInfo?.city || '',
+                    _genre: artistInfo?.genre || '',
+                    _dateObj: new Date(release.releaseDate)
+                };
+            }
+
+            // Get the sortable value for a column key
+            function getSortValue(enriched, key) {
+                switch (key) {
+                    case 'pos':     return enriched._pos;
+                    case 'chg':     return enriched._isNew ? -9999 : (enriched._posChange || 0);
+                    case 'release': return (enriched.bandName + ' ' + enriched.releaseTitle).toLowerCase();
+                    case 'city':    return enriched._city.toLowerCase();
+                    case 'genre':   return enriched._genre.toLowerCase();
+                    case 'pop':     return enriched._pop;
+                    case 'pdelta':  return enriched._isNew ? -9999 : (enriched._popDelta || 0);
+                    case 'date':    return enriched._dateObj.getTime();
+                    default:        return 0;
+                }
+            }
+
+            // Sort enriched releases by multi-column sort state
+            function sortAdvancedReleases(enrichedReleases, sortState) {
+                if (sortState.length === 0) return enrichedReleases; // default order (by rank)
+                return [...enrichedReleases].sort((a, b) => {
+                    for (const { column, direction } of sortState) {
+                        const colDef = advColumns.find(c => c.key === column);
+                        const aVal = getSortValue(a, column);
+                        const bVal = getSortValue(b, column);
+                        let cmp = 0;
+                        if (colDef?.sortType === 'string') {
+                            cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                        } else {
+                            cmp = aVal - bVal;
+                        }
+                        if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
+                    }
+                    return 0;
+                });
+            }
+
+            // Build thead HTML with sort indicators
+            function buildAdvancedThead(tableKey) {
+                const sortState = advSortState[tableKey];
+                return '<tr>' + advColumns.map(col => {
+                    const sortIdx = sortState.findIndex(s => s.column === col.key);
+                    const isActive = sortIdx !== -1;
+                    const direction = isActive ? sortState[sortIdx].direction : null;
+                    const arrow = direction === 'asc' ? '▲' : direction === 'desc' ? '▼' : '';
+                    const priority = sortState.length > 1 && isActive ? `<i class="sort-priority">${sortIdx + 1}</i>` : '';
+                    const indicator = isActive ? `<span class="sort-indicator"><i class="sort-arrow">${arrow}</i>${priority}</span>` : '';
+                    return `<th class="${col.cssClass}${isActive ? ' sort-active' : ''}" data-col="${col.key}">${col.label}${indicator}</th>`;
+                }).join('') + '</tr>';
+            }
+
+            // Build tbody HTML from enriched (and sorted) releases
+            function buildAdvancedTbody(enrichedReleases) {
+                if (enrichedReleases.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:1rem;">Нема изданија</td></tr>';
+                return enrichedReleases.map(r => {
+                    const posStr = r._pos;
+                    // Position change display
+                    let chgStr;
+                    if (r._isNew) chgStr = `<span class="adv-new">NEW</span>`;
+                    else if (r._posChange > 0) chgStr = `<span class="adv-up">+${r._posChange}</span>`;
+                    else if (r._posChange < 0) chgStr = `<span class="adv-down">${r._posChange}</span>`;
+                    else chgStr = `<span class="adv-same">·</span>`;
+
+                    // Pop delta display
+                    let pdStr;
+                    if (r._isNew) pdStr = `<span class="adv-new">NEW</span>`;
+                    else if (r._popDelta > 0) pdStr = `<span class="adv-up">+${r._popDelta}</span>`;
+                    else if (r._popDelta < 0) pdStr = `<span class="adv-down">${r._popDelta}</span>`;
+                    else pdStr = `<span class="adv-same">·</span>`;
+
+                    const d = r._dateObj;
+                    const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+
+                    const releaseStr = `${escHtml(r.bandName)} \u2014 ${escHtml(r.releaseTitle)}`;
+                    return `<tr>` +
+                        `<td class="col-pos">${posStr}</td>` +
+                        `<td class="col-chg">${chgStr}</td>` +
+                        `<td class="col-release" title="${releaseStr}">${releaseStr}</td>` +
+                        `<td class="col-city adv-city" title="${escHtml(r._city)}">${escHtml(r._city)}</td>` +
+                        `<td class="col-genre adv-genre" title="${escHtml(r._genre)}">${escHtml(r._genre)}</td>` +
+                        `<td class="col-pop adv-pop">${r._pop}</td>` +
+                        `<td class="col-pdelta">${pdStr}</td>` +
+                        `<td class="col-date adv-date">${dateStr}</td>` +
+                        `</tr>`;
+                }).join('');
+            }
+
+            // Render (or re-render) a single advanced table
+            function renderAdvancedTable(tableKey) {
+                const tableId = tableKey === 'singles' ? 'adv-singles-table' : 'adv-albums-table';
+                const countId = tableKey === 'singles' ? 'adv-singles-count' : 'adv-albums-count';
+                const table = document.getElementById(tableId);
+                if (!table) return;
+
+                const releases = advChartData[tableKey];
+                const prevMap = tableKey === 'singles' ? advChartData.prevSinglesMap : advChartData.prevAlbumsMap;
+
+                // Enrich data
+                const enriched = releases.map((r, i) => enrichRelease(r, i, prevMap));
+
+                // Sort
+                const sorted = sortAdvancedReleases(enriched, advSortState[tableKey]);
+
+                // Render
+                table.querySelector('thead').innerHTML = buildAdvancedThead(tableKey);
+                table.querySelector('tbody').innerHTML = buildAdvancedTbody(sorted);
+
+                // Count label
+                const countEl = document.getElementById(countId);
+                if (countEl) countEl.textContent = `(${releases.length})`;
+
+                // Show/hide reset button
+                const resetBtn = document.getElementById('adv-sort-reset');
+                const hasSort = advSortState.singles.length > 0 || advSortState.albums.length > 0;
+                if (resetBtn) resetBtn.classList.toggle('visible', hasSort);
+
+                // Attach click handlers to thead
+                table.querySelectorAll('thead th[data-col]').forEach(th => {
+                    th.addEventListener('click', (e) => {
+                        handleAdvancedSort(tableKey, th.dataset.col, e.shiftKey);
+                    });
+                });
+            }
+
+            // Handle sort column click
+            function handleAdvancedSort(tableKey, columnKey, isShift) {
+                const state = advSortState[tableKey];
+                const existingIdx = state.findIndex(s => s.column === columnKey);
+                const colDef = advColumns.find(c => c.key === columnKey);
+                // Default first-click direction: desc for numbers/dates, asc for strings
+                const defaultDir = colDef?.sortType === 'string' ? 'asc' : 'desc';
+
+                if (existingIdx !== -1) {
+                    // Column already in sort chain: toggle direction, or remove on third click
+                    const current = state[existingIdx];
+                    if (current.direction === defaultDir) {
+                        // Flip direction
+                        current.direction = defaultDir === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        // Remove from sort chain
+                        state.splice(existingIdx, 1);
+                    }
+                } else {
+                    if (isShift) {
+                        // Add as additional sort key
+                        state.push({ column: columnKey, direction: defaultDir });
+                    } else {
+                        // Replace entire sort with just this column
+                        advSortState[tableKey] = [{ column: columnKey, direction: defaultDir }];
+                    }
+                }
+
+                renderAdvancedTable(tableKey);
+            }
+
+            // Main entry: render both advanced tables
+            function renderAdvancedChart(singles, albums, prevSinglesMap, prevAlbumsMap) {
+                // Store data for re-sorting
+                advChartData = { singles, albums, prevSinglesMap, prevAlbumsMap };
+                // Reset sort state when data changes
+                advSortState = { singles: [], albums: [] };
+
+                renderAdvancedTable('singles');
+                renderAdvancedTable('albums');
+
+                // Reset button handler
+                const resetBtn = document.getElementById('adv-sort-reset');
+                if (resetBtn) {
+                    resetBtn.onclick = () => {
+                        advSortState = { singles: [], albums: [] };
+                        renderAdvancedTable('singles');
+                        renderAdvancedTable('albums');
+                    };
+                }
+            }
+            
             function renderChart(containerId, releases, previousMap = {}, isDateSorted = false) {
                 const container = document.getElementById(containerId);
                 const loading = document.getElementById(`${containerId}-loading`);
@@ -3553,10 +4037,7 @@
                     }
                     
                     // Format release date for display
-                    const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
-                    const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}`;
-                    
-                    // Check for changes from previous chart (skip for date-sorted)
+                    const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                     let changeIndicator = '';
                     let popChangeIndicator = '';
                     

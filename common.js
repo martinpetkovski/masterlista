@@ -176,18 +176,17 @@ function artistMatchesGenre(artistName, genreFilter, bandsData) {
  * @param {Object} opts
  * @param {string}  opts.type       — 'single' | 'album' (release type filter)
  * @param {string}  opts.genre      — genre filter key (e.g. 'all', 'alt')
- * @param {string}  [opts.city]     — city filter key (optional, for toplista)
- * @param {Array}   opts.bandsData  — bands array for genre matching
- * @param {number}  opts.count      — how many items to return (e.g. 3 or 20)
- * @param {Function} [opts.cityMatcher] — optional (artistName,city)->boolean
- * @returns {Array} ranked releases sorted by popularity
+ * @param {string}  [opts.city]     — city filter key (optional, default 'all')
+ * @param {Array}   opts.bandsData  — bands array for genre/city matching
+ * @param {number}  [opts.count]    — how many items to return (default 20; 0 = all)
+ * @param {Function} [opts.cityMatcher] — DEPRECATED. Built-in city matching is used.
+ * @returns {Array} ranked releases sorted by popularity (deterministic)
  */
 function buildChartRanking(releases, opts) {
     var type = opts.type || 'single';
     var genre = opts.genre || 'all';
     var bands = opts.bandsData || [];
-    var count = opts.count || 20;
-    var cityMatcher = opts.cityMatcher;
+    var count = opts.count !== undefined ? opts.count : 20;
     var city = opts.city || 'all';
 
     var deduped = deduplicateCollabs(releases);
@@ -204,11 +203,24 @@ function buildChartRanking(releases, opts) {
         return artistMatchesGenre(r.bandName, genre, bands);
     });
 
-    // Apply city filter if provided
-    if (cityMatcher && city !== 'all') {
-        filtered = filtered.filter(function(r) {
-            return cityMatcher(r.bandName, city);
-        });
+    // Apply city filter
+    if (city !== 'all') {
+        // Legacy callback support
+        if (opts.cityMatcher) {
+            filtered = filtered.filter(function(r) {
+                return opts.cityMatcher(r.bandName, city);
+            });
+        } else {
+            filtered = filtered.filter(function(r) {
+                return artistMatchesCity(r.bandName, city, bands);
+            });
+        }
+    }
+
+    // When count is 0, skip 2-month cutoff/backfill — return ALL sorted releases
+    if (count === 0) {
+        filtered.sort(chartSort);
+        return filtered;
     }
 
     // 2-month cutoff with backfill — always build a pool of at least 20
@@ -228,10 +240,38 @@ function buildChartRanking(releases, opts) {
         pool = pool.concat(older.slice(0, minPool - pool.length));
     }
 
-    // Sort by popularity descending
-    pool.sort(function(a, b) { return (b.popularity || 0) - (a.popularity || 0); });
+    pool.sort(chartSort);
 
     return pool.slice(0, count);
+}
+
+/**
+ * Deterministic sort comparator for chart ranking.
+ * Primary: popularity desc, Secondary: followers desc, Tertiary: name asc.
+ */
+function chartSort(a, b) {
+    var popDiff = (b.popularity || 0) - (a.popularity || 0);
+    if (popDiff !== 0) return popDiff;
+    var folDiff = (b.followers || 0) - (a.followers || 0);
+    if (folDiff !== 0) return folDiff;
+    return (a.bandName || '').localeCompare(b.bandName || '');
+}
+
+/**
+ * Check if an artist matches a city filter.
+ * @param {string} artistName
+ * @param {string} cityFilter — 'all', 'skopje', 'bitola', etc.
+ * @param {Array} bandsData — the bands array to search in
+ * @returns {boolean}
+ */
+function artistMatchesCity(artistName, cityFilter, bandsData) {
+    if (cityFilter === 'all') return true;
+    var cityLabels = { 'skopje': 'скопје', 'bitola': 'битола' };
+    var target = cityLabels[cityFilter];
+    if (!target) return true;
+    var info = getArtistInfoByName(artistName, bandsData);
+    if (!info || !info.city) return false;
+    return info.city.toLowerCase().indexOf(target) !== -1;
 }
 
 // ==================== MACEDONIAN MONTHS ====================
@@ -423,6 +463,28 @@ function initHeaderCollage() {
     var headerEl = document.querySelector('header');
     if (!headerEl) return;
 
+    var isVerifiedArtistHeader = function() {
+        return !!(document.body && document.body.classList.contains('artist-page') && document.body.classList.contains('verified-accent'));
+    };
+
+    var removeCollageIfVerified = function() {
+        if (!isVerifiedArtistHeader()) return false;
+        var existingCollage = headerEl.querySelector('.header-collage');
+        if (existingCollage) existingCollage.remove();
+        return true;
+    };
+
+    if (removeCollageIfVerified()) return;
+
+    if (document.body && document.body.classList.contains('artist-page')) {
+        var bodyClassObserver = new MutationObserver(function() {
+            if (removeCollageIfVerified()) {
+                bodyClassObserver.disconnect();
+            }
+        });
+        bodyClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+
     fetch('/chart-data.json?t=' + Date.now())
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(data) {
@@ -447,8 +509,14 @@ function initHeaderCollage() {
                     var collage = document.createElement('div');
                     collage.className = 'header-collage';
 
-                    // Create enough images to fill 2 rows; excess hidden by overflow
-                    var totalImages = 60;
+                    if (removeCollageIfVerified()) return;
+
+                    // Create enough images to fill 2 rows across current viewport width (+ buffer)
+                    var headerHeight = Math.max(headerEl.clientHeight || 0, 48);
+                    var rows = 2;
+                    var tileSize = headerHeight / rows;
+                    var columnsNeeded = Math.ceil((window.innerWidth || headerEl.clientWidth || 1200) / tileSize) + 8;
+                    var totalImages = Math.max(columnsNeeded * rows, 60);
                     for (var i = 0; i < totalImages; i++) {
                         var img = document.createElement('img');
                         img.src = thumbs[i % maxUnique];
