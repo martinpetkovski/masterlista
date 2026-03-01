@@ -2,12 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     
-    <!-- Main Chart Page (Homepage) -->
+    <!-- Homepage Dashboard -->
     <url>
         <loc>https://toplista.mk/</loc>
-        <lastmod>2026-01-15</lastmod>
-        <changefreq>weekly</changefreq>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
         <priority>1.0</priority>
+    </url>
+    
+    <!-- Charts Page -->
+    <url>
+        <loc>https://toplista.mk/charts</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
     </url>
     
     <!-- Master List - Artist Database -->

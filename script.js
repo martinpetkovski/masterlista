@@ -2567,6 +2567,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.deleteBand = deleteBand;
 
         console.log('Modal initialization complete, window.openModal defined:', typeof window.openModal);
+
+        // Auto-open add modal if navigated with #dodaj-artist hash
+        if (location.hash === '#dodaj-artist') {
+            openModal('add');
+            history.replaceState(null, '', location.pathname + location.search);
+        }
     }
 
     function initializeCopyData() {
@@ -3767,7 +3773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { element: null, title: 'Здраво! 👋', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
             { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници: Топ Листа, Мастер Листа, Настани, Вести, Кустоси...', position: 'bottom' },
             { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong> (Spotify, YouTube, Deezer...). Кога ќе кликнеш на песна, директно се отвора таму.', position: 'bottom' },
-            { element: null, title: 'Топ Листа 📊', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти, рангирани по Spotify популарност. Се ажурира автоматски секој ден. <a href="/">Отвори →</a>', position: 'center' },
+            { element: null, title: 'Топ Листа 📊', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти, рангирани по Spotify популарност. Се ажурира автоматски секој ден. <a href="/charts">Отвори →</a>', position: 'center' },
             { element: null, title: 'Мастер Листа 📋', description: 'Комплетна база на <strong>сите македонски артисти</strong> со линкови, жанрови, градови и медиуми. Секој може да додаде нов артист. <a href="/lista">Отвори →</a>', position: 'center' },
             { element: null, title: 'Настани 📅', description: 'Претстојни <strong>концерти и настани</strong> со датуми, локации и карти. <a href="/nastani">Отвори →</a>', position: 'center' },
             { element: null, title: 'Вести 📰', description: 'Најнови <strong>вести и написи</strong> за македонската музичка сцена од разни извори. <a href="/vesti">Отвори →</a>', position: 'center' },

@@ -1271,6 +1271,76 @@ foreach ($curator in $curators) {
     }
 }
 
+# ── Post-process: backfill missing Spotify track images via API ──────
+$credentialsPath = Join-Path $projectRoot "spotify-credentials.json"
+$spotifyTracksMissing = @()
+
+foreach ($curatorName in $output.curators.Keys) {
+    $playlists = $output.curators[$curatorName].playlists
+    foreach ($pl in $playlists) {
+        if ($pl.service -ne "spotify") { continue }
+        foreach ($t in $pl.tracks) {
+            if (-not $t.image -and $t.trackId) {
+                $spotifyTracksMissing += $t
+            }
+        }
+    }
+}
+
+if ($spotifyTracksMissing.Count -gt 0 -and (Test-Path $credentialsPath)) {
+    Write-Step "Backfilling $($spotifyTracksMissing.Count) missing Spotify track images via API..." "Cyan"
+    try {
+        $creds = Get-Content $credentialsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($creds.clientId -and $creds.clientSecret -and $creds.clientId -ne "YOUR_SPOTIFY_CLIENT_ID_HERE") {
+            $authBody = "grant_type=client_credentials"
+            $authHeader = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$($creds.clientId):$($creds.clientSecret)"))
+            $tokenResp = Invoke-RestMethod -Uri "https://accounts.spotify.com/api/token" -Method Post `
+                -Headers @{ Authorization = "Basic $authHeader" } `
+                -ContentType "application/x-www-form-urlencoded" -Body $authBody -TimeoutSec 10
+            $apiToken = $tokenResp.access_token
+
+            if ($apiToken) {
+                $batchSize = 50
+                $filled = 0
+                for ($i = 0; $i -lt $spotifyTracksMissing.Count; $i += $batchSize) {
+                    $batch = $spotifyTracksMissing[$i..[math]::Min($i + $batchSize - 1, $spotifyTracksMissing.Count - 1)]
+                    $ids = ($batch | ForEach-Object { $_.trackId }) -join ","
+                    try {
+                        $trackResp = Invoke-RestMethod -Uri "https://api.spotify.com/v1/tracks?ids=$ids" `
+                            -Headers @{ Authorization = "Bearer $apiToken" } -TimeoutSec 10
+                        foreach ($apiTrack in $trackResp.tracks) {
+                            if (-not $apiTrack) { continue }
+                            $albumImages = $apiTrack.album.images
+                            if ($albumImages -and $albumImages.Count -gt 0) {
+                                $imgUrl = ($albumImages | Sort-Object { if ($_.width) { $_.width } else { 9999 } } -Descending | Select-Object -First 1).url
+                                $match = $batch | Where-Object { $_.trackId -eq $apiTrack.id } | Select-Object -First 1
+                                if ($match -and $imgUrl) {
+                                    $match.image = $imgUrl
+                                    $filled++
+                                }
+                            }
+                        }
+                    }
+                    catch {
+                        Write-Step "  Batch API call failed: $($_.Exception.Message)" "DarkYellow"
+                    }
+                    if ($i + $batchSize -lt $spotifyTracksMissing.Count) { Start-Sleep -Milliseconds 200 }
+                }
+                Write-Step "Filled $filled/$($spotifyTracksMissing.Count) track images" "Green"
+            }
+        }
+        else {
+            Write-Step "Spotify credentials not configured, skipping image backfill" "DarkYellow"
+        }
+    }
+    catch {
+        Write-Step "Spotify API image backfill failed: $($_.Exception.Message)" "DarkYellow"
+    }
+}
+elseif ($spotifyTracksMissing.Count -gt 0) {
+    Write-Step "$($spotifyTracksMissing.Count) Spotify tracks missing images (no credentials found)" "DarkYellow"
+}
+
 # Write output
 Write-Host ""
 Write-Step "Writing curators-tracklists.json..." "Cyan"

@@ -40,6 +40,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/common.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -840,24 +841,10 @@
 
         var MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
 
-        // Cyrillic-to-Latin transliteration for artist slug URLs
-        var cyrMap = {
-            'А':'A','а':'a','Б':'B','б':'b','В':'V','в':'v','Г':'G','г':'g',
-            'Д':'D','д':'d','Ѓ':'Gj','ѓ':'gj','Е':'E','е':'e','Ж':'Zh','ж':'zh',
-            'З':'Z','з':'z','Ѕ':'Dz','ѕ':'dz','И':'I','и':'i','Ј':'J','ј':'j',
-            'К':'K','к':'k','Л':'L','л':'l','Љ':'Lj','љ':'lj','М':'M','м':'m',
-            'Н':'N','н':'n','Њ':'Nj','њ':'nj','О':'O','о':'o','П':'P','п':'p',
-            'Р':'R','р':'r','С':'S','с':'s','Т':'T','т':'t','Ќ':'Kj','ќ':'kj',
-            'У':'U','у':'u','Ф':'F','ф':'f','Х':'H','х':'h','Ц':'C','ц':'c',
-            'Ч':'Ch','ч':'ch','Џ':'Dz','џ':'dz','Ш':'Sh','ш':'sh'
-        };
-        function transliterate(text) { return text.split('').map(function(c) { return cyrMap[c] || c; }).join(''); }
-        function artistSlug(name) { return transliterate(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
-        function artistUrl(name) {
-            var slug = encodeURIComponent(artistSlug(name));
-            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return 'artist.html?a=' + slug;
-            return '/' + slug;
-        }
+        // Cyrillic transliteration, slug, URL from common.js
+        var transliterate = transliterateCyrillicToLatin;
+        var artistSlug = generateArtistSlug;
+        var artistUrl = getArtistPageUrl;
 
         var allEvents = [];
         var masterArtists = [];
@@ -865,93 +852,9 @@
         var searchQuery = '';
         var editingEventId = null;
 
-        // ==================== SETTINGS MENU ====================
-        (function() {
-            const settingsBtn = document.getElementById('settings-btn');
-            if (!settingsBtn) return;
-            const svcDefs = {
-                spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
-                youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
-                youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
-                appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
-                deezer: { name: 'Deezer', icon: 'fas fa-headphones', color: '#A238FF' },
-                tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#000000' },
-                amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
-                soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
-                bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
-            };
-            const overlay = document.createElement('div');
-            overlay.id = 'settings-overlay';
-            overlay.className = 'settings-overlay';
-            const currentService = localStorage.getItem('mmm-preferred-service');
-            const isDark = document.documentElement.classList.contains('dark-mode');
-            overlay.innerHTML = `
-                <div class="settings-panel">
-                    <h3><i class="fas fa-gear"></i> Поставки</h3>
-                    <div class="settings-section">
-                        <div class="settings-section-title">Тема</div>
-                        <div class="settings-theme-toggle">
-                            <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light"><i class="fas fa-sun"></i> Светла</button>
-                            <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark"><i class="fas fa-moon"></i> Темна</button>
-                        </div>
-                    </div>
-                    <div class="settings-section">
-                        <div class="settings-section-title">Стриминг сервис</div>
-                        <select class="settings-service-select">
-                            <option value="" ${!currentService ? 'selected' : ''}>Секогаш прашувај</option>
-                            ${Object.entries(svcDefs).map(([id, svc]) => `<option value="${id}" ${id === currentService ? 'selected' : ''}>${svc.name}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="settings-section settings-tour-section">
-                        <button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> Тура на сајтот</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('visible'); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const ov = document.getElementById('settings-overlay'); if (ov) ov.classList.remove('visible'); } });
-            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const dark = btn.dataset.theme === 'dark';
-                    document.body.classList.toggle('dark-mode', dark);
-                    document.documentElement.classList.toggle('dark-mode', dark);
-                    document.documentElement.style.backgroundColor = dark ? '#111318' : '';
-                    localStorage.setItem('mmm-dark-mode', dark);
-                    overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-            const svcSelect = overlay.querySelector('.settings-service-select');
-            if (svcSelect) {
-                svcSelect.addEventListener('change', () => {
-                    const serviceId = svcSelect.value;
-                    if (serviceId) { localStorage.setItem('mmm-preferred-service', serviceId); }
-                    else { localStorage.removeItem('mmm-preferred-service'); }
-                });
-            }
-            const tourBtnEl = overlay.querySelector('#settings-start-tour');
-            if (tourBtnEl) { tourBtnEl.addEventListener('click', () => { overlay.classList.remove('visible'); if (typeof window.startGlobalTour === 'function') window.startGlobalTour(); }); }
-            settingsBtn.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.contains('dark-mode');
-                overlay.querySelectorAll('.settings-theme-btn').forEach(btn => { btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark); });
-                const currentSvc = localStorage.getItem('mmm-preferred-service');
-                const svcSel = overlay.querySelector('.settings-service-select'); if (svcSel) svcSel.value = currentSvc || '';
-                overlay.classList.add('visible');
-            });
-        })();
-
-        // ==================== NAV MENU ====================
-        (function() {
-            var trigger = document.querySelector('.site-nav-trigger');
-            var menu = document.getElementById('site-nav-menu');
-            if (!trigger || !menu) return;
-            trigger.addEventListener('click', function(e) {
-                if (window.innerWidth <= 600) { e.preventDefault(); e.stopPropagation(); menu.classList.toggle('open'); }
-            });
-            document.addEventListener('click', function(e) {
-                if (!menu.contains(e.target) && !trigger.contains(e.target)) menu.classList.remove('open');
-            });
-        })();
+        // Settings menu + nav menu from common.js
+        initSettingsMenu();
+        initNavMenu();
 
         // ==================== FILTER TOGGLE ====================
         (function() {
@@ -1499,6 +1402,12 @@
         document.getElementById('modal-close-btn').addEventListener('click', closeModal);
         window.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+        // Auto-open add modal if navigated with #dodaj-nastan hash
+        if (location.hash === '#dodaj-nastan') {
+            openAddModal();
+            history.replaceState(null, '', location.pathname + location.search);
+        }
 
         document.getElementById('add-artist-btn').addEventListener('click', function() {
             var c = document.getElementById('artist-entries');

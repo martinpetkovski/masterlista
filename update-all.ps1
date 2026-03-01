@@ -8,6 +8,7 @@
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
 #   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
 #   5. Curators   - Fetches playlist tracklists for curators from streaming APIs
+#   6. YouTube    - Scrapes latest Xotel YouTube videos via RSS feed
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
@@ -31,7 +32,8 @@ param(
     [switch]$SkipLinks,
     [switch]$SkipInstagram,
     [switch]$SkipCurators,
-    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators")]
+    [switch]$SkipYouTube,
+    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators", "youtube")]
     [string]$Only
 )
 
@@ -943,6 +945,77 @@ function Update-CuratorTracklists {
 }
 
 
+function Update-YouTube {
+    Write-Section "TASK 6: XOTEL YOUTUBE VIDEOS"
+
+    $channelId = "UC3Etl3X-9ev1T_OweXAh09w"
+    $rssUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=$channelId"
+    $outputPath = Join-Path $scriptRoot "xotel-videos.json"
+
+    Write-Step "Fetching YouTube RSS feed for Xotel..."
+    try {
+        [xml]$rss = (Invoke-WebRequest -Uri $rssUrl -UseBasicParsing -TimeoutSec 15).Content
+    }
+    catch {
+        Write-Step "Failed to fetch YouTube RSS: $($_.Exception.Message)" "Red"
+        return $false
+    }
+
+    $ns = @{ atom = "http://www.w3.org/2005/Atom"; yt = "http://www.youtube.com/xml/schemas/2015"; media = "http://search.yahoo.com/mrss/" }
+    $entries = $rss.feed.entry
+
+    if (-not $entries -or $entries.Count -eq 0) {
+        Write-Step "No videos found in RSS feed" "Red"
+        return $false
+    }
+
+    $videos = @()
+    $maxVideos = 20
+    $count = 0
+
+    foreach ($entry in $entries) {
+        if ($count -ge $maxVideos) { break }
+        $videoId = $entry.getElementsByTagName("yt:videoId") | ForEach-Object { $_.'#text' }
+        if (-not $videoId) {
+            # Fallback: extract from link
+            $link = ($entry.link | Where-Object { $_.rel -eq "alternate" }).href
+            if ($link -match '[?&]v=([a-zA-Z0-9_-]+)') { $videoId = $Matches[1] }
+        }
+        if (-not $videoId) { continue }
+
+        $title = $entry.title
+        if ($title -is [System.Xml.XmlElement]) { $title = $title.'#text' }
+
+        $published = $entry.published
+        if ($published -is [System.Xml.XmlElement]) { $published = $published.'#text' }
+
+        # Skip Shorts / promos (contain hashtags)
+        if ($title -match '#') { continue }
+
+        $thumbnail = "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
+
+        $videos += @{
+            id        = $videoId
+            title     = $title
+            published = $published
+            thumbnail = $thumbnail
+        }
+        $count++
+    }
+
+    Write-Step "Found $($videos.Count) videos"
+
+    $json = $videos | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($outputPath, $json, [System.Text.Encoding]::UTF8)
+
+    $size = [math]::Round((Get-Item $outputPath).Length / 1KB, 1)
+    Write-Step "Generated xotel-videos.json (${size} KB)" "Green"
+
+    Write-Step "YouTube scraping completed" "Green"
+    return $true
+}
+
+
 # ============================================================================
 #  MAIN
 # ============================================================================
@@ -962,6 +1035,7 @@ $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
 $runInstagram = -not $SkipInstagram
 $runCurators  = -not $SkipCurators
+$runYouTube   = -not $SkipYouTube
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
@@ -970,13 +1044,14 @@ if ($Only) {
     $runLinks     = $Only -eq "links"
     $runInstagram = $Only -eq "instagram"
     $runCurators  = $Only -eq "curators"
+    $runYouTube   = $Only -eq "youtube"
 }
 
 $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runYouTube) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -1043,6 +1118,17 @@ if ($runCurators) {
 }
 else {
     Write-Step "Skipping curator tracklists" "DarkGray"
+}
+
+# --- Task 6: YouTube ---
+if ($runYouTube) {
+    Set-OverallProgress "YouTube"
+    $t = Get-Date
+    $results["YouTube"] = Update-YouTube
+    $taskTimings["YouTube"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping YouTube scraping" "DarkGray"
 }
 
 Write-Progress -Id 0 -Activity "Master Lista Update" -Completed
