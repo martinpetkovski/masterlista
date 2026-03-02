@@ -1,17 +1,22 @@
 // ==================== MULTI-PAGE SITE TOUR ====================
-// Automatically navigates between pages and highlights key features.
-// Auto-starts for first-time visitors on the index page.
+// Navigates between pages and highlights key features.
+// First-time visitors on the index page get a prompt asking if they want a tour.
 // Can be re-launched from Settings > "Тура на сајтот".
 (function() {
     'use strict';
 
     var STEPS = [
-        // === INDEX (Топ Листа) ===
-        { page: '/', title: 'Здраво! 👋', text: 'Добредојде на <strong>ТопЛиста.мк</strong>!<br><br>Ова е сајт за секој што сака македонска музика — тука ги следиме артистите, ги рангираме песните, собираме настани и вести, и уште многу работи.<br><br>Ќе ти направам кратка тура за да видиш што нуди сајтот. Трае околу 2 минути.', el: null, pos: 'center' },
-        { page: '/', title: 'Навигација', text: 'Ова е <strong>менито</strong>. На телефон, тапни на логото горе лево за да го отвориш.<br><br>Од тука стигнуваш до сè: топ листата, мастер листата, настаните, вестите и останатите делови на сајтот.', el: '.site-nav-trigger', pos: 'bottom' },
-        { page: '/', title: 'Поставки ⚙', text: 'Во поставките можеш да промениш неколку работи:<br><br>• <strong>Тема</strong> — светла или темна, зависи како ти се допаѓа<br>• <strong>Стриминг сервис</strong> — избери го твојот (Spotify, YouTube, Apple Music…)<br><br>Кога ќе кликнеш на некоја песна на сајтот, таа ќе ти се отвори директно во сервисот што си го избрал.', el: '#settings-btn', pos: 'bottom' },
-        { page: '/', title: 'Филтри', text: 'Топ листата не е само една — има повеќе варијанти:<br><br>• <strong>Оригинална</strong> — апсолутно сите песни достапни на Spotify од артисти од Мастер Листата<br>• <strong>Алтернативна</strong> — сите песни кои не се поп<br>• <strong>Сите времиња</strong> — кумулативна листа на сите артисти според бројот на следачи на Spotify<br><br>Филтрите можеш и да ги комбинираш меѓу себе за поспецифичен резултат.', el: '.chart-filter-bar', pos: 'bottom' },
-        { page: '/', title: 'Топ Листа 📊', text: 'Ова е срцето на сајтот — <strong>Топ Листата</strong>.<br><br>Тука се рангирани најслушаните изданија (песни, албуми, EP-а) од македонски артисти. Рангирањето се базира на бројот на слушања на Spotify.<br><br>Податоците се освежуваат секој ден, а нова листа се пресметува секој понеделник. Секоја минатата листа се чува во архивата.', el: '.chart-sections', pos: 'top' },
+        // === INDEX (Дома — Dashboard) ===
+        { page: '/', title: 'Здраво! 👋', text: 'Добредојде на <strong>ТопЛиста.мк</strong>!<br><br>Ова е сајт за секој што сака македонска музика — тука ги следиме артистите, ги рангираме песните, собираме настани и вести, и уште многу работи.<br><br>Ајде да видиме што нуди сајтот. Турата трае околу 2 минути.', el: null, pos: 'center' },
+        { page: '/', title: 'Навигација', text: 'Ова е <strong>навигацијата</strong>. Од тука стигнуваш до сè: топ листата, мастер листата, настаните, вестите и останатото.<br><br>На телефон, тапни на логото горе лево за да го отвориш менито — таму има и копче „Дома" за брз пристап до почетната.', el: '.site-title', pos: 'bottom' },
+        { page: '/', title: 'Поставки ⚙', text: 'Во поставките можеш да промениш неколку работи:<br><br>• <strong>Тема</strong> — светла или темна, зависи како ти се допаѓа<br>• <strong>Стриминг сервис</strong> — избери го твојот (Spotify, YouTube, Apple Music…)<br><br>Кога ќе кликнеш на некоја песна на сајтот, таа ќе ти се отвори директно во сервисот што си го избрал.<br><br>⚙ Поставките ги наоѓаш во горната лента — заедно со логото, доволно е да скролнеш горе.', el: null, pos: 'center' },
+        { page: '/', title: 'Почетна страница 🏠', text: 'Ова е <strong>контролната табла</strong> — преглед на сè што се случува на сајтот.<br><br>Тука ги гледаш најслушаните песни, новите изданија, претстојните настани, вести, препораки од кустоси, и уште многу — сè на едно место.', el: '.dashboard', pos: 'top' },
+        { page: '/', title: 'Брзи акции ⚡', text: 'Овие копчиња се кратенки до најкорисните работи:<br><br>• <strong>Изненади ме</strong> — случаен артист<br>• <strong>Додај артист</strong> — предложи некој што го нема<br>• <strong>Додај настан</strong> — пријави концерт или фестивал<br>• <strong>Стани кустос</strong> — сподели ја твојата плејлиста<br><br>Доволно е еден клик.', el: '.quick-actions', pos: 'top' },
+
+        // === CHARTS (Топ Листа) ===
+        { page: '/charts', title: 'Топ Листа 📊', text: 'Ова е срцето на сајтот — <strong>Топ Листата</strong>.<br><br>Тука се рангирани најслушаните изданија (песни, албуми, EP-а) од македонски артисти. Рангирањето се базира на бројот на слушања на Spotify.<br><br>Податоците се освежуваат секој ден, а нова листа се пресметува секој понеделник. Секоја минатата листа се чува во архивата.', el: null, pos: 'center' },
+        { page: '/charts', title: 'Филтри', text: 'Листата не е само една — има повеќе варијанти:<br><br>• <strong>Топ Листа</strong> — сите песни достапни на Spotify од артисти во Мастер Листата<br>• <strong>Алтернативна</strong> — сите песни кои не се поп<br>• <strong>Сите времиња</strong> — кумулативна листа на артисти по број на следачи<br><br>Филтрите можеш и да ги комбинираш за поспецифичен резултат.', el: '.chart-filter-bar', pos: 'bottom' },
+        { page: '/charts', title: 'Секции', text: 'Листата е поделена на три секции:<br><br>• <strong>Сингли</strong> — поединечни песни<br>• <strong>Албуми</strong> — албуми и EP-а<br>• <strong>Нови изданија</strong> — песни објавени во последните 30 дена<br><br>Секоја секција може да се сподели посебно.', el: '.chart-sections', pos: 'top' },
 
         // === LISTA (Мастер Листа) ===
         { page: '/lista', title: 'Мастер Листа 📋', text: 'Ова е <strong>Мастер Листата</strong> — главната база на сајтот.<br><br>Тука се собрани сите македонски артисти и бендови, заедно со нивните жанрови, градови, линкови до профилите и друго. Практично, секоја друга функција на сајтот (топ листата, вестите, настаните) зависи од оваа листа.', el: null, pos: 'center' },
@@ -29,12 +34,13 @@
 
         // === IZNENADI-ME ===
         { page: '/iznenadi-me', title: 'Изненади ме 🎲', text: 'Не знаеш што да слушаш? Нема проблем.<br><br>Избери <strong>жанр</strong> и <strong>временски период</strong>, кликни на копчето и сајтот ќе ти избере случаен артист. Одличен начин да откриеш нешто ново, или да се потсетиш на нешто заборавено.', el: '.surprise-container', pos: 'top' },
-        { page: '/iznenadi-me', title: 'Тоа беше сè! 🎸', text: 'Фала што ја помина турата! Ако ти се допаѓа идејата, еве неколку начини како можеш да придонесеш:<br><br>• <strong>Додај артист</strong> што го нема во Мастер Листата<br>• <strong>Додај настан</strong> за претстоен концерт<br>• <strong>Стани кустос</strong> и сподели ја твојата плејлиста<br>• <strong>Верифицирај го бендот</strong> ако си артист<br>• <strong>Јави се</strong> на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord</a> за идеи, фидбек или само да поздравиш<br><br>Турата можеш да ја повториш кога сакаш — отвори ⚙ Поставки и кликни „Тура на сајтот".<br><br>Уживај! 🙌', el: null, pos: 'center' }
+        { page: '/iznenadi-me', title: 'Тоа беше сè! 🎸', text: 'Фала што ја помина турата! Ако ти се допаѓа идејата, еве неколку начини како можеш да придонесеш:<br><br>• <strong>Додај артист</strong> што го нема во Мастер Листата<br>• <strong>Додај настан</strong> за претстоен концерт<br>• <strong>Стани кустос</strong> и сподели ја твојата плејлиста<br>• <strong>Верифицирај го бендот</strong> ако си артист<br>• <strong>Јави се</strong> на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord</a> за идеи, фидбек или само да поздравиш<br><br>Турата можеш да ја повториш кога сакаш — отвори \u2699 Поставки и кликни „Тура на сајтот".<br><br>Уживај! \uD83D\uDE4C', el: null, pos: 'center' }
     ];
 
-    var KEY_ACTIVE = 'mmm-tour-active';
-    var KEY_STEP   = 'mmm-tour-step';
-    var KEY_DONE   = 'mmm-tour-completed';
+    var KEY_ACTIVE  = 'mmm-tour-active';
+    var KEY_STEP    = 'mmm-tour-step';
+    var KEY_DONE    = 'mmm-tour-completed';
+    var KEY_ASKED   = 'mmm-tour-asked';
 
     var overlay = null;
     var active  = false;
@@ -68,22 +74,79 @@
         if (!titleEl) return;
 
         var pageTitles = {
-            '/': 'Топ Листа',
-            '/lista': 'Мастер Листа',
-            '/nastani': 'Настани',
-            '/vesti': 'Вести',
-            '/kustosi': 'Кустоси',
-            '/iznenadi-me': 'Изненади ме',
-            '/za': 'За проектот',
-            '/uslovi': 'Услови',
-            '/privatnost': 'Приватност',
-            '/nastan': 'Настан'
+            '/': '\u0414\u043e\u043c\u0430',
+            '/lista': '\u041c\u0430\u0441\u0442\u0435\u0440 \u041b\u0438\u0441\u0442\u0430',
+            '/charts': '\u0422\u043e\u043f \u041b\u0438\u0441\u0442\u0430',
+            '/nastani': '\u041d\u0430\u0441\u0442\u0430\u043d\u0438',
+            '/vesti': '\u0412\u0435\u0441\u0442\u0438',
+            '/kustosi': '\u041a\u0443\u0441\u0442\u043e\u0441\u0438',
+            '/iznenadi-me': '\u0418\u0437\u043d\u0435\u043d\u0430\u0434\u0438 \u043c\u0435',
+            '/za': '\u0417\u0430 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0442',
+            '/uslovi': '\u0423\u0441\u043b\u043e\u0432\u0438',
+            '/privatnost': '\u041f\u0440\u0438\u0432\u0430\u0442\u043d\u043e\u0441\u0442',
+            '/nastan': '\u041d\u0430\u0441\u0442\u0430\u043d'
         };
 
         var shortTitle = pageTitles[curPage()];
         if (shortTitle) {
             titleEl.textContent = shortTitle;
         }
+    }
+
+    // ---- welcome prompt ----
+
+    function showWelcomePrompt() {
+        var existing = document.getElementById('tour-welcome');
+        if (existing) existing.remove();
+
+        var el = document.createElement('div');
+        el.id = 'tour-welcome';
+        el.className = 'tour-overlay active';
+        el.innerHTML =
+            '<div class="tour-tooltip tour-center">' +
+                '<div class="tour-tooltip-content">' +
+                    '<h3 class="tour-title">\u0417\u0434\u0440\u0430\u0432\u043e! \uD83D\uDC4B</h3>' +
+                    '<p class="tour-description">\u0414\u043e\u0431\u0440\u0435\u0434\u043e\u0458\u0434\u0435 \u043d\u0430 <strong>\u0422\u043e\u043f\u041b\u0438\u0441\u0442\u0430.\u043c\u043a</strong>!<br><br>\u0421\u0430\u043a\u0430\u0448 \u043a\u0440\u0430\u0442\u043a\u0430 \u0442\u0443\u0440\u0430 \u043d\u0430 \u0441\u0430\u0458\u0442\u043e\u0442? \u0422\u0440\u0430\u0435 \u043e\u043a\u043e\u043b\u0443 2 \u043c\u0438\u043d\u0443\u0442\u0438 \u0438 \u045c\u0435 \u0442\u0438 \u043f\u043e\u043a\u0430\u0436\u0435 \u0448\u0442\u043e \u043d\u0443\u0434\u0438 \u0441\u0430\u0458\u0442\u043e\u0442 — \u0442\u043e\u043f \u043b\u0438\u0441\u0442\u0438, \u0430\u0440\u0442\u0438\u0441\u0442\u0438, \u043d\u0430\u0441\u0442\u0430\u043d\u0438 \u0438 \u043c\u043d\u043e\u0433\u0443 \u043f\u043e\u0432\u0435\u045c\u0435.<br><br>\u041c\u043e\u0436\u0435\u0448 \u0438 \u043f\u043e\u0434\u043e\u0446\u043d\u0430 \u0434\u0430 \u0458\u0430 \u043f\u043e\u0447\u043d\u0435\u0448 \u043e\u0434 \u2699 \u041f\u043e\u0441\u0442\u0430\u0432\u043a\u0438.</p>' +
+                '</div>' +
+                '<div class="tour-footer">' +
+                    '<span></span>' +
+                    '<div class="tour-buttons">' +
+                        '<button class="tour-btn-skip tour-welcome-dismiss">\u041c\u043e\u0436\u0435\u0431\u0438 \u043f\u043e\u0434\u043e\u0446\u043d\u0430</button>' +
+                        '<button class="tour-btn-next tour-welcome-start">\u0410\u0458\u0434\u0435! <i class="fas fa-arrow-right"></i></button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+        document.body.appendChild(el);
+
+        el.querySelector('.tour-welcome-start').addEventListener('click', function() {
+            el.remove();
+            localStorage.setItem(KEY_ASKED, 'true');
+            beginTour(0);
+        });
+
+        el.querySelector('.tour-welcome-dismiss').addEventListener('click', function() {
+            el.remove();
+            localStorage.setItem(KEY_ASKED, 'true');
+        });
+
+        // Click backdrop to dismiss
+        el.addEventListener('click', function(e) {
+            if (e.target === el) {
+                el.remove();
+                localStorage.setItem(KEY_ASKED, 'true');
+            }
+        });
+
+        // Escape to dismiss
+        function escHandler(e) {
+            if (e.key === 'Escape') {
+                el.remove();
+                localStorage.setItem(KEY_ASKED, 'true');
+                document.removeEventListener('keydown', escHandler);
+            }
+        }
+        document.addEventListener('keydown', escHandler);
     }
 
     // ---- overlay DOM ----
@@ -296,11 +359,12 @@
             return;
         }
 
-        // 2. Auto-start for first-time visitors on the index page
-        var done = localStorage.getItem(KEY_DONE) === 'true'
-                || localStorage.getItem('mmm-tour-viewed') === 'true';
-        if (!done && onPage('/')) {
-            setTimeout(function() { beginTour(0); }, 1500);
+        // 2. First-time visitors on the index page: ask if they want a tour
+        var done  = localStorage.getItem(KEY_DONE) === 'true'
+                 || localStorage.getItem('mmm-tour-viewed') === 'true';
+        var asked = localStorage.getItem(KEY_ASKED) === 'true';
+        if (!done && !asked && onPage('/')) {
+            setTimeout(function() { showWelcomePrompt(); }, 1500);
         }
     }
 

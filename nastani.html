@@ -270,6 +270,59 @@
     .nastani-page .controls {
         flex-wrap: wrap;
     }
+    .nastani-page .events-search-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+        position: relative;
+    }
+    .nastani-page .events-search-icon {
+        position: absolute;
+        left: 0.65rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .nastani-page .events-filters-panel {
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding-top: 0.4rem;
+        animation: filtersSlideDown 0.15s ease;
+    }
+    .nastani-page .events-filters-panel.open {
+        display: flex;
+    }
+    @keyframes filtersSlideDown {
+        from { opacity: 0; transform: translateY(-4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .nastani-page .clear-filters-btn {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 0.3rem 0.6rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-primary);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+    }
+    .nastani-page .clear-filters-btn:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+    }
+    body.dark-mode .nastani-page .clear-filters-btn {
+        background: var(--bg-secondary);
+    }
     .nastani-page .filter-btn-group {
         display: flex;
         gap: 0;
@@ -458,14 +511,14 @@
     .nastani-page #search-events {
         font-family: 'Inter', sans-serif;
         font-size: 0.8rem;
-        padding: 0.35rem 0.75rem;
+        padding: 0.35rem 0.75rem 0.35rem 2rem;
         border: 1px solid var(--border-color);
         border-radius: 4px;
         background: var(--bg-primary);
         color: var(--text-primary);
         height: 34px;
-        flex: 2;
-        min-width: 200px;
+        flex: 1;
+        min-width: 0;
         transition: all var(--transition);
     }
     .nastani-page #search-events:focus {
@@ -501,50 +554,6 @@
     .nastani-page #save-event-btn:hover { opacity: 0.9; }
     .nastani-page #save-event-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ===== MOBILE EVENTS SEARCH ===== */
-    .events-mobile-search {
-        display: none;
-    }
-    @media (max-width: 600px) {
-        .events-mobile-search {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.25rem 0.4rem;
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .events-mobile-search input {
-            flex: 1;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            padding: 0.45rem 0.65rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            height: 36px;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-        .events-mobile-search input:focus {
-            border-color: var(--accent-blue);
-            background: var(--bg-primary);
-        }
-        .events-mobile-search input::placeholder {
-            color: var(--text-muted);
-        }
-        body.dark-mode .events-mobile-search {
-            background: #15181e;
-            border-bottom-color: #2a2e36;
-        }
-        body.dark-mode .events-mobile-search input {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-color: var(--border-color);
-        }
-    }
-
     /* ===== DESKTOP RESPONSIVE COLUMN HIDING ===== */
     /* Override generic master-list column hiding from desktop.css */
     @media (min-width: 601px) {
@@ -576,13 +585,24 @@
             flex-direction: column;
             gap: 0.4rem;
             padding: 0.4rem;
+            animation: searchBarSlideDown 0.15s ease;
         }
-        .nastani-page .controls.active { display: flex; }
+        @keyframes searchBarSlideDown {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nastani-page .controls.visible { display: flex; }
         .nastani-page #search-events {
             width: 100%;
             min-width: 0;
             height: 40px;
             font-size: 0.9rem;
+            padding-left: 2rem;
+        }
+        .nastani-page .events-search-row { width: 100%; }
+        .nastani-page .events-filters-panel {
+            flex-direction: column;
+            gap: 0.4rem;
         }
         .nastani-page .filter-btn-group {
             width: 100%;
@@ -733,23 +753,24 @@
             <span><strong id="stat-past">0</strong> минати</span>
         </span>
         <button id="add-event-btn" class="header-btn add-band" title="Додај настан"><i class="fas fa-plus"></i></button>
-        <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
-            <i class="fas fa-filter"></i>
-        </button>
+        <button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i></button>
     </header>
     <script src="/load-header.js"></script>
     <main>
-        <div class="mobile-search-bar events-mobile-search" id="events-mobile-search">
-            <input type="text" id="mobile-events-search-input" placeholder="Пребарај настан, артист, место...">
-        </div>
         <div class="controls" id="controls-bar">
-            <input type="text" id="search-events" placeholder="Пребарај настан, артист, место...">
-            <div class="filter-btn-group">
-                <button class="evt-filter-btn active" data-filter="all">Сите</button>
-                <button class="evt-filter-btn" data-filter="upcoming">Претстојни</button>
-                <button class="evt-filter-btn" data-filter="past">Минати</button>
+            <div class="events-search-row">
+                <i class="fas fa-search events-search-icon"></i>
+                <input type="text" id="search-events" placeholder="Пребарај настан, артист, место...">
+                <button type="button" id="evt-filter-toggle-btn" class="filter-toggle-btn" title="Филтри"><i class="fas fa-sliders-h"></i></button>
             </div>
-            <button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i></button>
+            <div class="events-filters-panel" id="events-filters-panel">
+                <div class="filter-btn-group">
+                    <button class="evt-filter-btn active" data-filter="all">Сите</button>
+                    <button class="evt-filter-btn" data-filter="upcoming">Претстојни</button>
+                    <button class="evt-filter-btn" data-filter="past">Минати</button>
+                </div>
+                <button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i> Исчисти</button>
+            </div>
         </div>
         <div id="loading-bar" class="loading-bar">
             <div class="loading-progress"></div>
@@ -856,18 +877,36 @@
         initSettingsMenu();
         initNavMenu();
 
-        // ==================== FILTER TOGGLE ====================
+        // ==================== SEARCH TOGGLE ====================
         (function() {
-            var btn = document.getElementById('toggle-filters');
+            var btn = document.getElementById('search-toggle-btn');
             var controls = document.getElementById('controls-bar');
+            var searchInput = document.getElementById('search-events');
             if (!btn || !controls) return;
             btn.addEventListener('click', function() {
-                // On mobile, toggle via .active class; on desktop, toggle display
-                if (window.innerWidth <= 600) {
-                    controls.classList.toggle('active');
+                var isVisible = controls.classList.toggle('visible');
+                btn.innerHTML = '<i class="fas ' + (isVisible ? 'fa-times' : 'fa-search') + '"></i>';
+                if (isVisible) {
+                    searchInput.focus();
                 } else {
-                    controls.style.display = controls.style.display === 'none' ? '' : 'none';
+                    // Clear search when hiding
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        searchQuery = '';
+                        renderTable();
+                    }
                 }
+            });
+        })();
+
+        // ==================== FILTER TOGGLE ====================
+        (function() {
+            var filterBtn = document.getElementById('evt-filter-toggle-btn');
+            var panel = document.getElementById('events-filters-panel');
+            if (!filterBtn || !panel) return;
+            filterBtn.addEventListener('click', function() {
+                var isOpen = panel.classList.toggle('open');
+                filterBtn.classList.toggle('active', isOpen);
             });
         })();
 
@@ -1209,16 +1248,6 @@
             renderTable();
         });
 
-        // Mobile search bar sync
-        var mobileEvtSearch = document.getElementById('mobile-events-search-input');
-        if (mobileEvtSearch) {
-            mobileEvtSearch.addEventListener('input', function() {
-                searchQuery = this.value.trim();
-                document.getElementById('search-events').value = this.value;
-                renderTable();
-            });
-        }
-
         document.querySelectorAll('.evt-filter-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.evt-filter-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1232,7 +1261,6 @@
             searchQuery = '';
             currentFilter = 'all';
             document.getElementById('search-events').value = '';
-            if (mobileEvtSearch) mobileEvtSearch.value = '';
             document.querySelectorAll('.evt-filter-btn').forEach(function(b) { b.classList.remove('active'); });
             document.querySelector('.evt-filter-btn[data-filter="all"]').classList.add('active');
             renderTable();

@@ -2715,6 +2715,11 @@ body.dark-mode .settings-tour-section {
     z-index: auto;
 }
 
+/* Home link: hidden on desktop (logo serves as home) */
+.site-nav-menu .mobile-home-link {
+    display: none !important;
+}
+
 .site-nav-menu a {
     display: inline-flex;
     align-items: center;

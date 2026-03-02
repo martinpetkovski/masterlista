@@ -48,7 +48,7 @@ header {
     z-index: 200;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Header album art collage – 2 neat rows, right-aligned */
@@ -134,7 +134,7 @@ html.dark-mode body header .subtitle-stats {
 
 .header-content {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping */
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     width: 100%;
@@ -2452,6 +2452,11 @@ body.dark-mode .site-nav-menu a.active:hover i {
     color: var(--nav-text, var(--text-primary, #1a1d21));
     text-decoration: none;
     border: 2px solid transparent;
+}
+
+/* Home link: only visible on mobile (dropdown) */
+.mobile-home-link {
+    display: flex !important;
 }
 
 .site-nav-menu a:hover {
