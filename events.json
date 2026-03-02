@@ -1,6 +1,46 @@
 {
   "events": [
     {
+      "id": "evt-20260801-расплет-фест-ден-1-0pu6",
+      "title": "Расплет Фест Ден 1",
+      "date": "2025-08-01",
+      "time": "19:00",
+      "place": "Споменик на слободата, Кочани",
+      "artists": [
+        "Корка",
+        "Алембик",
+        "Taxi Consilium",
+        "Xajka"
+      ],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/raspletfest/"
+        }
+      ]
+    },
+    {
+      "id": "evt-20260802-расплет-фест-ден-2-ujps",
+      "title": "Расплет Фест Ден 2",
+      "date": "2025-08-02",
+      "time": "20:30",
+      "place": "Споменик на слободата, Кочани",
+      "artists": [
+        "Mallard",
+        "Големата Вода",
+        "Lufthansa",
+        "Donplaya"
+      ],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/raspletfest/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260206-re-start-festival-ден-1-6z31",
       "title": "Re:Start Festival: Ден 1",
       "date": "2026-02-06",
@@ -864,26 +904,6 @@
       "link": "https://kupikarta.com/event-details.nspx?eventid=5730"
     },
     {
-      "id": "evt-20260801-расплет-фест-ден-1-0pu6",
-      "title": "Расплет Фест Ден 1",
-      "date": "2026-08-01",
-      "time": "19:00",
-      "place": "Споменик на слободата, Кочани",
-      "artists": [
-        "Корка",
-        "Алембик",
-        "Taxi Consilium",
-        "Xajka"
-      ],
-      "tickets": [],
-      "links": [
-        {
-          "label": "",
-          "url": "https://www.instagram.com/raspletfest/"
-        }
-      ]
-    },
-    {
       "id": "evt-20260802-slatkaristika-friends-6sy4",
       "title": "SLATKARISTIKA & Friends",
       "date": "2026-08-02",
@@ -901,26 +921,6 @@
       "link": "https://kupikarta.com/event-details.nspx?eventid=5728"
     },
     {
-      "id": "evt-20260802-расплет-фест-ден-2-ujps",
-      "title": "Расплет Фест Ден 2",
-      "date": "2026-08-02",
-      "time": "20:30",
-      "place": "Споменик на слободата, Кочани",
-      "artists": [
-        "Mallard",
-        "Големата Вода",
-        "Lufthansa",
-        "Donplaya"
-      ],
-      "tickets": [],
-      "links": [
-        {
-          "label": "",
-          "url": "https://www.instagram.com/raspletfest/"
-        }
-      ]
-    },
-    {
       "id": "evt-20260805-дупер-4hnk",
       "title": "Дупер",
       "date": "2026-08-05",
@@ -936,6 +936,21 @@
         }
       ],
       "link": "https://kupikarta.com/event-details.nspx?eventid=5729"
+    },
+    {
+      "id": "evt-20260815-расплет-фест-1722",
+      "title": "Расплет Фест",
+      "date": "2026-08-15",
+      "time": "20:00",
+      "place": "Споменик на слободата, Кочани",
+      "artists": [],
+      "tickets": [],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/raspletfest/"
+        }
+      ]
     },
     {
       "id": "evt-20260919-skopje-fury-festival-nwg9",
