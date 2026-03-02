@@ -366,37 +366,91 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Background vinyl record decoration */
-        .chart-bg-svg {
+
+
+        /* ==================== ANIMATED LINE CHART BACKGROUND ==================== */
+        .chart-bg-line {
             position: absolute;
-            bottom: -10%;
-            right: -5%;
-            height: 90%;
-            width: auto;
-            aspect-ratio: 1;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70%;
             z-index: 0;
             pointer-events: none;
-            opacity: 0;
-            transform: scale(0.3) rotate(-180deg);
-            animation: vinylDropIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+            overflow: hidden;
         }
 
-        @keyframes vinylDropIn {
-            0% { opacity: 0; transform: scale(0.3) rotate(-180deg); }
-            60% { opacity: 0.9; transform: scale(1.05) rotate(15deg); }
-            80% { opacity: 1; transform: scale(0.97) rotate(-5deg); }
-            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        .chart-bg-line svg {
+            width: 100%;
+            height: 100%;
         }
 
-        /* Vinyl spin animation */
-        .vinyl-spin {
-            animation: vinylRotate 6s linear infinite;
-            transform-origin: center;
+        .chart-line-path {
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.08;
+            stroke-dasharray: 600;
+            stroke-dashoffset: 600;
+            animation: chartLineDraw 3s ease forwards, chartLinePulse 4s ease-in-out 3s infinite alternate;
         }
 
-        @keyframes vinylRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .chart-line-area {
+            opacity: 0.03;
+            animation: chartAreaFadeIn 3s ease forwards;
+        }
+
+        @keyframes chartLineDraw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes chartLinePulse {
+            0% { opacity: 0.08; }
+            50% { opacity: 0.14; }
+            100% { opacity: 0.08; }
+        }
+
+        @keyframes chartAreaFadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.03; }
+        }
+
+        #main-chart-card .chart-line-path { stroke: url(#mainLineGrad); }
+        #main-chart-card .chart-line-area { fill: url(#mainLineGrad); }
+        #alt-chart-card .chart-line-path { stroke: url(#altLineGrad); }
+        #alt-chart-card .chart-line-area { fill: url(#altLineGrad); }
+
+        /* Second line path (delayed) */
+        .chart-line-path-2 {
+            animation-delay: 0.8s, 3.8s;
+            opacity: 0.05;
+        }
+
+        /* ==================== HOVER DARKEN + BACKDROP BLUR ==================== */
+        .mini-chart-item {
+            transition: background 0.12s, filter 0.25s;
+        }
+
+        .mini-chart-item:hover {
+            background: rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        body.dark-mode .mini-chart-item:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .mini-chart-item:hover .mini-chart-cover {
+            filter: brightness(0.85);
+            transition: filter 0.25s;
+        }
+
+        .mini-chart-item:hover .mini-chart-title,
+        .mini-chart-item:hover .mini-chart-artist {
+            filter: brightness(0.85);
+            transition: filter 0.25s;
         }
 
         /* Ensure chart items are above SVG background */
@@ -502,9 +556,21 @@
             border-radius: 8px;
         }
 
+        #main-chart-card .mini-chart-item:first-child:hover,
+        #alt-chart-card .mini-chart-item:first-child:hover {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%), rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
         body.dark-mode #main-chart-card .mini-chart-item:first-child,
         body.dark-mode #alt-chart-card .mini-chart-item:first-child {
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+        }
+
+        body.dark-mode #main-chart-card .mini-chart-item:first-child:hover,
+        body.dark-mode #alt-chart-card .mini-chart-item:first-child:hover {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 70%), rgba(0, 0, 0, 0.25);
         }
 
         /* #1 cover glow effect */
@@ -599,10 +665,7 @@
             border-color: var(--border-color, #2a2e36);
         }
 
-        body.dark-mode .chart-bg-svg {
-            opacity: 0;
-            animation: vinylFadeIn 1.8s ease-out 0.3s forwards;
-        }
+
 
         body.dark-mode #main-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank,
         body.dark-mode #alt-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank {
@@ -714,6 +777,47 @@
             flex-shrink: 0;
             min-width: 42px;
             line-height: 1.2;
+        }
+
+        /* Day indicator inline tag in meta line */
+        .event-day-indicator {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted, #8b929a);
+            background: var(--bg-hover, #eceef1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            margin-left: 0.35rem;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        body.dark-mode .event-day-indicator {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted, #8b929a);
+        }
+
+        /* Today event special styling */
+        .event-item.event-today {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+            border-radius: 8px;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-green, #22c55e);
+        }
+
+        .event-item.event-today .event-date-badge {
+            background: var(--accent-green, #22c55e);
+        }
+
+        .event-item.event-today .event-day-indicator {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green, #22c55e);
+            font-weight: 700;
+        }
+
+        body.dark-mode .event-item.event-today {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.12) 0%, transparent 70%);
         }
 
         .event-date-day {
@@ -1320,6 +1424,28 @@
             color: #000;
         }
 
+        /* Chevron popularity indicators */
+        .trending-chevrons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0px;
+            flex-shrink: 0;
+            margin-left: auto;
+            padding-right: 0.25rem;
+        }
+
+        .trending-chevrons i {
+            font-size: 0.5rem;
+            color: var(--accent-green, #22c55e);
+            line-height: 0.55;
+            opacity: 0.7;
+        }
+
+        .trending-chevrons i:first-child {
+            opacity: 1;
+        }
+
         /* Verified badge inline */
         .verified-badge {
             color: #1d9bf0;
@@ -1359,6 +1485,51 @@
             font-size: 0.75rem;
             gap: 0.4rem;
             flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hide the spinner icon */
+        .dash-loading i.fa-spinner {
+            display: none;
+        }
+
+        /* Animated chart-graph shimmer while loading */
+        .dash-loading::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg,
+                    transparent 0%,
+                    var(--text-muted, #8b929a) 15%,
+                    transparent 20%,
+                    transparent 30%,
+                    var(--text-muted, #8b929a) 40%,
+                    transparent 45%,
+                    transparent 55%,
+                    var(--text-muted, #8b929a) 65%,
+                    transparent 70%,
+                    transparent 80%,
+                    var(--text-muted, #8b929a) 90%,
+                    transparent 95%
+                );
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40' preserveAspectRatio='none'%3E%3Cpath d='M0,32 L10,28 L20,30 L30,22 L40,25 L50,15 L60,18 L70,10 L80,14 L90,8 L100,12 L110,5 L120,9' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40' preserveAspectRatio='none'%3E%3Cpath d='M0,32 L10,28 L20,30 L30,22 L40,25 L50,15 L60,18 L70,10 L80,14 L90,8 L100,12 L110,5 L120,9' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            mask-size: 100% 80%;
+            -webkit-mask-size: 100% 80%;
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-position: center;
+            opacity: 0.07;
+            animation: loadingChartShimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes loadingChartShimmer {
+            0% { opacity: 0.04; transform: scaleY(0.8); }
+            50% { opacity: 0.09; transform: scaleY(1.1); }
+            100% { opacity: 0.04; transform: scaleY(0.8); }
         }
 
         /* ==================== SITE TITLE BAR ==================== */
@@ -1783,35 +1954,21 @@
 
         <!-- ==================== TOP 3 MAIN CHART ==================== -->
         <div class="dash-card" id="main-chart-card">
-            <!-- SVG Background: vinyl record -->
-            <svg class="chart-bg-svg" viewBox="0 0 200 200" aria-hidden="true">
-                <g class="vinyl-spin">
-                    <!-- Outer disc -->
-                    <circle cx="100" cy="100" r="96" fill="#4a7fa5" opacity="0.03"/>
-                    <circle cx="100" cy="100" r="95" fill="none" stroke="#4a7fa5" stroke-width="1" opacity="0.12"/>
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="#4a7fa5" stroke-width="0.5" opacity="0.1"/>
-                    <!-- Grooves -->
-                    <circle cx="100" cy="100" r="85" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="80" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="75" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="70" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="65" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="60" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="55" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="50" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="45" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="40" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
-                    <!-- Label area -->
-                    <circle cx="100" cy="100" r="32" fill="#4a7fa5" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="32" fill="none" stroke="#4a7fa5" stroke-width="0.8" opacity="0.12"/>
-                    <!-- Genre text on label -->
-                    <text x="100" y="88" text-anchor="middle" dominant-baseline="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="11" fill="#4a7fa5" opacity="0.12" letter-spacing="1">ПОП</text>
-                    <!-- Center hole -->
-                    <circle cx="100" cy="100" r="4" fill="var(--bg-primary, #fff)" stroke="#4a7fa5" stroke-width="1" opacity="0.15"/>
-                    <!-- Light reflection -->
-                    <ellipse cx="75" cy="75" rx="25" ry="12" fill="#fff" opacity="0.02" transform="rotate(-40 75 75)"/>
-                </g>
-            </svg>
+
+            <!-- Animated line chart background -->
+            <div class="chart-bg-line" aria-hidden="true">
+                <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="mainLineGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#4a7fa5"/>
+                            <stop offset="100%" stop-color="#22c55e"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="chart-line-area" d="M0,90 Q30,60 60,65 T120,40 T180,55 T240,30 T300,45 L300,120 L0,120 Z"/>
+                    <path class="chart-line-path" d="M0,90 Q30,60 60,65 T120,40 T180,55 T240,30 T300,45"/>
+                    <path class="chart-line-path chart-line-path-2" d="M0,100 Q40,85 80,88 T160,70 T220,78 T280,60 T300,65"/>
+                </svg>
+            </div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-chart-line"></i> Топ Листа</h2>
                 <a href="/charts" class="more-link">Целосна листа &raquo;</a>
@@ -1822,35 +1979,21 @@
 
         <!-- ==================== TOP 3 ALTERNATIVE CHART ==================== -->
         <div class="dash-card" id="alt-chart-card">
-            <!-- SVG Background: vinyl record (alt) -->
-            <svg class="chart-bg-svg" viewBox="0 0 200 200" aria-hidden="true">
-                <g class="vinyl-spin" style="animation-direction: reverse;">
-                    <!-- Outer disc -->
-                    <circle cx="100" cy="100" r="96" fill="#7b6e9e" opacity="0.03"/>
-                    <circle cx="100" cy="100" r="95" fill="none" stroke="#7b6e9e" stroke-width="1" opacity="0.12"/>
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="#7b6e9e" stroke-width="0.5" opacity="0.1"/>
-                    <!-- Grooves -->
-                    <circle cx="100" cy="100" r="85" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="80" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="75" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="70" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="65" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="60" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="55" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.08"/>
-                    <circle cx="100" cy="100" r="50" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
-                    <circle cx="100" cy="100" r="45" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="40" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
-                    <!-- Label area -->
-                    <circle cx="100" cy="100" r="32" fill="#7b6e9e" opacity="0.06"/>
-                    <circle cx="100" cy="100" r="32" fill="none" stroke="#7b6e9e" stroke-width="0.8" opacity="0.12"/>
-                    <!-- Genre text on label -->
-                    <text x="100" y="88" text-anchor="middle" dominant-baseline="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="9" fill="#7b6e9e" opacity="0.12" letter-spacing="0.5">АЛТ</text>
-                    <!-- Center hole -->
-                    <circle cx="100" cy="100" r="4" fill="var(--bg-primary, #fff)" stroke="#7b6e9e" stroke-width="1" opacity="0.15"/>
-                    <!-- Light reflection -->
-                    <ellipse cx="75" cy="75" rx="25" ry="12" fill="#fff" opacity="0.02" transform="rotate(-40 75 75)"/>
-                </g>
-            </svg>
+
+            <!-- Animated line chart background -->
+            <div class="chart-bg-line" aria-hidden="true">
+                <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="altLineGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#7b6e9e"/>
+                            <stop offset="100%" stop-color="#a86078"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="chart-line-area" d="M0,80 Q35,55 70,60 T140,35 T200,50 T260,25 T300,40 L300,120 L0,120 Z"/>
+                    <path class="chart-line-path" d="M0,80 Q35,55 70,60 T140,35 T200,50 T260,25 T300,40"/>
+                    <path class="chart-line-path chart-line-path-2" d="M0,95 Q45,80 90,85 T170,65 T230,72 T290,55 T300,60"/>
+                </svg>
+            </div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-guitar"></i> Алтернативна</h2>
                 <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')">Целосна листа &raquo;</a>
@@ -1882,7 +2025,7 @@
         <!-- ==================== TRENDING: RISING ARTISTS ==================== -->
         <div class="dash-card" id="rising-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-arrow-trend-up"></i> Во подем</h2>
+                <h2><i class="fas fa-arrow-trend-up"></i> Артисти во подем</h2>
                 <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
             </div>
             <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
@@ -2017,6 +2160,7 @@
         var articlesData = [];
         var curatorsData = null;
         var curatorTracksData = null;
+        var siteMaster = null;  // Pre-calculated data from site-master.json
 
         // Helper: returns verified badge HTML if artist is confirmed
         function verifiedBadge(artistName) {
@@ -2168,20 +2312,23 @@
             var t = Date.now();
             try {
                 var results = await Promise.all([
+                    loadSiteMaster(),
                     fetch('bands.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('chart-data.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('articles.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
                 ]);
 
-                if (results[0]) bandsData = results[0].muzickaMasterLista || [];
-                if (results[1]) chartData = results[1];
-                if (results[2]) eventsData = results[2].events || [];
-                if (results[3]) articlesData = results[3].articles || [];
-                if (results[4]) curatorsData = results[4];
-                if (results[5]) curatorTracksData = results[5];
+                siteMaster = results[0];
+                if (results[1]) bandsData = results[1].muzickaMasterLista || [];
+                if (results[2]) curatorsData = results[2];
+                if (results[3]) curatorTracksData = results[3];
+
+                // Populate legacy variables from site-master for backward compat
+                if (siteMaster) {
+                    chartData = siteMaster.chartData || null;
+                    eventsData = siteMaster.events ? siteMaster.events.all || [] : [];
+                    articlesData = siteMaster.news ? siteMaster.news.allFiltered || [] : [];
+                }
             } catch (err) {
                 console.error('Data load error:', err);
             }
@@ -2227,18 +2374,11 @@
 
         // ==================== RENDER: TITLE COLLAGE (scattered album arts) ====================
         function renderTitleCollage() {
-            if (!chartData || !chartData.releases) return;
             var titleEl = document.querySelector('.site-title');
             if (!titleEl) return;
 
-            // Get top releases by popularity, deduplicated, with thumbnails
-            var ranked = buildChartRanking(chartData.releases, {
-                type: 'single',
-                genre: 'all',
-                bandsData: bandsData,
-                count: 20
-            });
-            var thumbs = ranked.map(function(r) { return r.thumbnail; }).filter(Boolean);
+            // Use pre-computed header thumbs from site-master
+            var thumbs = siteMaster && siteMaster.headerThumbs ? siteMaster.headerThumbs : [];
             if (thumbs.length === 0) return;
 
             var maxThumbs = thumbs.length;
@@ -2258,14 +2398,13 @@
             titleEl.insertBefore(collage, titleEl.firstChild);
         }
 
-        // ==================== RENDER: MINI CHART (uses buildChartRanking from common.js) ====================
-        function renderMiniChart(containerId, loadingId, releases, genreFilter) {
-            var top3 = buildChartRanking(releases, {
-                type: 'single',
-                genre: genreFilter,
-                bandsData: bandsData,
-                count: 3
-            });
+        // ==================== RENDER: MINI CHART (uses pre-computed data from site-master.json) ====================
+        function renderMiniChart(containerId, loadingId, genreKey) {
+            var chartKey = genreKey + '_single';
+            var top3 = siteMaster && siteMaster.charts && siteMaster.charts[chartKey]
+                ? siteMaster.charts[chartKey].slice(0, 3) : [];
+
+            if (top3.length === 0) return;
 
             var container = document.getElementById(containerId);
             var loading = document.getElementById(loadingId);
@@ -2306,22 +2445,24 @@
         }
 
         function renderMainChart() {
-            if (!chartData || !chartData.releases) return;
-            renderMiniChart('main-chart-list', 'main-chart-loading', chartData.releases, 'all');
+            if (!siteMaster) return;
+            renderMiniChart('main-chart-list', 'main-chart-loading', 'all');
         }
 
         function renderAltChart() {
-            if (!chartData || !chartData.releases) return;
-            renderMiniChart('alt-chart-list', 'alt-chart-loading', chartData.releases, 'alt');
+            if (!siteMaster) return;
+            renderMiniChart('alt-chart-list', 'alt-chart-loading', 'alt');
         }
 
-        // ==================== RENDER: RELEASE RADAR (last 5) ====================
+        // ==================== RENDER: RELEASE RADAR (last 5, pre-computed) ====================
         function renderReleaseRadar() {
-            if (!chartData || !chartData.releases) return;
-
-            var deduped = deduplicateCollabs(chartData.releases);
-            var sorted = deduped.slice().sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
-            var last5 = sorted.slice(0, 5);
+            var last5 = siteMaster && siteMaster.releaseRadar ? siteMaster.releaseRadar : [];
+            if (last5.length === 0 && chartData && chartData.releases) {
+                // Fallback to client-side dedup if site-master not available
+                var deduped = deduplicateCollabs(chartData.releases);
+                var sorted = deduped.slice().sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
+                last5 = sorted.slice(0, 5);
+            }
 
             var list = document.getElementById('radar-list');
             var loading = document.getElementById('radar-loading');
@@ -2508,53 +2649,38 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: HOT SONGS (Горештини) ====================
+        // ==================== RENDER: HOT SONGS (pre-computed from site-master.json) ====================
+        var previousChartData = null;
+
         function renderHotSongs() {
-            if (!chartData || !chartData.releases) return;
+            var candidates = siteMaster && siteMaster.hotSongs ? siteMaster.hotSongs : [];
 
-            var deduped = deduplicateCollabs(chartData.releases);
-            // Recent singles with high popularity
-            var threeMonthsAgo = new Date();
-            threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-            var cutoff = threeMonthsAgo.toISOString().slice(0, 10);
-
-            var candidates = deduped.filter(function(r) {
-                return r.releaseType === 'single' && r.releaseDate >= cutoff && (r.popularity || 0) > 0;
-            });
-
-            // Score = popularity + recency bonus
-            var now = Date.now();
-            candidates.forEach(function(r) {
-                var ageMs = now - new Date(r.releaseDate).getTime();
-                var ageDays = ageMs / (1000 * 60 * 60 * 24);
-                r._hotScore = (r.popularity || 0) + Math.max(0, 20 - ageDays) * 2;
-            });
-
-            // Shuffle first, then pick top by hot score with randomization
-            var shuffled = shuffle(candidates);
-            shuffled.sort(function(a, b) { return b._hotScore - a._hotScore; });
-            // Take top pool and pick 5 randomly from top 15
-            var topPool = shuffled.slice(0, 15);
-            var picked = shuffle(topPool).slice(0, 5);
+            // Pick 5 random from candidates
+            var picked = shuffle(candidates).slice(0, 5);
 
             var list = document.getElementById('hot-songs-list');
             var loading = document.getElementById('hot-songs-loading');
-            var badges = ['hot', 'hot', 'rising', 'rising', 'fresh'];
-            var badgeLabels = { hot: '🔥 ОГАН', rising: '📈 ВО ПОДЕМ', fresh: '✨ НОВО' };
 
-            list.innerHTML = picked.map(function(r, i) {
-                var badge = badges[i] || 'fresh';
-                var releases = getLatestReleases(r.bandName, 3);
-                var relHtml = buildReleasesHtml(releases);
+            if (picked.length === 0) {
+                list.innerHTML = '<li class="no-data-msg">Нема песни со позитивна промена оваа недела.</li>';
+                loading.style.display = 'none';
+                list.style.display = '';
+                return;
+            }
+
+            list.innerHTML = picked.map(function(r) {
+                var chevCount = Math.min(r.popularityChange || r._popChange || 0, 5);
+                var chevrons = '';
+                for (var c = 0; c < chevCount; c++) chevrons += '<i class="fas fa-chevron-up"></i>';
+                var popChangeVal = r.popularityChange || r._popChange || 0;
+                var chevHtml = chevrons ? '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност">' + chevrons + '</span>' : '';
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
-                    '<span class="trending-rank">' + (i + 1) + '</span>' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(r.releaseTitle) + '</div>' +
                         '<div class="trending-sub">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
-                        relHtml +
                     '</div>' +
-                    '<span class="trending-badge ' + badge + '">' + badgeLabels[badge] + '</span>' +
+                    chevHtml +
                 '</li>';
             }).join('');
 
@@ -2564,77 +2690,7 @@
 
         // ==================== RENDER: RISING ARTISTS (Во подем) ====================
         function renderRisingArtists() {
-            if (!chartData || !chartData.releases) return;
-
-            var now = new Date();
-            var twoYearsAgo = new Date();
-            twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-            var twoYearCutoff = twoYearsAgo.toISOString().slice(0, 10);
-
-            var releases = chartData.releases;
-
-            // Group all releases by artist
-            var artistReleases = {};
-            for (var i = 0; i < releases.length; i++) {
-                var r = releases[i];
-                if (!artistReleases[r.bandName]) artistReleases[r.bandName] = [];
-                artistReleases[r.bandName].push(r);
-            }
-
-            var candidates = [];
-            for (var name in artistReleases) {
-                var rels = artistReleases[name];
-
-                // Sort by release date ascending
-                rels.sort(function(a, b) { return a.releaseDate.localeCompare(b.releaseDate); });
-
-                // Skip if ANY tracked release is older than 2 years
-                if (rels[0].releaseDate < twoYearCutoff) continue;
-
-                // The chart system caps at 10 releases per artist (Spotify API limit).
-                // If an artist has exactly 10 releases, they likely have older ones
-                // that fell off the cap, so we can't verify they're truly new.
-                if (rels.length >= 10) continue;
-
-                // Compute popularity values
-                var latestRelease = rels[rels.length - 1];
-                var latestPop = latestRelease.popularity || 0;
-                var earliestPop = rels[0].popularity || 0;
-                var maxPop = 0;
-                for (var j = 0; j < rels.length; j++) {
-                    var pop = rels[j].popularity || 0;
-                    if (pop > maxPop) maxPop = pop;
-                }
-
-                // Must have minimum popularity to be considered "rising"
-                if (maxPop < 3) continue;
-
-                // Popularity trend: positive means rising
-                var popTrend = rels.length > 1 ? (latestPop - earliestPop) : 0;
-
-                // Recency bonus: days since latest release (more recent = higher)
-                var daysSinceLatest = Math.floor((now - new Date(latestRelease.releaseDate)) / 86400000);
-                var recencyBonus = Math.max(0, 180 - daysSinceLatest);
-
-                // Rising score: current popularity + trend bonus + recency + activity
-                var score = latestPop + Math.max(0, popTrend) * 2 + recencyBonus + (rels.length >= 2 ? 25 : 0);
-
-                var bandInfo = null;
-                for (var j = 0; j < bandsData.length; j++) {
-                    if (bandsData[j].name.toLowerCase() === name.toLowerCase()) { bandInfo = bandsData[j]; break; }
-                }
-
-                candidates.push({
-                    name: bandInfo ? bandInfo.name : name,
-                    image: bandInfo ? bandInfo.image : latestRelease.thumbnail,
-                    genre: bandInfo ? bandInfo.genre : '',
-                    score: score,
-                    count: rels.length,
-                    maxPop: maxPop,
-                    latestPop: latestPop,
-                    popTrend: popTrend
-                });
-            }
+            var candidates = siteMaster && siteMaster.risingArtists ? siteMaster.risingArtists : [];
 
             // Shuffle and pick 5 random candidates
             var picked = shuffle(candidates).slice(0, 5);
@@ -2643,10 +2699,7 @@
             var loading = document.getElementById('rising-loading');
 
             list.innerHTML = picked.map(function(a, i) {
-                var badge, badgeLabel;
-                if (a.popTrend > 5) { badge = 'hot'; badgeLabel = '📈 ВО ПОДЕМ'; }
-                else if (a.count >= 3) { badge = 'rising'; badgeLabel = '🔥 АКТИВЕН'; }
-                else { badge = 'fresh'; badgeLabel = '✨ НОВ'; }
+                var badge = a.badge || 'fresh', badgeLabel = a.badgeLabel || '✨ НОВ';
                 var artistUrl = '/artist.html?name=' + encodeURIComponent(a.name);
                 var releases = getLatestReleases(a.name, 3);
                 var relHtml = buildReleasesHtml(releases);
@@ -2665,19 +2718,37 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: EVENTS ====================
+        // ==================== RENDER: EVENTS (pre-computed from site-master.json) ====================
         function renderEvents() {
-            var now = new Date();
-            var todayStr = now.toISOString().slice(0, 10);
-            var weekLater = new Date(now); weekLater.setDate(weekLater.getDate() + 14);
-            var weekLaterStr = weekLater.toISOString().slice(0, 10);
-
-            var upcoming = eventsData
-                .filter(function(e) { return e.date >= todayStr && e.date <= weekLaterStr; })
-                .sort(function(a, b) { return a.date.localeCompare(b.date); });
+            var upcoming = siteMaster && siteMaster.events && siteMaster.events.upcoming
+                ? siteMaster.events.upcoming
+                : [];
 
             var list = document.getElementById('events-list');
             var loading = document.getElementById('events-loading');
+
+            // Day indicator helpers (matching nastani.html logic)
+            var dayNames = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            function getDayName(dateStr) {
+                var p = dateStr.split('-');
+                var d = new Date(+p[0], +p[1]-1, +p[2]);
+                return dayNames[d.getDay()];
+            }
+            function daysUntil(dateStr) {
+                var today = new Date(); today.setHours(0,0,0,0);
+                var p = dateStr.split('-');
+                var target = new Date(+p[0], +p[1]-1, +p[2]);
+                return Math.ceil((target - today) / 86400000);
+            }
+            function getDayIndicator(dateStr) {
+                var d = daysUntil(dateStr);
+                var day = getDayName(dateStr);
+                if (d === 0) return { text: 'Денес', cls: 'event-today' };
+                if (d === 1) return { text: 'Утре, во ' + day, cls: '' };
+                if (d > 1 && d <= 7) return { text: 'Во ' + day, cls: '' };
+                if (d > 7) return { text: 'За ' + d + ' дена, во ' + day, cls: '' };
+                return { text: '', cls: '' };
+            }
 
             if (upcoming.length === 0) {
                 list.innerHTML = '<li class="no-data-msg">Нема претстојни настани.</li>';
@@ -2687,6 +2758,9 @@
                     var day = d.getDate();
                     var month = mkMonths[d.getMonth()];
                     var eventPageUrl = e.id ? '/nastan/' + encodeURIComponent(e.id) : (e.link || (e.links && e.links[0] ? e.links[0].url : '#'));
+                    var dayInfo = getDayIndicator(e.date);
+                    var itemClass = 'event-item' + (dayInfo.cls ? ' ' + dayInfo.cls : '');
+                    var dayIndicatorHtml = dayInfo.text ? ' <span class="event-day-indicator">' + dayInfo.text + '</span>' : '';
                     var artistsHtml = '';
                     if (e.artists && e.artists.length) {
                         var artistLinks = e.artists.map(function(name) {
@@ -2702,11 +2776,11 @@
                         });
                         artistsHtml = '<div class="event-artists"><i class="fas fa-music"></i> ' + artistLinks.join(', ') + '</div>';
                     }
-                    return '<li class="event-item">' +
+                    return '<li class="' + itemClass + '">' +
                         '<div class="event-date-badge"><span class="event-date-day">' + day + '</span><span class="event-date-month">' + month + '</span></div>' +
                         '<div class="event-info">' +
                             '<div class="event-title"><a href="' + eventPageUrl + '">' + escHtml(e.title) + '</a></div>' +
-                            '<div class="event-meta"><i class="fas fa-location-dot"></i> ' + escHtml(e.place) + (e.time ? ' &bull; ' + e.time : '') + '</div>' +
+                            '<div class="event-meta"><i class="fas fa-location-dot"></i> ' + escHtml(e.place) + (e.time ? ' &bull; ' + e.time : '') + dayIndicatorHtml + '</div>' +
                             artistsHtml +
                         '</div>' +
                     '</li>';
@@ -2717,13 +2791,23 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: NEWS (min 5) ====================
+        // ==================== RENDER: NEWS (pre-computed from site-master.json) ====================
         function renderNews() {
-            var musicSources = ['mono-ton', 'Култура Бета', 'Popup Mk', 'MK Tickets'];
-            var filtered = articlesData.filter(function(a) { return musicSources.indexOf(a.source) !== -1; });
-            if (filtered.length < 5) filtered = articlesData;
+            var newsData = siteMaster && siteMaster.news ? siteMaster.news : null;
+            if (!newsData) {
+                document.getElementById('news-loading').innerHTML = '<span>Нема вести</span>';
+                return;
+            }
 
-            var top5 = filtered.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); }).slice(0, 5);
+            // Use pre-matched articles; fall back to all if fewer than 5
+            var pool = newsData.matched && newsData.matched.length >= 5 ? newsData.matched : newsData.allFiltered;
+            if (!pool || pool.length === 0) {
+                document.getElementById('news-loading').innerHTML = '<span>Нема вести</span>';
+                return;
+            }
+
+            // Already sorted by date descending in site-master; take top 5
+            var top5 = pool.slice(0, 5);
 
             var list = document.getElementById('news-list');
             var loading = document.getElementById('news-loading');
@@ -2772,39 +2856,30 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: YOUTUBE ====================
+        // ==================== RENDER: YOUTUBE (pre-computed from site-master.json) ====================
         function renderYouTube() {
             var grid = document.getElementById('yt-grid');
 
-            fetch('/xotel-videos.json')
-                .then(function(r) { return r.ok ? r.json() : null; })
-                .then(function(videos) {
-                    if (!videos || videos.length === 0) {
-                        grid.innerHTML = '<div class="no-data-msg">Нема достапни видеа.</div>';
-                        return;
-                    }
-                    // Filter out shorts/promos (contain #) and pick 3 random
-                    var fullEps = videos.filter(function(v) { return v.title.indexOf('#') === -1; });
-                    if (fullEps.length === 0) fullEps = videos;
-                    var shuffled = fullEps.sort(function() { return 0.5 - Math.random(); });
-                    var picked = shuffled.slice(0, 3);
-                    grid.innerHTML = picked.map(function(v) {
-                        return '<div class="yt-embed">' +
-                            '<iframe src="https://www.youtube.com/embed/' + v.id + '" ' +
-                            'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-                            'allowfullscreen loading="lazy" title="' + (v.title || 'Xotel видео').replace(/"/g, '&quot;') + '"></iframe>' +
-                        '</div>';
-                    }).join('');
-                })
-                .catch(function() {
-                    // Fallback: direct channel embed
-                    grid.innerHTML =
-                        '<div class="yt-embed">' +
-                            '<iframe src="https://www.youtube.com/embed?listType=user_uploads&list=xotelmusic" ' +
-                            'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-                            'allowfullscreen loading="lazy" title="Xotel видео"></iframe>' +
-                        '</div>';
-                });
+            // Use pre-computed video IDs from site-master
+            var videoIds = siteMaster && siteMaster.xotelVideoIds ? siteMaster.xotelVideoIds : [];
+            if (videoIds.length === 0) {
+                grid.innerHTML = '<div class="no-data-msg">Нема достапни видеа.</div>';
+                return;
+            }
+
+            // Determine how many fit: 2 rows based on responsive columns
+            var w = window.innerWidth;
+            var cols = w <= 800 ? 1 : (w <= 1100 ? 2 : 3);
+            var maxVideos = cols * 2;
+            var picked = videoIds.slice(0, maxVideos);
+
+            grid.innerHTML = picked.map(function(v) {
+                return '<div class="yt-embed">' +
+                    '<iframe src="https://www.youtube.com/embed/' + v.id + '" ' +
+                    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
+                    'allowfullscreen loading="lazy" title="' + (v.title || 'Xotel видео').replace(/"/g, '&quot;') + '"></iframe>' +
+                '</div>';
+            }).join('');
         }
 
         // escHtml, formatDate, mkMonths — provided by common.js

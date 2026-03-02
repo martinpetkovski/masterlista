@@ -2513,159 +2513,88 @@ a.chart-history-item {
             }
         }
         
-        // Load and process chart history for an artist
-        async function loadChartHistory(artistName) {
-            const CHART_HISTORY_DIR = 'chart-history';
-            const CHART_WEEKS_LIMIT = 20;
-
-            function getISOWeek(date) {
-                const d = new Date(date);
-                d.setHours(0, 0, 0, 0);
-                d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-                const yearStart = new Date(d.getFullYear(), 0, 1);
-                const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-                return { year: d.getFullYear(), week: weekNum };
-            }
-
-            function getISOWeekStart(year, week) {
-                const jan4 = new Date(year, 0, 4);
-                const jan4Day = jan4.getDay() || 7;
-                const week1Monday = new Date(jan4);
-                week1Monday.setDate(jan4.getDate() - (jan4Day - 1));
-                const weekStart = new Date(week1Monday);
-                weekStart.setDate(week1Monday.getDate() + (week - 1) * 7);
-                weekStart.setHours(0, 0, 0, 0);
-                return weekStart;
-            }
-
-            function buildRecentChartFiles(limit) {
-                const files = [];
-                const cursor = new Date();
-                for (let i = 0; i < limit; i++) {
-                    const info = getISOWeek(cursor);
-                    const weekId = `${info.year}-W${String(info.week).padStart(2, '0')}`;
-                    files.push(`${CHART_HISTORY_DIR}/chart-${weekId}.json`);
-                    cursor.setDate(cursor.getDate() - 7);
-                }
-                return files;
-            }
-
-            const chartFiles = buildRecentChartFiles(CHART_WEEKS_LIMIT);
-            
+        // Build artistHistory from pre-computed site-master.json data
+        // Returns the same format as the old loadChartHistory() for compatibility with renderers
+        function buildArtistHistoryFromSiteMaster(artistName, siteMaster) {
             const artistHistory = {
-                releases: new Map(), // releaseId -> release data with chart history
-                weeklyPopularity: new Map(), // weekId -> cumulative popularity
+                releases: new Map(),
+                weeklyPopularity: new Map(),
                 totalWeeksOnChart: 0,
                 peakPopularity: 0,
                 followers: 0
             };
             
-            const artistNameLower = artistName.toLowerCase();
+            const artistNameLower = artistName.toLowerCase().trim();
             
-            for (const chartFile of chartFiles) {
-                try {
-                    const response = await fetch(chartFile);
-                    if (!response.ok) continue;
-                    
-                    const chartData = await response.json();
-                    const weekMatch = chartFile.match(/chart-(\d{4}-W\d{2})\.json/);
-                    const weekId = weekMatch ? weekMatch[1] : chartFile;
-                    
-                    // Parse generatedAt for display
-                    const generatedAt = chartData.generatedAt ? new Date(chartData.generatedAt) : null;
-                    
-                    const releases = chartData.releases || [];
-                    
-                    // Calculate cumulative popularity for this week
-                    let weekCumulativePopularity = 0;
-                    const newReleasesThisWeek = [];
-                    
-                    // Parse week ID to get start/end dates (ISO week: Monday-Sunday)
-                    function getWeekDateRange(weekId) {
-                        const match = weekId.match(/(\d{4})-W(\d{2})/);
-                        if (!match) return null;
-                        const year = parseInt(match[1], 10);
-                        const week = parseInt(match[2], 10);
-                        const weekStart = getISOWeekStart(year, week);
-                        const weekEnd = new Date(weekStart);
-                        weekEnd.setDate(weekStart.getDate() + 6);
-                        return { start: weekStart, end: weekEnd };
-                    }
-                    
-                    const weekRange = getWeekDateRange(weekId);
-                    
-                    // Find all releases for this artist
-                    releases.forEach((release, index) => {
-                        if (release.bandName && release.bandName.toLowerCase() === artistNameLower) {
-                            const releaseId = release.releaseId;
-                            
-                            // Add to cumulative popularity for this week
-                            weekCumulativePopularity += (release.popularity || 0);
-                            
-                            // Check if this release was published within this chart week
-                            let isNewThisWeek = false;
-                            if (weekRange && release.releaseDate) {
-                                // Parse release date as local date (YYYY-MM-DD format)
-                                const parts = release.releaseDate.split('-');
-                                const releaseDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                                
-                                // Compare dates (ignoring time)
-                                const releaseDateOnly = new Date(releaseDate.getFullYear(), releaseDate.getMonth(), releaseDate.getDate());
-                                const weekStartOnly = new Date(weekRange.start.getFullYear(), weekRange.start.getMonth(), weekRange.start.getDate());
-                                const weekEndOnly = new Date(weekRange.end.getFullYear(), weekRange.end.getMonth(), weekRange.end.getDate());
-                                
-                                isNewThisWeek = releaseDateOnly >= weekStartOnly && releaseDateOnly <= weekEndOnly;
-                            }
-                            
-                            // Update artist followers (use most recent)
-                            if (release.followers) {
-                                artistHistory.followers = release.followers;
-                            }
-                            
-                            if (!artistHistory.releases.has(releaseId)) {
-                                artistHistory.releases.set(releaseId, {
-                                    ...release,
-                                    chartWeeks: [],
-                                    firstSeenWeek: weekId
-                                });
-                            }
-                            
-                            // Track new releases for this specific week
-                            if (isNewThisWeek) {
-                                newReleasesThisWeek.push(release.releaseTitle);
-                            }
-                            
-                            const releaseData = artistHistory.releases.get(releaseId);
-                            
-                            releaseData.chartWeeks.push({
-                                week: weekId,
-                                popularity: release.popularity || 0,
-                                date: generatedAt
-                            });
-                            
-                            if ((release.popularity || 0) > artistHistory.peakPopularity) {
-                                artistHistory.peakPopularity = release.popularity || 0;
-                            }
-                        }
-                    });
-                    
-                    // Store cumulative popularity for this week
-                    if (weekCumulativePopularity > 0) {
-                        artistHistory.weeklyPopularity.set(weekId, {
-                            week: weekId,
-                            popularity: weekCumulativePopularity,
-                            date: generatedAt,
-                            newReleases: newReleasesThisWeek
-                        });
-                    }
-                } catch (e) {
-                    console.warn(`Could not load ${chartFile}:`, e);
-                }
-            }
+            // 1. Build weeklyPopularity from artistPopularityGraphs
+            const graphData = siteMaster.artistPopularityGraphs?.[artistNameLower] || [];
+            graphData.forEach(entry => {
+                artistHistory.weeklyPopularity.set(entry.weekId, {
+                    week: entry.weekId,
+                    popularity: entry.value || 0,
+                    date: null,
+                    newReleases: entry.newReleaseTitles || (entry.hasNewRelease ? [''] : [])
+                });
+            });
             
-            // Calculate total weeks on chart
-            artistHistory.releases.forEach(release => {
-                artistHistory.totalWeeksOnChart += release.chartWeeks.length;
+            // 2. Build per-release data from chartData.releases + releaseSparklines
+            const releases = siteMaster.chartData?.releases || [];
+            releases.forEach(r => {
+                if (!r.bandName || r.bandName.toLowerCase().trim() !== artistNameLower) return;
+                const rid = r.releaseId;
+                if (artistHistory.releases.has(rid)) return;
+                
+                // Get sparkline data for this release
+                const sparkline = siteMaster.releaseSparklines?.[rid] || [];
+                const chartWeeks = sparkline.map(s => ({
+                    week: s.weekId,
+                    popularity: s.popularity || 0,
+                    date: null
+                }));
+                
+                artistHistory.releases.set(rid, {
+                    ...r,
+                    chartWeeks,
+                    firstSeenWeek: chartWeeks.length > 0 ? chartWeeks[0].week : ''
+                });
+                
+                // Update followers
+                if (r.followers) artistHistory.followers = r.followers;
+                
+                // Update peak
+                const maxPop = Math.max(...chartWeeks.map(w => w.popularity), r.popularity || 0);
+                if (maxPop > artistHistory.peakPopularity) artistHistory.peakPopularity = maxPop;
+                
+                artistHistory.totalWeeksOnChart += chartWeeks.length;
+            });
+            
+            // 3. Reconstruct new release titles from chartData.releases dates
+            // For each week with hasNewRelease, find releases whose releaseDate falls in that ISO week
+            graphData.forEach(entry => {
+                if (!entry.hasNewRelease) return;
+                const weekEntry = artistHistory.weeklyPopularity.get(entry.weekId);
+                if (!weekEntry) return;
+                // Parse ISO week to date range
+                const match = entry.weekId.match(/(\d{4})-W(\d{2})/);
+                if (!match) return;
+                const year = parseInt(match[1]);
+                const week = parseInt(match[2]);
+                const jan4 = new Date(year, 0, 4);
+                const dayOfWeek = jan4.getDay() || 7;
+                const weekMonday = new Date(jan4);
+                weekMonday.setDate(jan4.getDate() + (week - 1) * 7 - dayOfWeek + 1);
+                const weekSunday = new Date(weekMonday);
+                weekSunday.setDate(weekMonday.getDate() + 6);
+                const mondayStr = weekMonday.toISOString().slice(0, 10);
+                const sundayStr = weekSunday.toISOString().slice(0, 10);
+                
+                const titles = [];
+                artistHistory.releases.forEach(rel => {
+                    if (rel.releaseDate >= mondayStr && rel.releaseDate <= sundayStr) {
+                        titles.push(rel.releaseTitle);
+                    }
+                });
+                if (titles.length > 0) weekEntry.newReleases = titles;
             });
             
             return artistHistory;
@@ -3014,78 +2943,41 @@ a.chart-history-item {
         }
         
         // Main initialization
-        // ==================== ARTICLE LOADING & MATCHING ====================
-        let cachedArticles = null;
+        // ==================== ARTICLE MATCHING (from pre-computed site-master.json) ====================
         
-        async function loadArticles() {
-            if (cachedArticles !== null) return cachedArticles;
-            try {
-                const resp = await fetch('articles.json');
-                if (!resp.ok) throw new Error(`Failed to load articles.json: ${resp.status}`);
-                const archive = await resp.json();
-                const allArticles = (archive.articles || []).map(a => ({
-                    title: a.title || '',
-                    link: a.link || '',
-                    description: a.description || '',
-                    content: '',
-                    pubDate: a.date ? new Date(a.date) : new Date(0),
-                    source: a.source || '',
-                    sourceIcon: a.iconUrl || '',
-                    siteUrl: a.siteUrl || ''
-                }));
-                allArticles.sort((a, b) => b.pubDate - a.pubDate);
-                cachedArticles = allArticles;
-                return allArticles;
-            } catch (err) {
-                console.warn('Failed to load articles:', err);
-                cachedArticles = [];
-                return [];
-            }
-        }
-        
-        function findMatchingArticles(articles, bandName) {
-            if (!articles || articles.length === 0 || !bandName) return [];
+        function getArtistArticles(siteMaster, artistName) {
+            const allMatched = siteMaster?.news?.matched || [];
+            if (!artistName || allMatched.length === 0) return [];
             
-            // Capitalize helper: first letter uppercase unless starts with digit
-            function capitalize(s) {
-                if (!s || /^\d/.test(s)) return s;
-                return s.charAt(0).toUpperCase() + s.slice(1);
-            }
+            const artistNameLower = artistName.toLowerCase().trim();
+            const artistTranslit = transliterate(artistName).toLowerCase().trim();
             
-            const searchTerms = new Set();
-            const name = bandName.trim();
-            if (name.length >= 3) searchTerms.add(capitalize(name));
-            
-            const latinName = transliterate(bandName).trim();
-            if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
-            
-            // Also try shorthand transliteration (e.g. Ш→S instead of Sh)
-            const latinShort = transliterateShorthand(bandName).trim();
-            if (latinShort.length >= 3 && latinShort !== name && latinShort !== latinName) searchTerms.add(capitalize(latinShort));
-            
-            if (searchTerms.size === 0) return [];
-            
-            // Word boundaries: start/end of string, whitespace, or common punctuation.
-            // Case-sensitive matching with exact word boundaries.
-            const B = '[\\s,;:.!?\\-\u2013\u2014\\/\\(\\)\\[\\]"\'\\|\u00ab\u00bb\u201e\u201c\\u2018\\u2019\\u201c\\u201d]';
-            const termRegexes = [...searchTerms].map(term => {
-                const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                return new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
-            });
-            
-            return articles.filter(article => {
-                const searchIn = article.title + ' ' + article.description + ' ' + article.content;
-                for (const regex of termRegexes) {
-                    if (regex.test(searchIn)) return true;
-                }
-                return false;
-            });
+            return allMatched.filter(article => {
+                const matched = article.matchedArtists || [];
+                return matched.some(a => {
+                    const aLower = a.toLowerCase().trim();
+                    return aLower === artistNameLower || transliterate(a).toLowerCase().trim() === artistTranslit;
+                });
+            }).map(a => ({
+                title: a.title || '',
+                link: a.link || '',
+                description: a.description || '',
+                content: '',
+                pubDate: a.date ? new Date(a.date) : new Date(0),
+                source: a.source || '',
+                sourceIcon: a.iconUrl || a.sourceIcon || '',
+                siteUrl: a.siteUrl || ''
+            }));
         }
         
         async function init() {
-            // Start loading articles and events early (in parallel)
-            const articlesLoadPromise = loadArticles();
-            const eventsLoadPromise = fetch('events.json').then(r => r.ok ? r.json() : { events: [] });
+            // Load site-master.json early
+            let siteMaster = null;
+            try {
+                siteMaster = await loadSiteMaster();
+            } catch (e) {
+                console.warn('Could not load site-master.json:', e);
+            }
             
             const urlParams = new URLSearchParams(window.location.search);
             let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
@@ -3117,47 +3009,44 @@ a.chart-history-item {
                     return;
                 }
                 
-                // Try to get artist thumbnail and activity status from chart-data.json
-                // Artist image comes from bands.json (image field), with chart-data release thumbnail as fallback
+                // Get thumbnail and latest release date from pre-computed chart data
                 let thumbnail = artist.image || null;
                 let latestReleaseDate = null;
                 let latestReleaseThumbnail = null;
-                try {
-                    const chartResponse = await fetch('chart-data.json');
-                    const chartData = await chartResponse.json();
-                    const releases = chartData.releases || [];
-                    const artistNameLower = artist.name.toLowerCase();
-                    
-                    releases.forEach(r => {
-                        if (r.bandName && r.bandName.toLowerCase() === artistNameLower) {
-                            if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
-                            if (r.releaseDate && (!latestReleaseDate || r.releaseDate > latestReleaseDate)) {
-                                latestReleaseDate = r.releaseDate;
-                                if (r.thumbnail) latestReleaseThumbnail = r.thumbnail;
-                            }
-                        }
-                    });
-                    // If no image from bands.json, fall back to latest release thumbnail
-                    if (!thumbnail && latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
-                } catch (e) {
-                    console.warn('Could not load chart data:', e);
-                }
                 
-                // Compute activity status from release dates AND events
-                let hasRecentEvent = false;
-                try {
-                    const eventsData = await eventsLoadPromise;
-                    const events = eventsData.events || eventsData || [];
+                const releases = siteMaster?.chartData?.releases || [];
+                const artistNameLower = artist.name.toLowerCase();
+                releases.forEach(r => {
+                    if (r.bandName && r.bandName.toLowerCase() === artistNameLower) {
+                        if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
+                        if (r.releaseDate && (!latestReleaseDate || r.releaseDate > latestReleaseDate)) {
+                            latestReleaseDate = r.releaseDate;
+                            if (r.thumbnail) latestReleaseThumbnail = r.thumbnail;
+                        }
+                    }
+                });
+                if (!thumbnail && latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
+                
+                // Get pre-computed activity status from site-master
+                const artistSlug = generateSlug(artist.name);
+                const precomputedActivity = siteMaster?.artistActivity?.[artistSlug];
+                if (precomputedActivity) {
+                    // Map Macedonian labels to internal codes
+                    const statusMap = { 'Активен': 'active', 'Неактивен': 'inactive', 'Можеби': 'maybe', 'Непознато': 'unknown' };
+                    artist._activityStatus = statusMap[precomputedActivity] || precomputedActivity;
+                } else {
+                    // Fallback: compute from events
+                    let hasRecentEvent = false;
+                    const allEvents = siteMaster?.events?.all || [];
                     const now = new Date();
                     const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
                     const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
-                    const artistNameLower = artist.name.toLowerCase();
-                    hasRecentEvent = events.some(e =>
+                    hasRecentEvent = allEvents.some(e =>
                         e.date >= oneYearAgoStr &&
                         (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
                     );
-                } catch (e) {}
-                artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
+                    artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
+                }
                 
                 // Render artist page
                 renderArtist(artist, thumbnail, bandsData);
@@ -3306,21 +3195,18 @@ a.chart-history-item {
                     }
                 }
                 
-                // Load and render chart history
+                // Build chart history from pre-computed site-master data
                 try {
-                    const chartHistory = await loadChartHistory(artist.name);
-                    
-                    // Enrich releases from current chart-data.json (no preview URLs needed)
+                    const chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
                     renderPopularityGraph(chartHistory);
                     renderReleases(chartHistory, artist.links);
                 } catch (e) {
-                    console.warn('Could not load chart history:', e);
+                    console.warn('Could not build chart history:', e);
                 }
                 
-                // Load and render media articles
+                // Load and render media articles from pre-computed site-master data
                 try {
-                    const allArticles = await articlesLoadPromise;
-                    const matched = findMatchingArticles(allArticles, artist.name);
+                    const matched = getArtistArticles(siteMaster, artist.name);
                     if (matched.length > 0) {
                         const mediaContainer = document.getElementById('rss-media-container');
                         if (mediaContainer) {
@@ -3358,10 +3244,9 @@ a.chart-history-item {
                     console.warn('Could not load articles:', e);
                 }
                 
-                // Load and render upcoming events for this artist
+                // Load and render upcoming events for this artist from pre-computed data
                 try {
-                    const eventsData = await eventsLoadPromise;
-                        const events = eventsData.events || eventsData || [];
+                    const events = siteMaster?.events?.all || [];
                         const today = new Date(); today.setHours(0,0,0,0);
                         const MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
                         const MK_DAYS = ['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];

@@ -2727,98 +2727,12 @@
             document.getElementById('albums-period').textContent = periodText;
             document.getElementById('latest-period').textContent = `последни 20`;
             
-            // Store previous chart data for comparison
-            let previousChartData = null;
+            // site-master.json reference (loaded in loadChartData)
+            let siteMaster = null;
             
-            // Store chart history for last 10 weeks (for hover tooltips)
-            let chartHistoryWeeks = []; // Array of { weekId, releases[] } sorted newest first
+            // Release history map for hover tooltips
             let releaseHistoryMap = new Map(); // releaseId -> [{weekId, popularity, position}]
             
-            /**
-             * Load the last N weeks of chart history for tooltip display.
-             * Returns array of { weekId, data } sorted newest-first.
-             */
-            async function loadChartHistory(numWeeks = 10) {
-                const results = [];
-                const cursor = new Date();
-                for (let i = 0; i < numWeeks; i++) {
-                    const info = getISOWeek(cursor);
-                    const weekId = `${info.year}-W${String(info.week).padStart(2, '0')}`;
-                    const url = `${CHART_HISTORY_DIR}/chart-${weekId}.json?t=${Date.now()}`;
-                    try {
-                        const resp = await fetch(url);
-                        if (resp.ok) {
-                            const data = await resp.json();
-                            results.push({ weekId, releases: data.releases || [] });
-                        }
-                    } catch (e) { /* skip unavailable weeks */ }
-                    cursor.setDate(cursor.getDate() - 7);
-                }
-                return results; // newest first
-            }
-            
-            /**
-             * Build a per-release history map from chart history data.
-             * For each release, computes the chart position (within its type) per week.
-             * releaseHistoryMap: releaseId -> [{ weekId, popularity, singlesPos, albumsPos }]
-             */
-            function buildReleaseHistoryMap(historyWeeks, genreFilter = 'all', cityFilter = 'all') {
-                const map = new Map();
-                
-                historyWeeks.forEach(({ weekId, releases }) => {
-                    // Deduplicate collabs
-                    const deduped = deduplicateCollabs(releases);
-                    
-                    // Apply genre/city filters
-                    const filtered = deduped.filter(r => 
-                        artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
-                    );
-                    
-                    const sortByPop = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                    const singlesFilter = r => r.releaseType === 'single';
-                    const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
-                    
-                    // Build ranked lists
-                    // Use same logic as applyFilters: last 2 months pool, sort by popularity
-                    const byDate = [...filtered].sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-                    const cutoff = new Date();
-                    cutoff.setMonth(cutoff.getMonth() - 2);
-                    const cutoffStr = cutoff.toISOString().slice(0, 10);
-                    
-                    function buildRankedList(filterFn) {
-                        const recent = byDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
-                        let pool = [...recent];
-                        if (pool.length < 20) {
-                            const older = byDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
-                            pool = pool.concat(older.slice(0, 20 - pool.length));
-                        }
-                        return pool.sort(sortByPop).slice(0, 20);
-                    }
-                    
-                    const rankedSingles = buildRankedList(singlesFilter);
-                    const rankedAlbums = buildRankedList(albumsFilter);
-                    
-                    // Assign positions
-                    const singlesPosMap = new Map();
-                    rankedSingles.forEach((r, i) => singlesPosMap.set(r.releaseId, i + 1));
-                    
-                    const albumsPosMap = new Map();
-                    rankedAlbums.forEach((r, i) => albumsPosMap.set(r.releaseId, i + 1));
-                    
-                    // Store per-release data
-                    filtered.forEach(r => {
-                        if (!map.has(r.releaseId)) map.set(r.releaseId, []);
-                        map.get(r.releaseId).push({
-                            weekId,
-                            popularity: r.popularity || 0,
-                            singlesPos: singlesPosMap.get(r.releaseId) || null,
-                            albumsPos: albumsPosMap.get(r.releaseId) || null
-                        });
-                    });
-                });
-                
-                return map;
-            }
             
             /**
              * Generate the HTML for a history tooltip.
@@ -2899,8 +2813,7 @@
                     <div class="history-tooltip-spark">${sparkBars}</div>`;
             }
             
-            // Store all releases data for filtering
-            let allReleasesData = [];
+            // Store all releases data for filtering (used in city-filter fallback)
             let allBandsData = [];
             
             // Current filter state (radio-button style - one selection per group)
@@ -2918,15 +2831,6 @@
             };
             
             // getISOWeek from common.js
-            
-            /**
-             * Get the previous week's ISO week number and year.
-             */
-            function getPreviousWeek(date) {
-                const d = new Date(date);
-                d.setDate(d.getDate() - 7); // Go back 7 days
-                return getISOWeek(d);
-            }
             
             function formatDataAge(isoString) {
                 if (!isoString) return null;
@@ -2961,45 +2865,6 @@
                 }
             }
             
-            // Build a lookup map for previous chart positions
-            function buildPreviousChartMap(previousReleases, filterFn, sortFn, deduplicateFn, genreFilter = 'all', cityFilter = 'all') {
-                if (!previousReleases || previousReleases.length === 0) return {};
-                
-                // Deduplicate collabs in previous data too
-                const dedupedReleases = deduplicateFn ? deduplicateFn(previousReleases) : previousReleases;
-                
-                // Apply genre/city filters
-                const genreCityFiltered = dedupedReleases.filter(r =>
-                    artistMatchesGenre(r.bandName, genreFilter) && artistMatchesCity(r.bandName, cityFilter)
-                );
-                
-                const releasesSortedByDate = [...genreCityFiltered].sort((a, b) => 
-                    new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-                );
-                
-                // Prefer last 2 months, backfill with most recent older if < 20
-                const cutoff = new Date();
-                cutoff.setMonth(cutoff.getMonth() - 2);
-                const cutoffStr = cutoff.toISOString().slice(0, 10);
-                const recent = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate >= cutoffStr);
-                let pool = [...recent];
-                if (pool.length < 20) {
-                    const older = releasesSortedByDate.filter(r => filterFn(r) && r.releaseDate < cutoffStr);
-                    pool = pool.concat(older.slice(0, 20 - pool.length));
-                }
-                const sorted = pool.sort(sortFn).slice(0, 20);
-                
-                const map = {};
-                sorted.forEach((release, index) => {
-                    map[release.releaseId] = {
-                        position: index + 1,
-                        popularity: release.popularity || 0
-                    };
-                });
-                return map;
-            }
-            
-
             
             // Scroll shadow detection
             function initScrollShadows() {
@@ -3019,92 +2884,54 @@
                 });
             }
             
-            async function loadPreviousData() {
-                // Calculate previous week's filename
-                const prevWeek = getPreviousWeek(now);
-                const prevWeekFileName = `chart-${prevWeek.year}-W${String(prevWeek.week).padStart(2, '0')}.json`;
-                const prevWeekUrl = `${CHART_HISTORY_DIR}/${prevWeekFileName}`;
-                
-                try {
-                    // Try to load last week's chart data from history
-                    const response = await fetch(prevWeekUrl + '?t=' + Date.now());
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log(`Loaded previous week chart data: ${prevWeekFileName}`);
-                        return data;
-                    } else {
-                        console.log(`Previous week data not found: ${prevWeekFileName}`);
-                    }
-                } catch (err) {
-                    console.log('Could not load previous week chart data:', err.message);
-                }
-                
-                return null;
-            }
             
             // deduplicateCollabs from common.js
             
+            // Helper: get pre-computed chart key
+            function getChartKey(genre, type) {
+                return genre + '_' + type;
+            }
+            
+            // Helper: update release history map for current genre filter
+            function updateReleaseHistoryForGenre(genre) {
+                releaseHistoryMap = new Map();
+                const historyGenre = siteMaster && siteMaster.releaseHistory && siteMaster.releaseHistory[genre];
+                if (historyGenre) {
+                    for (const rid in historyGenre) {
+                        releaseHistoryMap.set(rid, historyGenre[rid]);
+                    }
+                }
+            }
+            
             async function loadChartData() {
-                let releases = [];
-                let generatedAt = null;
-                
-                // Load previous data for comparison
-                previousChartData = await loadPreviousData();
-                
-                // Load chart history for hover tooltips (last 10 weeks)
+                // Load site-master.json (all pre-computed data)
                 try {
-                    chartHistoryWeeks = await loadChartHistory(10);
-                    console.log('Loaded chart history:', chartHistoryWeeks.length, 'weeks');
-                } catch (e) {
-                    console.warn('Could not load chart history:', e);
+                    siteMaster = await loadSiteMaster();
+                } catch (err) {
+                    console.warn('Could not load site-master.json:', err);
                 }
                 
-                // Load bands data for filtering
+                if (!siteMaster) {
+                    console.warn('site-master.json not available');
+                    document.querySelectorAll('.chart-loading').forEach(el => el.textContent = 'Грешка при вчитување.');
+                    return;
+                }
+                
+                // Load bands data for artist info lookups (city filtering fallback)
                 try {
                     const bandsResponse = await fetch('bands.json?t=' + Date.now());
                     if (bandsResponse.ok) {
                         const bandsJson = await bandsResponse.json();
                         allBandsData = bandsJson.muzickaMasterLista || [];
-                        console.log('Loaded', allBandsData.length, 'bands for filtering');
                     }
                 } catch (err) {
-                    console.warn('Could not load bands.json for filtering:', err);
+                    console.warn('Could not load bands.json:', err);
                 }
                 
-                try {
-                    const response = await fetch(CHART_DATA_URL + '?t=' + Date.now());
-                    if (response.ok) {
-                        const chartData = await response.json();
-                        releases = chartData.releases || [];
-                        generatedAt = chartData.generatedAt;
-                        console.log('Loaded', releases.length, 'releases from chart-data.json');
-                        
-                        // Previous week data is now managed by the generate script
-                    } else {
-                        console.warn('chart-data.json returned status:', response.status);
-                    }
-                } catch (err) {
-                    console.warn('Could not load chart-data.json:', err);
-                }
+                // Set initial release history map for 'all' genre
+                updateReleaseHistoryForGenre('all');
                 
-                if (releases.length === 0) {
-                    console.warn('No releases found in chart-data.json');
-                }
-                
-                // Deduplicate collaborative releases (same releaseId appearing for multiple artists)
-                releases = deduplicateCollabs(releases);
-                console.log('After deduplication:', releases.length, 'unique releases');
-                
-                // Store all releases for filtering
-                allReleasesData = releases;
-                
-                // Build release history map for hover tooltips
-                if (chartHistoryWeeks.length > 0) {
-                    releaseHistoryMap = buildReleaseHistoryMap(chartHistoryWeeks);
-                    console.log('Built release history for', releaseHistoryMap.size, 'releases');
-                }
-                
-                updateDataInfo(generatedAt);
+                updateDataInfo(siteMaster.chartData?.generatedAt || siteMaster.generatedAt);
                 document.querySelectorAll('.chart-loading').forEach(el => el.style.display = 'none');
                 
                 // Initialize filter buttons first
@@ -3244,18 +3071,13 @@
                 return artistCity.includes(config.city.toLowerCase());
             }
             
-            // Apply combined filters and re-render charts
+            // Apply combined filters and re-render charts (uses pre-computed data from site-master.json)
             function applyFilters() {
+                if (!siteMaster) return;
                 const { chart, genre, city } = currentFilters;
                 
-                // Filter releases based on genre AND city
-                let filteredReleases = allReleasesData.filter(r => 
-                    artistMatchesGenre(r.bandName, genre) && artistMatchesCity(r.bandName, city)
-                );
-                
-                const sortByPopularity = (a, b) => (b.popularity || 0) - (a.popularity || 0);
-                const singlesFilter = r => r.releaseType === 'single';
-                const albumsFilter = r => r.releaseType === 'album' || r.releaseType === 'compilation';
+                // For city filtering, fall back to client-side computation using raw releases
+                const useCityFilter = city !== 'all';
                 
                 // Build filter label for display
                 const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
@@ -3278,33 +3100,34 @@
                             document.getElementById(id)?.classList.remove('mobile-active'));
                     }
                     
-                    // Extract unique artists by artistId, apply genre/city filters
-                    const artistMap = new Map();
-                    for (const release of allReleasesData) {
-                        // Skip if doesn't match genre/city filters
-                        if (!artistMatchesGenreById(release.artistId, genre)) continue;
-                        if (!artistMatchesCityById(release.artistId, city)) continue;
-                        
-                        const existing = artistMap.get(release.artistId);
-                        if (!existing || (release.followers || 0) > (existing.followers || 0)) {
-                            // Get canonical artist name from bands.json
-                            const bandInfo = getArtistInfoById(release.artistId);
-                            const canonicalName = bandInfo?.name || release.bandName;
-                            
-                            artistMap.set(release.artistId, {
-                                artistId: release.artistId,
-                                bandName: canonicalName,
-                                followers: release.followers || 0,
-                                spotifyUrl: release.spotifyUrl,
-                                thumbnail: release.thumbnail
-                            });
+                    let topArtists;
+                    if (!useCityFilter) {
+                        // Use pre-computed all-time artists for this genre
+                        topArtists = siteMaster.allTimeArtistsByGenre?.[genre] || siteMaster.allTimeArtists || [];
+                    } else {
+                        // City filter: compute from raw releases
+                        const rawReleases = siteMaster.chartData?.releases || [];
+                        const deduped = deduplicateCollabs(rawReleases);
+                        const artistMap = new Map();
+                        for (const release of deduped) {
+                            if (!artistMatchesGenreById(release.artistId, genre)) continue;
+                            if (!artistMatchesCityById(release.artistId, city)) continue;
+                            const existing = artistMap.get(release.artistId);
+                            if (!existing || (release.followers || 0) > (existing.followers || 0)) {
+                                const bandInfo = getArtistInfoById(release.artistId);
+                                artistMap.set(release.artistId, {
+                                    artistId: release.artistId,
+                                    bandName: bandInfo?.name || release.bandName,
+                                    followers: release.followers || 0,
+                                    spotifyUrl: release.spotifyUrl,
+                                    thumbnail: release.thumbnail
+                                });
+                            }
                         }
+                        topArtists = Array.from(artistMap.values())
+                            .sort((a, b) => b.followers - a.followers)
+                            .slice(0, 100);
                     }
-                    
-                    // Sort by followers and take top 100
-                    const topArtists = Array.from(artistMap.values())
-                        .sort((a, b) => b.followers - a.followers)
-                        .slice(0, 100);
                     
                     // Update period label with filter suffix
                     document.getElementById('artists-period').textContent = 'сите времиња' + (filterSuffix ? ' • ' + filterSuffix : '');
@@ -3317,7 +3140,6 @@
                     chartDataStore.albums = [];
                     chartDataStore.latest = [];
                     
-                    console.log(`All-time artists (${filterSuffix || 'all'}): ${topArtists.length}`);
                 } else {
                     // Standard view: Show release charts
                     document.getElementById('singles-section').style.display = 'block';
@@ -3339,31 +3161,29 @@
                         });
                     }
                     
-                    // Recent releases sorted by popularity
-                    const releasesSortedByDate = [...filteredReleases].sort((a, b) => 
-                        new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-                    );
-                    
-                    // Singles chart: releases with type 'single', prefer last 2 months, backfill if < 20
-                    const twoMonthsCutoff = twoMonthsAgo.toISOString().slice(0, 10);
-                    const recentSingles = releasesSortedByDate.filter(r => singlesFilter(r) && r.releaseDate >= twoMonthsCutoff);
-                    let singlesPool = [...recentSingles];
-                    if (singlesPool.length < 20) {
-                        const olderSingles = releasesSortedByDate.filter(r => singlesFilter(r) && r.releaseDate < twoMonthsCutoff);
-                        singlesPool = singlesPool.concat(olderSingles.slice(0, 20 - singlesPool.length));
+                    let topSingles, topAlbums, latestReleases;
+                    if (!useCityFilter) {
+                        // Use pre-computed charts (with positionChange/popularityChange baked in)
+                        topSingles = siteMaster.charts[getChartKey(genre, 'single')] || [];
+                        topAlbums = siteMaster.charts[getChartKey(genre, 'album')] || [];
+                        latestReleases = siteMaster.latestReleasesByGenre?.[genre] || siteMaster.latestReleases || [];
+                        
+                        // Update release history for tooltip display
+                        updateReleaseHistoryForGenre(genre);
+                    } else {
+                        // City filter: compute from raw releases
+                        const rawReleases = siteMaster.chartData?.releases || [];
+                        topSingles = buildChartRanking(rawReleases, { type: 'single', genre, city, bandsData: allBandsData, count: 20 });
+                        topAlbums = buildChartRanking(rawReleases, { type: 'album', genre, city, bandsData: allBandsData, count: 20 });
+                        
+                        const deduped = deduplicateCollabs(rawReleases);
+                        const filtered = deduped.filter(r => 
+                            artistMatchesGenre(r.bandName, genre) && artistMatchesCity(r.bandName, city)
+                        );
+                        latestReleases = filtered.sort((a, b) => 
+                            (b.releaseDate || '').localeCompare(a.releaseDate || '')
+                        ).slice(0, 20);
                     }
-                    const topSingles = singlesPool.sort(sortByPopularity).slice(0, 20);
-                    
-                    // Albums chart: prefer last 2 months, backfill with most recent older if < 20
-                    const recentAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate >= twoMonthsCutoff);
-                    let albumPool = [...recentAlbums];
-                    if (albumPool.length < 20) {
-                        const olderAlbums = releasesSortedByDate.filter(r => albumsFilter(r) && r.releaseDate < twoMonthsCutoff);
-                        albumPool = albumPool.concat(olderAlbums.slice(0, 20 - albumPool.length));
-                    }
-                    const topAlbums = albumPool.sort(sortByPopularity).slice(0, 20);
-                    
-                    const latestReleases = releasesSortedByDate.slice(0, 20);
                     
                     // Set period labels with filter suffix
                     const periodWithFilter = periodText + (filterSuffix ? ' • ' + filterSuffix : '');
@@ -3377,18 +3197,9 @@
                         latestHeader.innerHTML = '<i class="fas fa-clock"></i> Најнови';
                     }
                     
-                    // Build previous chart maps for comparison (with genre/city filters)
-                    const prevReleases = previousChartData?.releases || [];
-                    const prevSinglesMap = buildPreviousChartMap(prevReleases, singlesFilter, sortByPopularity, deduplicateCollabs, genre, city);
-                    const prevAlbumsMap = buildPreviousChartMap(prevReleases, albumsFilter, sortByPopularity, deduplicateCollabs, genre, city);
-                    
-                    // Rebuild history map with current genre/city filters for tooltips
-                    if (chartHistoryWeeks.length > 0) {
-                        releaseHistoryMap = buildReleaseHistoryMap(chartHistoryWeeks, genre, city);
-                    }
-                    
-                    renderChart('singles-chart', topSingles, prevSinglesMap, false);
-                    renderChart('albums-chart', topAlbums, prevAlbumsMap, false);
+                    // Pre-computed items already have positionChange/popularityChange — pass empty prevMap
+                    renderChart('singles-chart', topSingles, {}, false);
+                    renderChart('albums-chart', topAlbums, {}, false);
                     renderChart('latest-chart', latestReleases, {}, true);
                     
                     // Store chart data for sharing
@@ -3396,8 +3207,6 @@
                     chartDataStore.albums = topAlbums;
                     chartDataStore.latest = latestReleases;
                     chartDataStore.artists = [];
-                    
-                    console.log(`Filter applied (${filterSuffix || 'all'}): Singles: ${topSingles.length}, Albums: ${topAlbums.length}, Latest: ${latestReleases.length}`);
                 }
             }
             
@@ -3607,30 +3416,39 @@
                     }
                     
                     if (!isDateSorted) {
-                        const prev = previousMap[release.releaseId];
-                        if (!prev) {
-                            // New entry to the chart
-                            changeIndicator = '';
-                            popChangeIndicator = '';
-                        } else {
-                            // Position change
-                            const posChange = prev.position - rank;
-                            if (posChange > 0) {
-                                changeIndicator = 'rank-up';
-                            } else if (posChange < 0) {
-                                changeIndicator = 'rank-down';
-                            } else {
-                                changeIndicator = 'rank-same';
-                            }
+                        // Check for pre-computed change fields first (from site-master.json)
+                        if (release.positionChange !== undefined || release.isNewEntry !== undefined) {
+                            const posChange = release.positionChange || 0;
+                            const popDiff = release.popularityChange || 0;
                             
-                            // Popularity change - only show if changed
-                            const popDiff = popularity - prev.popularity;
-                            if (popDiff > 0) {
-                                popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
-                            } else if (popDiff < 0) {
-                                popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
-                            } else {
+                            if (release.isNewEntry) {
+                                changeIndicator = '';
                                 popChangeIndicator = '';
+                            } else {
+                                if (posChange > 0) changeIndicator = 'rank-up';
+                                else if (posChange < 0) changeIndicator = 'rank-down';
+                                else changeIndicator = 'rank-same';
+                                
+                                if (popDiff > 0) popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
+                                else if (popDiff < 0) popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
+                                else popChangeIndicator = '';
+                            }
+                        } else {
+                            // Fallback to previousMap (for city-filtered results)
+                            const prev = previousMap[release.releaseId];
+                            if (!prev) {
+                                changeIndicator = '';
+                                popChangeIndicator = '';
+                            } else {
+                                const posChange = prev.position - rank;
+                                if (posChange > 0) changeIndicator = 'rank-up';
+                                else if (posChange < 0) changeIndicator = 'rank-down';
+                                else changeIndicator = 'rank-same';
+                                
+                                const popDiff = popularity - prev.popularity;
+                                if (popDiff > 0) popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
+                                else if (popDiff < 0) popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
+                                else popChangeIndicator = '';
                             }
                         }
                     }

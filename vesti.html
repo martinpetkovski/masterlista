@@ -878,78 +878,22 @@
         initSettingsMenu();
         initNavMenu();
 
-        // ==================== ARTICLE LOADING FROM articles.json ====================
-        
-        // Artist names loaded from bands.json for filtering
-        let artistNames = [];    // array of { patterns: [lowercase strings], name: original }
-        
-        async function loadArtistNames() {
-            try {
-                const resp = await fetch('bands.json');
-                const data = await resp.json();
-                const bands = data.muzickaMasterLista || [];
-                artistNames = bands.map(b => {
-                    const patterns = [];
-                    if (b.name) patterns.push(b.name);
-                    return { name: b.name, patterns };
-                }).filter(a => a.patterns.length > 0);
-            } catch (err) {
-                console.warn('Failed to load bands.json for news filtering:', err);
-            }
-        }
-        
-        /**
-         * Check if an article mentions any artist from the master list.
-         * Returns an array of all matched artist names (empty if none).
-         */
-        function matchesArtist(article) {
-            // Build searchable text from article fields
-            const haystack = [article.title, article.description]
-                .filter(Boolean).join(' ');
-            
-            // Capitalize helper: first letter uppercase unless starts with digit
-            function capitalize(s) {
-                if (!s || /^\d/.test(s)) return s;
-                return s.charAt(0).toUpperCase() + s.slice(1);
-            }
-            
-            // Word boundary chars (Cyrillic-safe, since \b doesn't work for Cyrillic)
-            const B = '[\\s,;:.!?\\-–—\\/\\(\\)\\[\\]"\'\\ |«»„"\u2018\u2019\u201c\u201d]';
-            
-            const matched = [];
-            for (const artist of artistNames) {
-                for (const pattern of artist.patterns) {
-                    // Skip very short names (<=2 chars) — too many false positives
-                    if (pattern.length <= 2) continue;
-                    
-                    // Require capitalized form and exact word boundaries (case-sensitive)
-                    const term = capitalize(pattern);
-                    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const regex = new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
-                    if (regex.test(haystack)) {
-                        if (!matched.includes(artist.name)) matched.push(artist.name);
-                        break; // Don't match same artist twice via different patterns
-                    }
-                }
-            }
-            return matched;
-        }
+        // ==================== ARTICLE LOADING FROM site-master.json (pre-computed) ====================
         
         async function loadNewsFeeds() {
             try {
-                // Load artist names and articles archive in parallel
-                const [articlesResp] = await Promise.all([
-                    fetch('articles.json'),
-                    loadArtistNames()
-                ]);
+                // Load pre-computed news data from site-master.json
+                const siteMaster = await loadSiteMaster();
+                const newsData = siteMaster && siteMaster.news ? siteMaster.news : null;
                 
-                if (!articlesResp.ok) throw new Error(`Failed to load articles.json: ${articlesResp.status}`);
-                const archive = await articlesResp.json();
+                if (!newsData) {
+                    throw new Error('No news data in site-master.json');
+                }
                 
                 // Populate last-updated in header
                 const updatedEl = document.getElementById('articles-updated');
-                if (updatedEl && archive.lastUpdated) {
-                    const d = new Date(archive.lastUpdated);
+                if (updatedEl && newsData.lastUpdated) {
+                    const d = new Date(newsData.lastUpdated);
                     const ageMs = Date.now() - d.getTime();
                     const hours = Math.floor(ageMs / (60 * 60 * 1000));
                     const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
@@ -958,15 +902,18 @@
                     else { updatedEl.textContent = `пред ${minutes}мин`; }
                 }
                 
-                const allArticles = (archive.articles || []).map(a => ({
+                // Use artist-matched articles (only articles mentioning a band from the list)
+                const normalizeArtists = (v) => Array.isArray(v) ? v : (typeof v === 'string' && v ? [v] : []);
+                const allArticles = (newsData.matched || []).map(a => ({
                     ...a,
+                    matchedArtists: normalizeArtists(a.matchedArtists),
                     pubDate: a.date ? new Date(a.date) : new Date(0),
                     image: a.thumbnail || '',
                     sourceIcon: a.iconUrl || '',
                     content: ''
                 }));
                 
-                let matchedArticles = [];
+                let matchedArticles = allArticles;
                 const filtersContainer = document.getElementById('news-source-filters');
                 
                 // Build source filter buttons from the unique sources in the archive
@@ -989,16 +936,7 @@
                     filtersContainer.appendChild(btn);
                 });
                 
-                // Match articles against master list artists
-                allArticles.forEach(article => {
-                    article.matchedArtists = matchesArtist(article);
-                });
-                
-                // Only keep articles that mention a master list artist
-                matchedArticles = allArticles.filter(a => a.matchedArtists.length > 0);
-                
-                // Sort by date descending
-                matchedArticles.sort((a, b) => b.pubDate - a.pubDate);
+                // Already sorted by date descending in site-master
                 
                 document.getElementById('news-loading').style.display = 'none';
                 

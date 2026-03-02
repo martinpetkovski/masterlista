@@ -9,6 +9,7 @@
 #   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
 #   5. Curators   - Fetches playlist tracklists for curators from streaming APIs
 #   6. YouTube    - Scrapes latest Xotel YouTube videos via RSS feed
+#   7. Site Master - Generates site-master.json with all pre-computed data for client pages
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
@@ -18,12 +19,14 @@
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipInstagram # Skip Instagram posting
 #   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
+#   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only articles # Run only articles task
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
 #   ./update-all.ps1 -Only instagram # Run only Instagram posting
 #   ./update-all.ps1 -Only curators # Run only curator tracklists
+#   ./update-all.ps1 -Only sitemaster # Run only site-master generation
 
 param(
     [switch]$SkipChart,
@@ -33,7 +36,8 @@ param(
     [switch]$SkipInstagram,
     [switch]$SkipCurators,
     [switch]$SkipYouTube,
-    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators", "youtube")]
+    [switch]$SkipSiteMaster,
+    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators", "youtube", "sitemaster")]
     [string]$Only
 )
 
@@ -989,7 +993,7 @@ function Update-YouTube {
         $published = $entry.published
         if ($published -is [System.Xml.XmlElement]) { $published = $published.'#text' }
 
-        # Skip Shorts / promos (contain hashtags)
+        # Skip shorts/promos (titles containing #)
         if ($title -match '#') { continue }
 
         $thumbnail = "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
@@ -1036,6 +1040,7 @@ $runLinks     = -not $SkipLinks
 $runInstagram = -not $SkipInstagram
 $runCurators  = -not $SkipCurators
 $runYouTube   = -not $SkipYouTube
+$runSiteMaster = -not $SkipSiteMaster
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
@@ -1045,13 +1050,14 @@ if ($Only) {
     $runInstagram = $Only -eq "instagram"
     $runCurators  = $Only -eq "curators"
     $runYouTube   = $Only -eq "youtube"
+    $runSiteMaster = $Only -eq "sitemaster"
 }
 
 $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runYouTube) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runYouTube, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -1129,6 +1135,32 @@ if ($runYouTube) {
 }
 else {
     Write-Step "Skipping YouTube scraping" "DarkGray"
+}
+
+# --- Task 7: Site Master ---
+if ($runSiteMaster) {
+    Set-OverallProgress "Site Master"
+    Write-Section "TASK 7: SITE MASTER (PRE-COMPUTED DATA)"
+    $t = Get-Date
+    try {
+        $smScript = Join-Path $scriptRoot "scripts" "generate-site-master.ps1"
+        if (Test-Path $smScript) {
+            & $smScript
+            $results["Site Master"] = $true
+        }
+        else {
+            Write-Step "generate-site-master.ps1 not found at $smScript" "Red"
+            $results["Site Master"] = $false
+        }
+    }
+    catch {
+        Write-Step "Site Master generation failed: $_" "Red"
+        $results["Site Master"] = $false
+    }
+    $taskTimings["Site Master"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping site-master generation" "DarkGray"
 }
 
 Write-Progress -Id 0 -Activity "Master Lista Update" -Completed

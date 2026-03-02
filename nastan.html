@@ -582,21 +582,23 @@
         var bandsImageCache = null;
         var chartDataCache = null;
         function loadArtistImageData() {
-            return Promise.all([
-                fetch('/bands.json?v=' + Date.now())
+            return loadSiteMaster().then(function(siteMaster) {
+                // Build bands image cache from bands.json data embedded in chartData or separate fetch
+                bandsImageCache = {};
+                chartDataCache = siteMaster && siteMaster.chartData ? siteMaster.chartData : { releases: [] };
+                // Load bands.json for images (not in chartData)
+                return fetch('/bands.json?v=' + Date.now())
                     .then(function(r) { return r.ok ? r.json() : { muzickaMasterLista: [] }; })
                     .then(function(d) {
-                        bandsImageCache = {};
                         (d.muzickaMasterLista || []).forEach(function(b) {
                             if (b.image) bandsImageCache[b.name.toLowerCase().trim()] = b.image;
                         });
                     })
-                    .catch(function() { bandsImageCache = {}; }),
-                fetch('/chart-data.json?v=' + Date.now())
-                    .then(function(r) { return r.ok ? r.json() : { releases: [] }; })
-                    .then(function(d) { chartDataCache = d; })
-                    .catch(function() { chartDataCache = { releases: [] }; })
-            ]);
+                    .catch(function() {});
+            }).catch(function() {
+                bandsImageCache = {};
+                chartDataCache = { releases: [] };
+            });
         }
         function getArtistThumb(artistName) {
             if (!artistName) return null;

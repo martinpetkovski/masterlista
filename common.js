@@ -453,11 +453,44 @@ function getISOWeek(date) {
     return { year: d.getFullYear(), week: weekNum };
 }
 
+// ==================== SITE MASTER LOADER ====================
+
+/**
+ * Cached site-master.json data. Loaded once, shared across all pages.
+ * Contains all pre-calculated chart rankings, news, events, etc.
+ */
+var _siteMasterCache = null;
+var _siteMasterPromise = null;
+
+/**
+ * Load site-master.json (cached — only one fetch per page).
+ * Returns a Promise that resolves to the parsed JSON object.
+ */
+function loadSiteMaster() {
+    if (_siteMasterCache) return Promise.resolve(_siteMasterCache);
+    if (_siteMasterPromise) return _siteMasterPromise;
+    _siteMasterPromise = fetch('/site-master.json?t=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            _siteMasterCache = data;
+            return data;
+        })
+        .catch(function() { return null; });
+    return _siteMasterPromise;
+}
+
+/**
+ * Get the cached site-master data (null if not yet loaded).
+ */
+function getSiteMaster() {
+    return _siteMasterCache;
+}
+
 // ==================== HEADER COLLAGE ====================
 /**
  * Adds a scattered album art collage behind the shared header/navbar.
  * Call this once from any page after DOMContentLoaded (or immediately if DOM ready).
- * Fetches chart-data.json, extracts thumbnails, and scatters them.
+ * Uses pre-computed headerThumbs from site-master.json.
  */
 function initHeaderCollage() {
     var headerEl = document.querySelector('header');
@@ -485,50 +518,32 @@ function initHeaderCollage() {
         bodyClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
-    fetch('/chart-data.json?t=' + Date.now())
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(data) {
-            if (!data || !data.releases) return;
+    loadSiteMaster().then(function(master) {
+        if (!master || !master.headerThumbs || master.headerThumbs.length === 0) return;
 
-            // We need bandsData for buildChartRanking – fetch it too
-            return fetch('/bands.json?t=' + Date.now())
-                .then(function(r2) { return r2.ok ? r2.json() : null; })
-                .then(function(bandsJson) {
-                    var bands = bandsJson ? (bandsJson.muzickaMasterLista || []) : [];
-                    var ranked = buildChartRanking(data.releases, {
-                        type: 'single',
-                        genre: 'all',
-                        bandsData: bands,
-                        count: 20
-                    });
-                    var thumbs = ranked.map(function(r) { return r.thumbnail; }).filter(Boolean);
-                    if (thumbs.length === 0) return;
+        var thumbs = master.headerThumbs;
+        var maxUnique = thumbs.length;
 
-                    var maxUnique = thumbs.length;
+        var collage = document.createElement('div');
+        collage.className = 'header-collage';
 
-                    var collage = document.createElement('div');
-                    collage.className = 'header-collage';
+        if (removeCollageIfVerified()) return;
 
-                    if (removeCollageIfVerified()) return;
+        var headerHeight = Math.max(headerEl.clientHeight || 0, 48);
+        var rows = 2;
+        var tileSize = headerHeight / rows;
+        var columnsNeeded = Math.ceil((window.innerWidth || headerEl.clientWidth || 1200) / tileSize) + 8;
+        var totalImages = Math.max(columnsNeeded * rows, 60);
+        for (var i = 0; i < totalImages; i++) {
+            var img = document.createElement('img');
+            img.src = thumbs[i % maxUnique];
+            img.alt = '';
+            img.loading = 'lazy';
+            collage.appendChild(img);
+        }
 
-                    // Create enough images to fill 2 rows across current viewport width (+ buffer)
-                    var headerHeight = Math.max(headerEl.clientHeight || 0, 48);
-                    var rows = 2;
-                    var tileSize = headerHeight / rows;
-                    var columnsNeeded = Math.ceil((window.innerWidth || headerEl.clientWidth || 1200) / tileSize) + 8;
-                    var totalImages = Math.max(columnsNeeded * rows, 60);
-                    for (var i = 0; i < totalImages; i++) {
-                        var img = document.createElement('img');
-                        img.src = thumbs[i % maxUnique];
-                        img.alt = '';
-                        img.loading = 'lazy';
-                        collage.appendChild(img);
-                    }
-
-                    headerEl.insertBefore(collage, headerEl.firstChild);
-                });
-        })
-        .catch(function() { /* silently fail */ });
+        headerEl.insertBefore(collage, headerEl.firstChild);
+    });
 }
 
 // Auto-init when DOM is ready

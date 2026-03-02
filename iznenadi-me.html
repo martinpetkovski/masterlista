@@ -443,18 +443,15 @@
         // ==================== LOAD DATA ====================
         async function loadData() {
             try {
-                const [bandsResp, chartResp, eventsResp] = await Promise.all([
-                    fetch('bands.json'),
-                    fetch('chart-data.json'),
-                    fetch('events.json')
+                const [bandsResp, siteMasterData] = await Promise.all([
+                    fetch('bands.json').then(r => r.json()),
+                    loadSiteMaster()
                 ]);
-                const bandsJson = await bandsResp.json();
-                const chartJson = await chartResp.json();
-                const eventsJson = await eventsResp.json();
 
-                bandsData = bandsJson.muzickaMasterLista || [];
-                releasesData = chartJson.releases || [];
-                eventsData = eventsJson.events || [];
+                bandsData = bandsResp.muzickaMasterLista || [];
+                releasesData = siteMasterData?.chartData?.releases || [];
+                eventsData = siteMasterData?.events?.all || [];
+                window._siteMasterActivity = siteMasterData?.artistActivity || {};
                 dataLoaded = true;
                 updateGoButton();
             } catch (err) {
@@ -519,8 +516,16 @@
 
         // ==================== ACTIVITY STATUS ====================
         function getArtistActivity(artistName, eraMap) {
+            // Try pre-computed activity from site-master
+            const slug = generateSlug ? generateSlug(artistName) : artistName.toLowerCase().replace(/\s+/g, '-');
+            const precomputed = window._siteMasterActivity?.[slug];
+            if (precomputed) {
+                const map = { 'Активен': 'active', 'Неактивен': 'inactive', 'Можеби': 'maybe', 'Непознато': 'unknown' };
+                return map[precomputed] || precomputed;
+            }
+            
+            // Fallback
             const now = new Date();
-            // Check recent event (past year)
             const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
             const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
             const lower = artistName.toLowerCase();
@@ -530,7 +535,6 @@
             );
             if (hasRecentEvent) return 'active';
 
-            // Check release dates
             const latestYear = eraMap[artistName];
             if (!latestYear) return 'unknown';
 
