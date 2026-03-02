@@ -1297,16 +1297,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const albumId = btn.dataset.albumId;
         const releaseCard = btn.closest('.new-release-card');
         const releaseUrl = releaseCard?.querySelector('.release-thumbnail-link')?.href;
+        const titleEl = releaseCard?.querySelector('.release-title');
+        const artistEl = releaseCard?.querySelector('.release-artist');
+        const title = titleEl?.textContent || '';
+        const artistName = artistEl?.textContent || '';
+        const thumbEl = releaseCard?.querySelector('.release-thumbnail');
+        const thumbnail = thumbEl?.src || '';
+        const band = bandsData.find(b => b.name && b.name.toLowerCase() === artistName.toLowerCase());
         
         if (releaseUrl) {
-            openOnPreferredService(releaseUrl);
+            openOnPreferredService(releaseUrl, title, artistName, thumbnail, band?.accentColors);
         }
     }
 
     async function loadBandsData() {
         const loadingBar = document.getElementById('loading-bar');
         const controls = document.querySelector('.controls');
-        const searchInput = document.getElementById('search-name');
+        const searchInput = document.getElementById('unified-search');
         try {
             console.log('Loading bands data...');
             loadingBar.classList.add('active');
@@ -1498,7 +1505,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingBar.classList.remove('active');
             // Re-enable controls
             searchInput.disabled = false;
-            searchInput.placeholder = 'Пребарај по име...';
+            searchInput.placeholder = 'Пребарај артист, жанр, град...';
             controls.querySelectorAll('select, button').forEach(el => el.disabled = false);
         }
     }
@@ -1572,111 +1579,264 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeFilters() {
-        console.log('Initializing filters');
-        $('#filter-city').select2({
-            placeholder: 'Сите градови',
-            allowClear: true,
-            width: '100%'
-        }).val('').trigger('change');
-        $('#filter-genre').select2({
-            placeholder: 'Сите жанрови',
-            allowClear: true,
-            width: '100%'
-        }).val('').trigger('change');
-        $('#filter-sounds-like').select2({
-            placeholder: 'Звучи како било кој',
-            allowClear: true,
-            width: '100%'
-        }).val('').trigger('change');
-        $('#filter-status').select2({
-            placeholder: 'Сите статуси',
-            allowClear: true,
-            width: '100%'
-        }).val('').trigger('change');
-        $('#filter-label').select2({
-            placeholder: 'Сите ознаки',
-            allowClear: true,
-            width: '100%'
-        }).val('').trigger('change');
-        // Use debounced filter for search input (better performance)
-        document.getElementById('search-name').addEventListener('input', filterBandsDebounced);
-        // Use regular filter for dropdowns (immediate feedback)
-        $('#filter-city').on('change', filterBands);
-        $('#filter-genre').on('change', filterBands);
-        $('#filter-sounds-like').on('change', filterBands);
-        $('#filter-status').on('change', filterBands);
-        $('#filter-label').on('change', filterBands);
-        document.getElementById('clear-filters').addEventListener('click', () => {
-            console.log('Clear filters clicked');
-            document.getElementById('search-name').value = '';
-            const mobileInput = document.getElementById('mobile-search-input');
-            if (mobileInput) mobileInput.value = '';
-            const clearBtn = document.getElementById('mobile-search-clear');
-            if (clearBtn) clearBtn.classList.remove('visible');
-            $('#filter-city').val('').trigger('change');
-            $('#filter-genre').val('').trigger('change');
-            $('#filter-sounds-like').val('').trigger('change');
-            $('#filter-status').val('').trigger('change');
-            $('#filter-label').val('').trigger('change');
-            filterBands();
-        });
-        document.getElementById('toggle-filters').addEventListener('click', () => {
-            console.log('Toggle filters clicked');
-            const controls = document.querySelector('.controls');
-            controls.classList.toggle('active');
-            const isActive = controls.classList.contains('active');
-            document.getElementById('toggle-filters').innerHTML = `<i class="fas ${isActive ? 'fa-times' : 'fa-filter'}"></i>`;
-        });
-        // Mobile unified search bar
-        const mobileSearchInput = document.getElementById('mobile-search-input');
-        const mobileSearchClear = document.getElementById('mobile-search-clear');
-        if (mobileSearchInput) {
-            let mobileSearchTimer = null;
-            mobileSearchInput.addEventListener('input', () => {
-                const val = mobileSearchInput.value;
-                // Sync to desktop search-name
-                document.getElementById('search-name').value = val;
-                // Show/hide clear button
-                if (mobileSearchClear) {
-                    mobileSearchClear.classList.toggle('visible', val.length > 0);
+        console.log('Initializing unified search filters');
+
+        const searchInput = document.getElementById('unified-search');
+        const chipsContainer = document.getElementById('unified-search-chips');
+        const dropdown = document.getElementById('unified-search-dropdown');
+        const container = document.getElementById('unified-search-container');
+        const hiddenSearchName = document.getElementById('search-name');
+
+        const filterGroups = [
+            { key: 'city', label: 'Град', icon: 'fa-map-marker-alt', select: '#filter-city' },
+            { key: 'genre', label: 'Жанр', icon: 'fa-music', select: '#filter-genre' },
+            { key: 'sounds-like', label: 'Звучи како', icon: 'fa-headphones', select: '#filter-sounds-like' },
+            { key: 'status', label: 'Статус', icon: 'fa-circle', select: '#filter-status' },
+            { key: 'label', label: 'Ознака', icon: 'fa-tag', select: '#filter-label' }
+        ];
+
+        const selectMap = {
+            'city': '#filter-city',
+            'genre': '#filter-genre',
+            'sounds-like': '#filter-sounds-like',
+            'status': '#filter-status',
+            'label': '#filter-label'
+        };
+
+        // Build dropdown content from available filter options
+        function buildDropdown(query) {
+            const queryLower = (query || '').toLowerCase().trim();
+            const queryLatin = queryLower ? transliterateCyrillicToLatin(queryLower).toLowerCase() : '';
+            const queryLatinShort = queryLower ? transliterateCyrillicToLatinShorthand(queryLower).toLowerCase() : '';
+
+            let html = '';
+            let totalMatches = 0;
+
+            filterGroups.forEach(group => {
+                // Skip group if already has an active chip
+                if ($(group.select).val()) return;
+
+                const selectEl = document.querySelector(group.select);
+                if (!selectEl) return;
+                const options = Array.from(selectEl.options).filter(opt => opt.value !== '');
+                if (options.length === 0) return;
+
+                let matchingOptions;
+                if (queryLower) {
+                    matchingOptions = options.filter(opt => {
+                        const text = opt.textContent.toLowerCase();
+                        const textLatin = transliterateCyrillicToLatin(text).toLowerCase();
+                        return text.includes(queryLower) || textLatin.includes(queryLatin) ||
+                               textLatin.includes(queryLower) || text.includes(queryLatin) ||
+                               textLatin.includes(queryLatinShort);
+                    });
+                } else {
+                    // No query: show top options by count (already sorted)
+                    matchingOptions = options.slice(0, 6);
                 }
-                // Debounced filter (capped for speed)
-                if (mobileSearchTimer) clearTimeout(mobileSearchTimer);
-                mobileSearchTimer = setTimeout(filterBandsFromSearch, SEARCH_DEBOUNCE_MS);
-            });
-            if (mobileSearchClear) {
-                mobileSearchClear.addEventListener('click', () => {
-                    mobileSearchInput.value = '';
-                    document.getElementById('search-name').value = '';
-                    mobileSearchClear.classList.remove('visible');
-                    filterBands();
+
+                if (matchingOptions.length === 0) return;
+
+                const displayOptions = matchingOptions.slice(0, queryLower ? 10 : 6);
+
+                html += '<div class="unified-dropdown-group">';
+                html += '<div class="unified-dropdown-group-label"><i class="fas ' + group.icon + '"></i> ' + group.label + '</div>';
+                displayOptions.forEach(opt => {
+                    html += '<div class="unified-dropdown-item" data-filter="' + group.key + '" data-value="' + opt.value.replace(/"/g, '&quot;') + '">' + opt.textContent + '</div>';
                 });
-            }
+                if (matchingOptions.length > displayOptions.length) {
+                    html += '<div class="unified-dropdown-more">' + (matchingOptions.length - displayOptions.length) + ' повеќе...</div>';
+                }
+                html += '</div>';
+                totalMatches += displayOptions.length;
+            });
+
+            dropdown.innerHTML = html;
+            dropdown.style.display = totalMatches > 0 ? 'block' : 'none';
+            // Reset keyboard highlight
+            dropdown._highlighted = null;
         }
 
-        // Mobile search toggle button
-        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
-        const mobileSearchBar = document.getElementById('mobile-search-bar');
-        if (mobileSearchToggle && mobileSearchBar) {
-            mobileSearchToggle.addEventListener('click', () => {
-                const isVisible = mobileSearchBar.classList.toggle('visible');
-                mobileSearchToggle.innerHTML = `<i class="fas ${isVisible ? 'fa-times' : 'fa-search'}"></i>`;
-                if (isVisible) {
-                    const input = document.getElementById('mobile-search-input');
-                    if (input) input.focus();
+        // Render chips from current filter values
+        function syncChips() {
+            let html = '';
+            filterGroups.forEach(f => {
+                const val = $(f.select).val();
+                if (val) {
+                    const displayText = val === '__verified__' ? '✓ Потврден' : val;
+                    html += '<span class="unified-chip" data-filter="' + f.key + '">' +
+                            '<i class="fas ' + f.icon + '"></i> ' + displayText +
+                            '<button class="unified-chip-remove" data-filter="' + f.key + '" title="Отстрани">&times;</button>' +
+                            '</span>';
+                }
+            });
+            chipsContainer.innerHTML = html;
+
+            // Add remove handlers
+            chipsContainer.querySelectorAll('.unified-chip-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const filterKey = btn.getAttribute('data-filter');
+                    $(selectMap[filterKey]).val('');
+                    syncChips();
+                    filterBands();
+                    if (dropdownOpen) buildDropdown(searchInput.value);
+                });
+            });
+
+            // Update placeholder
+            const hasChips = chipsContainer.children.length > 0;
+            searchInput.placeholder = hasChips ? 'Додај филтер...' : 'Пребарај артист, жанр, град...';
+        }
+
+        // --- Filter dropdown is ONLY opened/closed by the filter button ---
+        let dropdownOpen = false;
+        const filterToggleBtn = document.getElementById('filter-toggle-btn');
+
+        function openDropdown() {
+            dropdownOpen = true;
+            filterToggleBtn.classList.add('active');
+            buildDropdown(searchInput.value);
+        }
+
+        function closeDropdown() {
+            dropdownOpen = false;
+            filterToggleBtn.classList.remove('active');
+            dropdown.style.display = 'none';
+            dropdown._highlighted = null;
+        }
+
+        // Toggle dropdown via filter button
+        filterToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (dropdownOpen) {
+                closeDropdown();
+            } else {
+                openDropdown();
+                searchInput.focus();
+            }
+        });
+
+        // Search input handling — typing always filters the table;
+        // if dropdown is open, also updates dropdown contents
+        let searchTimer = null;
+        searchInput.addEventListener('input', () => {
+            const val = searchInput.value;
+            hiddenSearchName.value = val;
+            if (dropdownOpen) {
+                buildDropdown(val);
+            }
+            if (searchTimer) clearTimeout(searchTimer);
+            searchTimer = setTimeout(filterBandsFromSearch, SEARCH_DEBOUNCE_MS);
+        });
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+
+        // Click on input row focuses the search input
+        document.getElementById('unified-search-input-row').addEventListener('click', (e) => {
+            if (e.target === searchInput || e.target.closest('.unified-chip-remove') || e.target.closest('.filter-toggle-btn')) return;
+            searchInput.focus();
+        });
+
+        // Handle dropdown item clicks
+        dropdown.addEventListener('click', (e) => {
+            const item = e.target.closest('.unified-dropdown-item');
+            if (!item) return;
+
+            const filterKey = item.getAttribute('data-filter');
+            const filterValue = item.getAttribute('data-value');
+
+            $(selectMap[filterKey]).val(filterValue);
+            searchInput.value = '';
+            hiddenSearchName.value = '';
+            closeDropdown();
+            syncChips();
+            filterBands();
+            searchInput.focus();
+        });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (dropdownOpen) {
+                    closeDropdown();
                 } else {
-                    // Clear search when closing
-                    const input = document.getElementById('mobile-search-input');
-                    if (input && input.value) {
-                        input.value = '';
-                        document.getElementById('search-name').value = '';
-                        const clearBtn = document.getElementById('mobile-search-clear');
-                        if (clearBtn) clearBtn.classList.remove('visible');
-                        filterBands();
+                    searchInput.blur();
+                }
+                return;
+            }
+            if (e.key === 'Backspace' && searchInput.value === '') {
+                // Remove last chip
+                const chips = chipsContainer.querySelectorAll('.unified-chip');
+                if (chips.length > 0) {
+                    const lastChip = chips[chips.length - 1];
+                    const removeBtn = lastChip.querySelector('.unified-chip-remove');
+                    if (removeBtn) removeBtn.click();
+                }
+                return;
+            }
+            if (dropdownOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                e.preventDefault();
+                const items = Array.from(dropdown.querySelectorAll('.unified-dropdown-item'));
+                if (items.length === 0) return;
+                const current = dropdown._highlighted;
+                let idx = current ? items.indexOf(current) : -1;
+                if (e.key === 'ArrowDown') idx = (idx + 1) % items.length;
+                else idx = idx <= 0 ? items.length - 1 : idx - 1;
+                if (current) current.classList.remove('highlighted');
+                items[idx].classList.add('highlighted');
+                items[idx].scrollIntoView({ block: 'nearest' });
+                dropdown._highlighted = items[idx];
+                return;
+            }
+            if (e.key === 'Enter') {
+                if (dropdownOpen && dropdown._highlighted) {
+                    e.preventDefault();
+                    dropdown._highlighted.click();
+                }
+                return;
+            }
+        });
+
+        // Listen for programmatic changes on hidden selects (from inline tag clicks)
+        ['#filter-city', '#filter-genre', '#filter-sounds-like', '#filter-status', '#filter-label'].forEach(sel => {
+            $(sel).on('change', () => {
+                syncChips();
+                filterBands();
+            });
+        });
+
+        // Search toggle button
+        const searchToggleBtn = document.getElementById('search-toggle-btn');
+        const controlsBar = document.querySelector('.controls');
+        if (searchToggleBtn && controlsBar) {
+            searchToggleBtn.addEventListener('click', () => {
+                const isVisible = controlsBar.classList.toggle('visible');
+                searchToggleBtn.innerHTML = '<i class="fas ' + (isVisible ? 'fa-times' : 'fa-search') + '"></i>';
+                if (isVisible) {
+                    searchInput.focus();
+                } else {
+                    // Clear search & close dropdown when hiding
+                    if (searchInput.value) {
+                        searchInput.value = '';
+                        hiddenSearchName.value = '';
+                        filterBandsFromSearch();
                     }
+                    closeDropdown();
                 }
             });
         }
+
+        // Expose sync function globally
+        window._unifiedSearchSync = syncChips;
+
+        // Initial sync
+        syncChips();
     }
 
     // Autocomplete data cache
@@ -2971,9 +3131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchNameLatinFull = searchName ? transliterateCyrillicToLatin(searchName).toLowerCase() : '';
         const searchNameLatinShort = searchName ? transliterateCyrillicToLatinShorthand(searchName).toLowerCase() : '';
         
-        // Detect if mobile search bar is being used (unified search across all fields)
-        const mobileInput = document.getElementById('mobile-search-input');
-        const isMobileUnifiedSearch = mobileInput && mobileInput.value.length > 0 && window.innerWidth <= 600;
+        // Always use unified search across all fields
         
         const hasCity = !!filters.city;
         const hasGenre = !!filters.genre;
@@ -2985,25 +3143,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0, len = cache.length; i < len; i++) {
             const cached = cache[i];
             
-            // Name filter — on mobile, search across all fields (name, genre, city, etc.)
+            // Unified search: match name or any field (city, genre, sounds-like, label)
             if (searchName) {
-                if (isMobileUnifiedSearch) {
-                    // Unified mobile search: match any field
-                    if (!(
-                        cached.searchAll.includes(searchName) ||
-                        cached.searchAll.includes(searchNameLatinFull) ||
-                        cached.searchAll.includes(searchNameLatinShort)
-                    )) continue;
-                } else {
-                    // Desktop: only match name
-                    if (!(
-                        cached.nameLower.includes(searchName) ||
-                        cached.nameLatinFull.includes(searchNameLatinFull) ||
-                        cached.nameLatinShort.includes(searchNameLatinShort) ||
-                        cached.nameLatinFull.includes(searchNameLatinShort) ||
-                        cached.nameLatinShort.includes(searchNameLatinFull)
-                    )) continue;
-                }
+                if (!(
+                    cached.searchAll.includes(searchName) ||
+                    cached.searchAll.includes(searchNameLatinFull) ||
+                    cached.searchAll.includes(searchNameLatinShort)
+                )) continue;
             }
             
             if (hasCity && !cached.cities.has(filters.city)) continue;
@@ -3364,7 +3510,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (filterType === 'label') {
                         $('#filter-label').val(filterValue).trigger('change');
                     }
-                    document.querySelector('.controls').style.display = 'flex';
+                    // Clear search text when applying a filter from inline tag
+                    const unifiedInput = document.getElementById('unified-search');
+                    if (unifiedInput) {
+                        unifiedInput.value = '';
+                        document.getElementById('search-name').value = '';
+                    }
+                    // Ensure search bar is visible
+                    const ctrl = document.querySelector('.controls');
+                    if (ctrl && !ctrl.classList.contains('visible')) {
+                        ctrl.classList.add('visible');
+                        const toggleBtn = document.getElementById('search-toggle-btn');
+                        if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    }
                 });
             });
             const editBtn = bandRow.querySelector('.edit-btn');
@@ -3408,8 +3566,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Songlink API cache
-    const songlinkCache = {};
-
     function getPreferredService() {
         return localStorage.getItem('mmm-preferred-service') || null;
     }
@@ -3426,105 +3582,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function fetchSonglinkUrls(sourceUrl) {
-        if (songlinkCache[sourceUrl]) return songlinkCache[sourceUrl];
-        try {
-            const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`);
-            if (!resp.ok) return null;
-            const data = await resp.json();
-            const links = {};
-            if (data.linksByPlatform) {
-                for (const [platform, linkData] of Object.entries(data.linksByPlatform)) {
-                    if (serviceDefinitions[platform] && linkData.url) {
-                        links[platform] = linkData.url;
-                    }
-                }
-            }
-            songlinkCache[sourceUrl] = links;
-            return links;
-        } catch (err) {
-            console.warn('Songlink API error:', err);
-            return null;
-        }
+    function buildSearchUrl(serviceId, artist, title) {
+        const query = `${artist} ${title}`;
+        const encoded = encodeURIComponent(query);
+        const plusEncoded = query.replace(/\s+/g, '+');
+        const searchUrls = {
+            youtube: `https://www.youtube.com/results?search_query=${plusEncoded}`,
+            youtubeMusic: `https://music.youtube.com/search?q=${encoded}`,
+            appleMusic: `https://music.apple.com/search?term=${encoded}`,
+            deezer: `https://www.deezer.com/search/${encoded}`,
+            tidal: `https://listen.tidal.com/search?q=${encoded}`,
+            amazonMusic: `https://music.amazon.com/search/${encoded}`,
+            soundcloud: `https://soundcloud.com/search?q=${encoded}`,
+            bandcamp: `https://bandcamp.com/search?q=${encoded}`
+        };
+        return searchUrls[serviceId] || null;
     }
 
     // Open a song/release URL on the user's preferred streaming service
-    async function openOnPreferredService(releaseUrl, title) {
+    function openOnPreferredService(releaseUrl, title, artistName, thumbnail, accentColors) {
         if (!releaseUrl) return;
-
-        const preferred = getPreferredService();
-
-        // If the URL already belongs to the preferred service, open directly
-        if (preferred && urlMatchesService(releaseUrl, preferred)) {
-            window.open(releaseUrl, '_blank');
-            return;
-        }
-
-        // Show a quick loading toast
-        showServiceToast(preferred ? 'Се бара на ' + (serviceDefinitions[preferred]?.name || preferred) + '...' : 'Се бараат линкови…', 'loading');
-
-        const links = await fetchSonglinkUrls(releaseUrl);
-        hideServiceToast();
-        if (!links || Object.keys(links).length === 0) {
-            if (!preferred) {
-                // "Always ask" mode - show chooser with original URL
-                const fallbackLinks = {};
-                for (const [id] of Object.entries(serviceDefinitions)) {
-                    if (urlMatchesService(releaseUrl, id)) {
-                        fallbackLinks[id] = releaseUrl;
-                        break;
-                    }
-                }
-                showServiceChooserDialog(fallbackLinks, releaseUrl, title);
-            } else {
-                window.open(releaseUrl, '_blank');
-            }
-            return;
-        }
-        if (preferred && links[preferred]) {
-            window.open(links[preferred], '_blank');
-        } else {
-            showServiceChooserDialog(links, releaseUrl, title);
-        }
+        showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors);
     }
 
-    function urlMatchesService(url, serviceId) {
-        const patterns = {
-            spotify: /open\.spotify\.com/i,
-            youtube: /youtube\.com|youtu\.be/i,
-            youtubeMusic: /music\.youtube\.com/i,
-            appleMusic: /music\.apple\.com/i,
-            deezer: /deezer\.com/i,
-            tidal: /tidal\.com/i,
-            amazonMusic: /music\.amazon/i,
-            soundcloud: /soundcloud\.com/i,
-            bandcamp: /bandcamp\.com/i
-        };
-        return patterns[serviceId]?.test(url);
-    }
-
-    // Small toast notification for loading state
-    function showServiceToast(message, type) {
-        let toast = document.getElementById('service-toast');
-        if (!toast) {
-            toast = document.createElement('div');
-            toast.id = 'service-toast';
-            toast.className = 'service-toast';
-            document.body.appendChild(toast);
-        }
-        toast.innerHTML = type === 'loading'
-            ? `<i class="fas fa-spinner fa-spin"></i> ${message}`
-            : message;
-        toast.classList.add('visible');
-    }
-
-    function hideServiceToast() {
-        const toast = document.getElementById('service-toast');
-        if (toast) toast.classList.remove('visible');
-    }
-
-    // Service chooser dialog (fallback when preferred service unavailable)
-    function showServiceChooserDialog(links, fallbackUrl, title) {
+    // Service chooser dialog
+    function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors) {
         let overlay = document.getElementById('service-chooser-overlay');
         if (!overlay) {
             overlay = document.createElement('div');
@@ -3532,7 +3614,13 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.className = 'service-chooser-overlay';
             overlay.innerHTML = `
                 <div class="service-chooser">
-                    <h3 id="service-chooser-title"></h3>
+                    <div class="service-chooser-header" id="service-chooser-header">
+                        <img class="service-chooser-img" id="service-chooser-img">
+                        <div class="service-chooser-header-text">
+                            <div class="service-chooser-artist" id="service-chooser-artist"></div>
+                            <div class="service-chooser-song" id="service-chooser-song"></div>
+                        </div>
+                    </div>
                     <div class="service-chooser-links" id="service-chooser-links"></div>
                 </div>
             `;
@@ -3545,33 +3633,49 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        const titleEl = document.getElementById('service-chooser-title');
+        const headerEl = document.getElementById('service-chooser-header');
+        const imgEl = document.getElementById('service-chooser-img');
+        const artistEl = document.getElementById('service-chooser-artist');
+        const songEl = document.getElementById('service-chooser-song');
         const linksEl = document.getElementById('service-chooser-links');
-        titleEl.textContent = title || 'Отвори во...';
 
-        // Always include original URL
-        if (fallbackUrl && !Object.values(links).includes(fallbackUrl)) {
-            // Determine which service the fallback URL belongs to
-            for (const [id, svc] of Object.entries(serviceDefinitions)) {
-                if (urlMatchesService(fallbackUrl, id) && !links[id]) {
-                    links[id] = fallbackUrl;
-                    break;
-                }
-            }
+        if (accentColors && accentColors.length >= 2) {
+            headerEl.style.background = 'linear-gradient(135deg, ' + accentColors[0] + ', ' + accentColors[1] + ')';
+        } else if (accentColors && accentColors.length === 1) {
+            headerEl.style.background = accentColors[0];
+        } else {
+            headerEl.style.background = '';
         }
-        
-        const html = Object.entries(links)
-            .filter(([id]) => serviceDefinitions[id])
-            .map(([id, url]) => {
-                const svc = serviceDefinitions[id];
-                const isPreferred = id === getPreferredService();
-                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
-                    <i class="${svc.icon}"></i> ${svc.name}
-                    ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
-                </a>`;
-            }).join('');
 
-        linksEl.innerHTML = html || `<a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
+        if (thumbnail) {
+            imgEl.src = thumbnail;
+            imgEl.style.display = '';
+        } else {
+            imgEl.removeAttribute('src');
+            imgEl.style.display = 'none';
+        }
+
+        artistEl.textContent = artistName || '';
+        songEl.textContent = title || 'Отвори во...';
+
+        const pref = getPreferredService();
+        let linksHtml = '';
+        for (const [key, svc] of Object.entries(serviceDefinitions)) {
+            const isPreferred = key === pref;
+            let url;
+            if (key === 'spotify' && releaseUrl) {
+                url = releaseUrl;
+            } else {
+                url = buildSearchUrl(key, artistName || '', title || '');
+            }
+            if (!url) continue;
+            linksHtml += `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
+                <i class="${svc.icon}"></i> ${svc.name}
+                ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
+            </a>`;
+        }
+
+        linksEl.innerHTML = linksHtml;
         overlay.classList.add('visible');
     }
 
@@ -3593,7 +3697,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showMusicPlayer(spotifyId, type = 'artist', title = '', artist = '', thumbnail = '') {
         const url = `https://open.spotify.com/${type}/${spotifyId}`;
-        openOnPreferredService(url, title || artist);
+        const band = bandsData.find(b => b.name && b.name.toLowerCase() === artist.toLowerCase());
+        openOnPreferredService(url, title, artist, thumbnail, band?.accentColors);
     }
 
     function closeMusicPlayer() {
@@ -3618,15 +3723,9 @@ document.addEventListener('DOMContentLoaded', () => {
             position: 'bottom'
         },
         {
-            element: '#search-name',
-            title: 'Пребарување',
-            description: 'Тука пишуваш име и веднаш ти се појавуваат резултати. Работи и на кирилица и на латиница, така да не мора да се мачиш.',
-            position: 'bottom'
-        },
-        {
-            element: '.controls',
-            title: 'Филтри',
-            description: 'Ако сакаш да видиш само бендови од Скопје, или само рок, или само активни - тука ги имаш сите филтри. Комбинирај ги како сакаш.',
+            element: '#unified-search-container',
+            title: 'Пребарување и филтри',
+            description: 'Тука пишуваш име и веднаш ти се појавуваат резултати. Работи и на кирилица и на латиница. Може и да избереш филтри од менито - по град, жанр, статус... Комбинирај ги како сакаш.',
             position: 'bottom'
         },
         {
@@ -3718,10 +3817,14 @@ document.addEventListener('DOMContentLoaded', () => {
             position: 'bottom'
         },
         {
-            element: '#toggle-filters',
-            title: 'Филтри',
-            description: 'Кликни тука за да ги отвориш филтрите. Може да пребаруваш по име, да филтрираш по град, жанр, статус...',
-            position: 'bottom'
+            element: '#unified-search-container',
+            title: 'Пребарување и филтри',
+            description: 'Тука пишуваш име или бираш филтри. Може по град, жанр, статус... Комбинирај ги како сакаш.',
+            position: 'bottom',
+            beforeShow: () => {
+                const c = document.querySelector('.controls');
+                if (c) c.classList.add('visible');
+            }
         },
         {
             element: '#band-table-body tr:first-child',
@@ -3730,17 +3833,17 @@ document.addEventListener('DOMContentLoaded', () => {
             position: 'bottom'
         },
         {
-            element: '#search-name',
+            element: '#unified-search-container',
             title: 'Пребарување',
-            description: 'Пишувај име и веднаш се појавуваат резултати. Работи и на кирилица и на латиница.',
+            description: 'Пишувај име и веднаш се појавуваат резултати. Работи и на кирилица и на латиница. Може и да избереш филтри од менито.',
             position: 'bottom',
             beforeShow: () => {
-                const controls = document.querySelector('.controls');
-                if (controls) controls.classList.add('active');
+                const c = document.querySelector('.controls');
+                if (c) c.classList.add('visible');
             },
             afterHide: () => {
-                const controls = document.querySelector('.controls');
-                if (controls) controls.classList.remove('active');
+                const c = document.querySelector('.controls');
+                if (c) c.classList.remove('visible');
             }
         },
         {

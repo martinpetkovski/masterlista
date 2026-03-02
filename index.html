@@ -118,6 +118,40 @@
             height: 100%;
             box-sizing: border-box;
             overflow: hidden;
+            /* Slide-in + unblur on load */
+            opacity: 0;
+            transform: translateX(-30px);
+            filter: blur(6px);
+            animation: dashCardReveal 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+
+        /* Stagger each card */
+        .dash-card:nth-child(1)  { animation-delay: 0.05s; }
+        .dash-card:nth-child(2)  { animation-delay: 0.1s; }
+        .dash-card:nth-child(3)  { animation-delay: 0.15s; }
+        .dash-card:nth-child(4)  { animation-delay: 0.2s; }
+        .dash-card:nth-child(5)  { animation-delay: 0.25s; }
+        .dash-card:nth-child(6)  { animation-delay: 0.3s; }
+        .dash-card:nth-child(7)  { animation-delay: 0.35s; }
+        .dash-card:nth-child(8)  { animation-delay: 0.4s; }
+        .dash-card:nth-child(9)  { animation-delay: 0.45s; }
+        .dash-card:nth-child(10) { animation-delay: 0.5s; }
+        .dash-card:nth-child(11) { animation-delay: 0.55s; }
+        .dash-card:nth-child(12) { animation-delay: 0.6s; }
+        .dash-card:nth-child(13) { animation-delay: 0.65s; }
+        .dash-card:nth-child(14) { animation-delay: 0.7s; }
+
+        @keyframes dashCardReveal {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+                filter: blur(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
         }
 
         .dash-card:hover {
@@ -285,10 +319,297 @@
         }
 
         .mini-chart-pop {
-            font-size: 0.7rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
             color: var(--text-muted, #8b929a);
             flex-shrink: 0;
             font-weight: 500;
+        }
+
+        /* ==================== CHART CARD SPECIAL EFFECTS ==================== */
+
+        /* Base chart card setup */
+        #main-chart-card,
+        #alt-chart-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated gradient accent bar at top */
+        #main-chart-card::before,
+        #alt-chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            z-index: 2;
+            background-size: 200% 100%;
+            animation: chartAccentFlow 3s ease infinite;
+        }
+
+        #main-chart-card::before {
+            background: linear-gradient(90deg, #4a7fa5, #22c55e, #4a7fa5);
+            background-size: 200% 100%;
+        }
+
+        #alt-chart-card::before {
+            background: linear-gradient(90deg, #7b6e9e, #a86078, #7b6e9e);
+            background-size: 200% 100%;
+        }
+
+        @keyframes chartAccentFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Background vinyl record decoration */
+        .chart-bg-svg {
+            position: absolute;
+            bottom: -10%;
+            right: -5%;
+            height: 90%;
+            width: auto;
+            aspect-ratio: 1;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.3) rotate(-180deg);
+            animation: vinylDropIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+        }
+
+        @keyframes vinylDropIn {
+            0% { opacity: 0; transform: scale(0.3) rotate(-180deg); }
+            60% { opacity: 0.9; transform: scale(1.05) rotate(15deg); }
+            80% { opacity: 1; transform: scale(0.97) rotate(-5deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        /* Vinyl spin animation */
+        .vinyl-spin {
+            animation: vinylRotate 6s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes vinylRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Ensure chart items are above SVG background */
+        #main-chart-card .mini-chart-list,
+        #alt-chart-card .mini-chart-list {
+            position: relative;
+            z-index: 1;
+        }
+
+        #main-chart-card .dash-card-header,
+        #alt-chart-card .dash-card-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Chart item entry animation */
+        #main-chart-card .mini-chart-item,
+        #alt-chart-card .mini-chart-item {
+            animation: chartItemSlideIn 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+        }
+
+        #main-chart-card .mini-chart-item:nth-child(1),
+        #alt-chart-card .mini-chart-item:nth-child(1) { animation-delay: 0.2s; }
+        #main-chart-card .mini-chart-item:nth-child(2),
+        #alt-chart-card .mini-chart-item:nth-child(2) { animation-delay: 0.4s; }
+        #main-chart-card .mini-chart-item:nth-child(3),
+        #alt-chart-card .mini-chart-item:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes chartItemSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+                filter: blur(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+
+        /* Slide-in + unblur for all dashboard list items */
+        .radar-item,
+        .event-item,
+        .trending-item,
+        .discover-artist,
+        .sotd-item,
+        .news-item,
+        .verify-item,
+        .yt-embed,
+        .quick-action-btn {
+            animation: chartItemSlideIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+        }
+        .radar-item:nth-child(1), .event-item:nth-child(1), .trending-item:nth-child(1),
+        .discover-artist:nth-child(1), .sotd-item:nth-child(1), .news-item:nth-child(1),
+        .verify-item:nth-child(1), .yt-embed:nth-child(1), .quick-action-btn:nth-child(1) { animation-delay: 0.08s; }
+        .radar-item:nth-child(2), .event-item:nth-child(2), .trending-item:nth-child(2),
+        .discover-artist:nth-child(2), .sotd-item:nth-child(2), .news-item:nth-child(2),
+        .verify-item:nth-child(2), .yt-embed:nth-child(2), .quick-action-btn:nth-child(2) { animation-delay: 0.14s; }
+        .radar-item:nth-child(3), .event-item:nth-child(3), .trending-item:nth-child(3),
+        .discover-artist:nth-child(3), .sotd-item:nth-child(3), .news-item:nth-child(3),
+        .verify-item:nth-child(3), .yt-embed:nth-child(3), .quick-action-btn:nth-child(3) { animation-delay: 0.2s; }
+        .radar-item:nth-child(4), .event-item:nth-child(4), .trending-item:nth-child(4),
+        .discover-artist:nth-child(4), .sotd-item:nth-child(4), .news-item:nth-child(4),
+        .verify-item:nth-child(4), .quick-action-btn:nth-child(4) { animation-delay: 0.26s; }
+        .radar-item:nth-child(5), .event-item:nth-child(5), .trending-item:nth-child(5),
+        .discover-artist:nth-child(5), .sotd-item:nth-child(5), .news-item:nth-child(5),
+        .verify-item:nth-child(5), .quick-action-btn:nth-child(5) { animation-delay: 0.32s; }
+        .radar-item:nth-child(n+6), .event-item:nth-child(n+6), .trending-item:nth-child(n+6),
+        .discover-artist:nth-child(n+6), .sotd-item:nth-child(n+6), .news-item:nth-child(n+6),
+        .verify-item:nth-child(n+6), .quick-action-btn:nth-child(6) { animation-delay: 0.38s; }
+
+        /* Gold / Silver / Bronze rank numbers */
+        #main-chart-card .mini-chart-item:nth-child(1) .mini-chart-rank,
+        #alt-chart-card .mini-chart-item:nth-child(1) .mini-chart-rank {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+        }
+
+        #main-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank,
+        #alt-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank {
+            background: linear-gradient(135deg, #E8E8E8, #A0A0A0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #main-chart-card .mini-chart-item:nth-child(3) .mini-chart-rank,
+        #alt-chart-card .mini-chart-item:nth-child(3) .mini-chart-rank {
+            background: linear-gradient(135deg, #CD7F32, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* #1 item subtle gold highlight */
+        #main-chart-card .mini-chart-item:first-child,
+        #alt-chart-card .mini-chart-item:first-child {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%);
+            border-radius: 8px;
+        }
+
+        body.dark-mode #main-chart-card .mini-chart-item:first-child,
+        body.dark-mode #alt-chart-card .mini-chart-item:first-child {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+        }
+
+        /* #1 cover glow effect */
+        #main-chart-card .mini-chart-item:first-child .mini-chart-cover {
+            box-shadow: 0 0 16px rgba(74, 127, 165, 0.3), 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #alt-chart-card .mini-chart-item:first-child .mini-chart-cover {
+            box-shadow: 0 0 16px rgba(123, 110, 158, 0.3), 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+
+
+        /* Popularity score with animated bar */
+        .chart-pop-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .pop-bar-track {
+            width: 52px;
+            height: 3px;
+            background: var(--bg-hover, #eceef1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .pop-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: popBarGrow 0.8s ease-out forwards;
+        }
+
+        .pop-bar-fill.pop-gold { background: linear-gradient(90deg, #FFD700, #FFA500); }
+        .pop-bar-fill.pop-silver { background: linear-gradient(90deg, #C0C0C0, #A8A8A8); }
+        .pop-bar-fill.pop-bronze { background: linear-gradient(90deg, #CD7F32, #B8860B); }
+
+        #main-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #4a7fa5, #22c55e); }
+        #alt-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #7b6e9e, #a86078); }
+
+        .mini-chart-item:nth-child(1) .pop-bar-fill { animation-delay: 0.6s; }
+        .mini-chart-item:nth-child(2) .pop-bar-fill { animation-delay: 0.85s; }
+        .mini-chart-item:nth-child(3) .pop-bar-fill { animation-delay: 1.1s; }
+
+        @keyframes popBarGrow {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Sparkle effect on #1 cover */
+        .chart-sparkle-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .chart-sparkle-svg {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            width: calc(100% + 12px);
+            height: calc(100% + 12px);
+            pointer-events: none;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        .sparkle-star {
+            animation: sparkleRotate 3s linear infinite;
+            transform-origin: center;
+        }
+
+        .sparkle-star:nth-child(1) { animation-delay: 0s; }
+        .sparkle-star:nth-child(2) { animation-delay: 0.8s; }
+        .sparkle-star:nth-child(3) { animation-delay: 1.6s; }
+        .sparkle-star:nth-child(4) { animation-delay: 2.4s; }
+
+        @keyframes sparkleRotate {
+            0% { opacity: 0; transform: scale(0) rotate(0deg); }
+            15% { opacity: 1; transform: scale(1) rotate(90deg); }
+            30% { opacity: 0; transform: scale(0) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+
+        /* Dark mode adjustments for chart cards */
+        body.dark-mode #main-chart-card,
+        body.dark-mode #alt-chart-card {
+            border-color: var(--border-color, #2a2e36);
+        }
+
+        body.dark-mode .chart-bg-svg {
+            opacity: 0;
+            animation: vinylFadeIn 1.8s ease-out 0.3s forwards;
+        }
+
+        body.dark-mode #main-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank,
+        body.dark-mode #alt-chart-card .mini-chart-item:nth-child(2) .mini-chart-rank {
+            background: linear-gradient(135deg, #d0d0d0, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* ==================== RELEASE RADAR (horizontal grid) ==================== */
@@ -1338,6 +1659,102 @@
         body.dark-mode .settings-theme-btn { background: var(--bg-hover); border-color: var(--border-color); color: var(--text-secondary); }
         body.dark-mode .settings-theme-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
         body.dark-mode .settings-tour-btn { background: var(--bg-hover); border-color: var(--border-color); color: var(--text-secondary); }
+
+        /* ==================== SERVICE CHOOSER ==================== */
+        .service-chooser-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0);
+            z-index: 10000; align-items: center; justify-content: center;
+            transition: background 0.25s ease;
+        }
+        .service-chooser-overlay.visible { display: flex; background: rgba(0,0,0,0.4); }
+        .service-chooser {
+            background: #fff; border-radius: 0; min-width: 260px;
+            max-width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            font-family: 'Inter', sans-serif; overflow: hidden;
+            opacity: 0;
+            transform: scale(0.85) translateY(20px);
+            filter: blur(4px);
+            animation: serviceChooserIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
+        }
+        .service-chooser-overlay:not(.visible) .service-chooser {
+            animation: none;
+            opacity: 0;
+        }
+        @keyframes serviceChooserIn {
+            from {
+                opacity: 0;
+                transform: scale(0.85) translateY(20px);
+                filter: blur(4px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+        .service-chooser-links a {
+            opacity: 0;
+            transform: translateX(-12px);
+            filter: blur(2px);
+            animation: svcLinkSlideIn 0.3s ease forwards;
+        }
+        .service-chooser-overlay:not(.visible) .service-chooser-links a {
+            animation: none;
+            opacity: 0;
+        }
+        .service-chooser-links a:nth-child(1) { animation-delay: 0.12s; }
+        .service-chooser-links a:nth-child(2) { animation-delay: 0.17s; }
+        .service-chooser-links a:nth-child(3) { animation-delay: 0.22s; }
+        .service-chooser-links a:nth-child(4) { animation-delay: 0.27s; }
+        .service-chooser-links a:nth-child(5) { animation-delay: 0.32s; }
+        .service-chooser-links a:nth-child(6) { animation-delay: 0.37s; }
+        .service-chooser-links a:nth-child(7) { animation-delay: 0.42s; }
+        .service-chooser-links a:nth-child(8) { animation-delay: 0.47s; }
+        .service-chooser-links a:nth-child(9) { animation-delay: 0.52s; }
+        @keyframes svcLinkSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+                filter: blur(2px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+                filter: blur(0);
+            }
+        }
+        body.dark-mode .service-chooser { background: #1a1c24; }
+        .service-chooser-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1rem; background: #333;
+        }
+        .service-chooser-img {
+            width: 44px; height: 44px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
+        }
+        .service-chooser-header-text { min-width: 0; flex: 1; }
+        .service-chooser-artist {
+            font-size: 0.72rem; opacity: 0.85; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .service-chooser-song {
+            font-size: 0.88rem; font-weight: 600; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .service-chooser-links {
+            display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem 1rem 1rem;
+        }
+        .service-chooser-links a {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+            border-radius: 8px; text-decoration: none; color: #333;
+            background: rgba(0,0,0,0.04); transition: background 0.15s;
+            font-size: 0.85rem;
+        }
+        body.dark-mode .service-chooser-links a { color: #e8e8f0; background: rgba(255,255,255,0.06); }
+        .service-chooser-links a:hover { background: rgba(0,0,0,0.08); }
+        body.dark-mode .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
+        .service-chooser-links a i { width: 20px; text-align: center; font-size: 1.1rem; }
+        .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
+        .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
@@ -1366,6 +1783,35 @@
 
         <!-- ==================== TOP 3 MAIN CHART ==================== -->
         <div class="dash-card" id="main-chart-card">
+            <!-- SVG Background: vinyl record -->
+            <svg class="chart-bg-svg" viewBox="0 0 200 200" aria-hidden="true">
+                <g class="vinyl-spin">
+                    <!-- Outer disc -->
+                    <circle cx="100" cy="100" r="96" fill="#4a7fa5" opacity="0.03"/>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="#4a7fa5" stroke-width="1" opacity="0.12"/>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#4a7fa5" stroke-width="0.5" opacity="0.1"/>
+                    <!-- Grooves -->
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="75" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="55" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="45" fill="none" stroke="#22c55e" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="#4a7fa5" stroke-width="0.3" opacity="0.07"/>
+                    <!-- Label area -->
+                    <circle cx="100" cy="100" r="32" fill="#4a7fa5" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="32" fill="none" stroke="#4a7fa5" stroke-width="0.8" opacity="0.12"/>
+                    <!-- Genre text on label -->
+                    <text x="100" y="88" text-anchor="middle" dominant-baseline="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="11" fill="#4a7fa5" opacity="0.12" letter-spacing="1">ПОП</text>
+                    <!-- Center hole -->
+                    <circle cx="100" cy="100" r="4" fill="var(--bg-primary, #fff)" stroke="#4a7fa5" stroke-width="1" opacity="0.15"/>
+                    <!-- Light reflection -->
+                    <ellipse cx="75" cy="75" rx="25" ry="12" fill="#fff" opacity="0.02" transform="rotate(-40 75 75)"/>
+                </g>
+            </svg>
             <div class="dash-card-header">
                 <h2><i class="fas fa-chart-line"></i> Топ Листа</h2>
                 <a href="/charts" class="more-link">Целосна листа &raquo;</a>
@@ -1376,6 +1822,35 @@
 
         <!-- ==================== TOP 3 ALTERNATIVE CHART ==================== -->
         <div class="dash-card" id="alt-chart-card">
+            <!-- SVG Background: vinyl record (alt) -->
+            <svg class="chart-bg-svg" viewBox="0 0 200 200" aria-hidden="true">
+                <g class="vinyl-spin" style="animation-direction: reverse;">
+                    <!-- Outer disc -->
+                    <circle cx="100" cy="100" r="96" fill="#7b6e9e" opacity="0.03"/>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="#7b6e9e" stroke-width="1" opacity="0.12"/>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#7b6e9e" stroke-width="0.5" opacity="0.1"/>
+                    <!-- Grooves -->
+                    <circle cx="100" cy="100" r="85" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="80" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="75" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="65" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="60" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="55" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.08"/>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
+                    <circle cx="100" cy="100" r="45" fill="none" stroke="#a86078" stroke-width="0.3" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="40" fill="none" stroke="#7b6e9e" stroke-width="0.3" opacity="0.07"/>
+                    <!-- Label area -->
+                    <circle cx="100" cy="100" r="32" fill="#7b6e9e" opacity="0.06"/>
+                    <circle cx="100" cy="100" r="32" fill="none" stroke="#7b6e9e" stroke-width="0.8" opacity="0.12"/>
+                    <!-- Genre text on label -->
+                    <text x="100" y="88" text-anchor="middle" dominant-baseline="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="9" fill="#7b6e9e" opacity="0.12" letter-spacing="0.5">АЛТ</text>
+                    <!-- Center hole -->
+                    <circle cx="100" cy="100" r="4" fill="var(--bg-primary, #fff)" stroke="#7b6e9e" stroke-width="1" opacity="0.15"/>
+                    <!-- Light reflection -->
+                    <ellipse cx="75" cy="75" rx="25" ry="12" fill="#fff" opacity="0.02" transform="rotate(-40 75 75)"/>
+                </g>
+            </svg>
             <div class="dash-card-header">
                 <h2><i class="fas fa-guitar"></i> Алтернативна</h2>
                 <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')">Целосна листа &raquo;</a>
@@ -1557,6 +2032,137 @@
         // artistMatchesGenre, buildChartRanking, mkMonths, linkIcons
         // are all provided by common.js
 
+        // ==================== SERVICE CHOOSER ====================
+        var serviceDefinitions = {
+            spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
+            youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
+            youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
+            appleMusic: { name: 'Apple Music', icon: 'fab fa-itunes-note', color: '#fc3c44' },
+            deezer: { name: 'Deezer', icon: 'fab fa-deezer', color: '#FEAA2D' },
+            tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#00FFFF' },
+            amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
+            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
+            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
+        };
+
+        function getPreferredService() {
+            return localStorage.getItem('mmm-preferred-service') || null;
+        }
+
+        function buildSearchUrl(serviceId, artist, title) {
+            var query = artist + ' ' + title;
+            var encoded = encodeURIComponent(query);
+            var plusEncoded = query.replace(/\s+/g, '+');
+            var searchUrls = {
+                youtube: 'https://www.youtube.com/results?search_query=' + plusEncoded,
+                youtubeMusic: 'https://music.youtube.com/search?q=' + encoded,
+                appleMusic: 'https://music.apple.com/search?term=' + encoded,
+                deezer: 'https://www.deezer.com/search/' + encoded,
+                tidal: 'https://listen.tidal.com/search?q=' + encoded,
+                amazonMusic: 'https://music.amazon.com/search/' + encoded,
+                soundcloud: 'https://soundcloud.com/search?q=' + encoded,
+                bandcamp: 'https://bandcamp.com/search?q=' + encoded
+            };
+            return searchUrls[serviceId] || null;
+        }
+
+        function getArtistAccentColors(artistName) {
+            if (!bandsData || !artistName) return null;
+            var lower = artistName.toLowerCase();
+            for (var i = 0; i < bandsData.length; i++) {
+                if (bandsData[i].name && bandsData[i].name.toLowerCase() === lower) {
+                    return bandsData[i].accentColors || null;
+                }
+            }
+            return null;
+        }
+
+        function openOnPreferredService(url, title, artist, thumb, accentColors) {
+            if (!url) return;
+            var overlay = document.getElementById('service-chooser-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'service-chooser-overlay';
+                overlay.className = 'service-chooser-overlay';
+                overlay.innerHTML =
+                    '<div class="service-chooser">' +
+                        '<div class="service-chooser-header" id="service-chooser-header">' +
+                            '<img class="service-chooser-img" id="service-chooser-img">' +
+                            '<div class="service-chooser-header-text">' +
+                                '<div class="service-chooser-artist" id="service-chooser-artist"></div>' +
+                                '<div class="service-chooser-song" id="service-chooser-song"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="service-chooser-links" id="service-chooser-links"></div>' +
+                    '</div>';
+                document.body.appendChild(overlay);
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) overlay.classList.remove('visible');
+                });
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        var ov = document.getElementById('service-chooser-overlay');
+                        if (ov) ov.classList.remove('visible');
+                    }
+                });
+            }
+
+            var headerEl = document.getElementById('service-chooser-header');
+            var imgEl = document.getElementById('service-chooser-img');
+            var artistEl = document.getElementById('service-chooser-artist');
+            var songEl = document.getElementById('service-chooser-song');
+            var linksEl = document.getElementById('service-chooser-links');
+
+            if (accentColors && accentColors.length >= 2) {
+                headerEl.style.background = 'linear-gradient(135deg, ' + accentColors[0] + ', ' + accentColors[1] + ')';
+            } else if (accentColors && accentColors.length === 1) {
+                headerEl.style.background = accentColors[0];
+            } else {
+                headerEl.style.background = '';
+            }
+
+            if (thumb) {
+                imgEl.src = thumb;
+                imgEl.style.display = '';
+            } else {
+                imgEl.removeAttribute('src');
+                imgEl.style.display = 'none';
+            }
+
+            artistEl.textContent = artist || '';
+            songEl.textContent = title || 'Отвори во...';
+
+            var pref = getPreferredService();
+            var linksHtml = '';
+            var keys = Object.keys(serviceDefinitions);
+            for (var k = 0; k < keys.length; k++) {
+                var key = keys[k];
+                var svc = serviceDefinitions[key];
+                var isPreferred = key === pref;
+                var svcUrl;
+                if (key === 'spotify' && url) {
+                    svcUrl = url;
+                } else {
+                    svcUrl = buildSearchUrl(key, artist || '', title || '');
+                }
+                if (!svcUrl) continue;
+                linksHtml += '<a href="' + svcUrl + '" target="_blank" rel="noopener noreferrer"' + (isPreferred ? ' class="preferred"' : '') + '>' +
+                    '<i class="' + svc.icon + '"></i> ' + svc.name +
+                    (isPreferred ? ' <span class="pref-badge">★</span>' : '') +
+                '</a>';
+            }
+            linksEl.innerHTML = linksHtml;
+            overlay.classList.add('visible');
+        }
+
+        window.openServiceChooser = function(el) {
+            var url = el.getAttribute('data-url');
+            var title = el.getAttribute('data-title');
+            var artist = el.getAttribute('data-artist');
+            var thumb = el.getAttribute('data-thumb');
+            openOnPreferredService(url, title, artist, thumb, getArtistAccentColors(artist));
+        };
+
         // ==================== LOAD ALL DATA ====================
         async function loadAllData() {
             var t = Date.now();
@@ -1663,15 +2269,35 @@
 
             var container = document.getElementById(containerId);
             var loading = document.getElementById(loadingId);
+            var maxPop = Math.max.apply(null, top3.map(function(r) { return r.popularity || 1; }));
             container.innerHTML = top3.map(function(r, i) {
-                return '<li class="mini-chart-item" onclick="window.open(\'' + r.releaseUrl + '\',\'_blank\')" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                var popPct = Math.min(100, Math.round(((r.popularity || 0) / maxPop) * 100));
+                var barClass = i === 0 ? 'pop-gold' : i === 1 ? 'pop-silver' : 'pop-bronze';
+
+                // Sparkle SVG overlay for #1 cover
+                var sparkleSvg = i === 0 ? '<svg class="chart-sparkle-svg" viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">' +
+                    '<polygon class="sparkle-star" points="8,2 9.5,6 14,6 10.5,8.5 11.5,13 8,10 4.5,13 5.5,8.5 2,6 6.5,6" fill="#FFD700" opacity="0.9"/>' +
+                    '<polygon class="sparkle-star" points="82,8 83.2,11 86,11 83.8,12.8 84.5,16 82,14 79.5,16 80.2,12.8 78,11 80.8,11" fill="#FFA500" opacity="0.8"/>' +
+                    '<polygon class="sparkle-star" points="6,78 7.2,81 10,81 7.8,82.8 8.5,86 6,84 3.5,86 4.2,82.8 2,81 4.8,81" fill="#FFD700" opacity="0.7"/>' +
+                    '<polygon class="sparkle-star" points="86,72 87,75 90,75 87.8,76.5 88.5,80 86,78 83.5,80 84.2,76.5 82,75 85,75" fill="#FFA500" opacity="0.8"/>' +
+                    '</svg>' : '';
+                var coverHtml = i === 0 ?
+                    '<div class="chart-sparkle-wrap">' +
+                        '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+                        sparkleSvg +
+                    '</div>' :
+                    '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
-                    '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+                    coverHtml +
                     '<div class="mini-chart-info">' +
                         '<div class="mini-chart-title">' + escHtml(r.releaseTitle) + '</div>' +
                         '<div class="mini-chart-artist">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
                     '</div>' +
-                    '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
+                    '<div class="chart-pop-wrap">' +
+                        '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
+                        '<div class="pop-bar-track"><div class="pop-bar-fill ' + barClass + '" style="width:' + popPct + '%"></div></div>' +
+                    '</div>' +
                 '</li>';
             }).join('');
 
@@ -1705,7 +2331,7 @@
             } else {
                 list.innerHTML = last5.map(function(r) {
                     var typeLabel = r.releaseType === 'album' ? 'Албум' : r.releaseType === 'compilation' ? 'Комп.' : 'Сингл';
-                    return '<li class="radar-item" onclick="window.open(\'' + r.releaseUrl + '\',\'_blank\')" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                    return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(r.releaseTitle) + '</div>' +
@@ -1754,7 +2380,7 @@
             return '<div class="discover-releases">' + releases.map(function(r) {
                 var typeIcon = r.releaseType === 'album' ? 'fas fa-record-vinyl' : 'fas fa-compact-disc';
                 var url = r.releaseUrl || '#';
-                return '<a href="' + url + '" target="_blank" rel="noopener" class="discover-release-link" onclick="event.stopPropagation()" title="' + escHtml(r.releaseTitle) + '">' +
+                return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + '">' +
                     '<i class="' + typeIcon + '"></i> ' + escHtml(r.releaseTitle) +
                 '</a>';
             }).join('') + '</div>';
@@ -1847,7 +2473,7 @@
             var loading = document.getElementById('sotd-loading');
 
             list.innerHTML = picked.map(function(t) {
-                var onclick = t.url ? 'onclick="window.open(\'' + t.url + '\',\'_blank\')"' : '';
+                var onclick = t.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(t.url) + '" data-title="' + escHtml(t.title) + '" data-artist="' + escHtml(t.artist) + '" data-thumb="' + escHtml(t.image || '') + '"' : '';
                 var imgHtml = t.image ? '<img class="sotd-cover" src="' + t.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sotd-cover"></div>';
                 var relHtml = '';
                 if (t.relevance && t.relevance.length > 0) {
@@ -1920,7 +2546,7 @@
                 var badge = badges[i] || 'fresh';
                 var releases = getLatestReleases(r.bandName, 3);
                 var relHtml = buildReleasesHtml(releases);
-                return '<li class="trending-item" onclick="window.open(\'' + r.releaseUrl + '\',\'_blank\')" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<span class="trending-rank">' + (i + 1) + '</span>' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +

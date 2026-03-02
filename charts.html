@@ -705,6 +705,27 @@
         .adv-table .adv-city { color: var(--text-secondary); }
         .adv-table .adv-genre { color: var(--text-secondary); }
 
+        /* Artist & release links in advanced table */
+        .adv-table .adv-artist-link {
+            color: var(--text-primary, #1a1d21);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.15s ease;
+        }
+        .adv-table .adv-artist-link:hover {
+            color: var(--accent-blue, #4a7fa5);
+            text-decoration: underline;
+        }
+        .adv-table .adv-release-link {
+            color: var(--text-secondary, #555b64);
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+        .adv-table .adv-release-link:hover {
+            color: var(--accent-blue, #4a7fa5);
+            text-decoration: underline;
+        }
+
         /* Sort reset button */
         .adv-sort-reset {
             display: none;
@@ -2074,23 +2095,66 @@
         /* ==================== MINI PLAYER ==================== */
         /* ==================== SERVICE CHOOSER ==================== */
         .service-chooser-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0);
             z-index: 10000; align-items: center; justify-content: center;
+            transition: background 0.25s ease;
         }
-        .service-chooser-overlay.visible { display: flex; }
+        .service-chooser-overlay.visible { display: flex; background: rgba(0,0,0,0.4); }
         .service-chooser {
-            background: #fff; border-radius: 12px; padding: 1.25rem; min-width: 260px;
+            background: #fff; border-radius: 0; min-width: 260px;
             max-width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', sans-serif; overflow: hidden;
+            opacity: 0;
+            transform: scale(0.85) translateY(20px);
+            filter: blur(4px);
+            animation: serviceChooserIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
+        }
+        .service-chooser-overlay:not(.visible) .service-chooser {
+            animation: none; opacity: 0;
+        }
+        @keyframes serviceChooserIn {
+            from { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
+            to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+        .service-chooser-links a {
+            opacity: 0; transform: translateX(-12px); filter: blur(2px);
+            animation: svcLinkSlideIn 0.3s ease forwards;
+        }
+        .service-chooser-overlay:not(.visible) .service-chooser-links a {
+            animation: none; opacity: 0;
+        }
+        .service-chooser-links a:nth-child(1) { animation-delay: 0.12s; }
+        .service-chooser-links a:nth-child(2) { animation-delay: 0.17s; }
+        .service-chooser-links a:nth-child(3) { animation-delay: 0.22s; }
+        .service-chooser-links a:nth-child(4) { animation-delay: 0.27s; }
+        .service-chooser-links a:nth-child(5) { animation-delay: 0.32s; }
+        .service-chooser-links a:nth-child(6) { animation-delay: 0.37s; }
+        .service-chooser-links a:nth-child(7) { animation-delay: 0.42s; }
+        .service-chooser-links a:nth-child(8) { animation-delay: 0.47s; }
+        .service-chooser-links a:nth-child(9) { animation-delay: 0.52s; }
+        @keyframes svcLinkSlideIn {
+            from { opacity: 0; transform: translateX(-12px); filter: blur(2px); }
+            to { opacity: 1; transform: translateX(0); filter: blur(0); }
         }
         body.dark-mode .service-chooser { background: #1a1c24; }
-        .service-chooser h3 {
-            margin: 0 0 0.75rem; font-size: 0.9rem; color: #333;
+        .service-chooser-header {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1rem; background: #333;
+        }
+        .service-chooser-img {
+            width: 44px; height: 44px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
+        }
+        .service-chooser-header-text { min-width: 0; flex: 1; }
+        .service-chooser-artist {
+            font-size: 0.72rem; opacity: 0.85; color: #fff;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        body.dark-mode .service-chooser h3 { color: #e8e8f0; }
+        .service-chooser-song {
+            font-size: 0.88rem; font-weight: 600; color: #fff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
         .service-chooser-links {
-            display: flex; flex-direction: column; gap: 0.4rem;
+            display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem 1rem 1rem;
         }
         .service-chooser-links a {
             display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
@@ -2102,7 +2166,6 @@
         .service-chooser-links a:hover { background: rgba(0,0,0,0.08); }
         body.dark-mode .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
         .service-chooser-links a i { width: 20px; text-align: center; font-size: 1.1rem; }
-        .service-chooser-links .loading { text-align: center; padding: 1rem; color: #888; font-size: 0.8rem; }
         .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
         .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
 
@@ -2391,7 +2454,13 @@
     <!-- Service Chooser -->
     <div class="service-chooser-overlay" id="service-chooser-overlay">
         <div class="service-chooser">
-            <h3 id="service-chooser-title"></h3>
+            <div class="service-chooser-header" id="service-chooser-header">
+                <img class="service-chooser-img" id="service-chooser-img">
+                <div class="service-chooser-header-text">
+                    <div class="service-chooser-artist" id="service-chooser-artist"></div>
+                    <div class="service-chooser-song" id="service-chooser-song"></div>
+                </div>
+            </div>
             <div class="service-chooser-links" id="service-chooser-links"></div>
         </div>
     </div>
@@ -3755,7 +3824,7 @@
                 { key: 'release', label: 'Изданија', cssClass: 'col-release', align: 'left',  sortType: 'string' },
                 { key: 'city',    label: 'Град',     cssClass: 'col-city',    align: 'left',  sortType: 'string' },
                 { key: 'genre',   label: 'Жанр',     cssClass: 'col-genre',   align: 'left',  sortType: 'string' },
-                { key: 'pop',     label: 'Pop',      cssClass: 'col-pop',     align: 'left',  sortType: 'number' },
+                { key: 'pop',     label: 'П',        cssClass: 'col-pop',     align: 'left',  sortType: 'number' },
                 { key: 'pdelta',  label: 'Δ',        cssClass: 'col-pdelta',  align: 'left',  sortType: 'number' },
                 { key: 'date',    label: 'Датум',    cssClass: 'col-date',    align: 'left',  sortType: 'date' }
             ];
@@ -3874,11 +3943,13 @@
                     const d = r._dateObj;
                     const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
 
-                    const releaseStr = `${escHtml(r.bandName)} \u2014 ${escHtml(r.releaseTitle)}`;
+                    const artistLink = `/artist?a=${encodeURIComponent(r.bandName)}`;
+                    const releaseTitleStr = `${escHtml(r.bandName)} \u2014 ${escHtml(r.releaseTitle)}`;
+                    const releaseCell = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(r.bandName)}">${escHtml(r.bandName)}</a> \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(r.releaseTitle)}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" title="${escHtml(r.releaseTitle)}">${escHtml(r.releaseTitle)}</span>`;
                     return `<tr>` +
                         `<td class="col-pos">${posStr}</td>` +
                         `<td class="col-chg">${chgStr}</td>` +
-                        `<td class="col-release" title="${releaseStr}">${releaseStr}</td>` +
+                        `<td class="col-release" title="${releaseTitleStr}">${releaseCell}</td>` +
                         `<td class="col-city adv-city" title="${escHtml(r._city)}">${escHtml(r._city)}</td>` +
                         `<td class="col-genre adv-genre" title="${escHtml(r._genre)}">${escHtml(r._genre)}</td>` +
                         `<td class="col-pop adv-pop">${r._pop}</td>` +
@@ -3921,6 +3992,22 @@
                 table.querySelectorAll('thead th[data-col]').forEach(th => {
                     th.addEventListener('click', (e) => {
                         handleAdvancedSort(tableKey, th.dataset.col, e.shiftKey);
+                    });
+                });
+
+                // Attach click handlers to release title links (service chooser)
+                table.querySelectorAll('.adv-release-link[data-url]').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const url = el.dataset.url;
+                        const title = el.dataset.title || '';
+                        const artist = el.dataset.artist || '';
+                        const thumb = el.dataset.thumb || '';
+                        const info = getArtistInfo(artist);
+                        if (url) {
+                            openOnPreferredService(url, title, artist, thumb, info?.accentColors);
+                        }
                     });
                 });
             }
@@ -4135,8 +4222,11 @@
                     title.addEventListener('click', (e) => {
                         e.preventDefault();
                         const releaseUrl = title.dataset.releaseUrl;
+                        const artistName = title.dataset.artist || '';
+                        const thumbnail = title.dataset.thumbnail || '';
+                        const info = getArtistInfo(artistName);
                         if (releaseUrl) {
-                            openOnPreferredService(releaseUrl, title.textContent);
+                            openOnPreferredService(releaseUrl, title.textContent, artistName, thumbnail, info?.accentColors);
                         }
                     });
                 });
@@ -4285,8 +4375,6 @@
                 bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
             };
 
-            const songlinkCache = {};
-
             function getPreferredService() {
                 return localStorage.getItem('mmm-preferred-service') || null;
             }
@@ -4295,158 +4383,69 @@
                 localStorage.setItem('mmm-preferred-service', serviceId);
             }
 
-            function urlMatchesService(url, serviceId) {
-                const patterns = {
-                    spotify: /open\.spotify\.com/i,
-                    youtube: /youtube\.com|youtu\.be/i,
-                    youtubeMusic: /music\.youtube\.com/i,
-                    appleMusic: /music\.apple\.com/i,
-                    deezer: /deezer\.com/i,
-                    tidal: /tidal\.com/i,
-                    amazonMusic: /music\.amazon/i,
-                    soundcloud: /soundcloud\.com/i,
-                    bandcamp: /bandcamp\.com/i
+            function buildSearchUrl(serviceId, artist, title) {
+                const query = `${artist} ${title}`;
+                const encoded = encodeURIComponent(query);
+                const plusEncoded = query.replace(/\s+/g, '+');
+                const searchUrls = {
+                    youtube: `https://www.youtube.com/results?search_query=${plusEncoded}`,
+                    youtubeMusic: `https://music.youtube.com/search?q=${encoded}`,
+                    appleMusic: `https://music.apple.com/search?term=${encoded}`,
+                    deezer: `https://www.deezer.com/search/${encoded}`,
+                    tidal: `https://listen.tidal.com/search?q=${encoded}`,
+                    amazonMusic: `https://music.amazon.com/search/${encoded}`,
+                    soundcloud: `https://soundcloud.com/search?q=${encoded}`,
+                    bandcamp: `https://bandcamp.com/search?q=${encoded}`
                 };
-                return patterns[serviceId]?.test(url);
+                return searchUrls[serviceId] || null;
             }
 
-            async function fetchSonglinkUrls(sourceUrl) {
-                if (songlinkCache[sourceUrl]) return songlinkCache[sourceUrl];
-                try {
-                    const resp = await fetch(`https://api.song.link/v1-alpha.1/links?url=${encodeURIComponent(sourceUrl)}`);
-                    if (!resp.ok) return null;
-                    const data = await resp.json();
-                    const links = {};
-                    if (data.linksByPlatform) {
-                        for (const [platform, linkData] of Object.entries(data.linksByPlatform)) {
-                            if (serviceDefinitions[platform] && linkData.url) {
-                                links[platform] = linkData.url;
-                            }
-                        }
-                    }
-                    songlinkCache[sourceUrl] = links;
-                    return links;
-                } catch (err) { return null; }
-            }
-
-            function showServiceToast(message) {
-                let toast = document.getElementById('service-toast');
-                if (!toast) {
-                    toast = document.createElement('div');
-                    toast.id = 'service-toast';
-                    toast.className = 'service-toast';
-                    document.body.appendChild(toast);
-                }
-                toast.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${message}`;
-                toast.classList.add('visible');
-            }
-            function hideServiceToast() {
-                const toast = document.getElementById('service-toast');
-                if (toast) toast.classList.remove('visible');
-            }
-
-            async function openOnPreferredService(releaseUrl, title) {
+            function openOnPreferredService(releaseUrl, title, artistName, thumbnail, accentColors) {
                 if (!releaseUrl) return;
-                // Always show progressive chooser immediately
-                showServiceChooserProgressive(releaseUrl, title);
-            }
-            
-            async function showServiceChooserProgressive(releaseUrl, title) {
                 const overlay = document.getElementById('service-chooser-overlay');
-                const titleEl = document.getElementById('service-chooser-title');
+                const headerEl = document.getElementById('service-chooser-header');
+                const imgEl = document.getElementById('service-chooser-img');
+                const artistEl = document.getElementById('service-chooser-artist');
+                const songEl = document.getElementById('service-chooser-song');
                 const linksEl = document.getElementById('service-chooser-links');
                 const pref = getPreferredService();
                 
-                titleEl.textContent = title || 'Отвори во...';
+                if (accentColors && accentColors.length >= 2) {
+                    headerEl.style.background = 'linear-gradient(135deg, ' + accentColors[0] + ', ' + accentColors[1] + ')';
+                } else if (accentColors && accentColors.length === 1) {
+                    headerEl.style.background = accentColors[0];
+                } else {
+                    headerEl.style.background = '';
+                }
+
+                if (thumbnail) {
+                    imgEl.src = thumbnail;
+                    imgEl.style.display = '';
+                } else {
+                    imgEl.removeAttribute('src');
+                    imgEl.style.display = 'none';
+                }
+
+                artistEl.textContent = artistName || '';
+                songEl.textContent = title || 'Отвори во...';
                 
-                // Determine source service from URL
-                const sourceService = Object.keys(serviceDefinitions).find(key => urlMatchesService(releaseUrl, key));
-                
-                // Show immediate link + loading indicators for others
                 let linksHtml = '';
-                if (sourceService && serviceDefinitions[sourceService]) {
-                    const svc = serviceDefinitions[sourceService];
-                    const isPreferred = sourceService === pref;
-                    linksHtml += `<a href="${releaseUrl}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
+                for (const [key, svc] of Object.entries(serviceDefinitions)) {
+                    const isPreferred = key === pref;
+                    let url;
+                    if (key === 'spotify' && releaseUrl) {
+                        url = releaseUrl;
+                    } else {
+                        url = buildSearchUrl(key, artistName || '', title || '');
+                    }
+                    if (!url) continue;
+                    linksHtml += `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
                         <i class="${svc.icon}"></i> ${svc.name}
                         ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
                     </a>`;
                 }
                 
-                // Add loading placeholders for other services
-                for (const [key, svc] of Object.entries(serviceDefinitions)) {
-                    if (key === sourceService) continue;
-                    const isPreferred = key === pref;
-                    linksHtml += `<div class="loading" data-service="${key}">
-                        <i class="fas fa-spinner fa-spin"></i> ${svc.name}
-                        ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
-                    </div>`;
-                }
-                
                 linksEl.innerHTML = linksHtml;
-                overlay.classList.add('visible');
-                
-                // Load additional links in background
-                try {
-                    const links = await fetchSonglinkUrls(releaseUrl);
-                    if (links && overlay.classList.contains('visible')) {
-                        for (const [key, url] of Object.entries(links)) {
-                            if (key === sourceService) continue; // Skip source service, already shown
-                            const svc = serviceDefinitions[key];
-                            if (!svc) continue;
-                            
-                            const isPreferred = key === pref;
-                            const loadingEl = overlay.querySelector(`.loading[data-service="${key}"]`);
-                            if (loadingEl) {
-                                const newLink = document.createElement('a');
-                                newLink.href = url;
-                                newLink.target = '_blank';
-                                newLink.rel = 'noopener noreferrer';
-                                newLink.className = isPreferred ? 'preferred' : '';
-                                newLink.innerHTML = `<i class="${svc.icon}"></i> ${svc.name}${isPreferred ? '<span class="pref-badge">★</span>' : ''}`;
-                                
-                                loadingEl.replaceWith(newLink);
-                            }
-                        }
-                        
-                        // Remove any remaining loading placeholders
-                        overlay.querySelectorAll('.loading').forEach(el => el.remove());
-                    }
-                } catch (err) {
-                    // Remove loading indicators on error
-                    if (overlay.classList.contains('visible')) {
-                        overlay.querySelectorAll('.loading').forEach(el => el.remove());
-                    }
-                }
-            }
-
-            function showServiceChooser(links, fallbackUrl, title) {
-                const overlay = document.getElementById('service-chooser-overlay');
-                const titleEl = document.getElementById('service-chooser-title');
-                const linksEl = document.getElementById('service-chooser-links');
-                titleEl.textContent = title || 'Отвори во...';
-
-                if (fallbackUrl && !Object.values(links).includes(fallbackUrl)) {
-                    for (const [id] of Object.entries(serviceDefinitions)) {
-                        if (urlMatchesService(fallbackUrl, id) && !links[id]) {
-                            links[id] = fallbackUrl;
-                            break;
-                        }
-                    }
-                }
-
-                const html = Object.entries(links)
-                    .filter(([id]) => serviceDefinitions[id])
-                    .map(([id, url]) => {
-                        const svc = serviceDefinitions[id];
-                        const isPreferred = id === getPreferredService();
-                        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
-                            <i class="${svc.icon}"></i> ${svc.name}
-                            ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
-                        </a>`;
-                    }).join('');
-
-                linksEl.innerHTML = html || `<a href="${fallbackUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-spotify"></i> Spotify</a>`;
                 overlay.classList.add('visible');
             }
 

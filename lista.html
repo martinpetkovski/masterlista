@@ -230,26 +230,27 @@
             <span>Ажурирано <span id="last-modified">...</span></span>
         </span>
         <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
-        <button id="mobile-search-toggle" class="header-btn mobile-search-toggle-btn" title="Пребарај"><i class="fas fa-search"></i></button>
-        <button id="toggle-filters" class="header-btn toggle-filters-btn" title="Прикажи/Сокриј филтри">
-            <i class="fas fa-filter"></i>
-        </button>
+        <button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i></button>
         <button id="copy-data-btn" class="header-btn copy-data edit-hidden" title="Копирај податоци"><i class="fas fa-copy"></i></button>
     </header>
     <script src="/load-header.js"></script>
     <main>
-        <div class="mobile-search-bar" id="mobile-search-bar">
-            <input type="text" id="mobile-search-input" placeholder="Пребарај артист, жанр, град...">
-            <button class="mobile-search-clear" id="mobile-search-clear" title="Исчисти"><i class="fas fa-times"></i></button>
-        </div>
         <div class="controls">
-            <input type="text" id="search-name" placeholder="Пребарај по име...">
-            <select id="filter-city"></select>
-            <select id="filter-genre"></select>
-            <select id="filter-sounds-like"></select>
-            <select id="filter-status"></select>
-            <select id="filter-label"></select>
-            <button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i></button>
+            <div class="unified-search-container" id="unified-search-container">
+                <div class="unified-search-input-row" id="unified-search-input-row">
+                    <i class="fas fa-search unified-search-icon"></i>
+                    <div class="unified-search-chips" id="unified-search-chips"></div>
+                    <input type="text" id="unified-search" placeholder="Пребарај артист, жанр, град..." autocomplete="off">
+                    <button type="button" id="filter-toggle-btn" class="filter-toggle-btn" title="Филтри"><i class="fas fa-sliders-h"></i></button>
+                </div>
+                <div class="unified-search-dropdown" id="unified-search-dropdown"></div>
+            </div>
+            <input type="hidden" id="search-name">
+            <select id="filter-city" style="display:none"></select>
+            <select id="filter-genre" style="display:none"></select>
+            <select id="filter-sounds-like" style="display:none"></select>
+            <select id="filter-status" style="display:none"></select>
+            <select id="filter-label" style="display:none"></select>
         </div>
         <div id="loading-bar" class="loading-bar">
             <div class="loading-progress"></div>
