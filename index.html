@@ -175,6 +175,12 @@
             flex-shrink: 0;
         }
 
+        .dash-card-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
         .dash-card-header h2 {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.1rem;
@@ -207,6 +213,30 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
+            cursor: pointer;
+        }
+
+        .dash-card-header button.more-link {
+            font-family: inherit;
+            line-height: 1.2;
+        }
+
+        .shuffle-btn {
+                width: 28px;
+                height: 28px;
+                padding: 0;
+            border-radius: 14px !important;
+             border: 2px solid #000;
+             background: #000;
+             color: #fff;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             transition: color 0.25s ease;
+             position: relative;
+             z-index: 1;
+             overflow: hidden;
+             cursor: pointer;
         }
 
         .dash-card-header .more-link::before {
@@ -1477,38 +1507,34 @@
 
         /* Animated chevron popularity indicators (matching charts.html) */
         .trending-chevrons {
-            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.18rem;
             flex-shrink: 0;
             margin-left: auto;
-            width: 10px;
-            height: 22px;
+            min-height: 20px;
             pointer-events: none;
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
         }
 
         .trending-chevrons i {
-            position: absolute;
-            left: 50%;
+            position: relative;
             display: block !important;
-            width: 7px;
-            height: 7px;
-            border-right: 2.5px solid #16c953;
-            border-top: 2.5px solid #16c953;
-            transform: translateX(-50%) rotate(-45deg);
+            width: 10px;
+            height: 10px;
+            border-right: 3px solid #16c953;
+            border-top: 3px solid #16c953;
+            transform: rotate(-45deg);
             opacity: 0;
             animation: trending-chevron-float-up 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            animation-delay: calc(var(--chev-index, 0) * 0.12s);
         }
 
-        .trending-chevrons i:nth-child(2) { animation-delay: 0.4s; }
-        .trending-chevrons i:nth-child(3) { animation-delay: 0.8s; }
-
         @keyframes trending-chevron-float-up {
-            0%   { opacity: 0; top: 18px; }
+            0%   { opacity: 0; top: 6px; }
             20%  { opacity: 0.7; }
             50%  { opacity: 0.7; }
             80%  { opacity: 0; }
-            100% { opacity: 0; top: -2px; }
+            100% { opacity: 0; top: -8px; }
         }
 
         /* Verified badge inline */
@@ -2139,14 +2165,17 @@
             <ul class="events-list" id="events-list" style="display:none;"></ul>
         </div>
 
-        <!-- ==================== TRENDING: RISING ARTISTS ==================== -->
-        <div class="dash-card" id="rising-card">
+        <!-- ==================== TRENDING: HOT SONGS ==================== -->
+        <div class="dash-card" id="hot-songs-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-arrow-trend-up"></i> Артисти во подем</h2>
-                <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                <h2><i class="fas fa-fire"></i> Популарно</h2>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-hot-songs-btn"><i class="fas fa-shuffle"></i></button>
+                    <a href="/charts" class="more-link">Топ Листа &raquo;</a>
+                </div>
             </div>
-            <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
-            <ul class="trending-list" id="rising-list" style="display:none;"></ul>
+            <div class="dash-loading" id="hot-songs-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <ul class="trending-list" id="hot-songs-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== QUICK ACTIONS ==================== -->
@@ -2180,7 +2209,10 @@
         <div class="dash-card" id="discover-card">
             <div class="dash-card-header">
                 <h2><i class="fas fa-star"></i> Откриј артисти</h2>
-                <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-discover-btn"><i class="fas fa-shuffle"></i></button>
+                    <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                </div>
             </div>
             <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
             <div class="discover-grid" id="discover-grid" style="display:none;"></div>
@@ -2190,7 +2222,10 @@
         <div class="dash-card" id="sotd-card">
             <div class="dash-card-header">
                 <h2><i class="fas fa-headphones"></i> Препорачано од кустоси</h2>
-                <a href="/kustosi" class="more-link">Сите кустоси &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-sotd-btn"><i class="fas fa-shuffle"></i></button>
+                    <a href="/kustosi" class="more-link">Сите кустоси &raquo;</a>
+                </div>
             </div>
             <div class="dash-loading" id="sotd-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
             <ul class="sotd-list" id="sotd-list" style="display:none;"></ul>
@@ -2206,20 +2241,26 @@
             <ul class="news-list" id="news-list" style="display:none;"></ul>
         </div>
 
-        <!-- ==================== TRENDING: HOT SONGS ==================== -->
-        <div class="dash-card" id="hot-songs-card">
+        <!-- ==================== TRENDING: RISING ARTISTS ==================== -->
+        <div class="dash-card" id="rising-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-fire"></i> Оган</h2>
-                <a href="/charts" class="more-link">Топ Листа &raquo;</a>
+                <h2><i class="fas fa-arrow-trend-up"></i> Артисти во подем</h2>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-rising-btn"><i class="fas fa-shuffle"></i></button>
+                    <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                </div>
             </div>
-            <div class="dash-loading" id="hot-songs-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
-            <ul class="trending-list" id="hot-songs-list" style="display:none;"></ul>
+            <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <ul class="trending-list" id="rising-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== VERIFY ARTISTS ==================== -->
         <div class="dash-card" id="verify-card">
             <div class="dash-card-header">
                 <h2><i class="fas fa-circle-check"></i> Помогни со верификација</h2>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-verify-btn"><i class="fas fa-shuffle"></i></button>
+                </div>
             </div>
             <p class="verify-card-intro">Ги познаваш овие артисти или нивните претставници? Јави им да се верифицираат!</p>
             <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
@@ -2787,7 +2828,14 @@
 
             list.innerHTML = picked.map(function(r) {
                 var popChangeVal = r.popularityChange || r._popChange || 0;
-                var chevHtml = popChangeVal > 0 ? '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност"><i></i><i></i><i></i></span>' : '';
+                var chevCount = Math.max(0, Math.floor(popChangeVal));
+                var chevHtml = '';
+                if (chevCount > 0) {
+                    var chevItems = Array.from({ length: chevCount }, function(_, idx) {
+                        return '<i style="--chev-index:' + idx + '"></i>';
+                    }).join('');
+                    chevHtml = '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност">' + chevItems + '</span>';
+                }
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
@@ -3016,7 +3064,27 @@
 
         // escHtml, formatDate, mkMonths — provided by common.js
 
+        function bindShuffleButtons() {
+            var buttonBindings = [
+                { id: 'shuffle-hot-songs-btn', render: renderHotSongs },
+                { id: 'shuffle-discover-btn', render: renderDiscoverArtists },
+                { id: 'shuffle-sotd-btn', render: renderSongsOfTheDay },
+                { id: 'shuffle-rising-btn', render: renderRisingArtists },
+                { id: 'shuffle-verify-btn', render: renderVerifyArtists }
+            ];
+
+            buttonBindings.forEach(function(binding) {
+                var btn = document.getElementById(binding.id);
+                if (!btn) return;
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    binding.render();
+                });
+            });
+        }
+
         // ==================== INIT ====================
+        bindShuffleButtons();
         loadAllData();
     })();
     </script>

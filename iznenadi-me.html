@@ -46,19 +46,41 @@
         body.surprise-page main {
             height: auto;
             overflow: visible;
+            padding: 0.75rem 0 1.5rem;
         }
 
         .surprise-container {
-            max-width: 520px;
+            max-width: 620px;
             margin: 0 auto;
             padding: 2rem 1.25rem 3rem;
             font-family: 'Inter', sans-serif;
             color: var(--text-primary);
+            position: relative;
+        }
+
+        .surprise-container::before {
+            content: '';
+            position: absolute;
+            inset: 0.35rem 0.5rem auto;
+            height: 180px;
+            background: radial-gradient(circle at 15% 10%, rgba(74,127,165,0.14), transparent 55%),
+                        radial-gradient(circle at 85% 15%, rgba(74,127,165,0.09), transparent 58%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .surprise-container > * {
+            position: relative;
+            z-index: 1;
         }
 
         .surprise-hero {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            padding: 1.35rem 1rem 1.1rem;
+            animation: heroIn 0.55s ease;
         }
 
         .surprise-hero .hero-icon {
@@ -66,28 +88,67 @@
             margin-bottom: 0.75rem;
             display: block;
             color: var(--accent-blue);
+            animation: heroPulse 4.2s ease-in-out infinite;
         }
 
         .surprise-hero h2 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.38rem;
             font-weight: 800;
             margin: 0 0 0.5rem;
             color: var(--text-primary);
+            letter-spacing: 0.01em;
         }
 
         .surprise-hero p {
-            font-size: 0.82rem;
+            font-size: 0.83rem;
             color: var(--text-secondary);
             margin: 0;
-            line-height: 1.6;
+            line-height: 1.65;
+        }
+
+        .selection-summary {
+            margin-top: 0.9rem;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .selection-pill {
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 0.67rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            padding: 0.28rem 0.55rem;
+            text-transform: uppercase;
+            transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+        }
+
+        .selection-pill.active {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+            transform: translateY(-1px);
         }
 
         /* Step container */
         .surprise-step {
-            margin-bottom: 2rem;
+            margin-bottom: 0.9rem;
             opacity: 1;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            padding: 0.9rem;
+            animation: stepIn 0.48s ease both;
+        }
+
+        #step-era { animation-delay: 0.05s; }
+        #step-filters { animation-delay: 0.1s; }
+
+        .surprise-step:hover {
+            transform: translateY(-1px);
         }
 
         .surprise-step.disabled {
@@ -129,11 +190,11 @@
         .option-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 0;
+            gap: 0.35rem;
         }
         .option-grid .filter-btn.preset-btn {
-            min-width: 120px;
-            width: 50%;
+            min-width: 140px;
+            width: calc(50% - 0.2rem);
             justify-content: center;
             flex: 0 0 auto;
         }
@@ -178,27 +239,29 @@
             color: var(--bg-primary);
         }
         .surprise-page .preset-btn {
-            border-radius: 0;
+            border-radius: 8px;
             font-family: 'Montserrat', sans-serif;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.035em;
             font-weight: 600;
-            font-size: 0.72rem;
-            padding: 0.3rem 0.85rem;
-            height: 32px;
-            margin-left: -1px;
+            font-size: 0.71rem;
+            padding: 0.4rem 0.85rem;
+            height: 34px;
+            margin-left: 0;
         }
-        .surprise-page .preset-btn:first-child { margin-left: 0; }
+
         .surprise-page .preset-btn:hover {
             border-color: var(--accent-blue);
             color: var(--text-primary);
             z-index: 1;
+            transform: translateY(-1px);
         }
         .surprise-page .preset-btn.active {
             border-color: #000;
             background: #000;
             color: #fff;
             z-index: 2;
+            animation: selectionPop 0.24s ease;
         }
         body.dark-mode .surprise-page .preset-btn.active {
             border-color: #fff;
@@ -209,54 +272,93 @@
         /* Go button */
         .surprise-go-wrapper {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.25rem;
+            border: 1px dashed var(--border-color);
+            padding: 1rem;
+            background: var(--bg-primary);
         }
 
-        .surprise-go-btn {
+        .surprise-cta-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.6rem;
-            padding: 0.85rem 2.2rem;
-            border: none;
-            border-radius: 12px;
-            background: var(--accent-blue);
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
+            min-width: 260px;
+            justify-content: center;
+            padding: 0.9rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 0.01em;
+            letter-spacing: 0.015em;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .surprise-go-btn:hover {
-            transform: translateY(-1px);
+        .surprise-cta-btn:hover {
+            transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(74, 127, 165, 0.35);
         }
 
-        .surprise-go-btn:active {
+        .surprise-cta-btn:active {
             transform: scale(0.97);
         }
 
-        .surprise-go-btn:disabled {
+        .surprise-cta-btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        .surprise-go-btn i {
+        .surprise-cta-btn i {
             font-size: 1rem;
         }
 
+        .surprise-cta-btn.ready {
+            animation: ctaReady 2.7s ease-in-out infinite;
+        }
+
         /* Loading spinner */
-        .surprise-go-btn.loading i {
+        .surprise-cta-btn.loading i {
             animation: spin 0.8s linear infinite;
+        }
+
+        .surprise-go-wrapper.shake {
+            animation: noResultsShake 0.35s ease;
         }
 
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes heroPulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1px); }
+        }
+
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes selectionPop {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes ctaReady {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(74,127,165,0); }
+            50% { box-shadow: 0 0 0 5px rgba(74,127,165,0.08); }
+        }
+
+        @keyframes noResultsShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
         }
 
         /* No results message */
@@ -285,6 +387,10 @@
                 padding: 1.25rem 1rem 2rem;
             }
 
+            .surprise-step {
+                padding: 0.75rem;
+            }
+
             .surprise-hero h2 {
                 font-size: 1.15rem;
             }
@@ -295,19 +401,32 @@
 
             .option-grid {
                 flex-wrap: wrap;
+                gap: 0.3rem;
             }
             .option-grid .filter-btn.preset-btn {
                 min-width: 0;
-                flex: 1 1 auto;
+                width: 100%;
+                flex: 1 1 100%;
             }
             .surprise-page .preset-btn {
                 padding: 0.3rem 0.65rem;
                 font-size: 0.66rem;
             }
 
-            .surprise-go-btn {
-                font-size: 0.85rem;
-                padding: 0.75rem 1.8rem;
+            .surprise-cta-btn {
+                min-width: 100%;
+                font-size: 1.05rem;
+                padding: 0.78rem 1.25rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .surprise-hero .hero-icon,
+            .surprise-step,
+            .surprise-page .preset-btn.active,
+            .surprise-cta-btn.ready,
+            .surprise-go-wrapper.shake {
+                animation: none !important;
             }
         }
     </style>
@@ -318,6 +437,17 @@
     <script src="/load-header.js"></script>
     <main>
         <div class="surprise-container">
+            <div class="surprise-hero">
+                <span class="hero-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <h2>Изненади ме со следниот артист</h2>
+                <p>Избери расположение, пушти го случајниот избор и откриј нешто ново од сцената.</p>
+                <div class="selection-summary" id="selection-summary">
+                    <span class="selection-pill active" id="summary-genre">Сите жанрови</span>
+                    <span class="selection-pill active" id="summary-era">Било која ера</span>
+                    <span class="selection-pill" id="summary-filters">Без дополнителни филтри</span>
+                </div>
+            </div>
+
             <!-- Step 1: Genre -->
             <div class="surprise-step" id="step-genre">
                 <div class="step-label">
@@ -389,7 +519,7 @@
 
             <!-- Go button -->
             <div class="surprise-go-wrapper">
-                <button class="btn-generic" style="font-size: 2.5em; margin-top: 60px; padding: 0.75em 2em;" id="surprise-go" disabled>
+                <button class="btn-generic surprise-cta-btn" id="surprise-go" disabled>
                     <i class="fas fa-shuffle"></i> Изненади ме!
                 </button>
             </div>
@@ -444,6 +574,48 @@
         let releasesData = [];
         let eventsData = [];
         let dataLoaded = false;
+        const goBtn = document.getElementById('surprise-go');
+        const summaryGenreEl = document.getElementById('summary-genre');
+        const summaryEraEl = document.getElementById('summary-era');
+        const summaryFiltersEl = document.getElementById('summary-filters');
+
+        const genreLabels = {
+            all: 'Сите жанрови',
+            alt: 'Алтернативна',
+            rap: 'Рап / Трап',
+            electronic: 'Електронска',
+            jazz: 'Џез',
+            metal: 'Метал'
+        };
+
+        const eraLabels = {
+            any: 'Било која ера',
+            new: 'Нови (10г.)',
+            old: 'Стари (10+г.)'
+        };
+
+        const filterLabels = {
+            verified: 'Потврдени',
+            spotify: 'Со Spotify',
+            active: 'Активни',
+            inactive: 'Неактивни'
+        };
+
+        function updateSelectionSummary() {
+            summaryGenreEl.textContent = genreLabels[selectedGenre] || 'Сите жанрови';
+            summaryEraEl.textContent = eraLabels[selectedEra] || 'Било која ера';
+            summaryFiltersEl.textContent = activeFilters.size
+                ? Array.from(activeFilters).map(f => filterLabels[f]).filter(Boolean).join(' • ')
+                : 'Без дополнителни филтри';
+
+            summaryFiltersEl.classList.toggle('active', activeFilters.size > 0);
+        }
+
+        function updateStepCompletion() {
+            document.getElementById('step-num-1').classList.toggle('completed', selectedGenre !== 'all');
+            document.getElementById('step-num-2').classList.toggle('completed', selectedEra !== 'any');
+            document.getElementById('step-num-3').classList.toggle('completed', activeFilters.size > 0);
+        }
 
         // ==================== OPTION BUTTON LOGIC ====================
         document.querySelectorAll('#step-genre .filter-btn.preset-btn').forEach(btn => {
@@ -452,6 +624,8 @@
                 btn.classList.add('active');
                 selectedGenre = btn.dataset.genre;
                 updateGoButton();
+                updateSelectionSummary();
+                updateStepCompletion();
             });
         });
 
@@ -461,6 +635,8 @@
                 btn.classList.add('active');
                 selectedEra = btn.dataset.era;
                 updateGoButton();
+                updateSelectionSummary();
+                updateStepCompletion();
             });
         });
 
@@ -472,10 +648,22 @@
                     activeFilters.delete(filter);
                     btn.classList.remove('active');
                 } else {
+                    if (filter === 'active') {
+                        activeFilters.delete('inactive');
+                        const inactiveBtn = document.querySelector('#step-filters .filter-btn.preset-btn[data-filter="inactive"]');
+                        if (inactiveBtn) inactiveBtn.classList.remove('active');
+                    }
+                    if (filter === 'inactive') {
+                        activeFilters.delete('active');
+                        const activeBtn = document.querySelector('#step-filters .filter-btn.preset-btn[data-filter="active"]');
+                        if (activeBtn) activeBtn.classList.remove('active');
+                    }
                     activeFilters.add(filter);
                     btn.classList.add('active');
                 }
                 updateGoButton();
+                updateSelectionSummary();
+                updateStepCompletion();
             });
         });
 
@@ -499,8 +687,8 @@
         }
 
         function updateGoButton() {
-            const goBtn = document.getElementById('surprise-go');
             goBtn.disabled = !dataLoaded;
+            goBtn.classList.toggle('ready', dataLoaded);
             document.getElementById('no-results').classList.remove('visible');
         }
 
@@ -584,7 +772,6 @@
         }
 
         // ==================== GO! ====================
-        const goBtn = document.getElementById('surprise-go');
         goBtn.addEventListener('click', () => {
             if (!dataLoaded) return;
 
@@ -608,9 +795,13 @@
             });
 
             const noResultsEl = document.getElementById('no-results');
+            const goWrapper = document.querySelector('.surprise-go-wrapper');
 
             if (candidates.length === 0) {
                 noResultsEl.classList.add('visible');
+                goWrapper.classList.remove('shake');
+                void goWrapper.offsetWidth;
+                goWrapper.classList.add('shake');
                 return;
             }
 
@@ -630,6 +821,8 @@
         });
 
         // ==================== INIT ====================
+        updateSelectionSummary();
+        updateStepCompletion();
         loadData();
     })();
     </script>
