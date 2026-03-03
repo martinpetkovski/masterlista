@@ -1723,6 +1723,12 @@
             color: rgba(255,255,255,0.45);
         }
 
+        .site-title-logo-wrap {
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
         .site-title-logo {
             width: 64px;
             height: 64px;
@@ -1732,6 +1738,11 @@
             position: relative;
             z-index: 2;
             opacity: 0.9;
+        }
+
+        /* Dropdown menu hidden on desktop */
+        .site-title-menu {
+            display: none;
         }
 
         /* Title navigation buttons (right side of site-title bar) */
@@ -1841,62 +1852,89 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            /* Hide inline nav buttons on mobile — use hamburger menu instead */
             .title-nav {
-                gap: 0;
-                order: 99;
-                flex-basis: 100%;
-                margin-left: 0;
-                margin-top: 0.4rem;
-                flex-wrap: wrap;
-            }
-
-            .title-nav-btn {
-                font-family: 'Montserrat', sans-serif;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                font-weight: 600;
-                font-size: 0.66rem;
-                padding: 0.25rem 0.55rem;
-                height: 28px;
-                border: 1px solid rgba(255,255,255,0.3);
-                background: transparent;
-                color: rgba(255,255,255,0.7);
-                margin-left: -1px;
-                flex: 1;
-                justify-content: center;
-                min-width: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .title-nav-btn::before {
                 display: none;
             }
 
-            .title-nav-btn:hover,
-            .title-nav-btn:active {
-                background: rgba(255,255,255,0.15);
-                color: #fff;
+            .site-title {
+                overflow: visible;
+                margin-left: -0.5rem;
+                margin-right: -0.5rem;
+                width: calc(100% + 1rem);
             }
 
-            body.dark-mode .title-nav-btn {
-                border-color: rgba(255,255,255,0.2);
-                background: transparent;
-                color: rgba(255,255,255,0.6);
+            .site-title-logo {
+                cursor: pointer;
             }
 
-            body.dark-mode .title-nav-btn:hover,
-            body.dark-mode .title-nav-btn:active {
-                background: rgba(255,255,255,0.1);
-                color: #fff;
+            /* Dropdown menu (same style as regular header nav) */
+            .site-title-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                z-index: 1000;
+                min-width: 180px;
+                background: #fff;
+                border: 2px solid #dfe1e5;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                padding: 0.3rem 0;
+                margin-top: 0.35rem;
             }
 
-            .title-nav-btn span {
-                display: inline;
+            .site-title-menu.open {
+                display: block;
             }
 
-            .title-nav-btn i {
-                font-size: 0.55rem;
+            .site-title-menu a {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+                color: #1a1d21;
+                text-decoration: none;
+                border: 2px solid transparent;
+            }
+
+            .site-title-menu a:hover {
+                background: #eceef1;
+            }
+
+            .site-title-menu a i {
+                width: 16px;
+                text-align: center;
+                color: #8b929a;
+            }
+
+            .site-title-menu .nav-separator {
+                display: block;
+                height: 1px;
+                background: #dfe1e5;
+                margin: 0.2rem 0.5rem;
+            }
+
+            body.dark-mode .site-title-menu {
+                background: var(--bg-secondary, #191c22);
+                border-color: var(--border-color, #2a2e36);
+            }
+
+            body.dark-mode .site-title-menu a {
+                color: var(--text-primary, #d5d8de);
+            }
+
+            body.dark-mode .site-title-menu a i {
+                color: var(--text-muted, #555b64);
+            }
+
+            body.dark-mode .site-title-menu a:hover {
+                background: var(--bg-hover, #22262e);
+            }
+
+            body.dark-mode .site-title-menu .nav-separator {
+                background: var(--border-color, #2a2e36);
             }
         }
 
@@ -2080,7 +2118,22 @@
 
         <!-- ==================== TITLE BAR WITH NAV ==================== -->
         <div class="site-title">
-            <img src="/logo.png" alt="" class="site-title-logo">
+            <div class="site-title-logo-wrap">
+                <img src="/logo.png" alt="" class="site-title-logo" id="site-title-logo-trigger">
+                <div class="site-title-menu" id="site-title-menu">
+                    <a href="/"><i class="fas fa-house"></i> Дома</a>
+                    <a href="/charts"><i class="fas fa-chart-line"></i> Топ Листа</a>
+                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
+                    <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
+                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
+                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
+                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
+                    <span class="nav-separator"></span>
+                    <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
+                    <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> Instagram</a>
+                </div>
+            </div>
             <div class="site-title-text">
                 <span class="site-title-main">Топ Листа</span>
                 <span class="site-title-sub" id="site-last-update">—</span>
@@ -2262,7 +2315,7 @@
                     <button type="button" class="more-link shuffle-btn" id="shuffle-verify-btn"><i class="fas fa-shuffle"></i></button>
                 </div>
             </div>
-            <p class="verify-card-intro">Ги познаваш овие артисти или нивните претставници? Јави им да се верифицираат!</p>
+            <p class="verify-card-intro">Ги познаваш овие артисти или нивните претставници?</p>
             <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
             <ul class="verify-list" id="verify-list" style="display:none;"></ul>
         </div>
@@ -2286,6 +2339,26 @@
         // ==================== INIT SHARED UI (from common.js) ====================
         initSettingsMenu();
         initNavMenu();
+
+        // ==================== INDEX TITLE HAMBURGER MENU ====================
+        (function() {
+            var logoTrigger = document.getElementById('site-title-logo-trigger');
+            var titleMenu = document.getElementById('site-title-menu');
+            if (logoTrigger && titleMenu) {
+                logoTrigger.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 800) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        titleMenu.classList.toggle('open');
+                    }
+                });
+                document.addEventListener('click', function(e) {
+                    if (!titleMenu.contains(e.target) && !logoTrigger.contains(e.target)) {
+                        titleMenu.classList.remove('open');
+                    }
+                });
+            }
+        })();
 
         // ==================== NAVBAR: HIDE UNTIL SCROLL ====================
         (function() {
