@@ -348,12 +348,21 @@
             text-overflow: ellipsis;
         }
 
-        .mini-chart-artist a:hover {
-            color: var(--accent-blue, #4a7fa5);
+        .event-artist-link,
+        .mini-chart-artist a,
+        .radar-info-artist a,
+        .trending-sub a {
+            color: var(--text-secondary, #555b64);
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        .radar-info-artist a:hover {
-            color: var(--accent-blue, #4a7fa5) !important;
+        .event-artist-link:hover,
+        .mini-chart-artist a:hover,
+        .radar-info-artist a:hover,
+        .trending-sub a:hover {
+            color: var(--accent-blue, #4a7fa5);
+            text-decoration: underline;
         }
 
         .mini-chart-pop {
@@ -910,17 +919,6 @@
             font-size: 0.78rem;
             color: var(--text-muted, #8b929a);
             margin-top: 0.15rem;
-        }
-
-        .event-artist-link {
-            color: var(--text-secondary, #555b64);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .event-artist-link:hover {
-            color: var(--accent-blue, #4a7fa5);
-            text-decoration: underline;
         }
 
         .no-data-msg {
@@ -2722,7 +2720,7 @@
                     coverHtml +
                     '<div class="mini-chart-info">' +
                         '<div class="mini-chart-title">' + escHtml(r.releaseTitle) + '</div>' +
-                        '<div class="mini-chart-artist"><a href="' + getArtistPageUrl(r.bandName) + '" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
+                        '<div class="mini-chart-artist"><a href="' + getArtistPageUrl(r.bandName) + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
                     '</div>' +
                     '<div class="chart-pop-wrap">' +
                         '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
@@ -2780,7 +2778,7 @@
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(r.releaseTitle) + '</div>' +
-                            '<div class="radar-info-artist"><a href="' + getArtistPageUrl(r.bandName) + '" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
+                            '<div class="radar-info-artist"><a href="' + getArtistPageUrl(r.bandName) + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
                         '</div>' +
                         '<div class="radar-meta">' +
                             '<div class="radar-date">' + formatDate(r.releaseDate) + '</div>' +
@@ -2987,7 +2985,7 @@
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(r.releaseTitle) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
+                        '<div class="trending-sub"><a href="' + getArtistPageUrl(r.bandName) + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
                     '</div>' +
                     chevHtml +
                 '</li>';
