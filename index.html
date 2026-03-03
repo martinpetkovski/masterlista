@@ -348,6 +348,14 @@
             text-overflow: ellipsis;
         }
 
+        .mini-chart-artist a:hover {
+            color: var(--accent-blue, #4a7fa5);
+        }
+
+        .radar-info-artist a:hover {
+            color: var(--accent-blue, #4a7fa5) !important;
+        }
+
         .mini-chart-pop {
             font-family: 'Montserrat', sans-serif;
             font-weight: 800;
@@ -795,7 +803,21 @@
             display: flex;
             gap: 0.75rem;
             padding: 0.55rem 0;
-            align-items: flex-start;
+            align-items: center;
+        }
+
+        .event-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .event-title,
+        .event-meta,
+        .event-artists {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .event-date-badge {
@@ -862,8 +884,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
-        .event-info { flex: 1; min-width: 0; }
 
         .event-title {
             font-family: 'Montserrat', sans-serif;
@@ -1505,36 +1525,42 @@
             color: #000;
         }
 
-        /* Animated chevron popularity indicators (matching charts.html) */
+        /* Animated chevron popularity indicators — vertical stack */
         .trending-chevrons {
             display: inline-flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.18rem;
+            gap: 0;
             flex-shrink: 0;
             margin-left: auto;
-            min-height: 20px;
             pointer-events: none;
+            padding: 0.15rem 0.35rem;
         }
 
         .trending-chevrons i {
             position: relative;
             display: block !important;
-            width: 10px;
-            height: 10px;
-            border-right: 3px solid #16c953;
-            border-top: 3px solid #16c953;
+            width: 14px;
+            height: 8px;
+            border-right: 2.5px solid #16c953;
+            border-top: 2.5px solid #16c953;
             transform: rotate(-45deg);
+            margin-top: -3px;
             opacity: 0;
-            animation: trending-chevron-float-up 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            animation-delay: calc(var(--chev-index, 0) * 0.12s);
+            animation: trending-chevron-ripple 2s ease-in-out infinite;
+            animation-delay: calc((var(--chev-total, 1) - var(--chev-index, 0) - 1) * 0.12s);
         }
 
-        @keyframes trending-chevron-float-up {
-            0%   { opacity: 0; top: 6px; }
-            20%  { opacity: 0.7; }
-            50%  { opacity: 0.7; }
-            80%  { opacity: 0; }
-            100% { opacity: 0; top: -8px; }
+        .trending-chevrons i:first-child {
+            margin-top: 0;
+        }
+
+        @keyframes trending-chevron-ripple {
+            0%   { opacity: 0.1; }
+            20%  { opacity: 0.8; }
+            50%  { opacity: 0.8; }
+            75%  { opacity: 0.25; }
+            100% { opacity: 0.1; }
         }
 
         /* Verified badge inline */
@@ -1834,7 +1860,45 @@
             }
 
             .release-radar-grid {
-                grid-template-columns: repeat(3, 1fr);
+                display: flex;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 0.5rem;
+                padding-bottom: 0.25rem;
+            }
+
+            .release-radar-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .release-radar-grid .radar-item {
+                flex: 0 0 120px;
+                scroll-snap-align: start;
+            }
+
+            /* News list as horizontal scroll on mobile */
+            .news-list {
+                display: flex !important;
+                grid-template-columns: none !important;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 0.5rem;
+                padding-bottom: 0.25rem;
+            }
+
+            .news-list::-webkit-scrollbar {
+                display: none;
+            }
+
+            .news-list .news-item {
+                flex: 0 0 200px;
+                scroll-snap-align: start;
             }
 
             .discover-img { width: 56px; height: 56px; }
@@ -1846,10 +1910,6 @@
 
             .yt-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .news-list {
-                grid-template-columns: repeat(2, 1fr);
             }
 
             /* Hide inline nav buttons on mobile — use hamburger menu instead */
@@ -2237,14 +2297,14 @@
                 <h2><i class="fas fa-rocket"></i> Брз пристап</h2>
             </div>
             <div class="quick-actions">
-                <a href="/iznenadi-me" class="quick-action-btn">
-                    <i class="fas fa-shuffle"></i> Изненади ме!
-                </a>
                 <a href="/lista#dodaj-artist" class="quick-action-btn">
                     <i class="fas fa-plus"></i> Додај артист
                 </a>
                 <a href="/nastani#dodaj-nastan" class="quick-action-btn">
                     <i class="fas fa-calendar-plus"></i> Додај настан
+                </a>
+                <a href="/iznenadi-me" class="quick-action-btn">
+                    <i class="fas fa-shuffle"></i> Изненади ме!
                 </a>
                 <a href="/charts" class="quick-action-btn">
                     <i class="fas fa-chart-line"></i> Топ Листа
@@ -2662,7 +2722,7 @@
                     coverHtml +
                     '<div class="mini-chart-info">' +
                         '<div class="mini-chart-title">' + escHtml(r.releaseTitle) + '</div>' +
-                        '<div class="mini-chart-artist">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
+                        '<div class="mini-chart-artist"><a href="' + getArtistPageUrl(r.bandName) + '" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
                     '</div>' +
                     '<div class="chart-pop-wrap">' +
                         '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
@@ -2687,13 +2747,26 @@
 
         // ==================== RENDER: RELEASE RADAR (last 5, pre-computed) ====================
         function renderReleaseRadar() {
-            var last5 = siteMaster && siteMaster.releaseRadar ? siteMaster.releaseRadar : [];
-            if (last5.length === 0 && chartData && chartData.releases) {
-                // Fallback to client-side dedup if site-master not available
+            var isMobile = window.innerWidth <= 800;
+            var releases;
+
+            if (isMobile && chartData && chartData.releases) {
+                // Mobile: show all releases from the past 7 days, minimum 5
                 var deduped = deduplicateCollabs(chartData.releases);
                 var sorted = deduped.slice().sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
-                last5 = sorted.slice(0, 5);
+                var sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                var recent = sorted.filter(function(r) { return new Date(r.releaseDate) >= sevenDaysAgo; });
+                releases = recent.length >= 5 ? recent : sorted.slice(0, Math.max(5, recent.length));
+            } else {
+                releases = siteMaster && siteMaster.releaseRadar ? siteMaster.releaseRadar : [];
+                if (releases.length === 0 && chartData && chartData.releases) {
+                    var deduped = deduplicateCollabs(chartData.releases);
+                    var sorted = deduped.slice().sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
+                    releases = sorted.slice(0, 5);
+                }
             }
+            var last5 = releases;
 
             var list = document.getElementById('radar-list');
             var loading = document.getElementById('radar-loading');
@@ -2707,7 +2780,7 @@
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(r.releaseTitle) + '</div>' +
-                            '<div class="radar-info-artist">' + escHtml(r.bandName) + verifiedBadge(r.bandName) + '</div>' +
+                            '<div class="radar-info-artist"><a href="' + getArtistPageUrl(r.bandName) + '" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none">' + escHtml(r.bandName) + '</a>' + verifiedBadge(r.bandName) + '</div>' +
                         '</div>' +
                         '<div class="radar-meta">' +
                             '<div class="radar-date">' + formatDate(r.releaseDate) + '</div>' +
@@ -2719,6 +2792,7 @@
 
             loading.style.display = 'none';
             list.style.display = '';
+
         }
 
         // ==================== HELPER: Find latest release for an artist ====================
@@ -2905,7 +2979,7 @@
                 var chevHtml = '';
                 if (chevCount > 0) {
                     var chevItems = Array.from({ length: chevCount }, function(_, idx) {
-                        return '<i style="--chev-index:' + idx + '"></i>';
+                        return '<i style="--chev-index:' + idx + ';--chev-total:' + chevCount + '"></i>';
                     }).join('');
                     chevHtml = '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност">' + chevItems + '</span>';
                 }
@@ -3081,6 +3155,7 @@
 
             loading.style.display = 'none';
             list.style.display = '';
+
         }
 
         // ==================== RENDER: VERIFY ARTISTS ====================
@@ -3127,10 +3202,11 @@
             var picked = videoIds.slice(0, maxVideos);
 
             grid.innerHTML = picked.map(function(v) {
+                var videoId = typeof v === 'string' ? v : v.id;
                 return '<div class="yt-embed">' +
-                    '<iframe src="https://www.youtube.com/embed/' + v.id + '" ' +
+                    '<iframe src="https://www.youtube.com/embed/' + videoId + '" ' +
                     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-                    'allowfullscreen loading="lazy" title="' + (v.title || 'Xotel видео').replace(/"/g, '&quot;') + '"></iframe>' +
+                    'allowfullscreen loading="lazy" title="Xotel видео"></iframe>' +
                 '</div>';
             }).join('');
         }

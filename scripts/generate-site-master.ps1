@@ -959,7 +959,9 @@ $headerThumbs = @($charts["all_single"] | ForEach-Object { $_.thumbnail } | Wher
 
 $xotelVideoIds = @()
 foreach ($link in $xotelLinks) {
-    if ($link.url -match '(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})') {
+    # Support both plain URL strings and objects with .url property
+    $url = if ($link -is [string]) { $link } else { $link.url }
+    if ($url -match '(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})') {
         $xotelVideoIds += $Matches[1]
     }
 }
