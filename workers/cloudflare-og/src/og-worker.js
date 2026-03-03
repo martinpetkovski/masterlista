@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OG Meta Tag Worker for toplista.mk
  *
  * Intercepts requests from social media crawlers (Facebook, Twitter, Discord,
@@ -221,7 +221,7 @@ export default {
 
         return new Response(
           buildOgHtml({
-            title: `${curator.name} — Кустос | Македонска Музичка Мастер Листа`,
+            title: `${curator.name} — Кустос | ТопЛиста.мк`,
             description: `Курирана плејлиста од ${curator.name}`,
             image: curator.image || DEFAULT_OG_IMAGE,
             url: `${SITE_URL}/kustos/${generateSlug(curator.name)}`,
@@ -247,7 +247,7 @@ export default {
 
         return new Response(
           buildOgHtml({
-            title: `${event.title}${datePart} | Македонска Музичка Мастер Листа`,
+            title: `${event.title}${datePart} | ТопЛиста.мк`,
             description: `${event.title}${placePart}${datePart}`,
             image: DEFAULT_OG_IMAGE,
             url: `${SITE_URL}/nastan/${encodeURIComponent(event.id)}`,
@@ -268,7 +268,7 @@ export default {
 
       return new Response(
         buildOgHtml({
-          title: `${artist.name} | Македонска Музичка Мастер Листа`,
+          title: `${artist.name} | ТопЛиста.мк`,
           description: `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`,
           image: artist.image || DEFAULT_OG_IMAGE,
           url: `${SITE_URL}/${encodeURIComponent(generateSlug(artist.name))}`,

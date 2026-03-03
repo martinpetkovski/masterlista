@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">Настан | Македонска Музичка Мастер Листа</title>
+    <title id="page-title">Настан | ТопЛиста.мк</title>
 
-    <meta name="title" id="meta-title" content="Настан | Македонска Музичка Мастер Листа">
+    <meta name="title" id="meta-title" content="Настан | ТопЛиста.мк">
     <meta name="description" id="meta-description" content="Музички настан од македонската музичка сцена.">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
     <link rel="canonical" id="canonical-url" href="https://toplista.mk/nastan">
 
     <meta property="og:type" content="event">
     <meta property="og:url" id="og-url" content="https://toplista.mk/nastan">
-    <meta property="og:title" id="og-title" content="Настан | Македонска Музичка Мастер Листа">
+    <meta property="og:title" id="og-title" content="Настан | ТопЛиста.мк">
     <meta property="og:description" id="og-description" content="Музички настан од македонската музичка сцена.">
     <meta property="og:image" id="og-image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
@@ -631,7 +631,7 @@
             var isPast = daysUntil(evt.date) < 0;
 
             // Update SEO meta
-            var title = evt.title + ' | Македонска Музичка Мастер Листа';
+            var title = evt.title + ' | ТопЛиста.мк';
             document.getElementById('page-title').textContent = title;
             document.getElementById('event-page-title').textContent = 'Настан';
             var desc = evt.title + ' — ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + evt.place;
@@ -736,7 +736,7 @@
 
             // Footer
             html += '<div class="event-footer">';
-            html += '<a href="/"><img src="/logo.png" alt="Македонска Музичка Мастер Листа" class="mmm-logo-svg" width="28" height="28"></a>';
+            html += '<a href="/"><img src="/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28"></a>';
             html += '</div>';
 
             document.getElementById('event-content').innerHTML = html;

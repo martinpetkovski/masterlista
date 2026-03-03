@@ -352,7 +352,7 @@ function Test-ArtistMatchesAlt {
     return $true
 }
 
-# Get singles chart: filter singles, prefer last 2 months, backfill if needed, sort by popularity
+# Get singles chart: filter singles, prefer last 4 weeks, backfill if needed, sort by popularity
 # (Matches the website index.html logic exactly)
 function Get-SinglesChart {
     param($allReleases, [int]$count = 10, [string]$genreFilter = "all", $bandsData = $null)
@@ -384,12 +384,12 @@ function Get-SinglesChart {
         try { [DateTime]::Parse($_.releaseDate) } catch { [DateTime]::MinValue }
     } -Descending)
 
-    # Prefer last 2 months, backfill with older if pool < 20 (matches website logic)
-    $twoMonthsAgo = (Get-Date).AddMonths(-2).ToString("yyyy-MM-dd")
-    $recentSingles = @($sortedByDate | Where-Object { $_.releaseDate -ge $twoMonthsAgo })
+    # Prefer last 4 weeks, backfill with older if pool < 20 (matches website logic)
+    $cutoffDate = (Get-Date).AddDays(-28).ToString("yyyy-MM-dd")
+    $recentSingles = @($sortedByDate | Where-Object { $_.releaseDate -ge $cutoffDate })
     $pool = [System.Collections.ArrayList]@($recentSingles)
     if ($pool.Count -lt 20) {
-        $olderSingles = @($sortedByDate | Where-Object { $_.releaseDate -lt $twoMonthsAgo })
+        $olderSingles = @($sortedByDate | Where-Object { $_.releaseDate -lt $cutoffDate })
         $needed = 20 - $pool.Count
         $backfill = @($olderSingles | Select-Object -First $needed)
         foreach ($r in $backfill) { [void]$pool.Add($r) }

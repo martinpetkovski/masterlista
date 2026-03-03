@@ -237,10 +237,11 @@ function Build-ChartRanking {
         return @(Sort-ChartRanking $filtered)
     }
     
-    # 2-month cutoff with backfill
+    # Eligibility cutoff with backfill — 4 weeks for singles, 8 weeks for albums
     $minPool = [Math]::Max($count, 20)
-    $twoMonthsAgo = (Get-Date).AddMonths(-2)
-    $cutoff = $twoMonthsAgo.ToString("yyyy-MM-dd")
+    $cutoffWeeks = if ($type -eq 'album') { 8 } else { 4 }
+    $cutoffDate = (Get-Date).AddDays(-($cutoffWeeks * 7))
+    $cutoff = $cutoffDate.ToString("yyyy-MM-dd")
     
     $recent = @($filtered | Where-Object { $_.releaseDate -ge $cutoff })
     $pool = [System.Collections.ArrayList]::new()
@@ -643,8 +644,8 @@ $latestReleases = $latestReleasesByGenre['all']
 
 Write-Host "  > Calculating hot songs..." -ForegroundColor Yellow
 
-$currentRanked = Build-ChartRanking -releasesArr $releases -type 'single' -genre 'all' -count 20
-$prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type 'single' -genre 'all' -count 20
+$currentRanked = Build-ChartRanking -releasesArr $releases -type 'single' -genre 'all' -count 0
+$prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type 'single' -genre 'all' -count 0
 $prevMapHot = @{}
 for ($i = 0; $i -lt $prevRanked.Count; $i++) {
     $prevMapHot[$prevRanked[$i].releaseId] = @{

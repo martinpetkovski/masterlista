@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Настани | Македонска Музичка Мастер Листа</title>
+    <title>Настани | ТопЛиста.мк</title>
 
-    <meta name="title" content="Настани | Македонска Музичка Мастер Листа">
+    <meta name="title" content="Настани | ТопЛиста.мк">
     <meta name="description" content="Архива на музички настани и концерти од македонската музичка сцена.">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
     <link rel="canonical" href="https://toplista.mk/nastani">
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://toplista.mk/nastani.html">
-    <meta property="og:title" content="Настани | Македонска Музичка Мастер Листа">
+    <meta property="og:title" content="Настани | ТопЛиста.мк">
     <meta property="og:description" content="Архива на музички настани и концерти од македонската музичка сцена.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
@@ -182,97 +182,139 @@
     }
     .nastani-page .event-link-btn:hover { opacity: 0.7; }
 
-    /* Filter section */
-    .nastani-page .controls {
-        flex-wrap: wrap;
-    }
-    .nastani-page .events-search-row {
+    /* Search wrap (matching site-wide style) */
+    .nastani-page .events-search-wrap {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        width: 100%;
+        gap: 0.35rem;
+        flex: 1;
+        min-width: 200px;
         position: relative;
-    }
-    .nastani-page .events-search-icon {
-        position: absolute;
-        left: 0.65rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        font-size: 0.72rem;
-        pointer-events: none;
-        z-index: 1;
-    }
-    .nastani-page .events-filters-panel {
-        display: none;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
-        width: 100%;
-        padding-top: 0.4rem;
-        animation: filtersSlideDown 0.15s ease;
-    }
-    .nastani-page .events-filters-panel.open {
-        display: flex;
-    }
-    @keyframes filtersSlideDown {
-        from { opacity: 0; transform: translateY(-4px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    .nastani-page .clear-filters-btn {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.68rem;
-        font-weight: 600;
-        padding: 0.3rem 0.6rem;
+        min-height: 36px;
+        padding: 0.2rem 0.6rem;
         border: 1px solid var(--border-color);
-        border-radius: 4px;
+        border-radius: 8px;
+        background: var(--bg-primary);
+        cursor: text;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        margin-left: 0.75rem;
+    }
+    .nastani-page .events-search-wrap:focus-within {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
+    }
+    body.dark-mode .nastani-page .events-search-wrap {
+        background: var(--bg-secondary);
+        border-color: var(--border-color);
+    }
+    body.dark-mode .nastani-page .events-search-wrap:focus-within {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
+    }
+    .nastani-page .events-search-wrap i {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+    .nastani-page #search-events {
+        flex: 1;
+        min-width: 100px;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        font-family: 'Inter', sans-serif;
+        padding: 0.2rem 0;
+        height: 30px;
+    }
+    .nastani-page #search-events::placeholder { color: var(--text-muted); }
+    /* Filter bar (same as charts.html) */
+    .nastani-page .chart-filter-bar {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        gap: 0;
+    }
+    body.dark-mode .nastani-page .chart-filter-bar {
+        background: var(--bg-secondary);
+        border-bottom-color: var(--border-color);
+    }
+    .nastani-page .filter-presets {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        flex-shrink: 0;
+    }
+    .nastani-page .filter-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        border: 1px solid var(--border-color);
         background: var(--bg-primary);
         color: var(--text-secondary);
         cursor: pointer;
         transition: all 0.15s ease;
         white-space: nowrap;
     }
-    .nastani-page .clear-filters-btn:hover {
+    .nastani-page .filter-btn:hover {
         background: var(--bg-hover);
         color: var(--text-primary);
     }
-    body.dark-mode .nastani-page .clear-filters-btn {
-        background: var(--bg-secondary);
+    .nastani-page .filter-btn.active {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        color: var(--bg-primary);
     }
-    .nastani-page .filter-btn-group {
-        display: flex;
-        gap: 0;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .nastani-page .evt-filter-btn {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.72rem;
-        font-weight: 600;
-        padding: 0.35rem 0.7rem;
-        border: none;
-        background: var(--bg-primary);
+    .nastani-page .filter-btn i { font-size: 0.65rem; }
+    body.dark-mode .nastani-page .filter-btn {
+        background: var(--bg-hover);
+        border-color: var(--border-color);
         color: var(--text-secondary);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        border-right: 1px solid var(--border-color);
     }
-    .nastani-page .evt-filter-btn:last-child { border-right: none; }
-    .nastani-page .evt-filter-btn:hover {
-        background: var(--bg-hover);
+    body.dark-mode .nastani-page .filter-btn:hover {
+        background: #2a2e36;
         color: var(--text-primary);
     }
-    .nastani-page .evt-filter-btn.active {
-        background: var(--accent-blue);
-        color: #fff;
+    body.dark-mode .nastani-page .filter-btn.active {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        color: var(--bg-primary);
     }
-    body.dark-mode .nastani-page .evt-filter-btn {
-        background: var(--bg-secondary);
+    .nastani-page .preset-btn {
+        border-radius: 0;
+        font-family: 'Montserrat', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        font-weight: 600;
+        font-size: 0.72rem;
+        padding: 0.3rem 0.85rem;
+        height: 32px;
+        margin-left: -1px;
     }
-    body.dark-mode .nastani-page .evt-filter-btn.active {
-        background: var(--accent-blue);
+    .nastani-page .preset-btn:first-child { margin-left: 0; }
+    .nastani-page .preset-btn:hover {
+        border-color: var(--accent-blue);
+        color: var(--text-primary);
+        z-index: 1;
+    }
+    .nastani-page .preset-btn.active {
+        border-color: #000;
+        background: #000;
         color: #fff;
+        z-index: 2;
+    }
+    body.dark-mode .nastani-page .preset-btn.active {
+        border-color: #fff;
+        background: #fff;
+        color: #000;
     }
     body.dark-mode .nastani-page .artist-tag {
         background: var(--bg-primary);
@@ -391,36 +433,6 @@
         to   { opacity: 1; transform: translateY(0); }
     }
     body.dark-mode .nastani-notification { background: var(--bg-secondary); }
-
-    /* Input & button styling to match master list */
-    .nastani-page #search-events {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.8rem;
-        padding: 0.35rem 0.75rem 0.35rem 2rem;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        height: 34px;
-        flex: 1;
-        min-width: 0;
-        transition: all var(--transition);
-    }
-    .nastani-page #search-events:focus {
-        outline: none;
-        border-color: var(--accent-blue);
-        background: #fff;
-    }
-    .nastani-page #search-events::placeholder { color: var(--text-muted); }
-    body.dark-mode .nastani-page #search-events {
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        border-color: var(--border-color);
-    }
-    body.dark-mode .nastani-page #search-events:focus {
-        border-color: var(--accent-blue);
-        background: var(--bg-primary);
-    }
 
     .nastani-page #save-event-btn {
         width: 100%;
@@ -813,35 +825,30 @@
 
     /* ===== MOBILE ===== */
     @media (max-width: 600px) {
-        .nastani-page .controls {
+        .nastani-page .chart-filter-bar {
             display: none;
-            flex-direction: column;
-            gap: 0.4rem;
-            padding: 0.4rem;
-            animation: searchBarSlideDown 0.15s ease;
+            padding: 0.4rem 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.35rem;
         }
-        @keyframes searchBarSlideDown {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .nastani-page .controls.visible { display: flex; }
-        .nastani-page #search-events {
-            width: 100%;
-            min-width: 0;
-            height: 40px;
-            font-size: 0.9rem;
-            padding-left: 2rem;
-        }
-        .nastani-page .events-search-row { width: 100%; }
-        .nastani-page .events-filters-panel {
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-        .nastani-page .filter-btn-group {
-            width: 100%;
+        .nastani-page .chart-filter-bar.visible {
             display: flex;
         }
-        .nastani-page .evt-filter-btn { flex: 1; text-align: center; padding: 0.45rem 0.3rem; font-size: 0.8rem; }
+        .nastani-page .filter-presets {
+            width: 100%;
+            display: flex;
+            gap: 0;
+        }
+        .nastani-page .filter-presets .preset-btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 0;
+        }
+        .nastani-page .events-search-wrap {
+            min-width: 0;
+            flex-basis: 100%;
+            margin-left: 0;
+        }
 
         .nastani-page .table-wrapper {
             overflow: hidden !important;
@@ -992,19 +999,21 @@
     </header>
     <script src="/load-header.js"></script>
     <main>
-        <div class="controls" id="controls-bar">
-            <div class="events-search-row">
-                <i class="fas fa-search events-search-icon"></i>
-                <input type="text" id="search-events" placeholder="Пребарај настан, артист, место...">
-                <button type="button" id="evt-filter-toggle-btn" class="filter-toggle-btn" title="Филтри"><i class="fas fa-sliders-h"></i></button>
+        <div class="chart-filter-bar" id="controls-bar">
+            <div class="filter-group filter-presets" data-filter-group="preset">
+                <button class="filter-btn preset-btn active" data-filter="all">
+                    <i class="fas fa-calendar-days"></i> Сите
+                </button>
+                <button class="filter-btn preset-btn" data-filter="upcoming">
+                    <i class="fas fa-arrow-right"></i> Претстојни
+                </button>
+                <button class="filter-btn preset-btn" data-filter="past">
+                    <i class="fas fa-clock-rotate-left"></i> Минати
+                </button>
             </div>
-            <div class="events-filters-panel" id="events-filters-panel">
-                <div class="filter-btn-group">
-                    <button class="evt-filter-btn active" data-filter="all">Сите</button>
-                    <button class="evt-filter-btn" data-filter="upcoming">Претстојни</button>
-                    <button class="evt-filter-btn" data-filter="past">Минати</button>
-                </div>
-                <button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i> Исчисти</button>
+            <div class="events-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-events" placeholder="Пребарај настан, артист, место...">
             </div>
         </div>
         <div id="loading-bar" class="loading-bar">
@@ -1120,16 +1129,7 @@
             });
         })();
 
-        // ==================== FILTER TOGGLE ====================
-        (function() {
-            var filterBtn = document.getElementById('evt-filter-toggle-btn');
-            var panel = document.getElementById('events-filters-panel');
-            if (!filterBtn || !panel) return;
-            filterBtn.addEventListener('click', function() {
-                var isOpen = panel.classList.toggle('open');
-                filterBtn.classList.toggle('active', isOpen);
-            });
-        })();
+
 
         // ==================== HELPERS ====================
         function getToday() { var d = new Date(); d.setHours(0,0,0,0); return d; }
@@ -1518,22 +1518,13 @@
             renderTable();
         });
 
-        document.querySelectorAll('.evt-filter-btn').forEach(function(btn) {
+        document.querySelectorAll('.filter-btn.preset-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.evt-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+                document.querySelectorAll('.filter-btn.preset-btn').forEach(function(b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
                 renderTable();
             });
-        });
-
-        document.getElementById('clear-filters').addEventListener('click', function() {
-            searchQuery = '';
-            currentFilter = 'all';
-            document.getElementById('search-events').value = '';
-            document.querySelectorAll('.evt-filter-btn').forEach(function(b) { b.classList.remove('active'); });
-            document.querySelector('.evt-filter-btn[data-filter="all"]').classList.add('active');
-            renderTable();
         });
 
         // ==================== ARTIST AUTOCOMPLETE ====================

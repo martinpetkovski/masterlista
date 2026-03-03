@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <meta name="title" content="Македонска Музичка Топ Листа | Најпопуларни Македонски Песни">
     <meta name="description" content="Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена. Ажурирано неделно.">
     <meta name="keywords" content="македонска музика, топ листа, македонски песни, македонски албуми, музичка листа, македонски артисти, нови изданија, македонска музичка сцена">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
     <meta name="revisit-after" content="7 days">
@@ -55,7 +55,7 @@
         "inLanguage": "mk",
         "publisher": {
             "@type": "Organization",
-            "name": "Македонска Музичка Мастер Листа"
+            "name": "ТопЛиста.мк"
         }
     }
     </script>
@@ -898,6 +898,8 @@
                 flex: 1;
                 justify-content: center;
                 min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             
             .advanced-filters {
@@ -931,14 +933,16 @@
             .filter-btn {
                 padding: 0.35rem 0.6rem;
                 font-size: 0.65rem;
-                border-radius: 14px;
+                border-radius: 0;
                 white-space: nowrap;
                 min-height: 30px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             
             .reset-btn {
                 padding: 0.3rem 0.55rem;
-                border-radius: 14px;
+                border-radius: 0;
                 min-height: 30px;
             }
             
@@ -1419,50 +1423,61 @@
             .mobile-chart-tabs {
                 display: flex;
                 gap: 0;
-                background: var(--bg-primary);
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                overflow: hidden;
                 margin-bottom: 0.5rem;
                 flex-shrink: 0;
                 align-items: center;
             }
             .mobile-chart-tab {
                 flex: 1;
-                padding: 0.5rem 0.25rem;
-                font-size: 0.7rem;
-                font-weight: 600;
-                font-family: 'Inter', sans-serif;
-                border: none;
-                background: transparent;
-                color: var(--text-muted);
-                cursor: pointer;
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 gap: 0.3rem;
+                border: 1px solid var(--border-color);
+                border-radius: 0;
+                font-family: 'Montserrat', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                font-weight: 600;
+                font-size: 0.72rem;
+                padding: 0.3rem 0.85rem;
+                height: 32px;
+                margin-left: -1px;
+                background: var(--bg-primary);
+                color: var(--text-secondary);
+                cursor: pointer;
                 transition: all 0.15s ease;
-                border-right: 1px solid var(--border-color);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                min-width: 0;
             }
-            .mobile-chart-tab:last-child {
-                border-right: none;
+            .mobile-chart-tab:first-child {
+                margin-left: 0;
+            }
+            .mobile-chart-tab:hover {
+                border-color: var(--accent-blue);
+                color: var(--text-primary);
+                z-index: 1;
             }
             .mobile-chart-tab.active {
-                background: var(--accent-blue);
+                border-color: #000;
+                background: #000;
                 color: #fff;
+                z-index: 2;
             }
             .mobile-chart-tab i {
                 font-size: 0.65rem;
             }
-            body.dark-mode .mobile-chart-tabs {
-                background: #191c22;
-                border-color: #2a2e36;
-            }
             body.dark-mode .mobile-chart-tab {
-                border-color: #2a2e36;
+                background: var(--bg-hover);
+                border-color: var(--border-color);
+                color: var(--text-secondary);
             }
             body.dark-mode .mobile-chart-tab.active {
-                background: var(--accent-blue);
+                border-color: #fff;
+                background: #fff;
+                color: #000;
             }
             
             /* Show only active chart section when tabs are visible */

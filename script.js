@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // Silence console output in production; enable with ?debug=1
     try {
         const debugEnabled = /(?:^|[?&])debug=1(?:&|$)/.test(location.search);
@@ -3713,7 +3713,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: null,
             title: 'Здраво! 👋',
-            description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - место каде ги собираме сите домашни артисти на едно место. Проектот е отворен, секој може да помогне.<br><br>Ајде да ти покажам како работи ова.',
+            description: 'Ова е <strong>ТопЛиста.мк</strong> - место каде ги собираме сите домашни артисти на едно место. Проектот е отворен, секој може да помогне.<br><br>Ајде да ти покажам како работи ова.',
             position: 'center'
         },
         {
@@ -3807,7 +3807,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             element: null,
             title: 'Здраво! 👋',
-            description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - место каде ги собираме сите домашни артисти на едно место.<br><br>Ајде да ти покажам како работи.',
+            description: 'Ова е <strong>ТопЛиста.мк</strong> - место каде ги собираме сите домашни артисти на едно место.<br><br>Ајде да ти покажам како работи.',
             position: 'center'
         },
         {
@@ -3873,7 +3873,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== GLOBAL SITE TOUR ====================
     (function() {
         const gTourSteps = [
-            { element: null, title: 'Здраво! 👋', description: 'Ова е <strong>Македонска Музичка Мастер Листа</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
+            { element: null, title: 'Здраво! 👋', description: 'Ова е <strong>ТопЛиста.мк</strong> - сè за македонската музика на едно место.<br><br>Ајде брзо да ти покажам што има.', position: 'center' },
             { element: '.site-nav-trigger', title: 'Навигација', description: 'Кликни на <strong>логото</strong> за мени. Таму ги имаш сите страници: Топ Листа, Мастер Листа, Настани, Вести, Кустоси...', position: 'bottom' },
             { element: '#settings-btn', title: 'Поставки ⚙', description: 'Тука ги менуваш <strong>темата</strong> (светла/темна) и го избираш <strong>стриминг сервисот</strong> (Spotify, YouTube, Deezer...). Кога ќе кликнеш на песна, директно се отвора таму.', position: 'bottom' },
             { element: null, title: 'Топ Листа 📊', description: 'Листа на <strong>најпопуларни изданија</strong> од македонски артисти, рангирани по Spotify популарност. Се ажурира автоматски секој ден. <a href="/charts">Отвори →</a>', position: 'center' },

@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Македонска Музичка Мастер Листа | Дома</title>
+    <title>ТопЛиста.мк | Дома</title>
 
     <!-- Primary SEO Meta Tags -->
-    <meta name="title" content="Македонска Музичка Мастер Листа | Дома">
+    <meta name="title" content="ТопЛиста.мк | Дома">
     <meta name="description" content="Откријте ги најпопуларните македонски песни, артисти, настани и вести. Сè за македонската музичка сцена на едно место.">
     <meta name="keywords" content="македонска музика, топ листа, македонски песни, македонски артисти, настани, нови изданија, македонска музичка сцена">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
     <meta name="revisit-after" content="7 days">
@@ -19,7 +19,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://toplista.mk/">
-    <meta property="og:title" content="Македонска Музичка Мастер Листа | Дома">
+    <meta property="og:title" content="ТопЛиста.мк | Дома">
     <meta property="og:description" content="Сè за македонската музичка сцена на едно место. Топ листи, артисти, настани и вести.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
@@ -28,7 +28,7 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://toplista.mk/">
-    <meta property="twitter:title" content="Македонска Музичка Мастер Листа">
+    <meta property="twitter:title" content="ТопЛиста.мк">
     <meta property="twitter:description" content="Сè за македонската музичка сцена на едно место.">
     <meta property="twitter:image" content="https://toplista.mk/og-image.png">
 
@@ -46,14 +46,14 @@
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Македонска Музичка Мастер Листа",
+        "name": "ТопЛиста.мк",
         "alternateName": "Топ Листа МК",
         "url": "https://toplista.mk/",
         "description": "Сè за македонската музичка сцена на едно место",
         "inLanguage": "mk",
         "publisher": {
             "@type": "Organization",
-            "name": "Македонска Музичка Мастер Листа"
+            "name": "ТопЛиста.мк"
         }
     }
     </script>
@@ -801,7 +801,6 @@
         /* Today event special styling */
         .event-item.event-today {
             background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
-            border-radius: 8px;
             padding-left: 0.5rem;
             border-left: 3px solid var(--accent-green, #22c55e);
         }
@@ -918,6 +917,21 @@
             background: var(--bg-hover, #eceef1);
         }
 
+        .news-thumb-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            color: var(--text-muted, #8b929a);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .news-thumb-placeholder i {
+            font-size: 0.74rem;
+            opacity: 0.85;
+        }
+
         .news-info { flex: 1; min-width: 0; }
 
         .news-title {
@@ -965,6 +979,43 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: 0.15rem;
+        }
+
+        .news-artists {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.35rem;
+        }
+
+        .artist-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            text-decoration: none;
+            padding: 0.14rem 0.42rem;
+            border-radius: 0;
+            border: 1px solid rgba(74, 127, 165, 0.25);
+            color: var(--accent-blue);
+            background: rgba(74, 127, 165, 0.07);
+            font-size: 0.66rem;
+            font-weight: 600;
+            line-height: 1.2;
+            transition: background 0.12s ease;
+        }
+
+        .artist-chip:hover {
+            background: rgba(74, 127, 165, 0.16);
+        }
+
+        .artist-chip i {
+            font-size: 0.52rem;
+        }
+
+        .artist-empty {
+            font-size: 0.68rem;
+            color: var(--text-muted, #8b929a);
+            font-style: italic;
         }
 
         /* ==================== DISCOVER ARTISTS (vertical list) ==================== */
@@ -1424,26 +1475,40 @@
             color: #000;
         }
 
-        /* Chevron popularity indicators */
+        /* Animated chevron popularity indicators (matching charts.html) */
         .trending-chevrons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0px;
+            position: relative;
             flex-shrink: 0;
             margin-left: auto;
-            padding-right: 0.25rem;
+            width: 10px;
+            height: 22px;
+            pointer-events: none;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
         }
 
         .trending-chevrons i {
-            font-size: 0.5rem;
-            color: var(--accent-green, #22c55e);
-            line-height: 0.55;
-            opacity: 0.7;
+            position: absolute;
+            left: 50%;
+            display: block !important;
+            width: 7px;
+            height: 7px;
+            border-right: 2.5px solid #16c953;
+            border-top: 2.5px solid #16c953;
+            transform: translateX(-50%) rotate(-45deg);
+            opacity: 0;
+            animation: trending-chevron-float-up 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
 
-        .trending-chevrons i:first-child {
-            opacity: 1;
+        .trending-chevrons i:nth-child(2) { animation-delay: 0.4s; }
+        .trending-chevrons i:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes trending-chevron-float-up {
+            0%   { opacity: 0; top: 18px; }
+            20%  { opacity: 0.7; }
+            50%  { opacity: 0.7; }
+            80%  { opacity: 0; }
+            100% { opacity: 0; top: -2px; }
         }
 
         /* Verified badge inline */
@@ -1720,6 +1785,13 @@
                 padding: 0 0.5rem 2rem;
             }
 
+            .site-title {
+                flex-wrap: wrap;
+                padding: 0.5rem 0.6rem;
+                gap: 0.5rem;
+                min-height: auto;
+            }
+
             .dash-card.full-width {
                 grid-column: 1;
             }
@@ -1744,16 +1816,61 @@
             }
 
             .title-nav {
-                gap: 0.3rem;
+                gap: 0;
+                order: 99;
+                flex-basis: 100%;
+                margin-left: 0;
+                margin-top: 0.4rem;
+                flex-wrap: wrap;
             }
 
             .title-nav-btn {
-                font-size: 0.6rem;
-                padding: 0.25rem 0.5rem;
+                font-family: 'Montserrat', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                font-weight: 600;
+                font-size: 0.66rem;
+                padding: 0.25rem 0.55rem;
+                height: 28px;
+                border: 1px solid rgba(255,255,255,0.3);
+                background: transparent;
+                color: rgba(255,255,255,0.7);
+                margin-left: -1px;
+                flex: 1;
+                justify-content: center;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .title-nav-btn::before {
+                display: none;
+            }
+
+            .title-nav-btn:hover,
+            .title-nav-btn:active {
+                background: rgba(255,255,255,0.15);
+                color: #fff;
+            }
+
+            body.dark-mode .title-nav-btn {
+                border-color: rgba(255,255,255,0.2);
+                background: transparent;
+                color: rgba(255,255,255,0.6);
+            }
+
+            body.dark-mode .title-nav-btn:hover,
+            body.dark-mode .title-nav-btn:active {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
             }
 
             .title-nav-btn span {
-                display: none;
+                display: inline;
+            }
+
+            .title-nav-btn i {
+                font-size: 0.55rem;
             }
         }
 
@@ -2669,11 +2786,8 @@
             }
 
             list.innerHTML = picked.map(function(r) {
-                var chevCount = Math.min(r.popularityChange || r._popChange || 0, 5);
-                var chevrons = '';
-                for (var c = 0; c < chevCount; c++) chevrons += '<i class="fas fa-chevron-up"></i>';
                 var popChangeVal = r.popularityChange || r._popChange || 0;
-                var chevHtml = chevrons ? '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност">' + chevrons + '</span>' : '';
+                var chevHtml = popChangeVal > 0 ? '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност"><i></i><i></i><i></i></span>' : '';
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
@@ -2813,15 +2927,33 @@
             var loading = document.getElementById('news-loading');
 
             list.innerHTML = top5.map(function(a) {
-                var thumbHtml = a.thumbnail ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '';
+                var thumbHtml = a.thumbnail
+                    ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>Без слика</span></div>\'">'
+                    : '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>Без слика</span></div>';
                 var iconHtml = a.iconUrl ? '<img src="' + a.iconUrl + '" alt="">' : '';
                 var descHtml = a.description ? '<div class="news-desc">' + escHtml(a.description.length > 120 ? a.description.substring(0, 120) + '...' : a.description) + '</div>' : '';
+                var artistNames = [];
+                if (Array.isArray(a.matchedArtists) && a.matchedArtists.length) {
+                    artistNames = a.matchedArtists.filter(Boolean);
+                } else if (Array.isArray(a.artists) && a.artists.length) {
+                    artistNames = a.artists.filter(Boolean);
+                }
+
+                var artistsHtml = '';
+                if (artistNames.length) {
+                    artistsHtml = '<div class="news-artists">' + artistNames.slice(0, 6).map(function(name) {
+                        return '<a href="' + getArtistPageUrl(name) + '" class="artist-chip" title="' + escHtml(name) + '"><i class="fas fa-music"></i> ' + escHtml(name) + '</a>';
+                    }).join('') + '</div>';
+                } else {
+                    artistsHtml = '<div class="news-artists"><span class="artist-empty">Нема спомнати артисти</span></div>';
+                }
                 return '<li class="news-item">' +
                     thumbHtml +
                     '<div class="news-info">' +
                         '<div class="news-title"><a href="' + a.link + '" target="_blank" rel="noopener">' + escHtml(a.title) + '</a></div>' +
                         descHtml +
                         '<div class="news-source">' + iconHtml + escHtml(a.source) + ' &bull; ' + formatDate(a.date) + '</div>' +
+                        artistsHtml +
                     '</div>' +
                 '</li>';
             }).join('');

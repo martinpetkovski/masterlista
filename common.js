@@ -217,18 +217,20 @@ function buildChartRanking(releases, opts) {
         }
     }
 
-    // When count is 0, skip 2-month cutoff/backfill — return ALL sorted releases
+    // When count is 0, skip cutoff/backfill — return ALL sorted releases
     if (count === 0) {
         filtered.sort(chartSort);
         return filtered;
     }
 
-    // 2-month cutoff with backfill — always build a pool of at least 20
-    // so that smaller `count` values still see older high-popularity items.
+    // Eligibility cutoff with backfill — 4 weeks for singles, 8 weeks for albums.
+    // Always build a pool of at least 20 so that smaller `count` values still
+    // see older high-popularity items.
     var minPool = Math.max(count, 20);
-    var twoMonthsAgo = new Date();
-    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-    var cutoff = twoMonthsAgo.toISOString().slice(0, 10);
+    var cutoffWeeks = type === 'album' ? 8 : 4;
+    var cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - cutoffWeeks * 7);
+    var cutoff = cutoffDate.toISOString().slice(0, 10);
 
     var recent = filtered.filter(function(r) { return r.releaseDate >= cutoff; });
     var pool = recent.slice();

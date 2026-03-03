@@ -1,21 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
 	<meta charset="UTF-8">
 	<script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Вести | Македонска Музичка Мастер Листа</title>
+	<title>Вести | ТопЛиста.мк</title>
 
-	<meta name="title" content="Вести | Македонска Музичка Мастер Листа">
+	<meta name="title" content="Вести | ТопЛиста.мк">
 	<meta name="description" content="Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
-	<meta name="author" content="Македонска Музичка Мастер Листа">
+	<meta name="author" content="ТопЛиста.мк">
 	<meta name="robots" content="index, follow">
 	<meta name="language" content="Macedonian">
 	<link rel="canonical" href="https://toplista.mk/vesti">
 
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="https://toplista.mk/vesti.html">
-	<meta property="og:title" content="Вести | Македонска Музичка Мастер Листа">
+	<meta property="og:title" content="Вести | ТопЛиста.мк">
 	<meta property="og:description" content="Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
 	<meta property="og:image" content="https://toplista.mk/og-image.png">
 	<meta property="og:locale" content="mk_MK">
@@ -24,7 +24,7 @@
 	{
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
-		"name": "Вести | Македонска Музичка Мастер Листа",
+		"name": "Вести | ТопЛиста.мк",
 		"description": "Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата",
 		"url": "https://toplista.mk/vesti.html"
 	}
@@ -43,224 +43,252 @@
 	<script src="/common.js?v=1"></script>
 	<script src="/tour.js?v=1" defer></script>
 	<style>
-	/* ── Controls ── */
-	.vesti-page .controls {
-		gap: 0.5rem;
+	/* ── Filter bar (same as charts.html) ── */
+	.vesti-page .chart-filter-bar {
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border-color);
+		padding: 0.5rem 1rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		display: flex;
 		align-items: center;
-		flex-wrap: wrap;
+		gap: 0;
 	}
+	body.dark-mode .vesti-page .chart-filter-bar {
+		background: var(--bg-secondary);
+		border-bottom-color: var(--border-color);
+	}
+	.vesti-page .filter-presets {
+		display: flex;
+		align-items: center;
+		gap: 0;
+		flex-shrink: 0;
+	}
+	.vesti-page .filter-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 0.65rem;
+		font-size: 0.7rem;
+		font-weight: 500;
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		white-space: nowrap;
+	}
+	.vesti-page .filter-btn:hover {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+	.vesti-page .filter-btn.active {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	.vesti-page .filter-btn i {
+		font-size: 0.65rem;
+	}
+	body.dark-mode .vesti-page .filter-btn {
+		background: var(--bg-hover);
+		border-color: var(--border-color);
+		color: var(--text-secondary);
+	}
+	body.dark-mode .vesti-page .filter-btn:hover {
+		background: #2a2e36;
+		color: var(--text-primary);
+	}
+	body.dark-mode .vesti-page .filter-btn.active {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	.vesti-page .preset-btn {
+		border-radius: 0;
+		font-family: 'Montserrat', sans-serif;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		font-weight: 600;
+		font-size: 0.72rem;
+		padding: 0.3rem 0.85rem;
+		height: 32px;
+		margin-left: -1px;
+	}
+	.vesti-page .preset-btn:first-child {
+		margin-left: 0;
+	}
+	.vesti-page .preset-btn:hover {
+		border-color: var(--accent-blue);
+		color: var(--text-primary);
+		z-index: 1;
+	}
+	.vesti-page .preset-btn.active {
+		border-color: #000;
+		background: #000;
+		color: #fff;
+		z-index: 2;
+	}
+	body.dark-mode .vesti-page .preset-btn.active {
+		border-color: #fff;
+		background: #fff;
+		color: #000;
+	}
+
+	/* ── Search (unified style) ── */
 	.vesti-page .news-search-wrap {
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
+		gap: 0.35rem;
 		flex: 1;
-		min-width: 260px;
+		min-width: 200px;
 		position: relative;
+		min-height: 36px;
+		padding: 0.2rem 0.6rem;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-primary);
+		cursor: text;
+		transition: border-color 0.15s, box-shadow 0.15s;
+		margin-left: 0.75rem;
+	}
+	.vesti-page .news-search-wrap:focus-within {
+		border-color: var(--accent-blue);
+		box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
+	}
+	body.dark-mode .vesti-page .news-search-wrap {
+		background: var(--bg-secondary);
+		border-color: var(--border-color);
+	}
+	body.dark-mode .vesti-page .news-search-wrap:focus-within {
+		border-color: var(--accent-blue);
+		box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
 	}
 	.vesti-page .news-search-wrap i {
-		position: absolute;
-		left: 0.65rem;
 		color: var(--text-muted);
-		font-size: 0.72rem;
-		pointer-events: none;
+		font-size: 0.8rem;
+		flex-shrink: 0;
 	}
 	.vesti-page #news-search {
-		width: 100%;
-		padding: 0.48rem 0.6rem 0.48rem 1.9rem;
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		background: var(--bg-primary);
-		color: var(--text-primary);
-		font-size: 0.78rem;
-		font-family: 'Inter', sans-serif;
-		transition: border-color 0.15s ease;
-	}
-	.vesti-page #news-search:focus,
-	.vesti-page .news-filter-select:focus {
-		outline: none;
-		border-color: var(--accent-blue);
-	}
-	.vesti-page .news-filter-select {
-		padding: 0.48rem 1.9rem 0.48rem 0.55rem;
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		background: var(--bg-primary);
-		color: var(--text-primary);
-		font-size: 0.76rem;
-		font-family: 'Inter', sans-serif;
-		min-width: 140px;
-		transition: border-color 0.15s ease;
-	}
-	.vesti-page .clear-filters-btn {
-		font-size: 0.7rem;
-		font-weight: 600;
-		padding: 0.42rem 0.7rem;
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		background: var(--bg-primary);
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-	.vesti-page .clear-filters-btn:hover {
-		background: var(--bg-hover);
-		color: var(--text-primary);
-	}
-
-	/* ── Genre filter button group ── */
-	.vesti-page .genre-filter-group {
-		display: flex;
-		gap: 0;
-		border: 1px solid var(--border-color);
-		border-radius: 6px;
-		overflow: hidden;
-		flex-shrink: 0;
-	}
-	.vesti-page .genre-filter-btn {
-		font-family: 'Inter', sans-serif;
-		font-size: 0.7rem;
-		font-weight: 600;
-		padding: 0.38rem 0.62rem;
+		flex: 1;
+		min-width: 100px;
 		border: none;
-		background: var(--bg-primary);
-		color: var(--text-secondary);
-		cursor: pointer;
-		transition: all 0.15s ease;
-		border-right: 1px solid var(--border-color);
-		white-space: nowrap;
-	}
-	.vesti-page .genre-filter-btn:last-child { border-right: none; }
-	.vesti-page .genre-filter-btn:hover {
-		background: var(--bg-hover);
+		outline: none;
+		background: transparent;
 		color: var(--text-primary);
+		font-size: 0.82rem;
+		font-family: 'Inter', sans-serif;
+		padding: 0.2rem 0;
+		height: 30px;
 	}
-	.vesti-page .genre-filter-btn.active {
-		background: var(--accent-blue);
-		color: #fff;
-	}
-	body.dark-mode .vesti-page .genre-filter-btn {
-		background: var(--bg-secondary);
-	}
-	body.dark-mode .vesti-page .genre-filter-btn.active {
-		background: var(--accent-blue);
-		color: #fff;
+	.vesti-page #news-search::placeholder {
+		color: var(--text-muted);
 	}
 
-	/* ── News wrap / container ── */
+	/* ── News list grid (same as index.html) ── */
 	.vesti-page .news-wrap {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 0.7rem;
+		margin: 0;
+		padding: 0.75rem;
 	}
-	.vesti-page .news-container {
+	.vesti-page .news-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+		grid-template-columns: repeat(5, 1fr);
 		gap: 0.65rem;
 	}
-
-	/* ── News card ── */
-	.vesti-page .news-card {
-		border: 1px solid var(--border-color);
-		background: var(--bg-primary);
-		border-radius: 8px;
-		padding: 0.72rem;
+	.vesti-page .news-item {
 		display: flex;
 		flex-direction: column;
-		gap: 0.45rem;
-		min-height: 180px;
-		transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+		gap: 0.4rem;
+		padding: 0.5rem 0.3rem;
+		border-radius: 8px;
+		transition: background 0.12s;
 	}
-	.vesti-page .news-card:hover {
-		background: var(--bg-secondary);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-	}
-	body.dark-mode .vesti-page .news-card:hover {
-		box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-	}
-	.vesti-page .news-card-head {
-		display: flex;
-		gap: 0.55rem;
-	}
+	.vesti-page .news-item:hover { background: var(--bg-hover, #eceef1); }
 	.vesti-page .news-thumb {
-		width: 76px;
-		height: 76px;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border-radius: 8px;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--border-color);
 		flex-shrink: 0;
-		background: var(--bg-secondary);
+		background: var(--bg-hover, #eceef1);
 	}
-	.vesti-page .news-main {
-		min-width: 0;
-		flex: 1;
-	}
-	.vesti-page .news-title {
-		font-family: 'Montserrat', sans-serif;
-		font-size: 0.84rem;
-		line-height: 1.28;
-		font-weight: 700;
-		margin: 0;
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	.vesti-page .news-title a {
-		text-decoration: none;
-		color: var(--text-primary);
-		transition: color 0.12s ease;
-	}
-	.vesti-page .news-title a:hover {
-		color: var(--accent-blue);
-	}
-	.vesti-page .news-meta {
-		margin-top: 0.3rem;
+	.vesti-page .news-thumb-placeholder {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.35rem;
-		color: var(--text-muted);
-		font-size: 0.64rem;
-		flex-wrap: wrap;
+		color: var(--text-muted, #8b929a);
+		font-size: 0.7rem;
+		font-weight: 600;
 	}
-	.vesti-page .news-meta .dot {
-		color: var(--border-color);
+	.vesti-page .news-thumb-placeholder i {
+		font-size: 0.74rem;
+		opacity: 0.85;
 	}
-	.vesti-page .news-source-icon {
-		width: 14px;
-		height: 14px;
-		border-radius: 3px;
-		vertical-align: middle;
-	}
-	.vesti-page .news-desc {
-		color: var(--text-secondary);
-		font-size: 0.72rem;
-		line-height: 1.4;
-		margin: 0;
+	.vesti-page .news-info { flex: 1; min-width: 0; }
+	.vesti-page .news-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--text-primary, #1a1d21);
+		margin-bottom: 0.15rem;
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+		letter-spacing: -0.01em;
+	}
+	.vesti-page .news-title a {
+		color: inherit;
+		text-decoration: none;
+	}
+	.vesti-page .news-title a:hover { color: var(--accent-blue, #4a7fa5); }
+	.vesti-page .news-source {
+		font-size: 0.75rem;
+		color: var(--text-muted, #8b929a);
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.vesti-page .news-source img {
+		width: 14px;
+		height: 14px;
+		border-radius: 2px;
+	}
+	.vesti-page .news-desc {
+		font-size: 0.78rem;
+		color: var(--text-secondary, #555b64);
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		margin-bottom: 0.15rem;
 	}
 	.vesti-page .news-artists {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.25rem;
+		margin-top: 0.35rem;
 	}
 	.vesti-page .artist-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.22rem;
+		gap: 0.2rem;
 		text-decoration: none;
-		padding: 0.14rem 0.44rem;
-		border-radius: 999px;
+		padding: 0.14rem 0.42rem;
+		border-radius: 0;
 		border: 1px solid rgba(74, 127, 165, 0.25);
 		color: var(--accent-blue);
 		background: rgba(74, 127, 165, 0.07);
-		font-size: 0.63rem;
+		font-size: 0.66rem;
 		font-weight: 600;
+		line-height: 1.2;
 		transition: background 0.12s ease;
 	}
 	.vesti-page .artist-chip:hover {
@@ -269,24 +297,25 @@
 	.vesti-page .artist-chip i {
 		font-size: 0.52rem;
 	}
-	.vesti-page .news-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: auto;
-		padding-top: 0.25rem;
-		border-top: 1px solid var(--border-color);
-		gap: 0.4rem;
-	}
-	.vesti-page .news-link {
+	.vesti-page .artist-empty {
 		font-size: 0.68rem;
-		font-weight: 700;
-		color: var(--accent-blue);
-		text-decoration: none;
-		transition: color 0.12s ease;
+		color: var(--text-muted, #8b929a);
+		font-style: italic;
 	}
-	.vesti-page .news-link:hover {
-		text-decoration: underline;
+
+	/* ── Slide-in animation ── */
+	.vesti-page .news-item {
+		animation: vestiCardReveal 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+	}
+	.vesti-page .news-item:nth-child(1) { animation-delay: 0.05s; }
+	.vesti-page .news-item:nth-child(2) { animation-delay: 0.08s; }
+	.vesti-page .news-item:nth-child(3) { animation-delay: 0.11s; }
+	.vesti-page .news-item:nth-child(4) { animation-delay: 0.14s; }
+	.vesti-page .news-item:nth-child(5) { animation-delay: 0.17s; }
+	.vesti-page .news-item:nth-child(n+6) { animation-delay: 0.2s; }
+	@keyframes vestiCardReveal {
+		from { opacity: 0; transform: translateX(-20px); filter: blur(4px); }
+		to { opacity: 1; transform: translateX(0); filter: blur(0); }
 	}
 
 	/* ── Loading / empty / load-more ── */
@@ -315,26 +344,44 @@
 		padding: 2rem 1rem;
 		text-align: center;
 		color: var(--text-muted);
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 	}
 	.vesti-page .load-more-wrap {
 		display: flex;
 		justify-content: center;
-		padding: 1rem 0 0.3rem;
+		padding: 1.2rem 0 0.3rem;
 	}
 	.vesti-page .load-more-btn {
-		border: 1px solid var(--border-color);
-		background: var(--bg-primary);
-		color: var(--text-primary);
-		padding: 0.48rem 1rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 1.2rem;
+		font-family: 'Montserrat', sans-serif;
 		font-size: 0.72rem;
 		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		border-radius: 0;
 		cursor: pointer;
-		border-radius: 6px;
 		transition: all 0.15s ease;
 	}
 	.vesti-page .load-more-btn:hover {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	body.dark-mode .vesti-page .load-more-btn {
 		background: var(--bg-hover);
+		border-color: var(--border-color);
+		color: var(--text-secondary);
+	}
+	body.dark-mode .vesti-page .load-more-btn:hover {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
 	}
 
 	/* ── Active filter indicator badge ── */
@@ -353,53 +400,49 @@
 	}
 
 	/* ── Responsive ── */
+	@media (max-width: 800px) {
+		.vesti-page .news-list {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 801px) and (max-width: 1100px) {
+		.vesti-page .news-list {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
 	@media (max-width: 600px) {
-		.vesti-page .controls {
+		.vesti-page .chart-filter-bar {
+			padding: 0.4rem 0.5rem;
+			flex-wrap: wrap;
 			gap: 0.35rem;
-			align-items: stretch;
+		}
+		.vesti-page .filter-presets {
+			width: 100%;
+			display: flex;
+			gap: 0;
+		}
+		.vesti-page .filter-presets .preset-btn {
+			flex: 1;
+			justify-content: center;
+			min-width: 0;
 		}
 		.vesti-page .news-search-wrap {
 			min-width: 0;
 			flex-basis: 100%;
-		}
-		.vesti-page .genre-filter-group {
-			flex-basis: 100%;
-			order: -1;
-		}
-		.vesti-page .genre-filter-btn {
-			flex: 1;
-			text-align: center;
-			padding: 0.42rem 0.25rem;
-			font-size: 0.66rem;
-		}
-		.vesti-page .news-filter-select {
-			flex: 1;
-			min-width: 0;
-		}
-		.vesti-page .clear-filters-btn {
-			width: auto;
+			margin-left: 0;
 		}
 		.vesti-page .news-wrap {
 			padding: 0.4rem;
 		}
-		.vesti-page .news-container {
-			grid-template-columns: 1fr;
+		.vesti-page .news-list {
+			grid-template-columns: repeat(2, 1fr);
 			gap: 0.4rem;
 		}
-		.vesti-page .news-card {
-			padding: 0.58rem;
-			border-radius: 6px;
-		}
-		.vesti-page .news-card:hover {
-			transform: none;
-			box-shadow: none;
+		.vesti-page .news-item {
+			padding: 0.35rem 0.2rem;
 		}
 		.vesti-page .news-title {
-			font-size: 0.8rem;
-		}
-		.vesti-page .news-thumb {
-			width: 64px;
-			height: 64px;
+			font-size: 0.82rem;
 		}
 	}
 	</style>
@@ -419,34 +462,28 @@
 	<script src="/load-header.js"></script>
 
 	<main>
-		<div class="controls" id="controls-bar">
-			<div class="genre-filter-group">
-				<button class="genre-filter-btn active" data-genre="all">Сите</button>
-				<button class="genre-filter-btn" data-genre="pop">Поп</button>
-				<button class="genre-filter-btn" data-genre="alt">Алтернативна</button>
-				<button class="genre-filter-btn" data-genre="rap">Рап</button>
-				<button class="genre-filter-btn" data-genre="electronic">Електронска</button>
+		<div class="chart-filter-bar" id="controls-bar">
+			<div class="filter-group filter-presets" data-filter-group="preset">
+				<button class="filter-btn preset-btn active" data-genre="all">
+					<i class="fas fa-newspaper"></i> Сите
+				</button>
+				<button class="filter-btn preset-btn" data-genre="pop">
+					<i class="fas fa-music"></i> Поп
+				</button>
+				<button class="filter-btn preset-btn" data-genre="alt">
+					<i class="fas fa-guitar"></i> Алтернативна
+				</button>
 			</div>
 			<div class="news-search-wrap">
 				<i class="fas fa-search"></i>
 				<input type="text" id="news-search" placeholder="Пребарај наслов, опис, артист...">
 			</div>
-			<select id="source-filter" class="news-filter-select">
-				<option value="all">Сите извори</option>
-			</select>
-			<select id="sort-filter" class="news-filter-select">
-				<option value="date_desc">Најнови</option>
-				<option value="date_asc">Најстари</option>
-				<option value="source_asc">Извор A-Ш</option>
-				<option value="title_asc">Наслов A-Ш</option>
-			</select>
-			<button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i> Исчисти</button>
 		</div>
 
 		<div id="loading-bar" class="loading-bar"><div class="loading-progress"></div></div>
 
 		<div class="news-wrap">
-			<div id="news-container" class="news-container"></div>
+			<ul id="news-container" class="news-list"></ul>
 			<div class="load-more-wrap" id="load-more-wrap" style="display:none">
 				<button id="load-more-btn" class="load-more-btn">Вчитај повеќе</button>
 			</div>
@@ -468,8 +505,6 @@
 		var genreFilter = 'all';
 		var lastUpdated = '';
 
-		var sourceSelect = document.getElementById('source-filter');
-		var sortSelect = document.getElementById('sort-filter');
 		var searchInput = document.getElementById('news-search');
 		var loadMoreWrap = document.getElementById('load-more-wrap');
 		var loadMoreBtn = document.getElementById('load-more-btn');
@@ -493,8 +528,9 @@
 				}
 			});
 
+			// Always visible on desktop
 			if (window.innerWidth > 600) {
-				controls.classList.add('visible');
+				controls.style.display = 'flex';
 			}
 		})();
 
@@ -551,22 +587,6 @@
 			document.getElementById('stat-updated').textContent = lastUpdated ? ('ажурирање ' + formatDateLabel(lastUpdated)) : 'ажурирање —';
 		}
 
-		function buildSourceOptions() {
-			var counts = {};
-			allArticles.forEach(function(a) {
-				counts[a.source] = (counts[a.source] || 0) + 1;
-			});
-			var sources = Object.keys(counts).sort(function(a, b) { return a.localeCompare(b, 'mk'); });
-
-			sourceSelect.innerHTML = '<option value="all">Сите извори</option>';
-			sources.forEach(function(source) {
-				var o = document.createElement('option');
-				o.value = source;
-				o.textContent = source + ' (' + counts[source] + ')';
-				sourceSelect.appendChild(o);
-			});
-		}
-
 		function applyFilters() {
 			var q = searchQuery.toLowerCase().trim();
 			filteredArticles = allArticles.filter(function(a) {
@@ -603,7 +623,6 @@
 			// Update filter count badge in header
 			var activeFilters = 0;
 			if (genreFilter !== 'all') activeFilters++;
-			if (sourceFilter !== 'all') activeFilters++;
 			if (searchQuery.trim()) activeFilters++;
 			var badge = document.getElementById('filter-count');
 			if (badge) {
@@ -621,40 +640,36 @@
 			var html = '';
 
 			shown.forEach(function(article) {
-				var thumb = article.thumbnail ? '<img src="' + escAttr(article.thumbnail) + '" alt="" class="news-thumb" loading="lazy" decoding="async">' : '';
-				var sourceIcon = article.iconUrl ? '<img src="' + escAttr(article.iconUrl) + '" alt="" class="news-source-icon" loading="lazy" decoding="async">' : '';
-				var artistChips = '';
+				var thumbHtml = article.thumbnail
+					? '<img class="news-thumb" src="' + escAttr(article.thumbnail) + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>Без слика</span></div>\'">'
+					: '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>Без слика</span></div>';
+				var iconHtml = article.iconUrl ? '<img src="' + escAttr(article.iconUrl) + '" alt="">' : '';
+				var descHtml = article.description ? '<div class="news-desc">' + esc(article.description.length > 120 ? article.description.substring(0, 120) + '...' : article.description) + '</div>' : '';
+				var artistsHtml = '';
 
 				if (article.matchedArtists && article.matchedArtists.length) {
-					artistChips = '<div class="news-artists">' + article.matchedArtists.slice(0, 6).map(function(name) {
+					artistsHtml = '<div class="news-artists">' + article.matchedArtists.slice(0, 6).map(function(name) {
 						return '<a href="' + escAttr(artistLink(name)) + '" class="artist-chip" title="' + escAttr(name) + '"><i class="fas fa-music"></i> ' + esc(name) + '</a>';
 					}).join('') + '</div>';
+				} else {
+					artistsHtml = '<div class="news-artists"><span class="artist-empty">Нема спомнати артисти</span></div>';
 				}
 
-				html +=
-					'<article class="news-card">' +
-						'<div class="news-card-head">' +
-							thumb +
-							'<div class="news-main">' +
-								'<h2 class="news-title"><a href="' + escAttr(article.link) + '" target="_blank" rel="noopener">' + esc(article.title) + '</a></h2>' +
-								'<div class="news-meta">' +
-									'<span>' + sourceIcon + ' ' + esc(article.source) + '</span>' +
-									'<span class="dot">•</span>' +
-									'<span>' + esc(formatDateLabel(article.date)) + '</span>' +
-								'</div>' +
-							'</div>' +
-						'</div>' +
-						(article.description ? '<p class="news-desc">' + esc(article.description) + '</p>' : '') +
-						artistChips +
-						'<div class="news-footer">' +
-							'<span class="news-meta" style="margin:0">' + esc(article.matchedArtists.length ? article.matchedArtists.length + ' артист' + (article.matchedArtists.length > 1 ? 'и' : '') : '') + '</span>' +
-							'<a class="news-link" href="' + escAttr(article.link) + '" target="_blank" rel="noopener">Отвори <i class="fas fa-arrow-up-right-from-square"></i></a>' +
-						'</div>' +
-					'</article>';
+				html += '<li class="news-item">' +
+					'<a href="' + escAttr(article.link) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">' +
+						thumbHtml +
+					'</a>' +
+					'<div class="news-info">' +
+						'<div class="news-title"><a href="' + escAttr(article.link) + '" target="_blank" rel="noopener">' + esc(article.title) + '</a></div>' +
+						descHtml +
+						'<div class="news-source">' + iconHtml + esc(article.source) + ' &bull; ' + esc(formatDateLabel(article.date)) + '</div>' +
+						artistsHtml +
+					'</div>' +
+				'</li>';
 			});
 
 			newsContainer.innerHTML = html;
-			loadMoreWrap.style.display = filteredArticles.length > shown.length ? 'flex' : 'none';
+			loadMoreWrap.style.display = (visibleCount < filteredArticles.length) ? '' : 'none';
 		}
 
 		async function loadNewsData() {
@@ -688,7 +703,6 @@
 
 				allArticles.sort(function(a, b) { return parseDate(b) - parseDate(a); });
 				updateHeaderStats();
-				buildSourceOptions();
 				applyFilters();
 			} catch (err) {
 				console.error('News load error:', err);
@@ -704,39 +718,10 @@
 			applyFilters();
 		});
 
-		sourceSelect.addEventListener('change', function() {
-			sourceFilter = this.value;
-			visibleCount = 36;
-			applyFilters();
-		});
-
-		sortSelect.addEventListener('change', function() {
-			sortFilter = this.value;
-			visibleCount = 36;
-			applyFilters();
-		});
-
-		document.getElementById('clear-filters').addEventListener('click', function() {
-			searchQuery = '';
-			sourceFilter = 'all';
-			sortFilter = 'date_desc';
-			genreFilter = 'all';
-			visibleCount = 36;
-
-			searchInput.value = '';
-			sourceSelect.value = 'all';
-			sortSelect.value = 'date_desc';
-
-			document.querySelectorAll('.genre-filter-btn').forEach(function(b) { b.classList.remove('active'); });
-			document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
-
-			applyFilters();
-		});
-
 		// Genre filter buttons
-		document.querySelectorAll('.genre-filter-btn').forEach(function(btn) {
+		document.querySelectorAll('.filter-btn.preset-btn').forEach(function(btn) {
 			btn.addEventListener('click', function() {
-				document.querySelectorAll('.genre-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+				document.querySelectorAll('.filter-btn.preset-btn').forEach(function(b) { b.classList.remove('active'); });
 				btn.classList.add('active');
 				genreFilter = btn.getAttribute('data-genre');
 				visibleCount = 36;

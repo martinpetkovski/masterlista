@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кустоси | Македонска Музичка Мастер Листа</title>
+    <title>Кустоси | ТопЛиста.мк</title>
     
     <!-- Primary SEO Meta Tags -->
-    <meta name="title" content="Кустоси | Македонска Музичка Мастер Листа">
+    <meta name="title" content="Кустоси | ТопЛиста.мк">
     <meta name="description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти, музичари и познавачи.">
     <meta name="keywords" content="кустоси, плејлисти, македонска музика, курирани плејлисти, македонски артисти">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <meta name="language" content="Macedonian">
     <link rel="canonical" href="https://toplista.mk/kustosi">
@@ -18,7 +18,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://toplista.mk/kustosi">
-    <meta property="og:title" content="Кустоси | Македонска Музичка Мастер Листа">
+    <meta property="og:title" content="Кустоси | ТопЛиста.мк">
     <meta property="og:description" content="Кустоси на македонската музичка сцена. Плејлисти курирани од локални артисти, музичари и познавачи.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
@@ -94,40 +94,65 @@
             color: #e8e8f0;
         }
 
-        /* ==================== SEARCH ==================== */
-        .curators-search {
-            padding: 0.45rem 0.7rem;
-            border: 1px solid rgba(0,0,0,0.1);
+        /* ==================== SEARCH (chart-filter-bar style) ==================== */
+        .curators-page .chart-filter-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        body.dark-mode .curators-page .chart-filter-bar {
+            background: var(--bg-secondary);
+            border-bottom-color: var(--border-color);
+        }
+        .curators-page .curators-search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+            min-height: 36px;
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
+            background: var(--bg-primary);
+            cursor: text;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .curators-page .curators-search-wrap:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
+        }
+        body.dark-mode .curators-page .curators-search-wrap {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        body.dark-mode .curators-page .curators-search-wrap:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
+        }
+        .curators-page .curators-search-wrap i {
+            color: var(--text-muted);
             font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            background: #fff;
-            color: #1a1a2e;
+            flex-shrink: 0;
+        }
+        .curators-page #curators-search {
+            flex: 1;
+            min-width: 100px;
+            border: none;
             outline: none;
-            transition: border-color 0.2s;
-            width: 220px;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            padding: 0.2rem 0;
+            height: 30px;
         }
-
-        .curators-search:focus {
-            border-color: #5b8fb9;
-        }
-
-        body.dark-mode .curators-search {
-            background: #1e2028;
-            border-color: rgba(255,255,255,0.1);
-            color: #e8e8f0;
-        }
-
-        body.dark-mode .curators-search:focus {
-            border-color: #5b8fb9;
-        }
-
-        .curators-search::placeholder {
-            color: #999;
-        }
-
-        body.dark-mode .curators-search::placeholder {
-            color: #666;
+        .curators-page #curators-search::placeholder {
+            color: var(--text-muted);
         }
 
         /* ==================== GRID ==================== */
@@ -862,9 +887,8 @@
                 max-width: 100%;
             }
 
-            .curators-search {
-                width: 100%;
-                min-width: unset;
+            .curators-page .chart-filter-bar {
+                padding: 0.4rem 0.5rem;
             }
 
             .custos-card {
@@ -923,10 +947,13 @@
     </header>
     <script src="/load-header.js"></script>
     <main>
-        <div class="curators-container">
-            <div class="curators-page-header">
-                <input type="text" id="curators-search" class="curators-search" placeholder="Пребарај кустоси...">
+        <div class="chart-filter-bar">
+            <div class="curators-search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="curators-search" placeholder="Пребарај кустоси...">
             </div>
+        </div>
+        <div class="curators-container">
             <div id="curators-loading" class="curators-loading">
                 <div><i class="fas fa-spinner"></i></div>
                 <div>Се вчитуваат кустосите...</div>

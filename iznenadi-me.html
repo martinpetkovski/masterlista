@@ -1,22 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="mk">
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Изненади ме | Македонска Музичка Мастер Листа</title>
+    <title>Изненади ме | ТопЛиста.мк</title>
 
     <!-- Primary SEO Meta Tags -->
-    <meta name="title" content="Изненади ме | Македонска Музичка Мастер Листа">
+    <meta name="title" content="Изненади ме | ТопЛиста.мк">
     <meta name="description" content="Откриј нов македонски артист по случаен избор! Избери жанр и ера, и препушти се на изненадувањето.">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
+    <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://toplista.mk/iznenadi-me">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://toplista.mk/iznenadi-me">
-    <meta property="og:title" content="Изненади ме | Македонска Музичка Мастер Листа">
+    <meta property="og:title" content="Изненади ме | ТопЛиста.мк">
     <meta property="og:description" content="Откриј нов македонски артист по случаен избор!">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
@@ -115,7 +115,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: var(--accent-blue);
+            background: var(--text-primary);
             color: #fff;
             font-size: 0.65rem;
             font-weight: 700;
@@ -125,47 +125,85 @@
             background: #3dba6f;
         }
 
-        /* Option buttons */
+        /* Option grid */
         .option-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+        }
+        .option-grid .filter-btn.preset-btn {
+            min-width: 120px;
+            width: 50%;
+            justify-content: center;
+            flex: 0 0 auto;
         }
 
-        .option-btn {
-            display: flex;
+        /* Filter buttons (same as charts.html preset-btn) */
+        .surprise-page .filter-btn {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            border: 1.5px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.82rem;
+            gap: 0.3rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.7rem;
             font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.15s ease;
-            text-align: center;
-            line-height: 1.3;
+            white-space: nowrap;
         }
-
-        .option-btn:hover {
-            border-color: var(--accent-blue);
-            background: rgba(74, 127, 165, 0.06);
+        .surprise-page .filter-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
         }
-
-        .option-btn.selected {
-            border-color: var(--accent-blue);
-            background: rgba(74, 127, 165, 0.1);
-            color: var(--accent-blue);
+        .surprise-page .filter-btn.active {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        .surprise-page .filter-btn i { font-size: 0.65rem; }
+        body.dark-mode .surprise-page .filter-btn {
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+            color: var(--text-secondary);
+        }
+        body.dark-mode .surprise-page .filter-btn:hover {
+            background: #2a2e36;
+            color: var(--text-primary);
+        }
+        body.dark-mode .surprise-page .filter-btn.active {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        .surprise-page .preset-btn {
+            border-radius: 0;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
             font-weight: 600;
+            font-size: 0.72rem;
+            padding: 0.3rem 0.85rem;
+            height: 32px;
+            margin-left: -1px;
         }
-
-        .option-btn i {
-            font-size: 0.9rem;
-            flex-shrink: 0;
+        .surprise-page .preset-btn:first-child { margin-left: 0; }
+        .surprise-page .preset-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            z-index: 1;
+        }
+        .surprise-page .preset-btn.active {
+            border-color: #000;
+            background: #000;
+            color: #fff;
+            z-index: 2;
+        }
+        body.dark-mode .surprise-page .preset-btn.active {
+            border-color: #fff;
+            background: #fff;
+            color: #000;
         }
 
         /* Go button */
@@ -255,9 +293,16 @@
                 font-size: 2rem;
             }
 
-            .option-btn {
-                padding: 0.65rem 0.75rem;
-                font-size: 0.78rem;
+            .option-grid {
+                flex-wrap: wrap;
+            }
+            .option-grid .filter-btn.preset-btn {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+            .surprise-page .preset-btn {
+                padding: 0.3rem 0.65rem;
+                font-size: 0.66rem;
             }
 
             .surprise-go-btn {
@@ -273,12 +318,6 @@
     <script src="/load-header.js"></script>
     <main>
         <div class="surprise-container">
-            <div class="surprise-hero">
-                <span class="hero-icon"><i class="fas fa-shuffle"></i></span>
-                <h2>Изненади ме!</h2>
-                <p>Избери жанр и ера, и ќе те одведеме до случаен македонски артист.</p>
-            </div>
-
             <!-- Step 1: Genre -->
             <div class="surprise-step" id="step-genre">
                 <div class="step-label">
@@ -286,22 +325,22 @@
                     Жанр
                 </div>
                 <div class="option-grid">
-                    <button class="option-btn selected" data-genre="all">
+                    <button class="filter-btn preset-btn active" data-genre="all">
                         <i class="fas fa-music"></i> Сите
                     </button>
-                    <button class="option-btn" data-genre="alt">
+                    <button class="filter-btn preset-btn" data-genre="alt">
                         <i class="fas fa-guitar"></i> Алтернативна
                     </button>
-                    <button class="option-btn" data-genre="rap">
+                    <button class="filter-btn preset-btn" data-genre="rap">
                         <i class="fas fa-microphone-lines"></i> Рап/Трап
                     </button>
-                    <button class="option-btn" data-genre="electronic">
+                    <button class="filter-btn preset-btn" data-genre="electronic">
                         <i class="fas fa-headphones"></i> Електронска
                     </button>
-                    <button class="option-btn" data-genre="jazz">
+                    <button class="filter-btn preset-btn" data-genre="jazz">
                         <i class="fas fa-saxophone"></i> Џез
                     </button>
-                    <button class="option-btn" data-genre="metal">
+                    <button class="filter-btn preset-btn" data-genre="metal">
                         <i class="fas fa-skull-crossbones"></i> Метал
                     </button>
                 </div>
@@ -314,13 +353,13 @@
                     Ера
                 </div>
                 <div class="option-grid">
-                    <button class="option-btn selected" data-era="any">
+                    <button class="filter-btn preset-btn active" data-era="any">
                         <i class="fas fa-infinity"></i> Било која
                     </button>
-                    <button class="option-btn" data-era="new">
+                    <button class="filter-btn preset-btn" data-era="new">
                         <i class="fas fa-bolt"></i> Нови (последни 10г.)
                     </button>
-                    <button class="option-btn" data-era="old">
+                    <button class="filter-btn preset-btn" data-era="old">
                         <i class="fas fa-record-vinyl"></i> Стари (10+ години)
                     </button>
                 </div>
@@ -333,16 +372,16 @@
                     Филтри (опционално)
                 </div>
                 <div class="option-grid">
-                    <button class="option-btn" data-filter="verified">
+                    <button class="filter-btn preset-btn" data-filter="verified">
                         <i class="fas fa-circle-check"></i> Потврдени
                     </button>
-                    <button class="option-btn" data-filter="spotify">
+                    <button class="filter-btn preset-btn" data-filter="spotify">
                         <i class="fab fa-spotify"></i> Со Spotify
                     </button>
-                    <button class="option-btn" data-filter="active">
+                    <button class="filter-btn preset-btn" data-filter="active">
                         <i class="fas fa-bolt"></i> Активни
                     </button>
-                    <button class="option-btn" data-filter="inactive">
+                    <button class="filter-btn preset-btn" data-filter="inactive">
                         <i class="fas fa-moon"></i> Неактивни
                     </button>
                 </div>
@@ -350,7 +389,7 @@
 
             <!-- Go button -->
             <div class="surprise-go-wrapper">
-                <button class="surprise-go-btn" id="surprise-go" disabled>
+                <button class="btn-generic" style="font-size: 2.5em; margin-top: 60px; padding: 0.75em 2em;" id="surprise-go" disabled>
                     <i class="fas fa-shuffle"></i> Изненади ме!
                 </button>
             </div>
@@ -407,34 +446,34 @@
         let dataLoaded = false;
 
         // ==================== OPTION BUTTON LOGIC ====================
-        document.querySelectorAll('#step-genre .option-btn').forEach(btn => {
+        document.querySelectorAll('#step-genre .filter-btn.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#step-genre .option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+                document.querySelectorAll('#step-genre .filter-btn.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 selectedGenre = btn.dataset.genre;
                 updateGoButton();
             });
         });
 
-        document.querySelectorAll('#step-era .option-btn').forEach(btn => {
+        document.querySelectorAll('#step-era .filter-btn.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('#step-era .option-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+                document.querySelectorAll('#step-era .filter-btn.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 selectedEra = btn.dataset.era;
                 updateGoButton();
             });
         });
 
         // Filter buttons (toggle, multi-select)
-        document.querySelectorAll('#step-filters .option-btn').forEach(btn => {
+        document.querySelectorAll('#step-filters .filter-btn.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const filter = btn.dataset.filter;
                 if (activeFilters.has(filter)) {
                     activeFilters.delete(filter);
-                    btn.classList.remove('selected');
+                    btn.classList.remove('active');
                 } else {
                     activeFilters.add(filter);
-                    btn.classList.add('selected');
+                    btn.classList.add('active');
                 }
                 updateGoButton();
             });
