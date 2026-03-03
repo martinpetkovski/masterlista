@@ -885,10 +885,6 @@ thead {
     z-index: 100;
 }
 
-td { 
-    /* padding: 0.25rem 0.5rem; */
- }
-
 tr { transition: all var(--transition); content-visibility: auto; contain-intrinsic-size: auto 36px; animation: fadeInRow 0.3s ease forwards; opacity: 0; }
 
 @keyframes fadeInRow {
