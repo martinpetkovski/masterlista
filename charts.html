@@ -447,17 +447,51 @@
         }
         
         .filter-presets {
-            gap: 0.35rem;
+            gap: 0;
+        }
+        
+        .preset-btn {
+            border-radius: 0;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-weight: 600;
+            font-size: 0.72rem;
+            padding: 0.3rem 0.85rem;
+            height: 32px;
+            margin-left: -1px;
+        }
+        
+        .preset-btn:first-child {
+            margin-left: 0;
+        }
+        
+        .preset-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+            z-index: 1;
+        }
+        
+        .preset-btn.active {
+            border-color: #000;
+            background: #000;
+            color: #fff;
+            z-index: 2;
+        }
+        
+        body.dark-mode .preset-btn.active {
+            border-color: #fff;
+            background: #fff;
+            color: #000;
         }
         
         .preset-btn i {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
         }
         
         .filter-group {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
             flex-shrink: 0;
         }
         
@@ -855,7 +889,7 @@
                 width: 100%;
                 display: flex;
                 flex-wrap: wrap;
-                gap: 0.3rem;
+                gap: 0;
                 padding-right: 0;
                 border-right: none;
             }
@@ -2116,6 +2150,17 @@
             from { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
+        @keyframes serviceChooserOut {
+            from { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+            to { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
+        }
+        .service-chooser-overlay.closing {
+            background: rgba(0,0,0,0) !important;
+            transition: background 0.25s ease;
+        }
+        .service-chooser-overlay.closing .service-chooser {
+            animation: serviceChooserOut 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
         .service-chooser-links a {
             opacity: 0; transform: translateX(-12px); filter: blur(2px);
             animation: svcLinkSlideIn 0.3s ease forwards;
@@ -2364,7 +2409,7 @@
             
             <!-- Advanced table view (hidden by default) -->
             <div class="chart-section advanced-chart-view" id="advanced-section" style="display: none;">
-                <div class="chart-section-header">
+                <div class="chart-section-header" style="display: none;">
                     <h2><i class="fas fa-sliders-h"></i> Напредно</h2>
                     <div class="chart-header-right">
                         <button class="adv-sort-reset" id="adv-sort-reset" title="Ресетирај подредување"><i class="fas fa-undo"></i> Ресетирај</button>
@@ -3816,9 +3861,21 @@
                     const d = r._dateObj;
                     const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
 
-                    const artistLink = `/artist?a=${encodeURIComponent(r.bandName)}`;
+                    // Split collab artists into separate links
+                    const artistNames = r.bandName.split(',').map(a => a.trim()).filter(a => a);
+                    let artistLinksHtml;
+                    if (artistNames.length <= 1) {
+                        const artistLink = getArtistPageUrl(r.bandName);
+                        artistLinksHtml = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(r.bandName)}">${escHtml(r.bandName)}</a>`;
+                    } else {
+                        artistLinksHtml = artistNames.map((name, i) => {
+                            const link = getArtistPageUrl(name);
+                            const sep = i < artistNames.length - 1 ? ', ' : '';
+                            return `<a href="${link}" class="adv-artist-link" title="${escHtml(name)}">${escHtml(name)}</a>${sep}`;
+                        }).join('');
+                    }
                     const releaseTitleStr = `${escHtml(r.bandName)} \u2014 ${escHtml(r.releaseTitle)}`;
-                    const releaseCell = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(r.bandName)}">${escHtml(r.bandName)}</a> \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(r.releaseTitle)}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" title="${escHtml(r.releaseTitle)}">${escHtml(r.releaseTitle)}</span>`;
+                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(r.releaseTitle)}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" title="${escHtml(r.releaseTitle)}">${escHtml(r.releaseTitle)}</span>`;
                     return `<tr>` +
                         `<td class="col-pos">${posStr}</td>` +
                         `<td class="col-chg">${chgStr}</td>` +
@@ -4337,11 +4394,33 @@
                 overlay.classList.add('visible');
             }
 
+            function closeServiceChooser(animated) {
+                const ov = document.getElementById('service-chooser-overlay');
+                if (!ov || !ov.classList.contains('visible')) return;
+                if (animated) {
+                    ov.classList.add('closing');
+                    const sc = ov.querySelector('.service-chooser');
+                    const onEnd = () => {
+                        sc.removeEventListener('animationend', onEnd);
+                        ov.classList.remove('visible', 'closing');
+                    };
+                    sc.addEventListener('animationend', onEnd);
+                } else {
+                    ov.classList.remove('visible');
+                }
+            }
+
             document.getElementById('service-chooser-overlay').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('service-chooser-overlay')) document.getElementById('service-chooser-overlay').classList.remove('visible');
+                if (e.target === document.getElementById('service-chooser-overlay')) closeServiceChooser(true);
             });
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') document.getElementById('service-chooser-overlay').classList.remove('visible');
+                if (e.key === 'Escape') closeServiceChooser(true);
+            });
+
+            // Close with animation when a service link is clicked
+            document.getElementById('service-chooser-links').addEventListener('click', (e) => {
+                const link = e.target.closest('a');
+                if (link) closeServiceChooser(true);
             });
             
             loadChartData();

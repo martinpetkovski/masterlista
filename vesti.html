@@ -1,1156 +1,756 @@
 <!DOCTYPE html>
 <html lang="mk">
 <head>
-    <meta charset="UTF-8">
-    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Музички Вести | Македонска Музичка Мастер Листа</title>
-    
-    <!-- Primary SEO Meta Tags -->
-    <meta name="title" content="Музички Вести | Македонска Музичка Мастер Листа">
-    <meta name="description" content="Најнови вести од македонската музичка сцена. Рецензии, интервјуа и настани.">
-    <meta name="keywords" content="македонска музика, музички вести, рецензии, интервјуа, македонски бендови">
-    <meta name="author" content="Македонска Музичка Мастер Листа">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Macedonian">
-    <link rel="canonical" href="https://toplista.mk/vesti">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://toplista.mk/vesti.html">
-    <meta property="og:title" content="Музички Вести | Македонска Музичка Мастер Листа">
-    <meta property="og:description" content="Најнови вести од македонската музичка сцена. Рецензии, интервјуа и настани.">
-    <meta property="og:image" content="https://toplista.mk/og-image.png">
-    <meta property="og:locale" content="mk_MK">
-    <meta property="og:site_name" content="Топ Листа МК">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://toplista.mk/vesti.html">
-    <meta property="twitter:title" content="Музички Вести">
-    <meta property="twitter:description" content="Најнови вести од македонската музичка сцена.">
-    <meta property="twitter:image" content="https://toplista.mk/og-image.png">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    
-    <!-- Preconnect to external origins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
-    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=1"></script>
-    <script src="mmm-drafts.js?v=1"></script>
-    <script src="/tour.js?v=1" defer></script>
-    <style>
-        /* ==================== PAGE LAYOUT ==================== */
-        body.vesti-page {
-            height: auto;
-            min-height: 100vh;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        body.vesti-page main {
-            height: auto;
-            overflow: visible;
-        }
-
-        .news-container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 1.5rem 1.25rem 2rem;
-        }
-
-        /* ==================== PAGE HEADER / FILTERS ==================== */
-        .news-page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.25rem;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .news-page-header h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin: 0;
-            letter-spacing: -0.01em;
-        }
-
-        .news-search {
-            flex: 0 1 220px;
-            padding: 0.4rem 0.65rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            transition: border-color 0.15s ease;
-        }
-
-        .news-search:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .news-search::placeholder {
-            color: var(--text-muted);
-        }
-
-        .news-source-filters {
-            display: flex;
-            gap: 0.4rem;
-            align-items: center;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            max-width: 100%;
-            -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-            mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-        }
-
-        .news-source-filters::-webkit-scrollbar {
-            display: none;
-        }
-
-        .news-source-filter {
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.3rem 0.65rem;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            background: var(--bg-primary);
-            cursor: pointer;
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all 0.15s ease;
-            white-space: nowrap;
-        }
-
-        .news-source-filter:hover {
-            border-color: var(--accent-blue);
-            background: var(--bg-secondary);
-        }
-
-        .news-source-filter.active {
-            border-color: var(--accent-blue);
-            background: var(--accent-blue);
-            color: #fff;
-        }
-
-        .news-source-filter img {
-            width: 14px;
-            height: 14px;
-            border-radius: 2px;
-        }
-
-        /* ==================== HERO ARTICLE ==================== */
-        .news-hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 1.25rem;
-            text-decoration: none;
-            color: inherit;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .news-hero:hover {
-            border-color: var(--accent-blue);
-            box-shadow: 0 4px 20px rgba(74, 127, 165, 0.08);
-        }
-
-        .news-hero-image {
-            aspect-ratio: 16 / 10;
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-hover) 100%);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .news-hero-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .news-hero-image .hero-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: var(--text-muted);
-            opacity: 0.25;
-            background: linear-gradient(135deg, #e8ecf1 0%, #d1d8e0 100%);
-        }
-
-        .news-hero-body {
-            padding: 1.5rem 1.75rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 0.6rem;
-        }
-
-        .news-hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            font-size: 0.68rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .news-hero-badge img {
-            width: 14px;
-            height: 14px;
-            border-radius: 2px;
-        }
-
-        .news-hero-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 800;
-            line-height: 1.3;
-            color: var(--text-primary);
-            letter-spacing: -0.01em;
-        }
-
-        .news-hero:hover .news-hero-title {
-            color: var(--accent-blue);
-        }
-
-        .news-hero-desc {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-            line-height: 1.55;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .news-hero-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* ==================== SECTION LABEL ==================== */
-        .news-section-label {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--accent-blue);
-            display: inline-block;
-        }
-
-        /* ==================== CARD GRID ==================== */
-        .news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-        }
-
-        /* ==================== NEWS CARD ==================== */
-        .news-card {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-        }
-
-        .news-card:hover {
-            border-color: var(--accent-blue);
-            box-shadow: 0 4px 16px rgba(74, 127, 165, 0.07);
-            transform: translateY(-2px);
-        }
-
-        .news-card-image {
-            aspect-ratio: 16 / 9;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-hover) 100%);
-            position: relative;
-        }
-
-        .news-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .news-card:hover .news-card-image img {
-            transform: scale(1.03);
-        }
-
-        .news-card-image .card-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            color: var(--text-muted);
-            opacity: 0.2;
-        }
-
-        .news-card-body {
-            padding: 0.85rem 1rem 1rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            gap: 0.35rem;
-        }
-
-        .news-card-source {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-
-        .news-card-source-name {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-        }
-
-        .news-card-source-name img {
-            width: 13px;
-            height: 13px;
-            border-radius: 2px;
-        }
-
-        .news-card-date {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-        }
-
-        .news-card-title {
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: color 0.15s ease;
-        }
-
-        .news-card:hover .news-card-title {
-            color: var(--accent-blue);
-        }
-
-        .news-card-desc {
-            font-size: 0.76rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            flex: 1;
-        }
-
-        .news-card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 0.4rem;
-            margin-top: auto;
-            gap: 0.5rem;
-        }
-
-        .news-card-footer .news-artist-tags {
-            display: flex;
-            gap: 0.25rem;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            min-width: 0;
-            flex: 1;
-            -webkit-mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
-            mask-image: linear-gradient(to right, black calc(100% - 16px), transparent 100%);
-        }
-        .news-card-footer .news-artist-tags::-webkit-scrollbar { display: none; }
-
-        .news-card-readmore {
-            font-size: 0.68rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            opacity: 0;
-            transform: translateX(-4px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .news-card:hover .news-card-readmore {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* ==================== STATES ==================== */
-        .news-loading {
-            text-align: center;
-            padding: 5rem 1rem;
-            color: var(--text-muted);
-        }
-
-        .news-loading i {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            display: block;
-            animation: spin 1s linear infinite;
-            color: var(--accent-blue);
-        }
-
-        .news-loading div:last-child {
-            font-size: 0.82rem;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .news-empty {
-            text-align: center;
-            padding: 5rem 1rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .news-empty i {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 0.75rem;
-            opacity: 0.3;
-        }
-
-        /* ==================== FOOTER ==================== */
-        .news-footer {
-            margin-top: 2.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        .news-footer a {
-            color: var(--accent-blue);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .news-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* ==================== ARTIST TAG ==================== */
-        .news-artist-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.62rem;
-            font-weight: 600;
-            color: var(--accent-purple, #7b6e9e);
-            background: rgba(123, 110, 158, 0.1);
-            padding: 0.15rem 0.45rem;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-
-        .news-artist-tag i {
-            font-size: 0.55rem;
-        }
-
-        /* Multiple artist tags container (hero) */
-        .news-artist-tags {
-            display: flex;
-            gap: 0.3rem;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .news-artist-tags::-webkit-scrollbar { display: none; }
-
-        body.dark-mode .news-artist-tag {
-            background: rgba(138, 125, 181, 0.15);
-            color: var(--accent-purple, #8a7db5);
-        }
-
-        /* ==================== DARK MODE ==================== */
-        body.dark-mode .news-hero {
-            background: var(--bg-secondary);
-        }
-
-        body.dark-mode .news-hero:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-        }
-
-        body.dark-mode .news-hero-image .hero-placeholder {
-            background: linear-gradient(135deg, #1a1e26 0%, #22262e 100%);
-        }
-
-        body.dark-mode .news-card {
-            background: var(--bg-secondary);
-        }
-
-        body.dark-mode .news-card:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-        }
-
-        body.dark-mode .news-card-image {
-            background: linear-gradient(135deg, #1a1e26 0%, #22262e 100%);
-        }
-
-        /* ==================== MOBILE ==================== */
-        @media (max-width: 600px) {
-            .news-container {
-                padding: 0.75rem 0.6rem 1.5rem;
-            }
-
-            .news-page-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
-            }
-
-            .news-page-header h2 {
-                font-size: 1rem;
-            }
-
-            .news-search {
-                width: 100%;
-                padding: 0 0.75rem;
-                font-size: 0.8rem;
-                border-radius: 6px;
-                height: 32px;
-                max-height: 32px;
-                min-height: 32px;
-                line-height: 32px;
-                flex-shrink: 0;
-                flex-grow: 0;
-            }
-
-            .news-source-filters {
-                justify-content: flex-start;
-                width: 100%;
-                padding-bottom: 0.25rem;
-            }
-
-            .news-source-filter {
-                padding: 0.35rem 0.6rem;
-                font-size: 0.68rem;
-                min-height: 32px;
-            }
-
-            /* Hero stacks vertically on mobile */
-            .news-hero {
-                grid-template-columns: 1fr;
-                border-radius: 10px;
-            }
-
-            .news-hero-image {
-                aspect-ratio: 16 / 9;
-            }
-
-            .news-hero-body {
-                padding: 1rem;
-            }
-
-            .news-hero-title {
-                font-size: 1.05rem;
-            }
-
-            .news-hero-desc {
-                font-size: 0.78rem;
-                -webkit-line-clamp: 2;
-            }
-
-            .news-hero-meta {
-                flex-wrap: wrap;
-            }
-
-            /* Single column grid on mobile */
-            .news-grid {
-                grid-template-columns: 1fr;
-                gap: 0.75rem;
-            }
-
-            /* Card: horizontal compact layout */
-            .news-card {
-                flex-direction: row;
-                border-radius: 8px;
-            }
-
-            .news-card-image {
-                width: 100px;
-                min-width: 100px;
-                min-height: 100%;
-                aspect-ratio: auto;
-                flex-shrink: 0;
-            }
-
-            .news-card-body {
-                padding: 0.5rem 0.65rem;
-                gap: 0.25rem;
-            }
-
-            .news-card-title {
-                font-size: 0.78rem;
-                -webkit-line-clamp: 2;
-            }
-
-            .news-card-desc {
-                -webkit-line-clamp: 1;
-                font-size: 0.7rem;
-            }
-
-            .news-card-footer {
-                padding-top: 0.2rem;
-                gap: 0.3rem;
-            }
-
-            .news-card-footer .news-artist-tags {
-                gap: 0.2rem;
-            }
-
-            .news-card-footer .news-artist-tag {
-                font-size: 0.55rem;
-                padding: 0.1rem 0.3rem;
-            }
-
-            .news-card-readmore {
-                opacity: 1;
-                transform: none;
-                font-size: 0.6rem;
-                flex-shrink: 0;
-            }
-
-            .news-artist-tag {
-                font-size: 0.58rem;
-                padding: 0.1rem 0.35rem;
-            }
-        }
-
-        @media (min-width: 601px) and (max-width: 900px) {
-            .news-hero {
-                grid-template-columns: 1fr;
-            }
-
-            .news-hero-image {
-                aspect-ratio: 16 / 8;
-            }
-
-            .news-hero-body {
-                padding: 1.1rem 1.25rem;
-            }
-        }
-
-        /* ==================== MOBILE WIDTH FIX ==================== */
-        @media (max-width: 600px) {
-            .news-container {
-                max-width: 100vw;
-                overflow-x: hidden;
-            }
-
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .news-card-image img,
-            .news-hero-image img {
-                max-width: 100%;
-            }
-
-            .news-hero-title,
-            .news-hero-desc,
-            .news-card-title,
-            .news-card-desc {
-                word-break: break-word;
-                overflow-wrap: break-word;
-            }
-
-            .news-page-header {
-                max-width: 100%;
-                overflow: hidden;
-            }
-
-            .news-source-filters {
-                max-width: 100%;
-            }
-        }
-
-        /* ==================== COMPACT VIEW ==================== */
-        .header-btn.compact-active {
-            border-color: var(--accent-blue);
-            background: var(--accent-blue);
-            color: #fff;
-        }
-
-        /* Compact list container — table layout */
-        .news-compact-list {
-            display: none;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .news-compact-list.visible {
-            display: table;
-        }
-
-        .news-compact-item {
-            display: table-row;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.12s ease;
-        }
-
-        .news-compact-item:hover {
-            background: var(--bg-hover);
-        }
-
-        .news-compact-item > * {
-            display: table-cell;
-            vertical-align: middle;
-            padding: 0.45rem 0.35rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .news-compact-item:first-child > * {
-            border-top: 1px solid var(--border-color);
-        }
-
-        .news-compact-date {
-            font-size: 0.62rem;
-            color: var(--text-muted);
-            text-align: right;
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-            padding-right: 0.5rem;
-        }
-
-        .news-compact-source-icon {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-            vertical-align: middle;
-        }
-
-        .news-compact-icon-cell {
-            width: 1px;
-            white-space: nowrap;
-            text-align: center;
-        }
-
-        .news-compact-title {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.35;
-            max-width: 0;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .news-compact-item:hover .news-compact-title {
-            color: var(--accent-blue);
-        }
-
-        .news-compact-artists {
-            white-space: nowrap;
-            text-align: right;
-        }
-
-        .news-compact-artists .news-artist-tag {
-            font-size: 0.55rem;
-            padding: 0.08rem 0.3rem;
-        }
-
-        @media (max-width: 600px) {
-            .news-compact-item > * {
-                padding: 0.4rem 0.2rem;
-            }
-
-            .news-compact-date {
-                font-size: 0.58rem;
-            }
-
-            .news-compact-source-icon {
-                width: 14px;
-                height: 14px;
-            }
-
-            .news-compact-title {
-                font-size: 0.72rem;
-            }
-
-            .news-compact-artists {
-                display: none;
-            }
-        }
-    </style>
-    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
+	<meta charset="UTF-8">
+	<script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Вести | Македонска Музичка Мастер Листа</title>
+
+	<meta name="title" content="Вести | Македонска Музичка Мастер Листа">
+	<meta name="description" content="Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
+	<meta name="author" content="Македонска Музичка Мастер Листа">
+	<meta name="robots" content="index, follow">
+	<meta name="language" content="Macedonian">
+	<link rel="canonical" href="https://toplista.mk/vesti">
+
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://toplista.mk/vesti.html">
+	<meta property="og:title" content="Вести | Македонска Музичка Мастер Листа">
+	<meta property="og:description" content="Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
+	<meta property="og:image" content="https://toplista.mk/og-image.png">
+	<meta property="og:locale" content="mk_MK">
+
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"name": "Вести | Македонска Музичка Мастер Листа",
+		"description": "Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата",
+		"url": "https://toplista.mk/vesti.html"
+	}
+	</script>
+
+	<link rel="icon" type="image/png" href="/logo.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+	<link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+	<script src="/common.js?v=1"></script>
+	<script src="/tour.js?v=1" defer></script>
+	<style>
+	/* ── Controls ── */
+	.vesti-page .controls {
+		gap: 0.5rem;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	.vesti-page .news-search-wrap {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		flex: 1;
+		min-width: 260px;
+		position: relative;
+	}
+	.vesti-page .news-search-wrap i {
+		position: absolute;
+		left: 0.65rem;
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		pointer-events: none;
+	}
+	.vesti-page #news-search {
+		width: 100%;
+		padding: 0.48rem 0.6rem 0.48rem 1.9rem;
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+		background: var(--bg-primary);
+		color: var(--text-primary);
+		font-size: 0.78rem;
+		font-family: 'Inter', sans-serif;
+		transition: border-color 0.15s ease;
+	}
+	.vesti-page #news-search:focus,
+	.vesti-page .news-filter-select:focus {
+		outline: none;
+		border-color: var(--accent-blue);
+	}
+	.vesti-page .news-filter-select {
+		padding: 0.48rem 1.9rem 0.48rem 0.55rem;
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+		background: var(--bg-primary);
+		color: var(--text-primary);
+		font-size: 0.76rem;
+		font-family: 'Inter', sans-serif;
+		min-width: 140px;
+		transition: border-color 0.15s ease;
+	}
+	.vesti-page .clear-filters-btn {
+		font-size: 0.7rem;
+		font-weight: 600;
+		padding: 0.42rem 0.7rem;
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	.vesti-page .clear-filters-btn:hover {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+
+	/* ── Genre filter button group ── */
+	.vesti-page .genre-filter-group {
+		display: flex;
+		gap: 0;
+		border: 1px solid var(--border-color);
+		border-radius: 6px;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+	.vesti-page .genre-filter-btn {
+		font-family: 'Inter', sans-serif;
+		font-size: 0.7rem;
+		font-weight: 600;
+		padding: 0.38rem 0.62rem;
+		border: none;
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		border-right: 1px solid var(--border-color);
+		white-space: nowrap;
+	}
+	.vesti-page .genre-filter-btn:last-child { border-right: none; }
+	.vesti-page .genre-filter-btn:hover {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+	.vesti-page .genre-filter-btn.active {
+		background: var(--accent-blue);
+		color: #fff;
+	}
+	body.dark-mode .vesti-page .genre-filter-btn {
+		background: var(--bg-secondary);
+	}
+	body.dark-mode .vesti-page .genre-filter-btn.active {
+		background: var(--accent-blue);
+		color: #fff;
+	}
+
+	/* ── News wrap / container ── */
+	.vesti-page .news-wrap {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0.7rem;
+	}
+	.vesti-page .news-container {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+		gap: 0.65rem;
+	}
+
+	/* ── News card ── */
+	.vesti-page .news-card {
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		border-radius: 8px;
+		padding: 0.72rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		min-height: 180px;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+	}
+	.vesti-page .news-card:hover {
+		background: var(--bg-secondary);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+	}
+	body.dark-mode .vesti-page .news-card:hover {
+		box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+	}
+	.vesti-page .news-card-head {
+		display: flex;
+		gap: 0.55rem;
+	}
+	.vesti-page .news-thumb {
+		width: 76px;
+		height: 76px;
+		object-fit: cover;
+		border-radius: 6px;
+		border: 1px solid var(--border-color);
+		flex-shrink: 0;
+		background: var(--bg-secondary);
+	}
+	.vesti-page .news-main {
+		min-width: 0;
+		flex: 1;
+	}
+	.vesti-page .news-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.84rem;
+		line-height: 1.28;
+		font-weight: 700;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.vesti-page .news-title a {
+		text-decoration: none;
+		color: var(--text-primary);
+		transition: color 0.12s ease;
+	}
+	.vesti-page .news-title a:hover {
+		color: var(--accent-blue);
+	}
+	.vesti-page .news-meta {
+		margin-top: 0.3rem;
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		color: var(--text-muted);
+		font-size: 0.64rem;
+		flex-wrap: wrap;
+	}
+	.vesti-page .news-meta .dot {
+		color: var(--border-color);
+	}
+	.vesti-page .news-source-icon {
+		width: 14px;
+		height: 14px;
+		border-radius: 3px;
+		vertical-align: middle;
+	}
+	.vesti-page .news-desc {
+		color: var(--text-secondary);
+		font-size: 0.72rem;
+		line-height: 1.4;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.vesti-page .news-artists {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+	.vesti-page .artist-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.22rem;
+		text-decoration: none;
+		padding: 0.14rem 0.44rem;
+		border-radius: 999px;
+		border: 1px solid rgba(74, 127, 165, 0.25);
+		color: var(--accent-blue);
+		background: rgba(74, 127, 165, 0.07);
+		font-size: 0.63rem;
+		font-weight: 600;
+		transition: background 0.12s ease;
+	}
+	.vesti-page .artist-chip:hover {
+		background: rgba(74, 127, 165, 0.16);
+	}
+	.vesti-page .artist-chip i {
+		font-size: 0.52rem;
+	}
+	.vesti-page .news-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: auto;
+		padding-top: 0.25rem;
+		border-top: 1px solid var(--border-color);
+		gap: 0.4rem;
+	}
+	.vesti-page .news-link {
+		font-size: 0.68rem;
+		font-weight: 700;
+		color: var(--accent-blue);
+		text-decoration: none;
+		transition: color 0.12s ease;
+	}
+	.vesti-page .news-link:hover {
+		text-decoration: underline;
+	}
+
+	/* ── Loading / empty / load-more ── */
+	.vesti-page .loading-bar {
+		display: none;
+		height: 2px;
+		background: var(--bg-hover);
+	}
+	.vesti-page .loading-bar.active {
+		display: block;
+	}
+	.vesti-page .loading-progress {
+		height: 100%;
+		width: 34%;
+		background: var(--accent-blue);
+		animation: newsLoad 1s ease infinite;
+	}
+	@keyframes newsLoad {
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(320%); }
+	}
+	.vesti-page .news-empty {
+		border: 1px dashed var(--border-color);
+		background: var(--bg-primary);
+		border-radius: 8px;
+		padding: 2rem 1rem;
+		text-align: center;
+		color: var(--text-muted);
+		font-size: 0.8rem;
+	}
+	.vesti-page .load-more-wrap {
+		display: flex;
+		justify-content: center;
+		padding: 1rem 0 0.3rem;
+	}
+	.vesti-page .load-more-btn {
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		color: var(--text-primary);
+		padding: 0.48rem 1rem;
+		font-size: 0.72rem;
+		font-weight: 600;
+		cursor: pointer;
+		border-radius: 6px;
+		transition: all 0.15s ease;
+	}
+	.vesti-page .load-more-btn:hover {
+		background: var(--bg-hover);
+	}
+
+	/* ── Active filter indicator badge ── */
+	.vesti-page .filter-count {
+		display: none;
+		background: var(--accent-blue);
+		color: #fff;
+		font-size: 0.58rem;
+		font-weight: 700;
+		padding: 0.08rem 0.35rem;
+		border-radius: 999px;
+		margin-left: 0.3rem;
+	}
+	.vesti-page .filter-count.visible {
+		display: inline-block;
+	}
+
+	/* ── Responsive ── */
+	@media (max-width: 600px) {
+		.vesti-page .controls {
+			gap: 0.35rem;
+			align-items: stretch;
+		}
+		.vesti-page .news-search-wrap {
+			min-width: 0;
+			flex-basis: 100%;
+		}
+		.vesti-page .genre-filter-group {
+			flex-basis: 100%;
+			order: -1;
+		}
+		.vesti-page .genre-filter-btn {
+			flex: 1;
+			text-align: center;
+			padding: 0.42rem 0.25rem;
+			font-size: 0.66rem;
+		}
+		.vesti-page .news-filter-select {
+			flex: 1;
+			min-width: 0;
+		}
+		.vesti-page .clear-filters-btn {
+			width: auto;
+		}
+		.vesti-page .news-wrap {
+			padding: 0.4rem;
+		}
+		.vesti-page .news-container {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+		.vesti-page .news-card {
+			padding: 0.58rem;
+			border-radius: 6px;
+		}
+		.vesti-page .news-card:hover {
+			transform: none;
+			box-shadow: none;
+		}
+		.vesti-page .news-title {
+			font-size: 0.8rem;
+		}
+		.vesti-page .news-thumb {
+			width: 64px;
+			height: 64px;
+		}
+	}
+	</style>
+	<script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact vesti-page">
-    <header id="site-header" data-active="/vesti" data-title="Музички Вести">
-        <span class="header-info">
-            <span>Ажурирано <span id="articles-updated">...</span></span>
-        </span>
-        <button id="compact-toggle" class="header-btn" title="Компактен приказ">
-            <i class="fas fa-list"></i>
-        </button>
-    </header>
-    <script src="/load-header.js"></script>
-    <main>
-        <div class="news-container">
-            <div class="news-page-header">
-                <input type="text" id="news-search" class="news-search" placeholder="Пребарај вести...">
-                <div class="news-source-filters" id="news-source-filters"></div>
-            </div>
-            <div id="news-loading" class="news-loading">
-                <div><i class="fas fa-spinner"></i></div>
-                <div>Се вчитуваат вестите...</div>
-            </div>
-            <div id="news-hero" style="display:none;"></div>
-            <div class="news-section-label" id="news-section-label" style="display:none;">Последни Написи</div>
-            <div id="news-grid" class="news-grid" style="display:none;"></div>
-            <div id="news-compact-list" class="news-compact-list"></div>
-            <div id="news-empty" class="news-empty" style="display:none;">
-                <i class="fas fa-newspaper"></i>
-                <p>Нема вести за артисти од Мастер Листата во моментов.</p>
-            </div>
-        </div>
-    </main>
-    <script>
-        // Settings menu + nav menu from common.js
-        initSettingsMenu();
-        initNavMenu();
+	<header id="site-header" data-active="/vesti" data-title="Вести">
+		<span class="header-info">
+			<span><strong id="stat-articles">0</strong> вести</span>
+			<span class="separator">•</span>
+			<span><strong id="stat-sources">0</strong> извори</span>
+			<span class="separator">•</span>
+			<span id="stat-updated">ажурирање —</span>
+		</span>
+		<button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i><span id="filter-count" class="filter-count"></span></button>
+	</header>
+	<script src="/load-header.js"></script>
 
-        // ==================== ARTICLE LOADING FROM site-master.json (pre-computed) ====================
-        
-        async function loadNewsFeeds() {
-            try {
-                // Load pre-computed news data from site-master.json
-                const siteMaster = await loadSiteMaster();
-                const newsData = siteMaster && siteMaster.news ? siteMaster.news : null;
-                
-                if (!newsData) {
-                    throw new Error('No news data in site-master.json');
-                }
-                
-                // Populate last-updated in header
-                const updatedEl = document.getElementById('articles-updated');
-                if (updatedEl && newsData.lastUpdated) {
-                    const d = new Date(newsData.lastUpdated);
-                    const ageMs = Date.now() - d.getTime();
-                    const hours = Math.floor(ageMs / (60 * 60 * 1000));
-                    const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
-                    if (hours >= 24) { updatedEl.textContent = `пред ${Math.floor(hours/24)}д`; }
-                    else if (hours > 0) { updatedEl.textContent = `пред ${hours}ч`; }
-                    else { updatedEl.textContent = `пред ${minutes}мин`; }
-                }
-                
-                // Use artist-matched articles (only articles mentioning a band from the list)
-                const normalizeArtists = (v) => Array.isArray(v) ? v : (typeof v === 'string' && v ? [v] : []);
-                const allArticles = (newsData.matched || []).map(a => ({
-                    ...a,
-                    matchedArtists: normalizeArtists(a.matchedArtists),
-                    pubDate: a.date ? new Date(a.date) : new Date(0),
-                    image: a.thumbnail || '',
-                    sourceIcon: a.iconUrl || '',
-                    content: ''
-                }));
-                
-                let matchedArticles = allArticles;
-                const filtersContainer = document.getElementById('news-source-filters');
-                
-                // Build source filter buttons from the unique sources in the archive
-                const sources = new Map();
-                allArticles.forEach(a => {
-                    if (!sources.has(a.source)) {
-                        sources.set(a.source, { name: a.source, iconUrl: a.sourceIcon || a.iconUrl });
-                    }
-                });
-                
-                sources.forEach(feed => {
-                    const btn = document.createElement('button');
-                    btn.className = 'news-source-filter active';
-                    btn.dataset.source = feed.name;
-                    btn.innerHTML = `<img src="${feed.iconUrl}" alt="${feed.name}"> ${feed.name}`;
-                    btn.addEventListener('click', () => {
-                        btn.classList.toggle('active');
-                        renderNews(matchedArticles);
-                    });
-                    filtersContainer.appendChild(btn);
-                });
-                
-                // Already sorted by date descending in site-master
-                
-                document.getElementById('news-loading').style.display = 'none';
-                
-                if (matchedArticles.length === 0) {
-                    document.getElementById('news-empty').style.display = 'block';
-                } else {
-                    renderNews(matchedArticles);
-                }
-                
-                // Wire up search
-                const searchInput = document.getElementById('news-search');
-                if (searchInput) {
-                    let searchTimeout;
-                    searchInput.addEventListener('input', () => {
-                        clearTimeout(searchTimeout);
-                        searchTimeout = setTimeout(() => renderNews(matchedArticles), 200);
-                    });
-                }
-            } catch (err) {
-                console.error('Failed to load articles:', err);
-                document.getElementById('news-loading').innerHTML = '<div><i class="fas fa-exclamation-triangle"></i></div><div>Грешка при вчитување на вестите.</div>';
-            }
-        }
-        
-        function relativeTime(date) {
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'Сега';
-            if (diffMins < 60) return `пред ${diffMins} мин`;
-            if (diffHours < 24) return `пред ${diffHours} ч`;
-            if (diffDays < 7) return `пред ${diffDays} ${diffDays === 1 ? 'ден' : 'дена'}`;
-            return date.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-        
-        let isCompactView = false;
+	<main>
+		<div class="controls" id="controls-bar">
+			<div class="genre-filter-group">
+				<button class="genre-filter-btn active" data-genre="all">Сите</button>
+				<button class="genre-filter-btn" data-genre="pop">Поп</button>
+				<button class="genre-filter-btn" data-genre="alt">Алтернативна</button>
+				<button class="genre-filter-btn" data-genre="rap">Рап</button>
+				<button class="genre-filter-btn" data-genre="electronic">Електронска</button>
+			</div>
+			<div class="news-search-wrap">
+				<i class="fas fa-search"></i>
+				<input type="text" id="news-search" placeholder="Пребарај наслов, опис, артист...">
+			</div>
+			<select id="source-filter" class="news-filter-select">
+				<option value="all">Сите извори</option>
+			</select>
+			<select id="sort-filter" class="news-filter-select">
+				<option value="date_desc">Најнови</option>
+				<option value="date_asc">Најстари</option>
+				<option value="source_asc">Извор A-Ш</option>
+				<option value="title_asc">Наслов A-Ш</option>
+			</select>
+			<button id="clear-filters" class="clear-filters-btn" title="Исчисти филтри"><i class="fas fa-times"></i> Исчисти</button>
+		</div>
 
-        function initCompactToggle() {
-            const btn = document.getElementById('compact-toggle');
-            if (!btn) return;
-            // Restore saved preference
-            const saved = localStorage.getItem('mmm-news-compact');
-            if (saved === 'true') {
-                isCompactView = true;
-                btn.classList.add('compact-active');
-                btn.innerHTML = '<i class="fas fa-th-large"></i>';
-            }
-            btn.addEventListener('click', () => {
-                isCompactView = !isCompactView;
-                localStorage.setItem('mmm-news-compact', isCompactView);
-                btn.classList.toggle('compact-active', isCompactView);
-                btn.innerHTML = isCompactView
-                    ? '<i class="fas fa-th-large"></i>'
-                    : '<i class="fas fa-list"></i>';
-                // Re-render with current articles
-                if (window._currentNewsArticles) renderNews(window._currentNewsArticles);
-            });
-        }
-        initCompactToggle();
+		<div id="loading-bar" class="loading-bar"><div class="loading-progress"></div></div>
 
-        function renderNews(articles) {
-            window._currentNewsArticles = articles;
-            const heroContainer = document.getElementById('news-hero');
-            const gridContainer = document.getElementById('news-grid');
-            const sectionLabel = document.getElementById('news-section-label');
-            const compactList = document.getElementById('news-compact-list');
-            const activeFilters = Array.from(document.querySelectorAll('.news-source-filter.active'))
-                .map(btn => btn.dataset.source);
-            const searchQuery = (document.getElementById('news-search')?.value || '').trim().toLowerCase();
-            
-            let filtered = articles.filter(a => activeFilters.includes(a.source));
-            
-            if (searchQuery) {
-                filtered = filtered.filter(a => {
-                    const title = (a.title || '').toLowerCase();
-                    const desc = (a.description || '').toLowerCase();
-                    const source = (a.source || '').toLowerCase();
-                    const artists = (a.matchedArtists || []).join(' ').toLowerCase();
-                    return title.includes(searchQuery) || desc.includes(searchQuery) || source.includes(searchQuery) || artists.includes(searchQuery);
-                });
-            }
-            
-            if (filtered.length === 0) {
-                heroContainer.style.display = 'none';
-                gridContainer.style.display = 'none';
-                sectionLabel.style.display = 'none';
-                compactList.classList.remove('visible');
-                document.getElementById('news-empty').style.display = 'block';
-                return;
-            }
-            
-            document.getElementById('news-empty').style.display = 'none';
+		<div class="news-wrap">
+			<div id="news-container" class="news-container"></div>
+			<div class="load-more-wrap" id="load-more-wrap" style="display:none">
+				<button id="load-more-btn" class="load-more-btn">Вчитај повеќе</button>
+			</div>
+		</div>
+	</main>
 
-            // Compact view
-            if (isCompactView) {
-                heroContainer.style.display = 'none';
-                gridContainer.style.display = 'none';
-                sectionLabel.style.display = 'none';
-                compactList.classList.add('visible');
-                compactList.innerHTML = filtered.map(article => {
-                    const dateStr = article.pubDate.getTime() > 0 ? relativeTime(article.pubDate) : '';
-                    const artistTagsHtml = (article.matchedArtists || []).slice(0, 2)
-                        .map(a => `<span class="news-artist-tag"><i class="fas fa-guitar"></i> ${a}</span>`).join('');
-                    return `<a href="${article.link}" target="_blank" class="news-compact-item">
-                        <span class="news-compact-date">${dateStr}</span>
-                        <span class="news-compact-icon-cell"><img class="news-compact-source-icon" src="${article.sourceIcon}" alt="${article.source}"></span>
-                        <span class="news-compact-title">${article.title}</span>
-                        ${artistTagsHtml ? `<span class="news-compact-artists">${artistTagsHtml}</span>` : ''}
-                    </a>`;
-                }).join('');
-                return;
-            }
+	<script>
+	(function() {
+		'use strict';
 
-            // Card/default view
-            compactList.classList.remove('visible');
-            heroContainer.style.display = '';
-            gridContainer.style.display = '';
-            sectionLabel.style.display = filtered.length > 1 ? '' : 'none';
-            
-            // Hero article (first/latest)
-            const hero = filtered[0];
-            const heroDate = hero.pubDate.getTime() > 0 ? relativeTime(hero.pubDate) : '';
-            const heroImageHtml = hero.image
-                ? `<img src="${hero.image}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'hero-placeholder\\'><i class=\\'fas fa-newspaper\\'></i></div>'">`
-                : `<div class="hero-placeholder"><i class="fas fa-newspaper"></i></div>`;
-            
-            heroContainer.innerHTML = `<a href="${hero.link}" target="_blank" class="news-hero">
-                <div class="news-hero-image">${heroImageHtml}</div>
-                <div class="news-hero-body">
-                    <div class="news-hero-badge">
-                        <img src="${hero.sourceIcon}" alt="${hero.source}">
-                        ${hero.source}
-                    </div>
-                    <div class="news-hero-title">${hero.title}</div>
-                    ${hero.description ? `<div class="news-hero-desc">${hero.description}</div>` : ''}
-                    <div class="news-hero-meta">
-                        ${hero.matchedArtists && hero.matchedArtists.length > 0 ? `<span class="news-artist-tags">${hero.matchedArtists.map(a => `<span class="news-artist-tag"><i class="fas fa-guitar"></i> ${a}</span>`).join('')}</span>` : ''}
-                        ${heroDate ? `<span><i class="far fa-clock"></i> ${heroDate}</span>` : ''}
-                    </div>
-                </div>
-            </a>`;
-            
-            // Grid cards (rest of articles)
-            const rest = filtered.slice(1);
-            gridContainer.innerHTML = rest.map(article => {
-                const dateStr = article.pubDate.getTime() > 0 ? relativeTime(article.pubDate) : '';
-                const imageHtml = article.image
-                    ? `<img src="${article.image}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'card-placeholder\\'><i class=\\'fas fa-music\\'></i></div>'">`
-                    : `<div class="card-placeholder"><i class="fas fa-music"></i></div>`;
-                
-                const artistTagsHtml = article.matchedArtists && article.matchedArtists.length > 0
-                    ? `<span class="news-artist-tags">${article.matchedArtists.map(a => `<span class="news-artist-tag"><i class="fas fa-guitar"></i> ${a}</span>`).join('')}</span>`
-                    : '';
-                
-                return `<a href="${article.link}" target="_blank" class="news-card">
-                        <div class="news-card-image">${imageHtml}</div>
-                        <div class="news-card-body">
-                            <div class="news-card-source">
-                                <span class="news-card-source-name">
-                                    <img src="${article.sourceIcon}" alt="${article.source}">
-                                    ${article.source}
-                                </span>
-                                ${dateStr ? `<span class="news-card-date">${dateStr}</span>` : ''}
-                            </div>
-                            <div class="news-card-title">${article.title}</div>
-                            ${article.description ? `<div class="news-card-desc">${article.description}</div>` : ''}
-                            <div class="news-card-footer">
-                                ${artistTagsHtml}
-                                <span class="news-card-readmore">Прочитај повеќе <i class="fas fa-arrow-right"></i></span>
-                            </div>
-                        </div>
-                </a>`;
-            }).join('');
-        }
-        
-        // Start loading
-        loadNewsFeeds();
+		var allArticles = [];
+		var filteredArticles = [];
+		var bandsData = [];
+		var visibleCount = 36;
 
-        // Enable drag-to-scroll on news source filters and artist tag containers
-        function enableDragScroll(selector) {
-            document.querySelectorAll(selector).forEach(el => {
-                if (el.scrollWidth <= el.clientWidth) return;
-                el.style.cursor = 'grab';
-                el.addEventListener('mousedown', (e) => {
-                    el.style.cursor = 'grabbing';
-                    const startX = e.pageX;
-                    const startScrollLeft = el.scrollLeft;
-                    const onMove = (ev) => {
-                        ev.preventDefault();
-                        el.scrollLeft = startScrollLeft - (ev.pageX - startX);
-                    };
-                    const onUp = () => {
-                        el.style.cursor = 'grab';
-                        document.removeEventListener('mousemove', onMove);
-                        document.removeEventListener('mouseup', onUp);
-                    };
-                    document.addEventListener('mousemove', onMove);
-                    document.addEventListener('mouseup', onUp);
-                });
-                el.addEventListener('wheel', (e) => {
-                    if (el.scrollWidth <= el.clientWidth) return;
-                    e.preventDefault();
-                    el.scrollLeft += e.deltaY;
-                }, { passive: false });
-            });
-        }
-        // Delay to ensure DOM is rendered
-        setTimeout(() => {
-            enableDragScroll('.news-source-filters');
-            enableDragScroll('.news-artist-tags');
-        }, 2000);
-    </script>
+		var searchQuery = '';
+		var sourceFilter = 'all';
+		var sortFilter = 'date_desc';
+		var genreFilter = 'all';
+		var lastUpdated = '';
+
+		var sourceSelect = document.getElementById('source-filter');
+		var sortSelect = document.getElementById('sort-filter');
+		var searchInput = document.getElementById('news-search');
+		var loadMoreWrap = document.getElementById('load-more-wrap');
+		var loadMoreBtn = document.getElementById('load-more-btn');
+		var newsContainer = document.getElementById('news-container');
+		var loadingBar = document.getElementById('loading-bar');
+
+		initSettingsMenu();
+		initNavMenu();
+
+		(function setupSearchToggle() {
+			var btn = document.getElementById('search-toggle-btn');
+			var controls = document.getElementById('controls-bar');
+
+			if (!btn || !controls) return;
+
+			btn.addEventListener('click', function() {
+				controls.classList.toggle('visible');
+				btn.classList.toggle('active');
+				if (controls.classList.contains('visible')) {
+					setTimeout(function() { searchInput.focus(); }, 50);
+				}
+			});
+
+			if (window.innerWidth > 600) {
+				controls.classList.add('visible');
+			}
+		})();
+
+		function esc(str) {
+			return escHtml(String(str || ''));
+		}
+
+		function escAttr(str) {
+			return esc(str).replace(/'/g, '&#39;');
+		}
+
+		function normalizeArticle(a) {
+			var artistList = Array.isArray(a.matchedArtists) ? a.matchedArtists.filter(Boolean) : [];
+			return {
+				title: a.title || '',
+				link: a.link || '#',
+				description: a.description || '',
+				date: a.date || '',
+				source: a.source || 'Непознат извор',
+				iconUrl: a.iconUrl || '',
+				thumbnail: a.thumbnail || '',
+				matchedArtists: artistList
+			};
+		}
+
+		function normalizeDateOnly(raw) {
+			if (!raw) return '';
+			return String(raw).slice(0, 10);
+		}
+
+		function parseDate(article) {
+			var dateOnly = normalizeDateOnly(article.date);
+			if (!dateOnly) return 0;
+			return new Date(dateOnly + 'T00:00:00').getTime() || 0;
+		}
+
+		function formatDateLabel(dateStr) {
+			var dateOnly = normalizeDateOnly(dateStr);
+			if (!dateOnly) return '';
+			return formatDate(dateOnly);
+		}
+
+		function artistLink(name) {
+			return getArtistPageUrl(name);
+		}
+
+		function updateHeaderStats() {
+			var sourceSet = new Set();
+			for (var i = 0; i < allArticles.length; i++) {
+				if (allArticles[i].source) sourceSet.add(allArticles[i].source);
+			}
+			document.getElementById('stat-articles').textContent = allArticles.length;
+			document.getElementById('stat-sources').textContent = sourceSet.size;
+			document.getElementById('stat-updated').textContent = lastUpdated ? ('ажурирање ' + formatDateLabel(lastUpdated)) : 'ажурирање —';
+		}
+
+		function buildSourceOptions() {
+			var counts = {};
+			allArticles.forEach(function(a) {
+				counts[a.source] = (counts[a.source] || 0) + 1;
+			});
+			var sources = Object.keys(counts).sort(function(a, b) { return a.localeCompare(b, 'mk'); });
+
+			sourceSelect.innerHTML = '<option value="all">Сите извори</option>';
+			sources.forEach(function(source) {
+				var o = document.createElement('option');
+				o.value = source;
+				o.textContent = source + ' (' + counts[source] + ')';
+				sourceSelect.appendChild(o);
+			});
+		}
+
+		function applyFilters() {
+			var q = searchQuery.toLowerCase().trim();
+			filteredArticles = allArticles.filter(function(a) {
+				if (sourceFilter !== 'all' && a.source !== sourceFilter) return false;
+
+				// Genre filter: article passes if ANY matched artist matches genre
+				if (genreFilter !== 'all' && a.matchedArtists && a.matchedArtists.length) {
+					var anyMatch = a.matchedArtists.some(function(name) {
+						return artistMatchesGenre(name, genreFilter, bandsData);
+					});
+					if (!anyMatch) return false;
+				} else if (genreFilter !== 'all' && (!a.matchedArtists || !a.matchedArtists.length)) {
+					return false; // no artists = can't match genre
+				}
+
+				if (!q) return true;
+
+				var artists = (a.matchedArtists || []).join(' ').toLowerCase();
+				var hay = (a.title + ' ' + a.description + ' ' + a.source + ' ' + artists).toLowerCase();
+				return hay.indexOf(q) !== -1;
+			});
+
+			filteredArticles.sort(function(a, b) {
+				if (sortFilter === 'date_asc') return parseDate(a) - parseDate(b);
+				if (sortFilter === 'source_asc') return a.source.localeCompare(b.source, 'mk');
+				if (sortFilter === 'title_asc') return a.title.localeCompare(b.title, 'mk');
+				return parseDate(b) - parseDate(a);
+			});
+
+			renderNews();
+		}
+
+		function renderNews() {
+			// Update filter count badge in header
+			var activeFilters = 0;
+			if (genreFilter !== 'all') activeFilters++;
+			if (sourceFilter !== 'all') activeFilters++;
+			if (searchQuery.trim()) activeFilters++;
+			var badge = document.getElementById('filter-count');
+			if (badge) {
+				badge.textContent = activeFilters;
+				badge.classList.toggle('visible', activeFilters > 0);
+			}
+
+			if (!filteredArticles.length) {
+				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-newspaper" style="font-size:1.3rem;display:block;margin-bottom:0.5rem"></i>Нема вести за тековните филтри.</div>';
+				loadMoreWrap.style.display = 'none';
+				return;
+			}
+
+			var shown = filteredArticles.slice(0, visibleCount);
+			var html = '';
+
+			shown.forEach(function(article) {
+				var thumb = article.thumbnail ? '<img src="' + escAttr(article.thumbnail) + '" alt="" class="news-thumb" loading="lazy" decoding="async">' : '';
+				var sourceIcon = article.iconUrl ? '<img src="' + escAttr(article.iconUrl) + '" alt="" class="news-source-icon" loading="lazy" decoding="async">' : '';
+				var artistChips = '';
+
+				if (article.matchedArtists && article.matchedArtists.length) {
+					artistChips = '<div class="news-artists">' + article.matchedArtists.slice(0, 6).map(function(name) {
+						return '<a href="' + escAttr(artistLink(name)) + '" class="artist-chip" title="' + escAttr(name) + '"><i class="fas fa-music"></i> ' + esc(name) + '</a>';
+					}).join('') + '</div>';
+				}
+
+				html +=
+					'<article class="news-card">' +
+						'<div class="news-card-head">' +
+							thumb +
+							'<div class="news-main">' +
+								'<h2 class="news-title"><a href="' + escAttr(article.link) + '" target="_blank" rel="noopener">' + esc(article.title) + '</a></h2>' +
+								'<div class="news-meta">' +
+									'<span>' + sourceIcon + ' ' + esc(article.source) + '</span>' +
+									'<span class="dot">•</span>' +
+									'<span>' + esc(formatDateLabel(article.date)) + '</span>' +
+								'</div>' +
+							'</div>' +
+						'</div>' +
+						(article.description ? '<p class="news-desc">' + esc(article.description) + '</p>' : '') +
+						artistChips +
+						'<div class="news-footer">' +
+							'<span class="news-meta" style="margin:0">' + esc(article.matchedArtists.length ? article.matchedArtists.length + ' артист' + (article.matchedArtists.length > 1 ? 'и' : '') : '') + '</span>' +
+							'<a class="news-link" href="' + escAttr(article.link) + '" target="_blank" rel="noopener">Отвори <i class="fas fa-arrow-up-right-from-square"></i></a>' +
+						'</div>' +
+					'</article>';
+			});
+
+			newsContainer.innerHTML = html;
+			loadMoreWrap.style.display = filteredArticles.length > shown.length ? 'flex' : 'none';
+		}
+
+		async function loadNewsData() {
+			loadingBar.classList.add('active');
+			try {
+				// Load bands data for genre filtering
+				try {
+					var bandsResp = await fetch('bands.json');
+					if (bandsResp.ok) {
+						var bandsJson = await bandsResp.json();
+						bandsData = bandsJson.muzickaMasterLista || bandsJson || [];
+					}
+				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
+
+				var fromMaster = null;
+				var master = await loadSiteMaster();
+				if (master && master.news) {
+					fromMaster = master.news;
+				}
+
+				if (fromMaster && Array.isArray(fromMaster.matched)) {
+					allArticles = fromMaster.matched.map(normalizeArticle);
+					lastUpdated = fromMaster.lastUpdated || '';
+				} else {
+					var resp = await fetch('articles.json');
+					if (!resp.ok) throw new Error('Не можеме да го вчитаме articles.json');
+					var raw = await resp.json();
+					allArticles = (raw.articles || []).map(normalizeArticle);
+					lastUpdated = raw.lastUpdated || '';
+				}
+
+				allArticles.sort(function(a, b) { return parseDate(b) - parseDate(a); });
+				updateHeaderStats();
+				buildSourceOptions();
+				applyFilters();
+			} catch (err) {
+				console.error('News load error:', err);
+				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-triangle-exclamation" style="font-size:1.1rem;display:block;margin-bottom:0.4rem"></i>Не можеме да ги вчитаме вестите.</div>';
+			} finally {
+				loadingBar.classList.remove('active');
+			}
+		}
+
+		searchInput.addEventListener('input', function() {
+			searchQuery = this.value || '';
+			visibleCount = 36;
+			applyFilters();
+		});
+
+		sourceSelect.addEventListener('change', function() {
+			sourceFilter = this.value;
+			visibleCount = 36;
+			applyFilters();
+		});
+
+		sortSelect.addEventListener('change', function() {
+			sortFilter = this.value;
+			visibleCount = 36;
+			applyFilters();
+		});
+
+		document.getElementById('clear-filters').addEventListener('click', function() {
+			searchQuery = '';
+			sourceFilter = 'all';
+			sortFilter = 'date_desc';
+			genreFilter = 'all';
+			visibleCount = 36;
+
+			searchInput.value = '';
+			sourceSelect.value = 'all';
+			sortSelect.value = 'date_desc';
+
+			document.querySelectorAll('.genre-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+			document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
+
+			applyFilters();
+		});
+
+		// Genre filter buttons
+		document.querySelectorAll('.genre-filter-btn').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				document.querySelectorAll('.genre-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+				btn.classList.add('active');
+				genreFilter = btn.getAttribute('data-genre');
+				visibleCount = 36;
+				applyFilters();
+			});
+		});
+
+		loadMoreBtn.addEventListener('click', function() {
+			visibleCount += 36;
+			renderNews();
+		});
+
+		loadNewsData();
+	})();
+	</script>
 </body>
 </html>

@@ -85,88 +85,7 @@
         color: #ef4444 !important;
     }
 
-    /* Column sizing: Name, Artists, Place, Date, Time, Tickets, Link, Actions */
-    .nastani-page table { width: 100%; table-layout: auto; }
-    .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) { width: auto; padding: 0.25rem 0.5rem; }  /* Name - takes remaining space */
-    .nastani-page th:nth-child(2), .nastani-page td:nth-child(2) { max-width: 180px; white-space: nowrap; overflow: hidden; } /* Artists */
-    .nastani-page th:nth-child(3), .nastani-page td:nth-child(3) { white-space: nowrap; overflow: hidden; } /* Place */
-    .nastani-page th:nth-child(4), .nastani-page td:nth-child(4) { white-space: nowrap; padding: 0.25rem 0.5rem; } /* Date */
-    .nastani-page th:nth-child(5), .nastani-page td:nth-child(5) { white-space: nowrap; text-align: center; } /* Time */
-    .nastani-page th:nth-child(6), .nastani-page td:nth-child(6) { max-width: 150px; white-space: nowrap; overflow: hidden; } /* Tickets */
-    .nastani-page th:nth-child(7), .nastani-page td:nth-child(7) { width: 36px; white-space: nowrap; text-align: center; padding: 0 0.3rem; } /* Link */
-    .nastani-page th:nth-child(8), .nastani-page td:nth-child(8) { width: 36px; white-space: nowrap; text-align: center; } /* Actions */
-
-    .nastani-page .event-title-cell {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: var(--text-primary);
-    }
-    .nastani-page .event-name-row {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        min-width: 0;
-        max-width: 100%;
-    }
-    .nastani-page .event-name-row .event-title-cell {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        min-width: 0;
-    }
-    .nastani-page .event-name-row .countdown-badge {
-        flex-shrink: 0;
-    }
-    .nastani-page .event-date-cell {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        white-space: nowrap;
-    }
-    .nastani-page .event-place-cell,
-    .nastani-page .event-time-cell {
-        font-size: 0.72rem;
-        color: var(--text-secondary);
-    }
-
-    /* Hide mobile-only elements on desktop */
-    .nastani-page .mobile-meta,
-    .nastani-page .mobile-artists-inline,
-    .nastani-page .countdown-badge.mobile-place-badge,
-    .nastani-page .countdown-badge.mobile-price-badge {
-        display: none !important;
-    }
-
-    /* Maps link in Place column */
-    .nastani-page .place-maps-link {
-        color: inherit;
-        text-decoration: none;
-        transition: color 0.15s;
-    }
-    .nastani-page .place-maps-link:hover {
-        color: var(--accent-blue);
-    }
-    @media (max-width: 600px) {
-        .nastani-page .mobile-meta { display: flex; }
-        .nastani-page .mobile-artists-inline { display: flex; }
-    }
-
-    .nastani-page tr.past-event {
-        opacity: 0.45;
-    }
-    .nastani-page tr.past-event:hover {
-        opacity: 0.75;
-    }
-    .nastani-page tr.today-event {
-        background: rgba(34, 197, 94, 0.04);
-    }
-    .nastani-page tr.today-event td:first-child {
-        border-left: 3px solid #22c55e;
-    }
-
-    /* Artist tags in table */
+    /* Artist tags */
     .nastani-page .artist-tag {
         display: inline-flex;
         align-items: center;
@@ -192,7 +111,7 @@
         color: var(--accent-purple, var(--accent-blue));
     }
 
-    /* Ticket tags in table */
+    /* Ticket tags */
     .nastani-page .ticket-tag {
         display: inline-flex;
         align-items: center;
@@ -211,12 +130,11 @@
     /* Countdown badge */
     .nastani-page .countdown-badge {
         display: inline-block;
-        font-size: 0.58rem;
+        font-size: 0.55rem;
         font-weight: 700;
-        padding: 0.08rem 0.4rem;
+        padding: 0.06rem 0.35rem;
         border-radius: 999px;
         white-space: nowrap;
-        margin-left: 0.3rem;
         vertical-align: middle;
     }
     .nastani-page .countdown-badge.today-cd {
@@ -240,27 +158,25 @@
         border: 1px solid var(--border-color);
     }
 
-    /* Scrollable artist/ticket cells */
+    /* Scrollable cells */
     .nastani-page .cell-scroll {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
-        gap: 0.2rem;
+        gap: 0.15rem;
         scrollbar-width: none;
         -ms-overflow-style: none;
         cursor: grab;
         position: relative;
-        -webkit-mask-image: linear-gradient(to right, black calc(100% - 18px), transparent 100%);
-        mask-image: linear-gradient(to right, black calc(100% - 18px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 14px), transparent 100%);
+        mask-image: linear-gradient(to right, black calc(100% - 14px), transparent 100%);
     }
     .nastani-page .cell-scroll::-webkit-scrollbar { display: none; }
-    .nastani-page td:nth-child(2) .cell-scroll { max-width: 220px; }
-    .nastani-page td:nth-child(6) .cell-scroll { max-width: 180px; }
 
-    /* Link column */
+    /* Link button */
     .nastani-page .event-link-btn {
         color: var(--accent-blue);
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         text-decoration: none;
         transition: opacity 0.15s;
     }
@@ -360,37 +276,6 @@
     }
     body.dark-mode .nastani-page .artist-tag {
         background: var(--bg-primary);
-    }
-
-    /* Today separator row */
-    .nastani-page tr.today-separator td {
-        padding: 0.2rem 0.5rem;
-        background: none;
-        border: none;
-        position: relative;
-    }
-    .nastani-page .today-marker {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .nastani-page .today-marker .tm-line {
-        flex: 1;
-        height: 1px;
-        background: var(--accent-blue);
-        opacity: 0.3;
-    }
-    .nastani-page .today-marker .tm-label {
-        background: var(--accent-blue);
-        color: #fff;
-        font-family: 'Montserrat', sans-serif;
-        font-size: 0.55rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        padding: 0.15rem 0.6rem;
-        border-radius: 999px;
-        white-space: nowrap;
     }
 
     /* Autocomplete for artist input in modal */
@@ -554,31 +439,379 @@
     .nastani-page #save-event-btn:hover { opacity: 0.9; }
     .nastani-page #save-event-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ===== DESKTOP RESPONSIVE COLUMN HIDING ===== */
-    /* Override generic master-list column hiding from desktop.css */
-    @media (min-width: 601px) {
-        .nastani-page th, .nastani-page td {
-            display: table-cell;
-        }
+    /* ===== TIMELINE LAYOUT ===== */
+    .nastani-page .timeline-container {
+        position: relative;
+        padding: 0;
+    }
+    /* Vertical timeline line */
+    .nastani-page .timeline-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 54px;
+        width: 2px;
+        background: var(--border-color);
+        z-index: 0;
     }
 
-    /* Events-specific: progressively hide columns as viewport shrinks */
-    /* Hide order: Time → Tickets → Artists → Date */
-    /* Always visible: Name(1), Place(3), Link(7), Actions(8) */
+    /* Empty state */
+    .nastani-page .tl-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Month header */
+    .nastani-page .tl-month-header {
+        display: flex;
+        align-items: center;
+        padding: 0.15rem 0.5rem 0.15rem 0;
+        position: relative;
+        z-index: 1;
+        border-top: 2px solid var(--border-color)
+        /* background-color: var(--text-primary);
+        color: var(--bg-primary); */
+    }
+    .nastani-page .tl-month-date-col {
+        width: 44px;
+        flex-shrink: 0;
+    }
+    .nastani-page .tl-month-node {
+        width: 20px;
+        flex-shrink: 0;
+    }
+    .nastani-page .tl-month-content {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex: 1;
+        min-width: 0;
+        padding-left: 0.3rem;
+    }
+    .nastani-page .tl-month-label {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+    }
+
+    /* Today marker */
+    .nastani-page .tl-today-marker {
+        display: flex;
+        align-items: center;
+        padding: 0.3rem 0.5rem 0.3rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    .nastani-page .tl-today-date-col {
+        width: 44px;
+        flex-shrink: 0;
+    }
+    .nastani-page .tl-today-node {
+        width: 20px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+    }
+    .nastani-page .tl-today-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent-blue);
+        box-shadow: 0 0 8px rgba(74, 127, 165, 0.4);
+    }
+    .nastani-page .tl-today-content {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex: 1;
+        min-width: 0;
+        padding-left: 0.3rem;
+    }
+    .nastani-page .tl-today-label {
+        background: var(--accent-blue);
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.65rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+    .nastani-page .tl-today-line {
+        flex: 1;
+        height: 2px;
+        background: var(--accent-blue);
+        opacity: 0.2;
+        border-radius: 1px;
+    }
+
+    /* Direction indicator */
+    .nastani-page .tl-direction {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.5rem 0.15rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    .nastani-page .tl-direction-label {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        opacity: 0.6;
+        white-space: nowrap;
+        margin-left: 64px;
+    }
+    .nastani-page .tl-direction-label i {
+        font-size: 0.42rem;
+    }
+
+    /* ===== TIMELINE ITEM — single compact row ===== */
+    .nastani-page .tl-item {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.15s;
+        position: relative;
+        z-index: 1;
+        min-height: 32px;
+    }
+    .nastani-page .tl-item.date-group-even {
+        background: var(--bg-secondary);
+    }
+    .nastani-page .tl-item:hover {
+        background: var(--bg-hover);
+    }
+
+    /* Date column */
+    .nastani-page .tl-date-col {
+        width: 44px;
+        flex-shrink: 0;
+        text-align: center;
+        user-select: none;
+        padding: 0.15rem 0;
+    }
+    .nastani-page .tl-day {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.1;
+    }
+    .nastani-page .tl-weekday {
+        font-size: 0.48rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .nastani-page .tl-date-col.hidden-date .tl-day,
+    .nastani-page .tl-date-col.hidden-date .tl-weekday {
+        visibility: hidden;
+    }
+
+    /* Node column */
+    .nastani-page .tl-node-col {
+        width: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+    .nastani-page .tl-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent-blue);
+        border: 2px solid var(--bg-primary);
+        box-shadow: 0 0 0 1.5px var(--accent-blue);
+        flex-shrink: 0;
+    }
+
+    /* Content area — single-row columnar layout */
+    .nastani-page .tl-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 0.2rem 0.4rem 0.2rem 0.3rem;
+    }
+
+    /* Time cell */
+    .nastani-page .tl-time {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        white-space: nowrap;
+        width: 36px;
+        flex-shrink: 0;
+        text-align: center;
+    }
+
+    /* Title + countdown cell */
+    .nastani-page .tl-name-cell {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0 0.4rem;
+        overflow: hidden;
+    }
+    .nastani-page .tl-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+    .nastani-page .tl-name-cell .countdown-badge {
+        flex-shrink: 0;
+    }
+
+    /* Place cell */
+    .nastani-page .tl-place {
+        width: 160px;
+        flex-shrink: 0;
+        overflow: hidden;
+        padding: 0 0.3rem;
+    }
+    .nastani-page .tl-place-link {
+        font-size: 0.65rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .nastani-page .tl-place-link:hover {
+        color: var(--accent-blue);
+    }
+    .nastani-page .tl-place-link i {
+        font-size: 0.45rem;
+        margin-right: 0.15rem;
+    }
+
+    /* Artists cell */
+    .nastani-page .tl-artists-cell {
+        width: 190px;
+        flex-shrink: 0;
+        overflow: hidden;
+        padding: 0 0.2rem;
+    }
+    .nastani-page .tl-artists-cell .cell-scroll {
+        max-width: 100%;
+    }
+
+    /* Tickets cell */
+    .nastani-page .tl-tickets-cell {
+        width: 160px;
+        flex-shrink: 0;
+        overflow: hidden;
+        padding: 0 0.2rem;
+    }
+    .nastani-page .tl-tickets-cell .cell-scroll {
+        max-width: 100%;
+    }
+
+    /* Link cell */
+    .nastani-page .tl-link-cell {
+        width: 28px;
+        flex-shrink: 0;
+        text-align: center;
+    }
+
+    /* Actions cell */
+    .nastani-page .tl-actions-cell {
+        width: 28px;
+        flex-shrink: 0;
+        text-align: center;
+    }
+    .nastani-page .tl-actions-cell .edit-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.6rem;
+        padding: 0.15rem;
+        transition: color 0.15s;
+    }
+    .nastani-page .tl-actions-cell .edit-btn:hover {
+        color: var(--accent-blue);
+    }
+
+    /* Past event */
+    .nastani-page .tl-item.past-event {
+        opacity: 0.4;
+    }
+    .nastani-page .tl-item.past-event:hover {
+        opacity: 0.7;
+    }
+    .nastani-page .tl-item.past-event .tl-dot {
+        background: var(--text-muted);
+        box-shadow: 0 0 0 1.5px var(--border-color);
+    }
+
+    /* Today event */
+    .nastani-page .tl-item.today-event .tl-dot {
+        background: #22c55e;
+        box-shadow: 0 0 0 2px #22c55e, 0 0 6px rgba(34, 197, 94, 0.35);
+        width: 9px;
+        height: 9px;
+    }
+    .nastani-page .tl-item.today-event {
+        background: rgba(34, 197, 94, 0.04);
+    }
+
+    /* Dark mode */
+    body.dark-mode .nastani-page .tl-dot {
+        border-color: var(--bg-primary);
+    }
+    body.dark-mode .nastani-page .tl-item.date-group-even .tl-dot {
+        border-color: var(--bg-secondary);
+    }
+    body.dark-mode .nastani-page .tl-item:hover .tl-dot {
+        border-color: var(--bg-hover);
+    }
+    body.dark-mode .nastani-page .tl-item.today-event .tl-dot {
+        border-color: transparent;
+    }
+
+    /* ===== DESKTOP: progressively hide columns ===== */
     @media (max-width: 1100px) {
-        .nastani-page th:nth-child(5), .nastani-page td:nth-child(5) { display: none; }
+        .nastani-page .tl-tickets-cell { display: none; }
     }
-    @media (max-width: 1000px) {
-        .nastani-page th:nth-child(6), .nastani-page td:nth-child(6) { display: none; }
+    @media (max-width: 950px) {
+        .nastani-page .tl-artists-cell { display: none; }
     }
-    @media (max-width: 850px) {
-        .nastani-page th:nth-child(2), .nastani-page td:nth-child(2) { display: none; }
-    }
-    @media (max-width: 700px) {
-        .nastani-page th:nth-child(4), .nastani-page td:nth-child(4) { display: none; }
+    @media (max-width: 750px) {
+        .nastani-page .tl-place { display: none; }
     }
 
-    /* ===== MOBILE OVERRIDES ===== */
+    /* ===== MOBILE ===== */
     @media (max-width: 600px) {
         .nastani-page .controls {
             display: none;
@@ -610,9 +843,6 @@
         }
         .nastani-page .evt-filter-btn { flex: 1; text-align: center; padding: 0.45rem 0.3rem; font-size: 0.8rem; }
 
-        /* Table fills full width, no horizontal scroll */
-        .nastani-page thead { display: none !important; }
-        .nastani-page table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
         .nastani-page .table-wrapper {
             overflow: hidden !important;
             display: flex !important;
@@ -626,119 +856,124 @@
             flex: 1 !important;
         }
 
-        /* Hide all columns except Name(1) */
-        .nastani-page th:nth-child(2), .nastani-page td:nth-child(2),
-        .nastani-page th:nth-child(3), .nastani-page td:nth-child(3),
-        .nastani-page th:nth-child(4), .nastani-page td:nth-child(4),
-        .nastani-page th:nth-child(5), .nastani-page td:nth-child(5),
-        .nastani-page th:nth-child(6), .nastani-page td:nth-child(6),
-        .nastani-page th:nth-child(7), .nastani-page td:nth-child(7),
-        .nastani-page th:nth-child(8), .nastani-page td:nth-child(8) {
-            display: none !important;
-            width: 0 !important;
-            padding: 0 !important;
-            border: none !important;
+        /* Timeline shrinks */
+        .nastani-page .timeline-container::before {
+            left: 35px;
+        }
+        .nastani-page .tl-date-col {
+            width: 28px;
+        }
+        .nastani-page .tl-node-col {
+            width: 14px;
+        }
+        .nastani-page .tl-dot {
+            width: 5px;
+            height: 5px;
+            border-width: 1.5px;
+            box-shadow: 0 0 0 1px var(--accent-blue);
+        }
+        .nastani-page .tl-item.today-event .tl-dot {
+            width: 7px;
+            height: 7px;
+        }
+        .nastani-page .tl-item.past-event .tl-dot {
+            box-shadow: 0 0 0 1px var(--border-color);
+        }
+        .nastani-page .tl-today-dot {
+            width: 9px;
+            height: 9px;
+        }
+        .nastani-page .tl-today-date-col,
+        .nastani-page .tl-month-date-col {
+            width: 28px;
+        }
+        .nastani-page .tl-today-node,
+        .nastani-page .tl-month-node {
+            width: 14px;
+        }
+        .nastani-page .tl-day {
+            font-size: 0.65rem;
+        }
+        .nastani-page .tl-weekday {
+            font-size: 0.38rem;
         }
 
-        /* Name column fills entire width */
-        .nastani-page th:nth-child(1), .nastani-page td:nth-child(1) {
-            display: table-cell !important;
-            width: 100% !important;
+        /* Content: only show time + title + mobile badges */
+        .nastani-page .tl-content {
+            padding: 0.25rem 0.35rem 0.25rem 0.2rem;
+        }
+        .nastani-page .tl-time {
+            width: 30px;
+            font-size: 0.58rem;
+        }
+        .nastani-page .tl-title {
+            font-size: 0.74rem;
+        }
+        .nastani-page .tl-name-cell {
+            padding: 0 0.25rem;
+            gap: 0.2rem;
+        }
+        .nastani-page .tl-name-cell .countdown-badge {
+            display: none;
         }
 
-        /* Reset mobile.css flex-based row styles back to table layout */
-        .nastani-page tr {
-            display: table-row !important;
-            padding: 0 !important;
-            padding-right: 0 !important;
-            gap: 0 !important;
-            opacity: 1 !important;
-            animation: none !important;
-            flex-wrap: initial !important;
-            content-visibility: visible;
-            contain-intrinsic-size: auto;
-            transform: none;
-        }
-        .nastani-page td {
-            display: table-cell !important;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--border-color);
-        }
+        /* Hide detailed columns on mobile */
+        .nastani-page .tl-place { display: none; }
+        .nastani-page .tl-artists-cell { display: none; }
+        .nastani-page .tl-tickets-cell { display: none; }
+        .nastani-page .tl-actions-cell { display: none; }
+        .nastani-page .tl-link-cell { display: none; }
 
-        /* Single-line event row */
-        .nastani-page td[data-label="Настан"] {
-            padding: 0.35rem 0.5rem;
-            overflow: hidden;
-        }
-        .nastani-page td[data-label="Настан"] .event-name-row {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .nastani-page td[data-label="Настан"] .event-title-cell {
-            font-size: 0.78rem;
-            font-weight: 700;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            min-width: 0;
-            flex-shrink: 1;
-        }
-        .nastani-page td[data-label="Настан"] .countdown-badge {
-            font-size: 0.52rem;
-            padding: 0.04rem 0.3rem;
+        /* Show mobile-specific badges */
+        .nastani-page .tl-mobile-badges {
+            display: flex !important;
             flex-shrink: 0;
+            gap: 0.15rem;
+            margin-left: auto;
         }
-
-        /* Location badge — shown on mobile */
-        .nastani-page .countdown-badge.mobile-place-badge {
-            display: inline-block !important;
+        .nastani-page .tl-mobile-badge {
+            font-size: 0.48rem;
+            font-weight: 700;
+            padding: 0.04rem 0.2rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .nastani-page .tl-mobile-badge.place-badge {
             background: rgba(74, 127, 165, 0.08);
             color: var(--accent-blue);
             border: 1px solid rgba(74, 127, 165, 0.15);
-            max-width: 110px;
+            max-width: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
             text-decoration: none;
         }
-        .nastani-page .mobile-place-badge i {
-            font-size: 0.42rem;
-        }
-        /* Price badge — shown on mobile */
-        .nastani-page .countdown-badge.mobile-price-badge {
-            display: inline-block !important;
+        .nastani-page .tl-mobile-badge.price-badge {
             background: rgba(34, 197, 94, 0.08);
             color: #16a34a;
             border: 1px solid rgba(34, 197, 94, 0.2);
         }
-        .nastani-page .mobile-price-badge i {
+        .nastani-page .tl-mobile-badge i {
+            font-size: 0.38rem;
+        }
+
+        .nastani-page .tl-month-label {
+            font-size: 0.62rem;
+        }
+        .nastani-page .tl-today-label {
+            font-size: 0.48rem;
+            padding: 0.12rem 0.45rem;
+        }
+        .nastani-page .tl-direction-label {
             font-size: 0.42rem;
+            margin-left: 42px;
         }
+    }
 
-        /* Hide mobile-meta and artists — single line only */
-        .nastani-page .mobile-meta { display: none !important; }
-        .nastani-page .mobile-artists-inline { display: none !important; }
-
-        /* Today separator */
-        .nastani-page tr.today-separator {
-            display: table-row !important;
-            padding: 0;
+    /* Hide mobile badges on desktop */
+    @media (min-width: 601px) {
+        .nastani-page .tl-mobile-badges {
+            display: none !important;
         }
-        .nastani-page tr.today-separator td {
-            padding: 0.15rem 0.4rem;
-            display: table-cell !important;
-        }
-
-        /* Today event accent */
-        .nastani-page tr.today-event td:first-child {
-            border-left: 3px solid #22c55e;
-        }
-
-        /* Past event on mobile */
-        .nastani-page tr.past-event { opacity: 0.35; }
     }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -777,21 +1012,7 @@
         </div>
         <div class="table-wrapper">
             <div class="table-scroll-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Настан</th>
-                            <th>Артисти</th>
-                            <th>Место</th>
-                            <th>Датум</th>
-                            <th>Време</th>
-                            <th>Карти</th>
-                            <th><i class="fas fa-link"></i></th>
-                            <th><i class="fas fa-pen" style="font-size:0.6rem"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody id="events-table-body"></tbody>
-                </table>
+                <div id="events-timeline" class="timeline-container"></div>
             </div>
         </div>
     </main>
@@ -1002,8 +1223,8 @@
                 renderTable();
             } catch (err) {
                 console.error('Load error:', err);
-                document.getElementById('events-table-body').innerHTML =
-                    '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)"><i class="fas fa-exclamation-triangle"></i> Не можеме да ги вчитаме настаните.</td></tr>';
+                document.getElementById('events-timeline').innerHTML =
+                    '<div class="tl-empty"><i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i> Не можеме да ги вчитаме настаните.</div>';
             } finally {
                 loadingBar.classList.remove('active');
             }
@@ -1055,9 +1276,12 @@
             document.getElementById('stat-past').textContent = pa;
         }
 
-        // ==================== RENDER TABLE ====================
+        // ==================== RENDER TIMELINE ====================
+        var MK_MONTHS_FULL = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+        var MK_DAYS_SHORT = ['нед','пон','вто','сре','чет','пет','саб'];
+
         function renderTable() {
-            var tbody = document.getElementById('events-table-body');
+            var container = document.getElementById('events-timeline');
             var t = getToday();
             var q = searchQuery.toLowerCase();
 
@@ -1078,14 +1302,22 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted)">' +
+                container.innerHTML = '<div class="tl-empty">' +
                     '<i class="fas fa-calendar-xmark" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i>' +
-                    'Нема настани' + (q ? ' за "' + esc(q) + '"' : '') + '</td></tr>';
+                    'Нема настани' + (q ? ' за "' + esc(q) + '"' : '') + '</div>';
                 return;
             }
 
             var html = '';
             var todayInserted = false;
+            var lastMonth = '';
+            var lastDateStr = '';
+            var dateGroupIdx = -1;
+
+            // Direction indicator at top
+            if (currentFilter !== 'past') {
+                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-up"></i> Претстојни</span></div>';
+            }
 
             for (var i = 0; i < filtered.length; i++) {
                 var evt = filtered[i];
@@ -1093,133 +1325,169 @@
                 var isPast = evtDate < t;
                 var isToday = daysUntil(evt.date) === 0;
 
-                // Today separator
+                // Today marker
                 if (!todayInserted && isPast && currentFilter !== 'past' && currentFilter !== 'upcoming') {
                     todayInserted = true;
-                    html += '<tr class="today-separator"><td colspan="8">' +
-                        '<div class="today-marker">' +
-                        '<div class="tm-line"></div>' +
-                        '<span class="tm-label"><i class="fas fa-location-dot"></i> Денес</span>' +
-                        '<div class="tm-line"></div>' +
-                        '</div></td></tr>';
+                    html += '<div class="tl-today-marker" id="tl-today">' +
+                        '<div class="tl-today-date-col"></div>' +
+                        '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
+                        '<div class="tl-today-content">' +
+                        '<span class="tl-today-label"><i class="fas fa-location-dot"></i> Денес</span>' +
+                        '<div class="tl-today-line"></div>' +
+                        '</div></div>';
+                    lastMonth = '';
+                    lastDateStr = '';
                 }
 
-                var d = evtDate;
+                // Month header
+                var monthKey = evtDate.getFullYear() + '-' + evtDate.getMonth();
+                if (monthKey !== lastMonth) {
+                    lastMonth = monthKey;
+                    html += '<div class="tl-month-header">' +
+                        '<div class="tl-month-date-col"></div>' +
+                        '<div class="tl-month-node"></div>' +
+                        '<div class="tl-month-content">' +
+                        '<span class="tl-month-label">' + MK_MONTHS_FULL[evtDate.getMonth()] + ' ' + evtDate.getFullYear() + '</span>' +
+                        '</div></div>';
+                    lastDateStr = '';
+                }
+
                 var cd = countdownText(evt.date);
                 var artists = evt.artists || evt.bands || [];
-                var rowCls = isPast ? 'past-event' : (isToday ? 'today-event' : '');
+                var itemCls = isPast ? 'past-event' : (isToday ? 'today-event' : '');
 
-                html += '<tr class="' + rowCls + '" data-id="' + escA(evt.id) + '">';
+                var dateStr = evt.date;
+                var showDate = (dateStr !== lastDateStr);
+                if (showDate) dateGroupIdx++;
+                lastDateStr = dateStr;
+                if (dateGroupIdx % 2 === 0) itemCls += ' date-group-even';
 
-                // 1. Name + badges (countdown, location, price)
-                var cheapest = '';
-                if (evt.tickets && evt.tickets.length) {
-                    var prices = evt.tickets.map(function(t) { return parseInt(t.price, 10); }).filter(function(n) { return !isNaN(n); });
-                    if (prices.length) cheapest = Math.min.apply(null, prices) + ' ден.';
-                }
-                html += '<td data-label="Настан"><div class="event-name-row"><span class="event-title-cell">' + esc(evt.title) + '</span>';
-                if (cd.text) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
-                if (evt.place) html += '<a href="https://www.google.com/maps/search/' + encodeURIComponent(evt.place) + '" target="_blank" rel="noopener" class="countdown-badge mobile-place-badge" onclick="event.stopPropagation()"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</a>';
-                if (cheapest) html += '<span class="countdown-badge mobile-price-badge"><i class="fas fa-ticket"></i> ' + esc(cheapest) + '</span>';
+                var dayNum = String(evtDate.getDate()).padStart(2, '0');
+                var weekday = MK_DAYS_SHORT[evtDate.getDay()];
+
+                html += '<div class="tl-item ' + itemCls + '" data-id="' + escA(evt.id) + '">';
+
+                // Date column
+                html += '<div class="tl-date-col' + (showDate ? '' : ' hidden-date') + '">';
+                html += '<div class="tl-day">' + dayNum + '</div>';
+                html += '<div class="tl-weekday">' + weekday + '</div>';
                 html += '</div>';
-                // Mobile: structured meta with icons
-                html += '<span class="mobile-meta">';
-                html += '<span class="mm-item"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</span>';
-                html += '<span class="mm-sep">·</span>';
-                html += '<span class="mm-item"><i class="fas fa-calendar"></i> ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '</span>';
-                html += '<span class="mm-sep">·</span>';
-                html += '<span class="mm-item"><i class="fas fa-clock"></i> ' + esc(evt.time) + '</span>';
-                html += '</span>';
-                // Mobile: artists inline
+
+                // Node column
+                html += '<div class="tl-node-col"><div class="tl-dot"></div></div>';
+
+                // Content — single row with columns
+                html += '<div class="tl-content">';
+
+                // Time
+                html += '<span class="tl-time">' + esc(evt.time) + '</span>';
+
+                // Name + countdown
+                html += '<div class="tl-name-cell">';
+                html += '<span class="tl-title">' + esc(evt.title) + '</span>';
+                if (cd.text) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
+                html += '</div>';
+
+                // Place
+                html += '<div class="tl-place">';
+                if (evt.place) {
+                    var mapsUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place);
+                    html += '<a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="tl-place-link" onclick="event.stopPropagation()" title="' + escA(evt.place) + '"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</a>';
+                }
+                html += '</div>';
+
+                // Artists
+                html += '<div class="tl-artists-cell">';
                 if (artists.length) {
-                    html += '<span class="mobile-artists-inline">';
-                    for (var ma = 0; ma < artists.length; ma++) {
-                        html += '<a href="' + escA(artistUrl(artists[ma])) + '" class="artist-tag" onclick="event.stopPropagation()"><i class="fas fa-music"></i> ' + esc(artists[ma]) + '</a>';
+                    html += '<div class="cell-scroll">';
+                    for (var a = 0; a < artists.length; a++) {
+                        html += '<a href="' + escA(artistUrl(artists[a])) + '" class="artist-tag" onclick="event.stopPropagation()" title="' + escA(artists[a]) + '"><i class="fas fa-music"></i> ' + esc(artists[a]) + '</a>';
                     }
-                    html += '</span>';
+                    html += '</div>';
                 }
-                html += '</td>';
-
-                // 2. Artists
-                html += '<td data-label="Артисти"><div class="cell-scroll">';
-                for (var a = 0; a < artists.length; a++) {
-                    html += '<a href="' + escA(artistUrl(artists[a])) + '" class="artist-tag" onclick="event.stopPropagation()" title="' + escA(artists[a]) + '"><i class="fas fa-music"></i> ' + esc(artists[a]) + '</a>';
-                }
-                if (!artists.length) html += '<span style="color:var(--text-muted);font-size:0.7rem">—</span>';
-                html += '</div></td>';
-
-                // 3. Place (links to Google Maps)
-                var mapsUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place || '');
-                html += '<td data-label="Место"><a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="event-place-cell place-maps-link" onclick="event.stopPropagation()">' + esc(evt.place) + '</a></td>';
-
-                // 4. Date (single line)
-                html += '<td data-label="Датум"><div class="event-date-cell">' +
-                    String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear() +
-                    '</div></td>';
-
-                // 5. Time
-                html += '<td data-label="Време"><span class="event-time-cell">' + esc(evt.time) + '</span></td>';
+                html += '</div>';
 
                 // Tickets
-                html += '<td data-label="Карти"><div class="cell-scroll">';
+                html += '<div class="tl-tickets-cell">';
                 if (evt.tickets && evt.tickets.length) {
+                    html += '<div class="cell-scroll">';
                     for (var ti = 0; ti < evt.tickets.length; ti++) {
                         var tk = evt.tickets[ti];
                         html += '<span class="ticket-tag"><i class="fas fa-ticket"></i> ' + esc(tk.label) + ': ' + esc(tk.price) + '</span>';
                     }
-                } else {
-                    html += '<span style="color:var(--text-muted);font-size:0.7rem">—</span>';
+                    html += '</div>';
                 }
-                html += '</div></td>';
+                html += '</div>';
 
-                // Link (support both legacy .link and new .links array)
+                // Link
+                html += '<div class="tl-link-cell">';
                 var evtLinks = getEventLinks(evt);
-                html += '<td data-label="Линк" style="text-align:center">';
                 if (evtLinks.length === 1) {
                     html += '<a href="' + escA(evtLinks[0].url) + '" target="_blank" rel="noopener" class="event-link-btn" onclick="event.stopPropagation()" title="' + escA(evtLinks[0].label || evtLinks[0].url) + '"><i class="fas fa-arrow-up-right-from-square"></i></a>';
                 } else if (evtLinks.length > 1) {
                     html += '<span class="event-link-btn" style="cursor:pointer" title="' + evtLinks.length + ' линкови">';
                     html += '<i class="fas fa-arrow-up-right-from-square"></i><sup style="font-size:0.55rem;margin-left:1px">' + evtLinks.length + '</sup>';
                     html += '</span>';
-                } else {
-                    html += '<span style="color:var(--text-muted);font-size:0.7rem">—</span>';
                 }
-                html += '</td>';
+                html += '</div>';
 
-                // Actions
-                html += '<td data-label="Акции" style="text-align:center"><button class="action-btn edit-btn" data-id="' + escA(evt.id) + '" title="Уреди"><i class="fas fa-pen"></i></button></td>';
+                // Edit action
+                html += '<div class="tl-actions-cell">';
+                html += '<button class="edit-btn" data-id="' + escA(evt.id) + '" title="Уреди" onclick="event.stopPropagation()"><i class="fas fa-pen"></i></button>';
+                html += '</div>';
 
-                html += '</tr>';
+                // Mobile badges (hidden on desktop)
+                html += '<div class="tl-mobile-badges">';
+                if (evt.place) {
+                    var mapsUrl2 = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place);
+                    html += '<a href="' + escA(mapsUrl2) + '" target="_blank" rel="noopener" class="tl-mobile-badge place-badge" onclick="event.stopPropagation()" title="' + escA(evt.place) + '"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</a>';
+                }
+                if (evt.tickets && evt.tickets.length) {
+                    var prices = evt.tickets.map(function(t) { return parseInt(t.price, 10); }).filter(function(n) { return !isNaN(n); });
+                    if (prices.length) {
+                        var cheapest = Math.min.apply(null, prices) + ' ден.';
+                        html += '<span class="tl-mobile-badge price-badge"><i class="fas fa-ticket"></i> ' + esc(cheapest) + '</span>';
+                    }
+                }
+                html += '</div>';
+
+                html += '</div>'; // tl-content
+                html += '</div>'; // tl-item
             }
 
             // If all upcoming, insert today marker at end
             if (!todayInserted && currentFilter !== 'past' && currentFilter !== 'upcoming') {
-                html += '<tr class="today-separator"><td colspan="8">' +
-                    '<div class="today-marker">' +
-                    '<div class="tm-line"></div>' +
-                    '<span class="tm-label"><i class="fas fa-location-dot"></i> Денес</span>' +
-                    '<div class="tm-line"></div>' +
-                    '</div></td></tr>';
+                html += '<div class="tl-today-marker" id="tl-today">' +
+                    '<div class="tl-today-date-col"></div>' +
+                    '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
+                    '<div class="tl-today-content">' +
+                    '<span class="tl-today-label"><i class="fas fa-location-dot"></i> Денес</span>' +
+                    '<div class="tl-today-line"></div>' +
+                    '</div></div>';
             }
 
-            tbody.innerHTML = html;
+            // Direction indicator at bottom
+            if (currentFilter !== 'upcoming') {
+                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-down"></i> Минати</span></div>';
+            }
 
-            // Scroll to today separator
+            container.innerHTML = html;
+
+            // Scroll to today
             scrollToToday();
 
             // Bind edit buttons
-            tbody.querySelectorAll('.edit-btn').forEach(function(btn) {
+            container.querySelectorAll('.edit-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     openEditModal(btn.dataset.id);
                 });
             });
 
-            // Row click to open event page
-            tbody.querySelectorAll('tr[data-id]').forEach(function(row) {
-                row.style.cursor = 'pointer';
-                row.addEventListener('click', function() {
-                    var eid = encodeURIComponent(row.dataset.id);
+            // Item click to open event page
+            container.querySelectorAll('.tl-item[data-id]').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    var eid = encodeURIComponent(item.dataset.id);
                     window.location.href = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'nastan.html?id=' + eid : '/nastan/' + eid;
                 });
             });
@@ -1227,18 +1495,20 @@
 
         // ==================== SCROLL TO TODAY ====================
         function scrollToToday() {
-            var sep = document.querySelector('.today-separator');
-            if (!sep) return;
-            // On mobile, table-scroll-container is the scroll parent; on desktop, table-wrapper
+            var marker = document.getElementById('tl-today');
+            if (!marker) return;
             var sc = document.querySelector('.table-scroll-container');
             var wrapper = (sc && sc.scrollHeight > sc.clientHeight) ? sc : document.querySelector('.table-wrapper');
             if (!wrapper) return;
-            // Delay slightly to let DOM settle
             setTimeout(function() {
                 var wrapperRect = wrapper.getBoundingClientRect();
-                var sepRect = sep.getBoundingClientRect();
-                var offset = sepRect.top - wrapperRect.top + wrapper.scrollTop - (wrapperRect.height / 3);
-                wrapper.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+                var markerRect = marker.getBoundingClientRect();
+                // Position the "Денес" marker so that 2-3 past events
+                // are visible below it for context
+                var visibleHeight = wrapper.clientHeight;
+                var markerOffset = markerRect.top - wrapperRect.top + wrapper.scrollTop;
+                var targetScroll = markerOffset - visibleHeight + 220; // show ~2-3 past events below marker
+                wrapper.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
             }, 100);
         }
 
