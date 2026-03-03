@@ -938,6 +938,28 @@
       "link": "https://kupikarta.com/event-details.nspx?eventid=5729"
     },
     {
+      "id": "evt-20260807-концерт-на-владо-јаневски-so57",
+      "title": "Концерт на Владо Јаневски",
+      "date": "2026-08-07",
+      "time": "20:30",
+      "place": "Антички Театар, Охрид",
+      "artists": [
+        "Владо Јаневски"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "800"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://kupikarta.com/event-details.nspx?eventid=5741"
+        }
+      ]
+    },
+    {
       "id": "evt-20260815-расплет-фест-1722",
       "title": "Расплет Фест",
       "date": "2026-08-15",
@@ -977,6 +999,28 @@
         {
           "label": "",
           "url": "https://tix.mk/event/136/skopje-fury-festival"
+        }
+      ]
+    },
+    {
+      "id": "evt-20261017-концерт-на-калиопи-9tvg",
+      "title": "Концерт на Калиопи",
+      "date": "2026-10-17",
+      "time": "20:00",
+      "place": "А1 Арена Борис Трајковски, Скопје",
+      "artists": [
+        "Калиопи"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "700"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://kupikarta.com/event-details.nspx?eventid=5744"
         }
       ]
     },
