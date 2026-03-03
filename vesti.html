@@ -412,6 +412,12 @@
 	}
 	@media (max-width: 600px) {
 		.vesti-page .chart-filter-bar {
+			display: none;
+		}
+		.vesti-page .chart-filter-bar.visible {
+			display: flex;
+		}
+		.vesti-page .chart-filter-bar {
 			padding: 0.4rem 0.5rem;
 			flex-wrap: wrap;
 			gap: 0.35rem;
@@ -435,14 +441,24 @@
 			padding: 0.4rem;
 		}
 		.vesti-page .news-list {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: 1fr;
 			gap: 0.4rem;
 		}
 		.vesti-page .news-item {
 			padding: 0.35rem 0.2rem;
 		}
+		.vesti-page .news-thumb {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+		}
 		.vesti-page .news-title {
-			font-size: 0.82rem;
+			font-size: 1.4rem;
+		}
+		.vesti-page .news-desc {
+			font-size: 1.1rem;
+		}
+		.vesti-page .news-source {
+			font-size: 1rem;
 		}
 	}
 	</style>
@@ -517,20 +533,26 @@
 		(function setupSearchToggle() {
 			var btn = document.getElementById('search-toggle-btn');
 			var controls = document.getElementById('controls-bar');
+			var icon = btn ? btn.querySelector('i') : null;
 
 			if (!btn || !controls) return;
 
 			btn.addEventListener('click', function() {
-				controls.classList.toggle('visible');
-				btn.classList.toggle('active');
-				if (controls.classList.contains('visible')) {
+				var isVisible = controls.classList.toggle('visible');
+				if (icon) icon.className = 'fas ' + (isVisible ? 'fa-times' : 'fa-search');
+				if (isVisible) {
 					setTimeout(function() { searchInput.focus(); }, 50);
+				} else if (searchInput && searchInput.value) {
+					searchInput.value = '';
+					searchQuery = '';
+					visibleCount = 36;
+					applyFilters();
 				}
 			});
 
 			// Always visible on desktop
 			if (window.innerWidth > 600) {
-				controls.style.display = 'flex';
+				controls.classList.add('visible');
 			}
 		})();
 
