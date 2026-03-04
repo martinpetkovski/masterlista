@@ -76,6 +76,59 @@ $electronicGenres = @('Електронска', 'Техно', 'Хаус', 'Тр�
 $popGenres = @('Поп', 'Поп-Рок', 'Поп Рок', 'Данс Поп', 'Синт-Поп', 'К-Поп', 'Турбо-Фолк', 'R&B', 'Поп-Фолк', "Р'н'Б", 'Шлагер', 'Соул')
 $nonAltGenres = $rapGenres + $electronicGenres + $popGenres
 
+# Pre-compute lowercase genre sets for fast lookup (HashSet)
+$rapGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$rapGenres | ForEach-Object { [void]$rapGenresLower.Add($_.ToLower()) }
+$electronicGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$electronicGenres | ForEach-Object { [void]$electronicGenresLower.Add($_.ToLower()) }
+$popGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$popGenres | ForEach-Object { [void]$popGenresLower.Add($_.ToLower()) }
+$nonAltGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$nonAltGenres | ForEach-Object { [void]$nonAltGenresLower.Add($_.ToLower()) }
+
+# ============================================================================
+#  ARTIST LOOKUP CACHE (O(1) instead of O(n) per lookup)
+# ============================================================================
+
+# Build hash map: lowercased name -> band object
+$artistLookup = @{}
+foreach ($b in $bandsData) {
+    $key = $b.name.ToLower().Trim()
+    if (-not $artistLookup.ContainsKey($key)) {
+        $artistLookup[$key] = $b
+    }
+}
+
+# Pre-compute genre classification per artist: artistName(lower) -> { all=$true, alt=$bool, rap=$bool, electronic=$bool, pop=$bool }
+$artistGenreCache = @{}
+foreach ($b in $bandsData) {
+    $key = $b.name.ToLower().Trim()
+    $genres = @()
+    if ($b.genre -and $b.genre.ToLower() -ne 'недостигаат податоци') {
+        $genres = @(($b.genre -split ',\s*') | ForEach-Object { $_.Trim().ToLower() } | Where-Object { $_ })
+    }
+    $matchesRap = $false; $matchesElectronic = $false; $matchesPop = $false; $matchesAlt = $true
+    if ($genres.Count -eq 0) {
+        $matchesAlt = $false
+    } else {
+        foreach ($g in $genres) {
+            if ($rapGenresLower.Contains($g)) { $matchesRap = $true }
+            if ($electronicGenresLower.Contains($g)) { $matchesElectronic = $true }
+            if ($popGenresLower.Contains($g)) { $matchesPop = $true }
+            if ($nonAltGenresLower.Contains($g)) { $matchesAlt = $false }
+        }
+    }
+    $artistGenreCache[$key] = @{
+        all = $true
+        alt = $matchesAlt
+        rap = $matchesRap
+        electronic = $matchesElectronic
+        pop = $matchesPop
+    }
+}
+
+Write-Host "  > Built lookup cache for $($artistLookup.Count) artists" -ForegroundColor DarkGray
+
 # ============================================================================
 #  HELPER FUNCTIONS
 # ============================================================================
@@ -92,63 +145,37 @@ function Get-ISOWeek {
     return @{ year = $d.Year; week = $weekNum }
 }
 
-# Get artist info from bands data (matching common.js getArtistInfoByName)
+# Get artist info from bands data — O(1) hash lookup
 function Get-ArtistInfo {
     param([string]$artistName)
     if (-not $artistName) { return $null }
     $normalised = $artistName.ToLower().Trim()
-    foreach ($b in $bandsData) {
-        if ($b.name.ToLower().Trim() -eq $normalised) { return $b }
-    }
+    $result = $artistLookup[$normalised]
+    if ($result) { return $result }
     # Try first artist in collab
     $firstArtist = ($artistName -split ',')[0].Trim().ToLower()
     if ($firstArtist -ne $normalised) {
-        foreach ($b in $bandsData) {
-            if ($b.name.ToLower().Trim() -eq $firstArtist) { return $b }
-        }
+        return $artistLookup[$firstArtist]
     }
     return $null
 }
 
-# Split genre string to array
-function Split-Genres {
-    param([string]$genreStr)
-    if (-not $genreStr -or $genreStr.ToLower() -eq 'недостигаат податоци') { return @() }
-    return ($genreStr -split ',\s*') | ForEach-Object { $_.Trim().ToLower() } | Where-Object { $_ }
-}
-
-# Check if artist matches genre filter (matching common.js artistMatchesGenre)
+# Check if artist matches genre filter — O(1) cache lookup
 function Test-ArtistGenre {
     param([string]$artistName, [string]$genreFilter)
     if ($genreFilter -eq 'all') { return $true }
-    $info = Get-ArtistInfo $artistName
-    if (-not $info -or -not $info.genre) { return $false }
-    $artistGenres = Split-Genres $info.genre
-    if ($artistGenres.Count -eq 0) { return $false }
-    
-    if ($genreFilter -eq 'alt') {
-        if ($info.genre.ToLower() -eq 'недостигаат податоци') { return $false }
-        $excludeLower = $nonAltGenres | ForEach-Object { $_.ToLower() }
-        foreach ($ag in $artistGenres) {
-            if ($excludeLower -contains $ag) { return $false }
-        }
-        return $true
+    $normalised = $artistName.ToLower().Trim()
+    $cached = $artistGenreCache[$normalised]
+    if (-not $cached) {
+        # Try first artist in collab
+        $firstArtist = ($artistName -split ',')[0].Trim().ToLower()
+        $cached = $artistGenreCache[$firstArtist]
     }
-    
-    $configGenres = switch ($genreFilter) {
-        'rap' { $rapGenres }
-        'electronic' { $electronicGenres }
-        'pop' { $popGenres }
-        default { @() }
-    }
-    $configLower = $configGenres | ForEach-Object { $_.ToLower() }
-    foreach ($ag in $artistGenres) {
-        if ($configLower -contains $ag) { return $true }
-    }
-    return $false
+    if (-not $cached) { return $false }
+    return $cached[$genreFilter]
 }
 
-# Check if artist matches city filter
+# Check if artist matches city filter — O(1) hash lookup
 function Test-ArtistCity {
     param([string]$artistName, [string]$cityFilter)
     if ($cityFilter -eq 'all') { return $true }
@@ -161,6 +188,7 @@ function Test-ArtistCity {
 }
 
 # Deduplicate collaborative releases (matching common.js deduplicateCollabs)
+# Uses property-by-property clone instead of JSON serialization for ~100x speedup
 function Invoke-DeduplicateCollabs {
     param([array]$releasesArr)
     $map = [ordered]@{}
@@ -176,8 +204,12 @@ function Invoke-DeduplicateCollabs {
             if (($r.followers -as [int]) -gt ($existing.followers -as [int])) { $existing.followers = $r.followers }
             $existing | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
         } else {
-            # Clone the object
-            $clone = $r | ConvertTo-Json -Depth 5 | ConvertFrom-Json
+            # Clone via property copy (avoids expensive JSON roundtrip)
+            $props = @{}
+            foreach ($p in $r.PSObject.Properties) {
+                $props[$p.Name] = $p.Value
+            }
+            $clone = [PSCustomObject]$props
             $map[$id] = $clone
         }
     }
@@ -195,16 +227,18 @@ function Sort-ChartRanking {
 }
 
 # Build chart ranking (matching common.js buildChartRanking)
+# Accepts optional $preDeduped to skip internal dedup when already done
 function Build-ChartRanking {
     param(
         [array]$releasesArr,
         [string]$type = 'single',
         [string]$genre = 'all',
         [string]$city = 'all',
-        [int]$count = 20
+        [int]$count = 20,
+        [array]$preDeduped = $null
     )
     
-    $deduped = Invoke-DeduplicateCollabs $releasesArr
+    $deduped = if ($preDeduped) { $preDeduped } else { Invoke-DeduplicateCollabs $releasesArr }
     
     # Filter by release type
     $filtered = if ($type -eq 'album') {
@@ -289,78 +323,29 @@ Write-Host "  > Calculating chart rankings..." -ForegroundColor Yellow
 $genreFilters = @('all', 'alt', 'rap', 'electronic', 'pop')
 $typeFilters = @('single', 'album')
 
-# Build ranked charts for all genre combinations (standard = count 20, plus count 0 for advanced)
-$charts = @{}
+# Pre-deduplicate releases once for reuse across all chart computations
+$mainReleasesDeduped = Invoke-DeduplicateCollabs $releases
+$prevReleasesDeduped = Invoke-DeduplicateCollabs $previousWeekReleases
+
+# Pre-filter releases by genre once (avoids re-filtering inside every Build-ChartRanking call)
+$mainByGenre = @{}
+$prevByGenre = @{}
 foreach ($genre in $genreFilters) {
-    foreach ($type in $typeFilters) {
-        $key = "${genre}_${type}"
-        $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre $genre -count 20
-        
-        # Build previous chart map for position/popularity changes
-        $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre $genre -count 20
-        $prevMap = @{}
-        for ($i = 0; $i -lt $prevRanked.Count; $i++) {
-            $prevMap[$prevRanked[$i].releaseId] = @{
-                position = $i + 1
-                popularity = [int]($prevRanked[$i].popularity -as [int])
-            }
-        }
-        
-        # Enrich ranked items with position changes
-        $enriched = @()
-        for ($i = 0; $i -lt $ranked.Count; $i++) {
-            $r = $ranked[$i]
-            $pos = $i + 1
-            $posChange = $null
-            $popChange = $null
-            $isNew = $true
-            
-            if ($prevMap.ContainsKey($r.releaseId)) {
-                $prev = $prevMap[$r.releaseId]
-                $posChange = $prev.position - $pos  # positive = moved up
-                $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
-                $isNew = $false
-            }
-            
-            $artistInfo = Get-ArtistInfo $r.bandName
-            
-            $enriched += [PSCustomObject]@{
-                releaseId     = $r.releaseId
-                bandName      = $r.bandName
-                artistId      = $r.artistId
-                releaseTitle  = $r.releaseTitle
-                releaseType   = $r.releaseType
-                releaseDate   = $r.releaseDate
-                releaseUrl    = $r.releaseUrl
-                thumbnail     = $r.thumbnail
-                totalTracks   = $r.totalTracks
-                popularity    = [int]($r.popularity -as [int])
-                followers     = [int]($r.followers -as [int])
-                spotifyUrl    = $r.spotifyUrl
-                topTrackName  = $r.topTrackName
-                topTrackId    = $r.topTrackId
-                topTrackUrl   = $r.topTrackUrl
-                position      = $pos
-                positionChange = $posChange
-                popularityChange = $popChange
-                isNewEntry    = $isNew
-                confirmed     = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
-                isCollab      = if ($r.isCollab) { $true } else { $false }
-            }
-        }
-        
-        $charts[$key] = $enriched
+    if ($genre -eq 'all') {
+        $mainByGenre[$genre] = $mainReleasesDeduped
+        $prevByGenre[$genre] = $prevReleasesDeduped
+    } else {
+        $mainByGenre[$genre] = @($mainReleasesDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
+        $prevByGenre[$genre] = @($prevReleasesDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
     }
 }
 
-# Also build advanced (count=0) charts for all genre filters
-$advancedCharts = @{}
+# Pre-compute previous-week ranked maps once per genre/type (shared between standard and advanced)
+$prevMapsUnlimited = @{}
 foreach ($genre in $genreFilters) {
     foreach ($type in $typeFilters) {
-        $key = "${genre}_${type}_advanced"
-        $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre $genre -count 0
-        
-        $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre $genre -count 0
+        $key = "${genre}_${type}"
+        $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 0 -preDeduped $prevByGenre[$genre]
         $prevMap = @{}
         for ($i = 0; $i -lt $prevRanked.Count; $i++) {
             $prevMap[$prevRanked[$i].releaseId] = @{
@@ -368,8 +353,14 @@ foreach ($genre in $genreFilters) {
                 popularity = [int]($prevRanked[$i].popularity -as [int])
             }
         }
-    
-    $enriched = @()
+        $prevMapsUnlimited[$key] = $prevMap
+    }
+}
+
+# Helper: enrich ranked items with position changes, returns ArrayList
+function Enrich-ChartItems {
+    param([array]$ranked, [hashtable]$prevMap, [bool]$includeGenreCity = $false)
+    $enriched = [System.Collections.ArrayList]::new($ranked.Count)
     for ($i = 0; $i -lt $ranked.Count; $i++) {
         $r = $ranked[$i]
         $pos = $i + 1
@@ -379,41 +370,67 @@ foreach ($genre in $genreFilters) {
         
         if ($prevMap.ContainsKey($r.releaseId)) {
             $prev = $prevMap[$r.releaseId]
-            $posChange = $prev.position - $pos
+            $posChange = $prev.position - $pos  # positive = moved up
             $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
             $isNew = $false
         }
         
         $artistInfo = Get-ArtistInfo $r.bandName
         
-        $enriched += [PSCustomObject]@{
-            releaseId     = $r.releaseId
-            bandName      = $r.bandName
-            artistId      = $r.artistId
-            releaseTitle  = $r.releaseTitle
-            releaseType   = $r.releaseType
-            releaseDate   = $r.releaseDate
-            releaseUrl    = $r.releaseUrl
-            thumbnail     = $r.thumbnail
-            totalTracks   = $r.totalTracks
-            popularity    = [int]($r.popularity -as [int])
-            followers     = [int]($r.followers -as [int])
-            spotifyUrl    = $r.spotifyUrl
-            topTrackName  = $r.topTrackName
-            topTrackId    = $r.topTrackId
-            topTrackUrl   = $r.topTrackUrl
-            position      = $pos
-            positionChange = $posChange
+        $item = [PSCustomObject]@{
+            releaseId        = $r.releaseId
+            bandName         = $r.bandName
+            artistId         = $r.artistId
+            releaseTitle     = $r.releaseTitle
+            releaseType      = $r.releaseType
+            releaseDate      = $r.releaseDate
+            releaseUrl       = $r.releaseUrl
+            thumbnail        = $r.thumbnail
+            totalTracks      = $r.totalTracks
+            popularity       = [int]($r.popularity -as [int])
+            followers        = [int]($r.followers -as [int])
+            spotifyUrl       = $r.spotifyUrl
+            position         = $pos
+            positionChange   = $posChange
             popularityChange = $popChange
-            isNewEntry    = $isNew
-            confirmed     = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
-            isCollab      = if ($r.isCollab) { $true } else { $false }
-            genre         = if ($artistInfo) { $artistInfo.genre } else { $null }
-            city          = if ($artistInfo) { $artistInfo.city } else { $null }
+            isNewEntry       = $isNew
+            confirmed        = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
+            isCollab         = if ($r.isCollab) { $true } else { $false }
         }
+        if ($includeGenreCity) {
+            $item | Add-Member -NotePropertyName genre -NotePropertyValue $(if ($artistInfo) { $artistInfo.genre } else { $null })
+            $item | Add-Member -NotePropertyName city -NotePropertyValue $(if ($artistInfo) { $artistInfo.city } else { $null })
+        }
+        [void]$enriched.Add($item)
     }
-    
-    $advancedCharts[$key] = $enriched
+    return @($enriched)
+}
+
+# Build ranked charts for all genre combinations (standard = count 20, plus count 0 for advanced)
+$charts = @{}
+$advancedCharts = @{}
+foreach ($genre in $genreFilters) {
+    foreach ($type in $typeFilters) {
+        $key = "${genre}_${type}"
+        $prevMap = $prevMapsUnlimited[$key]
+        
+        # Standard (top 20) — build prev map with count=20 positions using pre-filtered data
+        $prevRankedStd = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 20 -preDeduped $prevByGenre[$genre]
+        $prevMapStd = @{}
+        for ($i = 0; $i -lt $prevRankedStd.Count; $i++) {
+            $prevMapStd[$prevRankedStd[$i].releaseId] = @{
+                position = $i + 1
+                popularity = [int]($prevRankedStd[$i].popularity -as [int])
+            }
+        }
+        
+        $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 20 -preDeduped $mainByGenre[$genre]
+        $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd)
+        
+        # Advanced (unlimited) — reuse the pre-computed prev map
+        $advKey = "${genre}_${type}_advanced"
+        $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre[$genre]
+        $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -includeGenreCity $true)
     }
 }
 
@@ -429,17 +446,29 @@ Write-Host "  > Building chart history map..." -ForegroundColor Yellow
 $tooltipWeekCount = [Math]::Min(10, $chartHistoryWeeks.Count)
 $releaseHistoryByGenre = @{}  # genre -> { releaseId -> array of { weekId, popularity, singlesPos, albumsPos } }
 
+# Pre-deduplicate each history week once (avoids re-deduplicating 5 genres × N weeks)
+$historyWeekDeduped = @{}
+for ($w = 0; $w -lt $tooltipWeekCount; $w++) {
+    $historyWeekDeduped[$w] = Invoke-DeduplicateCollabs $chartHistoryWeeks[$w].releases
+}
+
 foreach ($genre in $genreFilters) {
-    $genreHistoryMap = @{}  # releaseId -> array
+    $genreHistoryMap = @{}  # releaseId -> ArrayList of entries
     
     for ($w = 0; $w -lt $tooltipWeekCount; $w++) {
         $weekData = $chartHistoryWeeks[$w]
         $weekId = $weekData.weekId
-        $weekReleases = $weekData.releases
+        $weekDeduped = $historyWeekDeduped[$w]
         
-        # Rank singles and albums for this historical week with genre filter
-        $rankedSingles = Build-ChartRanking -releasesArr $weekReleases -type 'single' -genre $genre -count 20
-        $rankedAlbums = Build-ChartRanking -releasesArr $weekReleases -type 'album' -genre $genre -count 20
+        # Pre-filter by genre once for this week (used by both singles and albums ranking)
+        $genreFiltered = if ($genre -eq 'all') { $weekDeduped } else {
+            @($weekDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
+        }
+        
+        # Rank singles and albums from pre-filtered list — skip genre filtering inside Build-ChartRanking
+        # by passing genre='all' since we already filtered
+        $rankedSingles = Build-ChartRanking -releasesArr $weekData.releases -type 'single' -genre 'all' -count 20 -preDeduped $genreFiltered
+        $rankedAlbums = Build-ChartRanking -releasesArr $weekData.releases -type 'album' -genre 'all' -count 20 -preDeduped $genreFiltered
         
         $singlesPos = @{}
         for ($i = 0; $i -lt $rankedSingles.Count; $i++) {
@@ -450,23 +479,18 @@ foreach ($genre in $genreFilters) {
             $albumsPos[$rankedAlbums[$i].releaseId] = $i + 1
         }
         
-        # Get all unique releases for this week that match genre filter
-        $deduped = Invoke-DeduplicateCollabs $weekReleases
-        $filtered = if ($genre -eq 'all') { $deduped } else {
-            @($deduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
-        }
-        
-        foreach ($r in $filtered) {
+        # Use pre-filtered releases for genre
+        foreach ($r in $genreFiltered) {
             $rid = $r.releaseId
             if (-not $genreHistoryMap.ContainsKey($rid)) {
-                $genreHistoryMap[$rid] = @()
+                $genreHistoryMap[$rid] = [System.Collections.ArrayList]::new()
             }
-            $genreHistoryMap[$rid] += @{
+            [void]$genreHistoryMap[$rid].Add(@{
                 weekId = $weekId
                 popularity = [int]($r.popularity -as [int])
                 singlesPos = if ($singlesPos.ContainsKey($rid)) { $singlesPos[$rid] } else { $null }
                 albumsPos = if ($albumsPos.ContainsKey($rid)) { $albumsPos[$rid] } else { $null }
-            }
+            })
         }
     }
     
@@ -478,7 +502,6 @@ foreach ($genre in $genreFilters) {
     $releaseHistoryByGenre[$genre] = $genreHistoryMap
 }
 
-# Keep backward-compat: releaseHistoryMap = all genre
 $releaseHistoryMap = $releaseHistoryByGenre['all']
 
 Write-Host "  > Built history for $($releaseHistoryMap.Count) releases across $tooltipWeekCount weeks (x$($genreFilters.Count) genres)" -ForegroundColor DarkGray
@@ -530,13 +553,13 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
     
     foreach ($artistKey in $artistWeekPop.Keys) {
         if (-not $artistPopularityGraphs.ContainsKey($artistKey)) {
-            $artistPopularityGraphs[$artistKey] = @()
+            $artistPopularityGraphs[$artistKey] = [System.Collections.ArrayList]::new()
         }
-        $artistPopularityGraphs[$artistKey] += @{
+        [void]$artistPopularityGraphs[$artistKey].Add(@{
             weekId = $weekId
             value = $artistWeekPop[$artistKey]
             hasNewRelease = $artistNewRelease[$artistKey]
-        }
+        })
     }
 }
 
@@ -553,20 +576,16 @@ Write-Host "  > Built popularity graphs for $($artistPopularityGraphs.Count) art
 
 Write-Host "  > Building all-time artist rankings..." -ForegroundColor Yellow
 
-$deduped = Invoke-DeduplicateCollabs $releases
+$deduped = $mainReleasesDeduped
 $allTimeArtistsByGenre = @{}  # genre -> array of top 100 artists
 
 foreach ($genre in $genreFilters) {
     $artistFollowerMap = @{}  # artistId -> { bandName, followers, spotifyUrl, thumbnail }
-    foreach ($r in $deduped) {
+    # Use pre-filtered genre data
+    $genreDeduped = $mainByGenre[$genre]
+    foreach ($r in $genreDeduped) {
         $aid = $r.artistId
         if (-not $aid) { continue }
-        # Apply genre filter
-        if ($genre -ne 'all') {
-            $info = Get-ArtistInfo $r.bandName
-            if (-not $info) { continue }
-            if (-not (Test-ArtistGenre $r.bandName $genre)) { continue }
-        }
         $existing = $artistFollowerMap[$aid]
         if (-not $existing -or ([int]($r.followers -as [int])) -gt $existing.followers) {
             $bandInfo = Get-ArtistInfo $r.bandName
@@ -583,9 +602,6 @@ foreach ($genre in $genreFilters) {
     $allTimeArtistsByGenre[$genre] = @($artistFollowerMap.Values | Sort-Object { -$_.followers } | Select-Object -First 100)
 }
 
-# Backward compat: allTimeArtists = 'all' genre
-$allTimeArtists = $allTimeArtistsByGenre['all']
-
 Write-Host "  > Ranked all-time artists for $($genreFilters.Count) genres" -ForegroundColor DarkGray
 
 # ============================================================================
@@ -597,9 +613,8 @@ Write-Host "  > Building latest releases..." -ForegroundColor Yellow
 $latestReleasesByGenre = @{}  # genre -> array of latest 20
 
 foreach ($genre in $genreFilters) {
-    $genreFiltered = if ($genre -eq 'all') { $deduped } else {
-        @($deduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
-    }
+    # Reuse pre-filtered genre data
+    $genreFiltered = $mainByGenre[$genre]
     $latestReleasesByGenre[$genre] = @($genreFiltered | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 20 |
         ForEach-Object {
             $typeLabel = switch ($_.releaseType) {
@@ -627,8 +642,41 @@ foreach ($genre in $genreFilters) {
         })
 }
 
-# Backward compat
-$latestReleases = $latestReleasesByGenre['all']
+# Backward compat no longer needed — latestReleasesByGenre always has 'all' key
+
+# ============================================================================
+#  5b. TRIM RELEASE HISTORY TO DISPLAYED ITEMS ONLY
+# ============================================================================
+# Tooltips (releaseHistory) are only shown for standard chart items (top 20 singles/albums)
+# and latest releases — NOT for advanced charts. Trim to avoid generating ~1300 KB of unused data.
+
+Write-Host "  > Trimming release history to displayed chart items..." -ForegroundColor Yellow
+
+$totalHistoryBefore = 0
+$totalHistoryAfter = 0
+foreach ($genre in $genreFilters) {
+    $neededIds = [System.Collections.Generic.HashSet[string]]::new()
+    # Standard chart releases (top 20 singles + top 20 albums)
+    $sKey = "${genre}_single"
+    $aKey = "${genre}_album"
+    if ($charts.ContainsKey($sKey)) { foreach ($r in $charts[$sKey]) { [void]$neededIds.Add($r.releaseId) } }
+    if ($charts.ContainsKey($aKey)) { foreach ($r in $charts[$aKey]) { [void]$neededIds.Add($r.releaseId) } }
+    # Latest releases for this genre
+    if ($latestReleasesByGenre.ContainsKey($genre)) { foreach ($r in $latestReleasesByGenre[$genre]) { [void]$neededIds.Add($r.releaseId) } }
+    
+    $fullMap = $releaseHistoryByGenre[$genre]
+    $totalHistoryBefore += $fullMap.Count
+    $trimmedMap = @{}
+    foreach ($rid in @($fullMap.Keys)) {
+        if ($neededIds.Contains($rid)) {
+            $trimmedMap[$rid] = $fullMap[$rid]
+        }
+    }
+    $releaseHistoryByGenre[$genre] = $trimmedMap
+    $totalHistoryAfter += $trimmedMap.Count
+}
+
+Write-Host "  > Trimmed release history: $totalHistoryBefore -> $totalHistoryAfter entries across $($genreFilters.Count) genres" -ForegroundColor DarkGray
 
 # ============================================================================
 #  6. HOT SONGS (songs with positive popularity change vs last week)
@@ -636,17 +684,11 @@ $latestReleases = $latestReleasesByGenre['all']
 
 Write-Host "  > Calculating hot songs..." -ForegroundColor Yellow
 
-$currentRanked = Build-ChartRanking -releasesArr $releases -type 'single' -genre 'all' -count 0
-$prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type 'single' -genre 'all' -count 0
-$prevMapHot = @{}
-for ($i = 0; $i -lt $prevRanked.Count; $i++) {
-    $prevMapHot[$prevRanked[$i].releaseId] = @{
-        position = $i + 1
-        popularity = [int]($prevRanked[$i].popularity -as [int])
-    }
-}
+$currentRanked = Build-ChartRanking -releasesArr $releases -type 'single' -genre 'all' -count 0 -preDeduped $mainByGenre['all']
+# Reuse the pre-computed previous-week map from section 1
+$prevMapHot = $prevMapsUnlimited['all_single']
 
-$hotSongs = @()
+$hotSongs = [System.Collections.ArrayList]::new()
 for ($i = 0; $i -lt $currentRanked.Count; $i++) {
     $r = $currentRanked[$i]
     if ($prevMapHot.ContainsKey($r.releaseId)) {
@@ -654,7 +696,7 @@ for ($i = 0; $i -lt $currentRanked.Count; $i++) {
         $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
         if ($popChange -gt 0) {
             $artistInfo = Get-ArtistInfo $r.bandName
-            $hotSongs += [PSCustomObject]@{
+            [void]$hotSongs.Add([PSCustomObject]@{
                 releaseId    = $r.releaseId
                 bandName     = $r.bandName
                 releaseTitle = $r.releaseTitle
@@ -663,7 +705,7 @@ for ($i = 0; $i -lt $currentRanked.Count; $i++) {
                 popularity   = [int]($r.popularity -as [int])
                 popularityChange = $popChange
                 confirmed    = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
-            }
+            })
         }
     }
 }
@@ -684,9 +726,9 @@ $artistReleaseGroups = @{}
 foreach ($r in $releases) {
     $name = $r.bandName
     if (-not $artistReleaseGroups.ContainsKey($name)) {
-        $artistReleaseGroups[$name] = @()
+        $artistReleaseGroups[$name] = [System.Collections.ArrayList]::new()
     }
-    $artistReleaseGroups[$name] += $r
+    [void]$artistReleaseGroups[$name].Add($r)
 }
 
 $risingArtists = @()
@@ -810,23 +852,32 @@ Write-Host "  > Filtering and matching news articles..." -ForegroundColor Yellow
 # Build Cyrillic-safe word boundary pattern
 $boundaryChars = '[\s,;:.!?\-\u2013\u2014\/\(\)\[\]"''\ |«»\u201E\u201C\u2018\u2019\u201c\u201d]'
 
-# Build artist name patterns (skip names <= 2 chars)
+# Build and pre-compile artist name patterns (skip names <= 2 chars)
 $artistPatterns = @()
 foreach ($b in $bandsData) {
     if ($b.name -and $b.name.Length -gt 2) {
+        $pattern = $b.name
+        $term = if ($pattern.Length -gt 0 -and -not ($pattern[0] -match '^\d')) {
+            $pattern[0].ToString().ToUpper() + $pattern.Substring(1)
+        } else { $pattern }
+        $escaped = [regex]::Escape($term)
+        $regexStr = "(?:^|$boundaryChars)$escaped(?:$|$boundaryChars)"
         $artistPatterns += @{
             name = $b.name
-            pattern = $b.name
+            compiledRegex = [regex]::new($regexStr, [System.Text.RegularExpressions.RegexOptions]::Compiled)
         }
     }
 }
 
+# Pre-lowercase blacklist words once
+$blacklistWordsLower = @($blacklistWords | ForEach-Object { $_.ToLower() })
+
 function Test-ArticleBlacklist {
     param([string]$title, [string]$description)
     $text = "$title $description".ToLower()
-    foreach ($word in $blacklistWords) {
-        if ($text.Contains($word.ToLower())) {
-            return $true  # Blacklisted
+    foreach ($word in $blacklistWordsLower) {
+        if ($text.Contains($word)) {
+            return $true
         }
     }
     return $false
@@ -835,21 +886,10 @@ function Test-ArticleBlacklist {
 function Get-MatchedArtists {
     param([string]$title, [string]$description)
     $haystack = "$title $description"
-    # Use ArrayList so ConvertTo-Json always emits [] not a scalar or {}
     $matched = [System.Collections.ArrayList]@()
     
     foreach ($artist in $artistPatterns) {
-        $pattern = $artist.pattern
-        # Capitalize first letter
-        $term = if ($pattern.Length -gt 0 -and -not ($pattern[0] -match '^\d')) {
-            $pattern[0].ToString().ToUpper() + $pattern.Substring(1)
-        } else { $pattern }
-        
-        # Escape regex special chars
-        $escaped = [regex]::Escape($term)
-        $regex = "(?:^|$boundaryChars)$escaped(?:$|$boundaryChars)"
-        
-        if ([regex]::IsMatch($haystack, $regex)) {
+        if ($artist.compiledRegex.IsMatch($haystack)) {
             if (-not $matched.Contains($artist.name)) {
                 [void]$matched.Add($artist.name)
             }
@@ -859,7 +899,7 @@ function Get-MatchedArtists {
 }
 
 # Process all articles: filter by blacklist, then match artists
-$matchedArticles = @()
+$matchedArticles = [System.Collections.ArrayList]::new()
 
 foreach ($article in $allArticles) {
     # Apply blacklist
@@ -869,20 +909,18 @@ foreach ($article in $allArticles) {
     
     $artists = Get-MatchedArtists $article.title $article.description
     
-    $filteredArticle = [PSCustomObject]@{
-        title         = $article.title
-        link          = $article.link
-        description   = $article.description
-        date          = $article.date
-        source        = $article.source
-        siteUrl       = $article.siteUrl
-        iconUrl       = $article.iconUrl
-        thumbnail     = $article.thumbnail
-        matchedArtists = $artists
-    }
-    
     if ($artists.Count -gt 0) {
-        $matchedArticles += $filteredArticle
+        [void]$matchedArticles.Add([PSCustomObject]@{
+            title         = $article.title
+            link          = $article.link
+            description   = $article.description
+            date          = $article.date
+            source        = $article.source
+            siteUrl       = $article.siteUrl
+            iconUrl       = $article.iconUrl
+            thumbnail     = $article.thumbnail
+            matchedArtists = $artists
+        })
     }
 }
 
@@ -924,13 +962,6 @@ $releaseRadar = @($deduped | Sort-Object { $_.releaseDate } -Descending | Select
 $headerThumbs = @($charts["all_single"] | ForEach-Object { $_.thumbnail } | Where-Object { $_ })
 
 # ============================================================================
-#  11. ISO WEEK INFO
-# ============================================================================
-
-$isoWeek = Get-ISOWeek -Date $now
-$weekLabel = "W$($isoWeek.week.ToString().PadLeft(2,'0')) $($isoWeek.year)"
-
-# ============================================================================
 #  12. BUILD RELEASE SPARKLINES PER ARTIST (for artist.html)
 # ============================================================================
 
@@ -946,12 +977,12 @@ for ($w = 0; $w -lt $sparkWeekCount; $w++) {
     foreach ($r in $weekData.releases) {
         $rid = $r.releaseId
         if (-not $releaseSparklines.ContainsKey($rid)) {
-            $releaseSparklines[$rid] = @()
+            $releaseSparklines[$rid] = [System.Collections.ArrayList]::new()
         }
-        $releaseSparklines[$rid] += @{
+        [void]$releaseSparklines[$rid].Add(@{
             weekId = $weekId
             popularity = [int]($r.popularity -as [int])
-        }
+        })
     }
 }
 
@@ -960,7 +991,15 @@ foreach ($rid in @($releaseSparklines.Keys)) {
     $releaseSparklines[$rid] = @($releaseSparklines[$rid] | Sort-Object { $_.weekId })
 }
 
-Write-Host "  > Built sparklines for $($releaseSparklines.Count) releases" -ForegroundColor DarkGray
+# Remove sparklines with only 1 data point (artist.html requires >= 2 to render SVG sparkline)
+$sparkBefore = $releaseSparklines.Count
+$toRemove = [System.Collections.ArrayList]::new()
+foreach ($rid in $releaseSparklines.Keys) {
+    if ($releaseSparklines[$rid].Count -lt 2) { [void]$toRemove.Add($rid) }
+}
+foreach ($rid in $toRemove) { $releaseSparklines.Remove($rid) }
+
+Write-Host "  > Built sparklines for $($releaseSparklines.Count) releases (removed $($sparkBefore - $releaseSparklines.Count) with <2 weeks)" -ForegroundColor DarkGray
 
 # ============================================================================
 #  ASSEMBLE site-master.json
@@ -1020,35 +1059,44 @@ foreach ($rid in $releaseSparklines.Keys) {
     $sparklinesOutput[$rid] = @($releaseSparklines[$rid])
 }
 
+# Strip fields from chartData.releases that are unused by client code
+# (topTrackName, topTrackId, topTrackUrl are only in pre-computed charts, not accessed from raw data)
+$strippedReleases = @($releases | ForEach-Object {
+    $props = [ordered]@{}
+    foreach ($p in $_.PSObject.Properties) {
+        if ($p.Name -notin @('topTrackName', 'topTrackId', 'topTrackUrl')) {
+            $props[$p.Name] = $p.Value
+        }
+    }
+    [PSCustomObject]$props
+})
+
 $siteMaster = [PSCustomObject]@{
-    generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-    isoWeek = $isoWeek
-    weekLabel = $weekLabel
+    generatedAt = $chartJson.generatedAt
     
-    # Chart data (original, for reference)
+    # Chart data (stripped of unused fields)
     chartData = [PSCustomObject]@{
         generatedAt   = $chartJson.generatedAt
         totalReleases = $chartJson.totalReleases
         totalArtists  = $chartJson.totalArtists
-        releases      = $releases
+        releases      = $strippedReleases
     }
     
     # Pre-ranked charts: keys like "all_single", "alt_album", etc.
-    # Each entry contains enriched items with position, positionChange, popularityChange, isNewEntry
     charts = $chartsOutput
     
-    # Advanced (unlimited) charts for 'all' genre
+    # Advanced (unlimited) charts
     advancedCharts = $advancedChartsOutput
     
-    # Per-release chart history (for tooltips), keyed by genre: genre -> { releaseId -> [{weekId, popularity, singlesPos, albumsPos}] }
+    # Per-release chart history (for tooltips), keyed by genre
     releaseHistory = $historyMapOutput
     
     # All-time top artists sorted by followers, keyed by genre
-    allTimeArtists = $allTimeArtists
+    # (allTimeArtistsByGenre['all'] serves as the fallback — no separate allTimeArtists needed)
     allTimeArtistsByGenre = $allTimeArtistsByGenreOutput
     
     # Latest 20 releases sorted by date, keyed by genre
-    latestReleases = $latestReleases
+    # (latestReleasesByGenre['all'] serves as the fallback — no separate latestReleases needed)
     latestReleasesByGenre = $latestReleasesByGenreOutput
     
     # Hot songs (positive popularity change vs last week)

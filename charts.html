@@ -3213,7 +3213,7 @@
                     let topArtists;
                     if (!useCityFilter) {
                         // Use pre-computed all-time artists for this genre
-                        topArtists = siteMaster.allTimeArtistsByGenre?.[genre] || siteMaster.allTimeArtists || [];
+                        topArtists = siteMaster.allTimeArtistsByGenre?.[genre] || [];
                     } else {
                         // City filter: compute from raw releases
                         const rawReleases = siteMaster.chartData?.releases || [];
@@ -3273,7 +3273,7 @@
                         // Use pre-computed charts (with positionChange/popularityChange baked in)
                         topSingles = siteMaster.charts[getChartKey(genre, 'single')] || [];
                         topAlbums = siteMaster.charts[getChartKey(genre, 'album')] || [];
-                        latestReleases = siteMaster.latestReleasesByGenre?.[genre] || siteMaster.latestReleases || [];
+                        latestReleases = siteMaster.latestReleasesByGenre?.[genre] || [];
                         
                         // Update release history for tooltip display
                         updateReleaseHistoryForGenre(genre);
