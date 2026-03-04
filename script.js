@@ -3409,7 +3409,7 @@
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
             const thumbnailHtml = artistThumbnail 
-                ? `<img src="${artistThumbnail}" alt="" class="artist-thumb" loading="lazy" decoding="async">` 
+                ? `<img src="${artistThumbnail}" alt="" class="artist-thumb" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">` 
                 : '<span class="artist-thumb artist-thumb-placeholder"></span>';
             
             // Artist name links to artist page

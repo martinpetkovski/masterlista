@@ -4104,7 +4104,7 @@
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artist.thumbnail 
-                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-user\\'></i></div>'">`
+                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">`
                                     : '<div class="placeholder"><i class="fas fa-user"></i></div>'
                                 }
                             </div>

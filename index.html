@@ -2857,7 +2857,7 @@
                 var releases = getLatestReleases(artist.name, 3);
                 var releaseHtml = buildReleasesHtml(releases);
                 return '<div class="discover-artist" onclick="location.href=\'' + artistPageUrl + '\'">' +
-                    '<img class="discover-img" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" onerror="this.src=\'/logo.png\'">' +
+                    '<img class="discover-img" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
                     '<div class="discover-info">' +
                         '<div class="discover-name"><a href="' + artistPageUrl + '">' + escHtml(artist.name) + '</a>' + verifiedBadge(artist.name) + '</div>' +
                         '<div class="discover-genre">' + escHtml(artist.genre || '') + ' &bull; <i class="fas fa-location-dot"></i> ' + escHtml(artist.city || 'Непознато') + '</div>' +
@@ -3011,7 +3011,7 @@
                 var releases = getLatestReleases(a.name, 3);
                 var relHtml = buildReleasesHtml(releases);
                 return '<li class="trending-item" onclick="location.href=\'' + artistUrl + '\'">' +
-                    '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.src=\'/logo.png\'" style="border-radius:50%">' +
+                    '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(a.name) + verifiedBadge(a.name) + '</div>' +
                         '<div class="trending-sub">' + escHtml(a.genre || '') + '</div>' +
@@ -3172,7 +3172,7 @@
                 var artistUrl = '/artist.html?name=' + encodeURIComponent(b.name);
                 var contactLink = b.links && b.links.instagram ? b.links.instagram : (b.links && b.links.spotify ? b.links.spotify : artistUrl);
                 return '<li class="verify-item">' +
-                    '<img class="verify-img" src="' + (b.image || '/logo.png') + '" alt="" onerror="this.src=\'/logo.png\'">' +
+                    '<img class="verify-img" src="' + (b.image || '/logo.png') + '" alt="" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
                     '<span class="verify-name"><a href="' + artistUrl + '">' + escHtml(b.name) + '</a></span>' +
                     '<a href="' + contactLink + '" target="_blank" rel="noopener" class="verify-btn"><i class="fas fa-paper-plane"></i> Јави им</a>' +
                 '</li>';

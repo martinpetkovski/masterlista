@@ -40,6 +40,11 @@ function generateArtistSlug(name) {
 }
 
 // ==================== ARTIST PAGE URL ====================
+
+// Shared fallback image for artists without a valid photo.
+// Inline SVG data-URI: a dark rounded square with a '?' mark.
+var ARTIST_FALLBACK_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='40' fill='%23374151'/%3E%3Ctext x='40' y='54' text-anchor='middle' font-family='Inter,system-ui,sans-serif' font-size='36' font-weight='700' fill='%239ca3af'%3E%3F%3C/text%3E%3C/svg%3E";
+
 function getArtistPageUrl(artistName) {
     var slug = encodeURIComponent(generateArtistSlug(artistName));
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
