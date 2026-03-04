@@ -646,7 +646,7 @@ async function main() {
   }
   let imagesUpdated = 0;
 
-  // First pass: set images for all Spotify artists from Spotify data
+  // First pass: set images and Spotify display name for all Spotify artists
   for (const artistId of artistIds) {
     const band = artistMap.get(artistId);
     const artistInfo = artistsInfo[artistId];
@@ -655,6 +655,10 @@ async function main() {
       band.image = spotifyArtistImg;
       band.imageSource = 'spotify';
       imagesUpdated++;
+    }
+    // Store the Spotify display name (often Latin) alongside the local/Cyrillic name
+    if (artistInfo?.name && artistInfo.name !== band.name) {
+      band.spotifyName = artistInfo.name;
     }
   }
 
@@ -722,6 +726,7 @@ async function main() {
               
               return {
                 bandName: band.name,
+                spotifyName: band.spotifyName || undefined,
                 artistId,
                 releaseId: album.id,
                 releaseTitle: album.name,

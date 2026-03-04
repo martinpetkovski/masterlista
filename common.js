@@ -559,3 +559,237 @@ if (document.readyState === 'loading') {
 } else {
     initHeaderCollage();
 }
+
+// ==================== SERVICE CHOOSER (shared) ====================
+
+/**
+ * Canonical streaming-service definitions used across the entire site.
+ * Pages should reference this instead of maintaining their own copies.
+ */
+var serviceDefinitions = {
+    spotify:      { name: 'Spotify',       icon: 'fab fa-spotify',      color: '#1DB954' },
+    youtube:      { name: 'YouTube',       icon: 'fab fa-youtube',      color: '#FF0000' },
+    youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube',      color: '#FF0000' },
+    appleMusic:   { name: 'Apple Music',   icon: 'fab fa-itunes-note',  color: '#fc3c44' },
+    deezer:       { name: 'Deezer',        icon: 'fab fa-deezer',       color: '#FEAA2D' },
+    tidal:        { name: 'Tidal',         icon: 'fas fa-water',        color: '#00FFFF' },
+    amazonMusic:  { name: 'Amazon Music',  icon: 'fab fa-amazon',       color: '#FF9900' },
+    soundcloud:   { name: 'SoundCloud',    icon: 'fab fa-soundcloud',   color: '#ff7700' },
+    bandcamp:     { name: 'Bandcamp',      icon: 'fab fa-bandcamp',     color: '#1da0c3' }
+};
+
+function getPreferredService() {
+    return localStorage.getItem('mmm-preferred-service') || null;
+}
+
+function setPreferredService(serviceId) {
+    if (serviceId) {
+        localStorage.setItem('mmm-preferred-service', serviceId);
+    } else {
+        localStorage.removeItem('mmm-preferred-service');
+    }
+}
+
+function buildServiceSearchUrl(serviceId, artist, title) {
+    var query = (artist + ' ' + title).trim();
+    var encoded = encodeURIComponent(query);
+    var plusEncoded = query.replace(/\s+/g, '+');
+    var searchUrls = {
+        youtube:      'https://www.youtube.com/results?search_query=' + plusEncoded,
+        youtubeMusic: 'https://music.youtube.com/search?q=' + encoded,
+        appleMusic:   'https://music.apple.com/search?term=' + encoded,
+        deezer:       'https://www.deezer.com/search/' + encoded,
+        tidal:        'https://listen.tidal.com/search?q=' + encoded,
+        amazonMusic:  'https://music.amazon.com/search/' + encoded,
+        soundcloud:   'https://soundcloud.com/search?q=' + encoded,
+        bandcamp:     'https://bandcamp.com/search?q=' + encoded
+    };
+    return searchUrls[serviceId] || null;
+}
+
+/**
+ * Show the unified service-chooser dialog.
+ *
+ * @param {string}   releaseUrl         — Direct link (usually Spotify)
+ * @param {string}   [title]            — Song / release title
+ * @param {string}   [artistName]       — Artist display name (Cyrillic / local)
+ * @param {string}   [thumbnail]        — Thumbnail image URL
+ * @param {string[]} [accentColors]     — Accent colours from the artist profile
+ * @param {string}   [spotifyArtistName]— Spotify (Latin) artist name for search queries
+ * @param {boolean}  [verified]         — Whether the artist is verified (enables colourful popup)
+ */
+function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified) {
+    if (!releaseUrl) return;
+
+    // The name used in service search queries (prefer Spotify/Latin name)
+    var searchArtistName = spotifyArtistName || artistName || '';
+
+    function normalizeHexColor(hex) {
+        if (typeof hex !== 'string') return null;
+        var cleaned = hex.trim();
+        if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(cleaned)) return null;
+        if (cleaned.length === 4) {
+            cleaned = '#' + cleaned[1] + cleaned[1] + cleaned[2] + cleaned[2] + cleaned[3] + cleaned[3];
+        }
+        return cleaned;
+    }
+
+    function shadeHexColor(hex, percent) {
+        var normalized = normalizeHexColor(hex);
+        if (!normalized) return null;
+
+        var raw = normalized.slice(1);
+        var red = parseInt(raw.slice(0, 2), 16);
+        var green = parseInt(raw.slice(2, 4), 16);
+        var blue = parseInt(raw.slice(4, 6), 16);
+
+        var target = percent >= 0 ? 255 : 0;
+        var factor = Math.abs(percent) / 100;
+
+        var nextRed = Math.round(red + (target - red) * factor);
+        var nextGreen = Math.round(green + (target - green) * factor);
+        var nextBlue = Math.round(blue + (target - blue) * factor);
+
+        return '#' + [nextRed, nextGreen, nextBlue].map(function(v) {
+            return v.toString(16).padStart(2, '0');
+        }).join('');
+    }
+
+    var overlay = document.getElementById('service-chooser-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'service-chooser-overlay';
+        overlay.className = 'service-chooser-overlay';
+        overlay.innerHTML =
+            '<div class="service-chooser">' +
+                '<div class="service-chooser-header" id="service-chooser-header">' +
+                    '<img class="service-chooser-img" id="service-chooser-img">' +
+                    '<div class="service-chooser-header-text">' +
+                        '<div class="service-chooser-artist" id="service-chooser-artist">' +
+                            '<span class="sc-artist-name"></span>' +
+                            '<span class="sc-verified-badge" id="sc-verified-badge" title="Потврдено од артистот" aria-label="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' +
+                        '</div>' +
+                        '<div class="service-chooser-song" id="service-chooser-song"></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="service-chooser-links" id="service-chooser-links"></div>' +
+            '</div>';
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeServiceChooserDialog(true);
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeServiceChooserDialog(true);
+        });
+    }
+
+    var headerEl  = document.getElementById('service-chooser-header');
+    var chooserEl = overlay.querySelector('.service-chooser');
+    var imgEl     = document.getElementById('service-chooser-img');
+    var artistEl  = document.getElementById('service-chooser-artist');
+    var songEl    = document.getElementById('service-chooser-song');
+    var linksEl   = document.getElementById('service-chooser-links');
+
+    // Colourful header only for verified artists
+    var useColor = !!verified;
+    var primaryAccent = useColor && accentColors && accentColors.length > 0 ? normalizeHexColor(accentColors[0]) : null;
+    var secondaryAccent = useColor && accentColors && accentColors.length > 1 ? normalizeHexColor(accentColors[1]) : null;
+
+    if (primaryAccent) {
+        var lighterPrimary = shadeHexColor(primaryAccent, 18) || primaryAccent;
+        var darkerPrimary = shadeHexColor(primaryAccent, -14) || primaryAccent;
+        headerEl.style.background = 'linear-gradient(135deg, ' + lighterPrimary + ', ' + darkerPrimary + ')';
+    } else {
+        headerEl.style.background = '';
+    }
+
+    // Thumbnail
+    if (thumbnail) {
+        imgEl.src = thumbnail;
+        imgEl.style.display = '';
+    } else {
+        imgEl.removeAttribute('src');
+        imgEl.style.display = 'none';
+    }
+
+    var artistNameSpan = artistEl.querySelector('.sc-artist-name');
+    var verifiedBadge = document.getElementById('sc-verified-badge');
+    if (artistNameSpan) artistNameSpan.textContent = artistName || '';
+    if (verifiedBadge) verifiedBadge.style.display = verified ? 'inline-flex' : 'none';
+    songEl.textContent = title || 'Отвори во...';
+    if (secondaryAccent) {
+        chooserEl.style.border = '2px solid ' + secondaryAccent;
+    } else {
+        chooserEl.style.border = '';
+    }
+
+    // Dark-theme awareness: body.dark-mode, vfx-dark, OR accent-color luminance
+    var isDark = document.body.classList.contains('dark-mode') ||
+                 document.documentElement.classList.contains('dark-mode') ||
+                 document.body.classList.contains('vfx-dark');
+    if (!isDark && primaryAccent) {
+        // Compute luminance from accent colours (same formula as artist.html)
+        var _pr = parseInt(primaryAccent.slice(1,3),16),
+            _pg = parseInt(primaryAccent.slice(3,5),16),
+            _pb = parseInt(primaryAccent.slice(5,7),16);
+        var lum1 = (0.299*_pr + 0.587*_pg + 0.114*_pb) / 255;
+        if (secondaryAccent) {
+            var _sr = parseInt(secondaryAccent.slice(1,3),16),
+                _sg = parseInt(secondaryAccent.slice(3,5),16),
+                _sb = parseInt(secondaryAccent.slice(5,7),16);
+            var lum2 = (0.299*_sr + 0.587*_sg + 0.114*_sb) / 255;
+            isDark = ((lum1 + lum2) / 2) <= 0.45;
+        } else {
+            isDark = lum1 <= 0.45;
+        }
+    }
+    overlay.classList.toggle('sc-dark', isDark);
+
+    // Build service links
+    var pref = getPreferredService();
+    var linksHtml = '';
+    for (var key in serviceDefinitions) {
+        if (!serviceDefinitions.hasOwnProperty(key)) continue;
+        var svc = serviceDefinitions[key];
+        var isPreferred = key === pref;
+        var url;
+        if (key === 'spotify' && releaseUrl) {
+            url = releaseUrl;
+        } else {
+            url = buildServiceSearchUrl(key, searchArtistName, title || '');
+        }
+        if (!url) continue;
+        linksHtml +=
+            '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + (isPreferred ? 'preferred' : '') + '">' +
+                '<i class="' + svc.icon + '"></i> ' + escHtml(svc.name) +
+                (isPreferred ? ' <span class="pref-badge">★</span>' : '') +
+            '</a>';
+    }
+    linksEl.innerHTML = linksHtml;
+
+    // Ensure clean state then show
+    overlay.classList.remove('closing');
+    overlay.classList.add('visible');
+}
+
+/**
+ * Close the service-chooser dialog.
+ * @param {boolean} [animated=false] — play the reverse scale+blur animation
+ */
+function closeServiceChooserDialog(animated) {
+    var ov = document.getElementById('service-chooser-overlay');
+    if (!ov || !ov.classList.contains('visible')) return;
+
+    if (animated) {
+        ov.classList.add('closing');
+        var sc = ov.querySelector('.service-chooser');
+        var onEnd = function() {
+            sc.removeEventListener('animationend', onEnd);
+            ov.classList.remove('visible', 'closing');
+        };
+        sc.addEventListener('animationend', onEnd);
+    } else {
+        ov.classList.remove('visible');
+    }
+}

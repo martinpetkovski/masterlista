@@ -1271,7 +1271,7 @@
         const band = bandsData.find(b => b.name && b.name.toLowerCase() === artistName.toLowerCase());
         
         if (releaseUrl) {
-            openOnPreferredService(releaseUrl, title, artistName, thumbnail, band?.accentColors);
+            openOnPreferredService(releaseUrl, title, artistName, thumbnail, band?.accentColors, band?.spotifyName, band?.confirmed);
         }
     }
 
@@ -3517,131 +3517,14 @@
     }
     
     // ==================== SERVICE PREFERENCE & OPEN ON SERVICE ====================
-    // Service definitions for the "open on" feature
-    const serviceDefinitions = {
-        spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
-        youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
-        youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
-        appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
-        deezer: { name: 'Deezer', icon: 'fab fa-deezer', color: '#FEAA2D' },
-        tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#00FFFF' },
-        amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
-        soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
-        bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
-    };
+    // Uses shared serviceDefinitions, getPreferredService, setPreferredService,
+    // buildServiceSearchUrl, showServiceChooserDialog, closeServiceChooserDialog
+    // from common.js
 
-    // Songlink API cache
-    function getPreferredService() {
-        return localStorage.getItem('mmm-preferred-service') || null;
-    }
-
-    function setPreferredService(serviceId) {
-        localStorage.setItem('mmm-preferred-service', serviceId);
-        // Update any visible service preference indicators
-        document.querySelectorAll('.service-pref-current').forEach(el => {
-            const svc = serviceDefinitions[serviceId];
-            if (svc) {
-                el.innerHTML = `<i class="${svc.icon}"></i>`;
-                el.title = svc.name;
-            }
-        });
-    }
-
-    function buildSearchUrl(serviceId, artist, title) {
-        const query = `${artist} ${title}`;
-        const encoded = encodeURIComponent(query);
-        const plusEncoded = query.replace(/\s+/g, '+');
-        const searchUrls = {
-            youtube: `https://www.youtube.com/results?search_query=${plusEncoded}`,
-            youtubeMusic: `https://music.youtube.com/search?q=${encoded}`,
-            appleMusic: `https://music.apple.com/search?term=${encoded}`,
-            deezer: `https://www.deezer.com/search/${encoded}`,
-            tidal: `https://listen.tidal.com/search?q=${encoded}`,
-            amazonMusic: `https://music.amazon.com/search/${encoded}`,
-            soundcloud: `https://soundcloud.com/search?q=${encoded}`,
-            bandcamp: `https://bandcamp.com/search?q=${encoded}`
-        };
-        return searchUrls[serviceId] || null;
-    }
-
-    // Open a song/release URL on the user's preferred streaming service
-    function openOnPreferredService(releaseUrl, title, artistName, thumbnail, accentColors) {
+    // Open a song/release URL via the shared service chooser dialog
+    function openOnPreferredService(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified) {
         if (!releaseUrl) return;
-        showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors);
-    }
-
-    // Service chooser dialog
-    function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors) {
-        let overlay = document.getElementById('service-chooser-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'service-chooser-overlay';
-            overlay.className = 'service-chooser-overlay';
-            overlay.innerHTML = `
-                <div class="service-chooser">
-                    <div class="service-chooser-header" id="service-chooser-header">
-                        <img class="service-chooser-img" id="service-chooser-img">
-                        <div class="service-chooser-header-text">
-                            <div class="service-chooser-artist" id="service-chooser-artist"></div>
-                            <div class="service-chooser-song" id="service-chooser-song"></div>
-                        </div>
-                    </div>
-                    <div class="service-chooser-links" id="service-chooser-links"></div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('visible');
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') overlay.classList.remove('visible');
-            });
-        }
-        
-        const headerEl = document.getElementById('service-chooser-header');
-        const imgEl = document.getElementById('service-chooser-img');
-        const artistEl = document.getElementById('service-chooser-artist');
-        const songEl = document.getElementById('service-chooser-song');
-        const linksEl = document.getElementById('service-chooser-links');
-
-        if (accentColors && accentColors.length >= 2) {
-            headerEl.style.background = 'linear-gradient(135deg, ' + accentColors[0] + ', ' + accentColors[1] + ')';
-        } else if (accentColors && accentColors.length === 1) {
-            headerEl.style.background = accentColors[0];
-        } else {
-            headerEl.style.background = '';
-        }
-
-        if (thumbnail) {
-            imgEl.src = thumbnail;
-            imgEl.style.display = '';
-        } else {
-            imgEl.removeAttribute('src');
-            imgEl.style.display = 'none';
-        }
-
-        artistEl.textContent = artistName || '';
-        songEl.textContent = title || 'Отвори во...';
-
-        const pref = getPreferredService();
-        let linksHtml = '';
-        for (const [key, svc] of Object.entries(serviceDefinitions)) {
-            const isPreferred = key === pref;
-            let url;
-            if (key === 'spotify' && releaseUrl) {
-                url = releaseUrl;
-            } else {
-                url = buildSearchUrl(key, artistName || '', title || '');
-            }
-            if (!url) continue;
-            linksHtml += `<a href="${url}" target="_blank" rel="noopener noreferrer" class="${isPreferred ? 'preferred' : ''}">
-                <i class="${svc.icon}"></i> ${svc.name}
-                ${isPreferred ? '<span class="pref-badge">★</span>' : ''}
-            </a>`;
-        }
-
-        linksEl.innerHTML = linksHtml;
-        overlay.classList.add('visible');
+        showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified);
     }
 
     // Service preference picker UI
@@ -3663,7 +3546,7 @@
     function showMusicPlayer(spotifyId, type = 'artist', title = '', artist = '', thumbnail = '') {
         const url = `https://open.spotify.com/${type}/${spotifyId}`;
         const band = bandsData.find(b => b.name && b.name.toLowerCase() === artist.toLowerCase());
-        openOnPreferredService(url, title, artist, thumbnail, band?.accentColors);
+        openOnPreferredService(url, title, artist, thumbnail, band?.accentColors, band?.spotifyName, band?.confirmed);
     }
 
     function closeMusicPlayer() {
