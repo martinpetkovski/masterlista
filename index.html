@@ -2405,7 +2405,10 @@
         <div class="dash-card full-width" id="yt-card">
             <div class="dash-card-header">
                 <h2><i class="fab fa-youtube"></i> Xotel видеа</h2>
-                <a href="https://www.youtube.com/@xotelmusic" target="_blank" rel="noopener" class="more-link">YouTube канал &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-yt-btn"><i class="fas fa-shuffle"></i></button>
+                    <a href="https://www.youtube.com/@xotelmusic" target="_blank" rel="noopener" class="more-link">YouTube канал &raquo;</a>
+                </div>
             </div>
             <div class="yt-grid" id="yt-grid">
                 <div class="dash-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
@@ -2473,6 +2476,7 @@
         var curatorsData = null;
         var curatorTracksData = null;
         var siteMaster = null;  // Pre-calculated data from site-master.json
+        var xotelLinks = [];
 
         // Helper: returns verified badge HTML if artist is confirmed
         function verifiedBadge(artistName) {
@@ -2628,7 +2632,8 @@
                     fetch('bands.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+                    fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+                    fetch('xotel-links.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
                 ]);
 
                 siteMaster = results[0];
@@ -2636,6 +2641,7 @@
                 if (results[2]) curatorsData = results[2];
                 if (results[3]) curatorTracksData = results[3];
                 if (results[4]) eventsData = results[4].events || [];
+                if (Array.isArray(results[5])) xotelLinks = results[5];
 
                 // Populate legacy variables from site-master for backward compat
                 if (siteMaster) {
@@ -3227,12 +3233,16 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: YOUTUBE (pre-computed from site-master.json) ====================
+        // ==================== RENDER: YOUTUBE (loaded from xotel-links.json) ====================
         function renderYouTube() {
             var grid = document.getElementById('yt-grid');
 
-            // Use pre-computed video IDs from site-master
-            var videoIds = siteMaster && siteMaster.xotelVideoIds ? siteMaster.xotelVideoIds : [];
+            var videoIds = (xotelLinks || []).map(function(link) {
+                if (typeof link !== 'string') return null;
+                var idMatch = link.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || link.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+                return idMatch ? idMatch[1] : null;
+            }).filter(Boolean);
+
             if (videoIds.length === 0) {
                 grid.innerHTML = '<div class="no-data-msg">Нема достапни видеа.</div>';
                 return;
@@ -3242,7 +3252,7 @@
             var w = window.innerWidth;
             var cols = w <= 800 ? 1 : (w <= 1100 ? 2 : 3);
             var maxVideos = cols * 2;
-            var picked = videoIds.slice(0, maxVideos);
+            var picked = shuffle(videoIds).slice(0, maxVideos);
 
             grid.innerHTML = picked.map(function(v) {
                 var videoId = typeof v === 'string' ? v : v.id;
@@ -3262,7 +3272,8 @@
                 { id: 'shuffle-discover-btn', render: renderDiscoverArtists },
                 { id: 'shuffle-sotd-btn', render: renderSongsOfTheDay },
                 { id: 'shuffle-rising-btn', render: renderRisingArtists },
-                { id: 'shuffle-verify-btn', render: renderVerifyArtists }
+                { id: 'shuffle-verify-btn', render: renderVerifyArtists },
+                { id: 'shuffle-yt-btn', render: renderYouTube }
             ];
 
             buttonBindings.forEach(function(binding) {

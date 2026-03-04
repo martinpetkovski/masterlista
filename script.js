@@ -16,7 +16,6 @@
     let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
     let latestReleaseDateByArtist = {}; // Cache artist name -> latest release date string
     let cachedRssArticles = null; // Cache RSS feed articles for media column
-    let rssFeedsConfig = null; // RSS feeds configuration
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
     /**
@@ -484,16 +483,19 @@
     // ==================== ARTICLE LOADING & MATCHING ====================
     
     /**
-     * Load articles from the pre-built articles.json archive.
+     * Load pre-filtered, pre-matched articles from site-master.json.
+     * Uses the news.matched array which has blacklist filtering and artist
+     * matching already applied by generate-site-master.ps1.
      * Results are cached in cachedRssArticles.
      */
     async function loadRssFeeds() {
         if (cachedRssArticles !== null) return cachedRssArticles;
         try {
-            const resp = await fetch('articles.json');
-            if (!resp.ok) throw new Error(`Failed to load articles.json: ${resp.status}`);
-            const archive = await resp.json();
-            const allArticles = (archive.articles || []).map(a => ({
+            const master = await loadSiteMaster();
+            if (!master || !master.news || !master.news.matched) {
+                throw new Error('site-master.json missing news.matched');
+            }
+            const allArticles = master.news.matched.map(a => ({
                 title: a.title || '',
                 link: a.link || '',
                 description: a.description || '',
@@ -501,78 +503,41 @@
                 pubDate: a.date ? new Date(a.date) : new Date(0),
                 source: a.source || '',
                 sourceIcon: a.iconUrl || '',
-                siteUrl: a.siteUrl || ''
+                siteUrl: a.siteUrl || '',
+                matchedArtists: a.matchedArtists || []
             }));
             allArticles.sort((a, b) => b.pubDate - a.pubDate);
             cachedRssArticles = allArticles;
-            invalidateArticleMatchCache();
             return allArticles;
         } catch (err) {
-            console.warn('Failed to load articles:', err);
+            console.warn('Failed to load articles from site-master:', err);
             cachedRssArticles = [];
-            invalidateArticleMatchCache();
             return [];
         }
     }
     
     /**
      * Find RSS articles matching a band name.
-     * Checks both the original name and its Latin transliteration
-     * against article titles and content (case-insensitive).
+     * Uses the pre-computed matchedArtists array from site-master.json,
+     * which already has blacklist filtering and proper word-boundary matching applied.
      * Returns matches sorted by date (latest first).
      */
-    // Cache for findMatchingArticles results (cleared when RSS data changes)
+    // Cache for findMatchingArticles results
     let articleMatchCache = new Map();
-    function invalidateArticleMatchCache() { articleMatchCache = new Map(); }
 
     function findMatchingArticles(bandName) {
         if (!cachedRssArticles || cachedRssArticles.length === 0) return [];
         if (!bandName) return [];
         if (articleMatchCache.has(bandName)) return articleMatchCache.get(bandName);
         
-        // Capitalize helper: first letter uppercase unless starts with digit
-        function capitalize(s) {
-            if (!s || /^\d/.test(s)) return s;
-            return s.charAt(0).toUpperCase() + s.slice(1);
-        }
-        
-        // Build search terms with proper casing (first letter uppercase).
-        // Matching is case-sensitive and requires exact word boundaries to avoid
-        // false positives like "визија" matching common text or "Јулијан" matching "Јулија".
-        const searchTerms = new Set();
-        const name = bandName.trim();
-        if (name.length >= 3) searchTerms.add(capitalize(name));
-        
-        const latinName = transliterateCyrillicToLatin(bandName).trim();
-        if (latinName.length >= 3 && latinName !== name) searchTerms.add(capitalize(latinName));
-        
-        // Also try shorthand transliteration (e.g. Ш→S instead of Sh)
-        const latinShort = transliterateCyrillicToLatinShorthand(bandName).trim();
-        if (latinShort.length >= 3 && latinShort !== name && latinShort !== latinName) searchTerms.add(capitalize(latinShort));
-        
-        if (searchTerms.size === 0) return [];
-        
-        // Word boundaries: start/end of string, whitespace, or common punctuation.
-        // Case-sensitive matching with exact word boundaries.
-        const B = '[\\s,;:.!?\\-–—\\/\\(\\)\\[\\]"\'\\|«»„"\\u2018\\u2019\\u201c\\u201d]';
-        const termRegexes = [...searchTerms].map(term => {
-            const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            return new RegExp('(?:^|' + B + ')' + escaped + '(?:$|' + B + ')');
-        });
-        
-        const results = cachedRssArticles.filter(article => {
-            const searchIn = article.title + ' ' + article.description + ' ' + article.content;
-            
-            for (const regex of termRegexes) {
-                if (regex.test(searchIn)) return true;
-            }
-            return false;
-        });
+        const results = cachedRssArticles.filter(article =>
+            article.matchedArtists.includes(bandName)
+        );
         articleMatchCache.set(bandName, results);
         return results;
     }
     
-    // Start loading RSS feeds early (non-blocking)
+    // Start loading articles early (non-blocking)
     const rssLoadPromise = loadRssFeeds();
 
     // ==================== GREETING AUDIO ====================
@@ -1436,12 +1401,12 @@
             console.log(`Loaded ${bandsData.length} bands`);
             
             // Render the table first (highest priority)
-            // Ensure RSS feeds and events are loaded before rendering
+            // Ensure articles and events are loaded before rendering
             try {
                 await rssLoadPromise;
-                console.log(`RSS feeds loaded: ${(cachedRssArticles || []).length} articles`);
+                console.log(`Articles loaded from site-master: ${(cachedRssArticles || []).length} matched articles`);
             } catch (rssErr) {
-                console.warn('RSS feeds not available:', rssErr);
+                console.warn('Articles not available:', rssErr);
             }
             try {
                 await eventsLoadPromise;
