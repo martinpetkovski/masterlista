@@ -60,6 +60,12 @@
             flex-direction: column;
         }
 
+        body.curator-page main {
+            height: auto !important;
+            overflow: visible !important;
+            flex: 1;
+        }
+
         body.curator-page.dark-mode,
         html.dark-mode body.curator-page {
             background: #111318;
@@ -562,7 +568,10 @@
 
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 600px) {
-            .curator-container { padding: 1rem 0.75rem 2rem; }
+            .curator-container {
+                padding: 1rem 0.75rem 2rem;
+                -webkit-overflow-scrolling: touch;
+            }
             .curator-avatar { width: 80px; height: 80px; }
             .curator-name { font-size: 1.35rem; }
             .track-art { width: 34px; height: 34px; }

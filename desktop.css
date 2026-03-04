@@ -2643,6 +2643,42 @@ body.vfx-dark .service-chooser-links a:hover,
 .service-chooser-links a i { width: 30px; text-align: center; font-size: 1.65rem; }
 .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
 .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
+/* --- VFX background in service chooser header --- */
+.service-chooser-header { position: relative; overflow: hidden; }
+.sc-vfx-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.sc-vfx-layer { position: absolute; inset: 0; }
+.sc-vfx-grid { opacity: 0.4; }
+.sc-vfx-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    opacity: 0.05; mix-blend-mode: overlay;
+    animation: scVfxGrain 0.3s steps(2) infinite;
+}
+@keyframes scVfxGrain { 0% { transform: translate(0,0); } 50% { transform: translate(-2%,-2%); } }
+.sc-vfx-sweep {
+    position: absolute; left: 0; width: 100%; height: 2px; opacity: 0;
+    animation: scVfxSweep 6s linear infinite;
+}
+@keyframes scVfxSweep { 0% { top: -5%; opacity: 0; } 5% { opacity: 0.25; } 95% { opacity: 0.08; } 100% { top: 105%; opacity: 0; } }
+.sc-vfx-shape {
+    position: absolute; border: 1px solid; opacity: 0;
+    animation: scVfxShapeFloat 8s ease-in-out infinite;
+}
+.sc-vfx-shape--circle { border-radius: 50%; }
+.sc-vfx-shape--diamond { animation-name: scVfxShapeDiamond; }
+.sc-vfx-shape--rect { border-radius: 2px; }
+@keyframes scVfxShapeFloat {
+    0%, 100% { opacity: 0; transform: translateY(8px) scale(0.9); }
+    20% { opacity: 0.18; } 50% { opacity: 0.08; transform: translateY(-6px) scale(1.04); } 80% { opacity: 0.14; }
+}
+@keyframes scVfxShapeDiamond {
+    0%, 100% { opacity: 0; transform: rotate(45deg) translateY(8px) scale(0.9); }
+    20% { opacity: 0.18; } 50% { opacity: 0.08; transform: rotate(45deg) translateY(-6px) scale(1.04); } 80% { opacity: 0.14; }
+}
+.service-chooser-header > *:not(.sc-vfx-bg):not(.service-chooser-close) { position: relative; z-index: 1; }
+.service-chooser-close { z-index: 2; }
+/* --- multiple artist separator --- */
+.sc-artist-sep { color: rgba(255,255,255,0.5); margin: 0 0.1rem; }
 
 /* ==================== SETTINGS MENU ==================== */
 .settings-overlay {

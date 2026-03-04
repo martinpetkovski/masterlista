@@ -1091,13 +1091,15 @@ footer { display: none; }
 
 .modal-content {
     background: var(--bg-primary);
-    margin: 0;
+    margin: 4% auto;
     padding: 0.75rem;
     border: 1px solid var(--border-color);
-    width: 100%;
-    height: 100%;
-    max-height: 100vh;
-    max-height: 100dvh;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    max-height: 90vh;
+    max-height: 90dvh;
     overflow-y: auto;
     scrollbar-width: thin;
 }
@@ -1626,8 +1628,8 @@ body.dark-mode .cancel-band-btn:hover {
 }
 /* --- open animation --- */
 .service-chooser {
-    background: #fff; border-radius: 0; min-width: 260px;
-    max-width: 96vw; width: calc(100vw - 1rem);
+    background: #fff; border-radius: 0; min-width: 195px;
+    max-width: 72vw; width: calc(75vw - 1rem);
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     font-family: 'Inter', sans-serif; overflow: hidden;
     opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px);
@@ -1685,20 +1687,23 @@ body.vfx-dark .service-chooser,
     padding: 0.85rem 3rem 0.85rem 1rem; background: #333;
 }
 .service-chooser-close {
-    position: absolute; top: 0.55rem; right: 0.7rem;
-    border: none; background: transparent; color: #fff;
-    font-size: 1.4rem; line-height: 1; cursor: pointer;
-    opacity: 0.9; padding: 0.1rem 0.2rem;
+    position: absolute; top: 0.4rem; right: 0.5rem;
+    border: none; background: rgba(0,0,0,0.3); color: #fff;
+    font-size: 1.8rem; line-height: 1; cursor: pointer;
+    opacity: 0.9; padding: 0.3rem 0.55rem;
+    border-radius: 50%;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
 .service-chooser-close:hover { opacity: 1; }
 .service-chooser-img {
-    width: 66px; height: 66px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
+    width: 50px; height: 50px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
 }
 .service-chooser-header-text { min-width: 0; flex: 1; }
 .service-chooser-artist {
-    font-size: 1.08rem; opacity: 0.85; color: #fff;
+    font-size: 0.85rem; opacity: 0.85; color: #fff;
     white-space: nowrap;
     display: flex; align-items: center; gap: 0.35rem;
+    flex-wrap: wrap;
 }
 .service-chooser-artist .sc-artist-name {
     min-width: 0; max-width: calc(100% - 1rem);
@@ -1716,17 +1721,17 @@ body.vfx-dark .service-chooser,
     color: currentColor; margin-left: 0.05rem; display: none;
 }
 .service-chooser-song {
-    font-size: 1.32rem; font-weight: 600; color: #fff;
+    font-size: 1rem; font-weight: 600; color: #fff;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .service-chooser-links {
-    display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem 1rem 1rem;
+    display: flex; flex-direction: column; gap: 0.3rem; padding: 0.55rem 0.75rem 0.75rem;
 }
 .service-chooser-links a {
-    display: flex; align-items: center; gap: 1.125rem; padding: 0.9rem 1.125rem;
+    display: flex; align-items: center; gap: 0.85rem; padding: 0.65rem 0.85rem;
     border-radius: 8px; text-decoration: none; color: #333;
     background: rgba(0,0,0,0.04); transition: background 0.15s;
-    font-size: 1.275rem;
+    font-size: 0.95rem;
 }
 body.dark-mode .service-chooser-links a,
 body.vfx-dark .service-chooser-links a,
@@ -1735,9 +1740,45 @@ body.vfx-dark .service-chooser-links a,
 body.dark-mode .service-chooser-links a:hover,
 body.vfx-dark .service-chooser-links a:hover,
 .service-chooser-overlay.sc-dark .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
-.service-chooser-links a i { width: 30px; text-align: center; font-size: 1.65rem; }
+.service-chooser-links a i { width: 24px; text-align: center; font-size: 1.25rem; }
 .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
 .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
+/* --- VFX background in service chooser header --- */
+.service-chooser-header { position: relative; overflow: hidden; }
+.sc-vfx-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.sc-vfx-layer { position: absolute; inset: 0; }
+.sc-vfx-grid { opacity: 0.4; }
+.sc-vfx-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    opacity: 0.05; mix-blend-mode: overlay;
+    animation: scVfxGrain 0.3s steps(2) infinite;
+}
+@keyframes scVfxGrain { 0% { transform: translate(0,0); } 50% { transform: translate(-2%,-2%); } }
+.sc-vfx-sweep {
+    position: absolute; left: 0; width: 100%; height: 2px; opacity: 0;
+    animation: scVfxSweep 6s linear infinite;
+}
+@keyframes scVfxSweep { 0% { top: -5%; opacity: 0; } 5% { opacity: 0.25; } 95% { opacity: 0.08; } 100% { top: 105%; opacity: 0; } }
+.sc-vfx-shape {
+    position: absolute; border: 1px solid; opacity: 0;
+    animation: scVfxShapeFloat 8s ease-in-out infinite;
+}
+.sc-vfx-shape--circle { border-radius: 50%; }
+.sc-vfx-shape--diamond { animation-name: scVfxShapeDiamond; }
+.sc-vfx-shape--rect { border-radius: 2px; }
+@keyframes scVfxShapeFloat {
+    0%, 100% { opacity: 0; transform: translateY(8px) scale(0.9); }
+    20% { opacity: 0.18; } 50% { opacity: 0.08; transform: translateY(-6px) scale(1.04); } 80% { opacity: 0.14; }
+}
+@keyframes scVfxShapeDiamond {
+    0%, 100% { opacity: 0; transform: rotate(45deg) translateY(8px) scale(0.9); }
+    20% { opacity: 0.18; } 50% { opacity: 0.08; transform: rotate(45deg) translateY(-6px) scale(1.04); } 80% { opacity: 0.14; }
+}
+.service-chooser-header > *:not(.sc-vfx-bg):not(.service-chooser-close) { position: relative; z-index: 1; }
+.service-chooser-close { z-index: 2; }
+/* --- multiple artist separator --- */
+.sc-artist-sep { color: rgba(255,255,255,0.5); margin: 0 0.1rem; }
 
 /* Settings menu (mobile) */
 .settings-overlay {

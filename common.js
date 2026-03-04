@@ -747,13 +747,11 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         overlay.innerHTML =
             '<div class="service-chooser">' +
                 '<div class="service-chooser-header" id="service-chooser-header">' +
+                    '<div class="sc-vfx-bg" id="sc-vfx-bg"></div>' +
                     '<button type="button" class="service-chooser-close" id="service-chooser-close" aria-label="Затвори">×</button>' +
                     '<img class="service-chooser-img" id="service-chooser-img">' +
                     '<div class="service-chooser-header-text">' +
-                        '<div class="service-chooser-artist" id="service-chooser-artist">' +
-                            '<a class="sc-artist-name sc-artist-link"></a>' +
-                            '<span class="sc-verified-badge" id="sc-verified-badge" title="Потврдено од артистот" aria-label="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' +
-                        '</div>' +
+                        '<div class="service-chooser-artist" id="service-chooser-artist"></div>' +
                         '<div class="service-chooser-song" id="service-chooser-song"></div>' +
                     '</div>' +
                 '</div>' +
@@ -783,6 +781,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var artistEl  = document.getElementById('service-chooser-artist');
     var songEl    = document.getElementById('service-chooser-song');
     var linksEl   = document.getElementById('service-chooser-links');
+    var vfxBgEl   = document.getElementById('sc-vfx-bg');
 
     // Colourful header only for verified artists
     var useColor = !!verified;
@@ -800,27 +799,32 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         imgEl.style.display = 'none';
     }
 
-    var artistNameSpan = artistEl.querySelector('.sc-artist-name');
+    // Build artist name HTML with separate links for multiple artists
+    var artistNames = (artistName || '').split(',').map(function(n) { return n.trim(); }).filter(Boolean);
+    var artistHtml = '';
+    artistNames.forEach(function(name, idx) {
+        if (idx > 0) artistHtml += '<span class="sc-artist-sep">, </span>';
+        artistHtml += '<a class="sc-artist-name sc-artist-link" data-artist-name="' + escHtml(name) + '">' + escHtml(name) + '</a>';
+    });
+    artistHtml += '<span class="sc-verified-badge" id="sc-verified-badge" title="Потврдено од артистот" aria-label="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+    artistEl.innerHTML = artistHtml;
+
     var verifiedBadge = document.getElementById('sc-verified-badge');
-    if (artistNameSpan) {
-        artistNameSpan.textContent = artistName || '';
-        artistNameSpan.removeAttribute('href');
-        artistNameSpan.removeAttribute('target');
-        artistNameSpan.removeAttribute('rel');
-    }
     if (verifiedBadge) verifiedBadge.style.display = verified ? 'inline-flex' : 'none';
     songEl.textContent = title || 'Отвори во...';
 
-    var lookupArtist = (artistName || '').trim();
-    if (lookupArtist) {
-        artistEl.dataset.lookupArtist = lookupArtist;
+    // Resolve artist page links for each artist name
+    var lookupArtists = artistNames.slice();
+    if (lookupArtists.length > 0) {
         loadMasterArtistNameSet().then(function(artistSet) {
-            if (!artistSet || !artistNameSpan) return;
-            if (artistEl.dataset.lookupArtist !== lookupArtist) return;
-
-            if (artistSet.has(normalizeArtistLookupName(lookupArtist))) {
-                artistNameSpan.setAttribute('href', getArtistPageUrl(lookupArtist));
-            }
+            if (!artistSet) return;
+            var nameLinks = artistEl.querySelectorAll('.sc-artist-name');
+            nameLinks.forEach(function(linkEl) {
+                var aName = linkEl.getAttribute('data-artist-name');
+                if (aName && artistSet.has(normalizeArtistLookupName(aName))) {
+                    linkEl.setAttribute('href', getArtistPageUrl(aName));
+                }
+            });
         });
     }
 
@@ -858,8 +862,39 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             ? (shadeHexColor(primaryAccent, -22) || primaryAccent)
             : (shadeHexColor(primaryAccent, 22) || primaryAccent);
         headerEl.style.background = 'linear-gradient(135deg, ' + primaryAccent + ', ' + shadeEnd + ')';
+
+        // VFX background for the header (artist-page style)
+        var c1 = primaryAccent;
+        var c2 = secondaryAccent || shadeEnd;
+        var seed = (c1+c2).split('').reduce(function(a,ch){return a+ch.charCodeAt(0);},0);
+        function scSeededRand(i) { var x = Math.sin(seed+i*127.1)*43758.5453; return x-Math.floor(x); }
+
+        var vfxHtml = '';
+        // Geometric grid overlay
+        vfxHtml += '<div class="sc-vfx-layer sc-vfx-grid" style="background-image:linear-gradient(' + c2 + '18 1px, transparent 1px), linear-gradient(90deg, ' + c2 + '18 1px, transparent 1px);background-size:30px 30px;opacity:0.4;"></div>';
+        // Radial glow accents
+        var radBg = isDark
+            ? 'radial-gradient(ellipse at 20% 30%, ' + c1 + '30 0%, transparent 60%), radial-gradient(ellipse at 80% 60%, ' + c2 + '25 0%, transparent 55%)'
+            : 'radial-gradient(ellipse at 20% 30%, ' + c1 + '20 0%, transparent 60%), radial-gradient(ellipse at 80% 60%, ' + c2 + '18 0%, transparent 55%)';
+        vfxHtml += '<div class="sc-vfx-layer" style="background:' + radBg + ';"></div>';
+        // Floating shapes (reduced set)
+        var shapeTypes = ['circle', 'diamond', 'rect'];
+        for (var si = 0; si < 6; si++) {
+            var sType = shapeTypes[Math.floor(scSeededRand(si*31) * shapeTypes.length)];
+            var sSize = 10 + scSeededRand(si*41) * 30;
+            var sColor = si % 2 === 0 ? c1 : c2;
+            vfxHtml += '<div class="sc-vfx-shape sc-vfx-shape--' + sType + '" style="width:' + sSize + 'px;height:' + sSize + 'px;left:' + (scSeededRand(si*53)*100) + '%;top:' + (scSeededRand(si*67)*80) + '%;border-color:' + sColor + ';animation-duration:' + (6+scSeededRand(si*71)*8) + 's;animation-delay:' + (scSeededRand(si*79)*3) + 's;"></div>';
+        }
+        // Film grain
+        vfxHtml += '<div class="sc-vfx-layer sc-vfx-grain"></div>';
+        // Sweep beam
+        vfxHtml += '<div class="sc-vfx-sweep" style="background:linear-gradient(90deg, transparent, ' + c1 + '30, transparent);"></div>';
+        vfxBgEl.innerHTML = vfxHtml;
+        vfxBgEl.style.display = '';
     } else {
         headerEl.style.background = '';
+        vfxBgEl.innerHTML = '';
+        vfxBgEl.style.display = 'none';
     }
 
     // Build service links
