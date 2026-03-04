@@ -1610,14 +1610,17 @@ body.dark-mode .cancel-band-btn:hover {
 
 /* ==================== SERVICE CHOOSER (mobile) ==================== */
 .service-chooser-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0);
+    display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0);
     z-index: 10000; align-items: center; justify-content: center;
-    transition: background 0.25s ease, backdrop-filter 0.25s ease;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.25s ease, background 0.25s ease, backdrop-filter 0.25s ease, visibility 0s linear 0.25s;
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
 }
 .service-chooser-overlay.visible {
-    display: flex; background: rgba(0,0,0,0.4);
+    opacity: 1; visibility: visible; pointer-events: auto;
+    background: rgba(0,0,0,0.4);
+    transition: opacity 0.25s ease, background 0.25s ease, backdrop-filter 0.25s ease;
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
 }
@@ -1644,7 +1647,9 @@ body.dark-mode .cancel-band-btn:hover {
 }
 .service-chooser-overlay.closing {
     background: rgba(0,0,0,0) !important;
-    transition: background 0.25s ease;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background 0.25s ease, backdrop-filter 0.25s ease;
 }
 .service-chooser-overlay.closing .service-chooser {
     animation: serviceChooserOut 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
