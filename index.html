@@ -1140,17 +1140,40 @@
 
         .discover-links {
             display: flex;
-            gap: 0.4rem;
-            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.3rem;
         }
 
         .discover-links a {
-            font-size: 0.78rem;
+            font-size: 1.15rem;
             color: var(--text-secondary, #555b64);
             transition: color 0.15s;
+            padding: 0.15rem 0.25rem;
         }
 
         .discover-links a:hover { color: var(--accent-blue, #4a7fa5); }
+
+        .rising-links {
+            display: grid;
+            grid-template-columns: repeat(5, 1.65rem);
+            grid-auto-rows: 1.65rem;
+            max-height: calc(3 * 1.65rem);
+            gap: 0.2rem;
+            flex-shrink: 0;
+            justify-items: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .rising-links a {
+            font-size: 1.15rem;
+            color: var(--text-secondary, #555b64);
+            transition: color 0.15s;
+            padding: 0.15rem 0.25rem;
+        }
+
+        .rising-links a:hover { color: var(--accent-blue, #4a7fa5); }
 
         .discover-release {
             font-size: 0.72rem;
@@ -2326,7 +2349,7 @@
                 </div>
             </div>
             <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
-            <div class="discover-grid" id="discover-grid" style="display:none;"></div>
+            <ul class="trending-list" id="discover-grid" style="display:none;"></ul>
         </div>
 
         <!-- ==================== SONGS (random on refresh) ==================== -->
@@ -2604,13 +2627,15 @@
                     loadSiteMaster(),
                     fetch('bands.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+                    fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+                    fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
                 ]);
 
                 siteMaster = results[0];
                 if (results[1]) bandsData = results[1].muzickaMasterLista || [];
                 if (results[2]) curatorsData = results[2];
                 if (results[3]) curatorTracksData = results[3];
+                if (results[4]) eventsData = results[4].events || [];
 
                 // Populate legacy variables from site-master for backward compat
                 if (siteMaster) {
@@ -2856,15 +2881,15 @@
                 }
                 var releases = getLatestReleases(artist.name, 3);
                 var releaseHtml = buildReleasesHtml(releases);
-                return '<div class="discover-artist" onclick="location.href=\'' + artistPageUrl + '\'">' +
-                    '<img class="discover-img" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
-                    '<div class="discover-info">' +
-                        '<div class="discover-name"><a href="' + artistPageUrl + '">' + escHtml(artist.name) + '</a>' + verifiedBadge(artist.name) + '</div>' +
-                        '<div class="discover-genre">' + escHtml(artist.genre || '') + ' &bull; <i class="fas fa-location-dot"></i> ' + escHtml(artist.city || 'Непознато') + '</div>' +
+                return '<li class="trending-item" onclick="location.href=\'' + artistPageUrl + '\'">' +
+                    '<img class="trending-cover" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
+                    '<div class="trending-info">' +
+                        '<div class="trending-title">' + escHtml(artist.name) + verifiedBadge(artist.name) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(artist.genre || '') + '</div>' +
                         releaseHtml +
                     '</div>' +
-                    '<div class="discover-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' +
-                '</div>';
+                    (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
+                '</li>';
             }).join('');
 
             loading.style.display = 'none';
@@ -3006,10 +3031,22 @@
             var loading = document.getElementById('rising-loading');
 
             list.innerHTML = picked.map(function(a, i) {
-                var badge = a.badge || 'fresh', badgeLabel = a.badgeLabel || '✨ НОВ';
                 var artistUrl = '/artist.html?name=' + encodeURIComponent(a.name);
                 var releases = getLatestReleases(a.name, 3);
                 var relHtml = buildReleasesHtml(releases);
+                // Build streaming/social links from bandsData
+                var linksHtml = '';
+                var bandMatch = null;
+                for (var b = 0; b < bandsData.length; b++) {
+                    if (bandsData[b].name.toLowerCase() === a.name.toLowerCase()) { bandMatch = bandsData[b]; break; }
+                }
+                if (bandMatch && bandMatch.links) {
+                    for (var key in bandMatch.links) {
+                        if (bandMatch.links[key] && linkIcons[key]) {
+                            linksHtml += '<a href="' + bandMatch.links[key] + '" target="_blank" rel="noopener" title="' + key + '"><i class="' + linkIcons[key] + '"></i></a>';
+                        }
+                    }
+                }
                 return '<li class="trending-item" onclick="location.href=\'' + artistUrl + '\'">' +
                     '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
@@ -3017,7 +3054,7 @@
                         '<div class="trending-sub">' + escHtml(a.genre || '') + '</div>' +
                         relHtml +
                     '</div>' +
-                    '<span class="trending-badge ' + badge + '">' + badgeLabel + '</span>' +
+                    (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
                 '</li>';
             }).join('');
 
@@ -3025,11 +3062,19 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: EVENTS (pre-computed from site-master.json) ====================
+        // ==================== RENDER: EVENTS (loaded from events.json) ====================
         function renderEvents() {
-            var upcoming = siteMaster && siteMaster.events && siteMaster.events.upcoming
-                ? siteMaster.events.upcoming
-                : [];
+            // Filter upcoming events from events.json (date >= today)
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var sevenDaysLater = new Date(today.getTime() + 7 * 86400000);
+            var upcoming = eventsData.filter(function(e) {
+                var p = e.date.split('-');
+                var eventDate = new Date(+p[0], +p[1] - 1, +p[2]);
+                return eventDate >= today && eventDate <= sevenDaysLater;
+            }).sort(function(a, b) {
+                return new Date(a.date) - new Date(b.date);
+            }).slice(0, 7);
 
             var list = document.getElementById('events-list');
             var loading = document.getElementById('events-loading');
