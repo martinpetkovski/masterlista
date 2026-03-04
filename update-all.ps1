@@ -1143,7 +1143,7 @@ if ($runSiteMaster) {
     Write-Section "TASK 7: SITE MASTER (PRE-COMPUTED DATA)"
     $t = Get-Date
     try {
-        $smScript = Join-Path $scriptRoot "scripts" "generate-site-master.ps1"
+        $smScript = Join-Path (Join-Path $scriptRoot "scripts") "generate-site-master.ps1"
         if (Test-Path $smScript) {
             & $smScript
             $results["Site Master"] = $true

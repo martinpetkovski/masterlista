@@ -661,14 +661,15 @@
         // ==================== LOAD DATA ====================
         async function loadData() {
             try {
-                const [bandsResp, siteMasterData] = await Promise.all([
+                const [bandsResp, siteMasterData, eventsResp] = await Promise.all([
                     fetch('bands.json').then(r => r.json()),
-                    loadSiteMaster()
+                    loadSiteMaster(),
+                    fetch('events.json').then(r => r.json()).catch(() => null)
                 ]);
 
                 bandsData = bandsResp.muzickaMasterLista || [];
                 releasesData = siteMasterData?.chartData?.releases || [];
-                eventsData = siteMasterData?.events?.all || [];
+                eventsData = eventsResp?.events || [];
                 window._siteMasterActivity = siteMasterData?.artistActivity || {};
                 dataLoaded = true;
                 updateGoButton();

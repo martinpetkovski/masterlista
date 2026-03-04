@@ -31,8 +31,6 @@ $articlesPath = Join-Path $projectRoot "articles.json"
 $eventsPath = Join-Path $projectRoot "events.json"
 $curatorsPath = Join-Path $projectRoot "curators.json"
 $curatorTracklistsPath = Join-Path $projectRoot "curators-tracklists.json"
-$xotelLinksPath = Join-Path $projectRoot "xotel-links.json"
-$xotelVideosPath = Join-Path $projectRoot "xotel-videos.json"
 $blacklistPath = Join-Path $projectRoot "news-word-blacklist.txt"
 $chartHistoryDir = Join-Path $projectRoot "chart-history"
 
@@ -58,12 +56,6 @@ $curatorsData = if ($curatorsJson) { $curatorsJson.curators } else { @() }
 
 # Load curators-tracklists.json
 $curatorTracklistsJson = if (Test-Path $curatorTracklistsPath) { Get-Content $curatorTracklistsPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }
-
-# Load xotel-links.json
-$xotelLinks = if (Test-Path $xotelLinksPath) { Get-Content $xotelLinksPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { @() }
-
-# Load xotel-videos.json
-$xotelVideos = if (Test-Path $xotelVideosPath) { Get-Content $xotelVideosPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { @() }
 
 # Load news word blacklist
 $blacklistWords = @()
@@ -868,7 +860,6 @@ function Get-MatchedArtists {
 
 # Process all articles: filter by blacklist, then match artists
 $matchedArticles = @()
-$allFilteredArticles = @()
 
 foreach ($article in $allArticles) {
     # Apply blacklist
@@ -890,8 +881,6 @@ foreach ($article in $allArticles) {
         matchedArtists = $artists
     }
     
-    $allFilteredArticles += $filteredArticle
-    
     if ($artists.Count -gt 0) {
         $matchedArticles += $filteredArticle
     }
@@ -899,30 +888,11 @@ foreach ($article in $allArticles) {
 
 # Sort by date descending
 $matchedArticles = @($matchedArticles | Sort-Object { $_.date } -Descending)
-$allFilteredArticles = @($allFilteredArticles | Sort-Object { $_.date } -Descending)
 
-Write-Host "  > Filtered articles: $($allFilteredArticles.Count) passed blacklist, $($matchedArticles.Count) matched artists" -ForegroundColor DarkGray
-
-# ============================================================================
-#  10. UPCOMING EVENTS (next 14 days)
-# ============================================================================
-
-Write-Host "  > Processing events..." -ForegroundColor Yellow
-
-$todayStr = $now.ToString("yyyy-MM-dd")
-$twoWeeksStr = ($now.AddDays(14)).ToString("yyyy-MM-dd")
-
-$upcomingEvents = @($eventsData |
-    Where-Object { $_.date -ge $todayStr -and $_.date -le $twoWeeksStr } |
-    Sort-Object date)
-
-# All events sorted
-$allEvents = @($eventsData | Sort-Object { $_.date } -Descending)
-
-Write-Host "  > $($upcomingEvents.Count) upcoming events (next 14 days)" -ForegroundColor DarkGray
+Write-Host "  > Filtered articles: $($matchedArticles.Count) matched artists" -ForegroundColor DarkGray
 
 # ============================================================================
-#  11. RELEASE RADAR (latest 5 releases)
+#  10. RELEASE RADAR (latest 5 releases)
 # ============================================================================
 
 $releaseRadar = @($deduped | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 5 |
@@ -954,27 +924,14 @@ $releaseRadar = @($deduped | Sort-Object { $_.releaseDate } -Descending | Select
 $headerThumbs = @($charts["all_single"] | ForEach-Object { $_.thumbnail } | Where-Object { $_ })
 
 # ============================================================================
-#  13. XOTEL VIDEOS
-# ============================================================================
-
-$xotelVideoIds = @()
-foreach ($link in $xotelLinks) {
-    # Support both plain URL strings and objects with .url property
-    $url = if ($link -is [string]) { $link } else { $link.url }
-    if ($url -match '(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})') {
-        $xotelVideoIds += $Matches[1]
-    }
-}
-
-# ============================================================================
-#  14. ISO WEEK INFO
+#  11. ISO WEEK INFO
 # ============================================================================
 
 $isoWeek = Get-ISOWeek -Date $now
 $weekLabel = "W$($isoWeek.week.ToString().PadLeft(2,'0')) $($isoWeek.year)"
 
 # ============================================================================
-#  15. BUILD RELEASE SPARKLINES PER ARTIST (for artist.html)
+#  12. BUILD RELEASE SPARKLINES PER ARTIST (for artist.html)
 # ============================================================================
 
 Write-Host "  > Building per-release sparklines..." -ForegroundColor Yellow
@@ -1116,23 +1073,10 @@ $siteMaster = [PSCustomObject]@{
     news = [PSCustomObject]@{
         lastUpdated    = $articlesJson.lastUpdated
         matched        = $matchedArticles
-        allFiltered    = $allFilteredArticles
-    }
-    
-    # Events
-    events = [PSCustomObject]@{
-        upcoming = $upcomingEvents
-        all      = $allEvents
     }
     
     # Header collage thumbnails (top 20 singles thumbnails)
     headerThumbs = $headerThumbs
-    
-    # Xotel video IDs
-    xotelVideoIds = $xotelVideoIds
-    
-    # Xotel links (original)
-    xotelLinks = $xotelLinks
 }
 
 # Write to file

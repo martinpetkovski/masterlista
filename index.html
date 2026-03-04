@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <script src="/progress-bar.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ТопЛиста.мк | Дома</title>
 
@@ -2378,7 +2379,6 @@
         var bandsData = [];
         var chartData = null;
         var eventsData = [];
-        var articlesData = [];
         var curatorsData = null;
         var curatorTracksData = null;
         var siteMaster = null;  // Pre-calculated data from site-master.json
@@ -2448,8 +2448,6 @@
                 // Populate legacy variables from site-master for backward compat
                 if (siteMaster) {
                     chartData = siteMaster.chartData || null;
-                    eventsData = siteMaster.events ? siteMaster.events.all || [] : [];
-                    articlesData = siteMaster.news ? siteMaster.news.allFiltered || [] : [];
                 }
             } catch (err) {
                 console.error('Data load error:', err);
@@ -2960,7 +2958,7 @@
             }
 
             // Use pre-matched articles; fall back to all if fewer than 5
-            var pool = newsData.matched && newsData.matched.length >= 5 ? newsData.matched : newsData.allFiltered;
+            var pool = newsData.matched;
             if (!pool || pool.length === 0) {
                 document.getElementById('news-loading').innerHTML = '<span>Нема вести</span>';
                 return;
@@ -3090,7 +3088,9 @@
 
         // ==================== INIT ====================
         bindShuffleButtons();
-        loadAllData();
+        loadAllData().then(function () {
+            if (window.mmmFinishLoader) window.mmmFinishLoader();
+        });
     })();
     </script>
 </body>

@@ -2837,14 +2837,20 @@ a.chart-history-item {
                 } else {
                     // Fallback: compute from events
                     let hasRecentEvent = false;
-                    const allEvents = siteMaster?.events?.all || [];
-                    const now = new Date();
-                    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-                    const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
-                    hasRecentEvent = allEvents.some(e =>
-                        e.date >= oneYearAgoStr &&
-                        (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
-                    );
+                    try {
+                        const evResp = await fetch('events.json');
+                        const evJson = await evResp.json();
+                        const allEvents = evJson.events || [];
+                        const now = new Date();
+                        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                        const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+                        hasRecentEvent = allEvents.some(e =>
+                            e.date >= oneYearAgoStr &&
+                            (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
+                        );
+                    } catch (evErr) {
+                        console.warn('Could not load events for activity fallback:', evErr);
+                    }
                     artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
                 }
                 
@@ -3044,9 +3050,11 @@ a.chart-history-item {
                     console.warn('Could not load articles:', e);
                 }
                 
-                // Load and render upcoming events for this artist from pre-computed data
+                // Load and render upcoming events for this artist from events.json
                 try {
-                    const events = siteMaster?.events?.all || [];
+                    const evResp = await fetch('events.json');
+                    const evJson = await evResp.json();
+                    const events = evJson.events || [];
                         const today = new Date(); today.setHours(0,0,0,0);
                         const MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
                         const MK_DAYS = ['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];
