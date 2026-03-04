@@ -1947,7 +1947,7 @@
             resetLinks([{ label: '', url: '' }]);
             document.getElementById('evt-date').dispatchEvent(new Event('input'));
             document.getElementById('evt-time').dispatchEvent(new Event('input'));
-            modal.style.display = 'block';
+            modal.classList.add('visible');
             setTimeout(function() { document.getElementById('evt-title').focus(); }, 100);
         }
 
@@ -1980,7 +1980,7 @@
             var tickets = evt.tickets || [];
             resetTickets(tickets.length ? tickets : [{ label: '', price: '' }]);
 
-            modal.style.display = 'block';
+            modal.classList.add('visible');
         }
 
         function resetArtists(values) {
@@ -2025,7 +2025,20 @@
             c.appendChild(row);
         }
 
-        function closeModal() { modal.style.display = 'none'; editingEventId = null; }
+        function closeModal() {
+            var content = modal.querySelector('.modal-content');
+            if (content) {
+                modal.classList.add('closing');
+                content.addEventListener('animationend', function handler() {
+                    content.removeEventListener('animationend', handler);
+                    modal.classList.remove('visible', 'closing');
+                    editingEventId = null;
+                }, { once: true });
+            } else {
+                modal.classList.remove('visible');
+                editingEventId = null;
+            }
+        }
 
         document.getElementById('add-link-btn').addEventListener('click', function() {
             addLinkEntry('', '');

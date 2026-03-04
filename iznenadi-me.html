@@ -52,7 +52,7 @@
         .surprise-container {
             max-width: 620px;
             margin: 0 auto;
-            padding: 2rem 1.25rem 3rem;
+            padding: 1.5rem 1.25rem 3rem;
             font-family: 'Inter', sans-serif;
             color: var(--text-primary);
             position: relative;
@@ -67,116 +67,78 @@
             z-index: 1;
         }
 
-        .surprise-hero {
-            text-align: center;
-            margin-bottom: 1.1rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            padding: 1.35rem 1rem 1.1rem;
-            animation: heroIn 0.55s ease;
-        }
-
-        .surprise-hero .hero-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            display: block;
-            color: var(--accent-blue);
-            animation: heroPulse 4.2s ease-in-out infinite;
-        }
-
-        .surprise-hero h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.38rem;
-            font-weight: 800;
-            margin: 0 0 0.5rem;
-            color: var(--text-primary);
-            letter-spacing: 0.01em;
-        }
-
-        .surprise-hero p {
-            font-size: 0.83rem;
-            color: var(--text-secondary);
-            margin: 0;
-            line-height: 1.65;
-        }
-
-        .selection-summary {
-            margin-top: 0.9rem;
+        /* Dropdown rows */
+        .surprise-dropdown-row {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.45rem;
-        }
-
-        .selection-pill {
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-size: 0.67rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            padding: 0.28rem 0.55rem;
-            text-transform: uppercase;
-            transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease;
-        }
-
-        .selection-pill.active {
-            border-color: var(--text-primary);
-            color: var(--text-primary);
-            transform: translateY(-1px);
-        }
-
-        /* Step container */
-        .surprise-step {
-            margin-bottom: 0.9rem;
-            opacity: 1;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
             border: 1px solid var(--border-color);
             background: var(--bg-primary);
-            padding: 0.9rem;
-            animation: stepIn 0.48s ease both;
+            padding: 0.5rem 0.9rem;
         }
 
-        #step-era { animation-delay: 0.05s; }
-        #step-filters { animation-delay: 0.1s; }
-
-        .surprise-step:hover {
-            transform: translateY(-1px);
-        }
-
-        .surprise-step.disabled {
-            opacity: 0.35;
-            pointer-events: none;
-        }
-
-        .step-label {
+        .surprise-dropdown-label {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-muted);
-            margin-bottom: 0.6rem;
+            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
+            min-width: 60px;
         }
 
-        .step-label .step-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--text-primary);
-            color: #fff;
-            font-size: 0.65rem;
+        .surprise-dropdown-label i {
+            font-size: 0.7rem;
+            color: var(--accent-blue);
+        }
+
+        .surprise-select {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            appearance: auto;
+        }
+
+        .surprise-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        body.dark-mode .surprise-select {
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* Filters section */
+        .surprise-filters-section {
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            padding: 0.6rem 0.9rem 0.7rem;
+        }
+
+        .surprise-filters-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
             font-weight: 700;
-        }
-
-        .step-label .step-number.completed {
-            background: #3dba6f;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.45rem;
         }
 
         /* Option grid */
@@ -265,8 +227,8 @@
         /* Go button */
         .surprise-go-wrapper {
             text-align: center;
-            margin-top: 1.25rem;
-            padding: 1rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem;
         }
 
         .surprise-cta-btn {
@@ -321,26 +283,6 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes heroIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes heroPulse {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-1px); }
-        }
-
-        @keyframes stepIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes selectionPop {
-            0% { transform: scale(0.95); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes ctaReady {
             0%, 100% { box-shadow: 0 0 0 0 rgba(74,127,165,0); }
             50% { box-shadow: 0 0 0 5px rgba(74,127,165,0.08); }
@@ -378,16 +320,13 @@
                 padding: 1.25rem 1rem 2rem;
             }
 
-            .surprise-step {
-                padding: 0.75rem;
+            .surprise-dropdown-row {
+                padding: 0.45rem 0.75rem;
+                gap: 0.5rem;
             }
 
-            .surprise-hero h2 {
-                font-size: 1.15rem;
-            }
-
-            .surprise-hero .hero-icon {
-                font-size: 2rem;
+            .surprise-filters-section {
+                padding: 0.5rem 0.75rem 0.6rem;
             }
 
             .option-grid {
@@ -396,8 +335,8 @@
             }
             .option-grid .filter-btn.preset-btn {
                 min-width: 0;
-                width: 100%;
-                flex: 1 1 100%;
+                width: calc(50% - 0.2rem);
+                flex: 0 0 auto;
             }
             .surprise-page .preset-btn {
                 padding: 0.3rem 0.65rem;
@@ -412,9 +351,6 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .surprise-hero .hero-icon,
-            .surprise-step,
-            .surprise-page .preset-btn.active,
             .surprise-cta-btn.ready,
             .surprise-go-wrapper.shake {
                 animation: none !important;
@@ -428,70 +364,37 @@
     <script src="/load-header.js"></script>
     <main>
         <div class="surprise-container">
-            <div class="surprise-hero">
-                <span class="hero-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
-                <h2>Изненади ме со следниот артист</h2>
-                <p>Избери расположение, пушти го случајниот избор и откриј нешто ново од сцената.</p>
-                <div class="selection-summary" id="selection-summary">
-                    <span class="selection-pill active" id="summary-genre">Сите жанрови</span>
-                    <span class="selection-pill active" id="summary-era">Било која ера</span>
-                    <span class="selection-pill" id="summary-filters">Без дополнителни филтри</span>
-                </div>
+            <!-- Hidden summary elements for JS compatibility -->
+            <span id="summary-genre" style="display:none">Сите жанрови</span>
+            <span id="summary-era" style="display:none">Било која ера</span>
+            <span id="summary-filters" style="display:none">Без дополнителни филтри</span>
+
+            <!-- Genre dropdown -->
+            <div class="surprise-dropdown-row">
+                <label for="genre-select" class="surprise-dropdown-label"><i class="fas fa-music"></i> Жанр</label>
+                <select id="genre-select" class="surprise-select">
+                    <option value="all" selected>Сите жанрови</option>
+                    <option value="alt">Алтернативна</option>
+                    <option value="rap">Рап / Трап</option>
+                    <option value="electronic">Електронска</option>
+                    <option value="jazz">Џез</option>
+                    <option value="metal">Метал</option>
+                </select>
             </div>
 
-            <!-- Step 1: Genre -->
-            <div class="surprise-step" id="step-genre">
-                <div class="step-label">
-                    <span class="step-number" id="step-num-1">1</span>
-                    Жанр
-                </div>
-                <div class="option-grid">
-                    <button class="filter-btn preset-btn active" data-genre="all">
-                        <i class="fas fa-music"></i> Сите
-                    </button>
-                    <button class="filter-btn preset-btn" data-genre="alt">
-                        <i class="fas fa-guitar"></i> Алтернативна
-                    </button>
-                    <button class="filter-btn preset-btn" data-genre="rap">
-                        <i class="fas fa-microphone-lines"></i> Рап/Трап
-                    </button>
-                    <button class="filter-btn preset-btn" data-genre="electronic">
-                        <i class="fas fa-headphones"></i> Електронска
-                    </button>
-                    <button class="filter-btn preset-btn" data-genre="jazz">
-                        <i class="fas fa-saxophone"></i> Џез
-                    </button>
-                    <button class="filter-btn preset-btn" data-genre="metal">
-                        <i class="fas fa-skull-crossbones"></i> Метал
-                    </button>
-                </div>
+            <!-- Era dropdown -->
+            <div class="surprise-dropdown-row">
+                <label for="era-select" class="surprise-dropdown-label"><i class="fas fa-clock"></i> Ера</label>
+                <select id="era-select" class="surprise-select">
+                    <option value="any" selected>Било која ера</option>
+                    <option value="new">Нови (последни 10г.)</option>
+                    <option value="old">Стари (10+ години)</option>
+                </select>
             </div>
 
-            <!-- Step 2: Era -->
-            <div class="surprise-step" id="step-era">
-                <div class="step-label">
-                    <span class="step-number" id="step-num-2">2</span>
-                    Ера
-                </div>
-                <div class="option-grid">
-                    <button class="filter-btn preset-btn active" data-era="any">
-                        <i class="fas fa-infinity"></i> Било која
-                    </button>
-                    <button class="filter-btn preset-btn" data-era="new">
-                        <i class="fas fa-bolt"></i> Нови (последни 10г.)
-                    </button>
-                    <button class="filter-btn preset-btn" data-era="old">
-                        <i class="fas fa-record-vinyl"></i> Стари (10+ години)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Step 3: Filters -->
-            <div class="surprise-step" id="step-filters">
-                <div class="step-label">
-                    <span class="step-number" id="step-num-3">3</span>
-                    Филтри (опционално)
-                </div>
+            <!-- Filters (buttons) -->
+            <div class="surprise-filters-section">
+                <div class="surprise-filters-label">Филтри (опционално)</div>
                 <div class="option-grid">
                     <button class="filter-btn preset-btn" data-filter="verified">
                         <i class="fas fa-circle-check"></i> Потврдени
@@ -593,46 +496,33 @@
         };
 
         function updateSelectionSummary() {
-            summaryGenreEl.textContent = genreLabels[selectedGenre] || 'Сите жанрови';
-            summaryEraEl.textContent = eraLabels[selectedEra] || 'Било која ера';
-            summaryFiltersEl.textContent = activeFilters.size
-                ? Array.from(activeFilters).map(f => filterLabels[f]).filter(Boolean).join(' • ')
-                : 'Без дополнителни филтри';
-
-            summaryFiltersEl.classList.toggle('active', activeFilters.size > 0);
+            // Update hidden summary elements for compatibility
+            if (summaryGenreEl) summaryGenreEl.textContent = genreLabels[selectedGenre] || 'Сите жанрови';
+            if (summaryEraEl) summaryEraEl.textContent = eraLabels[selectedEra] || 'Било која ера';
+            if (summaryFiltersEl) {
+                summaryFiltersEl.textContent = activeFilters.size
+                    ? Array.from(activeFilters).map(f => filterLabels[f]).filter(Boolean).join(' • ')
+                    : 'Без дополнителни филтри';
+            }
         }
 
-        function updateStepCompletion() {
-            document.getElementById('step-num-1').classList.toggle('completed', selectedGenre !== 'all');
-            document.getElementById('step-num-2').classList.toggle('completed', selectedEra !== 'any');
-            document.getElementById('step-num-3').classList.toggle('completed', activeFilters.size > 0);
-        }
-
-        // ==================== OPTION BUTTON LOGIC ====================
-        document.querySelectorAll('#step-genre .filter-btn.preset-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('#step-genre .filter-btn.preset-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedGenre = btn.dataset.genre;
-                updateGoButton();
-                updateSelectionSummary();
-                updateStepCompletion();
-            });
+        // ==================== OPTION LOGIC ====================
+        // Genre dropdown
+        document.getElementById('genre-select').addEventListener('change', (e) => {
+            selectedGenre = e.target.value;
+            updateGoButton();
+            updateSelectionSummary();
         });
 
-        document.querySelectorAll('#step-era .filter-btn.preset-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('#step-era .filter-btn.preset-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedEra = btn.dataset.era;
-                updateGoButton();
-                updateSelectionSummary();
-                updateStepCompletion();
-            });
+        // Era dropdown
+        document.getElementById('era-select').addEventListener('change', (e) => {
+            selectedEra = e.target.value;
+            updateGoButton();
+            updateSelectionSummary();
         });
 
         // Filter buttons (toggle, multi-select)
-        document.querySelectorAll('#step-filters .filter-btn.preset-btn').forEach(btn => {
+        document.querySelectorAll('.surprise-filters-section .filter-btn.preset-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const filter = btn.dataset.filter;
                 if (activeFilters.has(filter)) {
@@ -641,12 +531,12 @@
                 } else {
                     if (filter === 'active') {
                         activeFilters.delete('inactive');
-                        const inactiveBtn = document.querySelector('#step-filters .filter-btn.preset-btn[data-filter="inactive"]');
+                        const inactiveBtn = document.querySelector('.surprise-filters-section .filter-btn.preset-btn[data-filter="inactive"]');
                         if (inactiveBtn) inactiveBtn.classList.remove('active');
                     }
                     if (filter === 'inactive') {
                         activeFilters.delete('active');
-                        const activeBtn = document.querySelector('#step-filters .filter-btn.preset-btn[data-filter="active"]');
+                        const activeBtn = document.querySelector('.surprise-filters-section .filter-btn.preset-btn[data-filter="active"]');
                         if (activeBtn) activeBtn.classList.remove('active');
                     }
                     activeFilters.add(filter);
@@ -654,7 +544,6 @@
                 }
                 updateGoButton();
                 updateSelectionSummary();
-                updateStepCompletion();
             });
         });
 
@@ -814,7 +703,6 @@
 
         // ==================== INIT ====================
         updateSelectionSummary();
-        updateStepCompletion();
         loadData();
     })();
     </script>

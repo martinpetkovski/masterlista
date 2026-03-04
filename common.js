@@ -353,13 +353,26 @@ function initSettingsMenu(extraServiceDefs) {
 
         document.body.appendChild(overlay);
 
+        function closeSettingsAnimated(ov) {
+            var panel = ov.querySelector('.settings-panel');
+            if (panel) {
+                ov.classList.add('closing');
+                panel.addEventListener('animationend', function handler() {
+                    panel.removeEventListener('animationend', handler);
+                    ov.classList.remove('visible', 'closing');
+                }, { once: true });
+            } else {
+                ov.classList.remove('visible');
+            }
+        }
+
         overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) overlay.classList.remove('visible');
+            if (e.target === overlay) closeSettingsAnimated(overlay);
         });
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 var ov = document.getElementById('settings-overlay');
-                if (ov) ov.classList.remove('visible');
+                if (ov) closeSettingsAnimated(ov);
             }
         });
 
@@ -387,7 +400,7 @@ function initSettingsMenu(extraServiceDefs) {
         var tourBtnEl = overlay.querySelector('#settings-start-tour');
         if (tourBtnEl) {
             tourBtnEl.addEventListener('click', function() {
-                overlay.classList.remove('visible');
+                closeSettingsAnimated(overlay);
                 if (typeof window.startGlobalTour === 'function') window.startGlobalTour();
             });
         }

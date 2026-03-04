@@ -731,6 +731,25 @@
         return webUrl;
     }
 
+    // Animated modal open/close helpers
+    function openModalAnimated(modal) {
+        modal.classList.add('visible');
+    }
+    function closeModalAnimated(modal, callback) {
+        const content = modal.querySelector('.modal-content');
+        if (content) {
+            modal.classList.add('closing');
+            content.addEventListener('animationend', function handler() {
+                content.removeEventListener('animationend', handler);
+                modal.classList.remove('visible', 'closing');
+                if (callback) callback();
+            }, { once: true });
+        } else {
+            modal.classList.remove('visible');
+            if (callback) callback();
+        }
+    }
+
     // Custom dialog and notification functions
     function showCustomDialog(title, message, inputPlaceholder = '', defaultValue = '', isPRForm = false) {
         return new Promise((resolve) => {
@@ -776,16 +795,17 @@
                 }
             }
 
-            modal.style.display = 'block';
+            openModalAnimated(modal);
 
             const closeModal = () => {
-                modal.style.display = 'none';
-                // Clean up event listeners
-                cancelBtn.removeEventListener('click', cancelHandler);
-                confirmBtn.removeEventListener('click', confirmHandler);
-                submitBtn.removeEventListener('click', submitHandler);
-                modal.removeEventListener('click', outsideClickHandler);
-                if (inputEl) inputEl.removeEventListener('keydown', enterHandler);
+                closeModalAnimated(modal, () => {
+                    // Clean up event listeners
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    submitBtn.removeEventListener('click', submitHandler);
+                    modal.removeEventListener('click', outsideClickHandler);
+                    if (inputEl) inputEl.removeEventListener('keydown', enterHandler);
+                });
             };
 
             const cancelHandler = (e) => {
@@ -2069,12 +2089,13 @@
                     }
                 }
             }
-            modal.style.display = 'none';
-            form.reset();
-            linksContainer.innerHTML = '';
-            clearErrors();
-            clearTags();
-            greetingEditReset();
+            closeModalAnimated(modal, () => {
+                form.reset();
+                linksContainer.innerHTML = '';
+                clearErrors();
+                clearTags();
+                greetingEditReset();
+            });
         }
 
         closeModal.addEventListener('click', () => {
@@ -2087,12 +2108,13 @@
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
                 console.log('Cancel button clicked');
-                modal.style.display = 'none';
-                form.reset();
-                linksContainer.innerHTML = '';
-                clearErrors();
-                clearTags();
-                greetingEditReset();
+                closeModalAnimated(modal, () => {
+                    form.reset();
+                    linksContainer.innerHTML = '';
+                    clearErrors();
+                    clearTags();
+                    greetingEditReset();
+                });
             });
         }
 
@@ -2266,12 +2288,13 @@
             if (tb1) tb1.textContent = bandsData.length;
             populateFilters(bandsData);
             filterBands();
-            modal.style.display = 'none';
-            delete form.dataset.editIndex;
-            form.reset();
-            linksContainer.innerHTML = '';
-            clearTags();
-            clearErrors();
+            closeModalAnimated(modal, () => {
+                delete form.dataset.editIndex;
+                form.reset();
+                linksContainer.innerHTML = '';
+                clearTags();
+                clearErrors();
+            });
             hasUnsavedChanges = true;
             updateSubmitButtonState();
             savePendingChanges(); // Save to localStorage
@@ -2577,7 +2600,7 @@
                 delete form.dataset.editIndex;
                 addLinkInput();
                 const deleteBtn = document.getElementById('delete-band-btn');
-                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (deleteBtn) deleteBtn.closest('.delete-band-zone').style.display = 'none';
             } else {
                 title.textContent = 'Уреди артист';
                 console.log('Pre-filling form with band data:', band);
@@ -2641,14 +2664,15 @@
                 // Show delete button in edit mode
                 const deleteBtn = document.getElementById('delete-band-btn');
                 if (deleteBtn) {
-                    deleteBtn.style.display = '';
+                    const zone = deleteBtn.closest('.delete-band-zone');
+                    if (zone) zone.style.display = '';
                     deleteBtn.onclick = async () => {
                         const confirmed = await showCustomDialog(
                             'Потврда за бришење',
                             `Дали сте сигурни дека сакате да го избришете артистот <strong>${band.name}</strong>?`
                         );
                         if (confirmed) {
-                            modal.style.display = 'none';
+                            closeModalAnimated(modal);
                             console.log(`Deleting band at index ${index}`);
                             bandsData.splice(index, 1);
                             invalidateBandCache();
@@ -2663,7 +2687,7 @@
                     };
                 }
             }
-            modal.style.display = 'block';
+            openModalAnimated(modal);
             console.log('Modal opened successfully');
         }
 

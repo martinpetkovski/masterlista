@@ -1252,16 +1252,33 @@ footer { display: none; }
 
 /* Modal */
 .modal {
-    display: none;
+    display: flex;
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0);
+    align-items: flex-start;
+    justify-content: center;
     overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, background-color 0.25s ease, backdrop-filter 0.25s ease, visibility 0s linear 0.25s;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+}
+
+.modal.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.25s ease, background-color 0.25s ease, backdrop-filter 0.25s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -1275,6 +1292,36 @@ footer { display: none; }
     max-height: 90vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    filter: blur(4px);
+    animation: modalContentIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
+}
+
+.modal:not(.visible) .modal-content {
+    animation: none;
+    opacity: 0;
+}
+
+@keyframes modalContentIn {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes modalContentOut {
+    from { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    to   { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
+}
+
+.modal.closing {
+    background-color: rgba(0, 0, 0, 0) !important;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
+}
+
+.modal.closing .modal-content {
+    animation: modalContentOut 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
 .modal-close {
@@ -1494,22 +1541,38 @@ body.dark-mode .cancel-band-btn:hover {
     color: #e8e8f0;
 }
 
+.delete-band-zone {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    position: relative;
+}
+
+.delete-band-zone-divider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
 .delete-band-btn {
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: 0;
     padding: 0.5rem 1rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #fff;
-    background: var(--accent-red);
-    border: none;
+    color: var(--accent-red);
+    background: transparent;
+    border: 1px solid var(--accent-red);
     border-radius: 4px;
     cursor: pointer;
     transition: all var(--transition);
 }
 
 .delete-band-btn:hover {
-    opacity: 0.9;
+    background: var(--accent-red);
+    color: #fff;
 }
 
 .tag-container {
@@ -2682,16 +2745,34 @@ body.vfx-dark .service-chooser-links a:hover,
 
 /* ==================== SETTINGS MENU ==================== */
 .settings-overlay {
-    display: none;
+    display: flex;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0);
     z-index: 10000;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, background 0.25s ease, backdrop-filter 0.25s ease, visibility 0s linear 0.25s;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
 }
 .settings-overlay.visible {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    background: rgba(0,0,0,0.4);
+    transition: opacity 0.25s ease, background 0.25s ease, backdrop-filter 0.25s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+.settings-overlay.closing {
+    background: rgba(0,0,0,0) !important;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: background 0.25s ease, backdrop-filter 0.25s ease;
 }
 .settings-panel {
     background: #fff;
@@ -2701,6 +2782,25 @@ body.vfx-dark .service-chooser-links a:hover,
     max-width: 360px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     font-family: 'Inter', sans-serif;
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    filter: blur(4px);
+    animation: settingsPanelIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
+}
+.settings-overlay:not(.visible) .settings-panel {
+    animation: none;
+    opacity: 0;
+}
+.settings-overlay.closing .settings-panel {
+    animation: settingsPanelOut 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+@keyframes settingsPanelIn {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+@keyframes settingsPanelOut {
+    from { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    to   { opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px); }
 }
 body.dark-mode .settings-panel {
     background: #1a1c24;
