@@ -41,6 +41,29 @@
       ]
     },
     {
+      "id": "evt-20260117-taxi-consilium-galactic-effendi-h3rz",
+      "title": "Taxi Consilium + Galactic Effendi",
+      "date": "2026-01-17",
+      "time": "21:00",
+      "place": "Котур, Скопје",
+      "artists": [
+        "Taxi Consilium",
+        "Galactic Effendi"
+      ],
+      "tickets": [
+        {
+          "label": "Билет",
+          "price": "300"
+        }
+      ],
+      "links": [
+        {
+          "label": "",
+          "url": "https://www.instagram.com/p/DTarpcKiC9o/"
+        }
+      ]
+    },
+    {
       "id": "evt-20260206-re-start-festival-ден-1-6z31",
       "title": "Re:Start Festival: Ден 1",
       "date": "2026-02-06",
@@ -169,12 +192,13 @@
     },
     {
       "id": "evt-20260221-кокиче-galactic-efendi-lm78",
-      "title": "Кокиче + Galactic Efendi",
+      "title": "Кокиче + Galactic Effendi",
       "date": "2026-02-21",
       "time": "21:00",
       "place": "Македонски Паб Ѕе, Скопје",
       "artists": [
-        "Кокиче"
+        "Кокиче",
+        "Galactic Effendi"
       ],
       "tickets": [],
       "links": [
