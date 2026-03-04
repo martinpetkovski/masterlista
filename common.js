@@ -560,6 +560,59 @@ if (document.readyState === 'loading') {
     initHeaderCollage();
 }
 
+// ==================== MINI FOOTER (shared) ====================
+function initGlobalMiniFooter() {
+    if (!document.body) return;
+    var currentPath = window.location.pathname || '/';
+    if (!/(^\/$|\/index\.html$)/.test(currentPath)) return;
+    if (document.querySelector('.site-mini-footer')) return;
+
+    var styleId = 'site-mini-footer-style';
+    if (!document.getElementById(styleId)) {
+        var styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        styleEl.textContent =
+            '.site-mini-footer{ text-align:center; margin-top:1rem; }' +
+            '.site-mini-footer__logo-link{ display:inline-flex; margin-bottom:0.42rem; }' +
+            '.site-mini-footer__logo{ width:22px; height:22px; border-radius:50%; vertical-align:middle; }' +
+            '.site-mini-footer__text{ font-size:0.68rem; line-height:1.45; color:var(--text-muted, #6b7280); }' +
+            '.site-mini-footer__license{ display:inline-flex; margin:0 0.25rem; vertical-align:middle; }' +
+            '.site-mini-footer__license img{ width:88px; height:31px; vertical-align:middle; border:0; }' +
+            '.site-mini-footer__text a{ color:var(--text-muted, #6b7280); text-decoration:none; }' +
+            '.site-mini-footer__text a:hover{ color:var(--accent-orange, #f59e0b); text-decoration:none; }' +
+            '.site-mini-footer--standalone{ width:min(100%,680px); margin:1rem auto 0; padding:0.75rem 1rem 1rem; border-top:1px solid var(--border-color, rgba(0,0,0,0.08)); }' +
+            'body.dark-mode .site-mini-footer--standalone, html.dark-mode .site-mini-footer--standalone{ border-top-color:rgba(255,255,255,0.08); }' +
+            'body.dark-mode .site-mini-footer__text a, html.dark-mode .site-mini-footer__text a{ color:var(--text-muted, #9ca3af); }';
+        document.head.appendChild(styleEl);
+    }
+
+    var repoUrl = 'https://github.com/martinpetkovski/masterlista/';
+    var xotelUrl = 'https://discord.gg/DzBQASu7mU';
+
+    var miniFooter = document.createElement('div');
+    miniFooter.className = 'site-mini-footer';
+    miniFooter.innerHTML =
+        '<a class="site-mini-footer__logo-link" href="/" aria-label="ТопЛиста.мк">' +
+            '<img src="/logo.png" alt="ТопЛиста.мк" class="site-mini-footer__logo" width="22" height="22">' +
+        '</a>' +
+        '<div class="site-mini-footer__text">' +
+            'Развиено од <a href="' + repoUrl + '" target="_blank" rel="noopener noreferrer">Мартин</a> ' +
+            '2025-2026. Потпомогнато од заедницата на <a href="' + xotelUrl + '" target="_blank" rel="noopener noreferrer">Xotel</a>' +
+            '<br><br><a rel="license" class="site-mini-footer__license" href="https://creativecommons.org/licenses/by/4.0/">' +
+                '<img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />' +
+            '</a>' +
+        '</div>';
+
+    miniFooter.classList.add('site-mini-footer--standalone');
+    document.body.appendChild(miniFooter);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGlobalMiniFooter);
+} else {
+    initGlobalMiniFooter();
+}
+
 // ==================== SERVICE CHOOSER (shared) ====================
 
 /**
@@ -605,6 +658,37 @@ function buildServiceSearchUrl(serviceId, artist, title) {
         bandcamp:     'https://bandcamp.com/search?q=' + encoded
     };
     return searchUrls[serviceId] || null;
+}
+
+var _masterArtistNameSet = null;
+var _masterArtistNameSetPromise = null;
+
+function normalizeArtistLookupName(name) {
+    return (name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function loadMasterArtistNameSet() {
+    if (_masterArtistNameSet) return Promise.resolve(_masterArtistNameSet);
+    if (_masterArtistNameSetPromise) return _masterArtistNameSetPromise;
+
+    _masterArtistNameSetPromise = fetch('/bands.json')
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            var list = data && data.muzickaMasterLista ? data.muzickaMasterLista : [];
+            var lookupSet = new Set();
+
+            list.forEach(function(item) {
+                if (item && item.name) {
+                    lookupSet.add(normalizeArtistLookupName(item.name));
+                }
+            });
+
+            _masterArtistNameSet = lookupSet;
+            return lookupSet;
+        })
+        .catch(function() { return null; });
+
+    return _masterArtistNameSetPromise;
 }
 
 /**
@@ -667,7 +751,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
                     '<img class="service-chooser-img" id="service-chooser-img">' +
                     '<div class="service-chooser-header-text">' +
                         '<div class="service-chooser-artist" id="service-chooser-artist">' +
-                            '<span class="sc-artist-name"></span>' +
+                            '<a class="sc-artist-name sc-artist-link"></a>' +
                             '<span class="sc-verified-badge" id="sc-verified-badge" title="Потврдено од артистот" aria-label="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' +
                         '</div>' +
                         '<div class="service-chooser-song" id="service-chooser-song"></div>' +
@@ -705,13 +789,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var primaryAccent = useColor && accentColors && accentColors.length > 0 ? normalizeHexColor(accentColors[0]) : null;
     var secondaryAccent = useColor && accentColors && accentColors.length > 1 ? normalizeHexColor(accentColors[1]) : null;
 
-    if (primaryAccent) {
-        var lighterPrimary = shadeHexColor(primaryAccent, 18) || primaryAccent;
-        var darkerPrimary = shadeHexColor(primaryAccent, -14) || primaryAccent;
-        headerEl.style.background = 'linear-gradient(135deg, ' + lighterPrimary + ', ' + darkerPrimary + ')';
-    } else {
-        headerEl.style.background = '';
-    }
+    // Header gradient is applied after dark/light theme detection below
 
     // Thumbnail
     if (thumbnail) {
@@ -724,9 +802,28 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
 
     var artistNameSpan = artistEl.querySelector('.sc-artist-name');
     var verifiedBadge = document.getElementById('sc-verified-badge');
-    if (artistNameSpan) artistNameSpan.textContent = artistName || '';
+    if (artistNameSpan) {
+        artistNameSpan.textContent = artistName || '';
+        artistNameSpan.removeAttribute('href');
+        artistNameSpan.removeAttribute('target');
+        artistNameSpan.removeAttribute('rel');
+    }
     if (verifiedBadge) verifiedBadge.style.display = verified ? 'inline-flex' : 'none';
     songEl.textContent = title || 'Отвори во...';
+
+    var lookupArtist = (artistName || '').trim();
+    if (lookupArtist) {
+        artistEl.dataset.lookupArtist = lookupArtist;
+        loadMasterArtistNameSet().then(function(artistSet) {
+            if (!artistSet || !artistNameSpan) return;
+            if (artistEl.dataset.lookupArtist !== lookupArtist) return;
+
+            if (artistSet.has(normalizeArtistLookupName(lookupArtist))) {
+                artistNameSpan.setAttribute('href', getArtistPageUrl(lookupArtist));
+            }
+        });
+    }
+
     if (secondaryAccent) {
         chooserEl.style.border = '2px solid ' + secondaryAccent;
     } else {
@@ -754,6 +851,16 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         }
     }
     overlay.classList.toggle('sc-dark', isDark);
+
+    // Apply accent gradient: true accent → darker in dark mode, lighter in light mode
+    if (primaryAccent) {
+        var shadeEnd = isDark
+            ? (shadeHexColor(primaryAccent, -22) || primaryAccent)
+            : (shadeHexColor(primaryAccent, 22) || primaryAccent);
+        headerEl.style.background = 'linear-gradient(135deg, ' + primaryAccent + ', ' + shadeEnd + ')';
+    } else {
+        headerEl.style.background = '';
+    }
 
     // Build service links
     var pref = getPreferredService();

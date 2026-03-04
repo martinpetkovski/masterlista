@@ -1704,6 +1704,13 @@ body.vfx-dark .service-chooser,
     min-width: 0; max-width: calc(100% - 1rem);
     overflow: hidden; text-overflow: ellipsis;
 }
+.service-chooser-artist .sc-artist-link {
+    color: inherit;
+    text-decoration: none;
+}
+.service-chooser-artist .sc-artist-link:hover {
+    text-decoration: underline;
+}
 .sc-verified-badge {
     flex-shrink: 0; font-size: 0.7rem; line-height: 1;
     color: currentColor; margin-left: 0.05rem; display: none;
