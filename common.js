@@ -663,6 +663,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         overlay.innerHTML =
             '<div class="service-chooser">' +
                 '<div class="service-chooser-header" id="service-chooser-header">' +
+                    '<button type="button" class="service-chooser-close" id="service-chooser-close" aria-label="Затвори">×</button>' +
                     '<img class="service-chooser-img" id="service-chooser-img">' +
                     '<div class="service-chooser-header-text">' +
                         '<div class="service-chooser-artist" id="service-chooser-artist">' +
@@ -682,6 +683,14 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeServiceChooserDialog(true);
         });
+        var closeBtn = overlay.querySelector('#service-chooser-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeServiceChooserDialog(true);
+            });
+        }
     }
 
     var headerEl  = document.getElementById('service-chooser-header');

@@ -1612,13 +1612,19 @@ body.dark-mode .cancel-band-btn:hover {
 .service-chooser-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0);
     z-index: 10000; align-items: center; justify-content: center;
-    transition: background 0.25s ease;
+    transition: background 0.25s ease, backdrop-filter 0.25s ease;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
 }
-.service-chooser-overlay.visible { display: flex; background: rgba(0,0,0,0.4); }
+.service-chooser-overlay.visible {
+    display: flex; background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
 /* --- open animation --- */
 .service-chooser {
     background: #fff; border-radius: 0; min-width: 260px;
-    max-width: 340px; width: calc(100vw - 2rem);
+    max-width: 96vw; width: calc(100vw - 1rem);
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     font-family: 'Inter', sans-serif; overflow: hidden;
     opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px);
@@ -1669,15 +1675,23 @@ body.dark-mode .service-chooser,
 body.vfx-dark .service-chooser,
 .service-chooser-overlay.sc-dark .service-chooser { background: #1a1c24; }
 .service-chooser-header {
+    position: relative;
     display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.85rem 1rem; background: #333;
+    padding: 0.85rem 3rem 0.85rem 1rem; background: #333;
 }
+.service-chooser-close {
+    position: absolute; top: 0.55rem; right: 0.7rem;
+    border: none; background: transparent; color: #fff;
+    font-size: 1.4rem; line-height: 1; cursor: pointer;
+    opacity: 0.9; padding: 0.1rem 0.2rem;
+}
+.service-chooser-close:hover { opacity: 1; }
 .service-chooser-img {
-    width: 44px; height: 44px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
+    width: 66px; height: 66px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
 }
 .service-chooser-header-text { min-width: 0; flex: 1; }
 .service-chooser-artist {
-    font-size: 0.72rem; opacity: 0.85; color: #fff;
+    font-size: 1.08rem; opacity: 0.85; color: #fff;
     white-space: nowrap;
     display: flex; align-items: center; gap: 0.35rem;
 }
@@ -1690,17 +1704,17 @@ body.vfx-dark .service-chooser,
     color: currentColor; margin-left: 0.05rem; display: none;
 }
 .service-chooser-song {
-    font-size: 0.88rem; font-weight: 600; color: #fff;
+    font-size: 1.32rem; font-weight: 600; color: #fff;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .service-chooser-links {
     display: flex; flex-direction: column; gap: 0.4rem; padding: 0.75rem 1rem 1rem;
 }
 .service-chooser-links a {
-    display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem;
+    display: flex; align-items: center; gap: 1.125rem; padding: 0.9rem 1.125rem;
     border-radius: 8px; text-decoration: none; color: #333;
     background: rgba(0,0,0,0.04); transition: background 0.15s;
-    font-size: 0.85rem;
+    font-size: 1.275rem;
 }
 body.dark-mode .service-chooser-links a,
 body.vfx-dark .service-chooser-links a,
@@ -1709,7 +1723,7 @@ body.vfx-dark .service-chooser-links a,
 body.dark-mode .service-chooser-links a:hover,
 body.vfx-dark .service-chooser-links a:hover,
 .service-chooser-overlay.sc-dark .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
-.service-chooser-links a i { width: 20px; text-align: center; font-size: 1.1rem; }
+.service-chooser-links a i { width: 30px; text-align: center; font-size: 1.65rem; }
 .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
 .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
 
