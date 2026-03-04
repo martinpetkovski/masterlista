@@ -1813,11 +1813,11 @@ a.chart-history-item {
             const artistUrl = `https://toplista.mk/${encodeURIComponent(generateSlug(artist.name))}`;
             document.getElementById('canonical-url').href = artistUrl;
             document.getElementById('og-url').content = artistUrl;
-            document.getElementById('og-title').content = `${artist.name} | MMM`;
-            document.getElementById('og-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
+            document.getElementById('og-title').content = `${artist.name} | ТопЛиста.мк`;
+            document.getElementById('og-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
             document.getElementById('twitter-url').content = artistUrl;
-            document.getElementById('twitter-title').content = `${artist.name} | MMM`;
-            document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}`;
+            document.getElementById('twitter-title').content = `${artist.name} | ТопЛиста.мк`;
+            document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
             
             // Update browser URL to clean URL (if not already clean) - only in production
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';

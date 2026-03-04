@@ -85,14 +85,14 @@ const STATIC_PATHS = new Set([
   '/kustosi', '/kustosi.html', '/iznenadi-me', '/iznenadi-me.html',
   '/za', '/za.html', '/privatnost', '/privatnost.html',
   '/uslovi', '/uslovi.html', '/admin', '/admin.html',
-  '/artist', '/artist.html', '/kustos.html', '/nastan.html', '/404.html',
+  '/404.html',
   '/robots.txt', '/sitemap.xml', '/CNAME',
   '/desktop.css', '/mobile.css', '/script.js', '/spotify-api.js',
   '/bands.json', '/chart-data.json', '/curators-tracklists.json',
   '/curators.json', '/events.json', '/articles.json', '/rss-feeds.json',
   '/favicon.svg', '/og-image.svg', '/og-image.png', '/logo.png',
   '/apple-touch-icon.png', '/mmm-drafts.js', '/tour.js',
-  '/alternativna', '/site-vreminja', '/napredno',
+  '/napredno',
 ]);
 
 const STATIC_DIR_PREFIXES = ['/chart-history/', '/scripts/', '/workers/', '/greetings/'];
@@ -171,6 +171,8 @@ function buildOgHtml({ title, description, image, url, type = 'website' }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:image" content="${esc(image)}">
+<meta property="og:image:width" content="640">
+<meta property="og:image:height" content="640">
 <meta property="og:locale" content="mk_MK">
 <meta property="og:site_name" content="Топ Листа МК">
 <meta property="twitter:card" content="summary_large_image">
@@ -182,6 +184,62 @@ function buildOgHtml({ title, description, image, url, type = 'website' }) {
 </head>
 <body></body>
 </html>`;
+}
+
+// --------------- Response helper ---------------
+const OG_HEADERS = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' };
+
+function ogResponse(opts) {
+  return new Response(buildOgHtml(opts), { status: 200, headers: OG_HEADERS });
+}
+
+// --------------- Entity OG builders ---------------
+async function handleArtist(searchParam) {
+  const data = await getBands();
+  const artist = findArtist(data.muzickaMasterLista || [], searchParam);
+  if (!artist) return null;
+
+  return ogResponse({
+    title: `${artist.name} | ТопЛиста.мк`,
+    description: `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`,
+    image: artist.image || DEFAULT_OG_IMAGE,
+    url: `${SITE_URL}/${encodeURIComponent(generateSlug(artist.name))}`,
+    type: 'profile',
+  });
+}
+
+async function handleCurator(searchParam) {
+  const data = await getCurators();
+  const curators = data.curators || [];
+  const curator = curators.find(c => generateSlug(c.name) === searchParam)
+    || curators.find(c => c.name === searchParam || c.name.toLowerCase() === searchParam.toLowerCase());
+  if (!curator) return null;
+
+  return ogResponse({
+    title: `${curator.name} — Кустос | ТопЛиста.мк`,
+    description: `Курирана плејлиста од ${curator.name}`,
+    image: curator.image || DEFAULT_OG_IMAGE,
+    url: `${SITE_URL}/kustos/${generateSlug(curator.name)}`,
+    type: 'profile',
+  });
+}
+
+async function handleEvent(eventId) {
+  const data = await getEvents();
+  const events = data.events || [];
+  const event = events.find(e => e.id === eventId);
+  if (!event) return null;
+
+  const datePart = event.date ? ` (${event.date})` : '';
+  const placePart = event.place ? ` — ${event.place}` : '';
+
+  return ogResponse({
+    title: `${event.title}${datePart} | ТопЛиста.мк`,
+    description: `${event.title}${placePart}${datePart}`,
+    image: DEFAULT_OG_IMAGE,
+    url: `${SITE_URL}/nastan/${encodeURIComponent(event.id)}`,
+    type: 'event',
+  });
 }
 
 // --------------- Main handler ---------------
@@ -197,85 +255,97 @@ export default {
     const url = new URL(request.url);
     const rawPath = url.pathname;
 
-    // Skip static assets and known pages — let origin handle them
-    if (STATIC_PATHS.has(rawPath)) return fetch(request);
-    if (STATIC_DIR_PREFIXES.some(d => rawPath.startsWith(d))) return fetch(request);
-    // Skip anything with a file extension (css, js, json, png, jpg, svg, etc.)
-    if (/\.[a-zA-Z0-9]{2,5}$/.test(rawPath)) return fetch(request);
-
-    const path = decodeURIComponent(rawPath);
-
     try {
+      // ==================== .html?param pages (redirect targets) ====================
+      // Crawlers may follow the 404.html JS redirect → artist.html?a=slug etc.
+      // Handle these BEFORE the static-path skip so crawlers still get proper OG tags.
+
+      if (rawPath === '/artist.html' || rawPath === '/artist') {
+        const artistParam = url.searchParams.get('a');
+        if (artistParam) {
+          const resp = await handleArtist(decodeURIComponent(artistParam));
+          if (resp) return resp;
+        }
+        // No param or artist not found → pass through (shows generic artist page)
+        return fetch(request);
+      }
+
+      if (rawPath === '/kustos.html') {
+        const nameParam = url.searchParams.get('name');
+        if (nameParam) {
+          const resp = await handleCurator(decodeURIComponent(nameParam));
+          if (resp) return resp;
+        }
+        return fetch(request);
+      }
+
+      if (rawPath === '/nastan.html') {
+        const idParam = url.searchParams.get('id');
+        if (idParam) {
+          const resp = await handleEvent(decodeURIComponent(idParam));
+          if (resp) return resp;
+        }
+        return fetch(request);
+      }
+
+      // ==================== Charts page ====================
+      if (rawPath === '/charts' || rawPath === '/charts.html') {
+        return ogResponse({
+          title: 'Македонска Музичка Топ Листа | ТопЛиста.мк',
+          description: 'Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена.',
+          image: DEFAULT_OG_IMAGE,
+          url: `${SITE_URL}/charts`,
+        });
+      }
+
+      // ==================== Chart preset routes ====================
+      if (rawPath === '/alternativna') {
+        return ogResponse({
+          title: 'Алтернативна Топ Листа | ТопЛиста.мк',
+          description: 'Топ листа на најпопуларни македонски алтернативни песни.',
+          image: DEFAULT_OG_IMAGE,
+          url: `${SITE_URL}/alternativna`,
+        });
+      }
+      if (rawPath === '/site-vreminja') {
+        return ogResponse({
+          title: 'Топ Листа — Сите Времиња | ТопЛиста.мк',
+          description: 'Најпопуларните македонски песни од сите времиња.',
+          image: DEFAULT_OG_IMAGE,
+          url: `${SITE_URL}/site-vreminja`,
+        });
+      }
+
+      // Skip static assets and known pages — let origin handle them
+      if (STATIC_PATHS.has(rawPath)) return fetch(request);
+      if (STATIC_DIR_PREFIXES.some(d => rawPath.startsWith(d))) return fetch(request);
+      // Skip anything with a file extension (css, js, json, png, jpg, svg, etc.)
+      if (/\.[a-zA-Z0-9]{2,5}$/.test(rawPath)) return fetch(request);
+
+      const path = decodeURIComponent(rawPath);
+
       // ==================== CURATOR: /kustos/{slug} ====================
       if (path.startsWith('/kustos/')) {
         const slug = path.substring('/kustos/'.length).replace(/\/$/, '');
         if (!slug) return fetch(request);
-
-        const data = await getCurators();
-        const curators = data.curators || [];
-        // Match by transliterated slug, then fallback to exact/case-insensitive name
-        const curator = curators.find(c => generateSlug(c.name) === slug)
-          || curators.find(c => c.name === slug || c.name.toLowerCase() === slug.toLowerCase());
-
-        if (!curator) return fetch(request);
-
-        return new Response(
-          buildOgHtml({
-            title: `${curator.name} — Кустос | ТопЛиста.мк`,
-            description: `Курирана плејлиста од ${curator.name}`,
-            image: curator.image || DEFAULT_OG_IMAGE,
-            url: `${SITE_URL}/kustos/${generateSlug(curator.name)}`,
-            type: 'profile',
-          }),
-          { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } },
-        );
+        const resp = await handleCurator(slug);
+        return resp || fetch(request);
       }
 
       // ==================== EVENT: /nastan/{id} ====================
       if (path.startsWith('/nastan/')) {
         const eventId = path.substring('/nastan/'.length).replace(/\/$/, '');
         if (!eventId) return fetch(request);
-
-        const data = await getEvents();
-        const events = data.events || [];
-        const event = events.find(e => e.id === eventId);
-
-        if (!event) return fetch(request);
-
-        const datePart = event.date ? ` (${event.date})` : '';
-        const placePart = event.place ? ` — ${event.place}` : '';
-
-        return new Response(
-          buildOgHtml({
-            title: `${event.title}${datePart} | ТопЛиста.мк`,
-            description: `${event.title}${placePart}${datePart}`,
-            image: DEFAULT_OG_IMAGE,
-            url: `${SITE_URL}/nastan/${encodeURIComponent(event.id)}`,
-            type: 'event',
-          }),
-          { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } },
-        );
+        const resp = await handleEvent(eventId);
+        return resp || fetch(request);
       }
 
       // ==================== ARTIST: /{slug} ====================
       const slug = path.substring(1).replace(/\/$/, '');
       if (!slug || slug.includes('/')) return fetch(request);
 
-      const data = await getBands();
-      const artist = findArtist(data.muzickaMasterLista || [], slug);
-
-      if (!artist) return fetch(request);
-
-      return new Response(
-        buildOgHtml({
-          title: `${artist.name} | ТопЛиста.мк`,
-          description: `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`,
-          image: artist.image || DEFAULT_OG_IMAGE,
-          url: `${SITE_URL}/${encodeURIComponent(generateSlug(artist.name))}`,
-          type: 'profile',
-        }),
-        { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } },
-      );
+      const resp = await handleArtist(slug);
+      return resp || fetch(request);
     } catch (err) {
       // On any error, fall through to origin so the user still sees the page
       console.error('OG worker error:', err);
