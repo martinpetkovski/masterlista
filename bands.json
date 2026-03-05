@@ -12020,8 +12020,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#1d9bf0",
+        "#ff922b"
+      ],
+      "confirmed": true,
       "image": "https://yt3.googleusercontent.com/NYYgnW4otY3RCbfbsnjW9tx4a6RYcY2jycGjz21adscnEDpK6yFYjZ21iKV-aTmZ2o_UlFxayw=s900-c-k-c0x00ffffff-no-rj",
       "imageSource": "youtube"
     },
