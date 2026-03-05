@@ -136,7 +136,7 @@
                      "Горан Пајак Трифуновски":  {
                                                      "playlists":  [
                                                                        {
-                                                                           "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20516",
+                                                                           "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20517",
                                                                            "url":  "https://youtube.com/playlist?list=PL1qijBqGdIrPlCWyF8_BkTYQ3M4uJOHeV\u0026si=a7qQlYxYIaUr88Ny",
                                                                            "tracks":  [
                                                                                           {
@@ -901,6 +901,17 @@
                                                                                        "previewUrl":  "https://p.scdn.co/mp3-preview/a9e10a032c91336f8ed0e24dc22610b7cfef213c"
                                                                                    },
                                                                                    {
+                                                                                       "artist":  "After",
+                                                                                       "album":  "",
+                                                                                       "durationMs":  221448,
+                                                                                       "trackId":  "72SUk8t3c6OqAAGVLVKijc",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/72SUk8t3c6OqAAGVLVKijc",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000b27343e4daa7549743fc58fe93f5",
+                                                                                       "title":  "The Element",
+                                                                                       "duration":  "3:41",
+                                                                                       "previewUrl":  "https://p.scdn.co/mp3-preview/80011e2b85710a2e8b8fb4bdd5041d9b3989591f"
+                                                                                   },
+                                                                                   {
                                                                                        "artist":  "Boksa, Lara Ivanova",
                                                                                        "album":  "",
                                                                                        "durationMs":  186666,
@@ -1163,7 +1174,7 @@
                                                                                           "image":  "https://i.scdn.co/image/ab67616d0000b273f50080f094264011260c3bbb",
                                                                                           "title":  "Shanghai",
                                                                                           "duration":  "4:00",
-                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3?hdnea=exp=1772644139~acl=/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3*~data=user_id=0,application_id=42~hmac=fbdb91daa824ef7f0ae775d05ae3c8a4cf78b1b1555d0f3d2601ee8616152d92"
+                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3?hdnea=exp=1772728916~acl=/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3*~data=user_id=0,application_id=42~hmac=48c1a25456d1b51840b46fa48890d055abd6fe943d66dd33b47068f3815c8cf3"
                                                                                       },
                                                                                       {
                                                                                           "artist":  "Idris Muhammad",
@@ -1240,7 +1251,7 @@
                                                                                           "image":  "https://i.scdn.co/image/ab67616d0000b273446e2a8d6c2fca7fbb249edc",
                                                                                           "title":  "Honey",
                                                                                           "duration":  "4:33",
-                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3?hdnea=exp=1772644140~acl=/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3*~data=user_id=0,application_id=42~hmac=974864e16eb3ef5acfc21116d04cdc1d405c961f06b489d274662a7de488a261"
+                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3?hdnea=exp=1772728916~acl=/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3*~data=user_id=0,application_id=42~hmac=2c02eafbe084b4761d4490a3bed51883f3b0092c5e2f39934df94f5989421d78"
                                                                                       },
                                                                                       {
                                                                                           "artist":  "Art of Sleeping",
@@ -2151,5 +2162,5 @@
                                                                ]
                                              }
                  },
-    "generatedAt":  "2026-03-04T16:53:58Z"
+    "generatedAt":  "2026-03-05T16:26:55Z"
 }
