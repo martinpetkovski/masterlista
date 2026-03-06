@@ -2550,17 +2550,64 @@ a.chart-history-item {
             const firstWeek = weeklyData[0].week.replace(/^\d{4}-/, '');
             const lastWeek = weeklyData[weeklyData.length - 1].week.replace(/^\d{4}-/, '');
             
-            // Create dots for each data point - highlight new releases with green
+            // Create dots for weekly data points
             const dotsHtml = points.map(p => {
-                if (p.newReleases.length > 0) {
-                    // New release marker - green dot with label
-                    return `
-                        <circle cx="${p.x}" cy="${p.y}" r="6" fill="#22c55e" stroke="var(--bg-primary)" stroke-width="2"/>
-                        <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" fill="#22c55e" font-size="7" font-weight="bold">НОВО</text>
-                    `;
-                }
-                return `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="2"/>`;
+                return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5"/>`;
             }).join('');
+
+            // Create release date dots with sub-week interpolation
+            // Use string-based date range from ISO weeks to avoid timezone issues
+            let releaseDotsHtml = '';
+            if (points.length >= 2) {
+                const weekMondays = weeklyData.map(d => isoWeekToMonday(d.week));
+                // Compute first/last date as ISO strings for clean comparison
+                const firstMon = weekMondays[0];
+                const firstDateStr = `${firstMon.getFullYear()}-${String(firstMon.getMonth()+1).padStart(2,'0')}-${String(firstMon.getDate()).padStart(2,'0')}`;
+                const lastMon = weekMondays[weekMondays.length - 1];
+                const lastSun = new Date(lastMon);
+                lastSun.setDate(lastMon.getDate() + 6);
+                const lastDateStr = `${lastSun.getFullYear()}-${String(lastSun.getMonth()+1).padStart(2,'0')}-${String(lastSun.getDate()).padStart(2,'0')}`;
+
+                const releases = Array.from(artistHistory.releases.values());
+                releases.forEach(rel => {
+                    if (!rel.releaseDate) return;
+                    // Pure string comparison — no timezone ambiguity
+                    if (rel.releaseDate < firstDateStr || rel.releaseDate > lastDateStr) return;
+
+                    // Parse date for fractional positioning
+                    const rdParts = rel.releaseDate.split('-');
+                    const rd = new Date(parseInt(rdParts[0]), parseInt(rdParts[1]) - 1, parseInt(rdParts[2]));
+
+                    let fracIdx = 0;
+                    if (rd <= weekMondays[0]) {
+                        fracIdx = 0;
+                    } else if (rd >= weekMondays[weekMondays.length - 1]) {
+                        fracIdx = weekMondays.length - 1;
+                    } else {
+                        for (let j = 0; j < weekMondays.length - 1; j++) {
+                            if (rd >= weekMondays[j] && rd < weekMondays[j + 1]) {
+                                const totalMs = weekMondays[j + 1] - weekMondays[j];
+                                const elapsedMs = rd - weekMondays[j];
+                                fracIdx = j + elapsedMs / totalMs;
+                                break;
+                            }
+                        }
+                    }
+                    fracIdx = Math.max(0, Math.min(fracIdx, points.length - 1));
+
+                    const idx = Math.min(Math.floor(fracIdx), points.length - 2);
+                    const frac = fracIdx - idx;
+                    const nextIdx = Math.min(idx + 1, points.length - 1);
+                    const dotX = points[idx].x + frac * (points[nextIdx].x - points[idx].x);
+                    const dotY = points[idx].y + frac * (points[nextIdx].y - points[idx].y);
+
+                    releaseDotsHtml += `
+                        <line x1="${dotX}" y1="${padding}" x2="${dotX}" y2="${height - padding}" stroke="#22c55e" stroke-width="0.7" opacity="0.35" stroke-dasharray="2,2"/>
+                        <circle cx="${dotX}" cy="${dotY}" r="5" fill="#22c55e" stroke="var(--bg-primary)" stroke-width="2"/>
+                        <text x="${dotX}" y="${dotY - 8}" text-anchor="middle" fill="#22c55e" font-size="8" font-weight="bold">${rel.releaseTitle.length > 14 ? rel.releaseTitle.slice(0, 13) + '…' : rel.releaseTitle}</text>
+                    `;
+                });
+            }
             
             // Y-axis labels (min and max)
             const yAxisLabels = `
@@ -2601,6 +2648,7 @@ a.chart-history-item {
                             <path d="${areaD}" fill="url(#areaGradient)" />
                             <path d="${pathD}" fill="none" stroke="var(--accent-orange)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             ${dotsHtml}
+                            ${releaseDotsHtml}
                         </svg>
                         <div class="graph-labels">
                             <span style="margin-left: 25px;">${firstWeek}</span>
@@ -2615,6 +2663,18 @@ a.chart-history-item {
             container.classList.add('section-loaded');
         }
         
+        // Convert ISO week string (e.g. "2026-W03") to Monday date
+        function isoWeekToMonday(weekId) {
+            const m = weekId.match(/(\d{4})-W(\d{2})/);
+            if (!m) return new Date(0);
+            const year = parseInt(m[1]), week = parseInt(m[2]);
+            const jan4 = new Date(year, 0, 4);
+            const dow = jan4.getDay() || 7;
+            const mon = new Date(jan4);
+            mon.setDate(jan4.getDate() + (week - 1) * 7 - dow + 1);
+            return mon;
+        }
+
         // Render releases section
         function renderReleases(artistHistory, artistLinks) {
             const container = document.getElementById('chart-history-container');
