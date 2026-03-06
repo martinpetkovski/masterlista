@@ -3812,7 +3812,10 @@
                         const hasPrecomputed = release.positionChange !== undefined || release.popularityChange !== undefined;
                         const prev = hasPrecomputed ? null : previousMap[release.releaseId];
                         
-                        if (hasPrecomputed && release.isNewEntry !== true) {
+                        if (hasPrecomputed && release.isNewEntry === true) {
+                            changeIndicator = 'rank-up';
+                            popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
+                        } else if (hasPrecomputed) {
                             const posChange = release.positionChange || 0;
                             if (posChange > 0) {
                                 changeIndicator = 'rank-up';
@@ -3848,6 +3851,10 @@
                             } else {
                                 popChangeIndicator = '';
                             }
+                        } else {
+                            // New entry (no previous data) — show as up
+                            changeIndicator = 'rank-up';
+                            popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
                         }
                     }
                     
