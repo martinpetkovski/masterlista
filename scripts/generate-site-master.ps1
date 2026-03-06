@@ -281,7 +281,16 @@ function Build-ChartRanking {
     }
     
     $sorted = @(Sort-ChartRanking @($pool))
-    return @($sorted | Select-Object -First $count)
+    
+    # Limit to at most 2 releases per artist
+    $artistCount = @{}
+    $limited = @($sorted | Where-Object {
+        $key = $_.bandName.ToLower().Trim()
+        $artistCount[$key] = ($artistCount[$key] -as [int]) + 1
+        $artistCount[$key] -le 2
+    })
+    
+    return @($limited | Select-Object -First $count)
 }
 
 # ============================================================================

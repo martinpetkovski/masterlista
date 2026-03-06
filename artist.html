@@ -2763,9 +2763,10 @@ a.chart-history-item {
                 
                 // Build VU meter with popularity to the right
                 let vuMeterHtml = '';
-                if (release.chartWeeks && release.chartWeeks.length >= 1) {
-                    const weeks = release.chartWeeks.sort((a, b) => a.week.localeCompare(b.week));
-                    const peakPop = Math.max(...weeks.map(w => w.popularity));
+                const peakPop = (release.chartWeeks && release.chartWeeks.length >= 1)
+                    ? Math.max(...release.chartWeeks.map(w => w.popularity))
+                    : (release.popularity || 0);
+                if (peakPop > 0) {
                     const totalSegs = 16;
                     const litSegs = artistHistory.peakPopularity > 0 ? Math.max(1, Math.round((peakPop / artistHistory.peakPopularity) * totalSegs)) : 0;
                     let segs = '';
@@ -2811,7 +2812,7 @@ a.chart-history-item {
                 <div class="chart-history-section">
                     <h3 class="section-title">
                         <i class="fas fa-compact-disc"></i>
-                        Изданија
+                        Изданија <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
                     </h3>
                     <div class="chart-history-list">
                         ${releasesHtml}

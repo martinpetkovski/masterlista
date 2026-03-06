@@ -249,6 +249,14 @@ function buildChartRanking(releases, opts) {
 
     pool.sort(chartSort);
 
+    // Limit to at most 2 releases per artist
+    var artistCount = {};
+    pool = pool.filter(function(r) {
+        var key = (r.bandName || '').toLowerCase().trim();
+        artistCount[key] = (artistCount[key] || 0) + 1;
+        return artistCount[key] <= 2;
+    });
+
     return pool.slice(0, count);
 }
 

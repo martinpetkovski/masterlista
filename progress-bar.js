@@ -15,11 +15,7 @@
 (function () {
     /* ── Inline fallback messages (used until JSON fetch completes) ── */
     var fallbackMessages = [
-        'Ги штимуваме гитарите...',
-        'Го будиме DJ-от...',
-        'Правиме саундчек...',
-        'Ги бараме изгубените медијатори...',
-        'Вчитуваме 100% македонска музика...'
+        'Вчитување...'
     ];
 
     var messages = fallbackMessages.slice();
