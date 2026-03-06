@@ -104,7 +104,8 @@ async function fetchJson(url) {
     cf: { cacheTtl: 300, cacheEverything: true },
   });
   if (!resp.ok) throw new Error(`Fetch failed: ${url} (${resp.status})`);
-  return resp.json();
+  const text = await resp.text();
+  return JSON.parse(text.replace(/^\uFEFF/, ''));
 }
 
 async function getBands() {
@@ -171,15 +172,15 @@ function buildOgHtml({ title, description, image, url, type = 'website' }) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:image" content="${esc(image)}">
-<meta property="og:image:width" content="640">
-<meta property="og:image:height" content="640">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
 <meta property="og:locale" content="mk_MK">
 <meta property="og:site_name" content="Топ Листа МК">
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="${esc(url)}">
-<meta property="twitter:title" content="${esc(title)}">
-<meta property="twitter:description" content="${esc(description)}">
-<meta property="twitter:image" content="${esc(image)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="${esc(url)}">
+<meta name="twitter:title" content="${esc(title)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${esc(image)}">
 <link rel="canonical" href="${esc(url)}">
 </head>
 <body></body>
