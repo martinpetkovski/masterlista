@@ -9,5 +9,11 @@ instagram-credentials.json
 bands.json.backup
 .ig-temp/
 
+# Tools (ffmpeg, yt-dlp binaries)
+tools/
+
+# Generated chart videos
+chart-videos/
+
 # Node
 node_modules/

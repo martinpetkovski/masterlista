@@ -136,7 +136,7 @@
                      "Горан Пајак Трифуновски":  {
                                                      "playlists":  [
                                                                        {
-                                                                           "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20517",
+                                                                           "image":  "https://i.ytimg.com/vi/IRNUc4iYYv4/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=\u0026amp;rs=AOn4CLBOtDL3qW0aG-5b0KmgIbnWk19CbQ\u0026amp;days_since_epoch=20518",
                                                                            "url":  "https://youtube.com/playlist?list=PL1qijBqGdIrPlCWyF8_BkTYQ3M4uJOHeV\u0026si=a7qQlYxYIaUr88Ny",
                                                                            "tracks":  [
                                                                                           {
@@ -769,6 +769,17 @@
                                                                                        "previewUrl":  "https://p.scdn.co/mp3-preview/8d001e41a5c66956aa35b7a34855e269830e2a0d"
                                                                                    },
                                                                                    {
+                                                                                       "artist":  "After",
+                                                                                       "album":  "",
+                                                                                       "durationMs":  221448,
+                                                                                       "trackId":  "72SUk8t3c6OqAAGVLVKijc",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/72SUk8t3c6OqAAGVLVKijc",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000b27343e4daa7549743fc58fe93f5",
+                                                                                       "title":  "The Element",
+                                                                                       "duration":  "3:41",
+                                                                                       "previewUrl":  "https://p.scdn.co/mp3-preview/80011e2b85710a2e8b8fb4bdd5041d9b3989591f"
+                                                                                   },
+                                                                                   {
                                                                                        "artist":  "Jamiroquai",
                                                                                        "album":  "",
                                                                                        "durationMs":  278240,
@@ -778,17 +789,6 @@
                                                                                        "title":  "Hot Tequila Brown",
                                                                                        "duration":  "4:38",
                                                                                        "previewUrl":  "https://p.scdn.co/mp3-preview/5b807ebf8238894658e7e8ce30e0beba6bfb8ba5"
-                                                                                   },
-                                                                                   {
-                                                                                       "artist":  "After",
-                                                                                       "album":  "",
-                                                                                       "durationMs":  180672,
-                                                                                       "trackId":  "2Gu2H8HRVuV9GOneJuYV5D",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/2Gu2H8HRVuV9GOneJuYV5D",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000b27393246252c958e855b6cb5cbb",
-                                                                                       "title":  "Ever",
-                                                                                       "duration":  "3:00",
-                                                                                       "previewUrl":  "https://p.scdn.co/mp3-preview/a9bb9db40d45d079c9c8c192ec45a0cfa0547f86"
                                                                                    },
                                                                                    {
                                                                                        "artist":  "The Stone Roses",
@@ -903,13 +903,13 @@
                                                                                    {
                                                                                        "artist":  "After",
                                                                                        "album":  "",
-                                                                                       "durationMs":  221448,
-                                                                                       "trackId":  "72SUk8t3c6OqAAGVLVKijc",
-                                                                                       "trackUrl":  "https://open.spotify.com/track/72SUk8t3c6OqAAGVLVKijc",
-                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000b27343e4daa7549743fc58fe93f5",
-                                                                                       "title":  "The Element",
-                                                                                       "duration":  "3:41",
-                                                                                       "previewUrl":  "https://p.scdn.co/mp3-preview/80011e2b85710a2e8b8fb4bdd5041d9b3989591f"
+                                                                                       "durationMs":  180672,
+                                                                                       "trackId":  "2Gu2H8HRVuV9GOneJuYV5D",
+                                                                                       "trackUrl":  "https://open.spotify.com/track/2Gu2H8HRVuV9GOneJuYV5D",
+                                                                                       "image":  "https://i.scdn.co/image/ab67616d0000b27393246252c958e855b6cb5cbb",
+                                                                                       "title":  "Ever",
+                                                                                       "duration":  "3:00",
+                                                                                       "previewUrl":  "https://p.scdn.co/mp3-preview/a9bb9db40d45d079c9c8c192ec45a0cfa0547f86"
                                                                                    },
                                                                                    {
                                                                                        "artist":  "Boksa, Lara Ivanova",
@@ -1174,7 +1174,7 @@
                                                                                           "image":  "https://i.scdn.co/image/ab67616d0000b273f50080f094264011260c3bbb",
                                                                                           "title":  "Shanghai",
                                                                                           "duration":  "4:00",
-                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3?hdnea=exp=1772728916~acl=/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3*~data=user_id=0,application_id=42~hmac=48c1a25456d1b51840b46fa48890d055abd6fe943d66dd33b47068f3815c8cf3"
+                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3?hdnea=exp=1772816250~acl=/api/1/1/6/c/e/0/6ce6fcdc77cc706d5724a52ee5b32ead.mp3*~data=user_id=0,application_id=42~hmac=7a2a80c8a60c6ee7d7e712ba92e938c7cf893214833f57533c0ce4dd69d13819"
                                                                                       },
                                                                                       {
                                                                                           "artist":  "Idris Muhammad",
@@ -1251,7 +1251,7 @@
                                                                                           "image":  "https://i.scdn.co/image/ab67616d0000b273446e2a8d6c2fca7fbb249edc",
                                                                                           "title":  "Honey",
                                                                                           "duration":  "4:33",
-                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3?hdnea=exp=1772728916~acl=/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3*~data=user_id=0,application_id=42~hmac=2c02eafbe084b4761d4490a3bed51883f3b0092c5e2f39934df94f5989421d78"
+                                                                                          "previewUrl":  "https://cdnt-preview.dzcdn.net/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3?hdnea=exp=1772816251~acl=/api/1/1/4/d/5/0/4d5f867b34de32e704ecefb92fdcae1f.mp3*~data=user_id=0,application_id=42~hmac=01159abe14f48238e30ead7a669700ac54a186503b70fb8d8f953f967321cb1e"
                                                                                       },
                                                                                       {
                                                                                           "artist":  "Art of Sleeping",
@@ -2162,5 +2162,5 @@
                                                                ]
                                              }
                  },
-    "generatedAt":  "2026-03-05T16:26:55Z"
+    "generatedAt":  "2026-03-06T16:42:29Z"
 }
