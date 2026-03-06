@@ -1196,23 +1196,62 @@ a.chart-history-item {
             opacity: 0.5;
         }
         
-        /* Release sparkline */
-        .release-sparkline {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 16px;
-            pointer-events: none;
-            opacity: 0.35;
-            overflow: hidden;
-            border-radius: 0 0 7px 7px;
+        /* VU Meter for releases */
+        .vu-meter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
         }
         
-        .release-sparkline svg {
-            width: 100%;
+        .vu-meter {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5px;
+            height: 10px;
+        }
+        
+        .vu-seg {
+            width: 4px;
             height: 100%;
-            display: block;
+            border-radius: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .vu-seg--off {
+            opacity: 0.12;
+        }
+        
+        body.dark-mode .vu-seg--off {
+            opacity: 0.18;
+        }
+        
+        .vu-seg--on {
+            opacity: 0.9;
+            box-shadow: 0 0 3px currentColor;
+        }
+        
+        .vu-pop-value {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 1.2em;
+            opacity: 0.75;
+        }
+        
+        .release-new-badge {
+            display: inline-block;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            background: #ef4444;
+            color: #fff;
+            margin-left: 0.3rem;
+            vertical-align: middle;
+            line-height: 1;
         }
         
         /* Popularity Graph */
@@ -2680,9 +2719,18 @@ a.chart-history-item {
             const container = document.getElementById('chart-history-container');
             if (!container) return;
             
-            // Convert map to array and sort by most recent release date
+            // Convert map to array and sort: new releases (last 4 weeks) first, then by peak popularity
+            const fourWeeksAgo = new Date();
+            fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
             const releases = Array.from(artistHistory.releases.values())
-                .sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                .sort((a, b) => {
+                    const isNewA = new Date(a.releaseDate) >= fourWeeksAgo ? 1 : 0;
+                    const isNewB = new Date(b.releaseDate) >= fourWeeksAgo ? 1 : 0;
+                    if (isNewA !== isNewB) return isNewB - isNewA;
+                    const peakA = a.chartWeeks && a.chartWeeks.length ? Math.max(...a.chartWeeks.map(w => w.popularity)) : (a.popularity || 0);
+                    const peakB = b.chartWeeks && b.chartWeeks.length ? Math.max(...b.chartWeeks.map(w => w.popularity)) : (b.popularity || 0);
+                    return peakB - peakA;
+                });
             
             if (releases.length === 0) {
                 container.innerHTML = '';
@@ -2713,23 +2761,28 @@ a.chart-history-item {
                     </button>
                 ` : '';
                 
-                // Build mini sparkline for release popularity over chart weeks
-                let sparklineHtml = '';
-                if (release.chartWeeks && release.chartWeeks.length >= 2) {
+                // Build VU meter with popularity to the right
+                let vuMeterHtml = '';
+                if (release.chartWeeks && release.chartWeeks.length >= 1) {
                     const weeks = release.chartWeeks.sort((a, b) => a.week.localeCompare(b.week));
-                    const maxP = Math.max(...weeks.map(w => w.popularity));
-                    const minP = Math.min(...weeks.map(w => w.popularity));
-                    const sw = 200, sh = 16, sp = 1;
-                    const pts = weeks.map((w, i) => {
-                        const x = (i / (weeks.length - 1)) * sw;
-                        const normY = maxP === minP ? 0.5 : (w.popularity - minP) / (maxP - minP);
-                        const y = sh - sp - normY * (sh - sp * 2);
-                        return `${x},${y}`;
-                    });
-                    const areaPath = `M0,${sh} L${pts.map(p => p).join(' L')} L${sw},${sh} Z`;
-                    const linePath = `M${pts.join(' L')}`;
-                    sparklineHtml = `<div class="release-sparkline"><svg viewBox="0 0 ${sw} ${sh}" preserveAspectRatio="none"><path d="${areaPath}" fill="var(--accent-orange)" opacity="0.25"/><path d="${linePath}" fill="none" stroke="var(--accent-orange)" stroke-width="1" opacity="0.5"/></svg></div>`;
+                    const peakPop = Math.max(...weeks.map(w => w.popularity));
+                    const totalSegs = 16;
+                    const litSegs = artistHistory.peakPopularity > 0 ? Math.max(1, Math.round((peakPop / artistHistory.peakPopularity) * totalSegs)) : 0;
+                    let segs = '';
+                    for (let s = 0; s < totalSegs; s++) {
+                        const isOn = s < litSegs;
+                        let color;
+                        if (s < 10) color = '#4ade80';
+                        else if (s < 13) color = '#facc15';
+                        else color = '#ef4444';
+                        segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
+                    }
+                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${peakPop}</span></div>`;
                 }
+                
+                // NEW badge for releases in the last 4 weeks
+                const isNew = new Date(release.releaseDate) >= fourWeeksAgo;
+                const newBadge = isNew ? '<span class="release-new-badge">НОВО</span>' : '';
                 
                 return `
                     <div class="chart-history-item" data-release-index="${index}" style="cursor:pointer;">
@@ -2740,16 +2793,16 @@ a.chart-history-item {
                             }
                         </div>
                         <div class="chart-history-info">
-                            <div class="chart-history-title">${release.releaseTitle}</div>
+                            <div class="chart-history-title">${release.releaseTitle}${newBadge}</div>
                             <div class="chart-history-meta">
                                 <span class="chart-history-type ${typeClass}">
                                     <i class="${typeIcon}"></i> ${typeLabel}
                                 </span>
                                 <span>${dateStr}</span>
                             </div>
+                            ${vuMeterHtml}
                         </div>
                         ${playButton}
-                        ${sparklineHtml}
                     </div>
                 `;
             }).join('');
@@ -3013,8 +3066,7 @@ a.chart-history-item {
                         '.popularity-graph-container svg [id="areaGradient"] stop:last-child { stop-color: ' + c2 + ' !important; }' +
                         '.popularity-graph-container svg path[stroke] { stroke: ' + c2 + ' !important; }' +
                         '.popularity-graph-container .graph-value-label span { color: ' + c2 + ' !important; }' +
-                        '.release-sparkline svg path[fill] { fill: ' + c2 + ' !important; }' +
-                        '.release-sparkline svg path[stroke] { stroke: ' + c2 + ' !important; }' +
+                        '.vu-pop-value { color: ' + c2 + ' !important; }' +
                         '.release-play-btn { background: ' + c2 + ' !important; }' +
                         '.verified-accent .artist-link:hover { border-color: ' + c2 + '60 !important; }' +
                         '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +

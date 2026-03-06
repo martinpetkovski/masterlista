@@ -157,7 +157,7 @@ class SpotifyAPI {
     /**
      * Get artist's albums (including singles and EPs)
      */
-    async getArtistAlbums(artistId, limit = 10) {
+    async getArtistAlbums(artistId, limit = 50) {
         // Check cache
         const cached = this.cache.artistReleases.get(artistId);
         if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
@@ -363,7 +363,7 @@ class SpotifyAPI {
         }
 
         try {
-            const albums = await this.getArtistAlbums(artistId, 5);
+            const albums = await this.getArtistAlbums(artistId, 50);
             if (!albums || albums.length === 0) {
                 return null;
             }

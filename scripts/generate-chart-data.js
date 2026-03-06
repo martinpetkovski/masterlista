@@ -527,7 +527,7 @@ async function getArtistsBatch(artistIds, token) {
   return results;
 }
 
-async function getArtistAlbums(artistId, token, limit = 10) {
+async function getArtistAlbums(artistId, token, limit = 50) {
   const response = await fetchWithRetry(
     `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album,single&market=MK&limit=${limit}`,
     { headers: { 'Authorization': `Bearer ${token}` } }
@@ -711,7 +711,7 @@ async function main() {
           const band = artistMap.get(artistId);
           const artistInfo = artistsInfo[artistId];
           
-          const albums = await getArtistAlbums(artistId, spotifyToken, 10);
+          const albums = await getArtistAlbums(artistId, spotifyToken, 50);
           if (!albums?.length) return null;
           
           // Fetch full album details to get album-level popularity
