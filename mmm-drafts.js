@@ -461,6 +461,70 @@ window.MMMDrafts = (function () {
         return total;
     }
 
+    /** Get list of HTML snippets describing changed items with links */
+    function _getChangedItemNames() {
+        var all = _readAll();
+        var items = [];
+
+        if (all['bands.json'] && all['bands.json'].original) {
+            var origList = (all['bands.json'].original.muzickaMasterLista) || [];
+            var modList = (all['bands.json'].data && all['bands.json'].data.muzickaMasterLista) || [];
+            var origMap = {}; origList.forEach(function (b) { origMap[b.name] = b; });
+            var modMap = {}; modList.forEach(function (b) { modMap[b.name] = b; });
+
+            modList.forEach(function (b) {
+                var link = '/artist.html?name=' + encodeURIComponent(b.name);
+                if (!origMap[b.name]) {
+                    items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(b.name) + '</a>');
+                } else {
+                    var o = origMap[b.name];
+                    if (b.city !== o.city || b.genre !== o.genre || b.soundsLike !== o.soundsLike ||
+                        b.contact !== o.contact || b.label !== o.label || b.confirmed !== o.confirmed ||
+                        JSON.stringify(b.links) !== JSON.stringify(o.links) ||
+                        JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) {
+                        items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(b.name) + '</a>');
+                    }
+                }
+            });
+            origList.forEach(function (b) {
+                if (!modMap[b.name]) items.push('<s style="opacity:.6">' + _esc(b.name) + '</s>');
+            });
+        }
+
+        if (all['events.json'] && all['events.json'].original) {
+            var origEvts = (all['events.json'].original.events) || [];
+            var modEvts = (all['events.json'].data && all['events.json'].data.events) || [];
+            var origEvtMap = {}; origEvts.forEach(function (e) { origEvtMap[e.id] = e; });
+            var modEvtMap = {}; modEvts.forEach(function (e) { modEvtMap[e.id] = e; });
+
+            modEvts.forEach(function (e) {
+                var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                var link = isLocalhost ? '/nastan.html?id=' + encodeURIComponent(e.id) : '/nastan/' + encodeURIComponent(e.id);
+                if (!origEvtMap[e.id]) {
+                    items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(e.title) + '</a>');
+                } else {
+                    var o = origEvtMap[e.id];
+                    if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
+                        e.place !== o.place || e.link !== o.link ||
+                        JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
+                        JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
+                        items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(e.title) + '</a>');
+                    }
+                }
+            });
+            origEvts.forEach(function (e) {
+                if (!modEvtMap[e.id]) items.push('<s style="opacity:.6">' + _esc(e.title) + '</s>');
+            });
+        }
+
+        return items;
+    }
+
+    function _esc(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
     function _refreshUI() {
         if (!_barEl) return;
         var files = getPendingFiles();
@@ -469,14 +533,22 @@ window.MMMDrafts = (function () {
             _barEl.classList.add('visible');
             _badgeEl.textContent = changeCount;
 
-            // Build descriptive text
-            var labels = files.map(function (f) {
-                if (f === 'bands.json') return 'Мастер Листа';
-                if (f === 'events.json') return 'Настани';
-                return f;
-            });
-            _barEl.querySelector('.mmm-draft-bar-text').textContent =
-                'Незачувани промени: ' + labels.join(', ');
+            // Build descriptive text with specific changed items
+            var details = _getChangedItemNames();
+            var textEl = _barEl.querySelector('.mmm-draft-bar-text');
+            if (details.length > 0) {
+                var maxShow = 3;
+                var shown = details.slice(0, maxShow);
+                var rest = details.length - maxShow;
+                textEl.innerHTML = shown.join(', ') + (rest > 0 ? ' <span style="opacity:.7">+' + rest + ' уште</span>' : '');
+            } else {
+                var labels = files.map(function (f) {
+                    if (f === 'bands.json') return 'Мастер Листа';
+                    if (f === 'events.json') return 'Настани';
+                    return f;
+                });
+                textEl.textContent = 'Незачувани промени: ' + labels.join(', ');
+            }
         } else {
             _barEl.classList.remove('visible');
         }

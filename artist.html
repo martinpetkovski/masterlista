@@ -85,6 +85,14 @@
             width: 100%;
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #artist-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
         
         /* ===== VERIFIED CINEMATIC BACKGROUND SYSTEM ===== */
@@ -900,7 +908,7 @@
         /* Branding footer */
         .artist-footer {
             text-align: center;
-            margin-top: 2rem;
+            margin-top: auto;
             padding-top: 1.5rem;
             border-top: 1px solid var(--border-color);
         }
@@ -921,7 +929,6 @@
         
         .artist-footer .mmm-logo-svg {
             vertical-align: middle;
-            border-radius: 50%;
         }
         
         /* Error state */
@@ -2800,6 +2807,7 @@ a.chart-history-item {
                 const data = await response.json();
                 const bandsData = data.muzickaMasterLista;
                 window.bandsData = bandsData;
+                primeMasterArtistNameSet(bandsData);
                 
                 // Find artist
                 const artist = findArtist(bandsData, decodeURIComponent(artistParam));

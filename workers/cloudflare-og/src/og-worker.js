@@ -243,6 +243,16 @@ async function handleEvent(eventId) {
 }
 
 // --------------- Main handler ---------------
+
+function defaultOgFallback() {
+  return ogResponse({
+    title: 'ТопЛиста.мк',
+    description: 'Македонска музичка топ листа — откријте ги најпопуларните македонски песни, артисти, нови изданија и настани.',
+    image: DEFAULT_OG_IMAGE,
+    url: SITE_URL,
+  });
+}
+
 export default {
   async fetch(request) {
     const ua = request.headers.get('User-Agent') || '';
@@ -266,8 +276,7 @@ export default {
           const resp = await handleArtist(decodeURIComponent(artistParam));
           if (resp) return resp;
         }
-        // No param or artist not found → pass through (shows generic artist page)
-        return fetch(request);
+        return defaultOgFallback();
       }
 
       if (rawPath === '/kustos.html') {
@@ -276,7 +285,7 @@ export default {
           const resp = await handleCurator(decodeURIComponent(nameParam));
           if (resp) return resp;
         }
-        return fetch(request);
+        return defaultOgFallback();
       }
 
       if (rawPath === '/nastan.html') {
@@ -285,7 +294,7 @@ export default {
           const resp = await handleEvent(decodeURIComponent(idParam));
           if (resp) return resp;
         }
-        return fetch(request);
+        return defaultOgFallback();
       }
 
       // ==================== Charts page ====================
@@ -327,29 +336,29 @@ export default {
       // ==================== CURATOR: /kustos/{slug} ====================
       if (path.startsWith('/kustos/')) {
         const slug = path.substring('/kustos/'.length).replace(/\/$/, '');
-        if (!slug) return fetch(request);
+        if (!slug) return defaultOgFallback();
         const resp = await handleCurator(slug);
-        return resp || fetch(request);
+        return resp || defaultOgFallback();
       }
 
       // ==================== EVENT: /nastan/{id} ====================
       if (path.startsWith('/nastan/')) {
         const eventId = path.substring('/nastan/'.length).replace(/\/$/, '');
-        if (!eventId) return fetch(request);
+        if (!eventId) return defaultOgFallback();
         const resp = await handleEvent(eventId);
-        return resp || fetch(request);
+        return resp || defaultOgFallback();
       }
 
       // ==================== ARTIST: /{slug} ====================
       const slug = path.substring(1).replace(/\/$/, '');
-      if (!slug || slug.includes('/')) return fetch(request);
+      if (!slug || slug.includes('/')) return defaultOgFallback();
 
       const resp = await handleArtist(slug);
-      return resp || fetch(request);
+      return resp || defaultOgFallback();
     } catch (err) {
-      // On any error, fall through to origin so the user still sees the page
+      // On any error, return default OG so crawlers still get a preview
       console.error('OG worker error:', err);
-      return fetch(request);
+      return defaultOgFallback();
     }
   },
 };

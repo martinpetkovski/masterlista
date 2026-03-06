@@ -587,7 +587,7 @@ function initGlobalMiniFooter() {
         styleEl.textContent =
             '.site-mini-footer{ text-align:center; margin-top:1rem; }' +
             '.site-mini-footer__logo-link{ display:inline-flex; margin-bottom:0.42rem; }' +
-            '.site-mini-footer__logo{ width:22px; height:22px; border-radius:50%; vertical-align:middle; }' +
+            '.site-mini-footer__logo{ width:22px; height:22px; vertical-align:middle; }' +
             '.site-mini-footer__text{ font-size:0.68rem; line-height:1.45; color:var(--text-muted, #6b7280); }' +
             '.site-mini-footer__license{ display:inline-flex; margin:0 0.25rem; vertical-align:middle; }' +
             '.site-mini-footer__license img{ width:88px; height:31px; vertical-align:middle; border:0; }' +
@@ -680,6 +680,19 @@ function normalizeArtistLookupName(name) {
     return (name || '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
+/** Pre-populate the artist name set from an already-loaded bands array so
+ *  the service chooser never needs a redundant fetch. */
+function primeMasterArtistNameSet(bandsArray) {
+    if (_masterArtistNameSet) return;
+    if (!Array.isArray(bandsArray) || bandsArray.length === 0) return;
+    var lookupSet = new Set();
+    bandsArray.forEach(function(item) {
+        if (item && item.name) lookupSet.add(normalizeArtistLookupName(item.name));
+    });
+    _masterArtistNameSet = lookupSet;
+    _masterArtistNameSetPromise = Promise.resolve(lookupSet);
+}
+
 function loadMasterArtistNameSet() {
     if (_masterArtistNameSet) return Promise.resolve(_masterArtistNameSet);
     if (_masterArtistNameSetPromise) return _masterArtistNameSetPromise;
@@ -759,8 +772,8 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         overlay.className = 'service-chooser-overlay';
         overlay.innerHTML =
             '<div class="service-chooser">' +
+                '<div class="sc-vfx-bg" id="sc-vfx-bg"></div>' +
                 '<div class="service-chooser-header" id="service-chooser-header">' +
-                    '<div class="sc-vfx-bg" id="sc-vfx-bg"></div>' +
                     '<button type="button" class="service-chooser-close" id="service-chooser-close" aria-label="Затвори">×</button>' +
                     '<img class="service-chooser-img" id="service-chooser-img">' +
                     '<div class="service-chooser-header-text">' +
@@ -841,56 +854,63 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         });
     }
 
-    if (secondaryAccent) {
-        chooserEl.style.border = '2px solid ' + secondaryAccent;
+    // Determine dark mode: accent-luminance for verified (matching artist page), page-theme fallback
+    var c1 = primaryAccent;
+    var c2 = secondaryAccent || primaryAccent;
+    var isDark;
+    if (primaryAccent) {
+        var _r1 = parseInt(c1.slice(1,3),16), _g1 = parseInt(c1.slice(3,5),16), _b1 = parseInt(c1.slice(5,7),16);
+        var _r2 = parseInt(c2.slice(1,3),16), _g2 = parseInt(c2.slice(3,5),16), _b2 = parseInt(c2.slice(5,7),16);
+        isDark = ((0.299*(_r1+_r2)/2 + 0.587*(_g1+_g2)/2 + 0.114*(_b1+_b2)/2) / 255) <= 0.45;
     } else {
-        chooserEl.style.border = '';
-    }
-
-    // Dark-theme awareness: body.dark-mode, vfx-dark, OR accent-color luminance
-    var isDark = document.body.classList.contains('dark-mode') ||
+        isDark = document.body.classList.contains('dark-mode') ||
                  document.documentElement.classList.contains('dark-mode') ||
                  document.body.classList.contains('vfx-dark');
-    if (!isDark && primaryAccent) {
-        // Compute luminance from accent colours (same formula as artist.html)
-        var _pr = parseInt(primaryAccent.slice(1,3),16),
-            _pg = parseInt(primaryAccent.slice(3,5),16),
-            _pb = parseInt(primaryAccent.slice(5,7),16);
-        var lum1 = (0.299*_pr + 0.587*_pg + 0.114*_pb) / 255;
-        if (secondaryAccent) {
-            var _sr = parseInt(secondaryAccent.slice(1,3),16),
-                _sg = parseInt(secondaryAccent.slice(3,5),16),
-                _sb = parseInt(secondaryAccent.slice(5,7),16);
-            var lum2 = (0.299*_sr + 0.587*_sg + 0.114*_sb) / 255;
-            isDark = ((lum1 + lum2) / 2) <= 0.45;
-        } else {
-            isDark = lum1 <= 0.45;
-        }
     }
     overlay.classList.toggle('sc-dark', isDark);
 
-    // Apply accent gradient: true accent → darker in dark mode, lighter in light mode
+    // Apply accent-themed full-dialog background (matching artist page cinematic styling)
     if (primaryAccent) {
-        var shadeEnd = isDark
-            ? (shadeHexColor(primaryAccent, -22) || primaryAccent)
-            : (shadeHexColor(primaryAccent, 22) || primaryAccent);
-        headerEl.style.background = 'linear-gradient(135deg, ' + primaryAccent + ', ' + shadeEnd + ')';
+        overlay.classList.add('sc-accent');
+        overlay.classList.toggle('sc-accent-dark', isDark);
+        overlay.classList.toggle('sc-accent-light', !isDark);
 
-        // VFX background for the header (artist-page style)
-        var c1 = primaryAccent;
-        var c2 = secondaryAccent || shadeEnd;
+        // Header background = c1, text color based on c1 luminance (matching artist page exactly)
+        var hR = parseInt(c1.slice(1,3),16), hG = parseInt(c1.slice(3,5),16), hB = parseInt(c1.slice(5,7),16);
+        var headerLum = (0.299 * hR + 0.587 * hG + 0.114 * hB) / 255;
+        var headerIsLight = headerLum > 0.55;
+        var headerTc = headerIsLight ? '#000' : '#fff';
+        var headerTcSub = headerIsLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
+
+        // Full-dialog gradient (matching artist page darkenHex/lightenHex approach)
+        if (isDark) {
+            var g1 = shadeHexColor(c1, -82) || c1, g2 = shadeHexColor(c2, -86) || c2, g3 = shadeHexColor(c1, -92) || c1;
+            chooserEl.style.background = 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 50%, ' + g3 + ' 100%)';
+        } else {
+            var l1 = shadeHexColor(c1, 84) || c1, l2 = shadeHexColor(c2, 87) || c2, l3 = shadeHexColor(c1, 92) || c1;
+            chooserEl.style.background = 'linear-gradient(135deg, ' + l1 + ' 0%, ' + l2 + ' 50%, ' + l3 + ' 100%)';
+        }
+        headerEl.style.background = c1;
+
+        // Header text color
+        songEl.style.color = headerTc;
+        artistEl.style.color = headerTcSub;
+        var closeBtnEl = overlay.querySelector('.service-chooser-close');
+        if (closeBtnEl) closeBtnEl.style.color = headerTc;
+
+        // Border: subtle accent glow
+        chooserEl.style.border = '1px solid ' + c2 + '50';
+
+        // VFX effects across full dialog (artist-page style)
         var seed = (c1+c2).split('').reduce(function(a,ch){return a+ch.charCodeAt(0);},0);
         function scSeededRand(i) { var x = Math.sin(seed+i*127.1)*43758.5453; return x-Math.floor(x); }
 
         var vfxHtml = '';
-        // Geometric grid overlay
         vfxHtml += '<div class="sc-vfx-layer sc-vfx-grid" style="background-image:linear-gradient(' + c2 + '18 1px, transparent 1px), linear-gradient(90deg, ' + c2 + '18 1px, transparent 1px);background-size:30px 30px;opacity:0.4;"></div>';
-        // Radial glow accents
         var radBg = isDark
             ? 'radial-gradient(ellipse at 20% 30%, ' + c1 + '30 0%, transparent 60%), radial-gradient(ellipse at 80% 60%, ' + c2 + '25 0%, transparent 55%)'
             : 'radial-gradient(ellipse at 20% 30%, ' + c1 + '20 0%, transparent 60%), radial-gradient(ellipse at 80% 60%, ' + c2 + '18 0%, transparent 55%)';
         vfxHtml += '<div class="sc-vfx-layer" style="background:' + radBg + ';"></div>';
-        // Floating shapes (reduced set)
         var shapeTypes = ['circle', 'diamond', 'rect'];
         for (var si = 0; si < 6; si++) {
             var sType = shapeTypes[Math.floor(scSeededRand(si*31) * shapeTypes.length)];
@@ -898,16 +918,21 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             var sColor = si % 2 === 0 ? c1 : c2;
             vfxHtml += '<div class="sc-vfx-shape sc-vfx-shape--' + sType + '" style="width:' + sSize + 'px;height:' + sSize + 'px;left:' + (scSeededRand(si*53)*100) + '%;top:' + (scSeededRand(si*67)*80) + '%;border-color:' + sColor + ';animation-duration:' + (6+scSeededRand(si*71)*8) + 's;animation-delay:' + (scSeededRand(si*79)*3) + 's;"></div>';
         }
-        // Film grain
         vfxHtml += '<div class="sc-vfx-layer sc-vfx-grain"></div>';
-        // Sweep beam
         vfxHtml += '<div class="sc-vfx-sweep" style="background:linear-gradient(90deg, transparent, ' + c1 + '30, transparent);"></div>';
         vfxBgEl.innerHTML = vfxHtml;
         vfxBgEl.style.display = '';
     } else {
+        overlay.classList.remove('sc-accent', 'sc-accent-dark', 'sc-accent-light');
         headerEl.style.background = '';
+        chooserEl.style.background = '';
+        chooserEl.style.border = '';
         vfxBgEl.innerHTML = '';
         vfxBgEl.style.display = 'none';
+        songEl.style.color = '';
+        artistEl.style.color = '';
+        var closeBtnReset = overlay.querySelector('.service-chooser-close');
+        if (closeBtnReset) closeBtnReset.style.color = '';
     }
 
     // Build service links
@@ -926,11 +951,19 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         if (!url) continue;
         linksHtml +=
             '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + (isPreferred ? 'preferred' : '') + '">' +
-                '<i class="' + svc.icon + '"></i> ' + escHtml(svc.name) +
+                '<i class="' + svc.icon + '" style="color:' + svc.color + '"></i> ' + escHtml(svc.name) +
                 (isPreferred ? ' <span class="pref-badge">★</span>' : '') +
             '</a>';
     }
     linksEl.innerHTML = linksHtml;
+
+    // Apply accent hover borders to links (uniform c2 accent border)
+    if (primaryAccent) {
+        var scLinks = linksEl.querySelectorAll('a');
+        for (var li = 0; li < scLinks.length; li++) {
+            scLinks[li].style.setProperty('--link-accent', c2);
+        }
+    }
 
     // Ensure clean state then show
     overlay.classList.remove('closing');

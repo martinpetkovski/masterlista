@@ -872,7 +872,7 @@
         const notificationArea = document.getElementById('notification-area');
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.textContent = message;
+        notification.innerHTML = message;
 
         notificationArea.appendChild(notification);
 
@@ -1410,6 +1410,7 @@
                 });
                 originalBandsData = JSON.parse(JSON.stringify(bandsData));
             }
+            primeMasterArtistNameSet(bandsData);
             bandsData.sort((a, b) => {
                 const nameA = transliterateCyrillicToLatin(a.name);
                 const nameB = transliterateCyrillicToLatin(b.name);
@@ -2070,6 +2071,13 @@
                     updateSubmitButtonState();
                     savePendingChanges();
 
+                    // Show notification with artist name and link
+                    const artistUrl = '/artist.html?name=' + encodeURIComponent(name);
+                    showNotification(
+                        'Уреден артист: <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(name) + '</a>',
+                        'success', 4000
+                    );
+
                     // Store greeting audio as additional file for the PR
                     if (greetingEditBlob && greetingEditExt) {
                         try {
@@ -2298,6 +2306,15 @@
             hasUnsavedChanges = true;
             updateSubmitButtonState();
             savePendingChanges(); // Save to localStorage
+
+            // Show notification with artist name and link
+            const isEditing = editIndex !== undefined && editIndex !== '';
+            const artistUrl = '/artist.html?name=' + encodeURIComponent(band.name);
+            const actionLabel = isEditing ? 'Уреден' : 'Додаден';
+            showNotification(
+                actionLabel + ' артист: <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(band.name) + '</a>',
+                'success', 4000
+            );
 
             // Store greeting audio as additional file for the PR
             if (greetingEditBlob && greetingEditExt) {

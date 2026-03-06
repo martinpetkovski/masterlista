@@ -867,10 +867,10 @@
             .tracklist-list {
                 flex: 1;
                 min-height: 0;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                touch-action: pan-y;
-                overscroll-behavior: contain;
+                overflow-y: visible;
+                -webkit-overflow-scrolling: auto;
+                touch-action: auto;
+                overscroll-behavior: auto;
             }
 
             .track-art {
@@ -1047,6 +1047,7 @@
                 const resp = await fetch('bands.json');
                 const data = await resp.json();
                 const bands = data.muzickaMasterLista || [];
+                primeMasterArtistNameSet(bands);
                 bands.forEach(b => {
                     if (!b.name) return;
                     bandNameSet.add(b.name);

@@ -100,6 +100,8 @@ const logDim  = m => log(m, '\x1b[90m');
 //  HELPERS
 // ============================================================================
 
+function readJSON(p) { return JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'')); }
+
 function ensureDir(d) { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); }
 function safeDelete(f) { try { if (fs.existsSync(f)) fs.unlinkSync(f); } catch {} }
 
@@ -276,7 +278,7 @@ async function makeCollage(releases, outPath) {
   }
 
   // Darken (full color, no blur, no gradient)
-  flt.push('[grid]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.55:t=fill[final]');
+  flt.push('[grid]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.35:t=fill[final]');
 
   ff([...inp, '-filter_complex', flt.join(';'), '-map','[final]','-frames:v','1','-update','1','-y',outPath], 'collage');
   logOk(`Collage: ${valid.length} covers, ${cols}x${rows} grid, darkened`);
@@ -301,35 +303,39 @@ function makeIntro(collagePath, outputPath, audioSrcPath) {
 
   flt.push(staticBg('0:v'));
 
-  const titleY = Math.round(H * 0.68);
-  const subTitleY = titleY + 100;
-  const dateY = subTitleY + 50;
+  const iSiteY = Math.round(H * 0.93);
+  const titleY = Math.round(H * 0.30);
+  const subTitleY = titleY + 90;
+  const dateY = subTitleY + 55;
 
-  // Logo (large) above title
+  // Logo centered above toplista.mk
   if (hasLogo) {
-    const sz = 600, lx = (W-sz)/2, ly = titleY - sz - 30;
+    const sz = 300, lx = (W-sz)/2, ly = iSiteY - sz - 15;
     flt.push(`[1:v]scale=${sz}:${sz},format=rgba[logo]`);
-    flt.push(`[bg][logo]overlay=x=${lx}:y='${ly}-100*(1-${ease(0.05,0.3)})':format=auto[base]`);
+    flt.push(`[bg][logo]overlay=x=${lx}:y='${ly}+80*(1-${ease(0.4,0.3)})':format=auto[base]`);
   } else {
     flt.push('[bg]copy[base]');
   }
 
   flt.push(
     `[base]` +
-    // White flash punch at start
-    `fade=t=in:st=0:d=0.15:color=white,` +
-    // Title SLAMS up
-    `drawtext=text='${esc(chartTitle)}':fontfile='${FF_TITLE}':fontsize=88:fontcolor=0x${T.white}:` +
-    `x=(w-text_w)/2:y='${titleY}+100*(1-${ease(0.25,0.3)})':alpha='${ease(0.25,0.3)}',` +
+    // BAM BAM strobe flashes
+    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='lt(t\\,0.05)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='between(t\\,0.05\\,0.10)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t\\,0.10\\,0.14)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=white@0.85:t=fill:enable='between(t\\,0.14\\,0.18)',` +
+    // Title SLAMS in
+    `drawtext=text='${esc(chartTitle)}':fontfile='${FF_TITLE}':fontsize=88:fontcolor=0x${T.white}:borderw=4:bordercolor=black:` +
+    `x=(w-text_w)/2:y='${titleY}+100*(1-${ease(0.20,0.25)})':alpha='${ease(0.20,0.25)}',` +
     // Subtitle snaps in
-    `drawtext=text='${esc(isAlt ? '' : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0xdddddd:` +
-    `x=(w-text_w)/2:y='${subTitleY}+60*(1-${ease(0.45,0.25)})':alpha='${ease(0.45,0.25)}',` +
+    `drawtext=text='${esc(isAlt ? '' : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=48:fontcolor=0xdddddd:borderw=3:bordercolor=black:` +
+    `x=(w-text_w)/2:y='${subTitleY}+60*(1-${ease(0.35,0.25)})':alpha='${ease(0.35,0.25)}',` +
     // Date snaps in
-    `drawtext=text='${esc(dateLabel)}':fontfile='${FF_BODY}':fontsize=38:fontcolor=0xbbbbbb:` +
-    `x=(w-text_w)/2:y='${dateY}+50*(1-${ease(0.6,0.25)})':alpha='${ease(0.6,0.25)}',` +
+    `drawtext=text='${esc(dateLabel)}':fontfile='${FF_BODY}':fontsize=40:fontcolor=0xbbbbbb:borderw=2:bordercolor=black:` +
+    `x=(w-text_w)/2:y='${dateY}+50*(1-${ease(0.50,0.25)})':alpha='${ease(0.50,0.25)}',` +
     // Site punches up
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:` +
-    `x=(w-text_w)/2:y='${Math.round(H*0.92)}+60*(1-${ease(0.9,0.3)})':alpha='${ease(0.9,0.3)}'[outv]`
+    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
+    `x=(w-text_w)/2:y='${iSiteY}+60*(1-${ease(0.80,0.3)})':alpha='${ease(0.80,0.3)}'[outv]`
   );
 
   // Audio: LPF from song source, or silence
@@ -434,7 +440,7 @@ function makeClip(release, rank, ytPath, collagePath, outputPath) {
   const vidW = Math.round(W * 0.90); // 972
   const vidH = Math.round(H * 0.60); // 1152
   const vidX = Math.round((W - vidW) / 2);
-  const vidY = Math.round(H * 0.18);
+  const vidY = Math.round(H * 0.10);
   const bp = 3;
 
   // Text area below video
@@ -456,28 +462,30 @@ function makeClip(release, rank, ytPath, collagePath, outputPath) {
     `[bg][vid]overlay=x=${vidX}:y=${vidY}:format=auto[comp]`,
   ];
 
-  // Logo overlay (top-left watermark)
+  // Logo centered above toplista.mk
   let base = 'comp';
+  const cSiteY = Math.round(H * 0.93);
   if (hasLogo) {
-    flt.push(`[${logoIdx}:v]scale=180:180,format=rgba[logo]`);
-    flt.push(`[comp][logo]overlay=x=30:y=15:format=auto[comp2]`);
+    const lsz = 160, llx = (W-lsz)/2, lly = cSiteY - lsz - 12;
+    flt.push(`[${logoIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
+    flt.push(`[comp][logo]overlay=x=${llx}:y=${lly}:format=auto[comp2]`);
     base = 'comp2';
   }
 
   flt.push(
     `[${base}]` +
-    // Rank box pops in (scale effect via delayed reveal)
+    // Rank box pops in
     `drawbox=x=${rankBoxX}:y=${rankBoxY}:w=${rankBoxW}:h=${rankBoxH}:color=0x${col}:t=fill:enable='gte(t\\,0.1)',` +
     `drawtext=text='${esc(String(rank))}':fontfile='${FF_HEAD}':fontsize=64:fontcolor=0x${T.black}:` +
     `x=${rankBoxX}+(${rankBoxW}-text_w)/2:y='${rankBoxY}+(${rankBoxH}-text_h)/2+15*(1-${ease(0.1,0.4)})':alpha='${ease(0.1,0.4)}',` +
     // Title bg + text slides in from right
     `drawbox=x='${titleX}+(${W - titleX - 50})*(1-${ease(0.15,0.5)})':y=${rankBoxY}:w=${W - titleX - 50}:h=${rankBoxH}:color=black@0.75:t=fill,` +
-    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=52:fontcolor=0x${T.white}:` +
+    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=52:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
     `x='${titleX+16}+60*(1-${ease(0.2,0.5)})':y=${rankBoxY+6}:alpha='${ease(0.2,0.5)}',` +
-    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=38:fontcolor=0x${T.textSec}:` +
+    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=38:fontcolor=0x${T.textSec}:borderw=2:bordercolor=black:` +
     `x='${titleX+16}+60*(1-${ease(0.3,0.5)})':y=${rankBoxY+52}:alpha='${ease(0.3,0.5)}',` +
     // Site
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:x=(w-text_w)/2:y='${Math.round(H*0.93)}+20*(1-${ease(0.4,0.5)})':alpha='${ease(0.4,0.5)}'[outv]`
+    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y='${cSiteY}+20*(1-${ease(0.4,0.5)})':alpha='${ease(0.4,0.5)}'[outv]`
   );
 
   // Real audio from the clip
@@ -535,26 +543,29 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
     flt.push(`[${fi}:v]scale=${artSize}:${artSize}:force_original_aspect_ratio=increase,crop=${artSize}:${artSize},setsar=1[art${ci}]`);
   }
 
-  // Logo (larger)
+  // Logo centered above toplista.mk
   let base = 'bg';
+  const chartSiteY = Math.round(H * 0.93);
   if (hasLogo) {
-    flt.push(`[${logoIdx}:v]scale=160:160,format=rgba[logo]`);
-    flt.push(`[bg][logo]overlay=x=30:y=15:format=auto[bglogo]`);
+    const lsz = 120, lx = (W-lsz)/2, ly = chartSiteY - lsz - 12;
+    flt.push(`[${logoIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
+    flt.push(`[bg][logo]overlay=x=${lx}:y=${ly}:format=auto[bglogo]`);
     base = 'bglogo';
   }
 
-  const hdrY = 60, startY = 160, rowH = 155, stag = 0.18;
+  const hdrY = 40, startY = 130, rowH = 148, stag = 0.18;
   const rowMargin = 40, rowW = W - rowMargin*2;
   const rankX = rowMargin + 14;
-  const artX = rankX + rankBoxS + 10;
+  const artX = rankX + rankBoxS + 12;
   const textX = artX + artSize + 14;
+  const textAreaW = rowMargin + rowW - textX - 70;
   const hasArts = Object.keys(artIdxMap).length > 0;
   const txtOutput = hasArts ? 'txout' : 'outv';
 
   let txt =
     `[${base}]` +
-    // Header
-    `drawtext=text='${esc(isAlt ? CYR_ALT+' '+CYR_TOP : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=58:fontcolor=0x${T.white}:` +
+    // Header with outline
+    `drawtext=text='${esc(isAlt ? CYR_ALT+' '+CYR_TOP : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=58:fontcolor=0x${T.white}:borderw=3:bordercolor=black:` +
     `x=(w-text_w)/2:y='${hdrY}+20*(1-${ease(0.1,0.4)})':alpha='${ease(0.1,0.4)}'`;
 
   for (let i = 0; i < Math.min(chart10.length, 10); i++) {
@@ -562,36 +573,42 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
     const y = startY + i * rowH;
     const dl = 0.3 + i * stag;
     const e = ease(dl, 0.35);
-    const song = r.releaseTitle.length>20 ? r.releaseTitle.slice(0,17)+'...' : r.releaseTitle;
-    const art = r.bandName.length>24 ? r.bandName.slice(0,21)+'...' : r.bandName;
+    const song = r.releaseTitle.length>22 ? r.releaseTitle.slice(0,19)+'...' : r.releaseTitle;
+    const art = r.bandName.length>26 ? r.bandName.slice(0,23)+'...' : r.bandName;
 
-    // Row background (dark, opaque)
+    // Row background
     txt += `,drawbox=x=${rowMargin}:y='${y}':w=${rowW}:h=${rowH-8}:color=black@0.80:t=fill:enable='gte(t\\,${dl})'`;
-    // Rank box
+    // Rank box (larger, more impactful)
     const rbY = y + Math.round((rowH - 8 - rankBoxS) / 2);
     txt += `,drawbox=x=${rankX}:y='${rbY}':w=${rankBoxS}:h=${rankBoxS}:color=0x${col}:t=fill:enable='gte(t\\,${dl})'`;
-    txt += `,drawtext=text='${esc(String(rk))}':fontfile='${FF_HEAD}':fontsize=36:fontcolor=0x${T.black}:x=${rankX}+(${rankBoxS}-text_w)/2:y='${rbY}+(${rankBoxS}-text_h)/2':alpha='${e}'`;
-    // Song title
-    txt += `,drawtext=text='${esc(song)}':fontfile='${FF_HEAD}':fontsize=42:fontcolor=0x${T.white}:x='${textX}+30*(1-${e})':y='${y+22}':alpha='${e}'`;
-    // Artist
-    txt += `,drawtext=text='${esc(art)}':fontfile='${FF_BODY}':fontsize=34:fontcolor=0x${T.textSec}:x='${textX}+30*(1-${e})':y='${y+68}':alpha='${e}'`;
+    txt += `,drawtext=text='${esc(String(rk))}':fontfile='${FF_HEAD}':fontsize=46:fontcolor=0x${T.black}:x=${rankX}+(${rankBoxS}-text_w)/2:y='${rbY}+(${rankBoxS}-text_h)/2':alpha='${e}'`;
+    // Song title (centered in text area, bigger)
+    txt += `,drawtext=text='${esc(song)}':fontfile='${FF_HEAD}':fontsize=50:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x='${textX}+(${textAreaW}-text_w)/2':y='${y+26}':alpha='${e}'`;
+    // Artist (centered in text area, bigger)
+    txt += `,drawtext=text='${esc(art)}':fontfile='${FF_BODY}':fontsize=40:fontcolor=0x${T.textSec}:x='${textX}+(${textAreaW}-text_w)/2':y='${y+78}':alpha='${e}'`;
     // Chevron indicator (right side of row)
     if (posChanges && posChanges[i]) {
       const pc = posChanges[i];
-      const chX = rowMargin + rowW - 55;
-      const chY = y + Math.round((rowH - 8) / 2) - 12;
+      const chX = rowMargin + rowW - 60;
+      const chY = y + Math.round((rowH - 8) / 2) - 14;
       if (pc.type === 'up') {
-        txt += `,drawtext=text='\\u25B2':fontfile='${FF_BODY}':fontsize=28:fontcolor=0x16c953:x=${chX}:y='${chY}':alpha='${e}'`;
+        // Up triangle (drawbox stacked)
+        txt += `,drawbox=x=${chX+8}:y=${chY}:w=8:h=7:color=0x16c953:t=fill:enable='gte(t\\,${dl})'`;
+        txt += `,drawbox=x=${chX+4}:y=${chY+7}:w=16:h=7:color=0x16c953:t=fill:enable='gte(t\\,${dl})'`;
+        txt += `,drawbox=x=${chX}:y=${chY+14}:w=24:h=7:color=0x16c953:t=fill:enable='gte(t\\,${dl})'`;
       } else if (pc.type === 'down') {
-        txt += `,drawtext=text='\\u25BC':fontfile='${FF_BODY}':fontsize=28:fontcolor=0xf03e3e:x=${chX}:y='${chY}':alpha='${e}'`;
+        // Down triangle (drawbox stacked)
+        txt += `,drawbox=x=${chX}:y=${chY}:w=24:h=7:color=0xf03e3e:t=fill:enable='gte(t\\,${dl})'`;
+        txt += `,drawbox=x=${chX+4}:y=${chY+7}:w=16:h=7:color=0xf03e3e:t=fill:enable='gte(t\\,${dl})'`;
+        txt += `,drawbox=x=${chX+8}:y=${chY+14}:w=8:h=7:color=0xf03e3e:t=fill:enable='gte(t\\,${dl})'`;
       } else if (pc.type === 'new') {
-        txt += `,drawtext=text='${esc('НОВО')}':fontfile='${FF_HEAD}':fontsize=18:fontcolor=0x${T.gold}:x=${chX - 10}:y='${chY + 4}':alpha='${e}'`;
+        txt += `,drawtext=text='${esc('НОВО')}':fontfile='${FF_HEAD}':fontsize=20:fontcolor=0x${T.gold}:x=${chX - 10}:y='${chY + 4}':alpha='${e}'`;
       }
     }
   }
 
   // Site link
-  txt += `,drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:x=(w-text_w)/2:y='${Math.round(H*0.93)}+20*(1-${ease(0.2,0.4)})':alpha='${ease(0.2,0.4)}'[${txtOutput}]`;
+  txt += `,drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y='${chartSiteY}+20*(1-${ease(0.2,0.4)})':alpha='${ease(0.2,0.4)}'[${txtOutput}]`;
   flt.push(txt);
 
   // Overlay art thumbnails AFTER row backgrounds (true color, not darkened)
@@ -664,16 +681,16 @@ function makeOutro(collagePath, outputPath, audioSrcPath) {
     // White flash punch
     `fade=t=in:st=0:d=0.12:color=white,` +
     // Word 1: СЛУШАЈ
-    `drawtext=text='${esc(word1)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:` +
+    `drawtext=text='${esc(word1)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
     `x=(w-text_w)/2:y='${tagY1}+60*(1-${ease(0.1,0.3)})':alpha='${ease(0.1,0.3)}',` +
     // Word 2: МАКЕДОНСКА
-    `drawtext=text='${esc(word2)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:` +
+    `drawtext=text='${esc(word2)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
     `x=(w-text_w)/2:y='${tagY2}+60*(1-${ease(0.3,0.3)})':alpha='${ease(0.3,0.3)}',` +
     // Word 3: МУЗИКА!
-    `drawtext=text='${esc(word3)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:` +
+    `drawtext=text='${esc(word3)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
     `x=(w-text_w)/2:y='${tagY3}+60*(1-${ease(0.5,0.3)})':alpha='${ease(0.5,0.3)}',` +
     // Site URL
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=50:fontcolor=0x${T.white}:` +
+    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=50:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
     `x=(w-text_w)/2:y='${siteY}+30*(1-${ease(0.8,0.3)})':alpha='${ease(0.8,0.3)}'[outv]`
   );
 
@@ -727,30 +744,40 @@ function makeExtendedArt(release, rank, artPath, collagePath, outputPath) {
   const title = release.releaseTitle.length>30 ? release.releaseTitle.slice(0,27)+'...' : release.releaseTitle;
   const artist = release.bandName.length>34 ? release.bandName.slice(0,31)+'...' : release.bandName;
   const hasArt = artPath && fs.existsSync(artPath);
+  const hasLogo = fs.existsSync(LOGO_PATH);
 
   const inp = ['-loop','1','-i',collagePath];
   let ni = 1;
   if (hasArt) { inp.push('-loop','1','-i',artPath); ni=2; }
+  let logoInputIdx = -1;
+  if (hasLogo) { inp.push('-i', LOGO_PATH); logoInputIdx = ni; ni++; }
   inp.push('-f','lavfi','-i','anullsrc=r=44100:cl=stereo');
 
   const flt = [];
-  // Static collage + abstract bottom art
   flt.push(staticBg('0:v'));
 
   let base = 'bg';
   if (hasArt) {
     flt.push(`[1:v]scale=500:500,pad=512:512:6:6:color=0x${T.textMuted}40,format=rgba,setsar=1[art]`);
-    flt.push(`[bg][art]overlay=x=${(W-512)/2}:y=${Math.round(H*0.25)}:format=auto[base]`);
-    base = 'base';
+    flt.push(`[bg][art]overlay=x=${(W-512)/2}:y=${Math.round(H*0.22)}:format=auto[artbg]`);
+    base = 'artbg';
   }
 
-  const ry = hasArt ? Math.round(H*0.56) : Math.round(H*0.3);
+  const extSiteY = Math.round(H * 0.92);
+  if (hasLogo) {
+    const lsz = 140, lx = (W-lsz)/2, ly = extSiteY - lsz - 10;
+    flt.push(`[${logoInputIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
+    flt.push(`[${base}][logo]overlay=x=${lx}:y=${ly}:format=auto[logobg]`);
+    base = 'logobg';
+  }
+
+  const ry = hasArt ? Math.round(H*0.54) : Math.round(H*0.3);
   flt.push(
     `[${base}]` +
-    `drawtext=text='${esc('#'+rank)}':fontfile='${FF_HEAD}':fontsize=80:fontcolor=0x${col}:x=(w-text_w)/2:y=${ry},` +
-    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=48:fontcolor=0x${T.white}:x=(w-text_w)/2:y=${ry+100},` +
-    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=36:fontcolor=0x${T.textSec}:x=(w-text_w)/2:y=${ry+160},` +
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:x=(w-text_w)/2:y=${Math.round(H*0.88)}[outv]`
+    `drawtext=text='${esc('#'+rank)}':fontfile='${FF_HEAD}':fontsize=80:fontcolor=0x${col}:borderw=3:bordercolor=black:x=(w-text_w)/2:y=${ry},` +
+    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=48:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${ry+100},` +
+    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=36:fontcolor=0x${T.textSec}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${ry+160},` +
+    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${extSiteY}[outv]`
   );
   flt.push(`[${ni}:a]aresample=44100[outa]`);
 
@@ -776,12 +803,12 @@ async function main() {
 
   // --- Load data ---
   logS('LOADING DATA');
-  const chartData = JSON.parse(fs.readFileSync(path.join(ROOT,'chart-data.json'),'utf8'));
+  const chartData = readJSON(path.join(ROOT,'chart-data.json'));
   let bandsData = [];
   const spMap = new Map();
   const bp = path.join(ROOT,'bands.json');
   if (fs.existsSync(bp)) {
-    const bj = JSON.parse(fs.readFileSync(bp,'utf8'));
+    const bj = readJSON(bp);
     bandsData = bj.muzickaMasterLista || [];
     for (const b of bandsData) { if (b.spotifyName) spMap.set(b.name, b.spotifyName); }
     logOk(`${bandsData.length} bands`);
@@ -884,7 +911,7 @@ async function main() {
       if (prevWk < 1) { prevWk = 52; prevYr--; }
       const prevFile = path.join(ROOT, 'chart-history', `chart-${prevYr}-W${String(prevWk).padStart(2,'0')}.json`);
       if (fs.existsSync(prevFile)) {
-        const prevData = JSON.parse(fs.readFileSync(prevFile, 'utf8'));
+        const prevData = readJSON(prevFile);
         const prevTop20 = getSinglesChart(prevData.releases, 20, isAlt?'alt':'all', bandsData);
         const prevPosMap = {};
         prevTop20.forEach((r, i) => prevPosMap[r.releaseId] = i + 1);

@@ -517,9 +517,9 @@
     .nastani-page .tl-today-marker {
         display: flex;
         align-items: center;
-        padding: 0.3rem 0.5rem 0.3rem 0;
+        padding: 0.5rem 0.5rem 0.5rem 0;
         position: relative;
-        z-index: 2;
+        z-index: 3;
     }
 
     .nastani-page .tl-today-date-col {
@@ -535,37 +535,42 @@
         z-index: 2;
     }
     .nastani-page .tl-today-dot {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
-        background: var(--accent-blue);
-        box-shadow: 0 0 8px rgba(74, 127, 165, 0.4);
+        background: var(--accent-blue, #4a7fa5);
+        box-shadow: 0 0 0 3px rgba(74, 127, 165, 0.25), 0 0 12px rgba(74, 127, 165, 0.4);
+        animation: todayPulse 2s ease-in-out infinite;
+    }
+    @keyframes todayPulse {
+        0%, 100% { box-shadow: 0 0 0 3px rgba(74, 127, 165, 0.25), 0 0 12px rgba(74, 127, 165, 0.4); }
+        50% { box-shadow: 0 0 0 5px rgba(74, 127, 165, 0.2), 0 0 20px rgba(74, 127, 165, 0.55); }
     }
     .nastani-page .tl-today-content {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.5rem;
         flex: 1;
         min-width: 0;
-        padding-left: 0.3rem;
+        padding-left: 0.4rem;
     }
     .nastani-page .tl-today-label {
-        background: var(--accent-blue);
+        background: var(--accent-blue, #4a7fa5);
         color: #fff;
         font-family: 'Montserrat', sans-serif;
-        font-size: 0.55rem;
+        font-size: 0.6rem;
         font-weight: 800;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        padding: 0.18rem 0.65rem;
-        border-radius: 999px;
+        padding: 0.22rem 0.75rem;
+        border-radius: 4px;
         white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(74, 127, 165, 0.3);
     }
     .nastani-page .tl-today-line {
         flex: 1;
         height: 2px;
-        background: var(--accent-blue);
-        opacity: 0.2;
+        background: linear-gradient(to right, var(--accent-blue, #4a7fa5), transparent);
         border-radius: 1px;
     }
 
@@ -866,7 +871,17 @@
 
     /* Today event */
     .nastani-page .tl-item.today-event {
-        background: rgba(34, 197, 94, 0.04);
+        background: rgba(34, 197, 94, 0.08);
+        box-shadow: inset 3px 0 0 #22c55e;
+    }
+    .nastani-page .tl-item.today-event .tl-title {
+        color: #16a34a;
+    }
+
+    /* Tomorrow event */
+    .nastani-page .tl-item.tomorrow-event {
+        background: rgba(74, 127, 165, 0.06);
+        box-shadow: inset 3px 0 0 var(--accent-blue);
     }
 
     /* ===== DESKTOP: progressively hide columns ===== */
@@ -944,8 +959,8 @@
             width: 14px;
         }
         .nastani-page .tl-today-dot {
-            width: 9px;
-            height: 9px;
+            width: 10px;
+            height: 10px;
         }
         .nastani-page .tl-today-date-col,
         .nastani-page .tl-month-date-col {
@@ -1429,7 +1444,8 @@
 
                 var cd = countdownText(evt.date);
                 var artists = evt.artists || evt.bands || [];
-                var itemCls = isPast ? 'past-event' : (isToday ? 'today-event' : '');
+                var isTomorrow = daysUntil(evt.date) === 1;
+                var itemCls = isPast ? 'past-event' : (isToday ? 'today-event' : (isTomorrow ? 'tomorrow-event' : ''));
 
                 var dateStr = evt.date;
                 var showDate = (dateStr !== lastDateStr);
@@ -1691,7 +1707,7 @@
                 var tp = (todayFrac * 100);
                 addStop('0%', '#4a7fa5', '0.35');
                 addStop(Math.max(0, tp - 3) + '%', '#4a7fa5', '0.55');
-                addStop(tp + '%', '#22c55e', '1');
+                addStop(tp + '%', timelineColor, '1');
                 addStop(Math.min(100, tp + 3) + '%', '#6b7280', '0.25');
                 addStop('100%', '#6b7280', '0.08');
             } else {
@@ -1756,48 +1772,61 @@
                 svg.appendChild(glowPath);
             }
 
-            // Draw chevrons at each row center, oriented along the tangent
-            var chevSize = isMobile ? 4 : 5;
-            for (var ci = 0; ci < rowCenters.length; ci++) {
-                var rc = rowCenters[ci];
-                var px = wavyX(rc.y);
-                var t = wavyTangent(rc.y);
-                // Tangent direction (dx, dy) pointing downward along the path
-                var tdx = t.x;
-                var tdy = t.y;
-                // Perpendicular
-                var pdx = -tdy;
-                var pdy = tdx;
-                // Chevron: two lines meeting at a point, pointing upward (against flow)
-                // Tip is at center, arms go backward (downward along tangent) and outward
-                var tipX = px;
-                var tipY = rc.y;
-                var arm1X = tipX + tdx * chevSize + pdx * chevSize * 0.7;
-                var arm1Y = tipY + tdy * chevSize + pdy * chevSize * 0.7;
-                var arm2X = tipX + tdx * chevSize - pdx * chevSize * 0.7;
-                var arm2Y = tipY + tdy * chevSize - pdy * chevSize * 0.7;
+            // Draw animated filled-triangle arrows streaming away from the TODAY marker
+            var arrowSize = isMobile ? 7 : 9;
+            var arrowSpacing = isMobile ? 35 : 40;
+            var todayY = todayFrac !== null ? todayFrac * h : -1;
+            var todayExclude = isMobile ? 14 : 18; // exclusion zone around today dot
 
-                var chevD = 'M ' + arm1X.toFixed(2) + ' ' + arm1Y.toFixed(2) +
-                            ' L ' + tipX.toFixed(2) + ' ' + tipY.toFixed(2) +
-                            ' L ' + arm2X.toFixed(2) + ' ' + arm2Y.toFixed(2);
+            // Separate phase offsets: above today streams upward, below streams downward
+            var phaseOffset = (phase * 30) % arrowSpacing;
 
-                var chevPath = document.createElementNS(ns, 'path');
-                chevPath.setAttribute('d', chevD);
-                chevPath.setAttribute('fill', 'none');
-                chevPath.setAttribute('stroke-linecap', 'round');
-                chevPath.setAttribute('stroke-linejoin', 'round');
-                chevPath.setAttribute('stroke', timelineColor);
+            // --- Arrows ABOVE today (pointing up, moving up) ---
+            var aboveEnd = todayY >= 0 ? todayY - todayExclude : h;
+            if (todayY < 0) aboveEnd = h; // no today marker: all arrows go up
+            for (var ay = aboveEnd - phaseOffset; ay >= 0; ay -= arrowSpacing) {
+                drawArrow(ay, false);
+            }
 
-                if (rc.today) {
-                    chevPath.setAttribute('stroke-width', isMobile ? '2' : '2.5');
-                    chevPath.setAttribute('filter', 'url(#tlGlow)');
-                } else if (rc.past) {
-                    chevPath.setAttribute('stroke-width', isMobile ? '1.5' : '2');
-                    chevPath.setAttribute('stroke-opacity', '0.5');
-                } else {
-                    chevPath.setAttribute('stroke-width', isMobile ? '1.5' : '2');
+            // --- Arrows BELOW today (pointing down, moving down) ---
+            if (todayY >= 0) {
+                var belowStart = todayY + todayExclude;
+                for (var ay2 = belowStart + phaseOffset; ay2 <= h; ay2 += arrowSpacing) {
+                    drawArrow(ay2, true);
                 }
-                svg.appendChild(chevPath);
+            }
+
+            function drawArrow(ay, pointDown) {
+                var apx = wavyX(ay);
+                var at = wavyTangent(ay);
+
+                var dirX, dirY;
+                if (pointDown) {
+                    dirX = at.x; dirY = at.y;
+                } else {
+                    dirX = -at.x; dirY = -at.y;
+                }
+
+                var perpX = -dirY;
+                var perpY = dirX;
+
+                var tipX = apx + dirX * arrowSize;
+                var tipY = ay + dirY * arrowSize;
+                var base1X = apx - dirX * arrowSize * 0.6 + perpX * arrowSize * 0.6;
+                var base1Y = ay - dirY * arrowSize * 0.6 + perpY * arrowSize * 0.6;
+                var base2X = apx - dirX * arrowSize * 0.6 - perpX * arrowSize * 0.6;
+                var base2Y = ay - dirY * arrowSize * 0.6 - perpY * arrowSize * 0.6;
+
+                var triD = tipX.toFixed(2) + ',' + tipY.toFixed(2) + ' ' +
+                           base1X.toFixed(2) + ',' + base1Y.toFixed(2) + ' ' +
+                           base2X.toFixed(2) + ',' + base2Y.toFixed(2);
+
+                var tri = document.createElementNS(ns, 'polygon');
+                tri.setAttribute('points', triD);
+                tri.setAttribute('fill', timelineColor);
+                tri.setAttribute('stroke', 'none');
+                tri.setAttribute('opacity', '1');
+                svg.appendChild(tri);
             }
 
             container.insertBefore(svg, container.firstChild);
@@ -1809,7 +1838,7 @@
             if (!_tlLastTime) _tlLastTime = ts;
             var dt = (ts - _tlLastTime) / 1000;
             _tlLastTime = ts;
-            _tlPhase += dt * 0.8; // slow flowing speed
+            _tlPhase += dt * 0.267; // slow flowing speed (3x slower)
             drawTimelineSVG(_tlPhase);
             _tlAnimFrame = requestAnimationFrame(_tlAnimLoop);
         }
@@ -2243,11 +2272,11 @@
             }
 
             var desc = (editingEventId ? 'Уреден' : 'Нов') + ' настан: ' + title + ' (' + date + ')\nМесто: ' + place + (artists.length ? '\nАртисти: ' + artists.join(', ') : '');
-            submitUpdate(updated, desc);
+            submitUpdate(updated, desc, eventObj);
         });
 
         /** Save changes to localStorage drafts instead of immediately submitting. */
-        function submitUpdate(updatedEvents, description) {
+        function submitUpdate(updatedEvents, description, eventObj) {
             updatedEvents.sort(function(a, b) { return a.date.localeCompare(b.date); });
 
             // Save to unified draft system
@@ -2262,7 +2291,21 @@
             renderTable();
             closeModal();
 
-            notify('Промените се зачувани локално. Кликнете "Испрати промени" за да ги поднесете.', 'info');
+            // Build notification with event details and artist links
+            var notifMsg = 'Зачувано локално. ';
+            if (eventObj) {
+                var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                var eventUrl = isLocalhost ? 'nastan.html?id=' + encodeURIComponent(eventObj.id) : '/nastan/' + encodeURIComponent(eventObj.id);
+                notifMsg += '<a href="' + eventUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(eventObj.title) + '</a>';
+                if (eventObj.artists && eventObj.artists.length) {
+                    var artistLinks = eventObj.artists.map(function(name) {
+                        var artistUrl = isLocalhost ? 'artist.html?name=' + encodeURIComponent(name) : '/artist.html?name=' + encodeURIComponent(name);
+                        return '<a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(name) + '</a>';
+                    });
+                    notifMsg += ' (' + artistLinks.join(', ') + ')';
+                }
+            }
+            notify(notifMsg, 'info');
         }
 
         // ==================== INIT ====================

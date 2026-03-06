@@ -563,7 +563,6 @@
 
         .curator-footer .mmm-logo-svg {
             vertical-align: middle;
-            border-radius: 50%;
         }
 
         /* ==================== RESPONSIVE ==================== */
@@ -694,6 +693,7 @@
                 const resp = await fetch('/bands.json');
                 const data = await resp.json();
                 const bands = data.muzickaMasterLista || [];
+                primeMasterArtistNameSet(bands);
                 bands.forEach(b => {
                     if (!b.name) return;
                     bandNameSet.add(b.name);

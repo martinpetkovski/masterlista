@@ -227,7 +227,6 @@ body.verified-accent header::before {
 .site-logo-svg {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
     flex-shrink: 0;
 }
 
@@ -2693,22 +2692,25 @@ body.vfx-dark .service-chooser,
 .service-chooser-links a {
     display: flex; align-items: center; gap: 1.125rem; padding: 0.9rem 1.125rem;
     border-radius: 8px; text-decoration: none; color: #333;
-    background: rgba(0,0,0,0.04); transition: background 0.15s;
+    background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08);
+    transition: background 0.15s, border-color 0.15s, transform 0.15s;
     font-size: 1.275rem;
 }
 body.dark-mode .service-chooser-links a,
 body.vfx-dark .service-chooser-links a,
-.service-chooser-overlay.sc-dark .service-chooser-links a { color: #e8e8f0; background: rgba(255,255,255,0.06); }
-.service-chooser-links a:hover { background: rgba(0,0,0,0.08); }
+.service-chooser-overlay.sc-dark .service-chooser-links a { color: #e8e8f0; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); }
+.service-chooser-links a:hover { background: rgba(0,0,0,0.08); transform: translateY(-1px); border-color: var(--link-accent, rgba(0,0,0,0.08)); }
 body.dark-mode .service-chooser-links a:hover,
 body.vfx-dark .service-chooser-links a:hover,
 .service-chooser-overlay.sc-dark .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
 .service-chooser-links a i { width: 30px; text-align: center; font-size: 1.65rem; }
 .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
 .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
-/* --- VFX background in service chooser header --- */
-.service-chooser-header { position: relative; overflow: hidden; }
+/* --- VFX background in service chooser --- */
+.service-chooser { position: relative; }
 .sc-vfx-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.service-chooser-header { position: relative; z-index: 1; }
+.service-chooser-links { position: relative; z-index: 1; }
 .sc-vfx-layer { position: absolute; inset: 0; }
 .sc-vfx-grid { opacity: 0.4; }
 .sc-vfx-grain {
@@ -2738,8 +2740,14 @@ body.vfx-dark .service-chooser-links a:hover,
     0%, 100% { opacity: 0; transform: rotate(45deg) translateY(8px) scale(0.9); }
     20% { opacity: 0.18; } 50% { opacity: 0.08; transform: rotate(45deg) translateY(-6px) scale(1.04); } 80% { opacity: 0.14; }
 }
-.service-chooser-header > *:not(.sc-vfx-bg):not(.service-chooser-close) { position: relative; z-index: 1; }
 .service-chooser-close { z-index: 2; }
+/* --- accent mode: full-dialog artist-page background --- */
+.sc-accent .service-chooser-header { z-index: 1; }
+.sc-accent-dark .service-chooser-links a { color: rgba(255,255,255,0.92); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.10); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.sc-accent-dark .service-chooser-links a:hover { background: rgba(255,255,255,0.12); border-color: var(--link-accent, rgba(255,255,255,0.18)); }
+.sc-accent-light .service-chooser-links a { color: #1a1a2e; background: rgba(255,255,255,0.50); border-color: rgba(0,0,0,0.07); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.sc-accent-light .service-chooser-links a:hover { background: rgba(255,255,255,0.70); border-color: var(--link-accent, rgba(0,0,0,0.12)); }
+.sc-accent-light .sc-artist-sep { color: rgba(0,0,0,0.4); }
 /* --- multiple artist separator --- */
 .sc-artist-sep { color: rgba(255,255,255,0.5); margin: 0 0.1rem; }
 

@@ -1946,6 +1946,9 @@
             body {
                 display: flex;
                 flex-direction: column;
+                height: 100vh;
+                height: 100dvh;
+                overflow: hidden;
             }
             header, .chart-filter-bar {
                 flex-shrink: 0;
@@ -1953,6 +1956,29 @@
             .chart-container { 
                 padding: 0.5rem; 
                 padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+            .chart-sections {
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+            .chart-section.mobile-active {
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+            .chart-list-wrapper {
+                flex: 1;
+                min-height: 0;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            .chart-list {
+                max-height: none !important;
+                overflow-y: visible !important;
             }
             .chart-header h1 { font-size: 0.8rem; }
             .chart-item { padding: 0.2rem 0.35rem; }
@@ -2967,6 +2993,7 @@
                     if (bandsResponse.ok) {
                         const bandsJson = await bandsResponse.json();
                         allBandsData = bandsJson.muzickaMasterLista || [];
+                        primeMasterArtistNameSet(allBandsData);
                     }
                 } catch (err) {
                     console.warn('Could not load bands.json:', err);
