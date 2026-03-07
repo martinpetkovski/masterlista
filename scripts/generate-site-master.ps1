@@ -68,12 +68,14 @@ if (Test-Path $blacklistPath) {
 Write-Host "  > Loaded: $($bandsData.Count) bands, $($releases.Count) releases, $($allArticles.Count) articles, $($eventsData.Count) events" -ForegroundColor DarkGray
 
 # ============================================================================
-#  GENRE CONFIGURATION (mirrors common.js)
+#  GENRE CONFIGURATION (loaded from chart-genres.json)
 # ============================================================================
 
-$rapGenres = @('Рап', 'Трап', 'Хип Хоп', 'Бум Бап', 'Поп-Рап')
-$electronicGenres = @('Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв', 'Драм ен Бас', 'Психоделичен Транс', 'Гоа', 'Глич', 'Чилаут', 'Електро-амбиентал', 'Трип Хоп', 'Псајбас', 'Псајдаб')
-$popGenres = @('Поп', 'Поп-Рок', 'Поп Рок', 'Данс Поп', 'Синт-Поп', 'К-Поп', 'Турбо-Фолк', 'R&B', 'Поп-Фолк', "Р'н'Б", 'Шлагер', 'Соул')
+$chartGenresPath = Join-Path $PSScriptRoot "..\chart-genres.json"
+$chartGenresData = Get-Content $chartGenresPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$rapGenres = @($chartGenresData.rap)
+$electronicGenres = @($chartGenresData.electronic)
+$popGenres = @($chartGenresData.pop)
 $nonAltGenres = $rapGenres + $electronicGenres + $popGenres
 
 # Pre-compute lowercase genre sets for fast lookup (HashSet)

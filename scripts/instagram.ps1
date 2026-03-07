@@ -324,10 +324,12 @@ function Merge-Collabs {
     return @($map.Values)
 }
 
-# Genre filter data (matching index.html logic)
-$script:rapGenres = @('Рап', 'Трап', 'Хип Хоп', 'Бум Бап', 'Поп-Рап')
-$script:electronicGenres = @('Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв', 'Драм ен Бас', 'Психоделичен Транс', 'Гоа', 'Глич', 'Чилаут', 'Електро-амбиентал', 'Трип Хоп', 'Псајбас', 'Псајдаб')
-$script:popGenres = @('Поп', 'Поп-Рок', 'Поп Рок', 'Данс Поп', 'Синт-Поп', 'К-Поп', 'Турбо-Фолк', 'R&B', 'Поп-Фолк', "Р'н'Б", 'Шлагер', 'Соул')
+# Genre filter data (loaded from chart-genres.json)
+$chartGenresPath = Join-Path $PSScriptRoot "..\chart-genres.json"
+$chartGenresData = Get-Content $chartGenresPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$script:rapGenres = @($chartGenresData.rap)
+$script:electronicGenres = @($chartGenresData.electronic)
+$script:popGenres = @($chartGenresData.pop)
 $script:nonAltGenres = $script:rapGenres + $script:electronicGenres + $script:popGenres
 
 function Test-ArtistMatchesAlt {

@@ -2539,7 +2539,8 @@
                     fetch('curators.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('xotel-links.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+                    fetch('xotel-links.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+                    loadChartGenres()
                 ]);
 
                 siteMaster = results[0];

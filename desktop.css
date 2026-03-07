@@ -2495,9 +2495,9 @@ body.dark-mode .share-no-lang-btn {
     color: #000;
 }
 .lang-dropdown-item.active {
-    background: var(--accent-orange, #ff922b);
-    border-color: var(--accent-orange, #ff922b);
-    color: #fff;
+    background: var(--bg-primary, #fff);
+    border-color: var(--bg-primary, #fff);
+    color: var(--text-primary, #000);
 }
 .lang-dropdown-flag {
     font-size: 1.15rem;

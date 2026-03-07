@@ -97,35 +97,47 @@ function deduplicateCollabs(releases) {
     return Array.from(map.values());
 }
 
-// ==================== GENRE CONFIGURATION (authoritative) ====================
+// ==================== GENRE CONFIGURATION (authoritative, loaded from chart-genres.json) ====================
+// Defaults (overridden by loadChartGenres)
 var rapGenres = ['Rap', 'Trap', 'Hip Hop', 'Boom Bap', 'Pop Rap'];
 var electronicGenres = ['Electronic', 'Techno', 'House', 'Trance', 'Synthwave', 'Synth-Pop', 'EDM', 'DnB', 'Drum and Bass', 'Ambient', 'Vaporwave', 'Psychedelic Trance', 'Goa Trance', 'Glitch', 'Chillout', 'Electro-Ambient', 'Trip Hop', 'Psybass', 'Psydub'];
-var popGenres = ['Pop', 'Pop Rock', 'Dance Pop', 'Synth-Pop', 'K-Pop', 'Turbo Folk', 'R&B', 'Pop Folk', 'Schlager', 'Soul'];
+var popGenres = ['Pop', 'Pop Rock', 'Dance Pop', 'Synth-Pop', 'K-Pop', 'Turbo Folk', 'R&B', 'Pop Folk', 'Schlager', 'Soul', 'Electropop', 'Dance'];
 var nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
 
+function _rebuildGenreConfig() {
+    nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
+    genreConfig = {
+        'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres },
+        'rap': { label: 'Rap/Trap', tKey: 'charts.genreRap', genres: rapGenres },
+        'electronic': { label: 'Electronic', tKey: 'charts.genreElectronic', genres: electronicGenres },
+        'pop': { label: 'Pop', tKey: 'charts.genrePop', genres: popGenres }
+    };
+}
+
 var genreConfig = {
-    'alt': {
-        label: 'Alternative',
-        tKey: 'charts.genreAlt',
-        isExclusion: true,
-        excludeGenres: nonAltGenres
-    },
-    'rap': {
-        label: 'Rap/Trap',
-        tKey: 'charts.genreRap',
-        genres: rapGenres
-    },
-    'electronic': {
-        label: 'Electronic',
-        tKey: 'charts.genreElectronic',
-        genres: electronicGenres
-    },
-    'pop': {
-        label: 'Pop',
-        tKey: 'charts.genrePop',
-        genres: popGenres
-    }
+    'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres },
+    'rap': { label: 'Rap/Trap', tKey: 'charts.genreRap', genres: rapGenres },
+    'electronic': { label: 'Electronic', tKey: 'charts.genreElectronic', genres: electronicGenres },
+    'pop': { label: 'Pop', tKey: 'charts.genrePop', genres: popGenres }
 };
+
+/**
+ * Load genre categories from chart-genres.json and rebuild genreConfig.
+ * Call this early in page init. Returns a promise.
+ */
+function loadChartGenres() {
+    return fetch('chart-genres.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.rap) rapGenres = data.rap;
+            if (data.electronic) electronicGenres = data.electronic;
+            if (data.pop) popGenres = data.pop;
+            _rebuildGenreConfig();
+        })
+        .catch(function(e) {
+            console.warn('Could not load chart-genres.json, using defaults:', e);
+        });
+}
 
 /**
  * Translate a genre name using the i18n system.

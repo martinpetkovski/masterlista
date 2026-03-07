@@ -164,9 +164,10 @@ function staticBg(inputLabel) {
 //  CHART DATA
 // ============================================================================
 
-const rapGenres = ['Рап','Трап','Хип Хоп','Бум Бап','Поп-Рап'];
-const electronicGenres = ['Електронска','Техно','Хаус','Транс','Синтвејв','Синт-Поп','EDM','ДНБ','Драм','Амбиентална','Вејпорвејв','Драм ен Бас','Психоделичен Транс','Гоа','Глич','Чилаут','Електро-амбиентал','Трип Хоп','Псајбас','Псајдаб'];
-const popGenres = ['Поп','Поп-Рок','Поп Рок','Данс Поп','Синт-Поп','К-Поп','Турбо-Фолк','R&B','Поп-Фолк',"Р'н'Б",'Шлагер','Соул'];
+const chartGenresData = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'chart-genres.json'), 'utf8'));
+const rapGenres = chartGenresData.rap;
+const electronicGenres = chartGenresData.electronic;
+const popGenres = chartGenresData.pop;
 const nonAlt = [...rapGenres,...electronicGenres,...popGenres].map(g=>g.toLowerCase());
 
 function isArtistAlt(name, bands) {
