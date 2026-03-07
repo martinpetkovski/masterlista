@@ -31,6 +31,22 @@ function transliterateCyrillicToLatin(text) {
     return text.split('').map(function(c) { return cyrillicToLatinMap[c] || c; }).join('');
 }
 
+// ==================== CYRILLIC → GREEK TRANSLITERATION ====================
+var cyrillicToGreekMap = {
+    'А': 'Α', 'а': 'α', 'Б': 'Μπ', 'б': 'μπ', 'В': 'Β', 'в': 'β', 'Г': 'Γ', 'г': 'γ',
+    'Д': 'Ντ', 'д': 'ντ', 'Ѓ': 'Γκ', 'ѓ': 'γκ', 'Е': 'Ε', 'е': 'ε', 'Ж': 'Ζ', 'ж': 'ζ',
+    'З': 'Ζ', 'з': 'ζ', 'Ѕ': 'Ντζ', 'ѕ': 'ντζ', 'И': 'Ι', 'и': 'ι', 'Ј': 'Γι', 'ј': 'γι',
+    'К': 'Κ', 'к': 'κ', 'Л': 'Λ', 'л': 'λ', 'Љ': 'Λι', 'љ': 'λι', 'М': 'Μ', 'м': 'μ',
+    'Н': 'Ν', 'н': 'ν', 'Њ': 'Νι', 'њ': 'νι', 'О': 'Ο', 'о': 'ο', 'П': 'Π', 'π': 'π',
+    'Р': 'Ρ', 'р': 'ρ', 'С': 'Σ', 'с': 'σ', 'Т': 'Τ', 'т': 'τ', 'Ќ': 'Κι', 'ќ': 'κι',
+    'У': 'Ου', 'у': 'ου', 'Ф': 'Φ', 'ф': 'φ', 'Х': 'Χ', 'х': 'χ', 'Ц': 'Τσ', 'ц': 'τσ',
+    'Ч': 'Τσ', 'ч': 'τσ', 'Џ': 'Τζ', 'џ': 'τζ', 'Ш': 'Σ', 'ш': 'σ'
+};
+
+function transliterateCyrillicToGreek(text) {
+    return text.split('').map(function(c) { return cyrillicToGreekMap[c] || c; }).join('');
+}
+
 // ==================== SLUG GENERATION ====================
 function generateArtistSlug(name) {
     return transliterateCyrillicToLatin(name)

@@ -110,10 +110,10 @@
     };
 
     /**
-     * Transliterate text from Cyrillic to Latin if the current language uses Latin script.
-     * Leaves non-Cyrillic text unchanged. Use for dynamic data (artist names, events, etc.).
-     * If the text matches a registered artist name that has a spotifyName (already Latin),
-     * the spotifyName is used instead of mechanical transliteration.
+     * Transliterate text based on the current language script.
+     * Latin: uses spotifyName map or Cyrillic→Latin transliteration.
+     * Greek: uses Cyrillic→Greek transliteration.
+     * Cyrillic: returns text unchanged.
      */
     var _artistLatinMap = {}; // lowercase Cyrillic name → spotifyName
 
@@ -130,11 +130,17 @@
 
     window.localizeText = function(text) {
         if (!text || typeof text !== 'string') return text || '';
-        if (getLanguageScript() !== 'latin') return text;
-        // Check if full text matches a known artist with a spotifyName
-        var lower = text.trim().toLowerCase();
-        if (_artistLatinMap[lower]) return _artistLatinMap[lower];
-        if (typeof transliterateCyrillicToLatin === 'function') return transliterateCyrillicToLatin(text);
+        var script = getLanguageScript();
+        if (script === 'latin') {
+            var lower = text.trim().toLowerCase();
+            if (_artistLatinMap[lower]) return _artistLatinMap[lower];
+            if (typeof transliterateCyrillicToLatin === 'function') return transliterateCyrillicToLatin(text);
+            return text;
+        }
+        if (script === 'greek') {
+            if (typeof transliterateCyrillicToGreek === 'function') return transliterateCyrillicToGreek(text);
+            return text;
+        }
         return text;
     };
 
