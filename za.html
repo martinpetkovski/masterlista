@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -140,179 +141,179 @@
         <div class="help-container">
             <div class="logo-hero">
                 <img src="/logo.png" alt="MMM">
-                <span class="hero-text">ТопЛиста.мк <span class="version-badge">v0.3 БЕТА</span></span>
+                <span class="hero-text">ТопЛиста.мк <span class="version-badge" data-i18n="about.betaBadge">v0.3 БЕТА</span></span>
             </div>
 
-            <h2><i class="fas fa-info-circle"></i> За проектот</h2>
-            <p>
+            <h2><i class="fas fa-info-circle"></i> <span data-i18n="about.headingAbout">За проектот</span></h2>
+            <p data-i18n-html="about.intro1">
                 ТопЛиста.мк е сајт кој автоматски генерира македонска музичка топ листа. Сајтот содржи и отворена база на македонски музички артисти и бендови.
                 Целта е да се документира и промовира македонската музичка сцена на едно место —
                 од етаблирани имиња до нови таленти.
             </p>
-            <p>
+            <p data-i18n-html="about.intro2">
                 Проектот е напојуван од заедницата <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel</a>
                 и е целосно отворен за придонеси.
             </p>
 
-            <h2><i class="fas fa-list"></i> Како функционира Мастер Листата</h2>
-            <p>
+            <h2><i class="fas fa-list"></i> <span data-i18n="about.headingMasterList">Како функционира Мастер Листата</span></h2>
+            <p data-i18n-html="about.masterList1">
                 Мастер Листата е <strong>рачно курирана база</strong> на македонски музички артисти, зачувана во JSON формат
                 (bands.json). Секој артист има: име, град, жанр, слични артисти, линкови кон стриминг платформи и социјални мрежи,
                 контакт и статус на активност.
             </p>
-            <p>
+            <p data-i18n-html="about.masterList2">
                 <strong>Додавање и уредување:</strong> Секој посетител може да предложи промени преку формуларот на сајтот.
                 Кога ќе се испрати промена, таа автоматски патува до <a href="https://github.com/martinpetkovski/masterlista/" target="_blank">GitHub репозиториумот</a> каде се отвора барање за промена.
                 По рачна проверка (проверката привремено се прави од <a href="https://www.instagram.com/najnajjak">Мартин</a>), промената се одобрува и се појавува на сајтот.
             </p>
-            <p>
+            <p data-i18n-html="about.masterList3">
                 <strong>Статус на активност:</strong> Системот автоматски го одредува статусот врз основа на последното издание —
                 „Активен" (издание во последните 2 години), „Можеби" (2–3 години) или „Неактивен" (над 3 години без издание).
             </p>
 
-            <h2><i class="fas fa-user-plus"></i> Критериуми за додавање артист</h2>
-            <p>
+            <h2><i class="fas fa-user-plus"></i> <span data-i18n="about.headingCriteria">Критериуми за додавање артист</span></h2>
+            <p data-i18n-html="about.criteria1">
                 За да биде додаден артист на Мастер Листата, потребно е да постои некаков <strong>доказ дека артистот/бендот навистина постоел</strong> —
                 достапна музика на стриминг платформи, објавени вести или статии, постери од настапи, или самите членови да потврдат дека артистот постоел.
             </p>
 
-            <h2><i class="fas fa-pen-fancy"></i> Формат за внесување</h2>
+            <h2><i class="fas fa-pen-fancy"></i> <span data-i18n="about.headingFormat">Формат за внесување</span></h2>
             <ul>
-                <li><strong>Име на артист:</strong> Мора да биде напишано на кирилица и на македонски јазик, освен ако тоа не е логично (на пример, ако името на бендот е на англиски јазик).</li>
-                <li><strong>Град:</strong> Треба да биде градот на потекло на било кој член на бендот — не градот каде живеат тековно или каде бендот бил формиран.</li>
-                <li><strong>Звучи како:</strong> Треба да биде очигледно влијание на артистот, или наведено некаде (интервју, биографија итн.).</li>
-                <li><strong>YouTube:</strong> Преферираме YouTube канал наместо поединечни линкови. Линкови се исто прифатливи ако не постои канал. Каналот мора да содржи <strong>само содржини од артистот</strong> — не наведувајте канали на издавачки куќи (labels).</li>
-                <li><strong>Википедија:</strong> Линкот до Википедија мора да биде на <strong>македонски јазик</strong> (mk.wikipedia.org).</li>
-                <li><strong>Жанр:</strong> Жанрот треба да биде напишан на <strong>македонски кирилица</strong>.</li>
+                <li data-i18n-html="about.formatName"><strong>Име на артист:</strong> Мора да биде напишано на кирилица и на македонски јазик, освен ако тоа не е логично (на пример, ако името на бендот е на англиски јазик).</li>
+                <li data-i18n-html="about.formatCity"><strong>Град:</strong> Треба да биде градот на потекло на било кој член на бендот — не градот каде живеат тековно или каде бендот бил формиран.</li>
+                <li data-i18n-html="about.formatSoundsLike"><strong>Звучи како:</strong> Треба да биде очигледно влијание на артистот, или наведено некаде (интервју, биографија итн.).</li>
+                <li data-i18n-html="about.formatYouTube"><strong>YouTube:</strong> Преферираме YouTube канал наместо поединечни линкови. Линкови се исто прифатливи ако не постои канал. Каналот мора да содржи <strong>само содржини од артистот</strong> — не наведувајте канали на издавачки куќи (labels).</li>
+                <li data-i18n-html="about.formatWikipedia"><strong>Википедија:</strong> Линкот до Википедија мора да биде на <strong>македонски јазик</strong> (mk.wikipedia.org).</li>
+                <li data-i18n-html="about.formatGenre"><strong>Жанр:</strong> Жанрот треба да биде напишан на <strong>македонски кирилица</strong>.</li>
             </ul>
 
-            <h2><i class="fas fa-circle-check"></i> Како да потврдиш артист</h2>
-            <p>
+            <h2><i class="fas fa-circle-check"></i> <span data-i18n="about.headingVerify">Како да потврдиш артист</span></h2>
+            <p data-i18n-html="about.verify1">
                 Ако си артист или член на бенд кој е веќе на Мастер Листата и сакаш да го потврдиш профилот —
                 доволно е да кликнеш на <strong>„Потврден"</strong> и да избереш <strong>бои за твојот артист</strong>, толку.
                 По поднесувањето, ние ќе ве контактираме преку вашите официјални страници за верификација.
             </p>
 
-            <h2><i class="fas fa-chart-line"></i> Како функционира Топ Листата</h2>
-            <p>
+            <h2><i class="fas fa-chart-line"></i> <span data-i18n="about.headingChart">Како функционира Топ Листата</span></h2>
+            <p data-i18n-html="about.chart1">
                 Топ листата се генерира автоматски од податоци добиени преку <strong>Spotify Web API</strong>.
                 За секој артист од Мастер Листата кој има Spotify профил, системот ги презема најновите изданија
                 (синглови и албуми) и за секое издание ја проверува <strong>популарноста на песните</strong> — 
                 метрика од 0 до 100 која Spotify ја пресметува врз основа на неодамнешни стрим-броеви.
             </p>
-            <p>
+            <p data-i18n="about.chart2">
                 Рангирањето се одредува на следниов начин:
             </p>
             <ul>
-                <li><strong>Синглови</strong> — Последните 20 синглови објавени во изминатите 4 недели, подредени по Spotify популарност. Напомена: Spotify <a href="https://community.spotify.com/t5/Content-Questions/Why-a-four-song-album-is-considered-a-single/td-p/1644557" target="_blank">автоматски ги категоризира изданијата кои имаат 1-4 песни како сингл</a>.</li>
-                <li><strong>Албуми</strong> — Последните 20 албуми објавени во изминатите 8 недели, подредени по истиот принцип</li>
-                <li><strong>Лимит по артист</strong> — Секој артист може да има <strong>најмногу 2 изданија</strong> на листата истовремено (двете најпопуларни). Ова обезбедува поголема разновидност на листата.</li>
-                <li><strong>Сите времиња</strong> — Топ 100 уникатни артисти, подредени по број на Spotify следбеници</li>
+                <li data-i18n-html="about.chartSingles"><strong>Синглови</strong> — Последните 20 синглови објавени во изминатите 4 недели, подредени по Spotify популарност. Напомена: Spotify <a href="https://community.spotify.com/t5/Content-Questions/Why-a-four-song-album-is-considered-a-single/td-p/1644557" target="_blank">автоматски ги категоризира изданијата кои имаат 1-4 песни како сингл</a>.</li>
+                <li data-i18n-html="about.chartAlbums"><strong>Албуми</strong> — Последните 20 албуми објавени во изминатите 8 недели, подредени по истиот принцип</li>
+                <li data-i18n-html="about.chartLimit"><strong>Лимит по артист</strong> — Секој артист може да има <strong>најмногу 2 изданија</strong> на листата истовремено (двете најпопуларни). Ова обезбедува поголема разновидност на листата.</li>
+                <li data-i18n-html="about.chartAllTime"><strong>Сите времиња</strong> — Топ 100 уникатни артисти, подредени по број на Spotify следбеници</li>
             </ul>
 
-            <h2><i class="fas fa-anchor"></i> Кога се ажурира листата?</h2>
-            <p>
+            <h2><i class="fas fa-anchor"></i> <span data-i18n="about.headingUpdates">Кога се ажурира листата?</span></h2>
+            <p data-i18n-html="about.updates1">
                 Топ листата се „закотвува" <strong>еднаш неделно, секој понеделник</strong>. Тоа значи дека позициите
                 и промените (стрелки нагоре/надолу) се пресметуваат со споредба на моменталните податоци
                 наспроти снимката од претходниот понеделник. Помеѓу два понеделника, податоците може да варираат
                 бидејќи Spotify ги ажурира своите метрики во реално време, но официјалната споредба се прави
                 само на неделно ниво.
             </p>
-            <p>
+            <p data-i18n-html="about.updates2">
                 <strong>Важно:</strong> Алгоритмите за пресметување на рангирањето подлежат на повремени промени
                 и подобрувања. Кога ќе се направи промена во алгоритамот, можно е да потрае <strong>една до две недели</strong>
                 додека резултатите целосно се стабилизираат и ја одразуваат новата логика. Во тој период, некои позиции
                 може привремено да изгледаат невообичаено.
             </p>
 
-            <h2><i class="fas fa-tag"></i> Што значи „pop" ознаката?</h2>
-            <p>
+            <h2><i class="fas fa-tag"></i> <span data-i18n="about.headingPopTag">Што значи „pop" ознаката?</span></h2>
+            <p data-i18n-html="about.popTag1">
                 Артистите кои имаат <strong>„pop"</strong> како жанр во Мастер Листата <strong>не се прикажуваат</strong>
                 во алтернативната топ листа. Ова е единствениот механизам за филтрирање — ако сакаш одреден артист
                 да не се појавува во алтернативните класирања, доволно е да му го додадеш жанрот „pop".
             </p>
-            <p>
+            <p data-i18n-html="about.popTag2">
                 Оваа ознака не влијае на приказот во Мастер Листата ниту во главната топ листа — таму артистот
                 останува видлив како и секој друг. Единствено алтернативната листа го исклучува.
             </p>
 
-            <h2><i class="fas fa-newspaper"></i> Како функционираат Вестите</h2>
-            <p>
+            <h2><i class="fas fa-newspaper"></i> <span data-i18n="about.headingNews">Како функционираат Вестите</span></h2>
+            <p data-i18n-html="about.news1">
                 Страницата за вести агрегира содржини од <strong>македонски медиумски извори</strong> преку нивните RSS feeds.
                 Изворите вклучуваат музички-специјализирани портали (mono-ton, Култура Бета, Popup Mk, MK Tickets)
                 и општи медиуми (Слободен Печат, Нова Македонија, А1он, Мета.мк, МКД.МК, Либертас, 360 Степени,
                 Радио МОФ, Фокус, Нетпрес). Ако имаш предлог за нов извор, приклучи се на <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord серверот</a> и сподели го твојот предлог.
             </p>
-            <p>
+            <p data-i18n-html="about.news2">
                 <strong>Филтрирање:</strong> Не се прикажуваат сите вести — туку само оние кои спомнуваат артист од Мастер Листата.
                 Системот го проверува насловот и описот на секоја статија со имиња на артисти достапни во мастер листата. Статиите кои не спомнуваат артист од листата се отфрлаат.
             </p>
-            <p>
+            <p data-i18n="about.news3">
                 Статиите се чуваат во отворена архива (articles.json) која се ажурира секој ден.
             </p>
 
-            <h2><i class="fas fa-calendar-plus"></i> Настани</h2>
-            <p>
+            <h2><i class="fas fa-calendar-plus"></i> <span data-i18n="about.headingEvents">Настани</span></h2>
+            <p data-i18n-html="about.events1">
                 Секој може да додаде настан на страницата за настани, но настанот мора да биде <strong>верифициран</strong>
                 по истиот принцип како и промените во Мастер Листата — по рачна проверка, настанот се одобрува и се појавува на сајтот.
             </p>
 
-            <h2><i class="fas fa-headphones"></i> Како да станеш кустос?</h2>
-            <p>
+            <h2><i class="fas fa-headphones"></i> <span data-i18n="about.headingCurator">Како да станеш кустос?</span></h2>
+            <p data-i18n-html="about.curator1">
                 Во свет каде содржините сè повеќе се генерираат автоматски, <strong>проблемот на курирање</strong>
                 станува сè поважен. Алгоритмите може да ти препорачаат музика врз основа на бројки и трендови,
                 но ништо не може да го замени вкусот на човек кој те познава — пријател, познаник, или некој чиј вкус
                 го цениш.
             </p>
-            <p>
+            <p data-i18n-html="about.curator2">
                 Затоа на оваа платформа постои улогата на <strong>кустос</strong> — човек кој рачно составува листа
                 на песни и ја споделува со заедницата. Идејата е едноставна: наместо алгоритам да одлучува
                 што ќе слушаш, дозволи некој <em>вистински</em> да ти препорача музика.
             </p>
-            <p>
+            <p data-i18n-html="about.curator3">
                 За да биде некој кустос, потребно е да биде <strong>некако вклучен во музичката сцена</strong> —
                 било како артист, критичар, водител на радио емисија, автор на онлајн блог, или слично.
                 Ова е основниот предуслов — целта е кустосите да бидат луѓе кои навистина ја познаваат музиката.
             </p>
-            <p>
+            <p data-i18n-html="about.curator4">
                 Ако сакаш да станеш кустос, приклучи се на
                 <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord серверот</a> и јави се.
             </p>
 
-            <h2><i class="fas fa-code-branch"></i> Код / инженерски придонеси</h2>
-            <p>
+            <h2><i class="fas fa-code-branch"></i> <span data-i18n="about.headingCode">Код / инженерски придонеси</span></h2>
+            <p data-i18n-html="about.code1">
                 Ако сакаш да придонесеш со код или технички подобрувања, секогаш си добредојден!
                 Целиот код е отворен и достапен на <a href="https://github.com/martinpetkovski/masterlista" target="_blank">GitHub</a>.
             </p>
-            <p>
+            <p data-i18n="about.code2">
                 Околу 80% од кодот е напишан со помош на Grok и Claude, а останатите 20% се рачно напишани. Податоците се 100% рачно внесени и проверени. Секој дел од сајтот е резултат на комбинација од автоматски алатки и човечки труд, со голем акцент на точност и квалитет.
             </p>
 
-            <h2><i class="fas fa-code"></i> Технологии</h2>
-            <p>
+            <h2><i class="fas fa-code"></i> <span data-i18n="about.headingTech">Технологии</span></h2>
+            <p data-i18n="about.tech1">
                 Сајтот е статичен (HTML/CSS/JS), хостиран на GitHub Pages.
                 Податоците се чуваат во JSON формат на GitHub и се од отворен тип.
                 Стриминг податоците доаѓаат од Spotify API.
             </p>
 
-            <h2><i class="fas fa-scale-balanced"></i> Лиценца</h2>
-            <p>
+            <h2><i class="fas fa-scale-balanced"></i> <span data-i18n="about.headingLicense">Лиценца</span></h2>
+            <p data-i18n-html="about.license1">
                 Податоците за артистите и за статиите се лиценцирани со
                 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 (CC BY 4.0)</a>.
                 Слободно можете да ги користите, споделувате и адаптирате податоците доколку го наведете изворот.
             </p>
 
-            <h2><i class="fas fa-envelope"></i> Контакт</h2>
-            <p>
+            <h2><i class="fas fa-envelope"></i> <span data-i18n="about.headingContact">Контакт</span></h2>
+            <p data-i18n-html="about.contact1">
                 За прашања, предлози или пријавување на грешки, приклучете се на
                 <a href="https://discord.gg/DzBQASu7mU" target="_blank">Xotel Discord серверот</a>.
             </p>
-            <p>
+            <p data-i18n-html="about.contact2">
                 Домар на сајтот привремено е <a href="https://www.instagram.com/najnajjak">Мартин</a>, а огромно фала и до Томи, Антонио (Мацик), Харун, Сашо, Петар, Андреј, Ирена, Даниел, Мирче, Марко, Бошко, Стефан, Филип x2, целата заедница на Xotel и еден куп други незнајни јунаци кои помогнаа на еден или друг начин во креирањето.
             </p>
 
-            <h2><i class="fas fa-file-alt"></i> Правни документи</h2>
-            <p>
+            <h2><i class="fas fa-file-alt"></i> <span data-i18n="about.headingLegal">Правни документи</span></h2>
+            <p data-i18n-html="about.legal1">
                 <a href="/uslovi">Услови за користење</a> &nbsp;|&nbsp;
                 <a href="/privatnost">Политика на приватност</a>
             </p>
@@ -323,6 +324,15 @@
         // Settings menu + nav menu from common.js
         initSettingsMenu();
         initNavMenu();
+
+        // Update page title and header on language change
+        function updateAboutPageMeta() {
+            document.title = t('about.pageTitle');
+            var header = document.getElementById('site-header');
+            if (header) header.setAttribute('data-title', t('about.headerTitle'));
+        }
+        updateAboutPageMeta();
+        onLanguageChange(updateAboutPageMeta);
     </script>
 </body>
 </html>

@@ -41,6 +41,7 @@
 	<link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
 	<link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
 	<script src="/common.js?v=1"></script>
+	<script src="/i18n.js?v=1"></script>
 	<script src="/tour.js?v=1" defer></script>
 	<style>
 	/* ── Filter bar (same as charts.html) ── */
@@ -467,13 +468,13 @@
 <body class="compact vesti-page">
 	<header id="site-header" data-active="/vesti" data-title="Вести">
 		<span class="header-info">
-			<span><strong id="stat-articles">0</strong> вести</span>
+			<span><strong id="stat-articles">0</strong> <span data-i18n="news.articles">вести</span></span>
 			<span class="separator">•</span>
-			<span><strong id="stat-sources">0</strong> извори</span>
+			<span><strong id="stat-sources">0</strong> <span data-i18n="news.sources">извори</span></span>
 			<span class="separator">•</span>
 			<span id="stat-updated">ажурирање —</span>
 		</span>
-		<button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i><span id="filter-count" class="filter-count"></span></button>
+		<button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="events.search" title="Пребарај"><i class="fas fa-search"></i><span id="filter-count" class="filter-count"></span></button>
 	</header>
 	<script src="/load-header.js"></script>
 
@@ -481,18 +482,18 @@
 		<div class="chart-filter-bar" id="controls-bar">
 			<div class="filter-group filter-presets" data-filter-group="preset">
 				<button class="filter-btn preset-btn active" data-genre="all">
-					<i class="fas fa-newspaper"></i> Сите
+					<i class="fas fa-newspaper"></i> <span data-i18n="news.all">Сите</span>
 				</button>
 				<button class="filter-btn preset-btn" data-genre="pop">
-					<i class="fas fa-music"></i> Поп
+					<i class="fas fa-music"></i> <span data-i18n="news.pop">Поп</span>
 				</button>
 				<button class="filter-btn preset-btn" data-genre="alt">
-					<i class="fas fa-guitar"></i> Алтернативна
+					<i class="fas fa-guitar"></i> <span data-i18n="news.alt">Алтернативна</span>
 				</button>
 			</div>
 			<div class="news-search-wrap">
 				<i class="fas fa-search"></i>
-				<input type="text" id="news-search" placeholder="Пребарај наслов, опис, артист...">
+				<input type="text" id="news-search" data-i18n-placeholder="news.searchPlaceholder" placeholder="Пребарај наслов, опис, артист...">
 			</div>
 		</div>
 
@@ -501,7 +502,7 @@
 		<div class="news-wrap">
 			<ul id="news-container" class="news-list"></ul>
 			<div class="load-more-wrap" id="load-more-wrap" style="display:none">
-				<button id="load-more-btn" class="load-more-btn">Вчитај повеќе</button>
+				<button id="load-more-btn" class="load-more-btn" data-i18n="news.loadMore">Вчитај повеќе</button>
 			</div>
 		</div>
 	</main>
@@ -571,7 +572,7 @@
 				link: a.link || '#',
 				description: a.description || '',
 				date: a.date || '',
-				source: a.source || 'Непознат извор',
+				source: a.source || t('news.unknownSource'),
 				iconUrl: a.iconUrl || '',
 				thumbnail: a.thumbnail || '',
 				matchedArtists: artistList
@@ -606,7 +607,7 @@
 			}
 			document.getElementById('stat-articles').textContent = allArticles.length;
 			document.getElementById('stat-sources').textContent = sourceSet.size;
-			document.getElementById('stat-updated').textContent = lastUpdated ? ('ажурирање ' + formatDateLabel(lastUpdated)) : 'ажурирање —';
+			document.getElementById('stat-updated').textContent = lastUpdated ? (t('news.updated') + ' ' + formatDateLabel(lastUpdated)) : t('news.updated') + ' —';
 		}
 
 		function applyFilters() {
@@ -653,7 +654,7 @@
 			}
 
 			if (!filteredArticles.length) {
-				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-newspaper" style="font-size:1.3rem;display:block;margin-bottom:0.5rem"></i>Нема вести за тековните филтри.</div>';
+				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-newspaper" style="font-size:1.3rem;display:block;margin-bottom:0.5rem"></i>' + t('news.noNews') + '</div>';
 				loadMoreWrap.style.display = 'none';
 				return;
 			}
@@ -661,20 +662,21 @@
 			var shown = filteredArticles.slice(0, visibleCount);
 			var html = '';
 
+			var noImageText = t('news.noImage');
 			shown.forEach(function(article) {
 				var thumbHtml = article.thumbnail
-					? '<img class="news-thumb" src="' + escAttr(article.thumbnail) + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>Без слика</span></div>\'">'
-					: '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>Без слика</span></div>';
+					? '<img class="news-thumb" src="' + escAttr(article.thumbnail) + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>' + esc(noImageText) + '</span></div>\'">'
+					: '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>' + t('news.noImage') + '</span></div>';
 				var iconHtml = article.iconUrl ? '<img src="' + escAttr(article.iconUrl) + '" alt="">' : '';
 				var descHtml = article.description ? '<div class="news-desc">' + esc(article.description.length > 120 ? article.description.substring(0, 120) + '...' : article.description) + '</div>' : '';
 				var artistsHtml = '';
 
 				if (article.matchedArtists && article.matchedArtists.length) {
 					artistsHtml = '<div class="news-artists">' + article.matchedArtists.slice(0, 6).map(function(name) {
-						return '<a href="' + escAttr(artistLink(name)) + '" class="artist-chip" title="' + escAttr(name) + '"><i class="fas fa-music"></i> ' + esc(name) + '</a>';
+						return '<a href="' + escAttr(artistLink(name)) + '" class="artist-chip" title="' + escAttr(localizeText(name)) + '"><i class="fas fa-music"></i> ' + esc(localizeText(name)) + '</a>';
 					}).join('') + '</div>';
 				} else {
-					artistsHtml = '<div class="news-artists"><span class="artist-empty">Нема спомнати артисти</span></div>';
+					artistsHtml = '<div class="news-artists"><span class="artist-empty">' + t('news.noArtists') + '</span></div>';
 				}
 
 				html += '<li class="news-item">' +
@@ -703,6 +705,7 @@
 					if (bandsResp.ok) {
 						var bandsJson = await bandsResp.json();
 						bandsData = bandsJson.muzickaMasterLista || bandsJson || [];
+						registerArtistNames(bandsData);
 					}
 				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
 
@@ -717,7 +720,7 @@
 					lastUpdated = fromMaster.lastUpdated || '';
 				} else {
 					var resp = await fetch('articles.json');
-					if (!resp.ok) throw new Error('Не можеме да го вчитаме articles.json');
+					if (!resp.ok) throw new Error(t('news.fetchError'));
 					var raw = await resp.json();
 					allArticles = (raw.articles || []).map(normalizeArticle);
 					lastUpdated = raw.lastUpdated || '';
@@ -728,7 +731,7 @@
 				applyFilters();
 			} catch (err) {
 				console.error('News load error:', err);
-				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-triangle-exclamation" style="font-size:1.1rem;display:block;margin-bottom:0.4rem"></i>Не можеме да ги вчитаме вестите.</div>';
+				newsContainer.innerHTML = '<div class="news-empty"><i class="fas fa-triangle-exclamation" style="font-size:1.1rem;display:block;margin-bottom:0.4rem"></i>' + t('news.loadError') + '</div>';
 			} finally {
 				loadingBar.classList.remove('active');
 			}

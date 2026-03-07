@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -484,7 +485,7 @@
 </head>
 <body class="compact event-page">
     <header id="site-header" data-title="Настан" data-title-id="event-page-title">
-        <button id="edit-event-btn" class="header-btn" title="Уреди настан" style="display:none">
+        <button id="edit-event-btn" class="header-btn" data-i18n-title="events.editEvent" title="Уреди настан" style="display:none">
             <i class="fas fa-pen"></i>
         </button>
     </header>
@@ -493,7 +494,7 @@
         <div id="event-content">
             <div class="event-loading">
                 <i class="fas fa-spinner fa-spin"></i>
-                <p>Се вчитува...</p>
+                <p data-i18n="common.loading">Се вчитува...</p>
             </div>
         </div>
     </div>
@@ -502,22 +503,22 @@
     <div id="event-edit-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="edit-modal-close">&times;</span>
-            <h2>Уреди настан</h2>
+            <h2 data-i18n="events.editEvent">Уреди настан</h2>
             <form id="event-edit-form">
                 <div class="form-group">
-                    <label for="edit-evt-title">Наслов *</label>
+                    <label for="edit-evt-title" data-i18n="events.titleRequired">Наслов *</label>
                     <input type="text" id="edit-evt-title" required>
                 </div>
                 <div class="form-group" style="display:flex;gap:0.5rem">
                     <div style="flex:1">
-                        <label for="edit-evt-date">Датум *</label>
+                        <label for="edit-evt-date" data-i18n="events.dateRequired">Датум *</label>
                         <div class="masked-input-wrap">
                             <input type="text" id="edit-evt-date" maxlength="10" inputmode="numeric" autocomplete="off" required>
                             <div class="mask-overlay" id="edit-evt-date-overlay"></div>
                         </div>
                     </div>
                     <div style="flex:1">
-                        <label for="edit-evt-time">Време *</label>
+                        <label for="edit-evt-time" data-i18n="events.timeRequired">Време *</label>
                         <div class="masked-input-wrap">
                             <input type="text" id="edit-evt-time" maxlength="5" inputmode="numeric" autocomplete="off" required>
                             <div class="mask-overlay" id="edit-evt-time-overlay"></div>
@@ -525,26 +526,26 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="edit-evt-place">Место / Локација *</label>
+                    <label for="edit-evt-place" data-i18n="events.placeLabel">Место / Локација *</label>
                     <input type="text" id="edit-evt-place" required>
                 </div>
                 <div class="form-group">
-                    <label>Артисти</label>
+                    <label data-i18n="events.artists">Артисти</label>
                     <div id="edit-artist-entries" class="artist-entries-list"></div>
-                    <button type="button" class="add-entry-btn" id="edit-add-artist-btn"><i class="fas fa-plus"></i> Додај артист</button>
+                    <button type="button" class="add-entry-btn" id="edit-add-artist-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addArtist">Додај артист</span></button>
                 </div>
                 <div class="form-group">
-                    <label>Карти / Влезници</label>
+                    <label data-i18n="events.tickets">Карти / Влезници</label>
                     <div id="edit-ticket-entries" class="ticket-entries-list"></div>
-                    <button type="button" class="add-entry-btn" id="edit-add-ticket-btn"><i class="fas fa-plus"></i> Додај карта</button>
+                    <button type="button" class="add-entry-btn" id="edit-add-ticket-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addTicket">Додај карта</span></button>
                 </div>
                 <div class="form-group">
-                    <label>Линкови</label>
+                    <label data-i18n="events.links">Линкови</label>
                     <div id="edit-link-entries" class="link-entries-list"></div>
-                    <button type="button" class="add-entry-btn" id="edit-add-link-btn"><i class="fas fa-plus"></i> Додај линк</button>
+                    <button type="button" class="add-entry-btn" id="edit-add-link-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addLink">Додај линк</span></button>
                 </div>
-                <button type="submit" id="edit-save-btn" style="width:100%;margin-top:0.75rem;padding:0.5rem 1rem;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;color:#fff;background:var(--accent-green,#22c55e);border:none;border-radius:4px;cursor:pointer">Зачувај</button>
-                <button type="button" id="edit-delete-btn" style="display:none;width:100%;margin-top:0.5rem;padding:0.5rem;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;border:1px solid rgba(239,68,68,0.3);border-radius:4px;background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer"><i class="fas fa-trash"></i> Избриши настан</button>
+                <button type="submit" id="edit-save-btn" style="width:100%;margin-top:0.75rem;padding:0.5rem 1rem;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;color:#fff;background:var(--accent-green,#22c55e);border:none;border-radius:4px;cursor:pointer" data-i18n="events.save">Зачувај</button>
+                <button type="button" id="edit-delete-btn" style="display:none;width:100%;margin-top:0.5rem;padding:0.5rem;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;border:1px solid rgba(239,68,68,0.3);border-radius:4px;background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer" data-i18n-html="events.deleteEventBtn"><i class="fas fa-trash"></i> Избриши настан</button>
             </form>
         </div>
     </div>
@@ -557,9 +558,9 @@
         initNavMenu();
 
         // ==================== HELPERS ======================================
-        var MK_MONTHS = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
-        var MK_MONTHS_SHORT = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
-        var MK_DAYS = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
+        var MK_MONTHS = t('months.full');
+        var MK_MONTHS_SHORT = t('months.short');
+        var MK_DAYS = t('days.long');
 
         // Cyrillic transliteration, slug, URL from common.js
         var transliterate = transliterateCyrillicToLatin;
@@ -588,7 +589,7 @@
         }
 
         function getDayName(dateStr) {
-            var days = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            var days = t('days.long').map(function(d) { return d.toLowerCase(); });
             var d = parseDate(dateStr);
             return days[d.getDay()];
         }
@@ -596,20 +597,20 @@
         function countdownInfo(dateStr) {
             var diff = daysUntil(dateStr);
             var day = getDayName(dateStr);
-            if (diff === 0) return { text: 'ДЕНЕС!', cls: 'today-cd' };
-            if (diff === 1) return { text: 'утре, во ' + day, cls: 'soon' };
-            if (diff > 1 && diff <= 7) return { text: 'за ' + diff + ' дена, во ' + day, cls: 'soon' };
-            if (diff > 7 && diff <= 30) return { text: 'за ' + diff + ' дена, во ' + day, cls: 'later' };
+            if (diff === 0) return { text: t('events.today').toUpperCase() + '!', cls: 'today-cd' };
+            if (diff === 1) return { text: t('events.tomorrow').replace('{0}', day), cls: 'soon' };
+            if (diff > 1 && diff <= 7) return { text: t('events.inDays').replace('{0}', diff).replace('{1}', day), cls: 'soon' };
+            if (diff > 7 && diff <= 30) return { text: t('events.inDays').replace('{0}', diff).replace('{1}', day), cls: 'later' };
             if (diff > 30) {
                 var m = Math.floor(diff / 30);
-                return { text: 'за ~' + m + ' мес.', cls: 'later' };
+                return { text: t('events.inMonths').replace('{0}', m), cls: 'later' };
             }
             if (diff < 0) {
                 var ago = Math.abs(diff);
-                if (ago === 1) return { text: 'вчера', cls: 'passed' };
-                if (ago <= 30) return { text: 'пред ' + ago + ' дена', cls: 'passed' };
+                if (ago === 1) return { text: t('events.yesterday'), cls: 'passed' };
+                if (ago <= 30) return { text: t('events.daysAgo').replace('{0}', ago), cls: 'passed' };
                 var mo = Math.floor(ago / 30);
-                return { text: 'пред ~' + mo + ' мес.', cls: 'passed' };
+                return { text: t('events.monthsAgo').replace('{0}', mo), cls: 'passed' };
             }
             return { text: '', cls: '' };
         }
@@ -654,9 +655,9 @@
             document.getElementById('event-content').innerHTML =
                 '<div class="event-error">' +
                     '<i class="fas fa-calendar-xmark"></i>' +
-                    '<h2>Настанот не е пронајден</h2>' +
-                    '<p>Обидете се повторно или вратете се на листата на настани.</p>' +
-                    '<a href="/nastani"><i class="fas fa-arrow-left"></i> Сите Настани</a>' +
+                    '<h2>' + t('events.notFound') + '</h2>' +
+                    '<p>' + t('events.notFoundDesc') + '</p>' +
+                    '<a href="/nastani"><i class="fas fa-arrow-left"></i> ' + t('events.allEvents') + '</a>' +
                 '</div>';
         }
 
@@ -669,7 +670,7 @@
             // Update SEO meta
             var title = evt.title + ' | ТопЛиста.мк';
             document.getElementById('page-title').textContent = title;
-            document.getElementById('event-page-title').textContent = 'Настан';
+            document.getElementById('event-page-title').textContent = t('events.eventLabel');
             var desc = evt.title + ' — ' + d.getDate() + ' ' + MK_MONTHS[d.getMonth()] + ' ' + d.getFullYear() + ', ' + evt.place;
             try {
                 document.getElementById('meta-title').content = title;
@@ -686,7 +687,7 @@
             // Header
             html += '<div class="event-header">';
             html += '<div class="event-icon"><i class="fas fa-calendar-day"></i></div>';
-            html += '<div class="event-name">' + esc(evt.title) + '</div>';
+            html += '<div class="event-name">' + esc(localizeText(evt.title)) + '</div>';
             if (cd.text) {
                 html += '<div class="event-countdown-hero ' + cd.cls + '">' + cd.text + '</div>';
             }
@@ -697,7 +698,7 @@
 
             // Artists section
             if (artists.length) {
-                html += '<h3 class="section-title"><i class="fas fa-music"></i> Артисти</h3>';
+                html += '<h3 class="section-title"><i class="fas fa-music"></i> ' + t('events.artistsSection') + '</h3>';
                 html += '<div class="info-list">';
                 for (var i = 0; i < artists.length; i++) {
                     var thumb = getArtistThumb(artists[i]);
@@ -707,7 +708,7 @@
                     } else {
                         html += '<i class="fas fa-music"></i>';
                     }
-                    html += '<span>' + esc(artists[i]) + '</span>';
+                    html += '<span>' + esc(localizeText(artists[i])) + '</span>';
                     html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
                     html += '</a>';
                 }
@@ -715,21 +716,21 @@
             }
 
             // Details section
-            html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-info-circle"></i> Детали</h3>';
+            html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-info-circle"></i> ' + t('events.details') + '</h3>';
             html += '<div class="info-list">';
 
             // Place (links to Google Maps)
             var mapsUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place || '');
             html += '<a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="info-card">';
             html += '<div class="info-card-icon"><i class="fas fa-location-dot"></i></div>';
-            html += '<div class="info-card-text"><div class="info-card-label">Место</div><div class="info-card-value">' + esc(evt.place) + '</div></div>';
+            html += '<div class="info-card-text"><div class="info-card-label">' + t('events.artistsPlace') + '</div><div class="info-card-value">' + esc(localizeText(evt.place)) + '</div></div>';
             html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
             html += '</a>';
 
             // Date
             html += '<div class="info-card">';
             html += '<div class="info-card-icon"><i class="fas fa-calendar"></i></div>';
-            html += '<div class="info-card-text"><div class="info-card-label">Датум</div><div class="info-card-value">' +
+            html += '<div class="info-card-text"><div class="info-card-label">' + t('events.artistsDate') + '</div><div class="info-card-value">' +
                 MK_DAYS[d.getDay()] + ', ' + String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear() + '</div></div>';
             html += '</div>';
 
@@ -737,7 +738,7 @@
             if (evt.time) {
                 html += '<div class="info-card">';
                 html += '<div class="info-card-icon"><i class="fas fa-clock"></i></div>';
-                html += '<div class="info-card-text"><div class="info-card-label">Време</div><div class="info-card-value">' + esc(evt.time) + '</div></div>';
+                html += '<div class="info-card-text"><div class="info-card-label">' + t('events.artistsTime') + '</div><div class="info-card-value">' + esc(evt.time) + '</div></div>';
                 html += '</div>';
             }
 
@@ -748,7 +749,7 @@
                     var lnk = evtLinks[li];
                     html += '<a href="' + escA(lnk.url) + '" target="_blank" rel="noopener" class="info-card">';
                     html += '<div class="info-card-icon"><i class="fas fa-arrow-up-right-from-square"></i></div>';
-                    html += '<div class="info-card-text"><div class="info-card-label">' + esc(lnk.label || 'Линк') + '</div><div class="info-card-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(lnk.url) + '</div></div>';
+                    html += '<div class="info-card-text"><div class="info-card-label">' + esc(localizeText(lnk.label) || t('events.linkDefault')) + '</div><div class="info-card-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(lnk.url) + '</div></div>';
                     html += '<i class="fas fa-chevron-right info-card-arrow"></i>';
                     html += '</a>';
                 }
@@ -758,13 +759,13 @@
 
             // Tickets section
             if (evt.tickets && evt.tickets.length) {
-                html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-ticket"></i> Карти</h3>';
+                html += '<h3 class="section-title" style="margin-top:1.5rem"><i class="fas fa-ticket"></i> ' + t('events.ticketsSection') + '</h3>';
                 html += '<div class="info-list">';
-                for (var t = 0; t < evt.tickets.length; t++) {
-                    var tk = evt.tickets[t];
+                for (var ti = 0; ti < evt.tickets.length; ti++) {
+                    var tk = evt.tickets[ti];
                     html += '<div class="ticket-card">';
                     html += '<div class="ticket-card-icon"><i class="fas fa-ticket"></i></div>';
-                    html += '<div class="ticket-card-info"><div class="ticket-card-label">' + esc(tk.label) + '</div><div class="ticket-card-price">' + esc(tk.price) + '</div></div>';
+                    html += '<div class="ticket-card-info"><div class="ticket-card-label">' + esc(localizeText(tk.label)) + '</div><div class="ticket-card-price">' + esc(tk.price) + '</div></div>';
                     html += '</div>';
                 }
                 html += '</div>';
@@ -807,6 +808,7 @@
                 masterArtists = (results[1].muzickaMasterLista || []).map(function(b) {
                     return { name: b.name, city: b.city || '' };
                 }).sort(function(a, b) { return a.name.localeCompare(b.name); });
+                registerArtistNames(results[1].muzickaMasterLista || []);
 
                 // Overlay drafts
                 if (window.MMMDrafts) {
@@ -827,7 +829,7 @@
             var row = document.createElement('div');
             row.className = 'artist-entry-row artist-ac-wrapper';
             var input = document.createElement('input');
-            input.type = 'text'; input.placeholder = 'Пребарај артист...';
+            input.type = 'text'; input.placeholder = t('events.searchArtist');
             input.className = 'artist-input'; input.value = value || '';
             input.readOnly = !!value;
             if (value) input.style.fontWeight = '600';
@@ -835,7 +837,7 @@
             acList.className = 'artist-ac-list';
             var removeBtn = document.createElement('button');
             removeBtn.type = 'button'; removeBtn.className = 'entry-remove';
-            removeBtn.title = 'Отстрани'; removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.title = t('events.remove'); removeBtn.innerHTML = '<i class="fas fa-times"></i>';
 
             row.appendChild(input); row.appendChild(acList); row.appendChild(removeBtn);
             removeBtn.addEventListener('click', function() { row.remove(); });
@@ -849,8 +851,8 @@
                 var matches = masterArtists.filter(function(a) { return a.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
                 if (!matches.length) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
                 acList.innerHTML = matches.map(function(a) {
-                    return '<div class="artist-ac-item" data-name="' + escA(a.name) + '">' +
-                        esc(a.name) + (a.city ? '<span class="ac-city">' + esc(a.city) + '</span>' : '') + '</div>';
+                    return '<div class=\"artist-ac-item\" data-name=\"' + escA(a.name) + '\">' +
+                        esc(localizeText(a.name)) + (a.city ? '<span class=\"ac-city\">' + esc(localizeText(a.city)) + '</span>' : '') + '</div>';
                 }).join('');
                 acList.classList.add('open');
                 acList.querySelectorAll('.artist-ac-item').forEach(function(item) {
@@ -881,9 +883,9 @@
             var c = document.getElementById('edit-ticket-entries');
             var row = document.createElement('div'); row.className = 'ticket-entry-row';
             row.innerHTML =
-                '<input type="text" placeholder="Тип (пр. Стандард)" class="ticket-label-input" value="' + escA(label) + '">' +
-                '<input type="text" placeholder="Цена (пр. 300 ден)" class="ticket-price-input" value="' + escA(price) + '">' +
-                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+                '<input type="text" placeholder="' + escA(t('events.ticketTypePlaceholder')) + '" class="ticket-label-input" value="' + escA(label) + '">' +
+                '<input type="text" placeholder="' + escA(t('events.ticketPricePlaceholder')) + '" class="ticket-price-input" value="' + escA(price) + '">' +
+                '<button type="button" class="entry-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
             row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
             c.appendChild(row);
         }
@@ -892,9 +894,9 @@
             var c = document.getElementById('edit-link-entries');
             var row = document.createElement('div'); row.className = 'link-entry-row';
             row.innerHTML =
-                '<input type="text" placeholder="Опис (пр. Билети, Инстаграм)" class="link-label-input" value="' + escA(label) + '">' +
-                '<input type="url" placeholder="https://..." class="link-url-input" value="' + escA(url) + '">' +
-                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+                '<input type="text" placeholder="' + escA(t('events.linkLabelPlaceholder')) + '" class="link-label-input" value="' + escA(label) + '">' +
+                '<input type="url" placeholder="' + escA(t('events.linkUrlPlaceholder')) + '" class="link-url-input" value="' + escA(url) + '">' +
+                '<button type="button" class="entry-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
             row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
             c.appendChild(row);
         }
@@ -975,8 +977,8 @@
             }
             function renderOverlay(overlayEl, value, template, sepChar) {
                 var digits = value.replace(/\D/g, '');
-                var datePlaceholders = ['Д','Д','М','М','Г','Г','Г','Г'];
-                var timePlaceholders = ['Ч','Ч','М','М'];
+                var datePlaceholders = t('events.datePlaceholders');
+                var timePlaceholders = t('events.timePlaceholders');
                 var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
                 var html = '';
                 var di = 0;
@@ -1053,7 +1055,7 @@
             // Delete button
             document.getElementById('edit-delete-btn').addEventListener('click', function() {
                 if (!currentEvent) return;
-                if (!confirm('Дали сте сигурни дека сакате да го избришете овој настан?')) return;
+                if (!confirm(t('events.deleteConfirm'))) return;
                 var updated = allEvents.filter(function(e) { return e.id !== currentEvent.id; });
                 submitEventUpdate(updated);
                 // Redirect to events list
@@ -1077,14 +1079,14 @@
                     if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
                         date = dp[2] + '-' + dp[1] + '-' + dp[0];
                     } else {
-                        notify('Форматот на датумот треба да биде дд.мм.гггг', 'error');
+                        notify(t('events.dateFormatError'), 'error');
                         return;
                     }
                 }
 
                 // Validate time format HH:MM
                 if (time && !/^\d{2}:\d{2}$/.test(time)) {
-                    notify('Форматот на времето треба да биде чч:мм', 'error');
+                    notify(t('events.timeFormatError'), 'error');
                     return;
                 }
 
@@ -1097,7 +1099,7 @@
                     var found = masterArtists.some(function(a) { return a.name === v; });
                     if (!found) {
                         input.style.borderColor = '#ef4444';
-                        notify('"' + v + '" не е на Мастер Листата.', 'error');
+                        notify(t('events.artistNotInList').replace('{0}', v), 'error');
                         valid = false; return;
                     }
                     input.style.borderColor = '';
@@ -1111,7 +1113,7 @@
                     var l = (row.querySelector('.ticket-label-input') || {}).value || '';
                     var p = (row.querySelector('.ticket-price-input') || {}).value || '';
                     l = l.trim(); p = p.trim();
-                    if (l || p) tickets.push({ label: l || 'Влез', price: p });
+                    if (l || p) tickets.push({ label: l || t('events.defaultTicketLabel'), price: p });
                 });
 
                 // Collect links
@@ -1124,7 +1126,7 @@
                 });
 
                 if (!title || !date || !time || !place) {
-                    notify('Пополнете ги сите задолжителни полиња.', 'error');
+                    notify(t('events.fillRequired'), 'error');
                     return;
                 }
 
@@ -1141,7 +1143,7 @@
                 currentEvent = updatedEvt;
                 renderEvent(updatedEvt);
                 closeEditModal();
-                notify('Промените се зачувани локално. Кликнете "Испрати промени" за да ги поднесете.', 'info');
+                notify(t('events.savedLocally'), 'info');
             });
         })();
 

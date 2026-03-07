@@ -90,19 +90,23 @@ var nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
 var genreConfig = {
     'alt': {
         label: 'Алтернативна',
+        tKey: 'charts.genreAlt',
         isExclusion: true,
         excludeGenres: nonAltGenres
     },
     'rap': {
         label: 'Рап/Трап',
+        tKey: 'charts.genreRap',
         genres: rapGenres
     },
     'electronic': {
         label: 'Електронска',
+        tKey: 'charts.genreElectronic',
         genres: electronicGenres
     },
     'pop': {
         label: 'Поп',
+        tKey: 'charts.genrePop',
         genres: popGenres
     }
 };
@@ -307,11 +311,14 @@ var mkMonths = ['јан', 'фев', 'мар', 'апр', 'мај', 'јун', 'ј�
 
 /**
  * Format an ISO date string (YYYY-MM-DD) as "D мон YYYY".
+ * Uses i18n month names when available.
  */
 function formatDate(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr + 'T00:00:00');
-    return d.getDate() + ' ' + mkMonths[d.getMonth()] + ' ' + d.getFullYear();
+    var months = (typeof t === 'function') ? t('months.short') : mkMonths;
+    if (!Array.isArray(months)) months = mkMonths;
+    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 }
 
 // ==================== SETTINGS MENU (shared) ====================
@@ -347,28 +354,42 @@ function initSettingsMenu(extraServiceDefs) {
         var currentService = localStorage.getItem('mmm-preferred-service');
         var isDark = document.documentElement.classList.contains('dark-mode');
 
-        var optionsHtml = '<option value=""' + (!currentService ? ' selected' : '') + '>Секогаш прашувај</option>';
+        var optionsHtml = '<option value=""' + (!currentService ? ' selected' : '') + '>' + (typeof t === 'function' ? t('settings.alwaysAsk') : 'Секогаш прашувај') + '</option>';
         for (var id in svcDefs) {
             if (!svcDefs.hasOwnProperty(id)) continue;
             optionsHtml += '<option value="' + id + '"' + (id === currentService ? ' selected' : '') + '>' + svcDefs[id].name + '</option>';
         }
 
+        // Build language selector options
+        var langOptionsHtml = '';
+        var curLang = (typeof getLanguage === 'function') ? getLanguage() : 'mk';
+        var langs = (typeof getLanguages === 'function') ? getLanguages() : [];
+        for (var li = 0; li < langs.length; li++) {
+            langOptionsHtml += '<option value="' + langs[li].code + '"' + (langs[li].code === curLang ? ' selected' : '') + '>' + langs[li].flag + ' ' + langs[li].name + '</option>';
+        }
+
+        var _t = typeof t === 'function' ? t : function(k) { return k; };
+
         overlay.innerHTML =
             '<div class="settings-panel">' +
-                '<h3><i class="fas fa-gear"></i> Поставки</h3>' +
+                '<h3><i class="fas fa-gear"></i> ' + _t('settings.title') + '</h3>' +
                 '<div class="settings-section">' +
-                    '<div class="settings-section-title">Тема</div>' +
+                    '<div class="settings-section-title">' + _t('settings.language') + '</div>' +
+                    '<select class="settings-lang-select">' + langOptionsHtml + '</select>' +
+                '</div>' +
+                '<div class="settings-section">' +
+                    '<div class="settings-section-title">' + _t('settings.theme') + '</div>' +
                     '<div class="settings-theme-toggle">' +
-                        '<button class="settings-theme-btn' + (!isDark ? ' active' : '') + '" data-theme="light"><i class="fas fa-sun"></i> Светла</button>' +
-                        '<button class="settings-theme-btn' + (isDark ? ' active' : '') + '" data-theme="dark"><i class="fas fa-moon"></i> Темна</button>' +
+                        '<button class="settings-theme-btn' + (!isDark ? ' active' : '') + '" data-theme="light"><i class="fas fa-sun"></i> ' + _t('settings.themeLight') + '</button>' +
+                        '<button class="settings-theme-btn' + (isDark ? ' active' : '') + '" data-theme="dark"><i class="fas fa-moon"></i> ' + _t('settings.themeDark') + '</button>' +
                     '</div>' +
                 '</div>' +
                 '<div class="settings-section">' +
-                    '<div class="settings-section-title">Стриминг сервис</div>' +
+                    '<div class="settings-section-title">' + _t('settings.streamingService') + '</div>' +
                     '<select class="settings-service-select">' + optionsHtml + '</select>' +
                 '</div>' +
                 '<div class="settings-section settings-tour-section">' +
-                    '<button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> Тура на сајтот</button>' +
+                    '<button class="settings-tour-btn" id="settings-start-tour"><i class="fas fa-route"></i> ' + _t('settings.siteTour') + '</button>' +
                 '</div>' +
             '</div>';
 
@@ -418,6 +439,17 @@ function initSettingsMenu(extraServiceDefs) {
             });
         }
 
+        var langSelect = overlay.querySelector('.settings-lang-select');
+        if (langSelect) {
+            langSelect.addEventListener('change', function() {
+                if (typeof setLanguage === 'function') {
+                    setLanguage(langSelect.value);
+                    // Reload to fully refresh all translated content
+                    window.location.reload();
+                }
+            });
+        }
+
         var tourBtnEl = overlay.querySelector('#settings-start-tour');
         if (tourBtnEl) {
             tourBtnEl.addEventListener('click', function() {
@@ -427,15 +459,21 @@ function initSettingsMenu(extraServiceDefs) {
         }
     }
 
-    settingsBtn.addEventListener('click', function() {
-        var isDarkNow = document.documentElement.classList.contains('dark-mode');
-        overlay.querySelectorAll('.settings-theme-btn').forEach(function(btn) {
-            btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDarkNow);
+    // Guard against duplicate click listeners on repeated initSettingsMenu calls
+    if (!settingsBtn.hasAttribute('data-settings-init')) {
+        settingsBtn.setAttribute('data-settings-init', '1');
+        settingsBtn.addEventListener('click', function() {
+            var ov = document.getElementById('settings-overlay');
+            if (!ov) return;
+            var isDarkNow = document.documentElement.classList.contains('dark-mode');
+            ov.querySelectorAll('.settings-theme-btn').forEach(function(btn) {
+                btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDarkNow);
+            });
+            var svcSel = ov.querySelector('.settings-service-select');
+            if (svcSel) svcSel.value = localStorage.getItem('mmm-preferred-service') || '';
+            ov.classList.add('visible');
         });
-        var svcSel = overlay.querySelector('.settings-service-select');
-        if (svcSel) svcSel.value = localStorage.getItem('mmm-preferred-service') || '';
-        overlay.classList.add('visible');
-    });
+    }
 }
 
 // ==================== NAV MENU (shared) ====================
@@ -461,6 +499,124 @@ function initNavMenu() {
             }
         });
     }
+}
+
+// ==================== SHARE LINK BUTTON (shared) ====================
+
+/**
+ * Initialises the share-link button in the header.
+ * Shows a popup letting the user pick a language for the shared URL.
+ */
+function initShareLinkButton() {
+    var btn = document.getElementById('header-share-link-btn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function() {
+        // If popup already exists, close it
+        var existing = document.getElementById('share-overlay');
+        if (existing) {
+            closeShareAnimated(existing);
+            return;
+        }
+
+        var langs = (typeof getLanguages === 'function') ? getLanguages() : [];
+        var _t = typeof t === 'function' ? t : function(k) { return k; };
+
+        var overlay = document.createElement('div');
+        overlay.id = 'share-overlay';
+        overlay.className = 'settings-overlay';
+
+        var panel = document.createElement('div');
+        panel.className = 'settings-panel share-panel';
+
+        var title = document.createElement('h3');
+        title.innerHTML = '<i class="fas fa-link"></i> ' + _t('share.pickLanguage');
+        panel.appendChild(title);
+
+        var grid = document.createElement('div');
+        grid.className = 'share-lang-grid';
+
+        for (var i = 0; i < langs.length; i++) {
+            (function(lang) {
+                var langBtn = document.createElement('button');
+                langBtn.className = 'share-lang-btn';
+                langBtn.innerHTML = '<span class="share-lang-flag">' + lang.flag + '</span><span class="share-lang-name">' + lang.name + '</span>';
+                langBtn.addEventListener('click', function() {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('lang', lang.code);
+                    var shareUrl = url.toString();
+                    copyAndConfirm(shareUrl, title, overlay, _t);
+                });
+                grid.appendChild(langBtn);
+            })(langs[i]);
+        }
+        panel.appendChild(grid);
+
+        // "No language" option
+        var plainBtn = document.createElement('button');
+        plainBtn.className = 'share-no-lang-btn';
+        plainBtn.textContent = _t('share.noLangParam');
+        plainBtn.addEventListener('click', function() {
+            var url = new URL(window.location.href);
+            url.searchParams.delete('lang');
+            var shareUrl = url.toString();
+            copyAndConfirm(shareUrl, title, overlay, _t);
+        });
+        panel.appendChild(plainBtn);
+
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
+
+        // Trigger open animation
+        requestAnimationFrame(function() { overlay.classList.add('visible'); });
+
+        // Close on backdrop click
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeShareAnimated(overlay);
+        });
+        // Close on Escape
+        function onEsc(e) {
+            if (e.key === 'Escape') {
+                closeShareAnimated(overlay);
+                document.removeEventListener('keydown', onEsc);
+            }
+        }
+        document.addEventListener('keydown', onEsc);
+    });
+
+    function copyAndConfirm(url, titleEl, overlay, _t) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                titleEl.innerHTML = '<i class="fas fa-check"></i> ' + _t('share.copied');
+                setTimeout(function() { closeShareAnimated(overlay); }, 1000);
+            }, function() {
+                prompt(_t('share.copyManually'), url);
+                closeShareAnimated(overlay);
+            });
+        } else {
+            prompt(_t('share.copyManually'), url);
+            closeShareAnimated(overlay);
+        }
+    }
+
+    function closeShareAnimated(ov) {
+        var panel = ov.querySelector('.settings-panel');
+        if (panel) {
+            ov.classList.add('closing');
+            panel.addEventListener('animationend', function handler() {
+                panel.removeEventListener('animationend', handler);
+                ov.remove();
+            }, { once: true });
+        } else {
+            ov.remove();
+        }
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShareLinkButton);
+} else {
+    initShareLinkButton();
 }
 
 // ==================== LINK ICONS ====================
@@ -625,17 +781,26 @@ function initGlobalMiniFooter() {
 
     var miniFooter = document.createElement('div');
     miniFooter.className = 'site-mini-footer';
-    miniFooter.innerHTML =
-        '<a class="site-mini-footer__logo-link" href="/" aria-label="ТопЛиста.мк">' +
-            '<img src="/logo.png" alt="ТопЛиста.мк" class="site-mini-footer__logo" width="22" height="22">' +
-        '</a>' +
-        '<div class="site-mini-footer__text">' +
-            'Развиено од <a href="' + repoUrl + '" target="_blank" rel="noopener noreferrer">Мартин</a> ' +
-            '2025-2026. Потпомогнато од заедницата на <a href="' + xotelUrl + '" target="_blank" rel="noopener noreferrer">Xotel</a>' +
-            '<br><br><a rel="license" class="site-mini-footer__license" href="https://creativecommons.org/licenses/by/4.0/">' +
-                '<img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />' +
+
+    function renderMiniFooterContent() {
+        var devBy = (typeof t === 'function') ? t('footer.developedBy') : 'Развиено од';
+        var supBy = (typeof t === 'function') ? t('footer.supportedBy') : 'Потпомогнато од заедницата на';
+        var authorName = (typeof localizeText === 'function') ? localizeText('Мартин') : 'Мартин';
+        var siteTitle = (typeof t === 'function') ? t('common.siteTitle') : 'Топ Листа';
+        miniFooter.innerHTML =
+            '<a class="site-mini-footer__logo-link" href="/" aria-label="' + siteTitle + '">' +
+                '<img src="/logo.png" alt="' + siteTitle + '" class="site-mini-footer__logo" width="22" height="22">' +
             '</a>' +
-        '</div>';
+            '<div class="site-mini-footer__text">' +
+                devBy + ' <a href="' + repoUrl + '" target="_blank" rel="noopener noreferrer">' + authorName + '</a> ' +
+                '2025-2026. ' + supBy + ' <a href="' + xotelUrl + '" target="_blank" rel="noopener noreferrer">Xotel</a>' +
+                '<br><br><a rel="license" class="site-mini-footer__license" href="https://creativecommons.org/licenses/by/4.0/">' +
+                    '<img alt="Creative Commons License" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />' +
+                '</a>' +
+            '</div>';
+    }
+    renderMiniFooterContent();
+    if (typeof onLanguageChange === 'function') onLanguageChange(renderMiniFooterContent);
 
     miniFooter.classList.add('site-mini-footer--standalone');
     document.body.appendChild(miniFooter);
@@ -645,6 +810,44 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initGlobalMiniFooter);
 } else {
     initGlobalMiniFooter();
+}
+
+// ==================== PAGE TITLE TRANSLATION ====================
+function initPageTitleTranslation() {
+    var path = window.location.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+    var config = {
+        '/':            { title: 'pageTitle.home',       header: 'pages.home' },
+        '/index':       { title: 'pageTitle.home',       header: 'pages.home' },
+        '/charts':      { title: 'pageTitle.charts',     header: 'pageTitle.chartsHeader' },
+        '/lista':       { title: 'pageTitle.masterList', header: 'pages.masterList' },
+        '/nastani':     { title: 'pageTitle.events',     header: 'pages.events' },
+        '/vesti':       { title: 'pageTitle.news',       header: 'pages.news' },
+        '/kustosi':     { title: 'pageTitle.curators',   header: 'pages.curators' },
+        '/iznenadi-me': { title: 'pageTitle.surprise',   header: 'pages.surprise' },
+        '/privatnost':  { title: 'pageTitle.privacy',    header: 'pageTitle.privacyHeader' },
+        '/uslovi':      { title: 'pageTitle.terms',      header: 'pageTitle.termsHeader' },
+        '/artist':      { title: 'pageTitle.artist',     header: 'pages.artist' },
+        '/nastan':      { title: 'pageTitle.event',      header: 'pages.event' },
+        '/kustos':      { title: 'pageTitle.curator',    header: 'pages.curator' }
+    };
+    var entry = config[path];
+    if (!entry) return;
+
+    function updateTitle() {
+        document.title = t(entry.title);
+        var header = document.getElementById('site-header');
+        if (header) header.setAttribute('data-title', t(entry.header));
+        var h1 = header && header.querySelector('h1');
+        if (h1) h1.textContent = t(entry.header);
+    }
+    updateTitle();
+    if (typeof onLanguageChange === 'function') onLanguageChange(updateTitle);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPageTitleTranslation);
+} else {
+    initPageTitleTranslation();
 }
 
 // ==================== SERVICE CHOOSER (shared) ====================
@@ -851,14 +1054,14 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var artistHtml = '';
     artistNames.forEach(function(name, idx) {
         if (idx > 0) artistHtml += '<span class="sc-artist-sep">, </span>';
-        artistHtml += '<a class="sc-artist-name sc-artist-link" data-artist-name="' + escHtml(name) + '">' + escHtml(name) + '</a>';
+        artistHtml += '<a class="sc-artist-name sc-artist-link" data-artist-name="' + escHtml(name) + '">' + escHtml(localizeText(name)) + '</a>';
     });
-    artistHtml += '<span class="sc-verified-badge" id="sc-verified-badge" title="Потврдено од артистот" aria-label="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+    artistHtml += '<span class="sc-verified-badge" id="sc-verified-badge" title="' + escHtml(t('service.verifiedBadge')) + '" aria-label="' + escHtml(t('service.verifiedBadge')) + '"><i class="fas fa-check-circle"></i></span>';
     artistEl.innerHTML = artistHtml;
 
     var verifiedBadge = document.getElementById('sc-verified-badge');
     if (verifiedBadge) verifiedBadge.style.display = verified ? 'inline-flex' : 'none';
-    songEl.textContent = title || 'Отвори во...';
+    songEl.textContent = title ? localizeText(title) : t('service.openIn');
 
     // Resolve artist page links for each artist name
     var lookupArtists = artistNames.slice();

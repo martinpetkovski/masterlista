@@ -36,10 +36,16 @@
         if (header.dataset.titleId) h1.id = header.dataset.titleId;
     }
 
-    // Insert page-specific buttons before the settings button
+    // Keep the generic share-link button immediately to the left of settings.
+    // Any page-specific controls should appear before that pair.
     var btnContainer = header.querySelector('.header-buttons');
+    var shareLinkBtn = header.querySelector('#header-share-link-btn');
     var settingsBtn = header.querySelector('#settings-btn');
-    if (btnContainer && settingsBtn && fragment.childNodes.length > 0) {
-        btnContainer.insertBefore(fragment, settingsBtn);
+    var insertionPoint = shareLinkBtn || settingsBtn;
+    if (btnContainer && insertionPoint && fragment.childNodes.length > 0) {
+        btnContainer.insertBefore(fragment, insertionPoint);
     }
+
+    // Apply i18n translations to the freshly injected header
+    if (typeof applyTranslations === 'function') applyTranslations();
 })();

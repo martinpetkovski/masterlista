@@ -65,6 +65,7 @@
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -1699,7 +1700,7 @@
             color: #FFF;
             padding: 0.6rem 0.9rem;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             min-height: 70px;
         }
 
@@ -1873,6 +1874,17 @@
 
         body.dark-mode .title-nav-btn:hover {
             color: #fff;
+        }
+
+        .title-nav-lang-btn {
+            box-sizing: border-box;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            justify-content: center;
+            line-height: 1.2;
+            min-height: calc(1.2em + 0.6rem + 4px);
+        }
+        body.dark-mode .title-nav-lang-btn {
         }
 
         /* ==================== RESPONSIVE ==================== */
@@ -2129,30 +2141,34 @@
             <div class="site-title-logo-wrap">
                 <img src="/logo.png" alt="" class="site-title-logo" id="site-title-logo-trigger">
                 <div class="site-title-menu" id="site-title-menu">
-                    <a href="/"><i class="fas fa-house"></i> Дома</a>
-                    <a href="/charts"><i class="fas fa-chart-line"></i> Топ Листа</a>
-                    <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
-                    <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
-                    <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-                    <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
-                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
-                    <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
+                    <a href="/"><i class="fas fa-house"></i> <span data-i18n="nav.home">Дома</span></a>
+                    <a href="/charts"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
+                    <a href="/lista"><i class="fas fa-list"></i> <span data-i18n="nav.masterList">Мастер Листа</span></a>
+                    <a href="/nastani"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
+                    <a href="/vesti"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
+                    <a href="/kustosi"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
+                    <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> <span data-i18n="nav.surprise">Изненади ме</span></a>
+                    <a href="/za"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За проектот</span></a>
                     <span class="nav-separator"></span>
                     <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
                     <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> Instagram</a>
                 </div>
             </div>
             <div class="site-title-text">
-                <span class="site-title-main">Топ Листа</span>
+                <span class="site-title-main" data-i18n="common.siteTitle">Топ Листа</span>
                 <span class="site-title-sub" id="site-last-update">—</span>
             </div>
             <nav class="title-nav">
-                <a href="/charts" class="title-nav-btn"><i class="fas fa-chart-line"></i> <span>Топ Листа</span></a>
-                <a href="/lista" class="title-nav-btn"><i class="fas fa-list"></i> <span>Мастер Листа</span></a>
-                <a href="/nastani" class="title-nav-btn"><i class="fas fa-calendar-days"></i> <span>Настани</span></a>
-                <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span>Вести</span></a>
-                <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span>Кустоси</span></a>
-                <a href="/za" class="title-nav-btn"><i class="fas fa-info-circle"></i> <span>За</span></a>
+                <a href="/charts" class="title-nav-btn"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
+                <a href="/lista" class="title-nav-btn"><i class="fas fa-list"></i> <span data-i18n="nav.masterList">Мастер Листа</span></a>
+                <a href="/nastani" class="title-nav-btn"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
+                <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
+                <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
+                <a href="/za" class="title-nav-btn"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За</span></a>
+                <div class="title-nav-lang-wrap">
+                    <a href="#" class="title-nav-btn title-nav-lang-btn" id="index-lang-toggle" title="Language" aria-haspopup="true" aria-expanded="false"><i class="fas fa-globe"></i></a>
+                    <div class="lang-dropdown" id="index-lang-dropdown"></div>
+                </div>
             </nav>
         </div>
 
@@ -2174,10 +2190,10 @@
                 </svg>
             </div>
             <div class="dash-card-header">
-                <h2><i class="fas fa-chart-line"></i> Топ Листа</h2>
-                <a href="/charts" class="more-link">Целосна листа &raquo;</a>
+                <h2><i class="fas fa-chart-line"></i> <span data-i18n="dashboard.topChart">Топ Листа</span></h2>
+                <a href="/charts" class="more-link"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
             </div>
-            <div class="dash-loading" id="main-chart-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="main-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="main-chart-list" style="display:none;"></ol>
         </div>
 
@@ -2199,63 +2215,63 @@
                 </svg>
             </div>
             <div class="dash-card-header">
-                <h2><i class="fas fa-guitar"></i> Алтернативна</h2>
-                <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')">Целосна листа &raquo;</a>
+                <h2><i class="fas fa-guitar"></i> <span data-i18n="dashboard.alternative">Алтернативна</span></h2>
+                <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
             </div>
-            <div class="dash-loading" id="alt-chart-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="alt-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="alt-chart-list" style="display:none;"></ol>
         </div>
 
         <!-- ==================== RELEASE RADAR (last 5) ==================== -->
         <div class="dash-card full-width" id="radar-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-bolt"></i> Најнови изданија</h2>
-                <a href="/charts" class="more-link">Сите изданија &raquo;</a>
+                <h2><i class="fas fa-bolt"></i> <span data-i18n="dashboard.latestReleases">Најнови изданија</span></h2>
+                <a href="/charts" class="more-link"><span data-i18n="common.allReleases">Сите изданија</span> &raquo;</a>
             </div>
-            <div class="dash-loading" id="radar-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="radar-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="release-radar-grid" id="radar-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== UPCOMING EVENTS ==================== -->
         <div class="dash-card" id="events-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-calendar-days"></i> Претстојни настани</h2>
-                <a href="/nastani" class="more-link">Сите настани &raquo;</a>
+                <h2><i class="fas fa-calendar-days"></i> <span data-i18n="dashboard.upcomingEvents">Претстојни настани</span></h2>
+                <a href="/nastani" class="more-link"><span data-i18n="common.allEvents">Сите настани</span> &raquo;</a>
             </div>
-            <div class="dash-loading" id="events-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="events-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="events-list" id="events-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== TRENDING: HOT SONGS ==================== -->
         <div class="dash-card" id="hot-songs-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-fire"></i> Популарно</h2>
+                <h2><i class="fas fa-fire"></i> <span data-i18n="dashboard.popular">Популарно</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-hot-songs-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/charts" class="more-link">Топ Листа &raquo;</a>
+                    <a href="/charts" class="more-link"><span data-i18n="common.topChart">Топ Листа</span> &raquo;</a>
                 </div>
             </div>
-            <div class="dash-loading" id="hot-songs-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="hot-songs-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="trending-list" id="hot-songs-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== QUICK ACTIONS ==================== -->
         <div class="dash-card full-width" id="actions-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-rocket"></i> Брз пристап</h2>
+                <h2><i class="fas fa-rocket"></i> <span data-i18n="dashboard.quickAccess">Брз пристап</span></h2>
             </div>
             <div class="quick-actions">
                 <a href="/lista#dodaj-artist" class="quick-action-btn">
-                    <i class="fas fa-plus"></i> Додај артист
+                    <i class="fas fa-plus"></i> <span data-i18n="dashboard.addArtist">Додај артист</span>
                 </a>
                 <a href="/nastani#dodaj-nastan" class="quick-action-btn">
-                    <i class="fas fa-calendar-plus"></i> Додај настан
+                    <i class="fas fa-calendar-plus"></i> <span data-i18n="dashboard.addEvent">Додај настан</span>
                 </a>
                 <a href="/iznenadi-me" class="quick-action-btn">
-                    <i class="fas fa-shuffle"></i> Изненади ме!
+                    <i class="fas fa-shuffle"></i> <span data-i18n="dashboard.surpriseMe">Изненади ме!</span>
                 </a>
                 <a href="/charts" class="quick-action-btn">
-                    <i class="fas fa-chart-line"></i> Топ Листа
+                    <i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span>
                 </a>
                 <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener" class="quick-action-btn">
                     <i class="fab fa-instagram"></i> Instagram
@@ -2269,76 +2285,76 @@
         <!-- ==================== DISCOVER ARTISTS (5 random) ==================== -->
         <div class="dash-card" id="discover-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-star"></i> Откриј артисти</h2>
+                <h2><i class="fas fa-star"></i> <span data-i18n="dashboard.discoverArtists">Откриј артисти</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-discover-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Мастер Листа</span> &raquo;</a>
                 </div>
             </div>
-            <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="trending-list" id="discover-grid" style="display:none;"></ul>
         </div>
 
         <!-- ==================== SONGS (random on refresh) ==================== -->
         <div class="dash-card" id="sotd-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-headphones"></i> Препорачано од кустоси</h2>
+                <h2><i class="fas fa-headphones"></i> <span data-i18n="dashboard.curatorPicks">Препорачано од кустоси</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-sotd-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/kustosi" class="more-link">Сите кустоси &raquo;</a>
+                    <a href="/kustosi" class="more-link"><span data-i18n="common.allCurators">Сите кустоси</span> &raquo;</a>
                 </div>
             </div>
-            <div class="dash-loading" id="sotd-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="sotd-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="sotd-list" id="sotd-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== NEWS (min 5) ==================== -->
         <div class="dash-card full-width" id="news-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-newspaper"></i> Вести</h2>
-                <a href="/vesti" class="more-link">Сите вести &raquo;</a>
+                <h2><i class="fas fa-newspaper"></i> <span data-i18n="dashboard.news">Вести</span></h2>
+                <a href="/vesti" class="more-link"><span data-i18n="common.allNews">Сите вести</span> &raquo;</a>
             </div>
-            <div class="dash-loading" id="news-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="news-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="news-list" id="news-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== TRENDING: RISING ARTISTS ==================== -->
         <div class="dash-card" id="rising-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-arrow-trend-up"></i> Артисти во подем</h2>
+                <h2><i class="fas fa-arrow-trend-up"></i> <span data-i18n="dashboard.risingArtists">Артисти во подем</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-rising-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link">Мастер Листа &raquo;</a>
+                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Мастер Листа</span> &raquo;</a>
                 </div>
             </div>
-            <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="trending-list" id="rising-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== VERIFY ARTISTS ==================== -->
         <div class="dash-card" id="verify-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-circle-check"></i> Помогни со верификација</h2>
+                <h2><i class="fas fa-circle-check"></i> <span data-i18n="dashboard.helpVerify">Помогни со верификација</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-verify-btn"><i class="fas fa-shuffle"></i></button>
                 </div>
             </div>
-            <p class="verify-card-intro">Ги познаваш овие артисти или нивните претставници?</p>
-            <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+            <p class="verify-card-intro" data-i18n="dashboard.verifyIntro">Ги познаваш овие артисти или нивните претставници?</p>
+            <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="verify-list" id="verify-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== XOTEL YOUTUBE ==================== -->
         <div class="dash-card full-width" id="yt-card">
             <div class="dash-card-header">
-                <h2><i class="fab fa-youtube"></i> Xotel видеа</h2>
+                <h2><i class="fab fa-youtube"></i> <span data-i18n="dashboard.xotelVideos">Xotel видеа</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-yt-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="https://www.youtube.com/@xotelmusic" target="_blank" rel="noopener" class="more-link">YouTube канал &raquo;</a>
+                    <a href="https://www.youtube.com/@xotelmusic" target="_blank" rel="noopener" class="more-link"><span data-i18n="common.youtubeChannel">YouTube канал</span> &raquo;</a>
                 </div>
             </div>
             <div class="yt-grid" id="yt-grid">
-                <div class="dash-loading"><i class="fas fa-spinner fa-spin"></i> Се вчитува...</div>
+                <div class="dash-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             </div>
         </div>
     </div>
@@ -2350,6 +2366,45 @@
         // ==================== INIT SHARED UI (from common.js) ====================
         initSettingsMenu();
         initNavMenu();
+
+        // ==================== INDEX LANGUAGE DROPDOWN ====================
+        (function() {
+            var btn = document.getElementById('index-lang-toggle');
+            var dropdown = document.getElementById('index-lang-dropdown');
+            if (!btn || !dropdown) return;
+            var langs = (typeof getLanguages === 'function') ? getLanguages() : [];
+            var curLang = (typeof getLanguage === 'function') ? getLanguage() : 'mk';
+
+            // Build dropdown items
+            for (var i = 0; i < langs.length; i++) {
+                (function(lang) {
+                    var item = document.createElement('button');
+                    item.className = 'lang-dropdown-item' + (lang.code === curLang ? ' active' : '');
+                    item.innerHTML = '<span class="lang-dropdown-flag">' + lang.flag + '</span><span>' + lang.name + '</span>';
+                    item.addEventListener('click', function() {
+                        if (lang.code !== curLang && typeof setLanguage === 'function') {
+                            setLanguage(lang.code);
+                            window.location.reload();
+                        }
+                        dropdown.classList.remove('open');
+                    });
+                    dropdown.appendChild(item);
+                })(langs[i]);
+            }
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var isOpen = dropdown.classList.toggle('open');
+                btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
 
         // ==================== INDEX TITLE HAMBURGER MENU ====================
         (function() {
@@ -2408,7 +2463,7 @@
         function verifiedBadge(artistName) {
             for (var i = 0; i < bandsData.length; i++) {
                 if (bandsData[i].name.toLowerCase() === artistName.toLowerCase() && bandsData[i].confirmed) {
-                    return '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+                    return '<span class="verified-badge" title="' + t('artist.verifiedBadge') + '"><i class="fas fa-check-circle"></i></span>';
                 }
             }
             return '';
@@ -2425,7 +2480,7 @@
             var cls = cssClass || 'event-artist-link';
             var names = bandName.split(',').map(function(n) { return n.trim(); }).filter(Boolean);
             return names.map(function(name) {
-                return '<a href="' + getArtistPageUrl(name) + '" class="' + cls + '" onclick="event.stopPropagation()">' + escHtml(name) + '</a>';
+                return '<a href="' + getArtistPageUrl(name) + '" class="' + cls + '" onclick="event.stopPropagation()">' + escHtml(localizeText(name)) + '</a>';
             }).join(', ') + names.reduce(function(acc, name) { return acc + verifiedBadge(name); }, '');
         }
 
@@ -2469,7 +2524,7 @@
                 ]);
 
                 siteMaster = results[0];
-                if (results[1]) { bandsData = results[1].muzickaMasterLista || []; primeMasterArtistNameSet(bandsData); }
+                if (results[1]) { bandsData = results[1].muzickaMasterLista || []; primeMasterArtistNameSet(bandsData); registerArtistNames(bandsData); }
                 if (results[2]) curatorsData = results[2];
                 if (results[3]) curatorTracksData = results[3];
                 if (results[4]) eventsData = results[4].events || [];
@@ -2580,7 +2635,7 @@
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     coverHtml +
                     '<div class="mini-chart-info">' +
-                        '<div class="mini-chart-title">' + escHtml(r.releaseTitle) + '</div>' +
+                        '<div class="mini-chart-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
                         '<div class="mini-chart-artist">' + buildArtistLinks(r.bandName) + '</div>' +
                     '</div>' +
                     '<div class="chart-pop-wrap">' +
@@ -2631,14 +2686,14 @@
             var loading = document.getElementById('radar-loading');
 
             if (last5.length === 0) {
-                list.innerHTML = '<li class="no-data-msg">Нема нови изданија.</li>';
+                list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noNewReleases') + '</li>';
             } else {
                 list.innerHTML = last5.map(function(r) {
-                    var typeLabel = r.releaseType === 'album' ? 'Албум' : r.releaseType === 'compilation' ? 'Комп.' : 'Сингл';
+                    var typeLabel = r.releaseType === 'album' ? t('dashboard.album') : r.releaseType === 'compilation' ? t('dashboard.compilation') : t('dashboard.single');
                     return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
-                            '<div class="radar-info-title">' + escHtml(r.releaseTitle) + '</div>' +
+                            '<div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
                             '<div class="radar-info-artist">' + buildArtistLinks(r.bandName) + '</div>' +
                         '</div>' +
                         '<div class="radar-meta">' +
@@ -2686,7 +2741,7 @@
                 var typeIcon = r.releaseType === 'album' ? 'fas fa-record-vinyl' : 'fas fa-compact-disc';
                 var url = r.releaseUrl || '#';
                 return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + '">' +
-                    '<i class="' + typeIcon + '"></i> ' + escHtml(r.releaseTitle) +
+                    '<i class="' + typeIcon + '"></i> ' + escHtml(localizeText(r.releaseTitle)) +
                 '</a>';
             }).join('') + '</div>';
         }
@@ -2694,7 +2749,7 @@
         // ==================== RENDER: DISCOVER ARTISTS (5 random on refresh) ====================
         function renderDiscoverArtists() {
             if (bandsData.length === 0) {
-                document.getElementById('discover-loading').innerHTML = '<span>Нема артисти</span>';
+                document.getElementById('discover-loading').innerHTML = '<span>' + t('dashboard.noArtists') + '</span>';
                 return;
             }
 
@@ -2718,10 +2773,10 @@
                 var releases = getLatestReleases(artist.name, 3);
                 var releaseHtml = buildReleasesHtml(releases);
                 return '<li class="trending-item" onclick="location.href=\'' + artistPageUrl + '\'">' +
-                    '<img class="trending-cover" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(artist.name) + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
+                    '<img class="trending-cover" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(localizeText(artist.name)) + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(artist.name) + verifiedBadge(artist.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(artist.genre || '') + '</div>' +
+                        '<div class="trending-title">' + escHtml(localizeText(artist.name)) + verifiedBadge(artist.name) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(localizeText(artist.genre || '')) + '</div>' +
                         releaseHtml +
                     '</div>' +
                     (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
@@ -2735,7 +2790,7 @@
         // ==================== RENDER: SONGS (random on refresh) ====================
         function renderSongsOfTheDay() {
             if (!curatorTracksData || !curatorTracksData.curators) {
-                document.getElementById('sotd-loading').innerHTML = '<span>Нема достапни песни</span>';
+                document.getElementById('sotd-loading').innerHTML = '<span>' + t('dashboard.noSongs') + '</span>';
                 return;
             }
 
@@ -2769,7 +2824,7 @@
             }
 
             if (allTracks.length === 0) {
-                document.getElementById('sotd-loading').innerHTML = '<span>Нема достапни песни</span>';
+                document.getElementById('sotd-loading').innerHTML = '<span>' + t('dashboard.noSongs') + '</span>';
                 return;
             }
 
@@ -2777,13 +2832,13 @@
             var list = document.getElementById('sotd-list');
             var loading = document.getElementById('sotd-loading');
 
-            list.innerHTML = picked.map(function(t) {
-                var onclick = t.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(t.url) + '" data-title="' + escHtml(t.title) + '" data-artist="' + escHtml(t.artist) + '" data-thumb="' + escHtml(t.image || '') + '"' : '';
-                var imgHtml = t.image ? '<img class="sotd-cover" src="' + t.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sotd-cover"></div>';
+            list.innerHTML = picked.map(function(track) {
+                var onclick = track.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(track.url) + '" data-title="' + escHtml(track.title) + '" data-artist="' + escHtml(track.artist) + '" data-thumb="' + escHtml(track.image || '') + '"' : '';
+                var imgHtml = track.image ? '<img class="sotd-cover" src="' + track.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sotd-cover"></div>';
                 var relHtml = '';
-                if (t.relevance && t.relevance.length > 0) {
+                if (track.relevance && track.relevance.length > 0) {
                     var flatItems = [];
-                    t.relevance.forEach(function(item) {
+                    track.relevance.forEach(function(item) {
                         item.split(/,(?![^(]*\))/g).forEach(function(s) { s = s.trim(); if (s) flatItems.push(s); });
                     });
                     relHtml = '<div class="sotd-relevance">' + flatItems.map(function(item) {
@@ -2794,16 +2849,16 @@
                             if (bandsData[b].name.toLowerCase() === nameOnly.toLowerCase()) { match = bandsData[b].name; break; }
                         }
                         if (match) {
-                            return '<a href="/artist.html?name=' + encodeURIComponent(match) + '" onclick="event.stopPropagation()">' + escHtml(match) + '</a>' + (extra ? ' <span style="opacity:.65">' + escHtml(extra) + '</span>' : '');
+                            return '<a href="/artist.html?name=' + encodeURIComponent(match) + '" onclick="event.stopPropagation()">' + escHtml(localizeText(match)) + '</a>' + (extra ? ' <span style="opacity:.65">' + escHtml(localizeText(extra)) + '</span>' : '');
                         }
-                        return escHtml(item);
+                        return escHtml(localizeText(item));
                     }).join('<span class="sep">·</span>') + '</div>';
                 }
-                return '<li class="sotd-item" ' + onclick + ' title="' + escHtml(t.artist) + ' - ' + escHtml(t.title) + '">' +
+                return '<li class="sotd-item" ' + onclick + ' title="' + escHtml(localizeText(track.artist)) + ' - ' + escHtml(localizeText(track.title)) + '">' +
                     imgHtml +
                     '<div class="sotd-info">' +
-                        '<div class="sotd-track">' + escHtml(t.artist) + ' - ' + escHtml(t.title) + '</div>' +
-                        '<div class="sotd-curator">препорачано од <a href="/kustos/' + encodeURIComponent(t.curator) + '" style="color:inherit;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation()">' + escHtml(t.curator) + '</a></div>' +
+                        '<div class="sotd-track">' + escHtml(localizeText(track.artist)) + ' - ' + escHtml(localizeText(track.title)) + '</div>' +
+                        '<div class="sotd-curator">' + t('dashboard.recommendedBy') + ' <a href="/kustos/' + encodeURIComponent(track.curator) + '" style="color:inherit;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation()">' + escHtml(localizeText(track.curator)) + '</a></div>' +
                         relHtml +
                     '</div>' +
                 '</li>';
@@ -2826,7 +2881,7 @@
             var loading = document.getElementById('hot-songs-loading');
 
             if (picked.length === 0) {
-                list.innerHTML = '<li class="no-data-msg">Нема песни со позитивна промена оваа недела.</li>';
+                list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noPositiveChange') + '</li>';
                 loading.style.display = 'none';
                 list.style.display = '';
                 return;
@@ -2840,12 +2895,12 @@
                     var chevItems = Array.from({ length: chevCount }, function(_, idx) {
                         return '<i style="--chev-index:' + idx + ';--chev-total:' + chevCount + '"></i>';
                     }).join('');
-                    chevHtml = '<span class="trending-chevrons" title="+' + popChangeVal + ' популарност">' + chevItems + '</span>';
+                    chevHtml = '<span class="trending-chevrons" title="+' + popChangeVal + ' ' + t('dashboard.popularity') + '">' + chevItems + '</span>';
                 }
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(r.releaseTitle) + '</div>' +
+                        '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
                         '<div class="trending-sub">' + buildArtistLinks(r.bandName) + '</div>' +
                     '</div>' +
                     chevHtml +
@@ -2886,8 +2941,8 @@
                 return '<li class="trending-item" onclick="location.href=\'' + artistUrl + '\'">' +
                     '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(a.name) + verifiedBadge(a.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(a.genre || '') + '</div>' +
+                        '<div class="trending-title">' + escHtml(localizeText(a.name)) + verifiedBadge(a.name) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(localizeText(a.genre || '')) + '</div>' +
                         relHtml +
                     '</div>' +
                     (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
@@ -2916,7 +2971,7 @@
             var loading = document.getElementById('events-loading');
 
             // Day indicator helpers (matching nastani.html logic)
-            var dayNames = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            var dayNames = t('days.long');
             function getDayName(dateStr) {
                 var p = dateStr.split('-');
                 var d = new Date(+p[0], +p[1]-1, +p[2]);
@@ -2931,20 +2986,22 @@
             function getDayIndicator(dateStr) {
                 var d = daysUntil(dateStr);
                 var day = getDayName(dateStr);
-                if (d === 0) return { text: 'Денес', cls: 'event-today' };
-                if (d === 1) return { text: 'Утре, во ' + day, cls: '' };
-                if (d > 1 && d <= 7) return { text: 'Во ' + day, cls: '' };
-                if (d > 7) return { text: 'За ' + d + ' дена, во ' + day, cls: '' };
+                if (d === 0) return { text: t('dashboard.today'), cls: 'event-today' };
+                if (d === 1) return { text: t('dashboard.tomorrow').replace('{0}', day), cls: '' };
+                if (d > 1 && d <= 7) return { text: t('dashboard.inDay').replace('{0}', day), cls: '' };
+                if (d > 7) return { text: t('dashboard.inDays').replace('{0}', day).replace('{1}', d), cls: '' };
                 return { text: '', cls: '' };
             }
 
             if (upcoming.length === 0) {
-                list.innerHTML = '<li class="no-data-msg">Нема претстојни настани.</li>';
+                list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noUpcomingEvents') + '</li>';
             } else {
                 list.innerHTML = upcoming.map(function(e) {
                     var d = new Date(e.date + 'T00:00:00');
                     var day = d.getDate();
-                    var month = mkMonths[d.getMonth()];
+                    var months = t('months.short');
+                    if (!Array.isArray(months)) months = mkMonths;
+                    var month = months[d.getMonth()];
                     var eventPageUrl = e.id ? '/nastan/' + encodeURIComponent(e.id) : (e.link || (e.links && e.links[0] ? e.links[0].url : '#'));
                     var dayInfo = getDayIndicator(e.date);
                     var itemClass = 'event-item' + (dayInfo.cls ? ' ' + dayInfo.cls : '');
@@ -2958,17 +3015,17 @@
                             }
                             if (match) {
                                 var aUrl = getArtistPageUrl(match);
-                                return '<a href="' + aUrl + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(match) + '</a>' + verifiedBadge(match);
+                                return '<a href="' + aUrl + '" class="event-artist-link" onclick="event.stopPropagation()">' + escHtml(localizeText(match)) + '</a>' + verifiedBadge(match);
                             }
-                            return escHtml(name);
+                            return escHtml(localizeText(name));
                         });
                         artistsHtml = '<div class="event-artists"><i class="fas fa-music"></i> ' + artistLinks.join(', ') + '</div>';
                     }
                     return '<li class="' + itemClass + '">' +
                         '<div class="event-date-badge"><span class="event-date-day">' + day + '</span><span class="event-date-month">' + month + '</span></div>' +
                         '<div class="event-info">' +
-                            '<div class="event-title"><a href="' + eventPageUrl + '">' + escHtml(e.title) + '</a></div>' +
-                            '<div class="event-meta"><i class="fas fa-location-dot"></i> ' + escHtml(e.place) + (e.time ? ' &bull; ' + e.time : '') + dayIndicatorHtml + '</div>' +
+                            '<div class="event-title"><a href="' + eventPageUrl + '">' + escHtml(localizeText(e.title)) + '</a></div>' +
+                            '<div class="event-meta"><i class="fas fa-location-dot"></i> ' + escHtml(localizeText(e.place)) + (e.time ? ' &bull; ' + e.time : '') + dayIndicatorHtml + '</div>' +
                             artistsHtml +
                         '</div>' +
                     '</li>';
@@ -2983,14 +3040,14 @@
         function renderNews() {
             var newsData = siteMaster && siteMaster.news ? siteMaster.news : null;
             if (!newsData) {
-                document.getElementById('news-loading').innerHTML = '<span>Нема вести</span>';
+                document.getElementById('news-loading').innerHTML = '<span>' + t('dashboard.noNews') + '</span>';
                 return;
             }
 
             // Use pre-matched articles; fall back to all if fewer than 5
             var pool = newsData.matched;
             if (!pool || pool.length === 0) {
-                document.getElementById('news-loading').innerHTML = '<span>Нема вести</span>';
+                document.getElementById('news-loading').innerHTML = '<span>' + t('dashboard.noNews') + '</span>';
                 return;
             }
 
@@ -3000,10 +3057,12 @@
             var list = document.getElementById('news-list');
             var loading = document.getElementById('news-loading');
 
+            var noImageText = t('dashboard.noImage');
+
             list.innerHTML = top5.map(function(a) {
                 var thumbHtml = a.thumbnail
-                    ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>Без слика</span></div>\'">'
-                    : '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>Без слика</span></div>';
+                    ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>' + noImageText + '</span></div>\'">'
+                    : '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>' + noImageText + '</span></div>';
                 var iconHtml = a.iconUrl ? '<img src="' + a.iconUrl + '" alt="">' : '';
                 var descHtml = a.description ? '<div class="news-desc">' + escHtml(a.description.length > 120 ? a.description.substring(0, 120) + '...' : a.description) + '</div>' : '';
                 var artistNames = [];
@@ -3016,10 +3075,10 @@
                 var artistsHtml = '';
                 if (artistNames.length) {
                     artistsHtml = '<div class="news-artists">' + artistNames.slice(0, 6).map(function(name) {
-                        return '<a href="' + getArtistPageUrl(name) + '" class="artist-chip" title="' + escHtml(name) + '"><i class="fas fa-music"></i> ' + escHtml(name) + '</a>';
+                        return '<a href="' + getArtistPageUrl(name) + '" class="artist-chip" title="' + escHtml(name) + '"><i class="fas fa-music"></i> ' + escHtml(localizeText(name)) + '</a>';
                     }).join('') + '</div>';
                 } else {
-                    artistsHtml = '<div class="news-artists"><span class="artist-empty">Нема спомнати артисти</span></div>';
+                    artistsHtml = '<div class="news-artists"><span class="artist-empty">' + t('dashboard.noArtistsMentioned') + '</span></div>';
                 }
                 return '<li class="news-item">' +
                     thumbHtml +
@@ -3041,7 +3100,7 @@
         function renderVerifyArtists() {
             var unverified = bandsData.filter(function(b) { return !b.confirmed; });
             if (unverified.length === 0) {
-                document.getElementById('verify-loading').innerHTML = '<span>Сите артисти се верифицирани!</span>';
+                document.getElementById('verify-loading').innerHTML = '<span>' + t('dashboard.allVerified') + '</span>';
                 return;
             }
 
@@ -3054,8 +3113,8 @@
                 var contactLink = b.links && b.links.instagram ? b.links.instagram : (b.links && b.links.spotify ? b.links.spotify : artistUrl);
                 return '<li class="verify-item">' +
                     '<img class="verify-img" src="' + (b.image || '/logo.png') + '" alt="" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
-                    '<span class="verify-name"><a href="' + artistUrl + '">' + escHtml(b.name) + '</a></span>' +
-                    '<a href="' + contactLink + '" target="_blank" rel="noopener" class="verify-btn"><i class="fas fa-paper-plane"></i> Јави им</a>' +
+                    '<span class="verify-name"><a href="' + artistUrl + '">' + escHtml(localizeText(b.name)) + '</a></span>' +
+                    '<a href="' + contactLink + '" target="_blank" rel="noopener" class="verify-btn"><i class="fas fa-paper-plane"></i> ' + t('dashboard.contactThem') + '</a>' +
                 '</li>';
             }).join('');
 
@@ -3074,7 +3133,7 @@
             }).filter(Boolean);
 
             if (videoIds.length === 0) {
-                grid.innerHTML = '<div class="no-data-msg">Нема достапни видеа.</div>';
+                grid.innerHTML = '<div class="no-data-msg">' + t('dashboard.noVideos') + '</div>';
                 return;
             }
 
@@ -3089,7 +3148,7 @@
                 return '<div class="yt-embed">' +
                     '<iframe src="https://www.youtube.com/embed/' + videoId + '" ' +
                     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-                    'allowfullscreen loading="lazy" title="Xotel видео"></iframe>' +
+                    'allowfullscreen loading="lazy" title="' + t('dashboard.xotelVideo') + '"></iframe>' +
                 '</div>';
             }).join('');
         }

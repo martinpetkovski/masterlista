@@ -225,13 +225,13 @@
 <body class="compact">
     <header id="site-header" data-active="/lista" data-title="ТопЛиста.мк">
         <span class="header-info">
-            <span><strong id="total-bands">0</strong> артисти</span>
+            <span><strong id="total-bands">0</strong> <span data-i18n="lista.artists">артисти</span></span>
             <span class="separator">•</span>
-            <span>Ажурирано <span id="last-modified">...</span></span>
+            <span><span data-i18n="lista.updated">Ажурирано</span> <span id="last-modified">...</span></span>
         </span>
-        <button id="add-band-btn" class="header-btn add-band edit-hidden" title="Додај артист"><i class="fas fa-plus"></i></button>
-        <button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i></button>
-        <button id="copy-data-btn" class="header-btn copy-data edit-hidden" title="Копирај податоци"><i class="fas fa-copy"></i></button>
+        <button id="add-band-btn" class="header-btn add-band edit-hidden" data-i18n-title="lista.addArtist" title="Додај артист"><i class="fas fa-plus"></i></button>
+        <button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="common.search" title="Пребарај"><i class="fas fa-search"></i></button>
+        <button id="copy-data-btn" class="header-btn copy-data edit-hidden" data-i18n-title="lista.copyData" title="Копирај податоци"><i class="fas fa-copy"></i></button>
     </header>
     <script src="/load-header.js"></script>
     <main>
@@ -240,8 +240,8 @@
                 <div class="unified-search-input-row" id="unified-search-input-row">
                     <i class="fas fa-search unified-search-icon"></i>
                     <div class="unified-search-chips" id="unified-search-chips"></div>
-                    <input type="text" id="unified-search" placeholder="Пребарај артист, жанр, град..." autocomplete="off">
-                    <button type="button" id="filter-toggle-btn" class="filter-toggle-btn" title="Филтри"><i class="fas fa-sliders-h"></i></button>
+                    <input type="text" id="unified-search" data-i18n-placeholder="lista.searchPlaceholder" placeholder="Пребарај артист, жанр, град..." autocomplete="off">
+                    <button type="button" id="filter-toggle-btn" class="filter-toggle-btn" data-i18n-title="charts.filters" title="Филтри"><i class="fas fa-sliders-h"></i></button>
                 </div>
                 <div class="unified-search-dropdown" id="unified-search-dropdown"></div>
             </div>
@@ -260,15 +260,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Име</th>
-                            <th>Град</th>
-                            <th>Жанр</th>
-                            <th>Звучи како</th>
-                            <th>Линкови</th>
-                            <th>Медиуми</th>
-                            <th>Настани</th>
+                            <th data-i18n="lista.name">Име</th>
+                            <th data-i18n="lista.city">Град</th>
+                            <th data-i18n="lista.genre">Жанр</th>
+                            <th data-i18n="lista.soundsLike">Звучи како</th>
+                            <th data-i18n="lista.links">Линкови</th>
+                            <th data-i18n="lista.media">Медиуми</th>
+                            <th data-i18n="lista.events">Настани</th>
                             <th><i class="fas fa-circle status-header-icon"></i></th>
-                            <th><i class="fas fa-microphone" style="font-size:0.6rem" title="Порака"></i></th>
+                            <th><i class="fas fa-microphone" style="font-size:0.6rem" data-i18n-title="lista.message" title="Порака"></i></th>
                             <th class="edit-hidden"><i class="fas fa-pen" style="font-size:0.6rem"></i></th>
                         </tr>
                     </thead>
@@ -281,16 +281,16 @@
     <div id="band-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close">×</span>
-            <h2 id="modal-title">Додај артист</h2>
+            <h2 id="modal-title" data-i18n="lista.addArtist">Додај артист</h2>
             <form id="band-form">
                 <div class="form-section">
-                    <div class="form-section-title">Општи информации</div>
+                    <div class="form-section-title" data-i18n="lista.generalInfo">Општи информации</div>
                     <div class="form-group">
-                        <label for="band-name">Име</label>
+                        <label for="band-name" data-i18n="lista.name">Име</label>
                         <input type="text" id="band-name" required>
                     </div>
                     <div class="form-group">
-                        <label for="band-city">Град (одделени со запирки)</label>
+                        <label for="band-city" data-i18n="lista.cityLabel">Град (одделени со запирки)</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" id="band-city" autocomplete="off">
                             <div id="band-city-autocomplete" class="autocomplete-dropdown"></div>
@@ -298,7 +298,7 @@
                         <div id="band-city-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-genre">Жанр (одделени со запирки)</label>
+                        <label for="band-genre" data-i18n="lista.genreLabel">Жанр (одделени со запирки)</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" id="band-genre" autocomplete="off">
                             <div id="band-genre-autocomplete" class="autocomplete-dropdown"></div>
@@ -306,7 +306,7 @@
                         <div id="band-genre-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-sounds-like">Звучи како (одделени со запирки)</label>
+                        <label for="band-sounds-like" data-i18n="lista.soundsLikeLabel">Звучи како (одделени со запирки)</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" id="band-sounds-like" autocomplete="off">
                             <div id="band-sounds-like-autocomplete" class="autocomplete-dropdown"></div>
@@ -314,7 +314,7 @@
                         <div id="band-sounds-like-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-label">Ознака (одделени со запирки)</label>
+                        <label for="band-label" data-i18n="lista.label">Ознака (одделени со запирки)</label>
                         <div class="autocomplete-wrapper">
                             <input type="text" id="band-label" autocomplete="off">
                             <div id="band-label-autocomplete" class="autocomplete-dropdown"></div>
@@ -322,19 +322,19 @@
                         <div id="band-label-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-contact">Контакт (е-пошта)</label>
+                        <label for="band-contact" data-i18n="lista.contact">Контакт (е-пошта)</label>
                         <input type="email" id="band-contact">
                     </div>
                     <div class="form-group">
-                        <label>Линкови</label>
+                        <label data-i18n="lista.links">Линкови</label>
                         <div id="links-container"></div>
-                        <button type="button" id="add-link-btn" class="add-link-btn">Додај линк</button>
+                        <button type="button" id="add-link-btn" class="add-link-btn" data-i18n="lista.addLink">Додај линк</button>
                     </div>
                 </div>
                 <div class="form-section">
-                    <div class="form-section-title">Потврда на артист</div>
+                    <div class="form-section-title" data-i18n="lista.verifySection">Потврда на артист</div>
                     <div class="form-group">
-                        <label>Акцент бои</label>
+                        <label data-i18n="artist.accentColors">Акцент бои</label>
                         <div style="display:flex;gap:0.5rem;align-items:center">
                             <div style="display:flex;align-items:center;gap:0.3rem;flex:1">
                                 <input type="color" id="accent-picker-1" value="#e94560" style="width:32px;height:32px;padding:0;border:2px solid var(--border-color);border-radius:50%;background:none;cursor:pointer;flex-shrink:0;overflow:hidden" oninput="document.getElementById('band-accent-color-1').value=this.value;document.getElementById('band-accent-color-1').dispatchEvent(new Event('input'))">
@@ -345,55 +345,55 @@
                                 <input type="text" id="band-accent-color-2" placeholder="#ffa502" style="flex:1" oninput="this.value=this.value.replace(/[^#0-9a-fA-F]/g,'');if(/^#[0-9a-fA-F]{6}$/.test(this.value))document.getElementById('accent-picker-2').value=this.value">
                             </div>
                         </div>
-                        <small class="form-help">Два хекс кода за акцент бои (пр. #e94560, #ffa502)</small>
+                        <small class="form-help" data-i18n="lista.colorHelp">Два хекс кода за акцент бои (пр. #e94560, #ffa502)</small>
                     </div>
                     <div class="form-group">
-                        <label>Порака за фановите <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem">(опционално)</span></label>
+                        <label><span data-i18n="lista.fanMessage">Порака за фановите</span> <span style="color:var(--text-muted);font-weight:400;font-size:0.75rem">(<span data-i18n="lista.fanMessageOptional">опционално</span>)</span></label>
                         <div class="greeting-edit-zone" id="greeting-edit-zone">
                             <div class="greeting-edit-actions" id="greeting-edit-actions">
                                 <button type="button" class="greeting-edit-btn" id="greeting-edit-record-btn">
-                                    <i class="fas fa-microphone"></i> Сними
+                                    <i class="fas fa-microphone"></i> <span data-i18n="artist.record">Сними</span>
                                 </button>
                                 <button type="button" class="greeting-edit-btn" id="greeting-edit-upload-btn">
-                                    <i class="fas fa-upload"></i> Прикачи
+                                    <i class="fas fa-upload"></i> <span data-i18n="artist.upload">Прикачи</span>
                                 </button>
                                 <input type="file" id="greeting-edit-file" accept="audio/*" style="display:none">
                             </div>
                             <div id="greeting-edit-timer" class="greeting-edit-timer" style="display:none"></div>
                             <div id="greeting-edit-preview" class="greeting-edit-preview-area" style="display:none">
                                 <audio id="greeting-edit-audio" controls></audio>
-                                <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" title="Отстрани">
+                                <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" data-i18n-title="lista.remove" title="Отстрани">
                                     <i class="fas fa-times-circle"></i>
                                 </button>
                             </div>
                             <div id="greeting-edit-existing" class="greeting-edit-existing-area" style="display:none">
                                 <div class="greeting-edit-existing-badge">
                                     <i class="fas fa-volume-up"></i>
-                                    <span>Постои порака</span>
+                                    <span data-i18n="lista.existingMessage">Постои порака</span>
                                 </div>
                                 <button type="button" class="greeting-edit-btn greeting-edit-replace-btn" id="greeting-edit-replace-btn">
-                                    <i class="fas fa-sync-alt"></i> Замени
+                                    <i class="fas fa-sync-alt"></i> <span data-i18n="lista.replace">Замени</span>
                                 </button>
                             </div>
-                            <small class="form-help" style="margin-top:0.4rem;display:block">Кратка звучна порака до 60 секунди (mp3, m4a, wav, ogg, webm)</small>
+                            <small class="form-help" style="margin-top:0.4rem;display:block" data-i18n="lista.greetingHelp">Кратка звучна порака до 60 секунди (mp3, m4a, wav, ogg, webm)</small>
                         </div>
                     </div>
                     <div class="form-group">
                         <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
                             <input type="checkbox" id="band-confirmed" style="width:18px;height:18px;cursor:pointer">
-                            <span>Потврдено од артистот</span>
+                            <span data-i18n="lista.verifiedByArtist">Потврдено од артистот</span>
                             <i class="fas fa-check-circle" style="color:#1d9bf0;font-size:0.9rem"></i>
                         </label>
-                        <small class="form-help">Означи ако информациите се потврдени од самиот артист</small>
+                        <small class="form-help" data-i18n="lista.verifiedHelp">Означи ако информациите се потврдени од самиот артист</small>
                     </div>
                 </div>
                 <div style="display:flex;gap:0.5rem;align-items:center">
-                    <button type="submit" id="save-band-btn">Зачувај</button>
-                    <button type="button" id="cancel-band-btn" class="cancel-band-btn">Откажи</button>
+                    <button type="submit" id="save-band-btn" data-i18n="lista.save">Зачувај</button>
+                    <button type="button" id="cancel-band-btn" class="cancel-band-btn" data-i18n="lista.cancel">Откажи</button>
                 </div>
                 <div class="delete-band-zone" id="delete-band-zone" style="display:none">
                     <div class="delete-band-zone-divider"></div>
-                    <button type="button" id="delete-band-btn" class="delete-band-btn"><i class="fas fa-trash"></i> Избриши артист</button>
+                    <button type="button" id="delete-band-btn" class="delete-band-btn"><i class="fas fa-trash"></i> <span data-i18n="lista.deleteArtist">Избриши артист</span></button>
                 </div>
             </form>
         </div>
@@ -401,7 +401,7 @@
     <!-- Custom Dialog Modals -->
     <div id="custom-dialog-modal" class="modal">
         <div class="modal-content dialog-modal-content">
-            <h2 id="dialog-title">Дијалог</h2>
+            <h2 id="dialog-title" data-i18n="lista.dialog">Дијалог</h2>
             <div id="dialog-message"></div>
             <div id="dialog-input-container" style="display: none;">
                 <input type="text" id="dialog-input" placeholder="Внесете текст">
@@ -410,21 +410,21 @@
             <div id="pr-form-container" style="display: none;">
                 <form id="pr-submission-form">
                     <div class="form-group">
-                        <label for="pr-contributor">Ваши информации (опционално)</label>
-                        <input type="text" id="pr-contributor" placeholder="Име или е-пошта">
-                        <small class="form-help">Вашето име или контакт информации</small>
+                        <label for="pr-contributor" data-i18n="lista.contributorInfo">Ваши информации (опционално)</label>
+                        <input type="text" id="pr-contributor" data-i18n-placeholder="lista.contributorPlaceholder" placeholder="Име или е-пошта">
+                        <small class="form-help" data-i18n="lista.contributorHelp">Вашето име или контакт информации</small>
                     </div>
                     <div class="form-group">
-                        <label for="pr-description">Опис на промените</label>
-                        <textarea id="pr-description" placeholder="Опишете ги промените кои ги правите..." rows="3" required>Предлог промени од MMM формуларот</textarea>
-                        <small class="form-help">Краток опис на промените</small>
+                        <label for="pr-description" data-i18n="lista.changeDesc">Опис на промените</label>
+                        <textarea id="pr-description" data-i18n-placeholder="lista.changePlaceholder" placeholder="Опишете ги промините кои ги правите..." rows="3" required>Предлог промени од MMM формуларот</textarea>
+                        <small class="form-help" data-i18n="lista.changeHelp">Краток опис на промините</small>
                     </div>
                 </form>
             </div>
             <div class="dialog-buttons">
-                <button id="dialog-cancel-btn" class="dialog-btn cancel-btn">Откажи</button>
-                <button id="dialog-confirm-btn" class="dialog-btn confirm-btn">Потврди</button>
-                <button id="dialog-submit-btn" class="dialog-btn confirm-btn" style="display: none;">Испрати</button>
+                <button id="dialog-cancel-btn" class="dialog-btn cancel-btn" data-i18n="lista.cancel">Откажи</button>
+                <button id="dialog-confirm-btn" class="dialog-btn confirm-btn" data-i18n="lista.confirm">Потврди</button>
+                <button id="dialog-submit-btn" class="dialog-btn confirm-btn" style="display: none;" data-i18n="lista.submit">Испрати</button>
             </div>
         </div>
     </div>
@@ -454,6 +454,7 @@
     <script src="/tour.js?v=1" defer></script>
     <script src="spotify-api.js"></script>
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="script.js?v=4"></script>
 </body>
 </html>

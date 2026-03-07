@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -893,10 +894,10 @@
     <script>if(document.documentElement.classList.contains('dark-mode'))document.body.classList.add('dark-mode')</script>
     <header id="site-header" data-active="/kustosi" data-title="Кустоси">
         <span class="header-info">
-            Сакаш да бидеш музички кустос? <a class="xotel-link" href="https://discord.gg/DzBQASu7mU" target="_blank">Придружи се на Discord</a>
+            <span data-i18n="curators.joinDiscord">Сакаш да бидеш музички кустос?</span> <a class="xotel-link" href="https://discord.gg/DzBQASu7mU" target="_blank"><span data-i18n="curators.joinLink">Придружи се на Discord</span></a>
         </span>
-        <button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i></button>
-        <button id="curators-compact-toggle" class="header-btn" title="Компактен/Проширен приказ">
+        <button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="events.search" title="Пребарај"><i class="fas fa-search"></i></button>
+        <button id="curators-compact-toggle" class="header-btn" data-i18n-title="curators.compactView" title="Компактен/Проширен приказ">
             <i class="fas fa-compress-alt"></i>
         </button>
     </header>
@@ -905,22 +906,22 @@
         <div class="chart-filter-bar" id="controls-bar">
             <div class="curators-search-wrap">
                 <i class="fas fa-search"></i>
-                <input type="text" id="curators-search" placeholder="Пребарај кустоси...">
+                <input type="text" id="curators-search" data-i18n-placeholder="curators.searchPlaceholder" placeholder="Пребарај кустоси...">
             </div>
         </div>
         <div class="curators-container">
             <div id="curators-loading" class="curators-loading">
                 <div><i class="fas fa-spinner"></i></div>
-                <div>Се вчитуваат кустосите...</div>
+                <div data-i18n="curators.loading">Се вчитуваат кустосите...</div>
             </div>
             <div id="curators-grid" class="curators-grid" style="display:none;"></div>
             <div id="curators-no-results" class="curators-no-results">
                 <i class="fas fa-search"></i>
-                <p>Нема резултати за пребарувањето.</p>
+                <p data-i18n="curators.noResults">Нема резултати за пребарувањето.</p>
             </div>
             <div id="curators-empty" class="curators-empty">
                 <i class="fas fa-headphones"></i>
-                <p>Нема кустоси во моментов.</p>
+                <p data-i18n="curators.none">Нема кустоси во моментов.</p>
             </div>
         </div>
     </main>
@@ -963,11 +964,11 @@
             const saved = JSON.parse(localStorage.getItem('mmm-curators-compact') || 'true');
             document.body.classList.toggle('curators-compact', saved);
             btn.innerHTML = saved ? '<i class="fas fa-expand-alt"></i>' : '<i class="fas fa-compress-alt"></i>';
-            btn.title = saved ? 'Проширен приказ' : 'Компактен приказ';
+            btn.title = saved ? t('curators.expandedView') : t('curators.compactView');
             btn.addEventListener('click', () => {
                 const isCompact = document.body.classList.toggle('curators-compact');
                 btn.innerHTML = isCompact ? '<i class="fas fa-expand-alt"></i>' : '<i class="fas fa-compress-alt"></i>';
-                btn.title = isCompact ? 'Проширен приказ' : 'Компактен приказ';
+                btn.title = isCompact ? t('curators.expandedView') : t('curators.compactView');
                 localStorage.setItem('mmm-curators-compact', JSON.stringify(isCompact));
             });
         }
@@ -996,7 +997,7 @@
                                                return { icon: 'fab fa-discord',       label: 'Discord',       service: 'discord' };
             if (u.includes('linkedin.com'))     return { icon: 'fab fa-linkedin-in',  label: 'LinkedIn',      service: 'linkedin' };
             if (u.includes('linktr.ee'))        return { icon: 'fas fa-link',         label: 'Linktree',      service: 'linktree' };
-            return { icon: 'fas fa-globe', label: 'Линк', service: 'default' };
+            return { icon: 'fas fa-globe', label: t('curators.defaultLink'), service: 'default' };
         }
 
         /** Build a compact link for opening the playlist on its native service */
@@ -1005,7 +1006,7 @@
             const cls = info.service;
             return `<a href="${escAttr(url)}" class="custos-playlist-link" target="_blank" rel="noopener">
                 <span class="pl-icon ${cls}"><i class="${info.icon}"></i></span>
-                <span class="pl-text">Отвори плејлиста</span>
+                <span class="pl-text">${t('curators.openPlaylist')}</span>
                 <span class="pl-arrow"><i class="fas fa-arrow-up-right-from-square"></i></span>
             </a>`;
         }
@@ -1048,6 +1049,7 @@
                 const data = await resp.json();
                 const bands = data.muzickaMasterLista || [];
                 primeMasterArtistNameSet(bands);
+                registerArtistNames(bands);
                 bands.forEach(b => {
                     if (!b.name) return;
                     bandNameSet.add(b.name);
@@ -1090,9 +1092,9 @@
                 const trimmed = part.trim();
                 const match = findBandMatch(trimmed);
                 if (match) {
-                    result += `<a href="/artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(trimmed)}</a>`;
+                    result += `<a href="/artist.html?name=${encodeURIComponent(match)}" style="color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px;">${escHtml(localizeText(trimmed))}</a>`;
                 } else {
-                    result += escHtml(trimmed);
+                    result += escHtml(localizeText(trimmed));
                 }
                 if (i < separators.length) result += escHtml(separators[i]);
             });
@@ -1114,9 +1116,9 @@
                 const match = findBandMatch(nameOnly);
                 if (match) {
                     const href = '/artist.html?name=' + encodeURIComponent(match);
-                    return `<a href="${href}">${escHtml(match)}</a>${extra ? ' <span style="opacity:.65">' + escHtml(extra) + '</span>' : ''}`;
+                    return `<a href="${href}">${escHtml(localizeText(match))}</a>${extra ? ' <span style="opacity:.65">' + escHtml(localizeText(extra)) + '</span>' : ''}`;
                 }
-                return escHtml(item);
+                return escHtml(localizeText(item));
             });
             return parts.join('<span class="sep">·</span>');
         }
@@ -1155,19 +1157,19 @@
             const limited = maxTracks && allTracks.length > maxTracks;
             const visibleTracks = limited ? allTracks.slice(0, maxTracks) : allTracks;
 
-            const trackItems = visibleTracks.map((t, i) => {
-                const hasUrl = !!t.trackUrl;
-                const playBtnTitle = hasUrl ? 'Отвори во сервис' : '';
+            const trackItems = visibleTracks.map((track, i) => {
+                const hasUrl = !!track.trackUrl;
+                const playBtnTitle = hasUrl ? t('curators.openInService') : '';
 
-                return `<li class="track-item" data-track-index="${i}" data-track-url="${escAttr(t.trackUrl || '')}">
+                return `<li class="track-item" data-track-index="${i}" data-track-url="${escAttr(track.trackUrl || '')}">
                     <span class="track-num">${i + 1}</span>
-                    ${t.image ? `<img class="track-art" src="${t.image}" alt="" loading="lazy">` : ''}
+                    ${track.image ? `<img class="track-art" src="${track.image}" alt="" loading="lazy">` : ''}
                     <div class="track-details">
-                        <div class="track-name">${escHtml(t.title)}</div>
-                        <div class="track-artist">${renderArtistName(t.artist || '')}</div>
+                        <div class="track-name">${escHtml(localizeText(track.title))}</div>
+                        <div class="track-artist">${renderArtistName(track.artist || '')}</div>
                     </div>
-                    <span class="track-duration">${t.duration || ''}</span>
-                    <button class="track-play-btn" data-track-id="${escAttr(t.trackId || i.toString())}" data-track-index="${i}" title="${playBtnTitle}">
+                    <span class="track-duration">${track.duration || ''}</span>
+                    <button class="track-play-btn" data-track-id="${escAttr(track.trackId || i.toString())}" data-track-index="${i}" title="${playBtnTitle}">
                         <i class="fas fa-external-link-alt"></i>
                     </button>
                 </li>`;
@@ -1175,20 +1177,20 @@
 
             const serviceInfo = detectLinkInfo(playlistUrl);
             const trackCount = allTracks.length;
-            const totalMs = allTracks.reduce((s, t) => s + (t.durationMs || 0), 0);
+            const totalMs = allTracks.reduce((s, tr) => s + (tr.durationMs || 0), 0);
             const totalMin = Math.round(totalMs / 60000);
-            const metaText = `${trackCount} песни` + (totalMin > 0 ? ` · ${totalMin} мин.` : '');
+            const metaText = `${trackCount} ${t('curators.songs')}` + (totalMin > 0 ? ` · ${totalMin} ${t('curators.minutes')}` : '');
 
             const remaining = allTracks.length - visibleTracks.length;
             const seeMoreHtml = limited && curatorName
-                ? `<a class="tracklist-see-more" href="/kustos/${curatorSlug(curatorName)}"><i class="fas fa-list"></i> Прикажи ги сите ${trackCount} песни</a>`
+                ? `<a class="tracklist-see-more" href="/kustos/${curatorSlug(curatorName)}"><i class="fas fa-list"></i> ${t('curators.showAll').replace('{0}', trackCount)}</a>`
                 : '';
 
             return `<div class="tracklist-wrapper tracklist-service-${service}" data-curator-playlist>
                 <a class="tracklist-header" href="${escAttr(playlistUrl)}" target="_blank" rel="noopener">
                     ${playlist.image ? `<img class="tracklist-cover" src="${playlist.image}" alt="" loading="lazy">` : ''}
                     <div class="tracklist-info">
-                        <div class="tracklist-title">${escHtml(playlist.name || serviceInfo.label + ' Playlist')}</div>
+                        <div class="tracklist-title">${escHtml(localizeText(playlist.name || serviceInfo.label + ' Playlist'))}</div>
                         <div class="tracklist-meta">${metaText}</div>
                     </div>
                 </a>
@@ -1278,7 +1280,7 @@
                 } else {
                     onerror = "this.onerror=null;this.parentElement.innerHTML='<i class=&quot;fas fa-user&quot;></i>';";
                 }
-                avatarInner = `<img src="${primarySrc}" alt="${c.name}" loading="lazy" referrerpolicy="no-referrer" onerror="${onerror}">`;
+                avatarInner = `<img src="${primarySrc}" alt="${localizeText(c.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="${onerror}">`;
             } else {
                 avatarInner = `<i class="fas fa-user"></i>`;
             }
@@ -1346,7 +1348,7 @@
                         <div class="custos-avatar">${avatarInner}</div>
                         <div class="custos-info">
                             <div class="custos-name-row">
-                                <a class="custos-name" href="${curatorLink}">${c.name}</a>
+                                <a class="custos-name" href="${curatorLink}">${localizeText(c.name)}</a>
                                 ${socialLinks ? `<div class="custos-socials">${socialLinks}</div>` : ''}
                             </div>
                             ${relevanceHtml ? `<div class="custos-relevance">${relevanceHtml}</div>` : ''}

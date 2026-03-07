@@ -26,15 +26,15 @@
      * unknown - no data available
      */
     function getActivityStatus(bandName) {
-        if (!bandName) return 'Непознато';
+        if (!bandName) return t('lista.statusUnknown');
         const normalizedName = bandName.toLowerCase().trim();
         
         // Check if the band has had an event in the past year
         const hasRecentEvent = checkRecentEvent(bandName);
-        if (hasRecentEvent) return 'Активен';
+        if (hasRecentEvent) return t('lista.statusActive');
         
         const dateStr = latestReleaseDateByArtist[normalizedName];
-        if (!dateStr) return 'Непознато';
+        if (!dateStr) return t('lista.statusUnknown');
         
         const now = new Date();
         const parts = dateStr.split('-');
@@ -42,9 +42,9 @@
         const diffMs = now - releaseDate;
         const diffYears = diffMs / (365.25 * 24 * 60 * 60 * 1000);
         
-        if (diffYears <= 2) return 'Активен';
-        if (diffYears <= 3) return 'Можеби';
-        return 'Неактивен';
+        if (diffYears <= 2) return t('lista.statusActive');
+        if (diffYears <= 3) return t('lista.statusMaybe');
+        return t('lista.statusInactive');
     }
     
     /**
@@ -280,156 +280,8 @@
         updateSubmitButtonState();
     });
     
-    // ==================== SETTINGS MENU ====================
-    function initSettingsMenu() {
-        const settingsBtn = document.getElementById('settings-btn');
-        if (!settingsBtn) return;
-
-        const svcDefs = {
-            spotify: { name: 'Spotify', icon: 'fab fa-spotify', color: '#1DB954' },
-            youtube: { name: 'YouTube', icon: 'fab fa-youtube', color: '#FF0000' },
-            youtubeMusic: { name: 'YouTube Music', icon: 'fab fa-youtube', color: '#FF0000' },
-            appleMusic: { name: 'Apple Music', icon: 'fab fa-apple', color: '#fc3c44' },
-            deezer: { name: 'Deezer', icon: 'fas fa-headphones', color: '#A238FF' },
-            tidal: { name: 'Tidal', icon: 'fas fa-water', color: '#000000' },
-            amazonMusic: { name: 'Amazon Music', icon: 'fab fa-amazon', color: '#FF9900' },
-            soundcloud: { name: 'SoundCloud', icon: 'fab fa-soundcloud', color: '#ff7700' },
-            bandcamp: { name: 'Bandcamp', icon: 'fab fa-bandcamp', color: '#1da0c3' }
-        };
-
-        let overlay = document.getElementById('settings-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'settings-overlay';
-            overlay.className = 'settings-overlay';
-
-            const currentService = localStorage.getItem('mmm-preferred-service');
-            const isDark = document.documentElement.classList.contains('dark-mode');
-
-            overlay.innerHTML = `
-                <div class="settings-panel">
-                    <h3><i class="fas fa-gear"></i> Поставки</h3>
-                    <div class="settings-section">
-                        <div class="settings-section-title">Тема</div>
-                        <div class="settings-theme-toggle">
-                            <button class="settings-theme-btn ${!isDark ? 'active' : ''}" data-theme="light">
-                                <i class="fas fa-sun"></i> Светла
-                            </button>
-                            <button class="settings-theme-btn ${isDark ? 'active' : ''}" data-theme="dark">
-                                <i class="fas fa-moon"></i> Темна
-                            </button>
-                        </div>
-                    </div>
-                    <div class="settings-section">
-                        <div class="settings-section-title">Стриминг сервис</div>
-                        <select class="settings-service-select">
-                            <option value="" ${!currentService ? 'selected' : ''}>Секогаш прашувај</option>
-                            ${Object.entries(svcDefs).map(([id, svc]) => `
-                                <option value="${id}" ${id === currentService ? 'selected' : ''}>${svc.name}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                    <div class="settings-section settings-tour-section">
-                        <button class="settings-tour-btn" id="settings-start-tour">
-                            <i class="fas fa-route"></i> Тура на сајтот
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(overlay);
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('visible');
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    const ov = document.getElementById('settings-overlay');
-                    if (ov) ov.classList.remove('visible');
-                }
-            });
-
-            // Theme toggle
-            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const dark = btn.dataset.theme === 'dark';
-                    document.body.classList.toggle('dark-mode', dark);
-                    document.documentElement.classList.toggle('dark-mode', dark);
-                    document.documentElement.style.backgroundColor = dark ? '#111318' : '';
-                    localStorage.setItem('mmm-dark-mode', dark);
-                    overlay.querySelectorAll('.settings-theme-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-
-            // Service selection
-            const svcSelect = overlay.querySelector('.settings-service-select');
-            if (svcSelect) {
-                svcSelect.addEventListener('change', () => {
-                    const serviceId = svcSelect.value;
-                    if (serviceId) {
-                        localStorage.setItem('mmm-preferred-service', serviceId);
-                    } else {
-                        localStorage.removeItem('mmm-preferred-service');
-                    }
-                    // Update any visible service preference indicators
-                    document.querySelectorAll('.service-pref-current').forEach(el => {
-                        if (serviceId && svcDefs[serviceId]) {
-                            el.innerHTML = `<i class="${svcDefs[serviceId].icon}"></i>`;
-                            el.title = svcDefs[serviceId].name;
-                        }
-                    });
-                });
-            }
-
-            // Tour button
-            const tourBtn = overlay.querySelector('#settings-start-tour');
-            if (tourBtn) {
-                tourBtn.addEventListener('click', () => {
-                    overlay.classList.remove('visible');
-                    if (typeof window.startGlobalTour === 'function') {
-                        window.startGlobalTour();
-                    }
-                });
-            }
-        }
-
-        // Open settings
-        settingsBtn.addEventListener('click', () => {
-            // Refresh active states
-            const isDark = document.documentElement.classList.contains('dark-mode');
-            overlay.querySelectorAll('.settings-theme-btn').forEach(btn => {
-                btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark);
-            });
-            const currentSvc = localStorage.getItem('mmm-preferred-service');
-            const svcSel = overlay.querySelector('.settings-service-select');
-            if (svcSel) svcSel.value = currentSvc || '';
-            overlay.classList.add('visible');
-        });
-    }
-
-    // Initialize settings menu
+    // ==================== SETTINGS & NAV MENU (use global from common.js) ====================
     initSettingsMenu();
-
-    // ==================== NAV MENU ====================
-    function initNavMenu() {
-        const trigger = document.querySelector('.site-nav-trigger');
-        const menu = document.getElementById('site-nav-menu');
-        if (!trigger || !menu) return;
-        trigger.addEventListener('click', (e) => {
-            // Only toggle dropdown on mobile (<=600px); on desktop nav is always visible
-            if (window.innerWidth <= 600) {
-                e.preventDefault();
-                e.stopPropagation();
-                menu.classList.toggle('open');
-            }
-        });
-        document.addEventListener('click', (e) => {
-            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
-                menu.classList.remove('open');
-            }
-        });
-    }
     initNavMenu();
 
     console.log('Script loaded, initializing...');
@@ -613,7 +465,7 @@
                 if (audioUrl && !greetingCell.querySelector('.greeting-play-btn')) {
                     const btn = document.createElement('button');
                     btn.className = 'greeting-play-btn';
-                    btn.title = 'Порака од артистот';
+                    btn.title = t('lista.messageFromArtist');
                     btn.innerHTML = '<i class="fas fa-play"></i>';
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -695,11 +547,11 @@
 
     function summarizeChangesText(diff) {
         const lines = [];
-        if (diff.added.length) lines.push(`Додадени (${diff.added.length}): ${diff.added.join(', ')}`);
-        if (diff.removed.length) lines.push(`Избришани (${diff.removed.length}): ${diff.removed.join(', ')}`);
+        if (diff.added.length) lines.push(`${t('lista.added')} (${diff.added.length}): ${diff.added.join(', ')}`);
+        if (diff.removed.length) lines.push(`${t('lista.removed')} (${diff.removed.length}): ${diff.removed.join(', ')}`);
         if (diff.modified.length) {
             const mods = diff.modified.map(m => `${m.name} [${m.changes.map(ch => ch.field).join(', ')}]`);
-            lines.push(`Изменети (${diff.modified.length}): ${mods.join('; ')}`);
+            lines.push(`${t('lista.modified')} (${diff.modified.length}): ${mods.join('; ')}`);
         }
         return lines.join('\n');
     }
@@ -708,7 +560,7 @@
         const btn = document.getElementById('submit-pr-btn');
         if (!btn) return;
         btn.disabled = !hasUnsavedChanges;
-        btn.title = hasUnsavedChanges ? 'Испрати барање за промена' : 'Нема промени за поднесување';
+        btn.title = hasUnsavedChanges ? t('lista.submitPrRequest') : t('lista.noChanges');
         
         // Add/remove glow animation class based on changes
         if (hasUnsavedChanges) {
@@ -830,7 +682,7 @@
                 const descriptionInput = document.getElementById('pr-description');
 
                 if (!descriptionInput.value.trim()) {
-                    showNotification('Внесете опис на промените.', 'error');
+                    showNotification(t('lista.descriptionRequired'), 'error');
                     descriptionInput.focus();
                     return;
                 }
@@ -1304,7 +1156,7 @@
             loadingBar.classList.add('active');
             // Disable controls while loading (keep visible)
             searchInput.disabled = true;
-            searchInput.placeholder = 'Се вчитува...';
+            searchInput.placeholder = t('common.loading');
             controls.querySelectorAll('select, button').forEach(el => el.disabled = true);
             
             // Check for pending changes in localStorage
@@ -1411,6 +1263,7 @@
                 originalBandsData = JSON.parse(JSON.stringify(bandsData));
             }
             primeMasterArtistNameSet(bandsData);
+            registerArtistNames(bandsData);
             bandsData.sort((a, b) => {
                 const nameA = transliterateCyrillicToLatin(a.name);
                 const nameB = transliterateCyrillicToLatin(b.name);
@@ -1460,9 +1313,9 @@
                         const hours = Math.floor(ageMs / (60 * 60 * 1000));
                         const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
                         let ageStr;
-                        if (hours >= 24) { ageStr = `пред ${Math.floor(hours/24)}д`; }
-                        else if (hours > 0) { ageStr = `пред ${hours}ч`; }
-                        else { ageStr = `пред ${minutes}мин`; }
+                        if (hours >= 24) { ageStr = t('charts.ago.days').replace('{0}', Math.floor(hours/24)); }
+                        else if (hours > 0) { ageStr = t('charts.ago.hours').replace('{0}', hours); }
+                        else { ageStr = t('charts.ago.minutes').replace('{0}', minutes); }
                         const el = document.getElementById('last-modified');
                         if (el) el.textContent = ageStr;
                     }
@@ -1484,14 +1337,14 @@
                 }
                 const tbody = document.getElementById('band-table-body');
                 if (tbody && tbody.children.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8">Извинете, нешто тргна наопаку.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8">' + t('lista.errorSomethingWrong') + '</td></tr>';
                 }
             }
         } finally {
             loadingBar.classList.remove('active');
             // Re-enable controls
             searchInput.disabled = false;
-            searchInput.placeholder = 'Пребарај артист, жанр, град...';
+            searchInput.placeholder = t('lista.searchPlaceholder');
             controls.querySelectorAll('select, button').forEach(el => el.disabled = false);
         }
     }
@@ -1520,12 +1373,12 @@
         { id: 'vimeo', name: 'Vimeo', icon: 'fa-brands fa-vimeo' },
         { id: 'patreon', name: 'Patreon', icon: 'fa-brands fa-patreon' },
         { id: 'discord', name: 'Discord', icon: 'fa-brands fa-discord' },
-        { id: 'interview', name: 'Интервју', icon: 'fa-solid fa-microphone' },
-        { id: 'review', name: 'Рецензија', icon: 'fa-solid fa-star' },
-        { id: 'article', name: 'Натпис', icon: 'fa-solid fa-newspaper' },
+        { id: 'interview', name: t('lista.interview'), icon: 'fa-solid fa-microphone' },
+        { id: 'review', name: t('lista.review'), icon: 'fa-solid fa-star' },
+        { id: 'article', name: t('lista.article'), icon: 'fa-solid fa-newspaper' },
         { id: 'website', name: 'Website', icon: 'fa-solid fa-globe' },
         { id: 'linktree', name: 'Linktree', icon: 'fa-solid fa-tree' },
-        { id: 'generic', name: 'Друг линк', icon: 'fa-solid fa-link' }
+        { id: 'generic', name: t('lista.otherLink'), icon: 'fa-solid fa-link' }
     ];
 
     // Auto-detect platform from URL domain/path
@@ -1574,11 +1427,11 @@
         const hiddenSearchName = document.getElementById('search-name');
 
         const filterGroups = [
-            { key: 'city', label: 'Град', icon: 'fa-map-marker-alt', select: '#filter-city' },
-            { key: 'genre', label: 'Жанр', icon: 'fa-music', select: '#filter-genre' },
-            { key: 'sounds-like', label: 'Звучи како', icon: 'fa-headphones', select: '#filter-sounds-like' },
-            { key: 'status', label: 'Статус', icon: 'fa-circle', select: '#filter-status' },
-            { key: 'label', label: 'Ознака', icon: 'fa-tag', select: '#filter-label' }
+            { key: 'city', label: t('lista.filterCity'), icon: 'fa-map-marker-alt', select: '#filter-city' },
+            { key: 'genre', label: t('lista.filterGenre'), icon: 'fa-music', select: '#filter-genre' },
+            { key: 'sounds-like', label: t('lista.filterSoundsLike'), icon: 'fa-headphones', select: '#filter-sounds-like' },
+            { key: 'status', label: t('lista.filterStatus'), icon: 'fa-circle', select: '#filter-status' },
+            { key: 'label', label: t('lista.filterLabel'), icon: 'fa-tag', select: '#filter-label' }
         ];
 
         const selectMap = {
@@ -1628,10 +1481,10 @@
                 html += '<div class="unified-dropdown-group">';
                 html += '<div class="unified-dropdown-group-label"><i class="fas ' + group.icon + '"></i> ' + group.label + '</div>';
                 displayOptions.forEach(opt => {
-                    html += '<div class="unified-dropdown-item" data-filter="' + group.key + '" data-value="' + opt.value.replace(/"/g, '&quot;') + '">' + opt.textContent + '</div>';
+                    html += '<div class="unified-dropdown-item" data-filter="' + group.key + '" data-value="' + opt.value.replace(/"/g, '&quot;') + '">' + localizeText(opt.textContent) + '</div>';
                 });
                 if (matchingOptions.length > displayOptions.length) {
-                    html += '<div class="unified-dropdown-more">' + (matchingOptions.length - displayOptions.length) + ' повеќе...</div>';
+                    html += '<div class="unified-dropdown-more">' + (matchingOptions.length - displayOptions.length) + ' ' + t('lista.andMore') + '</div>';
                 }
                 html += '</div>';
                 totalMatches += displayOptions.length;
@@ -1649,10 +1502,10 @@
             filterGroups.forEach(f => {
                 const val = $(f.select).val();
                 if (val) {
-                    const displayText = val === '__verified__' ? '✓ Потврден' : val;
+                    const displayText = val === '__verified__' ? '✓ ' + t('lista.verified') : localizeText(val);
                     html += '<span class="unified-chip" data-filter="' + f.key + '">' +
                             '<i class="fas ' + f.icon + '"></i> ' + displayText +
-                            '<button class="unified-chip-remove" data-filter="' + f.key + '" title="Отстрани">&times;</button>' +
+                            '<button class="unified-chip-remove" data-filter="' + f.key + '" title="' + t('lista.remove') + '">&times;</button>' +
                             '</span>';
                 }
             });
@@ -1672,7 +1525,7 @@
 
             // Update placeholder
             const hasChips = chipsContainer.children.length > 0;
-            searchInput.placeholder = hasChips ? 'Додај филтер...' : 'Пребарај артист, жанр, град...';
+            searchInput.placeholder = hasChips ? t('lista.addFilter') : t('lista.searchPlaceholder');
         }
 
         // --- Filter dropdown is ONLY opened/closed by the filter button ---
@@ -1930,7 +1783,7 @@
                 }
 
                 dropdown.innerHTML = filtered.map((item, idx) => 
-                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${item.name}<span class="count">(${item.count})</span></div>`
+                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${localizeText(item.name)}<span class="count">(${item.count})</span></div>`
                 ).join('');
 
                 dropdown.classList.add('active');
@@ -2014,7 +1867,7 @@
 
         if (!modal || !closeModal || !form || !addLinkBtn || !linksContainer) {
             console.error('Modal elements not found:', { modal, closeModal, form, addLinkBtn, linksContainer });
-            showNotification('Грешка: елементите на модалот не се пронајдени.', 'error');
+            showNotification(t('lista.errorModalNotFound'), 'error');
             return;
         }
 
@@ -2074,7 +1927,7 @@
                     // Show notification with artist name and link
                     const artistUrl = '/artist.html?name=' + encodeURIComponent(name);
                     showNotification(
-                        'Уреден артист: <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(name) + '</a>',
+                        t('lista.editedArtist') + ': <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(name)) + '</a>',
                         'success', 4000
                     );
 
@@ -2185,7 +2038,7 @@
                 items.forEach(item => {
                     const tag = document.createElement('span');
                     tag.className = `tag-item ${tagClass}`;
-                    tag.textContent = item;
+                    tag.textContent = localizeText(item);
                     tagContainer.appendChild(tag);
                 });
             }
@@ -2201,7 +2054,7 @@
             let hasError = false;
 
             if (!validateName(name)) {
-                showError(document.getElementById('band-name'), 'Името мора да има барем 2 карактери.');
+                showError(document.getElementById('band-name'), t('lista.nameMinLength'));
                 hasError = true;
             }
 
@@ -2212,12 +2065,12 @@
                 return bandNameLatin === nameLatin && (editIndex === undefined || parseInt(editIndex) !== index);
             });
             if (isDuplicate) {
-                showError(document.getElementById('band-name'), 'Бенд со ова име веќе постои.');
+                showError(document.getElementById('band-name'), t('lista.duplicateName'));
                 hasError = true;
             }
 
             if (contact && !validateEmail(contact)) {
-                showError(document.getElementById('band-contact'), 'Внесете валидна е-пошта или оставете празно.');
+                showError(document.getElementById('band-contact'), t('lista.invalidEmail'));
                 hasError = true;
             }
 
@@ -2310,9 +2163,9 @@
             // Show notification with artist name and link
             const isEditing = editIndex !== undefined && editIndex !== '';
             const artistUrl = '/artist.html?name=' + encodeURIComponent(band.name);
-            const actionLabel = isEditing ? 'Уреден' : 'Додаден';
+            const actionLabel = isEditing ? t('lista.editedArtistAction') : t('lista.addedArtistAction');
             showNotification(
-                actionLabel + ' артист: <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(band.name) + '</a>',
+                actionLabel + ' ' + t('lista.artistLabel') + ': <a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(band.name)) + '</a>',
                 'success', 4000
             );
 
@@ -2404,11 +2257,11 @@
             const file = e.target.files[0];
             if (!file) return;
             if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|m4a|wav|ogg|webm|aac|flac|opus)$/i)) {
-                showNotification('Ве молиме изберете аудио фајл.', 'error');
+                showNotification(t('lista.errorSelectAudioFile'), 'error');
                 return;
             }
             if (file.size > 10 * 1024 * 1024) {
-                showNotification('Фајлот е преголем. Максимум 10MB.', 'error');
+                showNotification(t('lista.errorFileTooLarge'), 'error');
                 return;
             }
             const ext = file.name.split('.').pop().toLowerCase();
@@ -2431,7 +2284,7 @@
             }
             if (geRecordBtn) {
                 geRecordBtn.classList.remove('recording');
-                geRecordBtn.innerHTML = '<i class="fas fa-microphone"></i> Сними';
+                geRecordBtn.innerHTML = '<i class="fas fa-microphone"></i> ' + t('artist.record');
             }
             if (geTimerEl) geTimerEl.style.display = 'none';
             greetingEditSeconds = 0;
@@ -2462,7 +2315,7 @@
                 };
                 greetingEditRecorder.start(100);
                 geRecordBtn.classList.add('recording');
-                geRecordBtn.innerHTML = '<i class="fas fa-stop"></i> Запри';
+                geRecordBtn.innerHTML = '<i class="fas fa-stop"></i> ' + t('artist.stop');
                 greetingEditSeconds = 0;
                 geTimerEl.textContent = greetingEditFormatTime(0);
                 geTimerEl.style.display = 'block';
@@ -2473,7 +2326,7 @@
                 }, 1000);
             } catch (err) {
                 console.error('Microphone access denied:', err);
-                showNotification('Не може да се пристапи до микрофонот.', 'error');
+                showNotification(t('lista.errorMicAccess'), 'error');
             }
         });
 
@@ -2517,13 +2370,13 @@
             // Plain text label for recognized / empty state
             const label = document.createElement('span');
             label.className = 'platform-label';
-            label.textContent = currentPlatform ? currentPlatform.name : 'Платформа';
+            label.textContent = currentPlatform ? currentPlatform.name : t('lista.platform');
             
             // Dropdown for manual selection (hidden by default)
             const select = document.createElement('select');
             select.className = 'platform-select';
             select.style.display = 'none';
-            select.innerHTML = '<option value="none">Избери платформа</option>' +
+            select.innerHTML = '<option value="none">' + t('lista.selectPlatform') + '</option>' +
                 socialPlatforms.map(p => `<option value="${p.id}" ${p.id === platform ? 'selected' : ''}>${p.name}</option>`).join('');
             
             selectWrapper.appendChild(iconEl);
@@ -2532,7 +2385,7 @@
             
             const input = document.createElement('input');
             input.type = 'url';
-            input.placeholder = 'Внеси URL (платформата се препознава автоматски)';
+            input.placeholder = t('lista.enterUrl');
             input.value = url;
             const removeBtn = document.createElement('button');
             removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -2548,7 +2401,7 @@
             // Switch between label (read-only) and dropdown (manual)
             function showLabel(platformId) {
                 const p = socialPlatforms.find(pp => pp.id === platformId);
-                label.textContent = p ? p.name : 'Платформа';
+                label.textContent = p ? p.name : t('lista.platform');
                 label.style.display = '';
                 select.style.display = 'none';
                 selectWrapper.classList.remove('manual-mode');
@@ -2613,17 +2466,17 @@
             clearTags();
             greetingEditReset();
             if (mode === 'add') {
-                title.textContent = 'Додај артист';
+                title.textContent = t('lista.addArtist');
                 delete form.dataset.editIndex;
                 addLinkInput();
                 const deleteBtn = document.getElementById('delete-band-btn');
                 if (deleteBtn) deleteBtn.closest('.delete-band-zone').style.display = 'none';
             } else {
-                title.textContent = 'Уреди артист';
+                title.textContent = t('lista.editArtist');
                 console.log('Pre-filling form with band data:', band);
                 if (!band) {
                     console.error('No band data provided for edit mode');
-                    showNotification('Грешка: нема податоци за артистот за уредување.', 'error');
+                    showNotification(t('lista.errorNoArtistData'), 'error');
                     return;
                 }
                 document.getElementById('band-name').value = (band.name && band.name !== 'недостигаат податоци') ? band.name : '';
@@ -2685,7 +2538,7 @@
                     if (zone) zone.style.display = '';
                     deleteBtn.onclick = async () => {
                         const confirmed = await showCustomDialog(
-                            'Потврда за бришење',
+                            t('lista.deleteConfirmTitle'),
                             `Дали сте сигурни дека сакате да го избришете артистот <strong>${band.name}</strong>?`
                         );
                         if (confirmed) {
@@ -2710,9 +2563,9 @@
 
         async function deleteBand(index) {
             console.log(`Delete band requested for index ${index}`);
-            const bandName = bandsData[index] ? bandsData[index].name : 'овој артист';
+            const bandName = bandsData[index] ? bandsData[index].name : t('lista.thisArtist');
             const confirmed = await showCustomDialog(
-                'Потврда за бришење',
+                t('lista.deleteConfirmTitle'),
                 `Дали сте сигурни дека сакате да го избришете артистот <strong>${bandName}</strong>?`
             );
             if (confirmed) {
@@ -2746,14 +2599,14 @@
         const copyButton = document.getElementById('copy-data-btn');
         if (!copyButton) {
             console.error('Copy data button not found in DOM');
-            showNotification('Грешка: копчето за копирање податоци не е пронајдено.', 'error');
+            showNotification(t('lista.errorCopyBtnNotFound'), 'error');
             return;
         }
         copyButton.addEventListener('click', async () => {
             console.log('Copy data button clicked');
             const accepted = await showCustomDialog(
-                'Лиценца за податоци',
-                'Податоците се достапни под <strong>CC BY 4.0</strong> (Creative Commons Attribution) лиценца. Со копирање се согласувате дека ќе го наведете изворот при користење на податоците.'
+                t('lista.dataLicenseTitle'),
+                t('lista.dataLicenseMessage')
             );
             if (!accepted) return;
             try {
@@ -2773,14 +2626,14 @@
                 const json = JSON.stringify(exportData, null, 2);
                 navigator.clipboard.writeText(json).then(() => {
                     console.log('Data copied to clipboard successfully');
-                    showNotification('Податоците се копирани во клипборд.', 'success');
+                    showNotification(t('lista.dataCopied'), 'success');
                 }).catch(err => {
                     console.error('Error copying data to clipboard:', err);
-                    showNotification('Грешка при копирање на податоците во клипборд. Проверете ја конзолата за детали.', 'error');
+                    showNotification(t('lista.errorCopyClipboard'), 'error');
                 });
             } catch (error) {
                 console.error('Error preparing data for copy:', error);
-                showNotification('Грешка при подготовка на податоците за копирање. Проверете ја конзолата за детали.', 'error');
+                showNotification(t('lista.errorPrepareData'), 'error');
             }
         });
     }
@@ -2792,7 +2645,7 @@
         // Make sure current changes are saved to the draft system before showing the dialog
         submitBtn.addEventListener('click', () => {
             if (!hasUnsavedChanges) {
-                showNotification('Нема промени за поднесување.', 'info');
+                showNotification(t('lista.noChanges'), 'info');
                 return;
             }
             // Ensure latest data is saved to drafts
@@ -2809,7 +2662,7 @@
         const masterEditBtn = document.getElementById('master-edit-btn');
         if (!masterEditBtn) {
             console.error('Master edit button not found in DOM');
-            showNotification('Грешка: копчето за уредување не е пронајдено.', 'error');
+            showNotification(t('lista.editBtnNotFound'), 'error');
             return;
         }
         masterEditBtn.addEventListener('click', () => {
@@ -2819,7 +2672,7 @@
             masterEditBtn.innerHTML = isEditMode ?
                 '<i class="fas fa-times"></i>' :
                 '<i class="fas fa-edit"></i>';
-            masterEditBtn.title = isEditMode ? 'Исклучи уредување' : 'Уреди';
+            masterEditBtn.title = isEditMode ? t('lista.disableEditing') : t('lista.editArtist');
             console.log('Edit mode:', isEditMode);
             renderBands(bandsData);
         });
@@ -3004,7 +2857,7 @@
         
         selectElement.innerHTML = '<option value=""></option>' +
             sortedValues.map(v => {
-                const label = v === '__verified__' ? `✓ Потврден` : v;
+                const label = v === '__verified__' ? '✓ ' + t('lista.verified') : v;
                 return `<option value="${v}">${label} (${counts[v]})</option>`;
             }).join('');
         
@@ -3332,7 +3185,7 @@
             let playBtnHtml = '';
             const hasSpotifyLink = band.links?.spotify && band.links.spotify !== 'недостигаат податоци';
             if (band.links.none === 'недостигаат податоци' && band.contact === 'недостигаат податоци') {
-                linksHtml = '<span class="missing-data"><i class="fas fa-question-circle"></i></span>';
+                linksHtml = `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`;
                 // Even with no links, check for RSS matches
                 const matchedArticles = findMatchingArticles(band.name);
                 if (matchedArticles.length > 0) {
@@ -3403,14 +3256,14 @@
                 reviewsHtml = rssHtml + manualReviewsHtml;
             }
             let cityHtml = band.city === 'недостигаат податоци'
-                ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="${getCityTagStyle(c)}"><i class="fas fa-map-marker-alt"></i>${c}</span>`).join('');
+                ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
+                : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="${getCityTagStyle(c)}"><i class="fas fa-map-marker-alt"></i>${localizeText(c)}</span>`).join('');
             let genreHtml = band.genre === 'недостигаат податоци'
-                ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${g}</span>`).join('');
+                ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
+                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${localizeText(g)}</span>`).join('');
             let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
-                ? '<span class="missing-data"><i class="fas fa-question-circle"></i></span>'
-                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}"><i class="fas fa-headphones"></i>${s}</span>`).join('');
+                ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
+                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}"><i class="fas fa-headphones"></i>${localizeText(s)}</span>`).join('');
             
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
@@ -3420,9 +3273,9 @@
             
             // Artist name links to artist page
             const artistPageUrl = getArtistPageUrl(band.name);
-            let nameHtml = `${thumbnailHtml}<a href="${artistPageUrl}" class="artist-name-link" title="Отвори профил на артистот">${band.name}</a>`;
+            let nameHtml = `${thumbnailHtml}<a href="${artistPageUrl}" class="artist-name-link" title="${t('lista.openProfile')}">${localizeText(band.name)}</a>`;
             if (band.confirmed) {
-                nameHtml += '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>';
+                nameHtml += '<span class="verified-badge" title="' + t('lista.verifiedBadge') + '"><i class="fas fa-check-circle"></i></span>';
             }
             if (band.label && band.label !== 'недостигаат податоци') {
                 const labels = String(band.label).split(',').map(l => l.trim()).filter(Boolean);
@@ -3433,7 +3286,7 @@
                 nameHtml += ` ${labelSpans}`;
             }
             const activityStatus = getActivityStatus(band.name);
-            const statusClass = activityStatus === 'Непознато' ? 'missing-data' : '';
+            const statusClass = activityStatus === t('lista.statusUnknown') ? 'missing-data' : '';
             
             // Build events column
             const matchedEvents = findMatchingEvents(band.name);
@@ -3445,7 +3298,7 @@
                     const d = evt.date ? new Date(evt.date + 'T00:00:00') : null;
                     const dateStr = d ? d.toLocaleDateString('mk-MK', { day: 'numeric', month: 'short' }) : '';
                     const isPast = evt.date < today;
-                    const escapedTitle = (evt.title + (dateStr ? ` (${dateStr})` : '') + (evt.place ? ` — ${evt.place}` : '')).replace(/"/g, '&quot;');
+                    const escapedTitle = (localizeText(evt.title) + (dateStr ? ` (${dateStr})` : '') + (evt.place ? ` — ${localizeText(evt.place)}` : '')).replace(/"/g, '&quot;');
                     const href = (evt.links && evt.links.length ? evt.links[0].url : evt.link) || `/nastan/${evt.id}`;
                     return `<a href="${href}" target="_blank" title="${escapedTitle}" class="event-icon-link${isPast ? ' past-event-icon' : ''}"><i class="fas fa-calendar-day"></i></a>`;
                 }).join('');
@@ -3478,7 +3331,7 @@
             statusSpan.addEventListener('mouseover', (e) => {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'status-tooltip';
-                tooltip.textContent = activityStatus;
+                tooltip.textContent = localizeText(activityStatus);
                 document.body.appendChild(tooltip);
                 const offsetX = 10;
                 const offsetY = 10;
@@ -3539,7 +3392,7 @@
                     window.openModal('edit', bandsData[idx], idx);
                 } else {
                     console.error('window.openModal is not defined');
-                    showNotification('Грешка: функцијата за уредување не е достапна.', 'error');
+                    showNotification(t('lista.editFnNotAvailable'), 'error');
                 }
             });
             

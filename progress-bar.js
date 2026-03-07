@@ -21,6 +21,10 @@
     var messages = fallbackMessages.slice();
     var usedIndices = [];
 
+    /* ── Detect user language from localStorage ── */
+    var userLang = 'mk';
+    try { var sl = localStorage.getItem('mmm-language'); if (sl) userLang = sl; } catch (e) {}
+
     /* ── Try to fetch the full message list ── */
     try {
         var xhr = new XMLHttpRequest();
@@ -30,8 +34,14 @@
             if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 0)) {
                 try {
                     var parsed = JSON.parse(xhr.responseText);
-                    if (Array.isArray(parsed) && parsed.length) {
-                        messages = parsed;
+                    var langMessages = null;
+                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                        langMessages = parsed[userLang] || parsed['mk'];
+                    } else if (Array.isArray(parsed)) {
+                        langMessages = parsed;
+                    }
+                    if (Array.isArray(langMessages) && langMessages.length) {
+                        messages = langMessages;
                         usedIndices = [];
                         if (msg && !done) {
                             msg.textContent = pickMessage();

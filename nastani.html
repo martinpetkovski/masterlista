@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -1079,32 +1080,32 @@
 <body class="compact nastani-page">
     <header id="site-header" data-active="/nastani" data-title="Настани">
         <span class="header-info">
-            <span><strong id="stat-total">0</strong> настани</span>
+            <span><strong id="stat-total">0</strong> <span data-i18n="events.total">настани</span></span>
             <span class="separator">•</span>
-            <span><strong id="stat-upcoming">0</strong> претстојни</span>
+            <span><strong id="stat-upcoming">0</strong> <span data-i18n="events.upcoming">претстојни</span></span>
             <span class="separator">•</span>
-            <span><strong id="stat-past">0</strong> минати</span>
+            <span><strong id="stat-past">0</strong> <span data-i18n="events.past">минати</span></span>
         </span>
-        <button id="add-event-btn" class="header-btn add-band" title="Додај настан"><i class="fas fa-plus"></i></button>
-        <button id="search-toggle-btn" class="header-btn search-toggle" title="Пребарај"><i class="fas fa-search"></i></button>
+        <button id="add-event-btn" class="header-btn add-band" data-i18n-title="events.addEvent" title="Додај настан"><i class="fas fa-plus"></i></button>
+        <button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="events.search" title="Пребарај"><i class="fas fa-search"></i></button>
     </header>
     <script src="/load-header.js"></script>
     <main>
         <div class="chart-filter-bar" id="controls-bar">
             <div class="filter-group filter-presets" data-filter-group="preset">
                 <button class="filter-btn preset-btn active" data-filter="all">
-                    <i class="fas fa-calendar-days"></i> Сите
+                    <i class="fas fa-calendar-days"></i> <span data-i18n="common.all">Сите</span>
                 </button>
                 <button class="filter-btn preset-btn" data-filter="upcoming">
-                    <i class="fas fa-arrow-right"></i> Претстојни
+                    <i class="fas fa-arrow-right"></i> <span data-i18n="events.upcoming">Претстојни</span>
                 </button>
                 <button class="filter-btn preset-btn" data-filter="past">
-                    <i class="fas fa-clock-rotate-left"></i> Минати
+                    <i class="fas fa-clock-rotate-left"></i> <span data-i18n="events.past">Минати</span>
                 </button>
             </div>
             <div class="events-search-wrap">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-events" placeholder="Пребарај настан, артист, место...">
+                <input type="text" id="search-events" data-i18n-placeholder="events.searchPlaceholder" placeholder="Пребарај настан, артист, место...">
             </div>
         </div>
         <div id="loading-bar" class="loading-bar">
@@ -1121,22 +1122,22 @@
     <div id="event-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="modal-close-btn">&times;</span>
-            <h2 id="modal-title">Додај настан</h2>
+            <h2 id="modal-title" data-i18n="events.addEvent">Додај настан</h2>
             <form id="event-form">
                 <div class="form-group">
-                    <label for="evt-title">Наслов *</label>
-                    <input type="text" id="evt-title" placeholder="пр. Rock Night Vol. 5" required>
+                    <label for="evt-title" data-i18n="events.title">Наслов *</label>
+                    <input type="text" id="evt-title" data-i18n-placeholder="events.titlePlaceholder" placeholder="пр. Rock Night Vol. 5" required>
                 </div>
                 <div class="form-group" style="display:flex;gap:0.5rem">
                     <div style="flex:1">
-                        <label for="evt-date">Датум *</label>
+                        <label for="evt-date" data-i18n="events.date">Датум *</label>
                         <div class="masked-input-wrap">
                             <input type="text" id="evt-date" maxlength="10" inputmode="numeric" autocomplete="off" required>
                             <div class="mask-overlay" id="evt-date-overlay"></div>
                         </div>
                     </div>
                     <div style="flex:1">
-                        <label for="evt-time">Време *</label>
+                        <label for="evt-time" data-i18n="events.time">Време *</label>
                         <div class="masked-input-wrap">
                             <input type="text" id="evt-time" maxlength="5" inputmode="numeric" autocomplete="off" required>
                             <div class="mask-overlay" id="evt-time-overlay"></div>
@@ -1144,28 +1145,28 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="evt-place">Место / Локација *</label>
-                    <input type="text" id="evt-place" placeholder="пр. МКЦ, Скопје" required>
+                    <label for="evt-place" data-i18n="events.place">Место / Локација *</label>
+                    <input type="text" id="evt-place" data-i18n-placeholder="events.placePlaceholder" placeholder="пр. МКЦ, Скопје" required>
                 </div>
                 <div class="form-group">
-                    <label>Артисти</label>
+                    <label data-i18n="events.artists">Артисти</label>
                     <div class="artist-entries-list" id="artist-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-artist-btn"><i class="fas fa-plus"></i> Додај артист</button>
-                    <small class="form-help">Артистите мора да бидат од Мастер Листата</small>
+                    <button type="button" class="add-entry-btn" id="add-artist-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addArtist">Додај артист</span></button>
+                    <small class="form-help" data-i18n="events.artistsMustBe">Артистите мора да бидат од Мастер Листата</small>
                 </div>
                 <div class="form-group">
-                    <label>Карти / Влезници</label>
+                    <label data-i18n="events.tickets">Карти / Влезници</label>
                     <div class="ticket-entries-list" id="ticket-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-ticket-btn"><i class="fas fa-plus"></i> Додај карта</button>
+                    <button type="button" class="add-entry-btn" id="add-ticket-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addTicket">Додај карта</span></button>
                 </div>
                 <div class="form-group">
-                    <label>Линкови</label>
+                    <label data-i18n="events.links">Линкови</label>
                     <div class="link-entries-list" id="link-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-link-btn"><i class="fas fa-plus"></i> Додај линк</button>
-                    <small class="form-help">Линкови за карти, Инстаграм, или повеќе информации</small>
+                    <button type="button" class="add-entry-btn" id="add-link-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addLink">Додај линк</span></button>
+                    <small class="form-help" data-i18n="events.linksHelp">Линкови за карти, Инстаграм, или повеќе информации</small>
                 </div>
-                <button type="submit" id="save-event-btn">Зачувај</button>
-                <button type="button" class="delete-event-btn" id="delete-event-btn"><i class="fas fa-trash"></i> Избриши настан</button>
+                <button type="submit" id="save-event-btn" data-i18n="events.save">Зачувај</button>
+                <button type="button" class="delete-event-btn" id="delete-event-btn"><i class="fas fa-trash"></i> <span data-i18n="events.deleteEvent">Избриши настан</span></button>
             </form>
         </div>
     </div>
@@ -1181,7 +1182,7 @@
         var PR_ENDPOINT = 'https://muzichka-master-lista.deeeeelay.workers.dev';
         var EVENTS_FILE_PATH = 'events.json';
 
-        var MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
+        var MK_MONTHS = t('months.short');
 
         // Cyrillic transliteration, slug, URL from common.js
         var transliterate = transliterateCyrillicToLatin;
@@ -1228,7 +1229,7 @@
         function daysUntil(s) { return Math.ceil((parseDate(s) - getToday()) / 86400000); }
 
         function getDayName(dateStr) {
-            var days = ['недела', 'понеделник', 'вторник', 'среда', 'четврток', 'петок', 'сабота'];
+            var days = t('days.long');
             var p = dateStr.split('-');
             var d = new Date(+p[0], +p[1]-1, +p[2]);
             return days[d.getDay()];
@@ -1237,14 +1238,14 @@
         function countdownText(dateStr) {
             var d = daysUntil(dateStr);
             var day = getDayName(dateStr);
-            if (d === 0) return { text: 'Денес', cls: 'today-cd' };
-            if (d === 1) return { text: 'Утре, во ' + day, cls: 'soon' };
-            if (d > 1 && d <= 7) return { text: 'За ' + d + ' дена, во ' + day, cls: 'soon' };
-            if (d > 7 && d <= 30) return { text: 'За ' + d + ' дена, во ' + day, cls: 'later' };
-            if (d > 30) { var m = Math.floor(d / 30); return { text: m === 1 ? 'За ~1 месец' : 'За ~' + m + ' месеци', cls: 'later' }; }
-            if (d === -1) return { text: 'Вчера', cls: 'passed' };
-            if (d < -1 && d >= -30) return { text: 'Пред ' + Math.abs(d) + ' дена', cls: 'passed' };
-            if (d < -30) { var mo = Math.floor(Math.abs(d) / 30); return { text: mo === 1 ? 'Пред ~1 месец' : 'Пред ~' + mo + ' месеци', cls: 'passed' }; }
+            if (d === 0) return { text: t('events.today'), cls: 'today-cd' };
+            if (d === 1) return { text: t('events.tomorrow').replace('{0}', day), cls: 'soon' };
+            if (d > 1 && d <= 7) return { text: t('events.inDays').replace('{0}', d).replace('{1}', day), cls: 'soon' };
+            if (d > 7 && d <= 30) return { text: t('events.inDays').replace('{0}', d).replace('{1}', day), cls: 'later' };
+            if (d > 30) { var m = Math.floor(d / 30); return { text: m === 1 ? t('events.inMonth') : t('events.inMonths').replace('{0}', m), cls: 'later' }; }
+            if (d === -1) return { text: t('events.yesterday'), cls: 'passed' };
+            if (d < -1 && d >= -30) return { text: t('events.daysAgo').replace('{0}', Math.abs(d)), cls: 'passed' };
+            if (d < -30) { var mo = Math.floor(Math.abs(d) / 30); return { text: mo === 1 ? t('events.monthAgoSingle') : t('events.monthsAgo').replace('{0}', mo), cls: 'passed' }; }
             return { text: '', cls: '' };
         }
 
@@ -1293,7 +1294,9 @@
 
                 if (bandsRes.ok) {
                     var bandsData = await bandsRes.json();
-                    masterArtists = (bandsData.muzickaMasterLista || []).map(function(b) {
+                    var rawBands = bandsData.muzickaMasterLista || [];
+                    registerArtistNames(rawBands);
+                    masterArtists = rawBands.map(function(b) {
                         return { name: b.name, city: b.city || '', image: (b.image || '').replace(/&amp;/g, '&') };
                     }).sort(function(a, b) { return a.name.localeCompare(b.name); });
                 }
@@ -1306,7 +1309,7 @@
                     var draft = window.MMMDrafts.load('events.json');
                     if (draft && draft.events && Array.isArray(draft.events)) {
                         allEvents = draft.events;
-                        notify('Вчитани се незачувани промени од претходно. Кликнете "Испрати промени" за да ги поднесете.', 'info');
+                        notify(t('events.unsavedChanges'), 'info');
                     }
                 }
 
@@ -1315,7 +1318,7 @@
             } catch (err) {
                 console.error('Load error:', err);
                 document.getElementById('events-timeline').innerHTML =
-                    '<div class="tl-empty"><i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i> Не можеме да ги вчитаме настаните.</div>';
+                    '<div class="tl-empty"><i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i> ' + t('events.loadError') + '</div>';
             } finally {
                 loadingBar.classList.remove('active');
             }
@@ -1360,25 +1363,25 @@
         });
 
         function updateStats() {
-            var t = getToday(), up = 0, pa = 0;
-            allEvents.forEach(function(e) { if (parseDate(e.date) >= t) up++; else pa++; });
+            var today = getToday(), up = 0, pa = 0;
+            allEvents.forEach(function(e) { if (parseDate(e.date) >= today) up++; else pa++; });
             document.getElementById('stat-total').textContent = allEvents.length;
             document.getElementById('stat-upcoming').textContent = up;
             document.getElementById('stat-past').textContent = pa;
         }
 
         // ==================== RENDER TIMELINE ====================
-        var MK_MONTHS_FULL = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
-        var MK_DAYS_SHORT = ['нед','пон','вто','сре','чет','пет','саб'];
+        var MK_MONTHS_FULL = t('months.full');
+        var MK_DAYS_SHORT = t('days.short');
 
         function renderTable() {
             var container = document.getElementById('events-timeline');
-            var t = getToday();
+            var today = getToday();
             var q = searchQuery.toLowerCase();
 
             var filtered = allEvents.filter(function(e) {
-                if (currentFilter === 'upcoming' && parseDate(e.date) < t) return false;
-                if (currentFilter === 'past' && parseDate(e.date) >= t) return false;
+                if (currentFilter === 'upcoming' && parseDate(e.date) < today) return false;
+                if (currentFilter === 'past' && parseDate(e.date) >= today) return false;
                 if (q) {
                     var artists = (e.artists || e.bands || []).join(' ').toLowerCase();
                     var hay = (e.title + ' ' + e.place + ' ' + artists).toLowerCase();
@@ -1395,7 +1398,7 @@
             if (filtered.length === 0) {
                 container.innerHTML = '<div class="tl-empty">' +
                     '<i class="fas fa-calendar-xmark" style="font-size:1.5rem;display:block;margin-bottom:0.5rem"></i>' +
-                    'Нема настани' + (q ? ' за "' + esc(q) + '"' : '') + '</div>';
+                    (q ? t('events.noSearchResults').replace('{0}', esc(q)) : t('events.noEvents')) + '</div>';
                 return;
             }
 
@@ -1407,13 +1410,13 @@
 
             // Direction indicator at top
             if (currentFilter !== 'past') {
-                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-up"></i> Претстојни</span></div>';
+                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-up"></i> ' + t('events.upcoming') + '</span></div>';
             }
 
             for (var i = 0; i < filtered.length; i++) {
                 var evt = filtered[i];
                 var evtDate = parseDate(evt.date);
-                var isPast = evtDate < t;
+                var isPast = evtDate < today;
                 var isToday = daysUntil(evt.date) === 0;
 
                 // Today marker
@@ -1423,7 +1426,7 @@
                         '<div class="tl-today-date-col"></div>' +
                         '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
                         '<div class="tl-today-content">' +
-                        '<span class="tl-today-label"><i class="fas fa-location-dot"></i> Денес</span>' +
+                        '<span class="tl-today-label"><i class="fas fa-location-dot"></i> ' + t('events.today') + '</span>' +
                         '<div class="tl-today-line"></div>' +
                         '</div></div>';
                     lastDateStr = '';
@@ -1505,14 +1508,14 @@
                         var _c = _palette[_pi];
                         html += '<span class="tl-artist-icon-placeholder" style="background:linear-gradient(145deg,' + _c[0] + ',' + _c[1] + ')">' + esc(_init) + '</span>';
                     }
-                    html += '<span class="tl-artist-name-tip">' + esc(artists[ai]) + '</span>';
+                    html += '<span class="tl-artist-name-tip">' + esc(localizeText(artists[ai])) + '</span>';
                     html += '</a>';
                 }
                 html += '</div>';
 
                 // Name + countdown
                 html += '<div class="tl-name-cell">';
-                html += '<span class="tl-title">' + esc(evt.title) + '</span>';
+                html += '<span class="tl-title">' + esc(localizeText(evt.title)) + '</span>';
                 if (cd.text) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
                 html += '</div>';
 
@@ -1520,7 +1523,7 @@
                 html += '<div class="tl-place">';
                 if (evt.place) {
                     var mapsUrl = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place);
-                    html += '<a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="tl-place-link" onclick="event.stopPropagation()" title="' + escA(evt.place) + '"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</a>';
+                    html += '<a href="' + escA(mapsUrl) + '" target="_blank" rel="noopener" class="tl-place-link" onclick="event.stopPropagation()" title="' + escA(localizeText(evt.place)) + '"><i class="fas fa-location-dot"></i> ' + esc(localizeText(evt.place)) + '</a>';
                 }
                 html += '</div>';
 
@@ -1529,7 +1532,7 @@
                 if (artists.length) {
                     html += '<div class="cell-scroll">';
                     for (var a = 0; a < artists.length; a++) {
-                        html += '<a href="' + escA(artistUrl(artists[a])) + '" class="artist-tag" onclick="event.stopPropagation()" title="' + escA(artists[a]) + '"><i class="fas fa-music"></i> ' + esc(artists[a]) + '</a>';
+                        html += '<a href="' + escA(artistUrl(artists[a])) + '" class="artist-tag" onclick="event.stopPropagation()" title="' + escA(localizeText(artists[a])) + '"><i class="fas fa-music"></i> ' + esc(localizeText(artists[a])) + '</a>';
                     }
                     html += '</div>';
                 }
@@ -1541,7 +1544,7 @@
                     html += '<div class="cell-scroll">';
                     for (var ti = 0; ti < evt.tickets.length; ti++) {
                         var tk = evt.tickets[ti];
-                        html += '<span class="ticket-tag"><i class="fas fa-ticket"></i> ' + esc(tk.label) + ': ' + esc(tk.price) + '</span>';
+                        html += '<span class="ticket-tag"><i class="fas fa-ticket"></i> ' + esc(localizeText(tk.label)) + ': ' + esc(tk.price) + '</span>';
                     }
                     html += '</div>';
                 }
@@ -1553,7 +1556,7 @@
                 if (evtLinks.length === 1) {
                     html += '<a href="' + escA(evtLinks[0].url) + '" target="_blank" rel="noopener" class="event-link-btn" onclick="event.stopPropagation()" title="' + escA(evtLinks[0].label || evtLinks[0].url) + '"><i class="fas fa-arrow-up-right-from-square"></i></a>';
                 } else if (evtLinks.length > 1) {
-                    html += '<span class="event-link-btn" style="cursor:pointer" title="' + evtLinks.length + ' линкови">';
+                    html += '<span class="event-link-btn" style="cursor:pointer" title="' + t('events.linksCount').replace('{0}', evtLinks.length) + '">';
                     html += '<i class="fas fa-arrow-up-right-from-square"></i><sup style="font-size:0.55rem;margin-left:1px">' + evtLinks.length + '</sup>';
                     html += '</span>';
                 }
@@ -1561,19 +1564,19 @@
 
                 // Edit action
                 html += '<div class="tl-actions-cell">';
-                html += '<button class="edit-btn" data-id="' + escA(evt.id) + '" title="Уреди" onclick="event.stopPropagation()"><i class="fas fa-pen"></i></button>';
+                html += '<button class="edit-btn" data-id="' + escA(evt.id) + '" title="' + escA(t('events.editBtn')) + '" onclick="event.stopPropagation()"><i class="fas fa-pen"></i></button>';
                 html += '</div>';
 
                 // Mobile badges (hidden on desktop)
                 html += '<div class="tl-mobile-badges">';
                 if (evt.place) {
                     var mapsUrl2 = 'https://www.google.com/maps/search/' + encodeURIComponent(evt.place);
-                    html += '<a href="' + escA(mapsUrl2) + '" target="_blank" rel="noopener" class="tl-mobile-badge place-badge" onclick="event.stopPropagation()" title="' + escA(evt.place) + '"><i class="fas fa-location-dot"></i> ' + esc(evt.place) + '</a>';
+                    html += '<a href="' + escA(mapsUrl2) + '" target="_blank" rel="noopener" class="tl-mobile-badge place-badge" onclick="event.stopPropagation()" title="' + escA(localizeText(evt.place)) + '"><i class="fas fa-location-dot"></i> ' + esc(localizeText(evt.place)) + '</a>';
                 }
                 if (evt.tickets && evt.tickets.length) {
                     for (var tki = 0; tki < evt.tickets.length; tki++) {
                         var tkm = evt.tickets[tki];
-                        html += '<span class="tl-mobile-badge price-badge"><i class="fas fa-ticket"></i> ' + esc(tkm.label) + ': ' + esc(tkm.price) + '</span>';
+                        html += '<span class="tl-mobile-badge price-badge"><i class="fas fa-ticket"></i> ' + esc(localizeText(tkm.label)) + ': ' + esc(tkm.price) + '</span>';
                     }
                 }
                 html += '</div>';
@@ -1588,14 +1591,14 @@
                     '<div class="tl-today-date-col"></div>' +
                     '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
                     '<div class="tl-today-content">' +
-                    '<span class="tl-today-label"><i class="fas fa-location-dot"></i> Денес</span>' +
+                    '<span class="tl-today-label"><i class="fas fa-location-dot"></i> ' + t('events.today') + '</span>' +
                     '<div class="tl-today-line"></div>' +
                     '</div></div>';
             }
 
             // Direction indicator at bottom
             if (currentFilter !== 'upcoming') {
-                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-down"></i> Минати</span></div>';
+                html += '<div class="tl-direction"><span class="tl-direction-label"><i class="fas fa-arrow-down"></i> ' + t('events.past') + '</span></div>';
             }
 
             container.innerHTML = html;
@@ -1908,7 +1911,7 @@
             row.className = 'artist-entry-row artist-ac-wrapper';
             var input = document.createElement('input');
             input.type = 'text';
-            input.placeholder = 'Пребарај артист...';
+            input.placeholder = t('events.searchArtist');
             input.className = 'artist-input';
             input.value = value || '';
             input.readOnly = !!value;
@@ -1918,7 +1921,7 @@
             var removeBtn = document.createElement('button');
             removeBtn.type = 'button';
             removeBtn.className = 'entry-remove';
-            removeBtn.title = 'Отстрани';
+            removeBtn.title = t('events.remove');
             removeBtn.innerHTML = '<i class="fas fa-times"></i>';
 
             row.appendChild(input);
@@ -1936,8 +1939,8 @@
                 var matches = masterArtists.filter(function(a) { return a.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
                 if (!matches.length) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
                 acList.innerHTML = matches.map(function(a) {
-                    return '<div class="artist-ac-item" data-name="' + escA(a.name) + '">' +
-                        esc(a.name) + (a.city ? '<span class="ac-city">' + esc(a.city) + '</span>' : '') + '</div>';
+                    return '<div class=\"artist-ac-item\" data-name=\"' + escA(a.name) + '\">' +
+                        esc(localizeText(a.name)) + (a.city ? '<span class=\"ac-city\">' + esc(localizeText(a.city)) + '</span>' : '') + '</div>';
                 }).join('');
                 acList.classList.add('open');
                 acList.querySelectorAll('.artist-ac-item').forEach(function(item) {
@@ -1968,7 +1971,7 @@
 
         function openAddModal() {
             editingEventId = null;
-            modalTitle.textContent = 'Додај настан';
+            modalTitle.textContent = t('events.addEventTitle');
             deleteBtn.style.display = 'none';
             form.reset();
             resetArtists(['']);
@@ -1984,7 +1987,7 @@
             var evt = allEvents.find(function(e) { return e.id === id; });
             if (!evt) return;
             editingEventId = id;
-            modalTitle.textContent = 'Уреди настан';
+            modalTitle.textContent = t('events.editEvent');
             deleteBtn.style.display = '';
 
             document.getElementById('evt-title').value = evt.title || '';
@@ -2029,9 +2032,9 @@
             var row = document.createElement('div');
             row.className = 'link-entry-row';
             row.innerHTML =
-                '<input type="text" placeholder="Опис (пр. Билети, Инстаграм)" class="link-label-input" value="' + escA(label) + '">' +
-                '<input type="url" placeholder="https://..." class="link-url-input" value="' + escA(url) + '">' +
-                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+                '<input type="text" placeholder="' + escA(t('events.linkLabelPlaceholder')) + '" class="link-label-input" value="' + escA(label) + '">' +
+                '<input type="url" placeholder="' + escA(t('events.linkUrlPlaceholder')) + '" class="link-url-input" value="' + escA(url) + '">' +
+                '<button type="button" class="entry-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
             row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
             c.appendChild(row);
         }
@@ -2047,9 +2050,9 @@
             var row = document.createElement('div');
             row.className = 'ticket-entry-row';
             row.innerHTML =
-                '<input type="text" placeholder="Тип (пр. Стандард)" class="ticket-label-input" value="' + escA(label) + '">' +
-                '<input type="text" placeholder="Цена (пр. 300 ден)" class="ticket-price-input" value="' + escA(price) + '">' +
-                '<button type="button" class="entry-remove" title="Отстрани"><i class="fas fa-times"></i></button>';
+                '<input type="text" placeholder="' + escA(t('events.ticketTypePlaceholder')) + '" class="ticket-label-input" value="' + escA(label) + '">' +
+                '<input type="text" placeholder="' + escA(t('events.ticketPricePlaceholder')) + '" class="ticket-price-input" value="' + escA(price) + '">' +
+                '<button type="button" class="entry-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
             row.querySelector('.entry-remove').addEventListener('click', function() { row.remove(); });
             c.appendChild(row);
         }
@@ -2123,8 +2126,8 @@
             }
             function renderOverlay(overlayEl, value, template, sepChar) {
                 var digits = value.replace(/\D/g, '');
-                var datePlaceholders = ['Д','Д','М','М','Г','Г','Г','Г'];
-                var timePlaceholders = ['Ч','Ч','М','М'];
+                var datePlaceholders = t('events.datePlaceholders');
+                var timePlaceholders = t('events.timePlaceholders');
                 var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
                 var html = '';
                 var di = 0;
@@ -2187,9 +2190,9 @@
         // ==================== DELETE ====================
         deleteBtn.addEventListener('click', function() {
             if (!editingEventId) return;
-            if (!confirm('Дали сте сигурни дека сакате да го избришете овој настан?')) return;
+            if (!confirm(t('events.deleteConfirm'))) return;
             var updated = allEvents.filter(function(e) { return e.id !== editingEventId; });
-            submitUpdate(updated, 'Избришан настан: ' + editingEventId);
+            submitUpdate(updated, t('events.deletedDesc').replace('{0}', editingEventId));
         });
 
         // ==================== FORM SUBMIT ====================
@@ -2208,14 +2211,14 @@
                 if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
                     date = dp[2] + '-' + dp[1] + '-' + dp[0];
                 } else {
-                    notify('Форматот на датумот треба да биде дд.мм.гггг', 'error');
+                    notify(t('events.dateFormatError'), 'error');
                     return;
                 }
             }
 
             // Validate time format HH:MM
             if (time && !/^\d{2}:\d{2}$/.test(time)) {
-                notify('Форматот на времето треба да биде чч:мм', 'error');
+                notify(t('events.timeFormatError'), 'error');
                 return;
             }
 
@@ -2227,7 +2230,7 @@
                 var found = masterArtists.some(function(a) { return a.name === v; });
                 if (!found) {
                     input.style.borderColor = '#ef4444';
-                    notify('"' + v + '" не е на Мастер Листата. Одберете артист од листата.', 'error');
+                    notify(t('events.artistNotInList').replace('{0}', v), 'error');
                     valid = false;
                     return;
                 }
@@ -2241,7 +2244,7 @@
                 var l = (row.querySelector('.ticket-label-input') || {}).value || '';
                 var p = (row.querySelector('.ticket-price-input') || {}).value || '';
                 l = l.trim(); p = p.trim();
-                if (l || p) tickets.push({ label: l || 'Влез', price: p });
+                if (l || p) tickets.push({ label: l || t('events.defaultTicketLabel'), price: p });
             });
 
             var links = [];
@@ -2253,7 +2256,7 @@
             });
 
             if (!title || !date || !time || !place) {
-                notify('Пополнете ги сите задолжителни полиња.', 'error');
+                notify(t('events.fillRequired'), 'error');
                 return;
             }
 
@@ -2271,7 +2274,7 @@
                 updated.push(eventObj);
             }
 
-            var desc = (editingEventId ? 'Уреден' : 'Нов') + ' настан: ' + title + ' (' + date + ')\nМесто: ' + place + (artists.length ? '\nАртисти: ' + artists.join(', ') : '');
+            var desc = (editingEventId ? t('events.editedDesc') : t('events.newDesc')).replace('{0}', title).replace('{1}', date).replace('{2}', place) + (artists.length ? t('events.descArtists').replace('{0}', artists.join(', ')) : '');
             submitUpdate(updated, desc, eventObj);
         });
 
@@ -2292,15 +2295,15 @@
             closeModal();
 
             // Build notification with event details and artist links
-            var notifMsg = 'Зачувано локално. ';
+            var notifMsg = t('events.savedLocally') + ' ';
             if (eventObj) {
                 var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
                 var eventUrl = isLocalhost ? 'nastan.html?id=' + encodeURIComponent(eventObj.id) : '/nastan/' + encodeURIComponent(eventObj.id);
-                notifMsg += '<a href="' + eventUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(eventObj.title) + '</a>';
+                notifMsg += '<a href="' + eventUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(eventObj.title)) + '</a>';
                 if (eventObj.artists && eventObj.artists.length) {
                     var artistLinks = eventObj.artists.map(function(name) {
                         var artistUrl = isLocalhost ? 'artist.html?name=' + encodeURIComponent(name) : '/artist.html?name=' + encodeURIComponent(name);
-                        return '<a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(name) + '</a>';
+                        return '<a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(name)) + '</a>';
                     });
                     notifMsg += ' (' + artistLinks.join(', ') + ')';
                 }

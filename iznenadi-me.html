@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -365,48 +366,48 @@
     <main>
         <div class="surprise-container">
             <!-- Hidden summary elements for JS compatibility -->
-            <span id="summary-genre" style="display:none">Сите жанрови</span>
-            <span id="summary-era" style="display:none">Било која ера</span>
-            <span id="summary-filters" style="display:none">Без дополнителни филтри</span>
+            <span id="summary-genre" style="display:none" data-i18n="surprise.allGenres">Сите жанрови</span>
+            <span id="summary-era" style="display:none" data-i18n="surprise.anyEra">Било која ера</span>
+            <span id="summary-filters" style="display:none" data-i18n="surprise.noFilters">Без дополнителни филтри</span>
 
             <!-- Genre dropdown -->
             <div class="surprise-dropdown-row">
-                <label for="genre-select" class="surprise-dropdown-label"><i class="fas fa-music"></i> Жанр</label>
+                <label for="genre-select" class="surprise-dropdown-label"><i class="fas fa-music"></i> <span data-i18n="surprise.genre">Жанр</span></label>
                 <select id="genre-select" class="surprise-select">
-                    <option value="all" selected>Сите жанрови</option>
-                    <option value="alt">Алтернативна</option>
-                    <option value="rap">Рап / Трап</option>
-                    <option value="electronic">Електронска</option>
-                    <option value="jazz">Џез</option>
-                    <option value="metal">Метал</option>
+                    <option value="all" selected data-i18n="surprise.allGenres">Сите жанрови</option>
+                    <option value="alt" data-i18n="surprise.alt">Алтернативна</option>
+                    <option value="rap" data-i18n="surprise.rap">Рап / Трап</option>
+                    <option value="electronic" data-i18n="surprise.electronic">Електронска</option>
+                    <option value="jazz" data-i18n="surprise.jazz">Џез</option>
+                    <option value="metal" data-i18n="surprise.metal">Метал</option>
                 </select>
             </div>
 
             <!-- Era dropdown -->
             <div class="surprise-dropdown-row">
-                <label for="era-select" class="surprise-dropdown-label"><i class="fas fa-clock"></i> Ера</label>
+                <label for="era-select" class="surprise-dropdown-label"><i class="fas fa-clock"></i> <span data-i18n="surprise.era">Ера</span></label>
                 <select id="era-select" class="surprise-select">
-                    <option value="any" selected>Било која ера</option>
-                    <option value="new">Нови (последни 10г.)</option>
-                    <option value="old">Стари (10+ години)</option>
+                    <option value="any" selected data-i18n="surprise.anyEra">Било која ера</option>
+                    <option value="new" data-i18n="surprise.newEra">Нови (последни 10г.)</option>
+                    <option value="old" data-i18n="surprise.oldEra">Стари (10+ години)</option>
                 </select>
             </div>
 
             <!-- Filters (buttons) -->
             <div class="surprise-filters-section">
-                <div class="surprise-filters-label">Филтри (опционално)</div>
+                <div class="surprise-filters-label" data-i18n="surprise.filtersOptional">Филтри (опционално)</div>
                 <div class="option-grid">
                     <button class="filter-btn preset-btn" data-filter="verified">
-                        <i class="fas fa-circle-check"></i> Потврдени
+                        <i class="fas fa-circle-check"></i> <span data-i18n="surprise.verified">Потврдени</span>
                     </button>
                     <button class="filter-btn preset-btn" data-filter="spotify">
-                        <i class="fab fa-spotify"></i> Со Spotify
+                        <i class="fab fa-spotify"></i> <span data-i18n="surprise.withSpotify">Со Spotify</span>
                     </button>
                     <button class="filter-btn preset-btn" data-filter="active">
-                        <i class="fas fa-bolt"></i> Активни
+                        <i class="fas fa-bolt"></i> <span data-i18n="surprise.active">Активни</span>
                     </button>
                     <button class="filter-btn preset-btn" data-filter="inactive">
-                        <i class="fas fa-moon"></i> Неактивни
+                        <i class="fas fa-moon"></i> <span data-i18n="surprise.inactive">Неактивни</span>
                     </button>
                 </div>
             </div>
@@ -414,13 +415,13 @@
             <!-- Go button -->
             <div class="surprise-go-wrapper">
                 <button class="btn-generic surprise-cta-btn" id="surprise-go" disabled>
-                    <i class="fas fa-shuffle"></i> Изненади ме!
+                    <i class="fas fa-shuffle"></i> <span data-i18n="surprise.surpriseMe">Изненади ме!</span>
                 </button>
             </div>
 
             <div class="no-results-msg" id="no-results">
                 <i class="fas fa-face-sad-tear"></i>
-                Нема артисти со избраните критериуми. Пробај друга комбинација.
+                <span data-i18n="surprise.noResults">Нема артисти со избраните критериуми. Пробај друга комбинација.</span>
             </div>
         </div>
     </main>
@@ -474,35 +475,35 @@
         const summaryFiltersEl = document.getElementById('summary-filters');
 
         const genreLabels = {
-            all: 'Сите жанрови',
-            alt: 'Алтернативна',
-            rap: 'Рап / Трап',
-            electronic: 'Електронска',
-            jazz: 'Џез',
-            metal: 'Метал'
+            all: t('surprise.allGenres'),
+            alt: t('surprise.alt'),
+            rap: t('surprise.rap'),
+            electronic: t('surprise.electronic'),
+            jazz: t('surprise.jazz'),
+            metal: t('surprise.metal')
         };
 
         const eraLabels = {
-            any: 'Било која ера',
-            new: 'Нови (10г.)',
-            old: 'Стари (10+г.)'
+            any: t('surprise.anyEra'),
+            new: t('surprise.newShort'),
+            old: t('surprise.oldShort')
         };
 
         const filterLabels = {
-            verified: 'Потврдени',
-            spotify: 'Со Spotify',
-            active: 'Активни',
-            inactive: 'Неактивни'
+            verified: t('surprise.verified'),
+            spotify: t('surprise.withSpotify'),
+            active: t('surprise.active'),
+            inactive: t('surprise.inactive')
         };
 
         function updateSelectionSummary() {
             // Update hidden summary elements for compatibility
-            if (summaryGenreEl) summaryGenreEl.textContent = genreLabels[selectedGenre] || 'Сите жанрови';
-            if (summaryEraEl) summaryEraEl.textContent = eraLabels[selectedEra] || 'Било која ера';
+            if (summaryGenreEl) summaryGenreEl.textContent = genreLabels[selectedGenre] || t('surprise.allGenres');
+            if (summaryEraEl) summaryEraEl.textContent = eraLabels[selectedEra] || t('surprise.anyEra');
             if (summaryFiltersEl) {
                 summaryFiltersEl.textContent = activeFilters.size
                     ? Array.from(activeFilters).map(f => filterLabels[f]).filter(Boolean).join(' • ')
-                    : 'Без дополнителни филтри';
+                    : t('surprise.noFilters');
             }
         }
 
@@ -557,6 +558,7 @@
                 ]);
 
                 bandsData = bandsResp.muzickaMasterLista || [];
+                registerArtistNames(bandsData);
                 releasesData = siteMasterData?.chartData?.releases || [];
                 eventsData = eventsResp?.events || [];
                 window._siteMasterActivity = siteMasterData?.artistActivity || {};

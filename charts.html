@@ -75,6 +75,7 @@
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -2050,12 +2051,12 @@
 <body class="compact chart-page">
     <header id="site-header" data-active="/charts" data-title="Македонска Музичка Топ Листа">
         <span class="header-info">
-            <span>Ажурирано <span id="last-updated">...</span></span>
+            <span><span data-i18n="charts.updated">Ажурирано</span> <span id="last-updated">...</span></span>
             <span class="separator">•</span>
             <span id="header-week"></span>
         </span>
         <span class="mobile-week-label" id="mobile-week-label"></span>
-        <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" title="Сподели">
+        <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" data-i18n-title="charts.share" title="Сподели">
             <i class="fas fa-share-alt"></i>
         </button>
     </header>
@@ -2066,62 +2067,62 @@
         <div class="chart-filter-content">
             <!-- Quick preset buttons -->
             <div class="filter-group filter-presets" data-filter-group="preset">
-                <button class="filter-btn preset-btn active" data-preset="toplista" title="Стандардна листа со сите жанрови">
-                    <i class="fas fa-chart-line"></i> Топ Листа
+                <button class="filter-btn preset-btn active" data-preset="toplista" data-i18n-title="charts.standardListTitle" title="Стандардна листа со сите жанрови">
+                    <i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span>
                 </button>
-                <button class="filter-btn preset-btn" data-preset="alt" title="Алтернативна музика">
-                    <i class="fas fa-guitar"></i> Алтернативна
+                <button class="filter-btn preset-btn" data-preset="alt" data-i18n-title="charts.altMusic" title="Алтернативна музика">
+                    <i class="fas fa-guitar"></i> <span data-i18n="charts.alternative">Алтернативна</span>
                 </button>
-                <button class="filter-btn preset-btn" data-preset="alltime" title="Сите времиња">
-                    <i class="fas fa-trophy"></i> Сите времиња
+                <button class="filter-btn preset-btn" data-preset="alltime" data-i18n-title="charts.allTime" title="Сите времиња">
+                    <i class="fas fa-trophy"></i> <span data-i18n="charts.allTime">Сите времиња</span>
                 </button>
-                <button class="filter-btn preset-btn" data-preset="advanced" title="Напредни филтри">
-                    <i class="fas fa-sliders-h"></i> Напредно
+                <button class="filter-btn preset-btn" data-preset="advanced" data-i18n-title="charts.advancedFilters" title="Напредни филтри">
+                    <i class="fas fa-sliders-h"></i> <span data-i18n="charts.advanced">Напредно</span>
                 </button>
             </div>
             <!-- Advanced filter groups (hidden by default) -->
             <div class="advanced-filters" id="advanced-filters" style="display: none;">
                 <div class="filter-group" data-filter-group="genre">
-                    <span class="filter-label">Жанр:</span>
-                    <button class="filter-btn active" data-filter-type="genre" data-filter-value="all" title="Сите жанрови">
-                        Сите
+                    <span class="filter-label" data-i18n="artist.genre">Жанр:</span>
+                    <button class="filter-btn active" data-filter-type="genre" data-filter-value="all" data-i18n-title="charts.allGenres" title="Сите жанрови">
+                        <span data-i18n="common.all">Сите</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="genre" data-filter-value="alt" title="Алтернативна музика">
-                        Алтернативна
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="alt" data-i18n-title="charts.altMusic" title="Алтернативна музика">
+                        <span data-i18n="charts.genreAlt">Алтернативна</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="genre" data-filter-value="rap" title="Рап и Трап">
-                        Рап/Трап
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="rap" data-i18n-title="charts.rapTrapTitle" title="Рап и Трап">
+                        <span data-i18n="charts.genreRap">Рап/Трап</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="genre" data-filter-value="electronic" title="Електронска музика">
-                        Електронска
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="electronic" data-i18n-title="charts.electronicTitle" title="Електронска музика">
+                        <span data-i18n="charts.genreElectronic">Електронска</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="genre" data-filter-value="pop" title="Поп музика">
-                        Поп
+                    <button class="filter-btn" data-filter-type="genre" data-filter-value="pop" data-i18n-title="charts.popTitle" title="Поп музика">
+                        <span data-i18n="charts.genrePop">Поп</span>
                     </button>
                 </div>
                 <div class="filter-group" data-filter-group="chart">
-                    <span class="filter-label">Листа:</span>
-                    <button class="filter-btn active" data-filter-type="chart" data-filter-value="standard" title="Стандардна листа">
-                        Стандардна
+                    <span class="filter-label" data-i18n="common.filter">Листа:</span>
+                    <button class="filter-btn active" data-filter-type="chart" data-filter-value="standard" data-i18n-title="charts.standardListShort" title="Стандардна листа">
+                        <span data-i18n="charts.standard">Стандардна</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="chart" data-filter-value="alltime" title="На сите времиња">
-                        Сите времиња
+                    <button class="filter-btn" data-filter-type="chart" data-filter-value="alltime" data-i18n-title="charts.allTimeTitle" title="На сите времиња">
+                        <span data-i18n="charts.allTime">Сите времиња</span>
                     </button>
                 </div>
                 <div class="filter-group" data-filter-group="city">
-                    <span class="filter-label">Град:</span>
-                    <button class="filter-btn active" data-filter-type="city" data-filter-value="all" title="Сите градови">
-                        Сите
+                    <span class="filter-label" data-i18n="artist.city">Град:</span>
+                    <button class="filter-btn active" data-filter-type="city" data-filter-value="all" data-i18n-title="charts.allCities" title="Сите градови">
+                        <span data-i18n="common.all">Сите</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="city" data-filter-value="skopje" title="Скопје">
-                        Скопје
+                    <button class="filter-btn" data-filter-type="city" data-filter-value="skopje" data-i18n-title="charts.citySkopje" title="Скопје">
+                        <span data-i18n="charts.citySkopje">Скопје</span>
                     </button>
-                    <button class="filter-btn" data-filter-type="city" data-filter-value="bitola" title="Битола">
-                        Битола
+                    <button class="filter-btn" data-filter-type="city" data-filter-value="bitola" data-i18n-title="charts.cityBitola" title="Битола">
+                        <span data-i18n="charts.cityBitola">Битола</span>
                     </button>
                 </div>
-                <button class="filter-btn reset-btn" id="reset-filters-btn" title="Ресетирај филтри">
-                    <i class="fas fa-undo"></i> Ресетирај
+                <button class="filter-btn reset-btn" id="reset-filters-btn" data-i18n-title="charts.resetFilters" title="Ресетирај филтри">
+                    <i class="fas fa-undo"></i> <span data-i18n="charts.reset">Ресетирај</span>
                 </button>
             </div>
         </div>
@@ -2131,31 +2132,31 @@
         
         <!-- Mobile chart tab filter -->
         <div class="mobile-chart-tabs" id="mobile-chart-tabs">
-            <button class="mobile-chart-tab active" data-chart-tab="singles"><i class="fas fa-music"></i> Синглови</button>
-            <button class="mobile-chart-tab" data-chart-tab="albums"><i class="fas fa-compact-disc"></i> Албуми</button>
-            <button class="mobile-chart-tab" data-chart-tab="latest"><i class="fas fa-clock"></i> Најнови</button>
+            <button class="mobile-chart-tab active" data-chart-tab="singles"><i class="fas fa-music"></i> <span data-i18n="charts.singles">Синглови</span></button>
+            <button class="mobile-chart-tab" data-chart-tab="albums"><i class="fas fa-compact-disc"></i> <span data-i18n="charts.albums">Албуми</span></button>
+            <button class="mobile-chart-tab" data-chart-tab="latest"><i class="fas fa-clock"></i> <span data-i18n="charts.newReleases">Најнови</span></button>
         </div>
         
         <div class="chart-sections">
             <!-- Top Singles -->
             <div class="chart-section" id="singles-section">
                 <div class="chart-section-header singles">
-                    <h2><i class="fas fa-music"></i> Синглови</h2>
+                    <h2><i class="fas fa-music"></i> <span data-i18n="charts.singles">Синглови</span></h2>
                     <div class="chart-header-right">
                         <span class="period" id="singles-period"></span>
-                        <button class="share-btn" onclick="shareChart('singles')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
+                        <button class="share-btn" onclick="shareChart('singles')" data-i18n-title="charts.share" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
                         </button>
                     </div>
                 </div>
                 <div class="chart-list-wrapper">
                     <div id="singles-chart-loading" class="chart-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Се вчитува...</p>
+                        <p data-i18n="common.loading">Се вчитува...</p>
                     </div>
                     <ol id="singles-chart" class="chart-list" style="display: none;"></ol>
                     <div id="singles-chart-empty" class="chart-empty" style="display: none;">
-                        <p>Нема синглови</p>
+                        <p data-i18n="charts.noSingles">Нема синглови</p>
                     </div>
                 </div>
             </div>
@@ -2163,22 +2164,22 @@
             <!-- Top Albums -->
             <div class="chart-section" id="albums-section">
                 <div class="chart-section-header albums">
-                    <h2><i class="fas fa-compact-disc"></i> Албуми</h2>
+                    <h2><i class="fas fa-compact-disc"></i> <span data-i18n="charts.albums">Албуми</span></h2>
                     <div class="chart-header-right">
                         <span class="period" id="albums-period"></span>
-                        <button class="share-btn" onclick="shareChart('albums')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
+                        <button class="share-btn" onclick="shareChart('albums')" data-i18n-title="charts.share" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
                         </button>
                     </div>
                 </div>
                 <div class="chart-list-wrapper">
                     <div id="albums-chart-loading" class="chart-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Се вчитува...</p>
+                        <p data-i18n="common.loading">Се вчитува...</p>
                     </div>
                     <ol id="albums-chart" class="chart-list" style="display: none;"></ol>
                     <div id="albums-chart-empty" class="chart-empty" style="display: none;">
-                        <p>Нема албуми</p>
+                        <p data-i18n="charts.noAlbums">Нема албуми</p>
                     </div>
                 </div>
             </div>
@@ -2186,22 +2187,22 @@
             <!-- Latest Releases -->
             <div class="chart-section" id="latest-section">
                 <div class="chart-section-header">
-                    <h2><i class="fas fa-clock"></i> Најнови</h2>
+                    <h2><i class="fas fa-clock"></i> <span data-i18n="charts.newReleases">Најнови</span></h2>
                     <div class="chart-header-right">
                         <span class="period" id="latest-period"></span>
-                        <button class="share-btn" onclick="shareChart('latest')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
+                        <button class="share-btn" onclick="shareChart('latest')" data-i18n-title="charts.share" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
                         </button>
                     </div>
                 </div>
                 <div class="chart-list-wrapper">
                     <div id="latest-chart-loading" class="chart-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Се вчитува...</p>
+                        <p data-i18n="common.loading">Се вчитува...</p>
                     </div>
                     <ol id="latest-chart" class="chart-list" style="display: none;"></ol>
                     <div id="latest-chart-empty" class="chart-empty" style="display: none;">
-                        <p>Нема изданија</p>
+                        <p data-i18n="charts.noReleases">Нема изданија</p>
                     </div>
                 </div>
             </div>
@@ -2209,15 +2210,15 @@
             <!-- Advanced table view (hidden by default) -->
             <div class="chart-section advanced-chart-view" id="advanced-section" style="display: none;">
                 <div class="chart-section-header" style="display: none;">
-                    <h2><i class="fas fa-sliders-h"></i> Напредно</h2>
+                    <h2><i class="fas fa-sliders-h"></i> <span data-i18n="charts.advanced">Напредно</span></h2>
                     <div class="chart-header-right">
-                        <button class="adv-sort-reset" id="adv-sort-reset" title="Ресетирај подредување"><i class="fas fa-undo"></i> Ресетирај</button>
+                        <button class="adv-sort-reset" id="adv-sort-reset" data-i18n-title="charts.resetSort" title="Ресетирај подредување"><i class="fas fa-undo"></i> <span data-i18n="charts.reset">Ресетирај</span></button>
                         <span class="period" id="advanced-period"></span>
                     </div>
                 </div>
                 <div class="adv-tables-container">
                     <div class="adv-table-wrapper" id="adv-singles-wrapper">
-                        <div class="adv-table-label">Синглови <span id="adv-singles-count"></span></div>
+                        <div class="adv-table-label"><span data-i18n="charts.singles">Синглови</span> <span id="adv-singles-count"></span></div>
                         <div class="adv-table-scroll">
                             <table class="adv-table" id="adv-singles-table">
                                 <thead></thead>
@@ -2226,7 +2227,7 @@
                         </div>
                     </div>
                     <div class="adv-table-wrapper" id="adv-albums-wrapper">
-                        <div class="adv-table-label">Албуми <span id="adv-albums-count"></span></div>
+                        <div class="adv-table-label"><span data-i18n="charts.albums">Албуми</span> <span id="adv-albums-count"></span></div>
                         <div class="adv-table-scroll">
                             <table class="adv-table" id="adv-albums-table">
                                 <thead></thead>
@@ -2240,22 +2241,22 @@
             <!-- All-Time Artists (hidden by default) -->
             <div class="chart-section alltime-section" id="artists-section" style="display: none;">
                 <div class="chart-section-header artists">
-                    <h2><i class="fas fa-users"></i> Топ Артисти</h2>
+                    <h2><i class="fas fa-users"></i> <span data-i18n="charts.topArtists">Топ Артисти</span></h2>
                     <div class="chart-header-right">
-                        <span class="period" id="artists-period">сите времиња</span>
-                        <button class="share-btn" onclick="shareChart('artists')" title="Сподели">
-                            <i class="fas fa-share-alt"></i> <span>Сподели</span>
+                        <span class="period" id="artists-period" data-i18n="charts.allTimeLabel">сите времиња</span>
+                        <button class="share-btn" onclick="shareChart('artists')" data-i18n-title="charts.share" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
                         </button>
                     </div>
                 </div>
                 <div class="chart-list-wrapper">
                     <div id="artists-chart-loading" class="chart-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <p>Се вчитува...</p>
+                        <p data-i18n="common.loading">Се вчитува...</p>
                     </div>
                     <ol id="artists-chart" class="chart-list" style="display: none;"></ol>
                     <div id="artists-chart-empty" class="chart-empty" style="display: none;">
-                        <p>Нема артисти</p>
+                        <p data-i18n="charts.noArtists">Нема артисти</p>
                     </div>
                 </div>
             </div>
@@ -2266,7 +2267,7 @@
     <div class="share-modal" id="share-modal">
         <div class="share-modal-content">
             <div class="share-modal-header">
-                <h3 id="share-modal-title">Сподели листа</h3>
+                <h3 id="share-modal-title" data-i18n="charts.shareList">Сподели листа</h3>
                 <button class="share-modal-close" onclick="closeShareModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -2274,13 +2275,13 @@
             <div class="share-preview" id="share-preview"></div>
             <div class="share-actions">
                 <button class="share-action-btn" onclick="shareToNative()" id="native-share-btn">
-                    <i class="fas fa-share"></i> Сподели
+                    <i class="fas fa-share"></i> <span data-i18n="charts.share">Сподели</span>
                 </button>
                 <button class="share-action-btn download" onclick="downloadShareImage()">
-                    <i class="fas fa-download"></i> Преземи
+                    <i class="fas fa-download"></i> <span data-i18n="charts.download">Преземи</span>
                 </button>
                 <button class="share-action-btn copy" onclick="copyShareImage()">
-                    <i class="fas fa-copy"></i> Копирај
+                    <i class="fas fa-copy"></i> <span data-i18n="charts.copy">Копирај</span>
                 </button>
                 <button class="share-action-btn" onclick="saveForInstagram()" id="instagram-save-btn" style="background: #E1306C;">
                     <i class="fab fa-instagram"></i> Instagram
@@ -2306,11 +2307,11 @@
         function renderArtistLinks(bandName) {
             const artists = bandName.split(',').map(a => a.trim()).filter(a => a);
             if (artists.length <= 1) {
-                return `<a href="${getArtistPageUrl(bandName)}" class="chart-artist-link" title="Отвори профил на артистот">${bandName}</a>`;
+                return `<a href="${getArtistPageUrl(bandName)}" class="chart-artist-link" title="${t('charts.openProfile')}">${localizeText(bandName)}</a>`;
             }
             return artists.map((artist, i) => {
                 const separator = i < artists.length - 1 ? ', ' : '';
-                return `<a href="${getArtistPageUrl(artist)}" class="chart-artist-link" title="Отвори профил на артистот">${artist}</a>${separator}`;
+                return `<a href="${getArtistPageUrl(artist)}" class="chart-artist-link" title="${t('charts.openProfile')}">${localizeText(artist)}</a>${separator}`;
             }).join('');
         }
         
@@ -2324,9 +2325,9 @@
         let currentShareType = null;
         
         const chartTitles = {
-            singles: 'Топ Синглови',
-            albums: 'Топ Албуми',
-            latest: 'Најнови Изданија'
+            singles: t('charts.topSingles'),
+            albums: t('charts.topAlbums'),
+            latest: t('charts.latestReleases')
         };
         
         // Initialize mobile chart tabs (show one chart at a time)
@@ -2380,11 +2381,12 @@
         
         // Dynamic chart titles based on current filter
         function getChartTitle(chartType) {
+            var _t = typeof t === 'function' ? t : function(k) { return k; };
             const baseTitles = {
-                singles: 'Топ Синглови',
-                albums: 'Топ Албуми',
-                latest: 'Најнови Изданија',
-                artists: 'Топ Артисти'
+                singles: _t('charts.singles'),
+                albums: _t('charts.albums'),
+                latest: _t('charts.newReleases'),
+                artists: _t('charts.topArtists')
             };
             
             // Get current filter state from active buttons
@@ -2397,8 +2399,8 @@
             const cityFilter = cityBtn?.dataset?.filterValue || 'all';
             
             // Build filter suffix
-            const genreLabels = { 'alt': 'Алтернативна', 'rap': 'Рап/Трап', 'electronic': 'Електронска', 'pop': 'Поп' };
-            const cityLabels = { 'skopje': 'Скопје', 'bitola': 'Битола' };
+            const genreLabels = { 'alt': t('charts.genreAlt'), 'rap': t('charts.genreRap'), 'electronic': t('charts.genreElectronic'), 'pop': t('charts.genrePop') };
+            const cityLabels = { 'skopje': t('charts.citySkopje'), 'bitola': t('charts.cityBitola') };
             
             const genreLabel = genreFilter !== 'all' ? genreLabels[genreFilter] : null;
             const cityLabel = cityFilter !== 'all' ? cityLabels[cityFilter] : null;
@@ -2408,7 +2410,7 @@
             
             // For all-time view
             if (chartFilter === 'alltime') {
-                title = chartType === 'artists' ? 'Топ Артисти (Сите времиња)' : title + ' (Сите времиња)';
+                title = chartType === 'artists' ? _t('charts.topArtistsAllTime') : title + ' ' + _t('charts.allTimeAppend');
             }
             
             // Add genre/city suffix
@@ -2468,7 +2470,7 @@
             try {
                 const releases = chartDataStore[chartType];
                 if (!releases || releases.length === 0) {
-                    alert('Нема податоци за споделување');
+                    alert(t('charts.noDataToShare'));
                     return;
                 }
                 
@@ -2485,7 +2487,7 @@
                 const preview = document.getElementById('share-preview');
                 const title = document.getElementById('share-modal-title');
                 
-                title.textContent = 'Сподели: ' + getChartTitle(chartType);
+                title.textContent = t('charts.sharePrefix') + getChartTitle(chartType);
                 
                 // Create preview image
                 const img = document.createElement('img');
@@ -2513,7 +2515,7 @@
                 
             } catch (err) {
                 console.error('Error creating share image:', err);
-                alert('Грешка при креирање на сликата');
+                alert(t('charts.shareCardError'));
             } finally {
                 if (shareBtn) shareBtn.classList.remove('sharing');
                 if (inlineBtn) inlineBtn.classList.remove('sharing');
@@ -2524,8 +2526,8 @@
             const container = document.getElementById('share-card-container');
             const now = new Date();
             
-            // Calculate chart week date range (Monday-Sunday) in Macedonian
-            const mkMonths = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+            // Calculate chart week date range (Monday-Sunday)
+            const mkMonths = t('months.full');
             const d = new Date(now);
             d.setHours(0, 0, 0, 0);
             // Find Monday of the current ISO week
@@ -2548,7 +2550,7 @@
             }
             
             // Use custom title or fallback to default
-            const chartTitle = customTitle || chartTitles[chartType] || 'Топ Листа';
+            const chartTitle = customTitle || chartTitles[chartType] || t('nav.charts');
             
             // Check if dark mode is active
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -2647,10 +2649,10 @@
                             
                             // Handle both releases and artists
                             const isArtist = chartType === 'artists';
-                            const title = isArtist ? release.bandName : release.releaseTitle;
+                            const title = isArtist ? localizeText(release.bandName) : localizeText(release.releaseTitle);
                             const subtitle = isArtist 
-                                ? (release.followers >= 1000 ? (release.followers / 1000).toFixed(1) + 'K следбеници' : release.followers + ' следбеници')
-                                : release.bandName;
+                                ? (release.followers >= 1000 ? t('charts.kFollowers').replace('{0}', (release.followers / 1000).toFixed(1)) : t('charts.nFollowers').replace('{0}', release.followers))
+                                : localizeText(release.bandName);
                             const coverStyle = isArtist ? 'border-radius: 50%;' : '';
                             
                             return `
@@ -2761,13 +2763,13 @@
                 // Show feedback
                 const btn = event.target.closest('.share-action-btn');
                 const originalText = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> Копирано!';
+                btn.innerHTML = '<i class="fas fa-check"></i> ' + t('charts.copied');
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                 }, 2000);
             } catch (err) {
                 console.error('Copy failed:', err);
-                alert('Не може да се копира. Пробајте да преземете.');
+                alert(t('charts.copyFailed'));
             }
         }
         
@@ -2812,11 +2814,11 @@
             const twoMonthsAgo = new Date(now);
             twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
             
-            const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
+            const monthNames = t('months.short');
             const periodText = `${monthNames[twoMonthsAgo.getMonth()]} - ${monthNames[now.getMonth()]}`;
             document.getElementById('singles-period').textContent = periodText;
             document.getElementById('albums-period').textContent = periodText;
-            document.getElementById('latest-period').textContent = `последни 20`;
+            document.getElementById('latest-period').textContent = t('charts.last20');
             
             // Site master data (pre-computed)
             let siteMaster = null;
@@ -2913,8 +2915,8 @@
             // Genre config (rapGenres, electronicGenres, popGenres, nonAltGenres, genreConfig) from common.js
             
             const cityConfig = {
-                'skopje': { label: 'Скопје', city: 'Скопје' },
-                'bitola': { label: 'Битола', city: 'Битола' }
+                'skopje': { label: 'Скопје', tKey: 'charts.citySkopje', city: 'Скопје' },
+                'bitola': { label: 'Битола', tKey: 'charts.cityBitola', city: 'Битола' }
             };
             
             // getISOWeek from common.js
@@ -2927,10 +2929,10 @@
                 const minutes = Math.floor((ageMs % (60 * 60 * 1000)) / (60 * 1000));
                 if (hours >= 24) {
                     const days = Math.floor(hours / 24);
-                    return `пред ${days}д`;
+                    return t('charts.ago.days').replace('{0}', days);
                 }
-                if (hours > 0) return `пред ${hours}ч`;
-                return `пред ${minutes}мин`;
+                if (hours > 0) return t('charts.ago.hours').replace('{0}', hours);
+                return t('charts.ago.minutes').replace('{0}', minutes);
             }
             
             function updateDataInfo(generatedAt) {
@@ -2994,6 +2996,7 @@
                         const bandsJson = await bandsResponse.json();
                         allBandsData = bandsJson.muzickaMasterLista || [];
                         primeMasterArtistNameSet(allBandsData);
+                        registerArtistNames(allBandsData);
                     }
                 } catch (err) {
                     console.warn('Could not load bands.json:', err);
@@ -3179,8 +3182,8 @@
                 const useCityFilter = city !== 'all';
                 
                 // Build filter label for display
-                const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
-                const cityLabel = city !== 'all' ? cityConfig[city]?.label : null;
+                const genreLabel = genre !== 'all' ? t(genreConfig[genre]?.tKey) : null;
+                const cityLabel = city !== 'all' ? t(cityConfig[city]?.tKey) : null;
                 const filterSuffix = [genreLabel, cityLabel].filter(Boolean).join(' • ');
                 
                 if (chart === 'advanced') {
@@ -3216,7 +3219,7 @@
                     const prevSinglesMap = {};
                     const prevAlbumsMap = {};
                     
-                    const advPeriod = 'сите изданија' + (filterSuffix ? ' \u2022 ' + filterSuffix : '');
+                    const advPeriod = t('charts.allReleasesLabel') + (filterSuffix ? ' \u2022 ' + filterSuffix : '');
                     document.getElementById('advanced-period').textContent = advPeriod;
                     renderAdvancedChart(advSingles, advAlbums, prevSinglesMap, prevAlbumsMap);
                     
@@ -3266,7 +3269,7 @@
                             .slice(0, 100);
                     }
                     
-                    document.getElementById('artists-period').textContent = 'сите времиња' + (filterSuffix ? ' • ' + filterSuffix : '');
+                    document.getElementById('artists-period').textContent = t('charts.allTimeLabel') + (filterSuffix ? ' • ' + filterSuffix : '');
                     renderArtistsChart('artists-chart', topArtists);
                     
                     chartDataStore.artists = topArtists;
@@ -3322,11 +3325,11 @@
                     const periodWithFilter = periodText + (filterSuffix ? ' • ' + filterSuffix : '');
                     document.getElementById('singles-period').textContent = periodWithFilter;
                     document.getElementById('albums-period').textContent = periodWithFilter;
-                    document.getElementById('latest-period').textContent = 'последни 20' + (filterSuffix ? ' • ' + filterSuffix : '');
+                    document.getElementById('latest-period').textContent = t('charts.last20') + (filterSuffix ? ' • ' + filterSuffix : '');
                     
                     const latestHeader = document.querySelector('#latest-section h2');
                     if (latestHeader) {
-                        latestHeader.innerHTML = '<i class="fas fa-clock"></i> Најнови';
+                        latestHeader.innerHTML = '<i class="fas fa-clock"></i> ' + t('charts.newReleases');
                     }
                     
                     // Pre-computed items already have positionChange/popularityChange — pass empty prevMap
@@ -3469,14 +3472,14 @@
 
             // Column definitions for the advanced table
             const advColumns = [
-                { key: 'pos',     label: '#',        cssClass: 'col-pos',     align: 'left',  sortType: 'number' },
-                { key: 'chg',     label: '±',        cssClass: 'col-chg',     align: 'left',  sortType: 'number' },
-                { key: 'release', label: 'Изданија', cssClass: 'col-release', align: 'left',  sortType: 'string' },
-                { key: 'city',    label: 'Град',     cssClass: 'col-city',    align: 'left',  sortType: 'string' },
-                { key: 'genre',   label: 'Жанр',     cssClass: 'col-genre',   align: 'left',  sortType: 'string' },
-                { key: 'pop',     label: 'П',        cssClass: 'col-pop',     align: 'left',  sortType: 'number' },
-                { key: 'pdelta',  label: 'Δ',        cssClass: 'col-pdelta',  align: 'left',  sortType: 'number' },
-                { key: 'date',    label: 'Датум',    cssClass: 'col-date',    align: 'left',  sortType: 'date' }
+                { key: 'pos',     label: '#',                  cssClass: 'col-pos',     align: 'left',  sortType: 'number' },
+                { key: 'chg',     label: '±',                  cssClass: 'col-chg',     align: 'left',  sortType: 'number' },
+                { key: 'release', label: t('charts.colReleases'), cssClass: 'col-release', align: 'left',  sortType: 'string' },
+                { key: 'city',    label: t('charts.colCity'),  cssClass: 'col-city',    align: 'left',  sortType: 'string' },
+                { key: 'genre',   label: t('charts.colGenre'), cssClass: 'col-genre',   align: 'left',  sortType: 'string' },
+                { key: 'pop',     label: t('charts.colPop'),   cssClass: 'col-pop',     align: 'left',  sortType: 'number' },
+                { key: 'pdelta',  label: 'Δ',                  cssClass: 'col-pdelta',  align: 'left',  sortType: 'number' },
+                { key: 'date',    label: t('charts.colDate'),  cssClass: 'col-date',    align: 'left',  sortType: 'date' }
             ];
 
             function escHtml(s) {
@@ -3588,7 +3591,7 @@
 
             // Build tbody HTML from enriched (and sorted) releases
             function buildAdvancedTbody(enrichedReleases) {
-                if (enrichedReleases.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:1rem;">Нема изданија</td></tr>';
+                if (enrichedReleases.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:1rem;">' + t('charts.noReleases') + '</td></tr>';
                 return enrichedReleases.map(r => {
                     const posStr = r._pos;
                     // Position change display
@@ -3613,22 +3616,22 @@
                     let artistLinksHtml;
                     if (artistNames.length <= 1) {
                         const artistLink = getArtistPageUrl(r.bandName);
-                        artistLinksHtml = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(r.bandName)}">${escHtml(r.bandName)}</a>`;
+                        artistLinksHtml = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(localizeText(r.bandName))}">${escHtml(localizeText(r.bandName))}</a>`;
                     } else {
                         artistLinksHtml = artistNames.map((name, i) => {
                             const link = getArtistPageUrl(name);
                             const sep = i < artistNames.length - 1 ? ', ' : '';
-                            return `<a href="${link}" class="adv-artist-link" title="${escHtml(name)}">${escHtml(name)}</a>${sep}`;
+                            return `<a href="${link}" class="adv-artist-link" title="${escHtml(localizeText(name))}">${escHtml(localizeText(name))}</a>${sep}`;
                         }).join('');
                     }
-                    const releaseTitleStr = `${escHtml(r.bandName)} \u2014 ${escHtml(r.releaseTitle)}`;
-                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(r.releaseTitle)}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" title="${escHtml(r.releaseTitle)}">${escHtml(r.releaseTitle)}</span>`;
+                    const releaseTitleStr = `${escHtml(localizeText(r.bandName))} \u2014 ${escHtml(localizeText(r.releaseTitle))}`;
+                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(localizeText(r.releaseTitle))}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" title="${escHtml(localizeText(r.releaseTitle))}">${escHtml(localizeText(r.releaseTitle))}</span>`;
                     return `<tr>` +
                         `<td class="col-pos">${posStr}</td>` +
                         `<td class="col-chg">${chgStr}</td>` +
                         `<td class="col-release" title="${releaseTitleStr}">${releaseCell}</td>` +
-                        `<td class="col-city adv-city" title="${escHtml(r._city)}">${escHtml(r._city)}</td>` +
-                        `<td class="col-genre adv-genre" title="${escHtml(r._genre)}">${escHtml(r._genre)}</td>` +
+                        `<td class="col-city adv-city" title="${escHtml(localizeText(r._city))}">${escHtml(localizeText(r._city))}</td>` +
+                        `<td class="col-genre adv-genre" title="${escHtml(localizeText(r._genre))}">${escHtml(localizeText(r._genre))}</td>` +
                         `<td class="col-pop adv-pop">${r._pop}</td>` +
                         `<td class="col-pdelta">${pdStr}</td>` +
                         `<td class="col-date adv-date">${dateStr}</td>` +
@@ -3753,17 +3756,17 @@
                     empty.style.display = 'block';
                     // Update empty message based on current filters
                     const { genre, city } = currentFilters;
-                    const genreLabel = genre !== 'all' ? genreConfig[genre]?.label : null;
-                    const cityLabel = city !== 'all' ? cityConfig[city]?.label : null;
+                    const genreLabel = genre !== 'all' ? t(genreConfig[genre]?.tKey) : null;
+                    const cityLabel = city !== 'all' ? t(cityConfig[city]?.tKey) : null;
                     const filterLabel = [genreLabel, cityLabel].filter(Boolean).join(' + ');
                     
                     if (filterLabel) {
-                        empty.innerHTML = `<p>Нема изданија за „${filterLabel}"</p>`;
+                        empty.innerHTML = `<p>${t('charts.emptyForFilter').replace('{filter}', filterLabel)}</p>`;
                     } else {
                         // Default empty messages
-                        if (containerId === 'singles-chart') empty.innerHTML = '<p>Нема синглови</p>';
-                        else if (containerId === 'albums-chart') empty.innerHTML = '<p>Нема албуми</p>';
-                        else empty.innerHTML = '<p>Нема изданија</p>';
+                        if (containerId === 'singles-chart') empty.innerHTML = '<p>' + t('charts.emptyNoSingles') + '</p>';
+                        else if (containerId === 'albums-chart') empty.innerHTML = '<p>' + t('charts.emptyNoAlbums') + '</p>';
+                        else empty.innerHTML = '<p>' + t('charts.emptyNoReleases') + '</p>';
                     }
                     return;
                 }
@@ -3882,7 +3885,7 @@
                     const popTooltipHtml = buildHistoryTooltipHTML(release.releaseId, 'popularity', release.releaseType, rank);
                     
                     // If we have history tooltips, suppress native title to avoid double tooltip
-                    const rankTitle = posTooltipHtml ? '' : (changeIndicator === 'rank-up' ? 'Се качи' : changeIndicator === 'rank-down' ? 'Падна' : changeIndicator === 'rank-same' ? 'Без промена' : '');
+                    const rankTitle = posTooltipHtml ? '' : (changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
                     const popTitle = popTooltipHtml ? '' : metricTitle;
                     
                     // Escape tooltip HTML for data attributes
@@ -3902,9 +3905,9 @@
                                 }
                             </div>
                             <div class="chart-info">
-                                <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="Кликни за отворање">${release.releaseTitle}</div>
+                                <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="${t('charts.clickToOpen')}">${localizeText(release.releaseTitle)}</div>
                                 <div class="chart-artist">
-                                    ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
+                                    ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
                             </div>
                             <div class="chart-meta">
@@ -4047,12 +4050,12 @@
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title artist-name">
-                                    <a href="${artistPageUrl}" title="Отвори профил на артистот">${artist.bandName}</a>${artIsConfirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
+                                    <a href="${artistPageUrl}" title="${t('charts.openProfile')}">${localizeText(artist.bandName)}</a>${artIsConfirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
-                                <div class="chart-artist artist-details">${genre}${genre && city ? ' • ' : ''}${city}</div>
+                                <div class="chart-artist artist-details">${localizeText(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
                             </div>
                             <div class="chart-meta">
-                                <span class="chart-stat followers" title="${followers.toLocaleString()} следбеници на Spotify">
+                                <span class="chart-stat followers" title="${t('charts.followersOnSpotify').replace('{0}', followers.toLocaleString())}">
                                     <i class="fas fa-users"></i> ${followersDisplay}
                                 </span>
                             </div>

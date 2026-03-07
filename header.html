@@ -4,14 +4,14 @@
             <img src="/logo.png" alt="MMM" class="site-logo-svg">
         </a>
         <div class="site-nav-menu" id="site-nav-menu">
-            <a href="/" class="mobile-home-link"><i class="fas fa-house"></i> Дома</a>
-            <a href="/charts"><i class="fas fa-chart-line"></i> Топ Листа</a>
-            <a href="/lista"><i class="fas fa-list"></i> Мастер Листа</a>
-            <a href="/nastani"><i class="fas fa-calendar-days"></i> Настани</a>
-            <a href="/vesti"><i class="fas fa-newspaper"></i> Вести</a>
-            <a href="/kustosi"><i class="fas fa-headphones"></i> Кустоси</a>
-            <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> Изненади ме</a>
-            <a href="/za"><i class="fas fa-info-circle"></i> За проектот</a>
+            <a href="/" class="mobile-home-link"><i class="fas fa-house"></i> <span data-i18n="nav.home">Дома</span></a>
+            <a href="/charts"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
+            <a href="/lista"><i class="fas fa-list"></i> <span data-i18n="nav.masterList">Мастер Листа</span></a>
+            <a href="/nastani"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
+            <a href="/vesti"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
+            <a href="/kustosi"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
+            <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> <span data-i18n="nav.surprise">Изненади ме</span></a>
+            <a href="/za"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За проектот</span></a>
             <span class="nav-separator"></span>
             <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener"><i class="fab fa-discord"></i> Discord</a>
             <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> Instagram</a>
@@ -21,7 +21,10 @@
         </div>
     </div>
     <div class="header-buttons">
-        <button id="settings-btn" class="header-btn" title="Поставки">
+        <button id="header-share-link-btn" class="header-btn" data-i18n-title="common.shareLink" title="Сподели линк">
+            <i class="fas fa-link"></i>
+        </button>
+        <button id="settings-btn" class="header-btn" data-i18n-title="settings.title" title="Поставки">
             <i class="fas fa-gear"></i>
         </button>
     </div>

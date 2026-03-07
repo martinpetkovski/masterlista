@@ -46,6 +46,7 @@
     <link rel="stylesheet" href="desktop.css?v=8" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=8" media="screen and (max-width: 600px)">
     <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
     <style>
@@ -1852,18 +1853,18 @@ a.chart-history-item {
             const contentEl = document.getElementById('artist-content');
             
             // Update page metadata
-            document.getElementById('page-title').textContent = `${artist.name} | ТопЛиста.мк`;
-            document.getElementById('meta-title').content = `${artist.name} | ТопЛиста.мк`;
-            document.getElementById('meta-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
+            document.getElementById('page-title').textContent = `${localizeText(artist.name)} | ТопЛиста.мк`;
+            document.getElementById('meta-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
+            document.getElementById('meta-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             
             const artistUrl = `https://toplista.mk/${encodeURIComponent(generateSlug(artist.name))}`;
             document.getElementById('canonical-url').href = artistUrl;
             document.getElementById('og-url').content = artistUrl;
-            document.getElementById('og-title').content = `${artist.name} | ТопЛиста.мк`;
-            document.getElementById('og-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
+            document.getElementById('og-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
+            document.getElementById('og-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             document.getElementById('twitter-url').content = artistUrl;
-            document.getElementById('twitter-title').content = `${artist.name} | ТопЛиста.мк`;
-            document.getElementById('twitter-description').content = `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`;
+            document.getElementById('twitter-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
+            document.getElementById('twitter-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             
             // Update browser URL to clean URL (if not already clean) - only in production
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -1881,15 +1882,15 @@ a.chart-history-item {
             
             // Build avatar HTML
             const avatarHtml = thumbnail 
-                ? `<img src="${thumbnail}" alt="${artist.name}">`
+                ? `<img src="${thumbnail}" alt="${localizeText(artist.name)}">`
                 : `<i class="fas fa-music artist-avatar-placeholder"></i>`;
             
             // Build status class and text from computed activity status
             const statusMap = {
-                'active': { cls: 'active', text: 'Активен' },
-                'inactive': { cls: 'inactive', text: 'Неактивен' },
-                'maybe': { cls: 'maybe', text: 'Можеби' },
-                'unknown': { cls: 'unknown', text: 'Непознат статус' }
+                'active': { cls: 'active', text: t('artist.active') },
+                'inactive': { cls: 'inactive', text: t('artist.inactive') },
+                'maybe': { cls: 'maybe', text: t('artist.maybe') },
+                'unknown': { cls: 'unknown', text: t('artist.unknownStatus') }
             };
             const computedStatus = artist._activityStatus || 'unknown';
             const { cls: statusClass, text: statusText } = statusMap[computedStatus] || statusMap['unknown'];
@@ -1898,11 +1899,11 @@ a.chart-history-item {
             let metaHtml = '';
             if (artist.city && artist.city !== 'недостигаат податоци') {
                 const cities = artist.city.split(',').map(c => c.trim()).slice(0, 2);
-                metaHtml += cities.map(city => `<span class="artist-city"><i class="fas fa-map-marker-alt"></i> ${city}</span>`).join('');
+                metaHtml += cities.map(city => `<span class="artist-city"><i class="fas fa-map-marker-alt"></i> ${localizeText(city)}</span>`).join('');
             }
             if (artist.genre && artist.genre !== 'недостигаат податоци') {
                 const genres = artist.genre.split(',').map(g => g.trim()).slice(0, 2);
-                metaHtml += genres.map(genre => `<span class="artist-genre"><i class="fas fa-music"></i> ${genre}</span>`).join('');
+                metaHtml += genres.map(genre => `<span class="artist-genre"><i class="fas fa-music"></i> ${localizeText(genre)}</span>`).join('');
             }
             
             // Build sounds like section
@@ -1917,7 +1918,7 @@ a.chart-history-item {
                     }
                     return `<span class="artist-sounds-like-item"><i class="fas fa-headphones"></i>${s}</span>`;
                 }).join('');
-                soundsLikeHtml = `<div class="artist-sounds-like"><strong>Звучи како:</strong> ${soundsLikeLinks}</div>`;
+                soundsLikeHtml = `<div class="artist-sounds-like"><strong>${t('artist.soundsLike')}:</strong> ${soundsLikeLinks}</div>`;
             }
             
             // Build labels
@@ -1978,7 +1979,7 @@ a.chart-history-item {
                 streamingLinks.push({
                     platform: 'email',
                     url: `mailto:${artist.contact}`,
-                    name: 'Контакт е-пошта',
+                    name: t('artist.contactEmail'),
                     icon: 'fas fa-envelope',
                     priority: 50
                 });
@@ -2002,7 +2003,7 @@ a.chart-history-item {
             }
             
             if (mediaLinks.length > 0) {
-                linksHtml += `<h3 class="link-section-title">Медиуми</h3>`;
+                linksHtml += `<h3 class="link-section-title">${t('artist.media')}</h3>`;
                 linksHtml += mediaLinks.map(link => `
                     <a href="${link.url}" target="_blank" rel="noopener" class="artist-link ${link.platform}">
                         <i class="${link.icon}"></i>
@@ -2013,7 +2014,7 @@ a.chart-history-item {
             }
             
             if (streamingLinks.length === 0 && mediaLinks.length === 0) {
-                linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">Нема достапни линкови</p>`;
+                linksHtml = `<p style="text-align: center; color: var(--text-muted); padding: 1rem;">${t('artist.noLinks')}</p>`;
             }
             
             // Build edit URL and add to header nav
@@ -2024,9 +2025,9 @@ a.chart-history-item {
                 const editLink = document.createElement('a');
                 editLink.href = editUrl;
                 editLink.className = 'header-btn header-edit-btn';
-                editLink.title = 'Уреди податоци';
+                editLink.title = t('artist.editData');
                 editLink.innerHTML = '<i class="fas fa-edit"></i>';
-                editLink.setAttribute('aria-label', 'Уреди податоци');
+                editLink.setAttribute('aria-label', t('artist.editData'));
                 headerButtons.insertBefore(editLink, headerButtons.firstChild);
             }
             
@@ -2035,11 +2036,11 @@ a.chart-history-item {
                 <div class="artist-header">
                     <div class="artist-avatar">${avatarHtml}</div>
                     <h1 class="artist-name">
-                        ${artist.name}
-                        ${artist.confirmed ? '<span class="verified-badge" title="Потврдено од артистот"><i class="fas fa-check-circle"></i></span>' : ''}
+                        ${localizeText(artist.name)}
+                        ${artist.confirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                         <span class="status-dot ${statusClass}" title="${statusText}"></span>
                     </h1>
-                    ${!artist.confirmed ? `<button class="verify-artist-btn" id="verify-artist-btn" title="Потврди го овој артист"><i class="fas fa-check-circle"></i> Потврди го артистот</button>` : ''}
+                    ${!artist.confirmed ? `<button class="verify-artist-btn" id="verify-artist-btn" title="${t('artist.verifyArtistBtn')}"><i class="fas fa-check-circle"></i> ${t('artist.verifyArtist')}</button>` : ''}
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
                     ${labelsHtml}
                     ${soundsLikeHtml}
@@ -2061,8 +2062,8 @@ a.chart-history-item {
                 
                 <div class="artist-footer">
                     <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.75rem;">
-                        Податоците на оваа страница се автоматски генерирани.<br/>
-                        Артистите кои се верифицирани ја потврдиле точноста на податоците.
+                        ${t('footer.dataAutogenerated')}<br/>
+                        ${t('footer.verifiedArtistNote')}
                     </p>
                     <a href="/">
                         <img src="/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28">
@@ -2088,11 +2089,11 @@ a.chart-history-item {
                                 let isPlaying = false;
                                 
                                 greetingContainer.innerHTML = `
-                                    <div class="artist-greeting" id="greeting-player" title="Порака од артистот">
-                                        <button class="artist-greeting-btn" id="greeting-play-btn" aria-label="Пушти порака">
+                                    <div class="artist-greeting" id="greeting-player" title="${t('artist.fromArtist')}">
+                                        <button class="artist-greeting-btn" id="greeting-play-btn" aria-label="${t('artist.playGreeting')}">
                                             <i class="fas fa-play"></i>
                                         </button>
-                                        <span class="artist-greeting-label">Порака од артистот</span>
+                                        <span class="artist-greeting-label">${t('artist.fromArtist')}</span>
                                         <div class="artist-greeting-wave">
                                             <span></span><span></span><span></span><span></span><span></span>
                                         </div>
@@ -2673,7 +2674,7 @@ a.chart-history-item {
                 <div class="popularity-graph-section">
                     <h3 class="section-title">
                         <i class="fas fa-chart-area"></i>
-                        Кумулативна Популарност
+                        ${t('artist.cumulativePopularity')}
                     </h3>
                     <div class="popularity-graph-container">
                         <svg class="popularity-graph" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
@@ -2744,19 +2745,19 @@ a.chart-history-item {
             // Render releases with play buttons
             const releasesHtml = releases.map((release, index) => {
                 const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
-                const typeLabel = release.releaseType === 'album' ? 'Албум' : 'Сингл';
+                const typeLabel = release.releaseType === 'album' ? t('artist.album') : t('artist.single');
                 const typeClass = release.releaseType === 'album' ? 'album' : 'single';
                 
                 // Format release date
                 const releaseDate = new Date(release.releaseDate);
-                const monthNames = ['Јан', 'Фев', 'Мар', 'Апр', 'Мај', 'Јун', 'Јул', 'Авг', 'Сеп', 'Окт', 'Ное', 'Дек'];
+                const monthNames = t('months.short');
                 const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                 
                 // Show open button if there's a release URL
                 const hasLink = !!release.releaseUrl;
                 
                 const playButton = hasLink ? `
-                    <button class="release-play-btn" data-release-index="${index}" title="Отвори во сервис">
+                    <button class="release-play-btn" data-release-index="${index}" title="${t('artist.openInService')}">
                         <i class="fas fa-external-link-alt"></i>
                     </button>
                 ` : '';
@@ -2812,7 +2813,7 @@ a.chart-history-item {
                 <div class="chart-history-section">
                     <h3 class="section-title">
                         <i class="fas fa-compact-disc"></i>
-                        Изданија <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
+                        ${t('artist.releases')} <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
                     </h3>
                     <div class="chart-history-list">
                         ${releasesHtml}
@@ -2853,11 +2854,11 @@ a.chart-history-item {
             el.innerHTML = `
                 <div class="artist-error">
                     <i class="fas fa-question-circle"></i>
-                    <h2>Артистот не е пронајден</h2>
-                    <p>Не можевме да го пронајдеме бараниот артист.</p>
+                    <h2>${t('artist.notFound')}</h2>
+                    <p>${t('artist.notFoundDesc')}</p>
                     <a href="/lista">
                         <i class="fas fa-list"></i>
-                        Прегледај ја листата
+                        ${t('artist.browseList')}
                     </a>
                 </div>
             `;
@@ -2922,6 +2923,7 @@ a.chart-history-item {
                 const bandsData = data.muzickaMasterLista;
                 window.bandsData = bandsData;
                 primeMasterArtistNameSet(bandsData);
+                registerArtistNames(bandsData);
                 
                 // Find artist
                 const artist = findArtist(bandsData, decodeURIComponent(artistParam));
@@ -3139,7 +3141,7 @@ a.chart-history-item {
                         if (mediaContainer) {
                             const mediaTitle = document.createElement('h3');
                             mediaTitle.className = 'section-title';
-                            mediaTitle.innerHTML = '<i class="fas fa-newspaper"></i> Медиуми';
+                            mediaTitle.innerHTML = '<i class="fas fa-newspaper"></i> ' + t('artist.media');
                             mediaContainer.appendChild(mediaTitle);
                             
                             const articlesList = document.createElement('div');
@@ -3177,8 +3179,8 @@ a.chart-history-item {
                     const evJson = await evResp.json();
                     const events = evJson.events || [];
                         const today = new Date(); today.setHours(0,0,0,0);
-                        const MK_MONTHS = ['Јан','Фев','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Ное','Дек'];
-                        const MK_DAYS = ['Нед','Пон','Вто','Сре','Чет','Пет','Саб'];
+                        const MK_MONTHS = t('months.short');
+                        const MK_DAYS = t('days.short');
                         const artistSlug = generateSlug(artist.name);
                         const artistNameLower = artist.name.toLowerCase();
                         const artistTranslit = transliterate(artist.name).toLowerCase();
@@ -3208,9 +3210,9 @@ a.chart-history-item {
                             const daysDiff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
                             let badge = '';
                             if (!isPast) {
-                                if (daysDiff === 0) badge = '<span style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.3);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">ДЕНЕС</span>';
-                                else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">за ${daysDiff} ден${daysDiff === 1 ? '' : 'а'}</span>`;
-                                else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">за ${daysDiff} дена</span>`;
+                                if (daysDiff === 0) badge = '<span style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.3);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">' + t('artist.today') + '</span>';
+                                else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${daysDiff === 1 ? t('artist.inDays').replace('{0}', daysDiff) : t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
+                                else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
                             }
                             const dateStr = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
                             const dayStr = MK_DAYS[d.getDay()];
@@ -3239,7 +3241,7 @@ a.chart-history-item {
                             if (upcoming.length > 0) {
                                 const title = document.createElement('h3');
                                 title.className = 'section-title';
-                                title.innerHTML = '<i class="fas fa-calendar-days"></i> Претстојни Настани';
+                                title.innerHTML = '<i class="fas fa-calendar-days"></i> ' + t('artist.upcomingEvents');
                                 evtContainer.appendChild(title);
                                 const list = document.createElement('div');
                                 list.className = 'chart-history-list';
@@ -3250,7 +3252,7 @@ a.chart-history-item {
                                 const title = document.createElement('h3');
                                 title.className = 'section-title';
                                 title.style.marginTop = '1.5rem';
-                                title.innerHTML = '<i class="fas fa-clock-rotate-left"></i> Минати Настани';
+                                title.innerHTML = '<i class="fas fa-clock-rotate-left"></i> ' + t('artist.pastEvents');
                                 evtContainer.appendChild(title);
                                 const list = document.createElement('div');
                                 list.className = 'chart-history-list';
@@ -3285,45 +3287,45 @@ a.chart-history-item {
             modalOverlay.id = 'verify-modal-overlay';
             modalOverlay.innerHTML = `
                 <div class="verify-modal">
-                    <button class="verify-modal-close" id="verify-modal-close" aria-label="Затвори">&times;</button>
-                    <h2><i class="fas fa-check-circle"></i> Потврди го артистот</h2>
-                    <p class="verify-modal-subtitle">Потврдените артисти добиваат значка, визуелни акцент бои и можат да додадат звучна порака за фановите.</p>
+                    <button class="verify-modal-close" id="verify-modal-close" aria-label="${t('common.close')}">&times;</button>
+                    <h2><i class="fas fa-check-circle"></i> ${t('artist.verifyTitle')}</h2>
+                    <p class="verify-modal-subtitle">${t('artist.verifyDesc')}</p>
                     <p class="verify-modal-alt-edit">
                         <a href="/lista" id="verify-full-edit-link">
-                            <i class="fas fa-pen-to-square"></i> Уреди го артистот целосно
+                            <i class="fas fa-pen-to-square"></i> ${t('artist.editArtistFull')}
                         </a>
                     </p>
 
                     <div class="verify-field">
-                        <label>Акцент бои <span class="required">*</span></label>
+                        <label>${t('artist.accentColors')} <span class="required">*</span></label>
                         <div class="verify-colors">
                             <div class="verify-color-group">
-                                <span>Примарна</span>
+                                <span>${t('artist.primary')}</span>
                                 <div class="verify-color-input-wrapper">
                                     <input type="color" id="verify-color-1" value="#1d9bf0">
                                 </div>
                             </div>
                             <div class="verify-color-group">
-                                <span>Секундарна</span>
+                                <span>${t('artist.secondary')}</span>
                                 <div class="verify-color-input-wrapper">
                                     <input type="color" id="verify-color-2" value="#ff922b">
                                 </div>
                             </div>
                         </div>
                         <div class="verify-color-preview" id="verify-color-preview">
-                            <div class="verify-color-preview-swatch" id="verify-preview-swatch">Преглед</div>
+                            <div class="verify-color-preview-swatch" id="verify-preview-swatch">${t('artist.primary')}</div>
                         </div>
                     </div>
 
                     <div class="verify-field">
-                        <label>Порака за фановите <span class="optional-tag">(опционално)</span></label>
+                        <label>${t('artist.fanMessage')} <span class="optional-tag">(${t('lista.fanMessageOptional')})</span></label>
                         <div class="verify-greeting-zone" id="verify-greeting-zone">
                             <div class="verify-greeting-actions" id="verify-greeting-actions">
                                 <button type="button" class="verify-greeting-btn" id="verify-record-btn">
-                                    <i class="fas fa-microphone"></i> Сними
+                                    <i class="fas fa-microphone"></i> ${t('artist.record')}
                                 </button>
                                 <button type="button" class="verify-greeting-btn" id="verify-upload-btn">
-                                    <i class="fas fa-upload"></i> Прикачи
+                                    <i class="fas fa-upload"></i> ${t('artist.upload')}
                                 </button>
                                 <input type="file" id="verify-greeting-file" accept="audio/*" style="display:none">
                             </div>
@@ -3331,19 +3333,19 @@ a.chart-history-item {
                             <div id="verify-greeting-preview-area" style="display:none">
                                 <div class="verify-greeting-preview">
                                     <audio id="verify-greeting-audio" controls></audio>
-                                    <button type="button" class="verify-greeting-remove" id="verify-greeting-remove" title="Отстрани">
+                                    <button type="button" class="verify-greeting-remove" id="verify-greeting-remove" title="${t('common.close')}">
                                         <i class="fas fa-times-circle"></i>
                                     </button>
                                 </div>
                             </div>
-                            <p class="verify-greeting-hint">Кратка звучна порака до 60 секунди. Форматите mp3, m4a, wav, ogg, webm се поддржани.</p>
+                            <p class="verify-greeting-hint">${t('artist.greetingHint')}</p>
                         </div>
                     </div>
 
                     <div class="verify-submit-area">
-                        <button type="button" class="verify-cancel-btn" id="verify-cancel-btn">Откажи</button>
+                        <button type="button" class="verify-cancel-btn" id="verify-cancel-btn">${t('artist.cancel')}</button>
                         <button type="button" class="verify-submit-btn" id="verify-submit-btn">
-                            <i class="fas fa-paper-plane"></i> Испрати за одобрување
+                            <i class="fas fa-paper-plane"></i> ${t('artist.submitForApproval')}
                         </button>
                     </div>
                 </div>
@@ -3451,11 +3453,11 @@ a.chart-history-item {
                 const file = e.target.files[0];
                 if (!file) return;
                 if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|m4a|wav|ogg|webm|aac|flac|opus|aiff|wma)$/i)) {
-                    alert('Ве молиме изберете аудио фајл.');
+                    alert(t('artist.selectAudioFile'));
                     return;
                 }
                 if (file.size > 10 * 1024 * 1024) {
-                    alert('Фајлот е преголем. Максимум 10MB.');
+                    alert(t('artist.fileTooLarge'));
                     return;
                 }
                 const ext = file.name.split('.').pop().toLowerCase();
@@ -3479,7 +3481,7 @@ a.chart-history-item {
                     recordingTimer = null;
                 }
                 recordBtn.classList.remove('recording');
-                recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Сними';
+                recordBtn.innerHTML = '<i class="fas fa-microphone"></i> ' + t('artist.record');
                 timerEl.style.display = 'none';
                 recordingSeconds = 0;
             }
@@ -3518,7 +3520,7 @@ a.chart-history-item {
 
                     mediaRecorder.start(100);
                     recordBtn.classList.add('recording');
-                    recordBtn.innerHTML = '<i class="fas fa-stop"></i> Запри';
+                    recordBtn.innerHTML = '<i class="fas fa-stop"></i> ' + t('artist.stop');
                     timerEl.style.display = 'block';
                     recordingSeconds = 0;
                     timerEl.textContent = formatTime(0);
@@ -3533,7 +3535,7 @@ a.chart-history-item {
 
                 } catch (err) {
                     console.error('Microphone access denied:', err);
-                    alert('Не може да се пристапи до микрофонот. Проверете ги дозволите на прелистувачот.');
+                    alert(t('artist.micDenied'));
                 }
             });
 
@@ -3544,18 +3546,18 @@ a.chart-history-item {
                 const c1 = color1Input.value;
                 const c2 = color2Input.value;
                 if (!c1 || !c2) {
-                    alert('Ве молиме изберете две акцент бои.');
+                    alert(t('artist.chooseTwoColors'));
                     return;
                 }
 
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Испраќање...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('artist.submitting');
 
                 try {
                     // Build updated bands data
                     const updatedBands = JSON.parse(JSON.stringify({ muzickaMasterLista: currentBandsData }));
                     const bandEntry = updatedBands.muzickaMasterLista.find(b => b.name === currentArtist.name);
-                    if (!bandEntry) throw new Error('Артистот не е пронајден во листата.');
+                    if (!bandEntry) throw new Error(t('artist.notInList'));
 
                     bandEntry.confirmed = true;
                     bandEntry.accentColors = [c1, c2];
@@ -3612,7 +3614,7 @@ a.chart-history-item {
                     const result = await resp.json();
 
                     // Show success
-                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> ' + t('artist.success');
                     submitBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
 
                     setTimeout(() => {
@@ -3620,7 +3622,7 @@ a.chart-history-item {
                         // Show a toast notification
                         const toast = document.createElement('div');
                         toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:0.75rem 1.5rem;border-radius:12px;font-size:0.85rem;font-weight:600;z-index:10001;box-shadow:0 4px 20px rgba(34,197,94,0.4);display:flex;align-items:center;gap:0.5rem;animation:verifyModalIn 0.3s ease;';
-                        toast.innerHTML = '<i class="fas fa-check-circle"></i> Верификацијата е испратена за одобрување!';
+                        toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + t('artist.verifySuccess');
                         document.body.appendChild(toast);
                         setTimeout(() => {
                             toast.style.transition = 'opacity 0.3s';
@@ -3631,9 +3633,9 @@ a.chart-history-item {
 
                 } catch (err) {
                     console.error('Verify submit failed:', err);
-                    alert('Грешка при испраќање: ' + (err.message || err));
+                    alert(t('artist.submitError') + (err.message || err));
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Испрати за одобрување';
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ' + t('artist.submitForApproval');
                     submitBtn.style.background = '';
                 }
             });
@@ -3649,6 +3651,7 @@ a.chart-history-item {
                         const resp = await fetch('bands.json?v=' + Date.now());
                         const data = await resp.json();
                         const bandsData = data.muzickaMasterLista;
+                        registerArtistNames(bandsData);
                         // Try query param first, then pathname slug (URL may have been cleaned)
                         const urlParams = new URLSearchParams(window.location.search);
                         let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');

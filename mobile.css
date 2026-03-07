@@ -2516,6 +2516,123 @@ th.edit-hidden { display: table-cell; }
     transform: none !important;
 }
 
+/* Tour language selection grid (mobile) */
+.tour-lang-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    justify-content: center;
+}
+
+.tour-lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 1rem;
+    border: 2px solid var(--border-color, #dfe1e5);
+    border-radius: 8px;
+    background: var(--bg-secondary, #f8f9fa);
+    color: var(--text-primary, #1a1d21);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.tour-lang-btn:hover,
+.tour-lang-btn:active {
+    border-color: var(--accent-orange, #f59e0b);
+    background: var(--bg-hover, #f0f1f3);
+}
+
+.tour-lang-flag {
+    font-size: 1.2rem;
+}
+
+/* Settings language select (mobile) */
+.settings-lang-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-color, #dfe1e5);
+    border-radius: 6px;
+    background: var(--bg-secondary, #f8f9fa);
+    color: var(--text-primary, #1a1d21);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
+
+/* ==================== SHARE POPUP (mobile) ==================== */
+.share-lang-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+.share-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color, #dfe1e5);
+    background: var(--bg-secondary, #f8f9fa);
+    color: var(--text-primary, #333);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: border-color 0.15s, background 0.15s;
+}
+.share-lang-btn:hover {
+    border-color: var(--accent-orange, #f59e0b);
+}
+.share-lang-flag { font-size: 1.3rem; }
+body.dark-mode .share-lang-btn {
+    border-color: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: #e8e8f0;
+}
+.share-no-lang-btn {
+    display: block;
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color, #dfe1e5);
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.76rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-muted, #888);
+    text-align: center;
+}
+
+/* ==================== LANG DROPDOWN (mobile) ==================== */
+.lang-dropdown {
+    min-width: 150px;
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+}
+
+.lang-dropdown-item {
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+    border-radius: 0;
+}
+
+.lang-dropdown-item:hover {
+    background: #fff;
+    color: #000;
+}
+
+.lang-dropdown-item.active {
+    border-color: var(--accent-orange, #ff922b);
+}
+
 /* Logo pulse hint for first-time mobile users */
 .site-nav-trigger.nav-hint-pulse {
     animation: nav-logo-pulse 2s ease-in-out 3;
