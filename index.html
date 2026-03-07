@@ -1887,6 +1887,13 @@
         body.dark-mode .title-nav-lang-btn {
         }
 
+        /* On desktop the lang button sits right after .title-nav (last flex item) */
+        .site-title > .title-nav-lang-wrap {
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 800px) {
             .dashboard {
@@ -1895,7 +1902,7 @@
             }
 
             .site-title {
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 padding: 0.5rem 0.6rem;
                 gap: 0.5rem;
                 min-height: auto;
@@ -1963,6 +1970,18 @@
             /* Hide inline nav buttons on mobile — use hamburger menu instead */
             .title-nav {
                 display: none;
+            }
+
+            /* Show lang button to the right of the site title on mobile */
+            .site-title > .title-nav-lang-wrap {
+                margin-left: auto;
+                z-index: 10;
+                flex-shrink: 0;
+            }
+
+            .site-title-text {
+                min-width: 0;
+                flex-shrink: 1;
             }
 
             .site-title {
@@ -2165,11 +2184,11 @@
                 <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
                 <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
                 <a href="/za" class="title-nav-btn"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За</span></a>
-                <div class="title-nav-lang-wrap">
-                    <a href="#" class="title-nav-btn title-nav-lang-btn" id="index-lang-toggle" title="Language" aria-haspopup="true" aria-expanded="false"><i class="fas fa-globe"></i></a>
-                    <div class="lang-dropdown" id="index-lang-dropdown"></div>
-                </div>
             </nav>
+            <div class="title-nav-lang-wrap">
+                <a href="#" class="title-nav-btn title-nav-lang-btn" id="index-lang-toggle" title="Language" aria-haspopup="true" aria-expanded="false"><i class="fas fa-globe"></i></a>
+                <div class="lang-dropdown" id="index-lang-dropdown"></div>
+            </div>
         </div>
 
         <!-- ==================== TOP 3 MAIN CHART ==================== -->

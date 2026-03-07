@@ -2610,18 +2610,50 @@ body.dark-mode .share-lang-btn {
 }
 
 /* ==================== LANG DROPDOWN (mobile) ==================== */
+.title-nav-lang-wrap {
+    position: relative;
+    z-index: 10;
+}
 .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0;
     min-width: 150px;
     background: #000;
     color: #fff;
     border: 2px solid #000;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+    padding: 0.5rem;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(0.9) translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+.lang-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .lang-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: 100%;
+    padding: 0.5rem 0.7rem;
     background: #000;
     color: #fff;
     border: 2px solid #000;
     border-radius: 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .lang-dropdown-item:hover {
@@ -2630,7 +2662,9 @@ body.dark-mode .share-lang-btn {
 }
 
 .lang-dropdown-item.active {
+    background: var(--accent-orange, #ff922b);
     border-color: var(--accent-orange, #ff922b);
+    color: #fff;
 }
 
 /* Logo pulse hint for first-time mobile users */
@@ -2645,6 +2679,27 @@ body.dark-mode .share-lang-btn {
     50% { 
         box-shadow: 0 0 0 6px rgba(74, 127, 165, 0.35);
     }
+}
+
+/* Dark mode lang dropdown */
+body.dark-mode .lang-dropdown {
+    background: #000;
+    border-color: #fff;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+}
+body.dark-mode .lang-dropdown-item {
+    background: #000;
+    border-color: #000;
+    color: #fff;
+}
+body.dark-mode .lang-dropdown-item:hover {
+    background: #fff;
+    color: #000;
+}
+body.dark-mode .lang-dropdown-item.active {
+    background: var(--accent-orange, #ff922b);
+    border-color: var(--accent-orange, #ff922b);
+    color: #fff;
 }
 
 /* ==================== DARK MODE ==================== */
