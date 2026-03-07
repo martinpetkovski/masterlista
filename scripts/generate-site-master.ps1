@@ -507,7 +507,7 @@ foreach ($genre in $genreFilters) {
             if (-not $genreHistoryMap.ContainsKey($rid)) {
                 $genreHistoryMap[$rid] = [System.Collections.ArrayList]::new()
             }
-            [void]$genreHistoryMap[$rid].Add(@{
+            [void]$genreHistoryMap[$rid].Add([ordered]@{
                 weekId = $weekId
                 popularity = [int]($r.popularity -as [int])
                 singlesPos = if ($singlesPos.ContainsKey($rid)) { $singlesPos[$rid] } else { $null }
@@ -577,7 +577,7 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
         if (-not $artistPopularityGraphs.ContainsKey($artistKey)) {
             $artistPopularityGraphs[$artistKey] = [System.Collections.ArrayList]::new()
         }
-        [void]$artistPopularityGraphs[$artistKey].Add(@{
+        [void]$artistPopularityGraphs[$artistKey].Add([ordered]@{
             weekId = $weekId
             value = $artistWeekPop[$artistKey]
             hasNewRelease = $artistNewRelease[$artistKey]
@@ -611,7 +611,7 @@ foreach ($genre in $genreFilters) {
         $existing = $artistFollowerMap[$aid]
         if (-not $existing -or ([int]($r.followers -as [int])) -gt $existing.followers) {
             $bandInfo = Get-ArtistInfo $r.bandName
-            $artistFollowerMap[$aid] = @{
+            $artistFollowerMap[$aid] = [ordered]@{
                 artistId = $aid
                 bandName = if ($bandInfo) { $bandInfo.name } else { $r.bandName }
                 followers = [int]($r.followers -as [int])
@@ -1001,7 +1001,7 @@ for ($w = 0; $w -lt $sparkWeekCount; $w++) {
         if (-not $releaseSparklines.ContainsKey($rid)) {
             $releaseSparklines[$rid] = [System.Collections.ArrayList]::new()
         }
-        [void]$releaseSparklines[$rid].Add(@{
+        [void]$releaseSparklines[$rid].Add([ordered]@{
             weekId = $weekId
             popularity = [int]($r.popularity -as [int])
         })
@@ -1031,53 +1031,56 @@ Write-Host ""
 Write-Host "  > Assembling site-master.json..." -ForegroundColor Yellow
 
 # Convert hashtable-based structures to proper objects for JSON serialization
-$chartsOutput = @{}
-foreach ($key in $charts.Keys) {
+# IMPORTANT: Use [ordered]@{} and sort keys to ensure deterministic JSON output.
+# Regular @{} hashtables have non-deterministic enumeration order, causing
+# the entire site-master.json to appear changed in git even when data is identical.
+$chartsOutput = [ordered]@{}
+foreach ($key in $charts.Keys | Sort-Object) {
     $chartsOutput[$key] = @($charts[$key])
 }
 
-$advancedChartsOutput = @{}
-foreach ($key in $advancedCharts.Keys) {
+$advancedChartsOutput = [ordered]@{}
+foreach ($key in $advancedCharts.Keys | Sort-Object) {
     $advancedChartsOutput[$key] = @($advancedCharts[$key])
 }
 
 # Convert releaseHistoryMap (per-genre)
-$historyMapOutput = @{}
-foreach ($genre in $releaseHistoryByGenre.Keys) {
-    $genreMap = @{}
-    foreach ($rid in $releaseHistoryByGenre[$genre].Keys) {
+$historyMapOutput = [ordered]@{}
+foreach ($genre in $releaseHistoryByGenre.Keys | Sort-Object) {
+    $genreMap = [ordered]@{}
+    foreach ($rid in $releaseHistoryByGenre[$genre].Keys | Sort-Object) {
         $genreMap[$rid] = @($releaseHistoryByGenre[$genre][$rid])
     }
     $historyMapOutput[$genre] = $genreMap
 }
 
 # Convert allTimeArtistsByGenre
-$allTimeArtistsByGenreOutput = @{}
-foreach ($genre in $allTimeArtistsByGenre.Keys) {
+$allTimeArtistsByGenreOutput = [ordered]@{}
+foreach ($genre in $allTimeArtistsByGenre.Keys | Sort-Object) {
     $allTimeArtistsByGenreOutput[$genre] = @($allTimeArtistsByGenre[$genre])
 }
 
 # Convert latestReleasesByGenre
-$latestReleasesByGenreOutput = @{}
-foreach ($genre in $latestReleasesByGenre.Keys) {
+$latestReleasesByGenreOutput = [ordered]@{}
+foreach ($genre in $latestReleasesByGenre.Keys | Sort-Object) {
     $latestReleasesByGenreOutput[$genre] = @($latestReleasesByGenre[$genre])
 }
 
 # Convert artist popularity graphs
-$graphsOutput = @{}
-foreach ($key in $artistPopularityGraphs.Keys) {
+$graphsOutput = [ordered]@{}
+foreach ($key in $artistPopularityGraphs.Keys | Sort-Object) {
     $graphsOutput[$key] = @($artistPopularityGraphs[$key])
 }
 
 # Convert activity map
-$activityOutput = @{}
-foreach ($key in $artistActivityMap.Keys) {
+$activityOutput = [ordered]@{}
+foreach ($key in $artistActivityMap.Keys | Sort-Object) {
     $activityOutput[$key] = $artistActivityMap[$key]
 }
 
 # Convert release sparklines
-$sparklinesOutput = @{}
-foreach ($rid in $releaseSparklines.Keys) {
+$sparklinesOutput = [ordered]@{}
+foreach ($rid in $releaseSparklines.Keys | Sort-Object) {
     $sparklinesOutput[$rid] = @($releaseSparklines[$rid])
 }
 
