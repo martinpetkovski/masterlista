@@ -257,6 +257,23 @@ function buildChartRanking(releases, opts) {
         return artistCount[key] <= 2;
     });
 
+    // If per-artist limit cut too many, backfill from older releases
+    if (pool.length < count) {
+        var usedIds = {};
+        pool.forEach(function(r) { usedIds[r.releaseId] = true; });
+        var extra = filtered
+            .filter(function(r) { return !usedIds[r.releaseId]; })
+            .sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
+        extra.sort(chartSort);
+        for (var i = 0; i < extra.length && pool.length < count; i++) {
+            var key = (extra[i].bandName || '').toLowerCase().trim();
+            if ((artistCount[key] || 0) < 2) {
+                artistCount[key] = (artistCount[key] || 0) + 1;
+                pool.push(extra[i]);
+            }
+        }
+    }
+
     return pool.slice(0, count);
 }
 

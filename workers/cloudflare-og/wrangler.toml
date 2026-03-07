@@ -6,10 +6,9 @@ compatibility_date = "2024-01-01"
 # The worker passes non-crawler traffic straight through to the origin (GitHub Pages).
 #
 # To use routes, the domain must be proxied through Cloudflare (orange cloud in DNS).
-# Uncomment and adjust the zone_id below after looking it up in the Cloudflare dashboard.
-#
-# [env.production]
-# routes = [
-#   { pattern = "toplista.mk/*", zone_id = "a1cd032f9d3b8024f397804a309a1f78" },
-#   { pattern = "www.toplista.mk/*", zone_id = "a1cd032f9d3b8024f397804a309a1f78" }
-# ]
+
+[env.production]
+routes = [
+  { pattern = "toplista.mk/*", zone_id = "a1cd032f9d3b8024f397804a309a1f78" },
+  { pattern = "www.toplista.mk/*", zone_id = "a1cd032f9d3b8024f397804a309a1f78" }
+]

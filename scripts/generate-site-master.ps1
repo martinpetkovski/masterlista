@@ -282,13 +282,29 @@ function Build-ChartRanking {
     
     $sorted = @(Sort-ChartRanking @($pool))
     
-    # Limit to at most 2 releases per artist
+    # Limit to at most 2 releases per artist, but keep backfilling until we have enough
     $artistCount = @{}
     $limited = @($sorted | Where-Object {
         $key = $_.bandName.ToLower().Trim()
         $artistCount[$key] = ($artistCount[$key] -as [int]) + 1
         $artistCount[$key] -le 2
     })
+    
+    # If per-artist limit cut too many, backfill from older releases
+    if ($limited.Count -lt $count) {
+        $usedIds = [System.Collections.Generic.HashSet[string]]::new()
+        foreach ($r in $limited) { [void]$usedIds.Add($r.releaseId) }
+        $extra = @($filtered | Where-Object { -not $usedIds.Contains($_.releaseId) -and -not ($pool -contains $_) } | Sort-Object { $_.releaseDate } -Descending)
+        $extraSorted = @(Sort-ChartRanking $extra)
+        foreach ($r in $extraSorted) {
+            $key = $r.bandName.ToLower().Trim()
+            if (($artistCount[$key] -as [int]) -lt 2) {
+                $artistCount[$key] = ($artistCount[$key] -as [int]) + 1
+                $limited += $r
+                if ($limited.Count -ge $count) { break }
+            }
+        }
+    }
     
     return @($limited | Select-Object -First $count)
 }
