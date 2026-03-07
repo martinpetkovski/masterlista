@@ -813,7 +813,7 @@ table {
     table-layout: fixed;
 }
 
-/* Column widths: Name, City, Genre, SoundsLike, Links, Media, Events, Activity, Greeting, Actions */
+/* Column widths: Name, City, Genre, SoundsLike, Links, Media, Events, VU, Activity, Greeting, Actions */
 th:nth-child(1) { width: auto; } /* Name header - takes remaining space */
 td:nth-child(1) { width: auto; padding: 0; } /* Name cell - flush thumbnail */
 th:nth-child(2), td:nth-child(2) { width: 120px; white-space: nowrap; overflow: hidden; } /* City */
@@ -822,9 +822,19 @@ th:nth-child(4), td:nth-child(4) { width: 130px; white-space: nowrap; overflow: 
 th:nth-child(5), td:nth-child(5) { width: 120px; white-space: nowrap; overflow: hidden; } /* Links */
 th:nth-child(6), td:nth-child(6) { width: 80px; white-space: nowrap; overflow: hidden; text-align: center; padding: 0 0.3rem; } /* Media */
 th:nth-child(7), td:nth-child(7) { width: 80px; white-space: nowrap; overflow: hidden; text-align: center; padding: 0 0.3rem; } /* Events */
-th:nth-child(8), td:nth-child(8) { width: 36px; white-space: nowrap; text-align: center; } /* Activity */
-th:nth-child(9), td:nth-child(9) { width: 24px; white-space: nowrap; text-align: center; padding: 0; } /* Greeting */
-th:nth-child(10), td:nth-child(10) { width: 36px; white-space: nowrap; text-align: center; } /* Actions */
+th:nth-child(8), td:nth-child(8) { width: 80px; white-space: nowrap; overflow: hidden; padding: 0 0.2rem; } /* VU meter */
+th:nth-child(9), td:nth-child(9) { width: 36px; white-space: nowrap; text-align: center; } /* Activity */
+th:nth-child(10), td:nth-child(10) { width: 24px; white-space: nowrap; text-align: center; padding: 0; } /* Greeting */
+th:nth-child(11), td:nth-child(11) { width: 36px; white-space: nowrap; text-align: center; } /* Actions */
+
+/* VU meter in master list */
+.lista-vu-meter { display: flex; align-items: flex-end; gap: 1px; height: 8px; }
+.lista-vu-seg { width: 3px; height: 100%; border-radius: 0; }
+.lista-vu-seg--off { opacity: 0.2; }
+body.dark-mode .lista-vu-seg--off { opacity: 0.3; }
+.lista-vu-seg--on { opacity: 1.0; }
+.lista-vu-seg--unavail { opacity: 0.1; }
+body.dark-mode .lista-vu-seg--unavail { opacity: 0.1; }
 
 /* Scrollable cell containers for columns with variable content */
 td:nth-child(2) .cell-scroll,
@@ -3401,8 +3411,8 @@ body.guide-page .site-footer {
 }
 
 /* ==================== RESPONSIVE COLUMN HIDING ==================== */
-/* Hide order: sounds like → media → events → city → genre → activity */
-/* Always visible: Name (1), Links (5), Greeting (9), Actions (10) */
+/* Hide order: sounds like → media → events → VU → city → genre → activity */
+/* Always visible: Name (1), Links (5), Greeting (10), Actions (11) */
 
 @media (max-width: 1200px) {
     /* Hide Sounds Like */
@@ -3417,6 +3427,8 @@ body.guide-page .site-footer {
 @media (max-width: 950px) {
     /* Also hide Events */
     th:nth-child(7), td:nth-child(7) { display: none; }
+    /* Also hide VU */
+    th:nth-child(8), td:nth-child(8) { display: none; }
 }
 
 @media (max-width: 850px) {
@@ -3431,7 +3443,7 @@ body.guide-page .site-footer {
 
 @media (max-width: 650px) {
     /* Also hide Activity */
-    th:nth-child(8), td:nth-child(8) { display: none; }
+    th:nth-child(9), td:nth-child(9) { display: none; }
 }
 
 /* ==================== TABLET INTERMEDIATE (601px - 1024px) ==================== */

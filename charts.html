@@ -2007,6 +2007,7 @@
             }
 
             .filter-btn[data-preset="alltime"],
+            .filter-btn[data-preset="artists"],
             .advanced-filters .filter-btn[data-filter-type="chart"][data-filter-value="alltime"],
             .alltime-section,
             #artists-section {
@@ -2044,6 +2045,42 @@
         .chart-title[data-release-url]:hover {
             text-decoration: underline;
         }
+
+        /* VU Meter for cumulative artists chart */
+        .vu-meter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
+        }
+        .vu-meter {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5px;
+            height: 10px;
+        }
+        .vu-seg {
+            width: 4px;
+            height: 100%;
+            border-radius: 0;
+            transition: opacity 0.3s ease;
+        }
+        .vu-seg--off {
+            opacity: 0.12;
+        }
+        body.dark-mode .vu-seg--off {
+            opacity: 0.18;
+        }
+        .vu-seg--on {
+            opacity: 0.9;
+        }
+        .vu-pop-value {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 1.2em;
+            opacity: 0.75;
+        }
         
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -2072,6 +2109,9 @@
                 </button>
                 <button class="filter-btn preset-btn" data-preset="alt" data-i18n-title="charts.altMusic" title="Алтернативна музика">
                     <i class="fas fa-guitar"></i> <span data-i18n="charts.alternative">Алтернативна</span>
+                </button>
+                <button class="filter-btn preset-btn desktop-only-preset" data-preset="artists" data-i18n-title="charts.artistsTitle" title="Артисти по кумулативна популарност">
+                    <i class="fas fa-users"></i> <span data-i18n="charts.artists">Артисти</span>
                 </button>
                 <button class="filter-btn preset-btn" data-preset="alltime" data-i18n-title="charts.allTime" title="Сите времиња">
                     <i class="fas fa-trophy"></i> <span data-i18n="charts.allTime">Сите времиња</span>
@@ -2234,6 +2274,29 @@
                                 <tbody></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artists by Cumulative Popularity (hidden by default, desktop only) -->
+            <div class="chart-section alltime-section" id="artists-cumulative-section" style="display: none;">
+                <div class="chart-section-header artists">
+                    <h2><i class="fas fa-users"></i> <span data-i18n="charts.artistsByCumulative">Артисти</span></h2>
+                    <div class="chart-header-right">
+                        <span class="period" id="artists-cumulative-period" data-i18n="charts.cumulativeLabel">кумулативна популарност</span>
+                        <button class="share-btn" onclick="shareChart('artists')" data-i18n-title="charts.share" title="Сподели">
+                            <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-list-wrapper">
+                    <div id="artists-cumulative-chart-loading" class="chart-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p data-i18n="common.loading">Се вчитува...</p>
+                    </div>
+                    <ol id="artists-cumulative-chart" class="chart-list" style="display: none;"></ol>
+                    <div id="artists-cumulative-chart-empty" class="chart-empty" style="display: none;">
+                        <p data-i18n="charts.noArtists">Нема артисти</p>
                     </div>
                 </div>
             </div>
@@ -2408,8 +2471,13 @@
             
             let title = baseTitles[chartType];
             
-            // For all-time view
-            if (chartFilter === 'alltime') {
+            // For cumulative artists view
+            const presetBtn = document.querySelector('.preset-btn.active');
+            const activePreset = presetBtn?.dataset?.preset;
+            if (activePreset === 'artists' && chartType === 'artists') {
+                title = _t('charts.artistsByCumulative');
+            } else if (chartFilter === 'alltime') {
+                // For all-time view
                 title = chartType === 'artists' ? _t('charts.topArtistsAllTime') : title + ' ' + _t('charts.allTimeAppend');
             }
             
@@ -2449,11 +2517,11 @@
                 if (artistsSection && artistsSection.classList.contains('mobile-active')) chartType = 'artists';
             } else {
                 // Desktop: check which sections are visible; prefer the first visible one
-                const sections = ['singles', 'albums', 'latest', 'artists'];
+                const sections = ['singles', 'albums', 'latest', 'artists-cumulative', 'artists'];
                 for (const s of sections) {
                     const el = document.getElementById(s + '-section');
                     if (el && el.style.display !== 'none' && el.offsetParent !== null) {
-                        chartType = s;
+                        chartType = s === 'artists-cumulative' ? 'artists' : s;
                         break;
                     }
                 }
@@ -3027,12 +3095,14 @@
                     const advancedPanel = document.getElementById('advanced-filters');
                     if (urlPreset === 'alt') {
                         currentFilters = { chart: 'standard', genre: 'alt', city: 'all' };
+                    } else if (urlPreset === 'artists') {
+                        currentFilters = { chart: 'artists', genre: 'all', city: 'all' };
                     } else if (urlPreset === 'alltime') {
                         currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
                     } else if (urlPreset === 'advanced') {
                         currentFilters = { chart: 'advanced', genre: 'all', city: 'all' };
                     }
-                    syncPresetButtons(urlPreset === 'advanced' ? 'advanced' : urlPreset === 'alt' ? 'alt' : urlPreset === 'alltime' ? 'alltime' : 'toplista');
+                    syncPresetButtons(urlPreset === 'advanced' ? 'advanced' : urlPreset === 'artists' ? 'artists' : urlPreset === 'alt' ? 'alt' : urlPreset === 'alltime' ? 'alltime' : 'toplista');
                     syncAdvancedButtons();
                     updateUrlForPreset(urlPreset);
                 }
@@ -3174,7 +3244,7 @@
                 if (!siteMaster) return;
                 const { chart, genre, city } = currentFilters;
 
-                if (window.innerWidth <= 600 && chart === 'alltime') {
+                if (window.innerWidth <= 600 && (chart === 'alltime' || chart === 'artists')) {
                     currentFilters = { chart: 'standard', genre: genre || 'all', city: city || 'all' };
                     syncPresetButtons(genre === 'alt' ? 'alt' : 'toplista');
                     syncAdvancedButtons();
@@ -3195,13 +3265,14 @@
                     document.getElementById('albums-section').style.display = 'none';
                     document.getElementById('latest-section').style.display = 'none';
                     document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
                     document.getElementById('advanced-section').style.display = 'flex';
                     
                     if (window.innerWidth <= 600) {
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = 'none';
                         document.getElementById('advanced-section').classList.add('mobile-active');
-                        ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(id => 
+                        ['singles-section', 'albums-section', 'latest-section', 'artists-section', 'artists-cumulative-section'].forEach(id => 
                             document.getElementById(id)?.classList.remove('mobile-active'));
                     }
                     
@@ -3226,12 +3297,33 @@
                     document.getElementById('advanced-period').textContent = advPeriod;
                     renderAdvancedChart(advSingles, advAlbums, prevSinglesMap, prevAlbumsMap);
                     
+                } else if (chart === 'artists') {
+                    // Artists by cumulative popularity
+                    document.getElementById('singles-section').style.display = 'none';
+                    document.getElementById('albums-section').style.display = 'none';
+                    document.getElementById('latest-section').style.display = 'none';
+                    document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('artists-cumulative-section').style.display = 'block';
+                    document.getElementById('advanced-section').style.display = 'none';
+                    document.getElementById('advanced-section').classList.remove('mobile-active');
+                    
+                    const cumulativeArtists = siteMaster.artistCumulativeRanking || [];
+                    
+                    document.getElementById('artists-cumulative-period').textContent = t('charts.cumulativeLabel');
+                    renderCumulativeArtistsChart('artists-cumulative-chart', cumulativeArtists);
+                    
+                    chartDataStore.artists = cumulativeArtists;
+                    chartDataStore.singles = [];
+                    chartDataStore.albums = [];
+                    chartDataStore.latest = [];
+                    
                 } else if (chart === 'alltime') {
                     // All-time: Show single artists chart sorted by followers
                     document.getElementById('singles-section').style.display = 'none';
                     document.getElementById('albums-section').style.display = 'none';
                     document.getElementById('latest-section').style.display = 'none';
                     document.getElementById('artists-section').style.display = 'block';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
@@ -3286,6 +3378,7 @@
                     document.getElementById('albums-section').style.display = 'block';
                     document.getElementById('latest-section').style.display = 'block';
                     document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
@@ -3369,6 +3462,7 @@
             const presetUrls = {
                 'toplista': '/charts',
                 'alt': '/alternativna',
+                'artists': '/artisti',
                 'alltime': '/site-vreminja',
                 'advanced': '/napredno'
             };
@@ -3396,6 +3490,8 @@
                             currentFilters = { chart: 'standard', genre: 'all', city: 'all' };
                         } else if (preset === 'alt') {
                             currentFilters = { chart: 'standard', genre: 'alt', city: 'all' };
+                        } else if (preset === 'artists') {
+                            currentFilters = { chart: 'artists', genre: 'all', city: 'all' };
                         } else if (preset === 'alltime') {
                             currentFilters = { chart: 'alltime', genre: 'all', city: 'all' };
                         } else if (preset === 'advanced') {
@@ -4072,6 +4168,80 @@
             function openOnPreferredService(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified) {
                 if (!releaseUrl) return;
                 showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified);
+            }
+
+            // Render artists chart sorted by cumulative popularity
+            function renderCumulativeArtistsChart(containerId, artists) {
+                const container = document.getElementById(containerId);
+                const loading = document.getElementById(`${containerId}-loading`);
+                const empty = document.getElementById(`${containerId}-empty`);
+                
+                loading.style.display = 'none';
+                
+                if (artists.length === 0) {
+                    container.style.display = 'none';
+                    empty.style.display = 'block';
+                    return;
+                }
+                
+                const maxCumPop = siteMaster?.maxCumulativePopularity || Math.max(...artists.map(a => a.cumulativePopularity || 0));
+                
+                empty.style.display = 'none';
+                container.style.display = 'block';
+                container.innerHTML = artists.map((artist, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+                    const itemClass = rank <= 3 ? `rank-${rank}` : '';
+                    
+                    const cumPop = artist.cumulativePopularity || 0;
+                    
+                    // Build VU meter
+                    const totalSegs = 16;
+                    const litSegs = maxCumPop > 0 ? Math.max(1, Math.round((cumPop / maxCumPop) * totalSegs)) : 0;
+                    let segs = '';
+                    for (let s = 0; s < totalSegs; s++) {
+                        const isOn = s < litSegs;
+                        let color;
+                        if (s < 10) color = '#4ade80';
+                        else if (s < 13) color = '#facc15';
+                        else color = '#ef4444';
+                        segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
+                    }
+                    const vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${cumPop}</span></div>`;
+                    
+                    // Get artist info from bands.json for genre/city
+                    const artistInfo = getArtistInfo(artist.bandName);
+                    const genre = artistInfo?.genre || '';
+                    const city = artistInfo?.city || '';
+                    const artIsConfirmed = artist.confirmed || artistInfo?.confirmed;
+                    const artAccentColors = artIsConfirmed ? artistInfo?.accentColors : null;
+                    const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
+                    const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
+                    const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
+                    const artAccentStyle = artHasAccent ? `style="--accent-1:${artAccent1};--accent-2:${artAccent2}"` : '';
+                    
+                    // Artist page URL
+                    const artistPageUrl = getArtistPageUrl(artist.bandName);
+                    
+                    return `
+                        <li class="chart-item artist-item ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
+                            <span class="chart-rank ${rankClass}">${rank}</span>
+                            <div class="chart-cover artist-cover">
+                                ${artist.thumbnail 
+                                    ? `<img src="${artist.thumbnail}" alt="${artist.bandName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">`
+                                    : '<div class="placeholder"><i class="fas fa-user"></i></div>'
+                                }
+                            </div>
+                            <div class="chart-info">
+                                <div class="chart-title artist-name">
+                                    <a href="${artistPageUrl}" title="${t('charts.openProfile')}">${localizeText(artist.bandName)}</a>${artIsConfirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
+                                </div>
+                                <div class="chart-artist artist-details">${localizeGenreString(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
+                                ${vuMeterHtml}
+                            </div>
+                        </li>
+                    `;
+                }).join('');
             }
 
             loadChartData();

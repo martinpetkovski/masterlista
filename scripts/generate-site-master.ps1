@@ -593,6 +593,72 @@ foreach ($key in @($artistPopularityGraphs.Keys)) {
 Write-Host "  > Built popularity graphs for $($artistPopularityGraphs.Count) artists" -ForegroundColor DarkGray
 
 # ============================================================================
+#  3b. ARTIST CUMULATIVE RANKING (by cumulative popularity)
+# ============================================================================
+
+Write-Host "  > Building artist cumulative ranking..." -ForegroundColor Yellow
+
+$artistCumulativeRanking = [System.Collections.ArrayList]::new()
+$maxCumulativePopularity = 0
+
+foreach ($artistKey in $artistPopularityGraphs.Keys) {
+    $graph = $artistPopularityGraphs[$artistKey]
+    if ($graph.Count -eq 0) { continue }
+    # Latest week cumulative value
+    $latestEntry = $graph[$graph.Count - 1]
+    $cumulativePop = [int]($latestEntry.value -as [int])
+    if ($cumulativePop -le 0) { continue }
+
+    if ($cumulativePop -gt $maxCumulativePopularity) { $maxCumulativePopularity = $cumulativePop }
+
+    # Find a representative release for thumbnail and artistId
+    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim() -eq $artistKey })
+    $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
+
+    if ($topRelease) {
+        $bandInfo = Get-ArtistInfo $topRelease.bandName
+        [void]$artistCumulativeRanking.Add([ordered]@{
+            bandName = if ($bandInfo) { $bandInfo.name } else { $topRelease.bandName }
+            artistId = $topRelease.artistId
+            cumulativePopularity = $cumulativePop
+            thumbnail = $topRelease.thumbnail
+            spotifyUrl = $topRelease.spotifyUrl
+            confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
+        })
+    }
+}
+
+$artistCumulativeRanking = @($artistCumulativeRanking | Sort-Object { -$_.cumulativePopularity } | Select-Object -First 100)
+
+# Collect all artist names that have any chart data (including 0 cumulative popularity)
+$artistsWithChartData = [System.Collections.ArrayList]::new()
+foreach ($artistKey in $artistPopularityGraphs.Keys) {
+    $graph = $artistPopularityGraphs[$artistKey]
+    if ($graph.Count -eq 0) { continue }
+    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim() -eq $artistKey })
+    $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
+    if ($topRelease) {
+        $bandInfo = Get-ArtistInfo $topRelease.bandName
+        $name = if ($bandInfo) { $bandInfo.name } else { $topRelease.bandName }
+        [void]$artistsWithChartData.Add($name.ToLower().Trim())
+    }
+}
+
+Write-Host "  > Ranked $($artistCumulativeRanking.Count) artists by cumulative popularity (max: $maxCumulativePopularity), $($artistsWithChartData.Count) total with chart data" -ForegroundColor DarkGray
+
+# ============================================================================
+#  3c. GLOBAL PEAK POPULARITY (max popularity of any single release)
+# ============================================================================
+
+$globalPeakPopularity = 0
+foreach ($r in $mainReleasesDeduped) {
+    $pop = [int]($r.popularity -as [int])
+    if ($pop -gt $globalPeakPopularity) { $globalPeakPopularity = $pop }
+}
+
+Write-Host "  > Global peak popularity: $globalPeakPopularity" -ForegroundColor DarkGray
+
+# ============================================================================
 #  4. ALL-TIME ARTISTS (sorted by followers, per genre)
 # ============================================================================
 
@@ -1119,6 +1185,18 @@ $siteMaster = [PSCustomObject]@{
     # All-time top artists sorted by followers, keyed by genre
     # (allTimeArtistsByGenre['all'] serves as the fallback — no separate allTimeArtists needed)
     allTimeArtistsByGenre = $allTimeArtistsByGenreOutput
+    
+    # Top 100 artists sorted by cumulative popularity (sum of all release popularities)
+    artistCumulativeRanking = $artistCumulativeRanking
+    
+    # Max cumulative popularity of any artist (for VU meter scaling)
+    maxCumulativePopularity = $maxCumulativePopularity
+    
+    # All artist names (lowercased) that have chart data (including 0 popularity)
+    artistsWithChartData = $artistsWithChartData
+    
+    # Max popularity of any single release (for VU meter scaling on artist page)
+    globalPeakPopularity = $globalPeakPopularity
     
     # Latest 20 releases sorted by date, keyed by genre
     # (latestReleasesByGenre['all'] serves as the fallback — no separate latestReleases needed)

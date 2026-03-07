@@ -1065,6 +1065,23 @@
             gap: 0.5rem;
         }
         
+        .section-title-vu {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+        
+        .section-title-vu .vu-meter-row {
+            margin-top: 0;
+        }
+        
+        .section-title-vu .vu-meter {
+            align-items: center;
+        }
+        
         .section-title i {
             color: var(--text-primary);
         }
@@ -1202,12 +1219,11 @@ a.chart-history-item {
             display: flex;
             align-items: center;
             gap: 0.35rem;
-            margin-top: 0.25rem;
         }
         
         .vu-meter {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 1.5px;
             height: 10px;
         }
@@ -1229,7 +1245,6 @@ a.chart-history-item {
         
         .vu-seg--on {
             opacity: 0.9;
-            box-shadow: 0 0 3px currentColor;
         }
         
         .vu-pop-value {
@@ -2542,7 +2557,7 @@ a.chart-history-item {
         }
         
         // Render popularity graph
-        function renderPopularityGraph(artistHistory) {
+        function renderPopularityGraph(artistHistory, siteMaster, artistName) {
             const container = document.getElementById('popularity-graph-container');
             if (!container) return;
             
@@ -2670,11 +2685,40 @@ a.chart-history-item {
                    </div>`
                 : '';
             
+            // Build VU meter for cumulative popularity
+            let cumulativeVuHtml = '';
+            const latestPop = weeklyData[weeklyData.length - 1]?.popularity || 0;
+            const globalMaxCumulative = siteMaster?.maxCumulativePopularity || maxPopularity;
+            if (latestPop > 0 && globalMaxCumulative > 0) {
+                const totalSegs = 16;
+                const litSegs = Math.max(1, Math.round((latestPop / globalMaxCumulative) * totalSegs));
+                let segs = '';
+                for (let s = 0; s < totalSegs; s++) {
+                    const isOn = s < litSegs;
+                    let color;
+                    if (s < 10) color = '#4ade80';
+                    else if (s < 13) color = '#facc15';
+                    else color = '#ef4444';
+                    segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
+                }
+                // Find artist position in cumulative ranking
+                let positionHtml = '';
+                if (artistName && siteMaster?.artistCumulativeRanking) {
+                    const artistNameLower = artistName.toLowerCase().trim();
+                    const rankIndex = siteMaster.artistCumulativeRanking.findIndex(a => a.bandName.toLowerCase().trim() === artistNameLower);
+                    if (rankIndex >= 0) {
+                        positionHtml = `<span class="vu-pop-value">#${rankIndex + 1}</span>`;
+                    }
+                }
+                cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${latestPop}</span>${positionHtml}</div>`;
+            }
+
             container.innerHTML = `
                 <div class="popularity-graph-section">
                     <h3 class="section-title">
                         <i class="fas fa-chart-area"></i>
                         ${t('artist.cumulativePopularity')}
+                        ${cumulativeVuHtml ? '<span class="section-title-vu">' + cumulativeVuHtml + '</span>' : ''}
                     </h3>
                     <div class="popularity-graph-container">
                         <svg class="popularity-graph" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
@@ -2716,7 +2760,7 @@ a.chart-history-item {
         }
 
         // Render releases section
-        function renderReleases(artistHistory, artistLinks) {
+        function renderReleases(artistHistory, artistLinks, siteMaster) {
             const container = document.getElementById('chart-history-container');
             if (!container) return;
             
@@ -2769,7 +2813,8 @@ a.chart-history-item {
                     : (release.popularity || 0);
                 if (peakPop > 0) {
                     const totalSegs = 16;
-                    const litSegs = artistHistory.peakPopularity > 0 ? Math.max(1, Math.round((peakPop / artistHistory.peakPopularity) * totalSegs)) : 0;
+                    const globalPeak = siteMaster?.globalPeakPopularity || artistHistory.peakPopularity;
+                    const litSegs = globalPeak > 0 ? Math.max(1, Math.round((peakPop / globalPeak) * totalSegs)) : 0;
                     let segs = '';
                     for (let s = 0; s < totalSegs; s++) {
                         const isOn = s < litSegs;
@@ -3127,8 +3172,8 @@ a.chart-history-item {
                 // Build chart history from pre-computed site-master data
                 try {
                     const chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
-                    renderPopularityGraph(chartHistory);
-                    renderReleases(chartHistory, artist.links);
+                    renderPopularityGraph(chartHistory, siteMaster, artist.name);
+                    renderReleases(chartHistory, artist.links, siteMaster);
                 } catch (e) {
                     console.warn('Could not build chart history:', e);
                 }

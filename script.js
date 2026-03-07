@@ -16,6 +16,9 @@
     let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
     let latestReleaseDateByArtist = {}; // Cache artist name -> latest release date string
     let cachedRssArticles = null; // Cache RSS feed articles for media column
+    let cumPopLookup = null; // Cache bandName -> { cumulativePopularity, rank }
+    let cumPopMax = 0; // Max cumulative popularity for VU scaling
+    let chartDataSet = null; // Set of artist names (lowercased) that have any chart data
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
     /**
@@ -1337,7 +1340,7 @@
                 }
                 const tbody = document.getElementById('band-table-body');
                 if (tbody && tbody.children.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8">' + t('lista.errorSomethingWrong') + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9">' + t('lista.errorSomethingWrong') + '</td></tr>';
                 }
             }
         } finally {
@@ -3117,7 +3120,7 @@
             if (wasCapped) {
                 const infoRow = document.createElement('tr');
                 infoRow.className = 'search-cap-row';
-                infoRow.innerHTML = `<td colspan="9" style="text-align:center;padding:12px;color:var(--text-secondary);font-size:0.82rem;">Прикажани ${cap} од ${totalCount} резултати. <a href="#" style="color:var(--accent-blue);cursor:pointer;">Прикажи ги сите</a></td>`;
+                infoRow.innerHTML = `<td colspan="10" style="text-align:center;padding:12px;color:var(--text-secondary);font-size:0.82rem;">Прикажани ${cap} од ${totalCount} резултати. <a href="#" style="color:var(--accent-blue);cursor:pointer;">Прикажи ги сите</a></td>`;
                 infoRow.querySelector('a').addEventListener('click', (e) => {
                     e.preventDefault();
                     renderBands(bands); // re-render without cap
@@ -3338,6 +3341,36 @@
             // Greeting slug for confirmed artists
             const greetingSlug = band.confirmed ? generateArtistSlug(band.name) : '';
             
+            // Build VU meter for cumulative popularity
+            let vuMeterHtml = '';
+            if (!cumPopLookup) {
+                const sm = typeof getSiteMaster === 'function' ? getSiteMaster() : null;
+                if (sm && sm.artistCumulativeRanking) {
+                    cumPopLookup = {};
+                    cumPopMax = sm.maxCumulativePopularity || 0;
+                    sm.artistCumulativeRanking.forEach(function(a, i) {
+                        cumPopLookup[a.bandName.toLowerCase().trim()] = { pop: a.cumulativePopularity || 0, rank: i + 1 };
+                    });
+                    chartDataSet = new Set(sm.artistsWithChartData || []);
+                }
+            }
+            {
+                const entry = cumPopLookup ? cumPopLookup[band.name.toLowerCase().trim()] : null;
+                const hasData = (entry !== null && entry !== undefined) || (chartDataSet && chartDataSet.has(band.name.toLowerCase().trim()));
+                const pop = entry ? entry.pop : 0;
+                const totalSegs = 12;
+                const litSegs = (pop > 0 && cumPopMax > 0) ? Math.max(1, Math.round((pop / cumPopMax) * totalSegs)) : 0;
+                const useAccentColor = band.confirmed && band.accentColors && (band.accentColors[0] || band.accentColors[1]);
+                let segs = '';
+                for (let s = 0; s < totalSegs; s++) {
+                    const isOn = s < litSegs;
+                    const color = !hasData ? '#888' : useAccentColor ? 'var(--accent-text)' : (s < 7 ? '#4ade80' : s < 10 ? '#facc15' : '#ef4444');
+                    const stateClass = isOn ? 'lista-vu-seg--on' : (!hasData ? 'lista-vu-seg--unavail' : 'lista-vu-seg--off');
+                    segs += '<span class="lista-vu-seg ' + stateClass + '" style="background:' + color + ';color:' + color + '"></span>';
+                }
+                vuMeterHtml = '<div class="lista-vu-meter">' + segs + '</div>';
+            }
+            
             bandRow.innerHTML = `
                 <td data-label="Име" class="name">${nameHtml}</td>
                 <td data-label="Град"><div class="cell-scroll">${cityHtml}</div></td>
@@ -3346,6 +3379,7 @@
                 <td data-label="Линкови" class="links"><div class="cell-scroll">${combinedLinksHtml}</div></td>
                 <td data-label="Медиуми" class="links reviews"><div class="cell-scroll">${reviewsHtml}</div></td>
                 <td data-label="Настани" class="links events"><div class="cell-scroll">${eventsHtml}</div></td>
+                <td data-label="VU" class="vu-cell">${vuMeterHtml}</td>
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
