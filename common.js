@@ -98,34 +98,55 @@ function deduplicateCollabs(releases) {
 }
 
 // ==================== GENRE CONFIGURATION (authoritative) ====================
-var rapGenres = ['Рап', 'Трап', 'Хип Хоп', 'Бум Бап', 'Поп-Рап'];
-var electronicGenres = ['Електронска', 'Техно', 'Хаус', 'Транс', 'Синтвејв', 'Синт-Поп', 'EDM', 'ДНБ', 'Драм', 'Амбиентална', 'Вејпорвејв', 'Драм ен Бас', 'Психоделичен Транс', 'Гоа', 'Глич', 'Чилаут', 'Електро-амбиентал', 'Трип Хоп', 'Псајбас', 'Псајдаб'];
-var popGenres = ['Поп', 'Поп-Рок', 'Поп Рок', 'Данс Поп', 'Синт-Поп', 'К-Поп', 'Турбо-Фолк', 'R&B', 'Поп-Фолк', "Р'н'Б", 'Шлагер', 'Соул'];
+var rapGenres = ['Rap', 'Trap', 'Hip Hop', 'Boom Bap', 'Pop Rap'];
+var electronicGenres = ['Electronic', 'Techno', 'House', 'Trance', 'Synthwave', 'Synth-Pop', 'EDM', 'DnB', 'Drum and Bass', 'Ambient', 'Vaporwave', 'Psychedelic Trance', 'Goa Trance', 'Glitch', 'Chillout', 'Electro-Ambient', 'Trip Hop', 'Psybass', 'Psydub'];
+var popGenres = ['Pop', 'Pop Rock', 'Dance Pop', 'Synth-Pop', 'K-Pop', 'Turbo Folk', 'R&B', 'Pop Folk', 'Schlager', 'Soul'];
 var nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
 
 var genreConfig = {
     'alt': {
-        label: 'Алтернативна',
+        label: 'Alternative',
         tKey: 'charts.genreAlt',
         isExclusion: true,
         excludeGenres: nonAltGenres
     },
     'rap': {
-        label: 'Рап/Трап',
+        label: 'Rap/Trap',
         tKey: 'charts.genreRap',
         genres: rapGenres
     },
     'electronic': {
-        label: 'Електронска',
+        label: 'Electronic',
         tKey: 'charts.genreElectronic',
         genres: electronicGenres
     },
     'pop': {
-        label: 'Поп',
+        label: 'Pop',
         tKey: 'charts.genrePop',
         genres: popGenres
     }
 };
+
+/**
+ * Translate a genre name using the i18n system.
+ * Falls back to the English genre name if no translation is found.
+ */
+function localizeGenre(genre) {
+    if (!genre) return '';
+    if (typeof t === 'function') {
+        var translated = t('genre.' + genre);
+        if (translated !== 'genre.' + genre) return translated;
+    }
+    return genre;
+}
+
+/**
+ * Translate a full comma-separated genre string.
+ */
+function localizeGenreString(genreStr) {
+    if (!genreStr || genreStr === 'недостигаат податоци') return genreStr;
+    return genreStr.split(',').map(function(g) { return localizeGenre(g.trim()); }).join(', ');
+}
 
 // ==================== GENRE MATCHING ====================
 

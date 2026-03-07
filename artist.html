@@ -1855,16 +1855,16 @@ a.chart-history-item {
             // Update page metadata
             document.getElementById('page-title').textContent = `${localizeText(artist.name)} | ТопЛиста.мк`;
             document.getElementById('meta-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
-            document.getElementById('meta-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
+            document.getElementById('meta-description').content = `${localizeText(artist.name)} - ${localizeGenreString(artist.genre) || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             
             const artistUrl = `https://toplista.mk/${encodeURIComponent(generateSlug(artist.name))}`;
             document.getElementById('canonical-url').href = artistUrl;
             document.getElementById('og-url').content = artistUrl;
             document.getElementById('og-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
-            document.getElementById('og-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
+            document.getElementById('og-description').content = `${localizeText(artist.name)} - ${localizeGenreString(artist.genre) || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             document.getElementById('twitter-url').content = artistUrl;
             document.getElementById('twitter-title').content = `${localizeText(artist.name)} | ТопЛиста.мк`;
-            document.getElementById('twitter-description').content = `${localizeText(artist.name)} - ${artist.genre || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
+            document.getElementById('twitter-description').content = `${localizeText(artist.name)} - ${localizeGenreString(artist.genre) || t('artist.macedonianArtist')}. ${t('artist.allLinksOnePLace')}`;
             
             // Update browser URL to clean URL (if not already clean) - only in production
             const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -1903,7 +1903,7 @@ a.chart-history-item {
             }
             if (artist.genre && artist.genre !== 'недостигаат податоци') {
                 const genres = artist.genre.split(',').map(g => g.trim()).slice(0, 2);
-                metaHtml += genres.map(genre => `<span class="artist-genre"><i class="fas fa-music"></i> ${localizeText(genre)}</span>`).join('');
+                metaHtml += genres.map(genre => `<span class="artist-genre"><i class="fas fa-music"></i> ${localizeGenre(genre)}</span>`).join('');
             }
             
             // Build sounds like section

@@ -3631,7 +3631,7 @@
                         `<td class="col-chg">${chgStr}</td>` +
                         `<td class="col-release" title="${releaseTitleStr}">${releaseCell}</td>` +
                         `<td class="col-city adv-city" title="${escHtml(localizeText(r._city))}">${escHtml(localizeText(r._city))}</td>` +
-                        `<td class="col-genre adv-genre" title="${escHtml(localizeText(r._genre))}">${escHtml(localizeText(r._genre))}</td>` +
+                        `<td class="col-genre adv-genre" title="${escHtml(localizeGenreString(r._genre))}">${escHtml(localizeGenreString(r._genre))}</td>` +
                         `<td class="col-pop adv-pop">${r._pop}</td>` +
                         `<td class="col-pdelta">${pdStr}</td>` +
                         `<td class="col-date adv-date">${dateStr}</td>` +
@@ -4052,7 +4052,7 @@
                                 <div class="chart-title artist-name">
                                     <a href="${artistPageUrl}" title="${t('charts.openProfile')}">${localizeText(artist.bandName)}</a>${artIsConfirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
-                                <div class="chart-artist artist-details">${localizeText(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
+                                <div class="chart-artist artist-details">${localizeGenreString(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
                             </div>
                             <div class="chart-meta">
                                 <span class="chart-stat followers" title="${t('charts.followersOnSpotify').replace('{0}', followers.toLocaleString())}">

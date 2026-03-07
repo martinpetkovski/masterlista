@@ -1294,7 +1294,7 @@
             // Initialize filters and UI — each wrapped individually so one failure doesn't block the rest
             try { populateFilters(bandsData); } catch (e) { console.warn('populateFilters error:', e); }
             try { initializeFilters(); } catch (e) { console.warn('initializeFilters error:', e); }
-            try { initializeModal(); } catch (e) { console.warn('initializeModal error:', e); }
+            try { await initializeModal(); } catch (e) { console.warn('initializeModal error:', e); }
             try { initializeSpotifyEmbedModal(); } catch (e) { console.warn('initializeSpotifyEmbedModal error:', e); }
             try { initializeCopyData(); } catch (e) { console.warn('initializeCopyData error:', e); }
             try { initializeSubmitPR(); } catch (e) { console.warn('initializeSubmitPR error:', e); }
@@ -1502,7 +1502,7 @@
             filterGroups.forEach(f => {
                 const val = $(f.select).val();
                 if (val) {
-                    const displayText = val === '__verified__' ? '✓ ' + t('lista.verified') : localizeText(val);
+                    const displayText = val === '__verified__' ? '✓ ' + t('lista.verified') : (f.key === 'genre' ? localizeGenre(val) : localizeText(val));
                     html += '<span class="unified-chip" data-filter="' + f.key + '">' +
                             '<i class="fas ' + f.icon + '"></i> ' + displayText +
                             '<button class="unified-chip-remove" data-filter="' + f.key + '" title="' + t('lista.remove') + '">&times;</button>' +
@@ -1686,6 +1686,20 @@
         labels: []
     };
 
+    // Predefined genres loaded from genres.json
+    let predefinedGenres = [];
+
+    // Load predefined genres from genres.json
+    async function loadPredefinedGenres() {
+        try {
+            const response = await fetch('genres.json');
+            predefinedGenres = await response.json();
+        } catch (e) {
+            console.warn('Could not load genres.json, falling back to band data genres');
+            predefinedGenres = [];
+        }
+    }
+
     // Build autocomplete data from bands
     function buildAutocompleteData() {
         const cityCounts = {};
@@ -1724,7 +1738,17 @@
         };
 
         autocompleteData.cities = sortByCountThenAlpha(cityCounts);
-        autocompleteData.genres = sortByCountThenAlpha(genreCounts);
+
+        // Use predefined genres from genres.json, with counts from band data
+        if (predefinedGenres.length > 0) {
+            autocompleteData.genres = predefinedGenres.map(g => ({
+                name: g,
+                count: genreCounts[g] || 0
+            }));
+        } else {
+            autocompleteData.genres = sortByCountThenAlpha(genreCounts);
+        }
+
         autocompleteData.soundsLike = sortByCountThenAlpha(soundsLikeCounts);
         autocompleteData.labels = sortByCountThenAlpha(labelCounts);
     }
@@ -1783,7 +1807,7 @@
                 }
 
                 dropdown.innerHTML = filtered.map((item, idx) => 
-                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${localizeText(item.name)}<span class="count">(${item.count})</span></div>`
+                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${inputId === 'band-genre' ? localizeGenre(item.name) : localizeText(item.name)}<span class="count">(${item.count})</span></div>`
                 ).join('');
 
                 dropdown.classList.add('active');
@@ -1857,7 +1881,7 @@
         });
     }
 
-    function initializeModal() {
+    async function initializeModal() {
         console.log('Initializing modal');
         const modal = document.getElementById('band-modal');
         const closeModal = document.querySelector('.modal-close');
@@ -1992,6 +2016,7 @@
         });
 
         // Initialize autocomplete for multi-value fields
+        await loadPredefinedGenres();
         initializeAutocomplete();
 
         ['band-city', 'band-genre', 'band-sounds-like', 'band-label'].forEach(id => {
@@ -2846,6 +2871,7 @@
     
     // Update a single select element from pre-computed counts
     function updateFilterSelect(selectElement, counts, currentValue) {
+        const isGenre = selectElement.id === 'filter-genre';
         const sortedValues = Object.keys(counts).sort((a, b) => 
             transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en')
         );
@@ -2857,7 +2883,7 @@
         
         selectElement.innerHTML = '<option value=""></option>' +
             sortedValues.map(v => {
-                const label = v === '__verified__' ? '✓ ' + t('lista.verified') : v;
+                const label = v === '__verified__' ? '✓ ' + t('lista.verified') : (isGenre ? localizeGenre(v) : v);
                 return `<option value="${v}">${label} (${counts[v]})</option>`;
             }).join('');
         
@@ -2926,7 +2952,7 @@
         const genres = [...genreSet].sort((a, b) => 
             transliterateCyrillicToLatin(a).localeCompare(transliterateCyrillicToLatin(b), 'en'));
         genreSelect.innerHTML = '<option value=""></option>' +
-            genres.map(genre => `<option value="${genre}">${genre} (${genreCounts[genre] || 0})</option>`).join('');
+            genres.map(genre => `<option value="${genre}">${localizeGenre(genre)} (${genreCounts[genre] || 0})</option>`).join('');
         
         // Sounds Like
         const soundsLikeCounts = {};
@@ -3260,7 +3286,7 @@
                 : band.city.split(',').map(c => c.trim()).map(c => `<span class="city-item" data-filter="city" data-value="${c}" style="${getCityTagStyle(c)}"><i class="fas fa-map-marker-alt"></i>${localizeText(c)}</span>`).join('');
             let genreHtml = band.genre === 'недостигаат податоци'
                 ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
-                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${localizeText(g)}</span>`).join('');
+                : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${escHtml(localizeGenre(g))}</span>`).join('');
             let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
                 ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
                 : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}"><i class="fas fa-headphones"></i>${localizeText(s)}</span>`).join('');

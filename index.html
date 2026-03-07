@@ -2795,7 +2795,7 @@
                     '<img class="trending-cover" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(localizeText(artist.name)) + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(localizeText(artist.name)) + verifiedBadge(artist.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(localizeText(artist.genre || '')) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(localizeGenreString(artist.genre || '')) + '</div>' +
                         releaseHtml +
                     '</div>' +
                     (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
@@ -2961,7 +2961,7 @@
                     '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(localizeText(a.name)) + verifiedBadge(a.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(localizeText(a.genre || '')) + '</div>' +
+                        '<div class="trending-sub">' + escHtml(localizeGenreString(a.genre || '')) + '</div>' +
                         relHtml +
                     '</div>' +
                     (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
