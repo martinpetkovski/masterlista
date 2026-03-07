@@ -208,8 +208,8 @@ window.MMMDrafts = (function () {
             var original = entry.original;
             if (!original) {
                 // No original stored — just note which files changed
-                var label = filePath === 'bands.json' ? 'Мастер Листа' : filePath === 'events.json' ? 'Настани' : filePath;
-                lines.push('• ' + label + ': промени');
+                var label = filePath === 'bands.json' ? t('drafts.masterList') : filePath === 'events.json' ? t('drafts.events') : filePath;
+                lines.push('• ' + label + ': ' + t('drafts.changes'));
                 return;
             }
 
@@ -218,7 +218,7 @@ window.MMMDrafts = (function () {
             } else if (filePath === 'events.json') {
                 lines.push.apply(lines, _diffEvents(original, data));
             } else {
-                lines.push('• ' + filePath + ': промени');
+                lines.push('• ' + filePath + ': ' + t('drafts.changes'));
             }
         });
 
@@ -237,22 +237,22 @@ window.MMMDrafts = (function () {
             if (!origMap[b.name]) { added.push(b.name); return; }
             var o = origMap[b.name];
             var fields = [];
-            if (b.city !== o.city) fields.push('град');
-            if (b.genre !== o.genre) fields.push('жанр');
-            if (b.soundsLike !== o.soundsLike) fields.push('звучи како');
-            if (b.contact !== o.contact) fields.push('контакт');
-            if (b.label !== o.label) fields.push('етикета');
-            if (b.confirmed !== o.confirmed) fields.push('потврден');
-            if (JSON.stringify(b.links) !== JSON.stringify(o.links)) fields.push('линкови');
-            if (JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) fields.push('бои');
+            if (b.city !== o.city) fields.push(t('drafts.fieldCity'));
+            if (b.genre !== o.genre) fields.push(t('drafts.fieldGenre'));
+            if (b.soundsLike !== o.soundsLike) fields.push(t('drafts.fieldSoundsLike'));
+            if (b.contact !== o.contact) fields.push(t('drafts.fieldContact'));
+            if (b.label !== o.label) fields.push(t('drafts.fieldLabel'));
+            if (b.confirmed !== o.confirmed) fields.push(t('drafts.fieldConfirmed'));
+            if (JSON.stringify(b.links) !== JSON.stringify(o.links)) fields.push(t('drafts.fieldLinks'));
+            if (JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) fields.push(t('drafts.fieldColors'));
             if (fields.length) changed.push(b.name + ' [' + fields.join(', ') + ']');
         });
         origList.forEach(function (b) { if (!modMap[b.name]) removed.push(b.name); });
 
         var lines = [];
-        if (added.length) lines.push('Додадени артисти (' + added.length + '): ' + added.join(', '));
-        if (removed.length) lines.push('Избришани артисти (' + removed.length + '): ' + removed.join(', '));
-        if (changed.length) lines.push('Изменети артисти (' + changed.length + '): ' + changed.join('; '));
+        if (added.length) lines.push(t('drafts.addedArtists') + ' (' + added.length + '): ' + added.join(', '));
+        if (removed.length) lines.push(t('drafts.removedArtists') + ' (' + removed.length + '): ' + removed.join(', '));
+        if (changed.length) lines.push(t('drafts.editedArtists') + ' (' + changed.length + '): ' + changed.join('; '));
         return lines;
     }
 
@@ -268,21 +268,21 @@ window.MMMDrafts = (function () {
             if (!origMap[e.id]) { added.push(e.title + ' (' + e.date + ')'); return; }
             var o = origMap[e.id];
             var fields = [];
-            if (e.title !== o.title) fields.push('наслов');
-            if (e.date !== o.date) fields.push('датум');
-            if (e.time !== o.time) fields.push('време');
-            if (e.place !== o.place) fields.push('место');
-            if (e.link !== o.link) fields.push('линк');
-            if (JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands)) fields.push('артисти');
-            if (JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) fields.push('карти');
+            if (e.title !== o.title) fields.push(t('drafts.fieldTitle'));
+            if (e.date !== o.date) fields.push(t('drafts.fieldDate'));
+            if (e.time !== o.time) fields.push(t('drafts.fieldTime'));
+            if (e.place !== o.place) fields.push(t('drafts.fieldPlace'));
+            if (e.link !== o.link) fields.push(t('drafts.fieldLink'));
+            if (JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands)) fields.push(t('drafts.fieldArtists'));
+            if (JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) fields.push(t('drafts.fieldTickets'));
             if (fields.length) changed.push(e.title + ' [' + fields.join(', ') + ']');
         });
         origList.forEach(function (e) { if (!modMap[e.id]) removed.push(e.title); });
 
         var lines = [];
-        if (added.length) lines.push('Нови настани (' + added.length + '): ' + added.join(', '));
-        if (removed.length) lines.push('Избришани настани (' + removed.length + '): ' + removed.join(', '));
-        if (changed.length) lines.push('Изменети настани (' + changed.length + '): ' + changed.join('; '));
+        if (added.length) lines.push(t('drafts.newEvents') + ' (' + added.length + '): ' + added.join(', '));
+        if (removed.length) lines.push(t('drafts.removedEvents') + ' (' + removed.length + '): ' + removed.join(', '));
+        if (changed.length) lines.push(t('drafts.editedEvents') + ' (' + changed.length + '): ' + changed.join('; '));
         return lines;
     }
 
@@ -309,7 +309,7 @@ window.MMMDrafts = (function () {
         var endpoint = _resolveEndpoint();
         var all = _readAll();
         var files = Object.keys(all);
-        if (!files.length) throw new Error('Нема промени за поднесување.');
+        if (!files.length) throw new Error(t('drafts.noChangesNotif'));
 
         var results = [];
         for (var i = 0; i < files.length; i++) {
@@ -368,15 +368,15 @@ window.MMMDrafts = (function () {
             '<div class="mmm-draft-bar-inner">' +
                 '<div class="mmm-draft-bar-info">' +
                     '<i class="fas fa-pen-to-square"></i>' +
-                    '<span class="mmm-draft-bar-text">Имате незачувани промени</span>' +
+                    '<span class="mmm-draft-bar-text" data-i18n="drafts.unsavedChanges">' + t('drafts.unsavedChanges') + '</span>' +
                     '<span class="mmm-draft-badge" id="mmm-draft-badge">0</span>' +
                 '</div>' +
                 '<div class="mmm-draft-bar-actions">' +
-                    '<button class="mmm-draft-btn discard" id="mmm-draft-discard" title="Отфрли ги сите промени">' +
-                        '<i class="fas fa-trash"></i> Отфрли' +
+                    '<button class="mmm-draft-btn discard" id="mmm-draft-discard" data-i18n-title="drafts.discardAllTitle" title="' + t('drafts.discardAllTitle') + '">' +
+                        '<i class="fas fa-trash"></i> <span data-i18n="drafts.discard">' + t('drafts.discard') + '</span>' +
                     '</button>' +
-                    '<button class="mmm-draft-btn submit" id="mmm-draft-submit" title="Испрати ги промените">' +
-                        '<i class="fas fa-paper-plane"></i> Испрати промени' +
+                    '<button class="mmm-draft-btn submit" id="mmm-draft-submit" data-i18n-title="drafts.submitTitle" title="' + t('drafts.submitTitle') + '">' +
+                        '<i class="fas fa-paper-plane"></i> <span data-i18n="drafts.submitChanges">' + t('drafts.submitChanges') + '</span>' +
                     '</button>' +
                 '</div>' +
             '</div>';
@@ -387,13 +387,13 @@ window.MMMDrafts = (function () {
         // Discard button
         document.getElementById('mmm-draft-discard').addEventListener('click', function () {
             _showConfirmDialog(
-                'Отфрли промени',
-                'Дали сте сигурни дека сакате да ги отфрлите сите незачувани промени?',
+                t('drafts.discardChangesTitle'),
+                t('drafts.discardConfirm'),
                 function () {
                     clearAll();
                     // Let each page know drafts were discarded
                     window.dispatchEvent(new CustomEvent('mmm-drafts-discarded'));
-                    _showNotification('Промените се отфрлени.', 'info');
+                    _showNotification(t('drafts.discarded'), 'info');
                 }
             );
         });
@@ -540,14 +540,14 @@ window.MMMDrafts = (function () {
                 var maxShow = 3;
                 var shown = details.slice(0, maxShow);
                 var rest = details.length - maxShow;
-                textEl.innerHTML = shown.join(', ') + (rest > 0 ? ' <span style="opacity:.7">+' + rest + ' уште</span>' : '');
+                textEl.innerHTML = shown.join(', ') + (rest > 0 ? ' <span style="opacity:.7">+' + rest + ' ' + t('drafts.more') + '</span>' : '');
             } else {
                 var labels = files.map(function (f) {
-                    if (f === 'bands.json') return 'Мастер Листа';
-                    if (f === 'events.json') return 'Настани';
+                    if (f === 'bands.json') return t('drafts.masterList');
+                    if (f === 'events.json') return t('drafts.events');
                     return f;
                 });
-                textEl.textContent = 'Незачувани промени: ' + labels.join(', ');
+                textEl.textContent = t('drafts.unsavedLabel') + labels.join(', ');
             }
         } else {
             _barEl.classList.remove('visible');
@@ -557,7 +557,7 @@ window.MMMDrafts = (function () {
         var legacyBtn = document.getElementById('submit-pr-btn');
         if (legacyBtn) {
             legacyBtn.disabled = !changeCount;
-            legacyBtn.title = changeCount ? 'Испрати барање за промена' : 'Нема промени за поднесување';
+            legacyBtn.title = changeCount ? t('drafts.submitRequest') : t('drafts.noChanges');
             if (changeCount) legacyBtn.classList.add('has-changes');
             else legacyBtn.classList.remove('has-changes');
         }
@@ -568,13 +568,13 @@ window.MMMDrafts = (function () {
     function _showSubmitDialog() {
         var files = getPendingFiles();
         if (!files.length) {
-            _showNotification('Нема промени за поднесување.', 'info');
+            _showNotification(t('drafts.noChangesNotif'), 'info');
             return;
         }
 
         var fileLabels = files.map(function (f) {
-            if (f === 'bands.json') return '<li><i class="fas fa-list"></i> Мастер Листа</li>';
-            if (f === 'events.json') return '<li><i class="fas fa-calendar-days"></i> Настани</li>';
+            if (f === 'bands.json') return '<li><i class="fas fa-list"></i> ' + t('drafts.masterList') + '</li>';
+            if (f === 'events.json') return '<li><i class="fas fa-calendar-days"></i> ' + t('drafts.events') + '</li>';
             return '<li><i class="fas fa-file"></i> ' + f + '</li>';
         }).join('');
 
@@ -582,22 +582,22 @@ window.MMMDrafts = (function () {
         overlay.className = 'mmm-draft-overlay';
         overlay.innerHTML =
             '<div class="mmm-draft-dialog">' +
-                '<h2><i class="fas fa-paper-plane"></i> Поднесување на промени</h2>' +
-                '<p class="mmm-draft-dialog-info">Ќе бидат поднесени промени за:</p>' +
+                '<h2><i class="fas fa-paper-plane"></i> ' + t('drafts.submitDialogTitle') + '</h2>' +
+                '<p class="mmm-draft-dialog-info">' + t('drafts.submitInfo') + '</p>' +
                 '<ul class="mmm-draft-file-list">' + fileLabels + '</ul>' +
                 '<form id="mmm-draft-submit-form">' +
                     '<div class="mmm-draft-field">' +
-                        '<label for="mmm-draft-contributor">Ваши информации (опционално)</label>' +
-                        '<input type="text" id="mmm-draft-contributor" placeholder="Име или е-пошта">' +
+                        '<label for="mmm-draft-contributor">' + t('drafts.contributorLabel') + '</label>' +
+                        '<input type="text" id="mmm-draft-contributor" placeholder="' + t('drafts.contributorPlaceholder') + '">' +
                     '</div>' +
                     '<div class="mmm-draft-field">' +
-                        '<label for="mmm-draft-description">Опис на промените</label>' +
-                        '<textarea id="mmm-draft-description" placeholder="Опишете ги промените..." rows="3" required></textarea>' +
+                        '<label for="mmm-draft-description">' + t('drafts.descLabel') + '</label>' +
+                        '<textarea id="mmm-draft-description" placeholder="' + t('drafts.descPlaceholder') + '" rows="3" required></textarea>' +
                     '</div>' +
                     '<div class="mmm-draft-dialog-buttons">' +
-                        '<button type="button" class="mmm-draft-btn discard" id="mmm-draft-dialog-cancel">Откажи</button>' +
+                        '<button type="button" class="mmm-draft-btn discard" id="mmm-draft-dialog-cancel">' + t('drafts.cancel') + '</button>' +
                         '<button type="submit" class="mmm-draft-btn submit" id="mmm-draft-dialog-submit">' +
-                            '<i class="fas fa-paper-plane"></i> Испрати' +
+                            '<i class="fas fa-paper-plane"></i> ' + t('drafts.submit') +
                         '</button>' +
                     '</div>' +
                 '</form>' +
@@ -624,33 +624,33 @@ window.MMMDrafts = (function () {
             var contributor = document.getElementById('mmm-draft-contributor').value.trim();
             var description = document.getElementById('mmm-draft-description').value.trim();
             if (!description) {
-                _showNotification('Внесете опис на промените.', 'error');
+                _showNotification(t('drafts.descRequired'), 'error');
                 document.getElementById('mmm-draft-description').focus();
                 return;
             }
 
             var submitBtn = document.getElementById('mmm-draft-dialog-submit');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Испраќање...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('drafts.submitting');
 
             try {
                 var results = await submitAll(contributor, description);
 
                 // Show success state in the dialog before closing
-                submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> ' + t('drafts.success');
                 submitBtn.classList.add('mmm-btn-success');
 
                 setTimeout(function () {
                     overlay.remove();
                 }, 1200);
 
-                _showNotification('Успешно поднесено! Промените ќе бидат видливи откако ќе бидат одобрени.', 'success');
+                _showNotification(t('drafts.submitSuccess'), 'success');
                 window.dispatchEvent(new CustomEvent('mmm-drafts-submitted', { detail: results }));
             } catch (err) {
                 console.error('Draft submit failed:', err);
-                _showNotification('Грешка при поднесување: ' + (err.message || err), 'error');
+                _showNotification(t('drafts.submitError') + (err.message || err), 'error');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Испрати';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ' + t('drafts.submit');
             }
         });
 
@@ -659,7 +659,7 @@ window.MMMDrafts = (function () {
             var descEl = document.getElementById('mmm-draft-description');
             var autoDesc = _generateDescription();
             if (autoDesc) {
-                descEl.value = 'Предлог промени од MMM\n\n' + autoDesc + '\n';
+                descEl.value = t('drafts.proposedChanges') + '\n\n' + autoDesc + '\n';
             }
             descEl.focus();
         }, 100);
@@ -675,8 +675,8 @@ window.MMMDrafts = (function () {
                 '<h2>' + title + '</h2>' +
                 '<p>' + message + '</p>' +
                 '<div class="mmm-draft-dialog-buttons">' +
-                    '<button class="mmm-draft-btn discard" id="mmm-confirm-cancel">Откажи</button>' +
-                    '<button class="mmm-draft-btn submit mmm-btn-danger" id="mmm-confirm-ok">Потврди</button>' +
+                    '<button class="mmm-draft-btn discard" id="mmm-confirm-cancel">' + t('drafts.cancel') + '</button>' +
+                    '<button class="mmm-draft-btn submit mmm-btn-danger" id="mmm-confirm-ok">' + t('drafts.confirm') + '</button>' +
                 '</div>' +
             '</div>';
 

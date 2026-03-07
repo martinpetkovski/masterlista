@@ -12,6 +12,143 @@ const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/martinpetkovski/maste
 const SITE_URL = 'https://toplista.mk';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
+// --------------- OG Translations ---------------
+const OG_LOCALES = {
+  mk: 'mk_MK', sr: 'sr_RS', sq: 'sq_AL', bg: 'bg_BG',
+  el: 'el_GR', fr: 'fr_FR', de: 'de_DE', en: 'en_GB',
+};
+
+const OG_TRANSLATIONS = {
+  mk: {
+    siteName: 'Топ Листа МК',
+    defaultTitle: 'ТопЛиста.мк',
+    defaultDesc: 'Македонска музичка топ листа — откријте ги најпопуларните македонски песни, артисти, нови изданија и настани.',
+    artistDesc: '{name} — {genre}. Сите линкови и информации на едно место.',
+    artistGenreFallback: 'Македонски артист',
+    curatorTitle: '{name} — Кустос | ТопЛиста.мк',
+    curatorDesc: 'Курирана плејлиста од {name}',
+    chartsTitle: 'Македонска Музичка Топ Листа | ТопЛиста.мк',
+    chartsDesc: 'Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена.',
+    altTitle: 'Алтернативна Топ Листа | ТопЛиста.мк',
+    altDesc: 'Топ листа на најпопуларни македонски алтернативни песни.',
+    allTimeTitle: 'Топ Листа — Сите Времиња | ТопЛиста.мк',
+    allTimeDesc: 'Најпопуларните македонски песни од сите времиња.',
+  },
+  en: {
+    siteName: 'Top Lista MK',
+    defaultTitle: 'TopLista.mk',
+    defaultDesc: 'Macedonian music chart — discover the most popular Macedonian songs, artists, new releases and events.',
+    artistDesc: '{name} — {genre}. All links and info in one place.',
+    artistGenreFallback: 'Macedonian artist',
+    curatorTitle: '{name} — Curator | TopLista.mk',
+    curatorDesc: 'Curated playlist by {name}',
+    chartsTitle: 'Macedonian Music Chart | TopLista.mk',
+    chartsDesc: 'Discover the most popular Macedonian songs and albums. Chart of singles, albums and new releases from the Macedonian music scene.',
+    altTitle: 'Alternative Chart | TopLista.mk',
+    altDesc: 'Chart of the most popular Macedonian alternative songs.',
+    allTimeTitle: 'Chart — All Time | TopLista.mk',
+    allTimeDesc: 'The most popular Macedonian songs of all time.',
+  },
+  sr: {
+    siteName: 'Топ Листа МК',
+    defaultTitle: 'ТопЛиста.мк',
+    defaultDesc: 'Македонска музичка топ листа — откријте најпопуларније македонске песме, извођаче, нова издања и догаћаје.',
+    artistDesc: '{name} — {genre}. Сви линкови и информације на једном месту.',
+    artistGenreFallback: 'Македонски извођач',
+    curatorTitle: '{name} — Кустос | ТопЛиста.мк',
+    curatorDesc: 'Курирана плејлиста од {name}',
+    chartsTitle: 'Македонска Музичка Топ Листа | ТопЛиста.мк',
+    chartsDesc: 'Откријте најпопуларније македонске песме и албуме. Топ листа синглова, албума и нових издања македонске музичке сцене.',
+    altTitle: 'Алтернативна Топ Листа | ТопЛиста.мк',
+    altDesc: 'Топ листа најпопуларнијих македонских алтернативних песама.',
+    allTimeTitle: 'Топ Листа — Сва Времена | ТопЛиста.мк',
+    allTimeDesc: 'Најпопуларније македонске песме свих времена.',
+  },
+  bg: {
+    siteName: 'Топ Листа МК',
+    defaultTitle: 'ТопЛиста.мк',
+    defaultDesc: 'Македонска музикална топ листа — открийте най-популярните македонски песни, артисти, нови издания и събития.',
+    artistDesc: '{name} — {genre}. Всички линкове и информация на едно място.',
+    artistGenreFallback: 'Македонски артист',
+    curatorTitle: '{name} — Кустос | ТопЛиста.мк',
+    curatorDesc: 'Курирана плейлиста от {name}',
+    chartsTitle: 'Македонска Музикална Топ Листа | ТопЛиста.мк',
+    chartsDesc: 'Открийте най-популярните македонски песни и албуми. Топ листа на сингли, албуми и нови издания от македонската музикална сцена.',
+    altTitle: 'Алтернативна Топ Листа | ТопЛиста.мк',
+    altDesc: 'Топ листа на най-популярните македонски алтернативни песни.',
+    allTimeTitle: 'Топ Листа — Всички Времена | ТопЛиста.мк',
+    allTimeDesc: 'Най-популярните македонски песни от всички времена.',
+  },
+  sq: {
+    siteName: 'Top Lista MK',
+    defaultTitle: 'TopLista.mk',
+    defaultDesc: 'Lista muzikore maqedonase — zbuloni këngët, artistët, botimet e reja dhe ngjarjet më të popullarizuara maqedonase.',
+    artistDesc: '{name} — {genre}. Të gjitha lidhjet dhe informacionet në një vend.',
+    artistGenreFallback: 'Artist maqedonas',
+    curatorTitle: '{name} — Kurator | TopLista.mk',
+    curatorDesc: 'Listë muzikore e kuruar nga {name}',
+    chartsTitle: 'Lista Muzikore Maqedonase | TopLista.mk',
+    chartsDesc: 'Zbuloni këngët dhe albumet më të popullarizuara maqedonase. Lista e singlave, albumeve dhe botimeve të reja nga skena muzikore maqedonase.',
+    altTitle: 'Lista Alternative | TopLista.mk',
+    altDesc: 'Lista e këngëve alternative maqedonase më të popullarizuara.',
+    allTimeTitle: 'Lista — Të Gjitha Kohërat | TopLista.mk',
+    allTimeDesc: 'Këngët maqedonase më të popullarizuara të të gjitha kohërave.',
+  },
+  el: {
+    siteName: 'Τοπ Λίστα ΜΚ',
+    defaultTitle: 'TopLista.mk',
+    defaultDesc: 'Μακεδονικό μουσικό chart — ανακαλύψτε τα πιο δημοφιλή μακεδονικά τραγούδια, καλλιτέχνες, νέες κυκλοφορίες και εκδηλώσεις.',
+    artistDesc: '{name} — {genre}. Όλοι οι σύνδεσμοι και πληροφορίες σε ένα μέρος.',
+    artistGenreFallback: 'Μακεδόνας καλλιτέχνης',
+    curatorTitle: '{name} — Επιμελητής | TopLista.mk',
+    curatorDesc: 'Επιμελημένη λίστα αναπαραγωγής από {name}',
+    chartsTitle: 'Μακεδονικό Μουσικό Chart | TopLista.mk',
+    chartsDesc: 'Ανακαλύψτε τα πιο δημοφιλή μακεδονικά τραγούδια και άλμπουμ. Chart σινγκλ, άλμπουμ και νέων κυκλοφοριών από τη μακεδονική μουσική σκηνή.',
+    altTitle: 'Εναλλακτικό Chart | TopLista.mk',
+    altDesc: 'Chart των πιο δημοφιλών μακεδονικών εναλλακτικών τραγουδιών.',
+    allTimeTitle: 'Chart — Όλων των Εποχών | TopLista.mk',
+    allTimeDesc: 'Τα πιο δημοφιλή μακεδονικά τραγούδια όλων των εποχών.',
+  },
+  fr: {
+    siteName: 'Top Lista MK',
+    defaultTitle: 'TopLista.mk',
+    defaultDesc: 'Classement musical macédonien — découvrez les chansons, artistes, nouvelles sorties et événements macédoniens les plus populaires.',
+    artistDesc: '{name} — {genre}. Tous les liens et infos en un seul endroit.',
+    artistGenreFallback: 'Artiste macédonien',
+    curatorTitle: '{name} — Curateur | TopLista.mk',
+    curatorDesc: 'Playlist composée par {name}',
+    chartsTitle: 'Classement Musical Macédonien | TopLista.mk',
+    chartsDesc: 'Découvrez les chansons et albums macédoniens les plus populaires. Classement des singles, albums et nouvelles sorties de la scène musicale macédonienne.',
+    altTitle: 'Classement Alternatif | TopLista.mk',
+    altDesc: 'Classement des chansons alternatives macédoniennes les plus populaires.',
+    allTimeTitle: 'Classement — Tous les Temps | TopLista.mk',
+    allTimeDesc: 'Les chansons macédoniennes les plus populaires de tous les temps.',
+  },
+  de: {
+    siteName: 'Top Lista MK',
+    defaultTitle: 'TopLista.mk',
+    defaultDesc: 'Mazedonische Musik-Charts — entdecken Sie die beliebtesten mazedonischen Songs, Künstler, Neuerscheinungen und Veranstaltungen.',
+    artistDesc: '{name} — {genre}. Alle Links und Infos an einem Ort.',
+    artistGenreFallback: 'Mazedonischer Künstler',
+    curatorTitle: '{name} — Kurator | TopLista.mk',
+    curatorDesc: 'Kuratierte Playlist von {name}',
+    chartsTitle: 'Mazedonische Musik-Charts | TopLista.mk',
+    chartsDesc: 'Entdecken Sie die beliebtesten mazedonischen Songs und Alben. Charts der Singles, Alben und Neuerscheinungen der mazedonischen Musikszene.',
+    altTitle: 'Alternative Charts | TopLista.mk',
+    altDesc: 'Charts der beliebtesten mazedonischen Alternative-Songs.',
+    allTimeTitle: 'Charts — Aller Zeiten | TopLista.mk',
+    allTimeDesc: 'Die beliebtesten mazedonischen Songs aller Zeiten.',
+  },
+};
+
+function getOgT(lang) {
+  return OG_TRANSLATIONS[lang] || OG_TRANSLATIONS.mk;
+}
+
+function getOgLocale(lang) {
+  return OG_LOCALES[lang] || OG_LOCALES.mk;
+}
+
 // --------------- In-memory cache (per-isolate) ---------------
 let bandsCache = null;
 let bandsCacheTime = 0;
@@ -160,9 +297,12 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
-function buildOgHtml({ title, description, image, url, type = 'website' }) {
+function buildOgHtml({ title, description, image, url, type = 'website', lang = 'mk' }) {
+  const locale = getOgLocale(lang);
+  const t = getOgT(lang);
+  const htmlLang = lang || 'mk';
   return `<!DOCTYPE html>
-<html lang="mk">
+<html lang="${esc(htmlLang)}">
 <head>
 <meta charset="UTF-8">
 <title>${esc(title)}</title>
@@ -174,8 +314,8 @@ function buildOgHtml({ title, description, image, url, type = 'website' }) {
 <meta property="og:image" content="${esc(image)}">
 <meta property="og:image:width" content="1024">
 <meta property="og:image:height" content="1024">
-<meta property="og:locale" content="mk_MK">
-<meta property="og:site_name" content="Топ Листа МК">
+<meta property="og:locale" content="${esc(locale)}">
+<meta property="og:site_name" content="${esc(t.siteName)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="${esc(url)}">
 <meta name="twitter:title" content="${esc(title)}">
@@ -195,62 +335,74 @@ function ogResponse(opts) {
 }
 
 // --------------- Entity OG builders ---------------
-async function handleArtist(searchParam) {
+async function handleArtist(searchParam, lang) {
   const data = await getBands();
   const artist = findArtist(data.muzickaMasterLista || [], searchParam);
   if (!artist) return null;
 
+  const t = getOgT(lang);
+  const genre = artist.genre || t.artistGenreFallback;
+  const description = t.artistDesc.replace('{name}', artist.name).replace('{genre}', genre);
+
   return ogResponse({
-    title: `${artist.name} | ТопЛиста.мк`,
-    description: `${artist.name} - ${artist.genre || 'Македонски артист'}. Сите линкови и информации на едно место.`,
+    title: `${artist.name} | ${t.defaultTitle}`,
+    description,
     image: artist.image || DEFAULT_OG_IMAGE,
     url: `${SITE_URL}/${encodeURIComponent(generateSlug(artist.name))}`,
     type: 'profile',
+    lang,
   });
 }
 
-async function handleCurator(searchParam) {
+async function handleCurator(searchParam, lang) {
   const data = await getCurators();
   const curators = data.curators || [];
   const curator = curators.find(c => generateSlug(c.name) === searchParam)
     || curators.find(c => c.name === searchParam || c.name.toLowerCase() === searchParam.toLowerCase());
   if (!curator) return null;
 
+  const t = getOgT(lang);
+
   return ogResponse({
-    title: `${curator.name} — Кустос | ТопЛиста.мк`,
-    description: `Курирана плејлиста од ${curator.name}`,
+    title: t.curatorTitle.replace('{name}', curator.name),
+    description: t.curatorDesc.replace('{name}', curator.name),
     image: curator.image || DEFAULT_OG_IMAGE,
     url: `${SITE_URL}/kustos/${generateSlug(curator.name)}`,
     type: 'profile',
+    lang,
   });
 }
 
-async function handleEvent(eventId) {
+async function handleEvent(eventId, lang) {
   const data = await getEvents();
   const events = data.events || [];
   const event = events.find(e => e.id === eventId);
   if (!event) return null;
 
+  const t = getOgT(lang);
   const datePart = event.date ? ` (${event.date})` : '';
   const placePart = event.place ? ` — ${event.place}` : '';
 
   return ogResponse({
-    title: `${event.title}${datePart} | ТопЛиста.мк`,
+    title: `${event.title}${datePart} | ${t.defaultTitle}`,
     description: `${event.title}${placePart}${datePart}`,
     image: DEFAULT_OG_IMAGE,
     url: `${SITE_URL}/nastan/${encodeURIComponent(event.id)}`,
     type: 'event',
+    lang,
   });
 }
 
 // --------------- Main handler ---------------
 
-function defaultOgFallback() {
+function defaultOgFallback(lang) {
+  const t = getOgT(lang);
   return ogResponse({
-    title: 'ТопЛиста.мк',
-    description: 'Македонска музичка топ листа — откријте ги најпопуларните македонски песни, артисти, нови изданија и настани.',
+    title: t.defaultTitle,
+    description: t.defaultDesc,
     image: DEFAULT_OG_IMAGE,
     url: SITE_URL,
+    lang,
   });
 }
 
@@ -265,6 +417,7 @@ export default {
 
     const url = new URL(request.url);
     const rawPath = url.pathname;
+    const lang = url.searchParams.get('lang') || 'mk';
 
     try {
       // ==================== .html?param pages (redirect targets) ====================
@@ -274,55 +427,61 @@ export default {
       if (rawPath === '/artist.html' || rawPath === '/artist') {
         const artistParam = url.searchParams.get('a');
         if (artistParam) {
-          const resp = await handleArtist(decodeURIComponent(artistParam));
+          const resp = await handleArtist(decodeURIComponent(artistParam), lang);
           if (resp) return resp;
         }
-        return defaultOgFallback();
+        return defaultOgFallback(lang);
       }
 
       if (rawPath === '/kustos.html') {
         const nameParam = url.searchParams.get('name');
         if (nameParam) {
-          const resp = await handleCurator(decodeURIComponent(nameParam));
+          const resp = await handleCurator(decodeURIComponent(nameParam), lang);
           if (resp) return resp;
         }
-        return defaultOgFallback();
+        return defaultOgFallback(lang);
       }
 
       if (rawPath === '/nastan.html') {
         const idParam = url.searchParams.get('id');
         if (idParam) {
-          const resp = await handleEvent(decodeURIComponent(idParam));
+          const resp = await handleEvent(decodeURIComponent(idParam), lang);
           if (resp) return resp;
         }
-        return defaultOgFallback();
+        return defaultOgFallback(lang);
       }
 
       // ==================== Charts page ====================
       if (rawPath === '/charts' || rawPath === '/charts.html') {
+        const t = getOgT(lang);
         return ogResponse({
-          title: 'Македонска Музичка Топ Листа | ТопЛиста.мк',
-          description: 'Откријте ги најпопуларните македонски песни и албуми. Топ листа на сингли, албуми и нови изданија од македонската музичка сцена.',
+          title: t.chartsTitle,
+          description: t.chartsDesc,
           image: DEFAULT_OG_IMAGE,
           url: `${SITE_URL}/charts`,
+          lang,
         });
       }
 
       // ==================== Chart preset routes ====================
       if (rawPath === '/alternativna') {
+        const t = getOgT(lang);
         return ogResponse({
-          title: 'Алтернативна Топ Листа | ТопЛиста.мк',
-          description: 'Топ листа на најпопуларни македонски алтернативни песни.',
+          title: t.altTitle,
+          description: t.altDesc,
           image: DEFAULT_OG_IMAGE,
           url: `${SITE_URL}/alternativna`,
+          lang,
         });
       }
       if (rawPath === '/site-vreminja') {
+        const t = getOgT(lang);
         return ogResponse({
-          title: 'Топ Листа — Сите Времиња | ТопЛиста.мк',
-          description: 'Најпопуларните македонски песни од сите времиња.',
+          title: t.allTimeTitle,
+          description: t.allTimeDesc,
           image: DEFAULT_OG_IMAGE,
           url: `${SITE_URL}/site-vreminja`,
+          lang,
         });
       }
 
@@ -337,29 +496,29 @@ export default {
       // ==================== CURATOR: /kustos/{slug} ====================
       if (path.startsWith('/kustos/')) {
         const slug = path.substring('/kustos/'.length).replace(/\/$/, '');
-        if (!slug) return defaultOgFallback();
-        const resp = await handleCurator(slug);
-        return resp || defaultOgFallback();
+        if (!slug) return defaultOgFallback(lang);
+        const resp = await handleCurator(slug, lang);
+        return resp || defaultOgFallback(lang);
       }
 
       // ==================== EVENT: /nastan/{id} ====================
       if (path.startsWith('/nastan/')) {
         const eventId = path.substring('/nastan/'.length).replace(/\/$/, '');
-        if (!eventId) return defaultOgFallback();
-        const resp = await handleEvent(eventId);
-        return resp || defaultOgFallback();
+        if (!eventId) return defaultOgFallback(lang);
+        const resp = await handleEvent(eventId, lang);
+        return resp || defaultOgFallback(lang);
       }
 
       // ==================== ARTIST: /{slug} ====================
       const slug = path.substring(1).replace(/\/$/, '');
-      if (!slug || slug.includes('/')) return defaultOgFallback();
+      if (!slug || slug.includes('/')) return defaultOgFallback(lang);
 
-      const resp = await handleArtist(slug);
-      return resp || defaultOgFallback();
+      const resp = await handleArtist(slug, lang);
+      return resp || defaultOgFallback(lang);
     } catch (err) {
       // On any error, return default OG so crawlers still get a preview
       console.error('OG worker error:', err);
-      return defaultOgFallback();
+      return defaultOgFallback(lang);
     }
   },
 };
