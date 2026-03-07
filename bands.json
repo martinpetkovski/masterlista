@@ -10046,7 +10046,7 @@
     {
       "name": "Владимир Четкар",
       "city": "Охрид",
-      "genre": "Jazz, Funk, Soul",
+      "genre": "Jazz, Funk, Soul, Pop",
       "soundsLike": "Jamiroquai",
       "links": {
         "spotify": "https://open.spotify.com/artist/265stn1aAQWDK61IA5i9KG?si=ecAHEOt8ToaqWSgKM8P0gA",
@@ -10063,11 +10063,13 @@
       },
       "contact": "info@vladimircetkar.com",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a0c0e0",
+        "#4080c0"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab67616d0000b273ad8aef4304fc1ad3591edec3",
-      "imageSource": "spotify",
-      "spotifyName": "Vladimir Cetkar"
+      "imageSource": "spotify"
     },
     {
       "name": "Гримус",
