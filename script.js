@@ -1793,12 +1793,13 @@
                 const allData = data();
 
                 // Filter: match term and exclude already selected
+                const isGenreField = inputId === 'band-genre';
                 const filtered = allData.filter(item => {
                     const nameLower = item.name.toLowerCase();
                     const matchesTerm = term === '' || nameLower.includes(term);
                     const notAlreadySelected = !selectedItems.includes(nameLower);
                     return matchesTerm && notAlreadySelected;
-                }).slice(0, 15); // Limit to 15 suggestions
+                }).slice(0, isGenreField ? 200 : 15); // Show all genres, limit others
 
                 if (filtered.length === 0) {
                     dropdown.classList.remove('active');
@@ -1807,7 +1808,7 @@
                 }
 
                 dropdown.innerHTML = filtered.map((item, idx) => 
-                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${inputId === 'band-genre' ? localizeGenre(item.name) : localizeText(item.name)}<span class="count">(${item.count})</span></div>`
+                    `<div class="autocomplete-item${idx === selectedIndex ? ' selected' : ''}" data-value="${item.name}">${isGenreField ? escHtml(item.name) : localizeText(item.name)}<span class="count">(${item.count})</span></div>`
                 ).join('');
 
                 dropdown.classList.add('active');
