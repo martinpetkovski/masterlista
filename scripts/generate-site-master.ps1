@@ -226,6 +226,23 @@ function Sort-ChartRanking {
     )
 }
 
+# Keep at most 2 releases per artist, preferring the most popular ones.
+function Limit-PerArtist {
+    param([array]$items)
+    $byArtist = @{}
+    foreach ($r in $items) {
+        $key = $r.bandName.ToLower().Trim()
+        if (-not $byArtist.ContainsKey($key)) { $byArtist[$key] = @() }
+        $byArtist[$key] += $r
+    }
+    $keepIds = [System.Collections.Generic.HashSet[string]]::new()
+    foreach ($key in $byArtist.Keys) {
+        $top2 = @(Sort-ChartRanking $byArtist[$key]) | Select-Object -First 2
+        foreach ($r in $top2) { [void]$keepIds.Add($r.releaseId) }
+    }
+    return @($items | Where-Object { $keepIds.Contains($_.releaseId) })
+}
+
 # Build chart ranking (matching common.js buildChartRanking)
 # Accepts optional $preDeduped to skip internal dedup when already done
 function Build-ChartRanking {
@@ -263,50 +280,28 @@ function Build-ChartRanking {
         return @(Sort-ChartRanking $filtered)
     }
     
-    # Eligibility cutoff with backfill — 4 weeks for singles, 8 weeks for albums
-    $minPool = [Math]::Max($count, 20)
+    # Cutoff — 4 weeks for singles, 8 weeks for albums
     $cutoffWeeks = if ($type -eq 'album') { 8 } else { 4 }
     $cutoffDate = (Get-Date).AddDays(-($cutoffWeeks * 7))
     $cutoff = $cutoffDate.ToString("yyyy-MM-dd")
     
+    # 1. Start with recent releases, enforce 2-per-artist (keep most popular)
     $recent = @($filtered | Where-Object { $_.releaseDate -ge $cutoff })
-    $pool = [System.Collections.ArrayList]::new()
-    $pool.AddRange($recent)
+    $pool = @(Limit-PerArtist $recent)
     
-    if ($pool.Count -lt $minPool) {
-        $older = @($filtered | Where-Object { $_.releaseDate -lt $cutoff } | Sort-Object { $_.releaseDate } -Descending)
-        $needed = $minPool - $pool.Count
-        $backfill = $older | Select-Object -First $needed
-        if ($backfill) { $pool.AddRange(@($backfill)) }
+    # 2. Backfill with most recent older releases, one at a time,
+    #    re-enforcing 2-per-artist after each addition
+    $older = @($filtered | Where-Object { $_.releaseDate -lt $cutoff } | Sort-Object { $_.releaseDate } -Descending)
+    
+    $oi = 0
+    while ($pool.Count -lt $count -and $oi -lt $older.Count) {
+        $pool = @($pool) + @($older[$oi])
+        $oi++
+        $pool = @(Limit-PerArtist $pool)
     }
     
-    $sorted = @(Sort-ChartRanking @($pool))
-    
-    # Limit to at most 2 releases per artist, but keep backfilling until we have enough
-    $artistCount = @{}
-    $limited = @($sorted | Where-Object {
-        $key = $_.bandName.ToLower().Trim()
-        $artistCount[$key] = ($artistCount[$key] -as [int]) + 1
-        $artistCount[$key] -le 2
-    })
-    
-    # If per-artist limit cut too many, backfill from older releases
-    if ($limited.Count -lt $count) {
-        $usedIds = [System.Collections.Generic.HashSet[string]]::new()
-        foreach ($r in $limited) { [void]$usedIds.Add($r.releaseId) }
-        $extra = @($filtered | Where-Object { -not $usedIds.Contains($_.releaseId) -and -not ($pool -contains $_) } | Sort-Object { $_.releaseDate } -Descending)
-        $extraSorted = @(Sort-ChartRanking $extra)
-        foreach ($r in $extraSorted) {
-            $key = $r.bandName.ToLower().Trim()
-            if (($artistCount[$key] -as [int]) -lt 2) {
-                $artistCount[$key] = ($artistCount[$key] -as [int]) + 1
-                $limited += $r
-                if ($limited.Count -ge $count) { break }
-            }
-        }
-    }
-    
-    return @($limited | Select-Object -First $count)
+    # Final sort by popularity for display order
+    return @(Sort-ChartRanking $pool | Select-Object -First $count)
 }
 
 # ============================================================================

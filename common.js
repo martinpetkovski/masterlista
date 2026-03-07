@@ -228,53 +228,49 @@ function buildChartRanking(releases, opts) {
         return filtered;
     }
 
-    // Eligibility cutoff with backfill — 4 weeks for singles, 8 weeks for albums.
-    // Always build a pool of at least 20 so that smaller `count` values still
-    // see older high-popularity items.
-    var minPool = Math.max(count, 20);
+    // Cutoff — 4 weeks for singles, 8 weeks for albums
     var cutoffWeeks = type === 'album' ? 8 : 4;
     var cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - cutoffWeeks * 7);
     var cutoff = cutoffDate.toISOString().slice(0, 10);
 
+    // 1. Start with recent releases, enforce 2-per-artist (keep most popular)
     var recent = filtered.filter(function(r) { return r.releaseDate >= cutoff; });
-    var pool = recent.slice();
+    var pool = trimPerArtist(recent);
 
-    if (pool.length < minPool) {
-        var older = filtered
-            .filter(function(r) { return r.releaseDate < cutoff; })
-            .sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
-        pool = pool.concat(older.slice(0, minPool - pool.length));
+    // 2. Backfill with most recent older releases, one at a time,
+    //    re-enforcing 2-per-artist after each addition
+    var older = filtered
+        .filter(function(r) { return r.releaseDate < cutoff; })
+        .sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
+
+    var oi = 0;
+    while (pool.length < count && oi < older.length) {
+        pool.push(older[oi++]);
+        pool = trimPerArtist(pool);
     }
 
+    // Final sort by popularity for display order
     pool.sort(chartSort);
-
-    // Limit to at most 2 releases per artist
-    var artistCount = {};
-    pool = pool.filter(function(r) {
-        var key = (r.bandName || '').toLowerCase().trim();
-        artistCount[key] = (artistCount[key] || 0) + 1;
-        return artistCount[key] <= 2;
-    });
-
-    // If per-artist limit cut too many, backfill from older releases
-    if (pool.length < count) {
-        var usedIds = {};
-        pool.forEach(function(r) { usedIds[r.releaseId] = true; });
-        var extra = filtered
-            .filter(function(r) { return !usedIds[r.releaseId]; })
-            .sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
-        extra.sort(chartSort);
-        for (var i = 0; i < extra.length && pool.length < count; i++) {
-            var key = (extra[i].bandName || '').toLowerCase().trim();
-            if ((artistCount[key] || 0) < 2) {
-                artistCount[key] = (artistCount[key] || 0) + 1;
-                pool.push(extra[i]);
-            }
-        }
-    }
-
     return pool.slice(0, count);
+}
+
+/** Keep at most 2 releases per artist, preferring the most popular ones. */
+function trimPerArtist(releases) {
+    var byArtist = {};
+    releases.forEach(function(r) {
+        var key = (r.bandName || '').toLowerCase().trim();
+        if (!byArtist[key]) byArtist[key] = [];
+        byArtist[key].push(r);
+    });
+    var keepIds = {};
+    Object.keys(byArtist).forEach(function(key) {
+        byArtist[key].sort(chartSort);
+        byArtist[key].slice(0, 2).forEach(function(r) {
+            keepIds[r.releaseId] = true;
+        });
+    });
+    return releases.filter(function(r) { return keepIds[r.releaseId]; });
 }
 
 /**
