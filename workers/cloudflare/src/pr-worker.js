@@ -250,7 +250,8 @@ export default {
       }
       const owner = env.GITHUB_OWNER || 'martinpetkovski';
       const repo = env.GITHUB_REPO || 'masterlista';
-      const baseBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
+      const defaultBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
+      const requestedBase = body?.baseBranch || null;
 
       if (!token) {
         return json({ error: 'Missing GitHub credentials', hint: 'Set GitHub App vars (GITHUB_APP_ID, GITHUB_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY) or a PAT in GITHUB_TOKEN.' }, 500, corsHeaders);
@@ -266,7 +267,15 @@ export default {
         },
       });
 
-      // 1) Get base ref sha
+      // 1) Resolve base branch: use requested branch if it exists, otherwise default
+      let baseBranch = defaultBranch;
+      if (requestedBase && requestedBase !== defaultBranch) {
+        const checkRef = await gh(`/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(requestedBase)}`);
+        if (checkRef.ok) {
+          baseBranch = requestedBase;
+        }
+      }
+
       const refRes = await gh(`/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(baseBranch)}`);
       if (!refRes.ok) {
         const text = await refRes.text();

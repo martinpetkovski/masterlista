@@ -345,20 +345,16 @@
 
         // ── Load data ────────────────────────────────────────────────
         function loadData() {
-            // Check for pending drafts first
-            var draft = window.MMMDrafts ? MMMDrafts.load('releases.json') : null;
-            if (draft) {
-                releasesData = draft;
-                originalData = null; // Will be set from fetch
-            }
-
             fetch('/releases.json?_=' + Date.now())
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    if (!releasesData) {
-                        releasesData = data;
-                    }
                     originalData = JSON.parse(JSON.stringify(data));
+                    releasesData = data;
+                    // Apply any pending draft changes
+                    var draft = _loadDraft();
+                    if (draft) {
+                        _applyDraft(releasesData, draft);
+                    }
                     applyFilters();
                     renderStats();
                     updateSubmitBtn();
@@ -665,20 +661,86 @@
             showNotification('Нов YouTube линк додаден (верификуван)', 'success');
         }
 
-        // ── Change tracking ──────────────────────────────────────────
+        // ── Change tracking (compact diff - avoids localStorage quota) ──
+        var DRAFT_KEY = 'mmm-yt-link-drafts';
+
+        function _getChangedReleaseIds() {
+            if (!releasesData || !originalData) return {};
+            var origMap = {};
+            for (var i = 0; i < originalData.releases.length; i++) {
+                var o = originalData.releases[i];
+                origMap[o.releaseId] = o;
+            }
+            var changes = {};
+            for (var i = 0; i < releasesData.releases.length; i++) {
+                var r = releasesData.releases[i];
+                var o = origMap[r.releaseId];
+                if (!o) {
+                    // New release added manually
+                    changes[r.releaseId] = r;
+                } else if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
+                    changes[r.releaseId] = r;
+                }
+            }
+            return changes;
+        }
+
+        function _saveDraft() {
+            var changes = _getChangedReleaseIds();
+            if (Object.keys(changes).length === 0) {
+                localStorage.removeItem(DRAFT_KEY);
+            } else {
+                try {
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+                        changes: changes,
+                        savedAt: new Date().toISOString()
+                    }));
+                } catch (e) {
+                    console.warn('Could not save YT draft:', e);
+                }
+            }
+        }
+
+        function _loadDraft() {
+            try {
+                var raw = localStorage.getItem(DRAFT_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch (_) {}
+            return null;
+        }
+
+        function _applyDraft(data, draft) {
+            if (!draft || !draft.changes) return;
+            var changeMap = draft.changes;
+            for (var i = 0; i < data.releases.length; i++) {
+                var r = data.releases[i];
+                if (changeMap[r.releaseId]) {
+                    data.releases[i] = changeMap[r.releaseId];
+                    delete changeMap[r.releaseId];
+                }
+            }
+            // Any remaining entries are new releases — prepend
+            var remaining = Object.keys(changeMap);
+            for (var j = 0; j < remaining.length; j++) {
+                data.releases.unshift(changeMap[remaining[j]]);
+            }
+        }
+
+        function _hasDraftChanges() {
+            var draft = _loadDraft();
+            return draft && draft.changes && Object.keys(draft.changes).length > 0;
+        }
+
         function markChanged() {
             hasUnsavedChanges = true;
-            if (window.MMMDrafts) {
-                MMMDrafts.save('releases.json', releasesData, originalData);
-            }
+            _saveDraft();
             updateSubmitBtn();
         }
 
         function updateSubmitBtn() {
             var btn = document.getElementById('yt-submit-btn');
             if (!btn) return;
-            var hasPending = window.MMMDrafts && MMMDrafts.hasPending && MMMDrafts.hasPending();
-            btn.disabled = !hasPending;
+            btn.disabled = !_hasDraftChanges();
         }
 
         // ── Pagination ───────────────────────────────────────────────
@@ -717,8 +779,10 @@
 
         // ── Listen for draft events ──────────────────────────────────
         window.addEventListener('mmm-drafts-submitted', function () {
+            // If releases.json was submitted through the main mmm-drafts system, sync
             originalData = JSON.parse(JSON.stringify(releasesData));
             hasUnsavedChanges = false;
+            localStorage.removeItem(DRAFT_KEY);
             updateSubmitBtn();
         });
 
@@ -726,22 +790,132 @@
             if (originalData) {
                 releasesData = JSON.parse(JSON.stringify(originalData));
                 hasUnsavedChanges = false;
+                localStorage.removeItem(DRAFT_KEY);
                 applyFilters();
                 renderStats();
                 updateSubmitBtn();
             }
         });
 
+        // ── Submit dialog ────────────────────────────────────────────
+        function _resolveEndpoint() {
+            if (typeof window.MMM_PR_ENDPOINT === 'string' && window.MMM_PR_ENDPOINT.trim()) return window.MMM_PR_ENDPOINT.trim();
+            var btn = document.querySelector('[data-endpoint]');
+            if (btn) { var a = btn.getAttribute('data-endpoint'); if (a && a.trim()) return a.trim(); }
+            var s = localStorage.getItem('mmm_pr_endpoint');
+            if (s && s.trim()) return s.trim();
+            return 'https://muzichka-master-lista.deeeeelay.workers.dev';
+        }
+
+        function showSubmitDialog() {
+            if (!_hasDraftChanges()) {
+                showNotification('Нема промени за праќање.', 'info');
+                return;
+            }
+            var changes = _getChangedReleaseIds();
+            var count = Object.keys(changes).length;
+
+            var overlay = document.createElement('div');
+            overlay.className = 'mmm-draft-overlay';
+            overlay.innerHTML =
+                '<div class="mmm-draft-dialog">' +
+                    '<h2><i class="fas fa-paper-plane"></i> Прати промени</h2>' +
+                    '<p class="mmm-draft-dialog-info">Промените ќе бидат испратени за преглед.</p>' +
+                    '<ul class="mmm-draft-file-list"><li><i class="fas fa-music"></i> YouTube Линкови (' + count + ' изданија)</li></ul>' +
+                    '<form id="yt-submit-form">' +
+                        '<div class="mmm-draft-field">' +
+                            '<label for="yt-contributor">Твое име (опционално)</label>' +
+                            '<input type="text" id="yt-contributor" placeholder="Анонимно">' +
+                        '</div>' +
+                        '<div class="mmm-draft-field">' +
+                            '<label for="yt-description">Опис на промените *</label>' +
+                            '<textarea id="yt-description" placeholder="Што променивте?" rows="3" required></textarea>' +
+                        '</div>' +
+                        '<div class="mmm-draft-dialog-buttons">' +
+                            '<button type="button" class="mmm-draft-btn discard" id="yt-dialog-cancel">Откажи</button>' +
+                            '<button type="submit" class="mmm-draft-btn submit" id="yt-dialog-submit">' +
+                                '<i class="fas fa-paper-plane"></i> Прати' +
+                            '</button>' +
+                        '</div>' +
+                    '</form>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+
+            overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+            document.getElementById('yt-dialog-cancel').addEventListener('click', function () { overlay.remove(); });
+
+            // Auto-generate description
+            var names = [];
+            for (var rid in changes) {
+                var c = changes[rid];
+                names.push(c.bandName + ' – ' + c.releaseTitle);
+            }
+            var maxShow = 5;
+            var desc = 'YouTube линкови: ' + names.slice(0, maxShow).join(', ');
+            if (names.length > maxShow) desc += ' (+' + (names.length - maxShow) + ' повеќе)';
+            document.getElementById('yt-description').value = desc;
+            document.getElementById('yt-description').focus();
+
+            document.getElementById('yt-submit-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                var contributor = document.getElementById('yt-contributor').value.trim();
+                var description = document.getElementById('yt-description').value.trim();
+                if (!description) { showNotification('Внеси опис.', 'error'); return; }
+
+                var submitBtn = document.getElementById('yt-dialog-submit');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Се праќа...';
+
+                try {
+                    var json = JSON.stringify(releasesData, null, 2);
+                    var origJson = JSON.stringify(originalData, null, 2);
+                    var endpoint = _resolveEndpoint();
+
+                    var resp = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            bandsJson: json,
+                            originalJson: origJson,
+                            contributor: contributor,
+                            description: description,
+                            path: 'releases.json',
+                            baseBranch: 'youtube-chart-tracking'
+                        })
+                    });
+
+                    if (!resp.ok) {
+                        var errText = await resp.text();
+                        throw new Error('Worker error (' + resp.status + '): ' + errText);
+                    }
+
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
+                    submitBtn.classList.add('mmm-btn-success');
+
+                    // Clear drafts and reset state
+                    originalData = JSON.parse(JSON.stringify(releasesData));
+                    hasUnsavedChanges = false;
+                    localStorage.removeItem(DRAFT_KEY);
+                    updateSubmitBtn();
+
+                    setTimeout(function () { overlay.remove(); }, 1200);
+                    showNotification('Промените се успешно испратени!', 'success');
+                } catch (err) {
+                    console.error('Submit failed:', err);
+                    showNotification('Грешка: ' + err.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Прати';
+                }
+            });
+        }
+
         // ── Init ─────────────────────────────────────────────────────────────
         document.getElementById('yt-search').addEventListener('input', debounce(applyFilters, 150));
         document.getElementById('yt-filter-status').addEventListener('change', applyFilters);
         document.getElementById('yt-filter-type').addEventListener('change', applyFilters);
         document.getElementById('yt-submit-btn').addEventListener('click', function () {
-            if (window.MMMDrafts && MMMDrafts.hasPending && MMMDrafts.hasPending()) {
-                // Trigger the mmm-drafts submit dialog
-                var submitBtn = document.querySelector('.mmm-draft-bar-submit');
-                if (submitBtn) submitBtn.click();
-            }
+            showSubmitDialog();
         });
 
         function debounce(fn, ms) {
