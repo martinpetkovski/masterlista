@@ -17,7 +17,15 @@
         "Without You",
         "Without You - Extended Mix"
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw"
+      "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
+      "youtubeTracks": [
+        {
+          "name": "Without You",
+          "videoId": "gFvp12aOxVs",
+          "url": "https://www.youtube.com/watch?v=gFvp12aOxVs",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Кирил Џајковски",
@@ -52,7 +60,7 @@
           "name": "Dynasty Hill",
           "videoId": "OP-SQFD0550",
           "url": "https://www.youtube.com/watch?v=OP-SQFD0550",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Losing Streak",
