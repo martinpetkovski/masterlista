@@ -175,6 +175,23 @@
         font-style: italic;
     }
 
+    .yt-track-unlinked { opacity: 0.55; }
+    .yt-track-unlinked:hover { opacity: 0.85; }
+
+    .yt-add-track-btn {
+        background: none; border: 1px dashed var(--border-color);
+        cursor: pointer; padding: 0.1rem 0.3rem; border-radius: 4px;
+        font-size: 0.6rem; color: var(--text-muted); transition: all 0.15s;
+    }
+    .yt-add-track-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+    .yt-form-search {
+        display: inline-flex; align-items: center; gap: 0.15rem;
+        color: #f00; font-size: 0.7rem; text-decoration: none;
+        opacity: 0.6; transition: opacity 0.15s; padding: 0.2rem 0.3rem;
+    }
+    .yt-form-search:hover { opacity: 1; }
+
     /* Add link inline form */
     .yt-add-form {
         display: flex; align-items: center; gap: 0.3rem; margin-top: 0.2rem;
@@ -540,33 +557,74 @@
 
         function renderYouTubeTracks(release, releaseIdx) {
             var yt = release.youtubeTracks || [];
+            var trackNames = release.trackNames || [];
             var html = '';
 
-            if (yt.length === 0) {
-                html += '<span class="yt-no-yt">Нема YouTube линкови</span> ';
+            // Build a map from lowercase track name → youtubeTracks index
+            var ytByName = {};
+            for (var j = 0; j < yt.length; j++) {
+                var key = yt[j].name.toLowerCase().trim();
+                if (!ytByName[key]) ytByName[key] = [];
+                ytByName[key].push(j);
             }
 
+            // Collect all track names (from trackNames + any yt tracks not in trackNames)
+            var allTracks = [];
+            var coveredKeys = {};
+            for (var i = 0; i < trackNames.length; i++) {
+                allTracks.push(trackNames[i]);
+                coveredKeys[trackNames[i].toLowerCase().trim()] = true;
+            }
+            // Add yt tracks whose name doesn't match any trackName
             for (var j = 0; j < yt.length; j++) {
-                var t = yt[j];
-                var pillClass = t.verified ? 'verified' : 'unverified';
-                var iconClass = t.verified ? 'fa-check-circle' : 'fa-question-circle';
-                html += '<div class="yt-track-row">';
-                html += '<span class="yt-track-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>';
-                html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
-                html += '<i class="fas ' + iconClass + '"></i> ';
-                html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
-                if (t.views) {
-                    var v = t.views;
-                    html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v) + ')</span>';
+                var key = yt[j].name.toLowerCase().trim();
+                if (!coveredKeys[key]) {
+                    allTracks.push(yt[j].name);
+                    coveredKeys[key] = true;
                 }
-                html += '</a>';
-                var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);
-                html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(t.name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
-                if (!t.verified) {
-                    html += ' <button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
+            }
+            // Fallback: if no tracks at all, show release title
+            if (allTracks.length === 0) allTracks.push(release.releaseTitle);
+
+            for (var i = 0; i < allTracks.length; i++) {
+                var name = allTracks[i];
+                var key = name.toLowerCase().trim();
+                var ytIndices = ytByName[key] || [];
+
+                if (ytIndices.length > 0) {
+                    // Track has YouTube link(s)
+                    for (var k = 0; k < ytIndices.length; k++) {
+                        var j = ytIndices[k];
+                        var t = yt[j];
+                        var pillClass = t.verified ? 'verified' : 'unverified';
+                        var iconClass = t.verified ? 'fa-check-circle' : 'fa-question-circle';
+                        html += '<div class="yt-track-row">';
+                        html += '<span class="yt-track-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>';
+                        html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
+                        html += '<i class="fas ' + iconClass + '"></i> ';
+                        html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
+                        if (t.views) {
+                            var v = t.views;
+                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v) + ')</span>';
+                        }
+                        html += '</a>';
+                        var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);
+                        html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(t.name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
+                        if (!t.verified) {
+                            html += ' <button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
+                        }
+                        html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
+                        html += '</div>';
+                    }
+                } else {
+                    // Track has no YouTube link — show with add button and search
+                    var trackQuery = encodeURIComponent(release.bandName + ' ' + name);
+                    html += '<div class="yt-track-row yt-track-unlinked">';
+                    html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + '</span>';
+                    html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
+                    html += ' <button class="yt-add-track-btn" data-release="' + releaseIdx + '" data-track-name="' + esc(name) + '" title="Додади YouTube линк"><i class="fas fa-plus"></i></button>';
+                    html += '</div>';
                 }
-                html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
-                html += '</div>';
             }
 
             html += '<button class="yt-add-link-btn" data-release="' + releaseIdx + '"><i class="fas fa-plus"></i> Додади линк</button>';
@@ -595,12 +653,22 @@
                 });
             }
 
-            // Add link buttons
+            // Add link buttons (generic, from bottom button)
             var addBtns = document.querySelectorAll('.yt-add-link-btn');
             for (var i = 0; i < addBtns.length; i++) {
                 addBtns[i].addEventListener('click', function () {
                     var ri = parseInt(this.dataset.release, 10);
                     showAddForm(this, ri);
+                });
+            }
+
+            // Add link buttons (per-track, for unlinked tracks)
+            var addTrackBtns = document.querySelectorAll('.yt-add-track-btn');
+            for (var i = 0; i < addTrackBtns.length; i++) {
+                addTrackBtns[i].addEventListener('click', function () {
+                    var ri = parseInt(this.dataset.release, 10);
+                    var trackName = this.dataset.trackName;
+                    showAddFormForTrack(this.closest('.yt-track-row'), ri, trackName);
                 });
             }
 
@@ -669,13 +737,22 @@
             }
             selectHtml += '</select>';
 
+            var defaultQuery = encodeURIComponent(release.bandName + ' ' + trackNames[0]);
             form.innerHTML =
                 selectHtml +
                 '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +
+                '<a class="yt-form-search" href="https://www.youtube.com/results?search_query=' + defaultQuery + '" target="_blank" rel="noopener" title="Пребарај на YouTube"><i class="fab fa-youtube"></i> <i class="fas fa-search"></i></a>' +
                 '<button class="yt-add-confirm" title="Додади"><i class="fas fa-check"></i></button>' +
                 '<button class="yt-add-cancel" title="Откажи"><i class="fas fa-times"></i></button>';
 
             btn.parentNode.appendChild(form);
+
+            // Update search link when track selection changes
+            var searchLink = form.querySelector('.yt-form-search');
+            form.querySelector('.yt-add-track-select').addEventListener('change', function () {
+                var q = encodeURIComponent(release.bandName + ' ' + this.value);
+                searchLink.href = 'https://www.youtube.com/results?search_query=' + q;
+            });
 
             var urlInput = form.querySelector('.yt-add-url');
             urlInput.focus();
@@ -697,6 +774,46 @@
                     var url = urlInput.value.trim();
                     var trackName = form.querySelector('.yt-add-track-select').value;
                     addYouTubeLink(releaseIdx, trackName, url);
+                    form.remove();
+                } else if (e.key === 'Escape') {
+                    form.remove();
+                }
+            });
+        }
+
+        function showAddFormForTrack(rowEl, releaseIdx, trackName) {
+            // Don't add multiple forms
+            if (rowEl.querySelector('.yt-add-form')) return;
+
+            var release = releasesData.releases[releaseIdx];
+            var form = document.createElement('div');
+            form.className = 'yt-add-form';
+
+            var searchQuery = encodeURIComponent(release.bandName + ' ' + trackName);
+            form.innerHTML =
+                '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +
+                '<a class="yt-form-search" href="https://www.youtube.com/results?search_query=' + searchQuery + '" target="_blank" rel="noopener" title="Пребарај на YouTube"><i class="fab fa-youtube"></i> <i class="fas fa-search"></i></a>' +
+                '<button class="yt-add-confirm" title="Додади"><i class="fas fa-check"></i></button>' +
+                '<button class="yt-add-cancel" title="Откажи"><i class="fas fa-times"></i></button>';
+
+            rowEl.appendChild(form);
+
+            var urlInput = form.querySelector('.yt-add-url');
+            urlInput.focus();
+
+            form.querySelector('.yt-add-cancel').addEventListener('click', function () {
+                form.remove();
+            });
+
+            form.querySelector('.yt-add-confirm').addEventListener('click', function () {
+                addYouTubeLink(releaseIdx, trackName, urlInput.value.trim());
+                form.remove();
+            });
+
+            urlInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addYouTubeLink(releaseIdx, trackName, urlInput.value.trim());
                     form.remove();
                 } else if (e.key === 'Escape') {
                     form.remove();
