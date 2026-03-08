@@ -9036,7 +9036,15 @@
         "Moet 2"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3gsp4PXZKqOqaOK166AdMh?si=mpjmXF15SliyFa40fTImNQ",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Moet 2",
+          "videoId": "tnRCaeOdz7c",
+          "url": "https://www.youtube.com/watch?v=tnRCaeOdz7c",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Александра Јанева",
@@ -9058,7 +9066,13 @@
           "name": "Mi Podavas Raka",
           "videoId": "T3kDNbOEJok",
           "url": "https://www.youtube.com/watch?v=T3kDNbOEJok",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Mi Podavas Raka",
+          "videoId": "FsAEcVRF-So",
+          "url": "https://www.youtube.com/watch?v=FsAEcVRF-So",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9098,7 +9112,7 @@
           "name": "Quedate Luna - Idin Gorji Remix",
           "videoId": "huKusmxqIH0",
           "url": "https://www.youtube.com/watch?v=huKusmxqIH0",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9122,7 +9136,7 @@
           "name": "Kade vaka sama vo pizhama?",
           "videoId": "a6MS-a7PROg",
           "url": "https://www.youtube.com/watch?v=a6MS-a7PROg",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9148,7 +9162,63 @@
         "Vselenska Relikvija"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/7L2YmE11s49whMFCiLWyvV?si=mGQ6eWtHQtSnMmYVEGwTEQ",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Himnata Na Heruvimite",
+          "videoId": "_1jDVoDdO6A",
+          "url": "https://www.youtube.com/watch?v=_1jDVoDdO6A",
+          "verified": true
+        },
+        {
+          "name": "Himnata Na Heruvimite",
+          "videoId": "injlnpvmqHI",
+          "url": "https://www.youtube.com/watch?v=injlnpvmqHI",
+          "verified": true
+        },
+        {
+          "name": "Ah , Minav Gora",
+          "videoId": "jdCtN04ab4I",
+          "url": "https://www.youtube.com/watch?v=jdCtN04ab4I",
+          "verified": true
+        },
+        {
+          "name": "Egregor",
+          "videoId": "a4dwQmmOlhA",
+          "url": "https://www.youtube.com/watch?v=a4dwQmmOlhA",
+          "verified": true
+        },
+        {
+          "name": "Beskonechna Segashnost",
+          "videoId": "uffiJcxxCPI",
+          "url": "https://www.youtube.com/watch?v=uffiJcxxCPI",
+          "verified": true
+        },
+        {
+          "name": "Zora Se Zori",
+          "videoId": "C8CVKL8CQwE",
+          "url": "https://www.youtube.com/watch?v=C8CVKL8CQwE",
+          "verified": true
+        },
+        {
+          "name": "Istochnik",
+          "videoId": "A7ewShImtxg",
+          "url": "https://www.youtube.com/watch?v=A7ewShImtxg",
+          "verified": true
+        },
+        {
+          "name": "Kon Tvorecot",
+          "videoId": "PteLppo9kUw",
+          "url": "https://www.youtube.com/watch?v=PteLppo9kUw",
+          "verified": true
+        },
+        {
+          "name": "Vselenska Relikvija",
+          "videoId": "Z83uDWFoAfQ",
+          "url": "https://www.youtube.com/watch?v=Z83uDWFoAfQ",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Galoski",
@@ -9169,13 +9239,7 @@
           "name": "Move",
           "videoId": "Qufa1lIqfLA",
           "url": "https://www.youtube.com/watch?v=Qufa1lIqfLA",
-          "verified": false
-        },
-        {
-          "name": "Move",
-          "videoId": "c1wUAf-subk",
-          "url": "https://www.youtube.com/watch?v=c1wUAf-subk",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9196,7 +9260,33 @@
         "Ohrid Dr Packer Remix - Dr Packer Radio Remix"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/265stn1aAQWDK61IA5i9KG?si=ecAHEOt8ToaqWSgKM8P0gA",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Ohrid Dr Packer Remix - Dr Packer Dub Remix",
+          "videoId": "CDNig5cso6M",
+          "url": "https://www.youtube.com/watch?v=CDNig5cso6M",
+          "verified": true
+        },
+        {
+          "name": "Ohrid Dr Packer Remix - Dr Packer Dub Remix",
+          "videoId": "16t83_VQntw",
+          "url": "https://www.youtube.com/watch?v=16t83_VQntw",
+          "verified": true
+        },
+        {
+          "name": "Ohrid Dr Packer Remix - Dr Packer Radio Remix",
+          "videoId": "2od7AiatawI",
+          "url": "https://www.youtube.com/watch?v=2od7AiatawI",
+          "verified": true
+        },
+        {
+          "name": "Ohrid Dr Packer Remix - Dr Packer Radio Remix",
+          "videoId": "FHuhgrWBwes",
+          "url": "https://www.youtube.com/watch?v=FHuhgrWBwes",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Леб и Сол",
@@ -9222,33 +9312,69 @@
         "Kako ti drago"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5hNernryMZIWE1Nrygbxp0?si=CsX7vM-KT66QmzH-FSYytA",
+      "youtubeViews": 0,
       "youtubeTracks": [
         {
           "name": "Bistra Voda",
-          "videoId": "CnYsgfkMWCo",
-          "url": "https://www.youtube.com/watch?v=CnYsgfkMWCo",
-          "verified": false
+          "videoId": "QKaczDyUmt4",
+          "url": "https://www.youtube.com/watch?v=QKaczDyUmt4",
+          "verified": true
+        },
+        {
+          "name": "Leb I Igri",
+          "videoId": "QvUgbHl6fSw",
+          "url": "https://www.youtube.com/watch?v=QvUgbHl6fSw",
+          "verified": true
+        },
+        {
+          "name": "Si Zaljubiv",
+          "videoId": "pioV49S6kcc",
+          "url": "https://www.youtube.com/watch?v=pioV49S6kcc",
+          "verified": true
+        },
+        {
+          "name": "Ajde Sonce Zajde",
+          "videoId": "6xOIC747zZg",
+          "url": "https://www.youtube.com/watch?v=6xOIC747zZg",
+          "verified": true
         },
         {
           "name": "Marija",
-          "videoId": "4cLljbomEj0",
-          "url": "https://www.youtube.com/watch?v=4cLljbomEj0",
-          "verified": false
+          "videoId": "hoxTxYq-Dv4",
+          "url": "https://www.youtube.com/watch?v=hoxTxYq-Dv4",
+          "verified": true
+        },
+        {
+          "name": "Rucni Rad",
+          "videoId": "RZUa--i1E3g",
+          "url": "https://www.youtube.com/watch?v=RZUa--i1E3g",
+          "verified": true
+        },
+        {
+          "name": "Ucime Majko",
+          "videoId": "ZAq6-FBNHqA",
+          "url": "https://www.youtube.com/watch?v=ZAq6-FBNHqA",
+          "verified": true
+        },
+        {
+          "name": "Raspukala Sharplanina",
+          "videoId": "SAmQUfQw46k",
+          "url": "https://www.youtube.com/watch?v=SAmQUfQw46k",
+          "verified": true
         },
         {
           "name": "Skakavac",
-          "videoId": "PJAX08XM6fg",
-          "url": "https://www.youtube.com/watch?v=PJAX08XM6fg",
-          "verified": false
+          "videoId": "ii4t2vsmgT8",
+          "url": "https://www.youtube.com/watch?v=ii4t2vsmgT8",
+          "verified": true
         },
         {
           "name": "Kako ti drago",
-          "videoId": "cm-_gLc09nw",
-          "url": "https://www.youtube.com/watch?v=cm-_gLc09nw",
-          "verified": false
+          "videoId": "86tRQ5-H9jk",
+          "url": "https://www.youtube.com/watch?v=86tRQ5-H9jk",
+          "verified": true
         }
-      ],
-      "youtubeViews": 0
+      ]
     },
     {
       "bandName": "Karma Scale",
@@ -9269,7 +9395,7 @@
           "name": "Sorrowless",
           "videoId": "duIotRURFso",
           "url": "https://www.youtube.com/watch?v=duIotRURFso",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9305,73 +9431,73 @@
           "name": "Melting Faces",
           "videoId": "HrZ2QWTcI2o",
           "url": "https://www.youtube.com/watch?v=HrZ2QWTcI2o",
-          "verified": false
+          "verified": true
         },
         {
           "name": "A Crooked Jive",
           "videoId": "FIT832_aqwI",
           "url": "https://www.youtube.com/watch?v=FIT832_aqwI",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Disillusion Policy",
           "videoId": "odJvcz38xIU",
           "url": "https://www.youtube.com/watch?v=odJvcz38xIU",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Heclers Machine",
           "videoId": "CQ1LW0j2dfo",
           "url": "https://www.youtube.com/watch?v=CQ1LW0j2dfo",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Slide It",
           "videoId": "xN-3d3OlEl0",
           "url": "https://www.youtube.com/watch?v=xN-3d3OlEl0",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Kameraden",
           "videoId": "rZvTyh0E0D0",
           "url": "https://www.youtube.com/watch?v=rZvTyh0E0D0",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Brisk And Hasty",
           "videoId": "EUjWwlk8sbg",
           "url": "https://www.youtube.com/watch?v=EUjWwlk8sbg",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Shades Of Black",
           "videoId": "vCWyzAHaZcc",
           "url": "https://www.youtube.com/watch?v=vCWyzAHaZcc",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Remembering EVH",
           "videoId": "8UAYcDNEKRw",
           "url": "https://www.youtube.com/watch?v=8UAYcDNEKRw",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Sonic Boogie",
           "videoId": "C0-jSHIN7jg",
           "url": "https://www.youtube.com/watch?v=C0-jSHIN7jg",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Hard-Edged",
           "videoId": "YGnEB86DtTw",
           "url": "https://www.youtube.com/watch?v=YGnEB86DtTw",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Evocation",
           "videoId": "j_3YFMvMl5A",
           "url": "https://www.youtube.com/watch?v=j_3YFMvMl5A",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9391,7 +9517,15 @@
         "Marija"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/38xRgdUspVMjonmfTNWyBo?si=QOTF6WSnSty4TOZl65G10g",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Marija",
+          "videoId": "5-rgEglpl5I",
+          "url": "https://www.youtube.com/watch?v=5-rgEglpl5I",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Zulu 3.4",
@@ -9412,7 +9546,45 @@
         "Sunday Funday"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1vx6Sja49GjsYJTniyp97F?si=bf7MT3Y6SOiflUzSNO9ZTg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Chéri",
+          "videoId": "VTCVWjtUkrI",
+          "url": "https://www.youtube.com/watch?v=VTCVWjtUkrI",
+          "verified": true
+        },
+        {
+          "name": "Mon Chéri",
+          "videoId": "K6um3KA9jDM",
+          "url": "https://www.youtube.com/watch?v=K6um3KA9jDM",
+          "verified": true
+        },
+        {
+          "name": "Вечера",
+          "videoId": "TNzmcE59HiA",
+          "url": "https://www.youtube.com/watch?v=TNzmcE59HiA",
+          "verified": true
+        },
+        {
+          "name": "Летна Манџа",
+          "videoId": "DDOdtn5Faxc",
+          "url": "https://www.youtube.com/watch?v=DDOdtn5Faxc",
+          "verified": true
+        },
+        {
+          "name": "Подготовки",
+          "videoId": "Ewu4C0XYK2o",
+          "url": "https://www.youtube.com/watch?v=Ewu4C0XYK2o",
+          "verified": true
+        },
+        {
+          "name": "Sunday Funday",
+          "videoId": "rDoKwzxiEMA",
+          "url": "https://www.youtube.com/watch?v=rDoKwzxiEMA",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Зоран Ванев",
@@ -9432,9 +9604,9 @@
       "youtubeTracks": [
         {
           "name": "BITOLSKO ČUPE",
-          "videoId": "oL6HtSnsgsg",
-          "url": "https://www.youtube.com/watch?v=oL6HtSnsgsg",
-          "verified": false
+          "videoId": "nl0Dd3BKQb8",
+          "url": "https://www.youtube.com/watch?v=nl0Dd3BKQb8",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9458,7 +9630,7 @@
           "name": "Red Letter",
           "videoId": "4pnfgBUuhPg",
           "url": "https://www.youtube.com/watch?v=4pnfgBUuhPg",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9478,7 +9650,15 @@
         "Treba mi"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4zEAyyL62T5mw5tbzhdxlv?si=YbUnM2ZTSJWNLvvctvvHBg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Treba mi",
+          "videoId": "WGE20bcE-cc",
+          "url": "https://www.youtube.com/watch?v=WGE20bcE-cc",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Saso Popovski",
@@ -9502,27 +9682,63 @@
         "Elevator Waltz"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5GpYUuGVfChD5p5JmuaTcw",
+      "youtubeViews": 0,
       "youtubeTracks": [
         {
           "name": "22 Days to Spring",
-          "videoId": "B1_YShvfw4k",
-          "url": "https://www.youtube.com/watch?v=B1_YShvfw4k",
-          "verified": false
+          "videoId": "73FnsiW_68A",
+          "url": "https://www.youtube.com/watch?v=73FnsiW_68A",
+          "verified": true
         },
         {
           "name": "Roads",
-          "videoId": "YGzxVoMtgog",
-          "url": "https://www.youtube.com/watch?v=YGzxVoMtgog",
-          "verified": false
+          "videoId": "ftZC-xSIV40",
+          "url": "https://www.youtube.com/watch?v=ftZC-xSIV40",
+          "verified": true
         },
         {
           "name": "Awakening",
-          "videoId": "4De0aohRydQ",
-          "url": "https://www.youtube.com/watch?v=4De0aohRydQ",
-          "verified": false
+          "videoId": "2VlyMFnq8TY",
+          "url": "https://www.youtube.com/watch?v=2VlyMFnq8TY",
+          "verified": true
+        },
+        {
+          "name": "Point Blues",
+          "videoId": "_ft4ZNloeOo",
+          "url": "https://www.youtube.com/watch?v=_ft4ZNloeOo",
+          "verified": true
+        },
+        {
+          "name": "Lost in Shanghai",
+          "videoId": "i_d5yM5w6f4",
+          "url": "https://www.youtube.com/watch?v=i_d5yM5w6f4",
+          "verified": true
+        },
+        {
+          "name": "Fuente de la Salud",
+          "videoId": "Fvn6jpV0l1w",
+          "url": "https://www.youtube.com/watch?v=Fvn6jpV0l1w",
+          "verified": true
+        },
+        {
+          "name": "Dear Ron",
+          "videoId": "GLKarStFpm4",
+          "url": "https://www.youtube.com/watch?v=GLKarStFpm4",
+          "verified": true
+        },
+        {
+          "name": "Going Home",
+          "videoId": "7kLbh7RgBvI",
+          "url": "https://www.youtube.com/watch?v=7kLbh7RgBvI",
+          "verified": true
+        },
+        {
+          "name": "Elevator Waltz",
+          "videoId": "R5ck40DW35M",
+          "url": "https://www.youtube.com/watch?v=R5ck40DW35M",
+          "verified": true
         }
-      ],
-      "youtubeViews": 0
+      ]
     },
     {
       "bandName": "Антониа Гиговска",
@@ -9539,7 +9755,21 @@
         "Specijalista"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1P0DXnsIm6pMkUgq0aHsKa",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Specijalista",
+          "videoId": "l8_0HZuqIJc",
+          "url": "https://www.youtube.com/watch?v=l8_0HZuqIJc",
+          "verified": true
+        },
+        {
+          "name": "Specijalista",
+          "videoId": "4HWRqzDkaaA",
+          "url": "https://www.youtube.com/watch?v=4HWRqzDkaaA",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Александар Тарабунов",
@@ -9556,7 +9786,21 @@
         "Majko silna"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5iXyY2yra1nQpFOxXyvnkB?si=3HRfP2asTsSFz7bSZNzWzg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Majko silna",
+          "videoId": "Xem4oNooki4",
+          "url": "https://www.youtube.com/watch?v=Xem4oNooki4",
+          "verified": true
+        },
+        {
+          "name": "Majko silna",
+          "videoId": "pLWJAg2XoDI",
+          "url": "https://www.youtube.com/watch?v=pLWJAg2XoDI",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Inserta",
@@ -9578,7 +9822,7 @@
           "name": "Do Hotel",
           "videoId": "-Rq2gUfgIC0",
           "url": "https://www.youtube.com/watch?v=-Rq2gUfgIC0",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9608,43 +9852,43 @@
           "name": "Dete na Zimata",
           "videoId": "360n9EWGdjo",
           "url": "https://www.youtube.com/watch?v=360n9EWGdjo",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Nekoi dni",
           "videoId": "597FrrewNgU",
           "url": "https://www.youtube.com/watch?v=597FrrewNgU",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Cuvari na Gruvot 2",
           "videoId": "j3OtMdRuS5M",
           "url": "https://www.youtube.com/watch?v=j3OtMdRuS5M",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Den denes",
           "videoId": "l3021TdaZCg",
           "url": "https://www.youtube.com/watch?v=l3021TdaZCg",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Majmunska rabota",
           "videoId": "IBjU5DQalHc",
           "url": "https://www.youtube.com/watch?v=IBjU5DQalHc",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Torpedo 1936 Del 2",
           "videoId": "W-eP7fXLJvo",
           "url": "https://www.youtube.com/watch?v=W-eP7fXLJvo",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Neuspesi",
           "videoId": "YmnVN7-RYgs",
           "url": "https://www.youtube.com/watch?v=YmnVN7-RYgs",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9663,7 +9907,15 @@
         "Lost in Shanghai"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5GpYUuGVfChD5p5JmuaTcw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Lost in Shanghai",
+          "videoId": "u4YHNIWhDdY",
+          "url": "https://www.youtube.com/watch?v=u4YHNIWhDdY",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Eye Cue",
@@ -9684,7 +9936,7 @@
           "name": "Till the beat comes down - Acoustic",
           "videoId": "mpYCcTTu-q8",
           "url": "https://www.youtube.com/watch?v=mpYCcTTu-q8",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9709,7 +9961,7 @@
           "name": "Pjesma spaja ljude sve",
           "videoId": "BRh7mjZnv3c",
           "url": "https://www.youtube.com/watch?v=BRh7mjZnv3c",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9734,7 +9986,13 @@
           "name": "Zapejte site angeli",
           "videoId": "UT-cgoPy_fk",
           "url": "https://www.youtube.com/watch?v=UT-cgoPy_fk",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Zapejte site angeli",
+          "videoId": "oXBwLiQLHlQ",
+          "url": "https://www.youtube.com/watch?v=oXBwLiQLHlQ",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9769,10 +10027,88 @@
       "spotifyUrl": "https://open.spotify.com/artist/5dXns4IdDzppTpedi3PyIJ?si=YeyLS1mTRCWxo8z3dW6nqQ",
       "youtubeTracks": [
         {
+          "name": "Veligdensko",
+          "videoId": "sFQKBJK7yxQ",
+          "url": "https://www.youtube.com/watch?v=sFQKBJK7yxQ",
+          "verified": true
+        },
+        {
+          "name": "Doce, Doce",
+          "videoId": "qCotfQnBuAk",
+          "url": "https://www.youtube.com/watch?v=qCotfQnBuAk",
+          "verified": true
+        },
+        {
+          "name": "Mace, Macke",
+          "videoId": "_vUxP4ppF8U",
+          "url": "https://www.youtube.com/watch?v=_vUxP4ppF8U",
+          "verified": true
+        },
+        {
+          "name": "Dracevski Zensko Oro",
+          "videoId": "03gO9RsgE04",
+          "url": "https://www.youtube.com/watch?v=03gO9RsgE04",
+          "verified": true
+        },
+        {
+          "name": "Dafino Mome",
+          "videoId": "icuqL_4by5A",
+          "url": "https://www.youtube.com/watch?v=icuqL_4by5A",
+          "verified": true
+        },
+        {
+          "name": "Nevestinsko",
+          "videoId": "-rVElKhNbfE",
+          "url": "https://www.youtube.com/watch?v=-rVElKhNbfE",
+          "verified": true
+        },
+        {
+          "name": "Kucka Liljana",
+          "videoId": "LCVKGk-NWXI",
+          "url": "https://www.youtube.com/watch?v=LCVKGk-NWXI",
+          "verified": true
+        },
+        {
           "name": "Kumanovka",
-          "videoId": "bXpypPyM9Lo",
-          "url": "https://www.youtube.com/watch?v=bXpypPyM9Lo",
-          "verified": false
+          "videoId": "pdbEAhaIBBs",
+          "url": "https://www.youtube.com/watch?v=pdbEAhaIBBs",
+          "verified": true
+        },
+        {
+          "name": "Splet",
+          "videoId": "8E7k7IB1XsE",
+          "url": "https://www.youtube.com/watch?v=8E7k7IB1XsE",
+          "verified": true
+        },
+        {
+          "name": "More Rasti, Rasti",
+          "videoId": "NpSiIlTfaec",
+          "url": "https://www.youtube.com/watch?v=NpSiIlTfaec",
+          "verified": true
+        },
+        {
+          "name": "Gajdarsko",
+          "videoId": "OUX7II01woY",
+          "url": "https://www.youtube.com/watch?v=OUX7II01woY",
+          "verified": true
+        },
+        {
+          "name": "Sitna Lisa",
+          "videoId": "WJJBbLvQVPg",
+          "url": "https://www.youtube.com/watch?v=WJJBbLvQVPg",
+          "verified": true
+        },
+        {
+          "name": "Zablela Kalesh Ovca",
+          "videoId": "KuEkf226AeQ",
+          "url": "https://www.youtube.com/watch?v=KuEkf226AeQ",
+          "verified": true
+        },
+        {
+          "name": "Jasna Mesechina",
+          "videoId": "DY1NdY8RHFI",
+          "url": "https://www.youtube.com/watch?v=DY1NdY8RHFI",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9792,7 +10128,15 @@
         "Intro Opening - EYOF Skopje 2025"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/7k7tAeXP9YKbWJPTWMQEcF?si=JrXk5vntRnusZgBB26Nirg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Intro Opening - EYOF Skopje 2025",
+          "videoId": "MpShleZqC4o",
+          "url": "https://www.youtube.com/watch?v=MpShleZqC4o",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Таско",
@@ -9809,7 +10153,15 @@
         "Maria"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/73esFbI8aJdscYA5E5zpPP?si=GBt7U1lcT6CvpW3ig1nNoQ",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Maria",
+          "videoId": "aFvLnqAL3mQ",
+          "url": "https://www.youtube.com/watch?v=aFvLnqAL3mQ",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "500ok",
@@ -9827,7 +10179,39 @@
         "Oll Korrect"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0OtTNgHnj14bWtA30tL56A?si=JiLeqKRrTw2hLpo-FC_E1g",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Fat Kitchen",
+          "videoId": "ekYhcCGkivY",
+          "url": "https://www.youtube.com/watch?v=ekYhcCGkivY",
+          "verified": true
+        },
+        {
+          "name": "Fat Kitchen",
+          "videoId": "4bH-jLECu30",
+          "url": "https://www.youtube.com/watch?v=4bH-jLECu30",
+          "verified": true
+        },
+        {
+          "name": "Key Players",
+          "videoId": "R1kv4phxPwg",
+          "url": "https://www.youtube.com/watch?v=R1kv4phxPwg",
+          "verified": true
+        },
+        {
+          "name": "Key Players",
+          "videoId": "HYS0ImFSyYs",
+          "url": "https://www.youtube.com/watch?v=HYS0ImFSyYs",
+          "verified": true
+        },
+        {
+          "name": "Oll Korrect",
+          "videoId": "EjbSvMy24Jc",
+          "url": "https://www.youtube.com/watch?v=EjbSvMy24Jc",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Дивизија",
@@ -9853,7 +10237,69 @@
         "Nadvor Od Sebe - Instrumental"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5TzZDt41DMb6gWJb6mutg2?si=5MO72BXTSf-nDUYKr-GEJQ",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Uste Eden Krug - Instrumental",
+          "videoId": "d4AZ0MEcMyA",
+          "url": "https://www.youtube.com/watch?v=d4AZ0MEcMyA",
+          "verified": true
+        },
+        {
+          "name": "Igra Na Trpenie - Instrumental",
+          "videoId": "bto4J0JvHN0",
+          "url": "https://www.youtube.com/watch?v=bto4J0JvHN0",
+          "verified": true
+        },
+        {
+          "name": "The Bomb - Instrumental",
+          "videoId": "SXdFXkOV-3k",
+          "url": "https://www.youtube.com/watch?v=SXdFXkOV-3k",
+          "verified": true
+        },
+        {
+          "name": "Still - Instrumental",
+          "videoId": "VpEi69g1o44",
+          "url": "https://www.youtube.com/watch?v=VpEi69g1o44",
+          "verified": true
+        },
+        {
+          "name": "King Kong - Instrumental",
+          "videoId": "YR-jC73Jb1o",
+          "url": "https://www.youtube.com/watch?v=YR-jC73Jb1o",
+          "verified": true
+        },
+        {
+          "name": "Topol Obrok - Instrumental",
+          "videoId": "CaQbRa3znWU",
+          "url": "https://www.youtube.com/watch?v=CaQbRa3znWU",
+          "verified": true
+        },
+        {
+          "name": "Nevremeplov - Instrumental",
+          "videoId": "jZetJAeADV8",
+          "url": "https://www.youtube.com/watch?v=jZetJAeADV8",
+          "verified": true
+        },
+        {
+          "name": "Nepoznati Vodi - Instrumental",
+          "videoId": "soIvCboqBmg",
+          "url": "https://www.youtube.com/watch?v=soIvCboqBmg",
+          "verified": true
+        },
+        {
+          "name": "Meri Mir - Instrumental",
+          "videoId": "_2YxbUo_OSU",
+          "url": "https://www.youtube.com/watch?v=_2YxbUo_OSU",
+          "verified": true
+        },
+        {
+          "name": "Nadvor Od Sebe - Instrumental",
+          "videoId": "Xe4Majd5K1s",
+          "url": "https://www.youtube.com/watch?v=Xe4Majd5K1s",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Galoski",
@@ -9869,7 +10315,45 @@
         "La Vida"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/19gU7Hvep0G37JeiLf3TNB?si=y-Fv2pDqTG6KeZpRO5zu9w",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "La Vida",
+          "videoId": "NzTaZ6TBMyU",
+          "url": "https://www.youtube.com/watch?v=NzTaZ6TBMyU",
+          "verified": true
+        },
+        {
+          "name": "La Vida",
+          "videoId": "usT1IdDmNGo",
+          "url": "https://www.youtube.com/watch?v=usT1IdDmNGo",
+          "verified": true
+        },
+        {
+          "name": "La Vida",
+          "videoId": "r-AAd2PfeXg",
+          "url": "https://www.youtube.com/watch?v=r-AAd2PfeXg",
+          "verified": true
+        },
+        {
+          "name": "La Vida",
+          "videoId": "KxNnwKEYEqU",
+          "url": "https://www.youtube.com/watch?v=KxNnwKEYEqU",
+          "verified": true
+        },
+        {
+          "name": "La Vida",
+          "videoId": "7Cnoe98zWjU",
+          "url": "https://www.youtube.com/watch?v=7Cnoe98zWjU",
+          "verified": true
+        },
+        {
+          "name": "La Vida",
+          "videoId": "S5YRhz0Jl7k",
+          "url": "https://www.youtube.com/watch?v=S5YRhz0Jl7k",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Syned Brain",
@@ -9893,7 +10377,63 @@
         "Veil Of Eternity"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5IbMCyWaYpNWnMMzKngLdo",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "MysteriUM TremendUM",
+          "videoId": "WPClpYt9onE",
+          "url": "https://www.youtube.com/watch?v=WPClpYt9onE",
+          "verified": true
+        },
+        {
+          "name": "Origin Of Valak",
+          "videoId": "20KOL_DUiCI",
+          "url": "https://www.youtube.com/watch?v=20KOL_DUiCI",
+          "verified": true
+        },
+        {
+          "name": "Enjoy Your Last Happiness - Syned Brain Remix",
+          "videoId": "jDzZ-bx3yeg",
+          "url": "https://www.youtube.com/watch?v=jDzZ-bx3yeg",
+          "verified": true
+        },
+        {
+          "name": "Obsidian Rift",
+          "videoId": "S-I0JwdhYpg",
+          "url": "https://www.youtube.com/watch?v=S-I0JwdhYpg",
+          "verified": true
+        },
+        {
+          "name": "Phantom Veil",
+          "videoId": "55FZkzITx8s",
+          "url": "https://www.youtube.com/watch?v=55FZkzITx8s",
+          "verified": true
+        },
+        {
+          "name": "Veil Of Eternity",
+          "videoId": "eFdHB-rusww",
+          "url": "https://www.youtube.com/watch?v=eFdHB-rusww",
+          "verified": true
+        },
+        {
+          "name": "Labyrinth Of Shadows",
+          "videoId": "ytaS1rda8sw",
+          "url": "https://www.youtube.com/watch?v=ytaS1rda8sw",
+          "verified": true
+        },
+        {
+          "name": "Inception - Dementor Remix",
+          "videoId": "MOCWmyB_S9M",
+          "url": "https://www.youtube.com/watch?v=MOCWmyB_S9M",
+          "verified": true
+        },
+        {
+          "name": "Echoes Of The Abyss",
+          "videoId": "hBuv52dXtDs",
+          "url": "https://www.youtube.com/watch?v=hBuv52dXtDs",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Ѓорѓи Крстевски",
@@ -9922,15 +10462,129 @@
       "youtubeTracks": [
         {
           "name": "Ljubov e",
-          "videoId": "esbIzELo6TI",
-          "url": "https://www.youtube.com/watch?v=esbIzELo6TI",
-          "verified": false
+          "videoId": "BO6Ddnh3Wf8",
+          "url": "https://www.youtube.com/watch?v=BO6Ddnh3Wf8",
+          "verified": true
+        },
+        {
+          "name": "Ljubov e",
+          "videoId": "SNjfns_KDWE",
+          "url": "https://www.youtube.com/watch?v=SNjfns_KDWE",
+          "verified": true
+        },
+        {
+          "name": "Posilni od se",
+          "videoId": "JFHtmXKucGo",
+          "url": "https://www.youtube.com/watch?v=JFHtmXKucGo",
+          "verified": true
+        },
+        {
+          "name": "Ljubov e",
+          "videoId": "QhJIQ0iQxHU",
+          "url": "https://www.youtube.com/watch?v=QhJIQ0iQxHU",
+          "verified": true
         },
         {
           "name": "Zasekogas",
-          "videoId": "8DIgX3H6mAY",
-          "url": "https://www.youtube.com/watch?v=8DIgX3H6mAY",
-          "verified": false
+          "videoId": "qZy5prwFj3Q",
+          "url": "https://www.youtube.com/watch?v=qZy5prwFj3Q",
+          "verified": true
+        },
+        {
+          "name": "Nesudjena",
+          "videoId": "gvxeltBgm8o",
+          "url": "https://www.youtube.com/watch?v=gvxeltBgm8o",
+          "verified": true
+        },
+        {
+          "name": "Brate moj",
+          "videoId": "ZFasn28jMm4",
+          "url": "https://www.youtube.com/watch?v=ZFasn28jMm4",
+          "verified": true
+        },
+        {
+          "name": "Brate moj",
+          "videoId": "aGa2xbi3VH8",
+          "url": "https://www.youtube.com/watch?v=aGa2xbi3VH8",
+          "verified": true
+        },
+        {
+          "name": "Te sakam",
+          "videoId": "LsR0oBjWsiw",
+          "url": "https://www.youtube.com/watch?v=LsR0oBjWsiw",
+          "verified": true
+        },
+        {
+          "name": "Te sakam",
+          "videoId": "oFJ4il0tk20",
+          "url": "https://www.youtube.com/watch?v=oFJ4il0tk20",
+          "verified": true
+        },
+        {
+          "name": "Te sakam",
+          "videoId": "82BONE3aAyo",
+          "url": "https://www.youtube.com/watch?v=82BONE3aAyo",
+          "verified": true
+        },
+        {
+          "name": "Skitnik",
+          "videoId": "0mBxhfupgB0",
+          "url": "https://www.youtube.com/watch?v=0mBxhfupgB0",
+          "verified": true
+        },
+        {
+          "name": "Skitnik",
+          "videoId": "qhoTunIh2as",
+          "url": "https://www.youtube.com/watch?v=qhoTunIh2as",
+          "verified": true
+        },
+        {
+          "name": "Skitnik",
+          "videoId": "HRHTHM77PF4",
+          "url": "https://www.youtube.com/watch?v=HRHTHM77PF4",
+          "verified": true
+        },
+        {
+          "name": "Vljubena",
+          "videoId": "YQR90PjdHR8",
+          "url": "https://www.youtube.com/watch?v=YQR90PjdHR8",
+          "verified": true
+        },
+        {
+          "name": "Vljubena",
+          "videoId": "8ve95A7pWV0",
+          "url": "https://www.youtube.com/watch?v=8ve95A7pWV0",
+          "verified": true
+        },
+        {
+          "name": "Vljubena",
+          "videoId": "4gmoXqMTUxI",
+          "url": "https://www.youtube.com/watch?v=4gmoXqMTUxI",
+          "verified": true
+        },
+        {
+          "name": "Sedum godini",
+          "videoId": "8RLZ0UY8Be8",
+          "url": "https://www.youtube.com/watch?v=8RLZ0UY8Be8",
+          "verified": true
+        },
+        {
+          "name": "Sedum godini",
+          "videoId": "KwswYZfnjIo",
+          "url": "https://www.youtube.com/watch?v=KwswYZfnjIo",
+          "verified": true
+        },
+        {
+          "name": "Malecka",
+          "videoId": "6y8XO--zQgQ",
+          "url": "https://www.youtube.com/watch?v=6y8XO--zQgQ",
+          "verified": true
+        },
+        {
+          "name": "Malecka",
+          "videoId": "qw5BPwC5fzU",
+          "url": "https://www.youtube.com/watch?v=qw5BPwC5fzU",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9950,7 +10604,15 @@
         "After Party"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2ZpOVSJ2HAUulYaLZVSutA?si=a1aNmkf9TnuqD-pfLcDopw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "After Party",
+          "videoId": "B9VLqtdLYMM",
+          "url": "https://www.youtube.com/watch?v=B9VLqtdLYMM",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Фико, Муфи",
@@ -9972,7 +10634,7 @@
           "name": "Cupra",
           "videoId": "eaWYdkbxqTU",
           "url": "https://www.youtube.com/watch?v=eaWYdkbxqTU",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -9991,15 +10653,15 @@
         "22 Days to Spring"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5GpYUuGVfChD5p5JmuaTcw",
+      "youtubeViews": 0,
       "youtubeTracks": [
         {
           "name": "22 Days to Spring",
-          "videoId": "B1_YShvfw4k",
-          "url": "https://www.youtube.com/watch?v=B1_YShvfw4k",
-          "verified": false
+          "videoId": "x3_hsxUnE-0",
+          "url": "https://www.youtube.com/watch?v=x3_hsxUnE-0",
+          "verified": true
         }
-      ],
-      "youtubeViews": 0
+      ]
     },
     {
       "bandName": "350Teric",
@@ -10023,19 +10685,19 @@
           "name": "Three Percent Of Infinity",
           "videoId": "UtJ62laJwR8",
           "url": "https://www.youtube.com/watch?v=UtJ62laJwR8",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Letting Go",
           "videoId": "inZC4KLP05U",
           "url": "https://www.youtube.com/watch?v=inZC4KLP05U",
-          "verified": false
+          "verified": true
         },
         {
           "name": "In Shadow With My True Self",
           "videoId": "JynLwQWaCJw",
           "url": "https://www.youtube.com/watch?v=JynLwQWaCJw",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -10074,67 +10736,67 @@
           "name": "The Gates of Istanbul",
           "videoId": "YLJlXfpvxwY",
           "url": "https://www.youtube.com/watch?v=YLJlXfpvxwY",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Relax Time",
           "videoId": "98YmHgSzv7I",
           "url": "https://www.youtube.com/watch?v=98YmHgSzv7I",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Winds Melody",
           "videoId": "4biSZc_6NQw",
           "url": "https://www.youtube.com/watch?v=4biSZc_6NQw",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Road to Istanbul",
           "videoId": "5MjHZAvrvaA",
           "url": "https://www.youtube.com/watch?v=5MjHZAvrvaA",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Oro",
           "videoId": "IE6r6x6A8mE",
           "url": "https://www.youtube.com/watch?v=IE6r6x6A8mE",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Night Experience",
           "videoId": "hGL-N5efX_s",
           "url": "https://www.youtube.com/watch?v=hGL-N5efX_s",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Book of the Sea",
           "videoId": "65AWnbI4Eu0",
           "url": "https://www.youtube.com/watch?v=65AWnbI4Eu0",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Night in Bosphorus",
           "videoId": "iBqQkQdBw0c",
           "url": "https://www.youtube.com/watch?v=iBqQkQdBw0c",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Sea",
           "videoId": "M9jPAUCvm-w",
           "url": "https://www.youtube.com/watch?v=M9jPAUCvm-w",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Sea",
           "videoId": "qaHQ3Fsp0OI",
           "url": "https://www.youtube.com/watch?v=qaHQ3Fsp0OI",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Rosa Rosi",
           "videoId": "b06oZuls394",
           "url": "https://www.youtube.com/watch?v=b06oZuls394",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -10184,7 +10846,15 @@
         "Together We Shine - EYOF Skopje 2025"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2ZpOVSJ2HAUulYaLZVSutA?si=a1aNmkf9TnuqD-pfLcDopw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Together We Shine - EYOF Skopje 2025",
+          "videoId": "vIGQRp0FAAw",
+          "url": "https://www.youtube.com/watch?v=vIGQRp0FAAw",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Водолија",
@@ -10211,10 +10881,58 @@
       "spotifyUrl": "https://open.spotify.com/artist/0Vj615Mlb437Q1bz0gTxTD?si=zIEDsXEhSC-_lFHM01xUdA",
       "youtubeTracks": [
         {
+          "name": "Poveke ne (Unplugged) - Live",
+          "videoId": "eVppVLBONzU",
+          "url": "https://www.youtube.com/watch?v=eVppVLBONzU",
+          "verified": true
+        },
+        {
+          "name": "Ljubov ili strasti (Unplugged) - Live",
+          "videoId": "LD4KJznC1dk",
+          "url": "https://www.youtube.com/watch?v=LD4KJznC1dk",
+          "verified": true
+        },
+        {
+          "name": "Solza (Unplugged) - Live",
+          "videoId": "rgAv3fxYRBE",
+          "url": "https://www.youtube.com/watch?v=rgAv3fxYRBE",
+          "verified": true
+        },
+        {
+          "name": "Se sto e sveto (Unplugged) - Live",
+          "videoId": "if-EUOr7C04",
+          "url": "https://www.youtube.com/watch?v=if-EUOr7C04",
+          "verified": true
+        },
+        {
+          "name": "Ti ne si (Unplugged) - Live",
+          "videoId": "LubebkJJrvQ",
+          "url": "https://www.youtube.com/watch?v=LubebkJJrvQ",
+          "verified": true
+        },
+        {
+          "name": "Mojot tv (Unplugged) - Live",
+          "videoId": "oEKAy0g1lzU",
+          "url": "https://www.youtube.com/watch?v=oEKAy0g1lzU",
+          "verified": true
+        },
+        {
+          "name": "Zid (Unplugged) - Live",
+          "videoId": "oGM69Hfd9ik",
+          "url": "https://www.youtube.com/watch?v=oGM69Hfd9ik",
+          "verified": true
+        },
+        {
+          "name": "Sekavanja (Unplugged) - Live",
+          "videoId": "XEm1YcOdBBc",
+          "url": "https://www.youtube.com/watch?v=XEm1YcOdBBc",
+          "verified": true
+        },
+        {
           "name": "Izmislen od bajki (Unplugged) - Live",
-          "videoId": "l3ehn18V3Qk",
-          "url": "https://www.youtube.com/watch?v=l3ehn18V3Qk",
-          "verified": false
+          "videoId": "Roul2sAmeHc",
+          "url": "https://www.youtube.com/watch?v=Roul2sAmeHc",
+          "verified": true
         }
       ],
       "youtubeViews": 0
