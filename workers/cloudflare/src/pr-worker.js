@@ -325,7 +325,37 @@ export default {
         }
       }
 
-      // 3c) Always preserve server-managed image fields from repo HEAD for bands.json.
+      // 3c) Always preserve server-managed youtube fields from repo HEAD for releases.json.
+      if (targetPath === 'releases.json' && currentContent) {
+        try {
+          const repoData = JSON.parse(currentContent);
+          const userData = JSON.parse(finalJson);
+          if (repoData.releases && userData.releases) {
+            const repoYtMap = new Map();
+            repoData.releases.forEach(r => {
+              if (r.releaseId && (r.youtubeTracks || r.youtubeViews)) {
+                repoYtMap.set(r.releaseId, { youtubeTracks: r.youtubeTracks, youtubeViews: r.youtubeViews });
+              }
+            });
+            let patched = false;
+            userData.releases.forEach(r => {
+              if (!r.releaseId) return;
+              const repo = repoYtMap.get(r.releaseId);
+              if (repo) {
+                if (JSON.stringify(r.youtubeTracks) !== JSON.stringify(repo.youtubeTracks)) patched = true;
+                if (r.youtubeViews !== repo.youtubeViews) patched = true;
+                r.youtubeTracks = repo.youtubeTracks;
+                r.youtubeViews = repo.youtubeViews;
+              }
+            });
+            if (patched) {
+              finalJson = JSON.stringify(userData, null, 2);
+            }
+          }
+        } catch (_) { /* if parsing fails, leave finalJson as-is */ }
+      }
+
+      // 3d) Always preserve server-managed image fields from repo HEAD for bands.json.
       // The three-way merge handles this when it runs, but when the merge is skipped
       // (baseline == current), we still need to overlay images from repo HEAD.
       if (targetPath === 'bands.json' && currentContent) {
@@ -459,6 +489,9 @@ function threeWayMerge(filePath, originalJson, currentJson, modifiedJson) {
     if (filePath === 'bands.json' && original.muzickaMasterLista && current.muzickaMasterLista) {
       return threeWayMergeBands(original, current, modified);
     }
+    if (filePath === 'releases.json' && original.releases && current.releases) {
+      return threeWayMergeReleases(original, current, modified);
+    }
     if (filePath === 'events.json' && original.events && current.events) {
       return threeWayMergeEvents(original, current, modified);
     }
@@ -535,6 +568,84 @@ function threeWayMergeBands(original, current, modified) {
   }
 
   const result = { ...current, muzickaMasterLista: merged };
+  return { merged: JSON.stringify(result, null, 2), notes };
+}
+
+function threeWayMergeReleases(original, current, modified) {
+  const origList = original.releases || [];
+  const currList = current.releases  || [];
+  const modList  = modified.releases || [];
+
+  const toMap = (list) => { const m = new Map(); list.forEach(r => { if (r.releaseId) m.set(r.releaseId, r); }); return m; };
+  const origMap = toMap(origList);
+  const currMap = toMap(currList);
+  const modMap  = toMap(modList);
+
+  // Server-managed fields that should always come from repo HEAD
+  const serverFields = ['youtubeTracks', 'youtubeViews'];
+  const stripServer = (obj) => {
+    const copy = { ...obj };
+    for (const f of serverFields) delete copy[f];
+    return copy;
+  };
+
+  const merged = [];
+  const notes = [];
+  const seen = new Set();
+
+  // Walk current (repo HEAD) list to preserve its ordering
+  for (const release of currList) {
+    const id = release.releaseId;
+    if (!id) { merged.push(release); continue; }
+    seen.add(id);
+    const inOrig = origMap.has(id);
+    const inMod  = modMap.has(id);
+
+    if (inOrig && !inMod) {
+      // User deleted this release — honour the deletion
+      notes.push(`Избришано издание: ${release.bandName} - ${release.releaseTitle || id}`);
+      continue;
+    }
+    if (inOrig && inMod) {
+      const oJson = JSON.stringify(stripServer(origMap.get(id)));
+      const cJson = JSON.stringify(stripServer(release));
+      const mJson = JSON.stringify(stripServer(modMap.get(id)));
+      if (mJson !== oJson && cJson === oJson) {
+        // Only user changed non-server fields → take user's version, keep HEAD server fields
+        const m = { ...modMap.get(id) };
+        for (const f of serverFields) { if (release[f] !== undefined) m[f] = release[f]; }
+        merged.push(m);
+        notes.push(`Изменето издание (корисник): ${release.bandName} - ${release.releaseTitle || id}`);
+      } else if (mJson !== oJson && cJson !== oJson) {
+        // Both changed → take user's version for non-server fields, keep HEAD server fields
+        const m = { ...modMap.get(id) };
+        for (const f of serverFields) { if (release[f] !== undefined) m[f] = release[f]; }
+        merged.push(m);
+        notes.push(`⚠️ Конфликт издание (земена верзија на корисникот): ${release.bandName} - ${release.releaseTitle || id}`);
+      } else {
+        // User didn't change (or identical changes) → keep repo version
+        merged.push(release);
+      }
+    } else {
+      // Not in original — added by repo after user's baseline
+      merged.push(release);
+    }
+  }
+
+  // Append releases added by user (in modified but not in original and not already seen)
+  for (const release of modList) {
+    const id = release.releaseId;
+    if (id && !seen.has(id) && !origMap.has(id)) {
+      // New release from user — strip server fields the client may have sent
+      const cleaned = { ...release };
+      for (const f of serverFields) delete cleaned[f];
+      merged.push(cleaned);
+      notes.push(`Ново издание: ${release.bandName} - ${release.releaseTitle || id}`);
+      seen.add(id);
+    }
+  }
+
+  const result = { ...current, releases: merged };
   return { merged: JSON.stringify(result, null, 2), notes };
 }
 
