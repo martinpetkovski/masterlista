@@ -178,6 +178,14 @@
     .yt-track-unlinked { opacity: 0.55; }
     .yt-track-unlinked:hover { opacity: 0.85; }
 
+    .yt-track-row.yt-drop-target {
+        background: rgba(255, 0, 0, 0.08);
+        outline: 2px dashed #f00;
+        outline-offset: -2px;
+        border-radius: 6px;
+        opacity: 1 !important;
+    }
+
     .yt-add-track-btn {
         background: none; border: 1px dashed var(--border-color);
         cursor: pointer; padding: 0.1rem 0.3rem; border-radius: 4px;
@@ -679,6 +687,37 @@
                     var ri = parseInt(this.dataset.release, 10);
                     showReleaseForm(ri);
                 });
+            }
+
+            // Drag-and-drop YouTube links onto track rows
+            var trackRows = document.querySelectorAll('.yt-track-row');
+            for (var i = 0; i < trackRows.length; i++) {
+                (function (row) {
+                    row.addEventListener('dragover', function (e) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'link';
+                        row.classList.add('yt-drop-target');
+                    });
+                    row.addEventListener('dragleave', function () {
+                        row.classList.remove('yt-drop-target');
+                    });
+                    row.addEventListener('drop', function (e) {
+                        e.preventDefault();
+                        row.classList.remove('yt-drop-target');
+                        var ri = parseInt(row.closest('tr').dataset.idx, 10);
+                        var trackName = row.querySelector('.yt-track-name');
+                        if (isNaN(ri) || !trackName) return;
+                        var name = trackName.textContent || trackName.innerText;
+                        var raw = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || '';
+                        var url = raw.split(/[\r\n]/)[0].trim();
+                        var videoId = parseYouTubeUrl(url);
+                        if (!videoId) {
+                            showNotification('Невалиден YouTube линк', 'error');
+                            return;
+                        }
+                        addYouTubeLink(ri, name, 'https://www.youtube.com/watch?v=' + videoId);
+                    });
+                })(trackRows[i]);
             }
 
             // Release title click → open service chooser
