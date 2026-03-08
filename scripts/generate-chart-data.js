@@ -791,7 +791,31 @@ async function main() {
   
   // Generate data
   const now = new Date();
-  const sortedReleases = releases.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+  releases.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+
+  // Deduplicate collab releases (same releaseId appearing under multiple artists)
+  const seenReleases = new Map();
+  const sortedReleases = [];
+  for (const r of releases) {
+    const existing = seenReleases.get(r.releaseId);
+    if (existing) {
+      // Merge artist name if not already present
+      const names = existing.bandName.split(', ');
+      if (!names.includes(r.bandName)) {
+        existing.bandName = names.concat(r.bandName).join(', ');
+      }
+      // Keep highest popularity and followers
+      if (r.popularity > existing.popularity) existing.popularity = r.popularity;
+      if (r.followers > existing.followers) existing.followers = r.followers;
+    } else {
+      const copy = { ...r };
+      seenReleases.set(r.releaseId, copy);
+      sortedReleases.push(copy);
+    }
+  }
+  if (sortedReleases.length < releases.length) {
+    console.log(`Deduplicated: ${releases.length} → ${sortedReleases.length} releases (${releases.length - sortedReleases.length} collab duplicates merged)`);
+  }
   
   const outputPath = path.join(__dirname, '..', 'chart-data.json');
   const releasesPath = path.join(__dirname, '..', 'releases.json');
@@ -817,9 +841,12 @@ async function main() {
       ...(r.trackNames ? { trackNames: r.trackNames } : {}),
       spotifyUrl: r.spotifyUrl
     };
-    // Preserve existing youtube track data (with verified flags)
+    // Preserve existing youtube track data (with verified flags) and view count
     if (existing?.youtubeTracks?.length > 0) {
       entry.youtubeTracks = existing.youtubeTracks;
+    }
+    if (existing?.youtubeViews) {
+      entry.youtubeViews = existing.youtubeViews;
     }
     return entry;
   });

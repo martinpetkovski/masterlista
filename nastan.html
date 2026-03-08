@@ -645,7 +645,7 @@
             // Fallback to release thumbnail from chart-data
             if (!chartDataCache || !chartDataCache.releases) return null;
             var release = chartDataCache.releases.find(function(r) {
-                return r.bandName && r.bandName.toLowerCase().trim() === lower;
+                return r.bandName && r.bandName.toLowerCase().trim().split(', ').indexOf(lower) !== -1;
             });
             return release ? (release.thumbnail || null) : null;
         }

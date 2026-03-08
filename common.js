@@ -1001,7 +1001,7 @@ function loadMasterArtistNameSet() {
  * @param {string}   [spotifyArtistName]— Spotify (Latin) artist name for search queries
  * @param {boolean}  [verified]         — Whether the artist is verified (enables colourful popup)
  */
-function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified) {
+function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified, youtubeUrl) {
     if (!releaseUrl) return;
 
     // The name used in service search queries (prefer Spotify/Latin name)
@@ -1218,6 +1218,8 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         var url;
         if (key === 'spotify' && releaseUrl) {
             url = releaseUrl;
+        } else if (key === 'youtube' && youtubeUrl) {
+            url = youtubeUrl;
         } else {
             url = buildServiceSearchUrl(key, searchArtistName, title || '');
         }

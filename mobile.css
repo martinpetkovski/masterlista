@@ -3249,7 +3249,8 @@ body.guide-page .site-footer {
     margin-bottom: 0.2rem;
 }
 .mmm-draft-field input,
-.mmm-draft-field textarea {
+.mmm-draft-field textarea,
+.mmm-draft-field select {
     width: 100%;
     padding: 0.5rem 0.6rem;
     background: var(--bg-primary, #1a1a2e);
@@ -3261,7 +3262,8 @@ body.guide-page .site-footer {
     box-sizing: border-box;
 }
 .mmm-draft-field input:focus,
-.mmm-draft-field textarea:focus {
+.mmm-draft-field textarea:focus,
+.mmm-draft-field select:focus {
     outline: none;
     border-color: var(--accent-orange, #ff9113);
 }

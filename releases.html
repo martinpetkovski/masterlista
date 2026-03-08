@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Линкови | ТопЛиста.мк</title>
+    <title>Изданија | ТопЛиста.мк</title>
 
-    <meta name="title" content="YouTube Линкови | ТопЛиста.мк">
-    <meta name="description" content="Верификација на YouTube линкови за изданија на македонски музичари.">
+    <meta name="title" content="Изданија | ТопЛиста.мк">
+    <meta name="description" content="Сите изданија на македонски музичари со YouTube линкови и верификација.">
     <meta name="author" content="ТопЛиста.мк">
     <meta name="robots" content="noindex, nofollow">
     <meta name="language" content="Macedonian">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="YouTube Линкови | ТопЛиста.мк">
-    <meta property="og:description" content="Верификација на YouTube линкови за изданија на македонски музичари.">
+    <meta property="og:title" content="Изданија | ТопЛиста.мк">
+    <meta property="og:description" content="Сите изданија на македонски музичари со YouTube линкови и верификација.">
     <meta property="og:image" content="https://toplista.mk/og-image.png">
     <meta property="og:locale" content="mk_MK">
 
@@ -32,22 +32,24 @@
     <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
     <style>
     /* === YouTube Links page styles === */
 
-    .yt-page { padding: 1rem; max-width: 1400px; margin: 0 auto; }
+    .yt-page { padding: 0; max-width: none; margin: 0; }
 
     .yt-stats {
         display: flex; gap: 1.5rem; flex-wrap: wrap;
-        margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted);
+        margin-bottom: 0; font-size: 0.8rem; color: var(--text-muted);
+        padding: 0.5rem 0.75rem;
     }
     .yt-stats .stat { display: flex; align-items: center; gap: 0.3rem; }
     .yt-stats .stat i { font-size: 0.75rem; }
     .yt-stats .stat-value { font-weight: 700; color: var(--text-primary); }
 
     .yt-controls {
-        display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
-        align-items: center;
+        display: flex; gap: 0.75rem; margin-bottom: 0; flex-wrap: wrap;
+        align-items: center; padding: 0.5rem 0.75rem; flex-shrink: 0;
     }
     .yt-controls input[type="text"] {
         flex: 1; min-width: 200px;
@@ -64,12 +66,13 @@
     }
 
     .yt-table-wrap {
-        overflow-x: auto; border-radius: 10px;
-        border: 1px solid var(--border-color);
-        background: var(--bg-primary);
+        overflow: auto; border-radius: 0;
+        border: none; border-top: 1px solid var(--border-color);
+        background: var(--bg-primary); flex: 1;
     }
     .yt-table {
         width: 100%; border-collapse: collapse; font-size: 0.78rem;
+        table-layout: fixed;
     }
     .yt-table thead th {
         position: sticky; top: 0; z-index: 2;
@@ -101,18 +104,24 @@
     .yt-release-info {
         display: flex; align-items: center; gap: 0.6rem;
     }
+    .yt-edit-btn {
+        background: none; border: none; cursor: pointer; padding: 0.25rem;
+        color: var(--text-muted); font-size: 0.7rem; opacity: 0.4;
+        transition: opacity 0.15s, color 0.15s; flex-shrink: 0; margin-left: auto;
+    }
+    .yt-edit-btn:hover { opacity: 1; color: var(--accent-orange, #ff9113); }
     .yt-release-thumb {
         width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
         flex-shrink: 0;
     }
-    .yt-release-meta { display: flex; flex-direction: column; gap: 0.1rem; }
-    .yt-release-title { font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+    .yt-release-meta { display: flex; flex-direction: column; gap: 0.05rem; min-width: 0; }
+    .yt-release-row1 { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; min-width: 0; }
     .yt-release-artist { font-size: 0.72rem; color: var(--text-muted); }
     .yt-release-type {
-        display: inline-block; font-size: 0.6rem; font-weight: 700;
-        padding: 0.1rem 0.35rem; border-radius: 4px;
+        display: inline-block; font-size: 0.58rem; font-weight: 700;
+        padding: 0.05rem 0.3rem; border-radius: 4px;
         background: var(--bg-tertiary); color: var(--text-muted);
-        text-transform: uppercase; margin-left: 0.3rem;
+        text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
     }
 
     .yt-tracks-cell { min-width: 350px; }
@@ -217,17 +226,6 @@
     }
     .yt-track-search:hover { opacity: 1; }
 
-    .yt-submit-btn {
-        padding: 0.45rem 0.9rem; border-radius: 8px;
-        border: 1px solid #22c55e; background: #22c55e; color: #fff;
-        font-size: 0.78rem; font-weight: 600; font-family: 'Inter', sans-serif;
-        cursor: pointer; transition: all 0.15s;
-        display: inline-flex; align-items: center; gap: 0.35rem;
-        white-space: nowrap;
-    }
-    .yt-submit-btn:hover { background: #16a34a; }
-    .yt-submit-btn:disabled { opacity: 0.4; cursor: default; background: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-muted); }
-
     .yt-artist-link {
         color: var(--text-muted); text-decoration: none;
         transition: color 0.15s;
@@ -237,7 +235,8 @@
     /* Pagination */
     .yt-pagination {
         display: flex; justify-content: center; gap: 0.3rem;
-        margin-top: 1rem; flex-wrap: wrap;
+        margin: 0; flex-wrap: wrap; padding: 0.5rem 0.75rem;
+        flex-shrink: 0; border-top: 1px solid var(--border-color);
     }
     .yt-pagination button {
         padding: 0.35rem 0.7rem; border-radius: 6px;
@@ -253,8 +252,20 @@
     }
     .yt-pagination button:disabled { opacity: 0.4; cursor: default; }
 
+    .yt-release-date {
+        font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
+    }
+    .yt-release-tracks-count {
+        font-size: 0.65rem; color: var(--text-muted); opacity: 0.7;
+    }
+    .yt-release-title-link {
+        font-weight: 600; color: var(--text-primary); line-height: 1.2;
+        cursor: pointer; text-decoration: none; transition: color 0.15s;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+    }
+    .yt-release-title-link:hover { color: var(--accent-blue, #5b8fb9); text-decoration: underline; }
+
     @media (max-width: 600px) {
-        .yt-page { padding: 0.5rem; }
         .yt-release-info { min-width: unset; }
         .yt-tracks-cell { min-width: unset; }
         .yt-table td { padding: 0.4rem 0.5rem; }
@@ -263,7 +274,8 @@
     </style>
 </head>
 <body class="compact yt-links-page">
-    <header id="site-header" data-active="/youtube-linkovi" data-title="YouTube Линкови">
+    <header id="site-header" data-active="/releases" data-title="Изданија">
+        <button id="yt-add-release-btn" class="header-btn add-band" title="Додади издание"><i class="fas fa-plus"></i></button>
     </header>
     <script src="load-header.js"></script>
 
@@ -283,7 +295,6 @@
                 <option value="single">Сингли</option>
                 <option value="album">Албуми</option>
             </select>
-            <button class="yt-submit-btn" id="yt-submit-btn" disabled><i class="fas fa-paper-plane"></i> Прати промени</button>
         </div>
 
         <div id="yt-content">
@@ -308,6 +319,9 @@
         var filteredReleases = [];
         var currentPage = 0;
         var hasUnsavedChanges = false;
+
+        // Migrate legacy draft key (one-time cleanup)
+        try { localStorage.removeItem('mmm-yt-link-drafts'); } catch (_) {}
 
         // ── Notifications ────────────────────────────────────────────
         window.showNotification = function (msg, type) {
@@ -350,14 +364,26 @@
                 .then(function (data) {
                     originalData = JSON.parse(JSON.stringify(data));
                     releasesData = data;
-                    // Apply any pending draft changes
-                    var draft = _loadDraft();
-                    if (draft) {
-                        _applyDraft(releasesData, draft);
+                    // Apply any pending mmm-drafts diff
+                    var draft = (typeof MMMDrafts !== 'undefined') ? MMMDrafts.load('releases.json') : null;
+                    if (draft && draft._isDiff) {
+                        // Apply compact diff on top of the fresh data
+                        for (var i = 0; i < releasesData.releases.length; i++) {
+                            var rid = releasesData.releases[i].releaseId;
+                            if (draft.changed[rid]) {
+                                releasesData.releases[i] = draft.changed[rid];
+                            }
+                        }
+                        // Prepend new releases
+                        if (draft.added && draft.added.length) {
+                            releasesData.releases = draft.added.concat(releasesData.releases);
+                        }
+                    } else if (draft) {
+                        // Legacy full-data format
+                        releasesData = draft;
                     }
                     applyFilters();
                     renderStats();
-                    updateSubmitBtn();
                 })
                 .catch(function (err) {
                     document.getElementById('yt-content').innerHTML =
@@ -369,7 +395,7 @@
         function renderStats() {
             var releases = releasesData.releases;
             var total = releases.length;
-            var withYt = 0, verifiedCount = 0, unverifiedCount = 0, noYt = 0;
+            var withYt = 0, verifiedCount = 0, unverifiedCount = 0, noYt = 0, totalViews = 0;
             for (var i = 0; i < releases.length; i++) {
                 var yt = releases[i].youtubeTracks;
                 if (yt && yt.length > 0) {
@@ -381,13 +407,16 @@
                 } else {
                     noYt++;
                 }
+                if (releases[i].youtubeViews) totalViews += releases[i].youtubeViews;
             }
+            var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K' : String(totalViews);
             document.getElementById('yt-stats').innerHTML =
                 '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
                 '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
                 '<div class="stat"><i class="fas fa-check-circle" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> верификувани</div>' +
                 '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
-                '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>';
+                '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>' +
+                (totalViews > 0 ? '<div class="stat"><i class="fas fa-eye"></i> <span class="stat-value">' + viewsStr + '</span> прегледи</div>' : '');
         }
 
         // ── Filtering ────────────────────────────────────────────────
@@ -451,21 +480,37 @@
                 var r = page[i].release;
                 var idx = page[i].index;
                 var num = start + i + 1;
-                var typeLabel = r.releaseType === 'album' ? 'АЛБ' : r.releaseType === 'compilation' ? 'КОМ' : 'СИН';
+                var typeLabel = r.releaseType === 'album' ? 'Албум' : r.releaseType === 'compilation' ? 'Компилација' : 'Сингл';
 
                 html += '<tr data-idx="' + idx + '">';
                 html += '<td style="color:var(--text-muted);font-size:0.7rem">' + num + '</td>';
 
-                // Release info
+                // Release info with details
                 html += '<td><div class="yt-release-info">';
                 if (r.thumbnail) html += '<img class="yt-release-thumb" src="' + esc(r.thumbnail) + '" alt="" loading="lazy">';
                 html += '<div class="yt-release-meta">';
-                html += '<span class="yt-release-title">' + esc(r.releaseTitle) + '<span class="yt-release-type">' + typeLabel + '</span></span>';
+                // Row 1: Title + type badge + date · tracks
+                html += '<div class="yt-release-row1">';
+                html += '<span class="yt-release-title-link" data-release-idx="' + idx + '" title="Отвори во стриминг сервис">' + esc(r.releaseTitle) + '</span>';
+                html += '<span class="yt-release-type">' + typeLabel + '</span>';
+                var dateParts = r.releaseDate ? r.releaseDate.split('-') : [];
+                var dateStr = dateParts.length === 3 ? dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0] : (r.releaseDate || '');
+                var dateInfo = esc(dateStr);
+                if (r.totalTracks) dateInfo += ' · ' + r.totalTracks + (r.totalTracks === 1 ? ' песна' : ' песни');
+                if (r.youtubeViews) {
+                    var views = r.youtubeViews;
+                    dateInfo += ' · <i class="fab fa-youtube" style="color:#f00"></i> ' + (views >= 1000000 ? (views / 1000000).toFixed(1) + 'M' : views >= 1000 ? (views / 1000).toFixed(1) + 'K' : views);
+                }
+                if (dateInfo) html += '<span class="yt-release-date">' + dateInfo + '</span>';
+                html += '</div>';
+                // Row 2: Artist
                 var artistUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
                     ? '/artist.html?name=' + encodeURIComponent(r.bandName)
                     : '/' + encodeURIComponent(r.bandName);
                 html += '<span class="yt-release-artist"><a class="yt-artist-link" href="' + artistUrl + '">' + esc(r.bandName) + '</a>' + (r.spotifyName ? ' <span style="opacity:.5">(' + esc(r.spotifyName) + ')</span>' : '') + '</span>';
-                html += '</div></div></td>';
+                html += '</div>';
+                html += '<button class="yt-edit-btn" data-release="' + idx + '" title="Измени издание"><i class="fas fa-pen"></i></button>';
+                html += '</div></td>';
 
                 // Spotify
                 html += '<td>';
@@ -510,6 +555,10 @@
                 html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
                 html += '<i class="fas ' + iconClass + '"></i> ';
                 html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
+                if (t.views) {
+                    var v = t.views;
+                    html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v) + ')</span>';
+                }
                 html += '</a>';
                 var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);
                 html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(t.name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
@@ -552,6 +601,31 @@
                 addBtns[i].addEventListener('click', function () {
                     var ri = parseInt(this.dataset.release, 10);
                     showAddForm(this, ri);
+                });
+            }
+
+            // Edit buttons
+            var editBtns = document.querySelectorAll('.yt-edit-btn');
+            for (var i = 0; i < editBtns.length; i++) {
+                editBtns[i].addEventListener('click', function () {
+                    var ri = parseInt(this.dataset.release, 10);
+                    showReleaseForm(ri);
+                });
+            }
+
+            // Release title click → open service chooser
+            var titleLinks = document.querySelectorAll('.yt-release-title-link');
+            for (var i = 0; i < titleLinks.length; i++) {
+                titleLinks[i].addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var ri = parseInt(this.dataset.releaseIdx, 10);
+                    var r = releasesData.releases[ri];
+                    if (r && r.releaseUrl && typeof showServiceChooserDialog === 'function') {
+                        var ytUrl = r.youtubeTracks && r.youtubeTracks.length > 0 ? (r.youtubeTracks[0].url || 'https://www.youtube.com/watch?v=' + r.youtubeTracks[0].videoId) : undefined;
+                        showServiceChooserDialog(r.releaseUrl, r.releaseTitle, r.bandName, r.thumbnail, null, r.spotifyName, false, ytUrl);
+                    } else if (r && r.releaseUrl) {
+                        window.open(r.releaseUrl, '_blank');
+                    }
                 });
             }
         }
@@ -661,86 +735,38 @@
             showNotification('Нов YouTube линк додаден (верификуван)', 'success');
         }
 
-        // ── Change tracking (compact diff - avoids localStorage quota) ──
-        var DRAFT_KEY = 'mmm-yt-link-drafts';
-
-        function _getChangedReleaseIds() {
-            if (!releasesData || !originalData) return {};
-            var origMap = {};
-            for (var i = 0; i < originalData.releases.length; i++) {
-                var o = originalData.releases[i];
-                origMap[o.releaseId] = o;
-            }
-            var changes = {};
-            for (var i = 0; i < releasesData.releases.length; i++) {
-                var r = releasesData.releases[i];
-                var o = origMap[r.releaseId];
-                if (!o) {
-                    // New release added manually
-                    changes[r.releaseId] = r;
-                } else if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
-                    changes[r.releaseId] = r;
-                }
-            }
-            return changes;
-        }
-
-        function _saveDraft() {
-            var changes = _getChangedReleaseIds();
-            if (Object.keys(changes).length === 0) {
-                localStorage.removeItem(DRAFT_KEY);
-            } else {
-                try {
-                    localStorage.setItem(DRAFT_KEY, JSON.stringify({
-                        changes: changes,
-                        savedAt: new Date().toISOString()
-                    }));
-                } catch (e) {
-                    console.warn('Could not save YT draft:', e);
-                }
-            }
-        }
-
-        function _loadDraft() {
-            try {
-                var raw = localStorage.getItem(DRAFT_KEY);
-                if (raw) return JSON.parse(raw);
-            } catch (_) {}
-            return null;
-        }
-
-        function _applyDraft(data, draft) {
-            if (!draft || !draft.changes) return;
-            var changeMap = draft.changes;
-            for (var i = 0; i < data.releases.length; i++) {
-                var r = data.releases[i];
-                if (changeMap[r.releaseId]) {
-                    data.releases[i] = changeMap[r.releaseId];
-                    delete changeMap[r.releaseId];
-                }
-            }
-            // Any remaining entries are new releases — prepend
-            var remaining = Object.keys(changeMap);
-            for (var j = 0; j < remaining.length; j++) {
-                data.releases.unshift(changeMap[remaining[j]]);
-            }
-        }
-
-        function _hasDraftChanges() {
-            var draft = _loadDraft();
-            return draft && draft.changes && Object.keys(draft.changes).length > 0;
-        }
-
+        // ── Change tracking (via mmm-drafts system) ──
+        // Build a compact diff to avoid exceeding localStorage's 5 MB limit
+        // (the full releases.json + original would be ~5.4 MB).
         function markChanged() {
             hasUnsavedChanges = true;
-            _saveDraft();
-            updateSubmitBtn();
-        }
+            if (typeof MMMDrafts === 'undefined') return;
 
-        function updateSubmitBtn() {
-            var btn = document.getElementById('yt-submit-btn');
-            if (!btn) return;
-            btn.disabled = !_hasDraftChanges();
+            var origMap = {};
+            if (originalData && originalData.releases) {
+                for (var i = 0; i < originalData.releases.length; i++) {
+                    var or = originalData.releases[i];
+                    origMap[or.releaseId] = or;
+                }
+            }
+
+            var changed = {};   // releaseId → modified release
+            var originals = {}; // releaseId → original release (for those that existed)
+            var added = [];     // brand new releases
+
+            for (var j = 0; j < releasesData.releases.length; j++) {
+                var r = releasesData.releases[j];
+                var o = origMap[r.releaseId];
+                if (!o) {
+                    added.push(r);
+                } else if (JSON.stringify(r) !== JSON.stringify(o)) {
+                    changed[r.releaseId] = r;
+                    originals[r.releaseId] = o;
+                }
+            }
+
+            var diff = { _isDiff: true, changed: changed, originals: originals, added: added };
+            MMMDrafts.save('releases.json', diff, null);
         }
 
         // ── Pagination ───────────────────────────────────────────────
@@ -772,150 +798,193 @@
                     currentPage = parseInt(this.dataset.page, 10);
                     renderTable();
                     renderPagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    var content = document.getElementById('yt-content');
+                    if (content) content.scrollTop = 0;
                 });
             }
         }
 
         // ── Listen for draft events ──────────────────────────────────
-        window.addEventListener('mmm-drafts-submitted', function () {
-            // If releases.json was submitted through the main mmm-drafts system, sync
-            originalData = JSON.parse(JSON.stringify(releasesData));
-            hasUnsavedChanges = false;
-            localStorage.removeItem(DRAFT_KEY);
-            updateSubmitBtn();
-        });
-
         window.addEventListener('mmm-drafts-discarded', function () {
             if (originalData) {
                 releasesData = JSON.parse(JSON.stringify(originalData));
                 hasUnsavedChanges = false;
-                localStorage.removeItem(DRAFT_KEY);
                 applyFilters();
                 renderStats();
-                updateSubmitBtn();
             }
         });
 
-        // ── Submit dialog ────────────────────────────────────────────
-        function _resolveEndpoint() {
-            if (typeof window.MMM_PR_ENDPOINT === 'string' && window.MMM_PR_ENDPOINT.trim()) return window.MMM_PR_ENDPOINT.trim();
-            var btn = document.querySelector('[data-endpoint]');
-            if (btn) { var a = btn.getAttribute('data-endpoint'); if (a && a.trim()) return a.trim(); }
-            var s = localStorage.getItem('mmm_pr_endpoint');
-            if (s && s.trim()) return s.trim();
-            return 'https://muzichka-master-lista.deeeeelay.workers.dev';
-        }
+        window.addEventListener('mmm-drafts-submitted', function () {
+            originalData = JSON.parse(JSON.stringify(releasesData));
+            hasUnsavedChanges = false;
+        });
 
-        function showSubmitDialog() {
-            if (!_hasDraftChanges()) {
-                showNotification('Нема промени за праќање.', 'info');
-                return;
-            }
-            var changes = _getChangedReleaseIds();
-            var count = Object.keys(changes).length;
+        // ── Add/Edit Release form ──────────────────────────────────
+        function showReleaseForm(editIdx) {
+            var isEdit = typeof editIdx === 'number';
+            var existing = isEdit ? releasesData.releases[editIdx] : null;
 
             var overlay = document.createElement('div');
             overlay.className = 'mmm-draft-overlay';
+
+            // Build initial tracks list HTML
+            function buildTrackRowHtml(name) {
+                return '<div class="ar-track-row" style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.3rem">' +
+                    '<input type="text" class="ar-track-input" placeholder="Име на песна..." value="' + esc(name || '') + '" style="flex:1">' +
+                    '<button type="button" class="ar-track-remove" title="Отстрани" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;padding:0.2rem"><i class="fas fa-times"></i></button>' +
+                '</div>';
+            }
+
+            var existingTracks = existing ? (existing.trackNames || [existing.releaseTitle]) : [];
+            var tracksHtml = '';
+            for (var t = 0; t < existingTracks.length; t++) {
+                tracksHtml += buildTrackRowHtml(existingTracks[t]);
+            }
+            if (!isEdit) tracksHtml = buildTrackRowHtml('');
+
             overlay.innerHTML =
-                '<div class="mmm-draft-dialog">' +
-                    '<h2><i class="fas fa-paper-plane"></i> Прати промени</h2>' +
-                    '<p class="mmm-draft-dialog-info">Промените ќе бидат испратени за преглед.</p>' +
-                    '<ul class="mmm-draft-file-list"><li><i class="fas fa-music"></i> YouTube Линкови (' + count + ' изданија)</li></ul>' +
-                    '<form id="yt-submit-form">' +
-                        '<div class="mmm-draft-field">' +
-                            '<label for="yt-contributor">Твое име (опционално)</label>' +
-                            '<input type="text" id="yt-contributor" placeholder="Анонимно">' +
-                        '</div>' +
-                        '<div class="mmm-draft-field">' +
-                            '<label for="yt-description">Опис на промените *</label>' +
-                            '<textarea id="yt-description" placeholder="Што променивте?" rows="3" required></textarea>' +
-                        '</div>' +
-                        '<div class="mmm-draft-dialog-buttons">' +
-                            '<button type="button" class="mmm-draft-btn discard" id="yt-dialog-cancel">Откажи</button>' +
-                            '<button type="submit" class="mmm-draft-btn submit" id="yt-dialog-submit">' +
-                                '<i class="fas fa-paper-plane"></i> Прати' +
-                            '</button>' +
-                        '</div>' +
-                    '</form>' +
+                '<div class="mmm-draft-dialog" style="max-width:440px">' +
+                    '<h2><i class="fas ' + (isEdit ? 'fa-edit' : 'fa-plus-circle') + '"></i> ' + (isEdit ? 'Измени издание' : 'Ново издание') + '</h2>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label for="ar-artist">Артист *</label>' +
+                        '<input type="text" id="ar-artist" placeholder="Име на артист..." value="' + esc(existing ? existing.bandName : '') + '">' +
+                    '</div>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label for="ar-title">Наслов на издание *</label>' +
+                        '<input type="text" id="ar-title" placeholder="Име на песна / албум..." value="' + esc(existing ? existing.releaseTitle : '') + '">' +
+                    '</div>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label for="ar-type">Тип</label>' +
+                        '<select id="ar-type">' +
+                            '<option value="single"' + (existing && existing.releaseType === 'single' ? ' selected' : '') + '>Сингл</option>' +
+                            '<option value="album"' + (existing && existing.releaseType === 'album' ? ' selected' : '') + '>Албум</option>' +
+                        '</select>' +
+                    '</div>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label for="ar-date">Датум на издавање</label>' +
+                        '<input type="date" id="ar-date" value="' + (existing ? (existing.releaseDate || '') : new Date().toISOString().slice(0, 10)) + '">' +
+                    '</div>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label>Песни</label>' +
+                        '<div id="ar-tracks">' + tracksHtml + '</div>' +
+                        '<button type="button" id="ar-add-track" style="background:none;border:1px dashed var(--border-color);color:var(--text-muted);cursor:pointer;padding:0.3rem 0.6rem;border-radius:6px;font-size:0.75rem;font-family:inherit;margin-top:0.3rem;width:100%"><i class="fas fa-plus"></i> Додади песна</button>' +
+                    '</div>' +
+                    '<div class="mmm-draft-field">' +
+                        '<label for="ar-spotify">Spotify линк (по избор)</label>' +
+                        '<input type="text" id="ar-spotify" placeholder="https://open.spotify.com/album/..." value="' + esc(existing ? (existing.releaseUrl || '') : '') + '">' +
+                    '</div>' +
+                    '<div class="mmm-draft-dialog-buttons">' +
+                        '<button type="button" class="mmm-draft-btn discard" id="ar-cancel">Откажи</button>' +
+                        '<button type="button" class="mmm-draft-btn submit" id="ar-save" disabled><i class="fas fa-check"></i> ' + (isEdit ? 'Зачувај' : 'Додади') + '</button>' +
+                    '</div>' +
                 '</div>';
 
             document.body.appendChild(overlay);
 
             overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
-            document.getElementById('yt-dialog-cancel').addEventListener('click', function () { overlay.remove(); });
+            document.getElementById('ar-cancel').addEventListener('click', function () { overlay.remove(); });
 
-            // Auto-generate description
-            var names = [];
-            for (var rid in changes) {
-                var c = changes[rid];
-                names.push(c.bandName + ' – ' + c.releaseTitle);
+            var artistInput = overlay.querySelector('#ar-artist');
+            var titleInput = overlay.querySelector('#ar-title');
+            var tracksContainer = overlay.querySelector('#ar-tracks');
+            (isEdit ? titleInput : artistInput).focus();
+
+            function updateSaveBtn() {
+                overlay.querySelector('#ar-save').disabled = !artistInput.value.trim() || !titleInput.value.trim();
             }
-            var maxShow = 5;
-            var desc = 'YouTube линкови: ' + names.slice(0, maxShow).join(', ');
-            if (names.length > maxShow) desc += ' (+' + (names.length - maxShow) + ' повеќе)';
-            document.getElementById('yt-description').value = desc;
-            document.getElementById('yt-description').focus();
+            artistInput.addEventListener('input', updateSaveBtn);
+            titleInput.addEventListener('input', updateSaveBtn);
+            updateSaveBtn();
 
-            document.getElementById('yt-submit-form').addEventListener('submit', async function (e) {
-                e.preventDefault();
-                var contributor = document.getElementById('yt-contributor').value.trim();
-                var description = document.getElementById('yt-description').value.trim();
-                if (!description) { showNotification('Внеси опис.', 'error'); return; }
+            // Add track row
+            overlay.querySelector('#ar-add-track').addEventListener('click', function () {
+                var div = document.createElement('div');
+                div.innerHTML = buildTrackRowHtml('');
+                var row = div.firstChild;
+                tracksContainer.appendChild(row);
+                row.querySelector('.ar-track-input').focus();
+                bindTrackRemove(row);
+            });
 
-                var submitBtn = document.getElementById('yt-dialog-submit');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Се праќа...';
+            // Bind remove buttons on existing rows
+            function bindTrackRemove(row) {
+                row.querySelector('.ar-track-remove').addEventListener('click', function () {
+                    row.remove();
+                });
+            }
+            var rows = tracksContainer.querySelectorAll('.ar-track-row');
+            for (var ri = 0; ri < rows.length; ri++) bindTrackRemove(rows[ri]);
 
-                try {
-                    var json = JSON.stringify(releasesData, null, 2);
-                    var origJson = JSON.stringify(originalData, null, 2);
-                    var endpoint = _resolveEndpoint();
+            // Collect track names from the form
+            function getTrackNames() {
+                var inputs = tracksContainer.querySelectorAll('.ar-track-input');
+                var names = [];
+                for (var j = 0; j < inputs.length; j++) {
+                    var v = inputs[j].value.trim();
+                    if (v) names.push(v);
+                }
+                return names;
+            }
 
-                    var resp = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            bandsJson: json,
-                            originalJson: origJson,
-                            contributor: contributor,
-                            description: description,
-                            path: 'releases.json',
-                            baseBranch: 'youtube-chart-tracking'
-                        })
-                    });
+            overlay.querySelector('#ar-save').addEventListener('click', function () {
+                var artist = artistInput.value.trim();
+                var title = titleInput.value.trim();
+                if (!artist || !title) return;
+                var type = overlay.querySelector('#ar-type').value;
+                var date = overlay.querySelector('#ar-date').value || new Date().toISOString().slice(0, 10);
+                var spotifyUrl = overlay.querySelector('#ar-spotify').value.trim();
+                var trackNames = getTrackNames();
+                if (trackNames.length === 0) trackNames = [title];
 
-                    if (!resp.ok) {
-                        var errText = await resp.text();
-                        throw new Error('Worker error (' + resp.status + '): ' + errText);
-                    }
-
-                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Успешно!';
-                    submitBtn.classList.add('mmm-btn-success');
-
-                    // Clear drafts and reset state
-                    originalData = JSON.parse(JSON.stringify(releasesData));
-                    hasUnsavedChanges = false;
-                    localStorage.removeItem(DRAFT_KEY);
-                    updateSubmitBtn();
-
-                    setTimeout(function () { overlay.remove(); }, 1200);
-                    showNotification('Промените се успешно испратени!', 'success');
-                } catch (err) {
-                    console.error('Submit failed:', err);
-                    showNotification('Грешка: ' + err.message, 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Прати';
+                if (isEdit) {
+                    // Update existing release
+                    existing.bandName = artist;
+                    existing.releaseTitle = title;
+                    existing.releaseType = type;
+                    existing.releaseDate = date;
+                    existing.releaseUrl = spotifyUrl || existing.releaseUrl || '';
+                    existing.trackNames = trackNames;
+                    existing.totalTracks = trackNames.length;
+                    markChanged();
+                    applyFilters();
+                    renderStats();
+                    overlay.remove();
+                    showNotification('Изданието "' + esc(title) + '" е изменето', 'success');
+                } else {
+                    // Create new release
+                    var releaseId = 'manual-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                    var newRelease = {
+                        bandName: artist,
+                        artistId: '',
+                        releaseId: releaseId,
+                        releaseTitle: title,
+                        releaseType: type,
+                        releaseDate: date,
+                        releaseUrl: spotifyUrl || '',
+                        thumbnail: '',
+                        totalTracks: trackNames.length,
+                        trackNames: trackNames,
+                        spotifyUrl: ''
+                    };
+                    releasesData.releases.unshift(newRelease);
+                    releasesData.totalReleases = releasesData.releases.length;
+                    markChanged();
+                    applyFilters();
+                    renderStats();
+                    overlay.remove();
+                    showNotification('Изданието "' + esc(title) + '" е додадено', 'success');
                 }
             });
         }
+
+        function showAddReleaseForm() { showReleaseForm(); }
 
         // ── Init ─────────────────────────────────────────────────────────────
         document.getElementById('yt-search').addEventListener('input', debounce(applyFilters, 150));
         document.getElementById('yt-filter-status').addEventListener('change', applyFilters);
         document.getElementById('yt-filter-type').addEventListener('change', applyFilters);
-        document.getElementById('yt-submit-btn').addEventListener('click', function () {
-            showSubmitDialog();
+        document.getElementById('yt-add-release-btn').addEventListener('click', function () {
+            showAddReleaseForm();
         });
 
         function debounce(fn, ms) {

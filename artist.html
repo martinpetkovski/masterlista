@@ -1257,6 +1257,38 @@ a.chart-history-item {
         }
         .release-yt-views .fa-youtube { font-size: 0.6rem; }
 
+        /* YouTube link pills on artist releases */
+        .release-track-list {
+            list-style: none; margin: 0; padding: 0;
+            display: flex; flex-direction: column;
+        }
+        .release-track-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 0.15rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.82rem;
+            cursor: pointer; transition: background 0.12s;
+        }
+        .release-track-item:last-child { border-bottom: none; }
+        .release-track-item:hover { background: var(--bg-secondary); }
+        .release-track-num {
+            width: 1.5rem; text-align: right; flex-shrink: 0;
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 600;
+        }
+        .release-track-name {
+            flex: 1; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--text-primary); font-weight: 500;
+        }
+        .release-track-item:hover .release-track-name { color: var(--accent-blue, #5b8fb9); }
+        .release-track-verified {
+            flex-shrink: 0; color: #22c55e; font-size: 0.65rem; opacity: 0.85;
+        }
+        .release-track-views {
+            flex-shrink: 0; font-size: 0.6rem; color: var(--text-muted); opacity: 0.7; margin-left: auto;
+        }
+        .release-track-views i { color: #ff4444; margin-right: 0.15rem; }
+
         .chart-history-link {
             margin-left: auto;
             color: var(--accent-orange);
@@ -2565,7 +2597,7 @@ a.chart-history-item {
             // 2. Build per-release data from chartData.releases + releaseSparklines
             const releases = siteMaster.chartData?.releases || [];
             releases.forEach(r => {
-                if (!r.bandName || r.bandName.toLowerCase().trim() !== artistNameLower) return;
+                if (!r.bandName || !r.bandName.toLowerCase().trim().split(', ').some(n => n === artistNameLower)) return;
                 const rid = r.releaseId;
                 if (artistHistory.releases.has(rid)) return;
                 
@@ -2854,28 +2886,55 @@ a.chart-history-item {
             // Store releases for music player
             window.artistReleases = releases;
             window.artistLinks = artistLinks || {};
-            
-            // Render releases with play buttons
-            const releasesHtml = releases.map((release, index) => {
-                const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
+
+            // Build a YouTube track lookup: trackName → { videoId, url, verified }
+            // per release for quick matching
+            function getYtMap(release) {
+                const map = {};
+                if (release.youtubeTracks) {
+                    release.youtubeTracks.forEach(yt => {
+                        map[yt.name.toLowerCase().trim()] = yt;
+                    });
+                }
+                return map;
+            }
+
+            // Build numbered track list per release
+            const releasesHtml = releases.map((release, rIdx) => {
                 const typeLabel = release.releaseType === 'album' ? t('artist.album') : t('artist.single');
                 const typeClass = release.releaseType === 'album' ? 'album' : 'single';
-                
-                // Format release date
+                const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
+                const isNew = new Date(release.releaseDate) >= fourWeeksAgo;
+                const newBadge = isNew ? '<span class="release-new-badge">НОВО</span>' : '';
+
+                const ytMap = getYtMap(release);
+                // Use trackNames if available, otherwise fall back to youtubeTracks names, or just releaseTitle
+                let trackNum = 0;
+                let tracks = release.trackNames && release.trackNames.length > 0
+                    ? release.trackNames
+                    : (release.youtubeTracks && release.youtubeTracks.length > 0
+                        ? release.youtubeTracks.map(yt => yt.name)
+                        : [release.releaseTitle]);
+
+                const tracksHtml = tracks.map(trackName => {
+                    trackNum++;
+                    const ytEntry = ytMap[trackName.toLowerCase().trim()];
+                    const isVerified = ytEntry && ytEntry.verified;
+                    const ytUrl = ytEntry ? (ytEntry.url || 'https://www.youtube.com/watch?v=' + ytEntry.videoId) : '';
+                    const tick = isVerified
+                        ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
+                        : '';
+                    const viewsHtml = ytEntry && ytEntry.views
+                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${ytEntry.views >= 1000000 ? (ytEntry.views / 1000000).toFixed(1) + 'M' : ytEntry.views >= 1000 ? (ytEntry.views / 1000).toFixed(1) + 'K' : ytEntry.views}</span>`
+                        : '';
+                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${ytUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${viewsHtml}${tick}</li>`;
+                }).join('');
+
+                // Release header with release type, date, cover thumbnail
                 const releaseDate = new Date(release.releaseDate);
-                const monthNames = t('months.short');
                 const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
-                
-                // Show open button if there's a release URL
-                const hasLink = !!release.releaseUrl;
-                
-                const playButton = hasLink ? `
-                    <button class="release-play-btn" data-release-index="${index}" title="${t('artist.openInService')}">
-                        <i class="fas fa-external-link-alt"></i>
-                    </button>
-                ` : '';
-                
-                // Build VU meter with popularity to the right
+
+                // Build VU meter
                 let vuMeterHtml = '';
                 const peakPop = (release.chartWeeks && release.chartWeeks.length >= 1)
                     ? Math.max(...release.chartWeeks.map(w => w.popularity))
@@ -2895,40 +2954,45 @@ a.chart-history-item {
                     }
                     vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${peakPop}</span></div>`;
                 }
-                
-                // NEW badge for releases in the last 4 weeks
-                const isNew = new Date(release.releaseDate) >= fourWeeksAgo;
-                const newBadge = isNew ? '<span class="release-new-badge">НОВО</span>' : '';
-                
+
                 return `
-                    <div class="chart-history-item" data-release-index="${index}" style="cursor:pointer;">
-                        <div class="chart-history-cover">
-                            ${release.thumbnail 
-                                ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
-                                : `<i class="${typeIcon}" style="font-size: 1.25rem; color: var(--text-muted);"></i>`
-                            }
-                        </div>
-                        <div class="chart-history-info">
-                            <div class="chart-history-title">${release.releaseTitle}${newBadge}</div>
-                            <div class="chart-history-meta">
-                                <span class="chart-history-type ${typeClass}">
-                                    <i class="${typeIcon}"></i> ${typeLabel}
-                                </span>
-                                <span>${dateStr}</span>
-                                ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${release.youtubeViews >= 1000000 ? (release.youtubeViews / 1000000).toFixed(1) + 'M' : release.youtubeViews >= 1000 ? (release.youtubeViews / 1000).toFixed(1) + 'K' : release.youtubeViews}</span>` : ''}
+                    <div class="chart-history-item" style="flex-direction:column;align-items:stretch;cursor:default;">
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div class="chart-history-cover">
+                                ${release.thumbnail 
+                                    ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
+                                    : `<i class="${typeIcon}" style="font-size: 1.25rem; color: var(--text-muted);"></i>`
+                                }
                             </div>
-                            ${vuMeterHtml}
+                            <div class="chart-history-info">
+                                <div class="chart-history-title">${release.releaseTitle}${newBadge}</div>
+                                <div class="chart-history-meta">
+                                    <span class="chart-history-type ${typeClass}">
+                                        <i class="${typeIcon}"></i> ${typeLabel}
+                                    </span>
+                                    <span>${dateStr}</span>
+                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${release.youtubeViews >= 1000000 ? (release.youtubeViews / 1000000).toFixed(1) + 'M' : release.youtubeViews >= 1000 ? (release.youtubeViews / 1000).toFixed(1) + 'K' : release.youtubeViews}</span>` : ''}
+                                </div>
+                                ${vuMeterHtml}
+                            </div>
                         </div>
-                        ${playButton}
+                        <ol class="release-track-list">${tracksHtml}</ol>
                     </div>
                 `;
             }).join('');
+            
+            // Calculate cumulative YouTube views across all releases
+            const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
+            const ytViewsHtml = totalYtViews > 0
+                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fab fa-youtube"></i> ${totalYtViews >= 1000000 ? (totalYtViews / 1000000).toFixed(1) + 'M' : totalYtViews >= 1000 ? (totalYtViews / 1000).toFixed(1) + 'K' : totalYtViews}</span>`
+                : '';
             
             container.innerHTML = `
                 <div class="chart-history-section">
                     <h3 class="section-title">
                         <i class="fas fa-compact-disc"></i>
                         ${t('artist.releases')} <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
+                        ${ytViewsHtml}
                         <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додади издание</button>
                     </h3>
                     <div class="chart-history-list">
@@ -2940,19 +3004,29 @@ a.chart-history-item {
             void container.offsetWidth;
             container.classList.add('section-loaded');
             
-            // Add click handlers for entire release items - open on preferred service
-            container.querySelectorAll('.chart-history-item[data-release-index]').forEach(item => {
+            // Add click handlers for track items - open service chooser
+            container.querySelectorAll('.release-track-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    const index = parseInt(item.dataset.releaseIndex);
+                    const rIdx = parseInt(item.dataset.releaseIdx);
+                    const trackName = item.dataset.trackName;
+                    const ytUrl = item.dataset.ytUrl || '';
                     const releases = window.artistReleases || [];
-                    const release = releases[index];
-                    if (release?.releaseUrl) {
-                        const bd = window.bandsData || [];
-                        const band = bd.find(b => b.name && b.name.toLowerCase() === (release.bandName || '').toLowerCase());
-                        openOnPreferredService(release.releaseUrl, release.releaseTitle, release.bandName, release.thumbnail, band?.accentColors, release.spotifyName || band?.spotifyName, band?.confirmed);
-                    }
+                    const release = releases[rIdx];
+                    if (!release) return;
+                    const bd = window.bandsData || [];
+                    const band = bd.find(b => b.name && b.name.toLowerCase() === (release.bandName || '').toLowerCase());
+                    showServiceChooserDialog(
+                        release.releaseUrl,
+                        trackName,
+                        release.bandName,
+                        release.thumbnail,
+                        band?.accentColors,
+                        release.spotifyName || band?.spotifyName,
+                        band?.confirmed,
+                        ytUrl || undefined
+                    );
                 });
             });
         }
@@ -3057,7 +3131,7 @@ a.chart-history-item {
                 const releases = siteMaster?.chartData?.releases || [];
                 const artistNameLower = artist.name.toLowerCase();
                 releases.forEach(r => {
-                    if (r.bandName && r.bandName.toLowerCase() === artistNameLower) {
+                    if (r.bandName && r.bandName.toLowerCase().split(', ').some(n => n === artistNameLower)) {
                         if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
                         if (r.releaseDate && (!latestReleaseDate || r.releaseDate > latestReleaseDate)) {
                             latestReleaseDate = r.releaseDate;
@@ -3244,6 +3318,18 @@ a.chart-history-item {
                 try {
                     const chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
                     renderPopularityGraph(chartHistory, siteMaster, artist.name);
+                    // Overlay verified youtube data from releases.json (site-master may have stale verified flags)
+                    try {
+                        const relResp = await fetch('/releases.json?_=' + Date.now());
+                        const relData = await relResp.json();
+                        const draft = (window.MMMDrafts) ? MMMDrafts.load('releases.json') : null;
+                        const relSrc = draft || relData;
+                        const ytOverlay = {};
+                        (relSrc.releases || []).forEach(r => { if (r.youtubeTracks) ytOverlay[r.releaseId] = r.youtubeTracks; });
+                        chartHistory.releases.forEach(rel => {
+                            if (ytOverlay[rel.releaseId]) rel.youtubeTracks = ytOverlay[rel.releaseId];
+                        });
+                    } catch (_) {}
                     renderReleases(chartHistory, artist.links, siteMaster);
                 } catch (e) {
                     console.warn('Could not build chart history:', e);
@@ -3942,7 +4028,7 @@ a.chart-history-item {
             document.addEventListener('click', function (e) {
                 if (e.target.closest('#add-release-btn')) {
                     e.preventDefault();
-                    _showAddReleaseForm();
+                    window.location.href = '/releases';
                 }
             });
         })();

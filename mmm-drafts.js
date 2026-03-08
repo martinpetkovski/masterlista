@@ -34,7 +34,9 @@ window.MMMDrafts = (function () {
     function _writeAll(obj) {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-        } catch (_) {}
+        } catch (e) {
+            console.warn('MMMDrafts: localStorage write failed', e);
+        }
     }
 
     /** Save a draft for a specific file path (e.g. 'events.json').
@@ -206,7 +208,7 @@ window.MMMDrafts = (function () {
             var entry = all[filePath];
             var data = entry.data;
             var original = entry.original;
-            if (!original) {
+            if (!original && !(data && data._isDiff)) {
                 // No original stored — just note which files changed
                 var label = filePath === 'bands.json' ? t('drafts.masterList') : filePath === 'events.json' ? t('drafts.events') : filePath;
                 lines.push('• ' + label + ': ' + t('drafts.changes'));
@@ -288,39 +290,68 @@ window.MMMDrafts = (function () {
         return lines;
     }
 
-    function _diffReleases(original, modified) {
-        var origList = (original && original.releases) || [];
-        var modList = (modified && modified.releases) || [];
-        var origMap = {}; origList.forEach(function (r) { origMap[r.releaseId] = r; });
-
-        var verified = 0, added = 0, removed = 0, changedReleases = [];
-
-        modList.forEach(function (r) {
-            var o = origMap[r.releaseId];
-            if (!o) return;
-            var origYt = o.youtubeTracks || [];
-            var modYt = r.youtubeTracks || [];
-            var origYtJson = JSON.stringify(origYt);
-            var modYtJson = JSON.stringify(modYt);
-            if (origYtJson === modYtJson) return;
-
-            // Count specific changes
-            var origVidMap = {}; origYt.forEach(function (t) { origVidMap[t.videoId] = t; });
-            var modVidMap = {}; modYt.forEach(function (t) { modVidMap[t.videoId] = t; });
-
-            var changes = [];
-            modYt.forEach(function (t) {
-                if (!origVidMap[t.videoId]) { added++; changes.push('+YT'); }
-                else if (t.verified && !origVidMap[t.videoId].verified) { verified++; changes.push('✓'); }
-            });
-            origYt.forEach(function (t) {
-                if (!modVidMap[t.videoId]) { removed++; changes.push('-YT'); }
-            });
-
-            if (changes.length) {
-                changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [' + changes.join(', ') + ']');
-            }
+    function _diffReleasesPair(origRelease, modRelease) {
+        var origYt = (origRelease && origRelease.youtubeTracks) || [];
+        var modYt = (modRelease && modRelease.youtubeTracks) || [];
+        var origVidMap = {}; origYt.forEach(function (t) { origVidMap[t.videoId] = t; });
+        var modVidMap = {}; modYt.forEach(function (t) { modVidMap[t.videoId] = t; });
+        var v = 0, a = 0, rem = 0, changes = [];
+        modYt.forEach(function (t) {
+            if (!origVidMap[t.videoId]) { a++; changes.push('+YT'); }
+            else if (t.verified && !origVidMap[t.videoId].verified) { v++; changes.push('✓'); }
         });
+        origYt.forEach(function (t) {
+            if (!modVidMap[t.videoId]) { rem++; changes.push('-YT'); }
+        });
+        // Detect metadata changes
+        if (origRelease) {
+            if (modRelease.bandName !== origRelease.bandName) changes.push('артист');
+            if (modRelease.releaseTitle !== origRelease.releaseTitle) changes.push('наслов');
+            if (modRelease.releaseType !== origRelease.releaseType) changes.push('тип');
+            if (JSON.stringify(modRelease.trackNames || []) !== JSON.stringify(origRelease.trackNames || [])) changes.push('песни');
+        }
+        return { verified: v, added: a, removed: rem, changes: changes };
+    }
+
+    function _diffReleases(original, modified) {
+        var changedReleases = [];
+        var verified = 0, added = 0, removed = 0;
+
+        if (modified && modified._isDiff) {
+            // Compact diff format
+            (modified.added || []).forEach(function (r) {
+                added++;
+                changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [+ново]');
+            });
+            var changedIds = Object.keys(modified.changed || {});
+            changedIds.forEach(function (rid) {
+                var r = modified.changed[rid];
+                var o = (modified.originals || {})[rid];
+                var d = _diffReleasesPair(o, r);
+                verified += d.verified; added += d.added; removed += d.removed;
+                if (d.changes.length) {
+                    changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [' + d.changes.join(', ') + ']');
+                }
+            });
+        } else {
+            var origList = (original && original.releases) || [];
+            var modList = (modified && modified.releases) || [];
+            var origMap = {}; origList.forEach(function (r) { origMap[r.releaseId] = r; });
+
+            modList.forEach(function (r) {
+                var o = origMap[r.releaseId];
+                if (!o) {
+                    added++;
+                    changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [+ново]');
+                    return;
+                }
+                var d = _diffReleasesPair(o, r);
+                verified += d.verified; added += d.added; removed += d.removed;
+                if (d.changes.length) {
+                    changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [' + d.changes.join(', ') + ']');
+                }
+            });
+        }
 
         var lines = [];
         var summary = [];
@@ -366,8 +397,31 @@ window.MMMDrafts = (function () {
         for (var i = 0; i < files.length; i++) {
             var filePath = files[i];
             var draft = all[filePath];
-            var json = JSON.stringify(draft.data, null, 2);
-            var originalJson = draft.original ? JSON.stringify(draft.original, null, 2) : null;
+            var draftData = draft.data;
+            var draftOriginal = draft.original;
+
+            // For releases.json compact diff, reconstruct the full file
+            if (filePath === 'releases.json' && draftData && draftData._isDiff) {
+                var resp0 = await fetch('/releases.json?_=' + Date.now());
+                var base = await resp0.json();
+                draftOriginal = JSON.parse(JSON.stringify(base));
+                // Apply changes on top of the base
+                for (var k = 0; k < base.releases.length; k++) {
+                    var rid = base.releases[k].releaseId;
+                    if (draftData.changed[rid]) {
+                        base.releases[k] = draftData.changed[rid];
+                    }
+                }
+                // Prepend new releases
+                if (draftData.added && draftData.added.length) {
+                    base.releases = draftData.added.concat(base.releases);
+                    base.totalReleases = base.releases.length;
+                }
+                draftData = base;
+            }
+
+            var json = JSON.stringify(draftData, null, 2);
+            var originalJson = draftOriginal ? JSON.stringify(draftOriginal, null, 2) : null;
 
             // Include any additional files (e.g. greeting audio)
             var extras = getAdditionalFiles(filePath);
@@ -464,7 +518,7 @@ window.MMMDrafts = (function () {
             var entry = all[filePath];
             var data = entry.data;
             var original = entry.original;
-            if (!original) {
+            if (!original && !(data && data._isDiff)) {
                 // No original stored — count as 1 change per file
                 total += 1;
                 return;
@@ -505,17 +559,22 @@ window.MMMDrafts = (function () {
                 });
                 origEvts.forEach(function (e) { if (!modEvtMap[e.id]) total++; });
             } else if (filePath === 'releases.json') {
-                var origRels = (original && original.releases) || [];
-                var modRels = (data && data.releases) || [];
-                var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
+                if (data && data._isDiff) {
+                    // Compact diff format
+                    total += (data.added ? data.added.length : 0) + Object.keys(data.changed || {}).length;
+                } else {
+                    var origRels = (original && original.releases) || [];
+                    var modRels = (data && data.releases) || [];
+                    var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
 
-                modRels.forEach(function (r) {
-                    var o = origRelMap[r.releaseId];
-                    if (!o) return;
-                    if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
-                        total++;
-                    }
-                });
+                    modRels.forEach(function (r) {
+                        var o = origRelMap[r.releaseId];
+                        if (!o) { total++; return; }
+                        if (JSON.stringify(r) !== JSON.stringify(o)) {
+                            total++;
+                        }
+                    });
+                }
             } else {
                 total += 1;
             }
@@ -580,20 +639,38 @@ window.MMMDrafts = (function () {
             });
         }
 
-        if (all['releases.json'] && all['releases.json'].original) {
-            var origRels = (all['releases.json'].original.releases) || [];
-            var modRels = (all['releases.json'].data && all['releases.json'].data.releases) || [];
-            var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
-
-            modRels.forEach(function (r) {
-                var o = origRelMap[r.releaseId];
-                if (!o) return;
-                if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
-                    var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-                    var link = isLocalhost ? '/artist.html?id=' + encodeURIComponent(r.artistId) : '/artist/' + encodeURIComponent(r.artistId);
+        if (all['releases.json']) {
+            var relData = all['releases.json'].data;
+            var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            if (relData && relData._isDiff) {
+                // Compact diff format
+                (relData.added || []).forEach(function (r) {
+                    var link = isLocalhost ? '/artist.html?name=' + encodeURIComponent(r.bandName) : '/' + encodeURIComponent(r.bandName);
+                    items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(r.bandName) + ' – ' + _esc(r.releaseTitle) + '</a>');
+                });
+                var changedIds = Object.keys(relData.changed || {});
+                changedIds.forEach(function (rid) {
+                    var r = relData.changed[rid];
+                    var link = isLocalhost ? '/artist.html?name=' + encodeURIComponent(r.bandName) : '/' + encodeURIComponent(r.bandName);
                     items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(r.bandName) + ' – ' + _esc(r.releaseTitle) + '</a>');
-                }
-            });
+                });
+            } else if (all['releases.json'].original) {
+                var origRels = (all['releases.json'].original.releases) || [];
+                var modRels = (relData && relData.releases) || [];
+                var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
+
+                modRels.forEach(function (r) {
+                    var o = origRelMap[r.releaseId];
+                    var link = isLocalhost ? '/artist.html?name=' + encodeURIComponent(r.bandName) : '/' + encodeURIComponent(r.bandName);
+                    if (!o) {
+                        items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(r.bandName) + ' – ' + _esc(r.releaseTitle) + '</a>');
+                        return;
+                    }
+                    if (JSON.stringify(r) !== JSON.stringify(o)) {
+                        items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(r.bandName) + ' – ' + _esc(r.releaseTitle) + '</a>');
+                    }
+                });
+            }
         }
 
         return items;
@@ -610,6 +687,7 @@ window.MMMDrafts = (function () {
         var changeCount = _countIndividualChanges();
         if (changeCount > 0) {
             _barEl.classList.add('visible');
+            document.body.style.paddingBottom = '4rem';
             _badgeEl.textContent = changeCount;
 
             // Build descriptive text with specific changed items
@@ -624,13 +702,14 @@ window.MMMDrafts = (function () {
                 var labels = files.map(function (f) {
                     if (f === 'bands.json') return t('drafts.masterList');
                     if (f === 'events.json') return t('drafts.events');
-                    if (f === 'releases.json') return 'YouTube Линкови';
+                    if (f === 'releases.json') return 'Изданија';
                     return f;
                 });
                 textEl.textContent = t('drafts.unsavedLabel') + labels.join(', ');
             }
         } else {
             _barEl.classList.remove('visible');
+            document.body.style.paddingBottom = '';
         }
 
         // Also update any legacy header button (lista.html's #submit-pr-btn)
@@ -655,7 +734,7 @@ window.MMMDrafts = (function () {
         var fileLabels = files.map(function (f) {
             if (f === 'bands.json') return '<li><i class="fas fa-list"></i> ' + t('drafts.masterList') + '</li>';
             if (f === 'events.json') return '<li><i class="fas fa-calendar-days"></i> ' + t('drafts.events') + '</li>';
-            if (f === 'releases.json') return '<li><i class="fas fa-music"></i> YouTube Линкови</li>';
+            if (f === 'releases.json') return '<li><i class="fas fa-music"></i> Изданија</li>';
             return '<li><i class="fas fa-file"></i> ' + f + '</li>';
         }).join('');
 

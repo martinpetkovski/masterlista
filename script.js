@@ -113,7 +113,7 @@
         // Fallback: try release thumbnail from chart-data
         if (cachedChartData?.releases) {
             const release = cachedChartData.releases.find(r => 
-                r.bandName && r.bandName.toLowerCase().trim() === normalizedName
+                r.bandName && r.bandName.toLowerCase().trim().split(', ').includes(normalizedName)
             );
             if (release?.thumbnail) {
                 artistThumbnailCache[artistName] = release.thumbnail;

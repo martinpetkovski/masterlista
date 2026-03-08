@@ -343,6 +343,12 @@ function Build-ChartRanking {
 
 Write-Host "  > Loading chart history..." -ForegroundColor Yellow
 
+# Build release catalog lookup map for hydrating compact chart-history entries
+$catalogMap = @{}
+foreach ($r in $releaseCatalog) {
+    $catalogMap[$r.releaseId] = $r
+}
+
 $chartHistoryWeeks = @()  # Array of { weekId, releases }
 $historyFiles = Get-ChildItem -Path $chartHistoryDir -Filter "chart-*.json" -ErrorAction SilentlyContinue |
     Sort-Object Name -Descending
@@ -350,13 +356,29 @@ $historyFiles = Get-ChildItem -Path $chartHistoryDir -Filter "chart-*.json" -Err
 foreach ($file in $historyFiles) {
     $weekId = $file.BaseName -replace '^chart-', ''
     $data = Get-Content $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json
+    # Chart-history files use compact format (releaseId + metrics only).
+    # Hydrate each entry with metadata from releases.json catalog.
+    $hydrated = @($data.releases | ForEach-Object {
+        $compact = $_
+        $catalog = $catalogMap[$compact.releaseId]
+        if (-not $catalog) { return }  # Skip releases no longer in catalog
+        $merged = [ordered]@{}
+        foreach ($p in $catalog.PSObject.Properties) {
+            $merged[$p.Name] = $p.Value
+        }
+        $merged['popularity'] = $compact.popularity
+        $merged['followers'] = $compact.followers
+        $merged['youtubeViews'] = if ($null -ne $compact.youtubeViews) { $compact.youtubeViews } else { 0 }
+        $merged['spotifyPopularity'] = if ($null -ne $compact.spotifyPopularity) { $compact.spotifyPopularity } else { 0 }
+        [PSCustomObject]$merged
+    })
     $chartHistoryWeeks += @{
         weekId = $weekId
-        releases = $data.releases
+        releases = $hydrated
     }
 }
 
-Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks" -ForegroundColor DarkGray
+Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
 # Get previous week's data (second newest)
 $previousWeekReleases = @()
@@ -643,7 +665,7 @@ foreach ($artistKey in $artistPopularityGraphs.Keys) {
     if ($cumulativePop -gt $maxCumulativePopularity) { $maxCumulativePopularity = $cumulativePop }
 
     # Find a representative release for thumbnail and artistId
-    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim() -eq $artistKey })
+    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
     $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
 
     if ($topRelease) {
@@ -666,7 +688,7 @@ $artistsWithChartData = [System.Collections.ArrayList]::new()
 foreach ($artistKey in $artistPopularityGraphs.Keys) {
     $graph = $artistPopularityGraphs[$artistKey]
     if ($graph.Count -eq 0) { continue }
-    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim() -eq $artistKey })
+    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
     $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
     if ($topRelease) {
         $bandInfo = Get-ArtistInfo $topRelease.bandName

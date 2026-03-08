@@ -598,21 +598,8 @@ async function main() {
 
     console.log(`  Done: ${totalTracksMatched} tracks matched, ${totalTracksUnmatched} unmatched`);
 
-    // ── Step 3: Fetch view counts for all matched video IDs ─────────────────
-    const allVideoIds = new Set();
-    for (const trackList of Object.values(cache.tracks)) {
-        for (const t of trackList) {
-            for (const vid of (t.videoIds || [])) allVideoIds.add(vid);
-        }
-    }
-    console.log(`\n── Step 3: Fetching view counts for ${allVideoIds.size} unique videos ──`);
-    const allStats = await getVideoStatsBatch([...allVideoIds], apiKey);
-    console.log(`  Got stats for ${allStats.size} videos`);
-
-    // ── Step 4: Compute per-release total views and update releases.json ─────
-    console.log('\n── Step 4: Computing YouTube views per release ──');
-
-    // Build a map of existing verified youtube tracks from releases.json
+    // ── Step 3: Fetch view counts only for verified video IDs ───────────────
+    // Build a map of existing youtube tracks from releases.json (need verified status)
     const existingYtMap = new Map(); // releaseId -> Map<videoId, { verified, name }>
     for (const r of releases) {
         if (r.youtubeTracks?.length > 0) {
@@ -624,6 +611,31 @@ async function main() {
         }
     }
 
+    // Collect only verified video IDs (saves API quota — unverified don't count toward charts)
+    const verifiedVideoIds = new Set();
+    let totalMatchedIds = 0;
+    for (const r of releases) {
+        const trackMatches = cache.tracks[r.releaseId] || [];
+        const existingTracks = existingYtMap.get(r.releaseId) || new Map();
+        for (const t of trackMatches) {
+            for (const vid of (t.videoIds || [])) {
+                totalMatchedIds++;
+                const existing = existingTracks.get(vid);
+                if (existing?.verified) verifiedVideoIds.add(vid);
+            }
+        }
+        // Also include manually-added verified tracks not in cache
+        for (const [vid, info] of existingTracks) {
+            if (info.verified) verifiedVideoIds.add(vid);
+        }
+    }
+    console.log(`\n── Step 3: Fetching view counts for ${verifiedVideoIds.size} verified videos (of ${totalMatchedIds} total matched) ──`);
+    const allStats = await getVideoStatsBatch([...verifiedVideoIds], apiKey);
+    console.log(`  Got stats for ${allStats.size} videos`);
+
+    // ── Step 4: Compute per-release total views and update releases.json ─────
+    console.log('\n── Step 4: Computing YouTube views per release ──');
+
     for (const r of releases) {
         const trackMatches = cache.tracks[r.releaseId] || [];
         let totalViews = 0;
@@ -631,21 +643,21 @@ async function main() {
         const existingTracks = existingYtMap.get(r.releaseId) || new Map();
 
         for (const t of trackMatches) {
-            let trackViews = 0;
             for (const vid of (t.videoIds || [])) {
-                const stats = allStats.get(vid);
-                const views = stats?.viewCount || 0;
-                trackViews += views;
                 const existing = existingTracks.get(vid);
+                const isVerified = existing?.verified || false;
+                const stats = isVerified ? allStats.get(vid) : null;
+                const views = stats?.viewCount || 0;
                 ytTracks.push({
                     name: t.trackName,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: existing?.verified || false
+                    verified: isVerified,
+                    ...(views > 0 ? { views } : {})
                 });
+                if (isVerified) totalViews += views;
                 existingTracks.delete(vid); // Mark as processed
             }
-            totalViews += trackViews;
         }
 
         // Preserve any manually-added verified youtube tracks that weren't auto-matched
@@ -658,13 +670,15 @@ async function main() {
                     name: info.name,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: true
+                    verified: true,
+                    ...(views > 0 ? { views } : {})
                 });
             }
         }
 
         // Update release catalog entry
         r.youtubeTracks = ytTracks.length > 0 ? ytTracks : undefined;
+        r.youtubeViews = totalViews;
 
         // Update chart data entry
         const chartEntry = chartMap.get(r.releaseId);

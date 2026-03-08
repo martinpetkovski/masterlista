@@ -2162,7 +2162,7 @@
                 <div class="site-title-menu" id="site-title-menu">
                     <a href="/"><i class="fas fa-house"></i> <span data-i18n="nav.home">Дома</span></a>
                     <a href="/charts"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
-                    <a href="/lista"><i class="fas fa-list"></i> <span data-i18n="nav.masterList">Мастер Листа</span></a>
+                    <a href="/lista"><i class="fas fa-users"></i> <span data-i18n="nav.masterList">Артисти</span></a>
                     <a href="/nastani"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
                     <a href="/vesti"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
                     <a href="/kustosi"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
@@ -2179,7 +2179,7 @@
             </div>
             <nav class="title-nav">
                 <a href="/charts" class="title-nav-btn"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
-                <a href="/lista" class="title-nav-btn"><i class="fas fa-list"></i> <span data-i18n="nav.masterList">Мастер Листа</span></a>
+                <a href="/lista" class="title-nav-btn"><i class="fas fa-users"></i> <span data-i18n="nav.masterList">Артисти</span></a>
                 <a href="/nastani" class="title-nav-btn"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
                 <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
                 <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
@@ -2307,7 +2307,7 @@
                 <h2><i class="fas fa-star"></i> <span data-i18n="dashboard.discoverArtists">Откриј артисти</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-discover-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Мастер Листа</span> &raquo;</a>
+                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Артисти</span> &raquo;</a>
                 </div>
             </div>
             <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
@@ -2343,7 +2343,7 @@
                 <h2><i class="fas fa-arrow-trend-up"></i> <span data-i18n="dashboard.risingArtists">Артисти во подем</span></h2>
                 <div class="dash-card-header-actions">
                     <button type="button" class="more-link shuffle-btn" id="shuffle-rising-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Мастер Листа</span> &raquo;</a>
+                    <a href="/lista" class="more-link"><span data-i18n="common.masterList">Артисти</span> &raquo;</a>
                 </div>
             </div>
             <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
@@ -2732,8 +2732,9 @@
         // ==================== HELPER: Find latest release for an artist ====================
         function getLatestRelease(artistName) {
             if (!chartData || !chartData.releases) return null;
+            var aNameLow = artistName.toLowerCase();
             var matches = chartData.releases.filter(function(r) {
-                return r.bandName.toLowerCase() === artistName.toLowerCase();
+                return r.bandName && r.bandName.toLowerCase().split(', ').indexOf(aNameLow) !== -1;
             });
             if (matches.length === 0) return null;
             matches.sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
@@ -2744,8 +2745,9 @@
         function getLatestReleases(artistName, count) {
             if (!chartData || !chartData.releases) return [];
             var seen = {};
+            var aNameLow = artistName.toLowerCase();
             var matches = chartData.releases.filter(function(r) {
-                if (r.bandName.toLowerCase() !== artistName.toLowerCase()) return false;
+                if (!r.bandName || r.bandName.toLowerCase().split(', ').indexOf(aNameLow) === -1) return false;
                 if (seen[r.releaseId]) return false;
                 seen[r.releaseId] = true;
                 return true;
