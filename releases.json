@@ -8685,7 +8685,7 @@
           "name": "Fever Shock",
           "videoId": "7H6Tiv4vmKo",
           "url": "https://www.youtube.com/watch?v=7H6Tiv4vmKo",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -8705,14 +8705,6 @@
         "TI SI ME VOLELA"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6FTNTuxSSqtaLIK2aCqPKg",
-      "youtubeTracks": [
-        {
-          "name": "TI SI ME VOLELA",
-          "videoId": "l_Sss0_7vDI",
-          "url": "https://www.youtube.com/watch?v=l_Sss0_7vDI",
-          "verified": false
-        }
-      ],
       "youtubeViews": 0
     },
     {
@@ -8734,7 +8726,7 @@
           "name": "L.Y.E. - Slowed + Reverb",
           "videoId": "e69QUbY85_4",
           "url": "https://www.youtube.com/watch?v=e69QUbY85_4",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -8767,43 +8759,55 @@
           "name": "Полип",
           "videoId": "2C_cIhu1ktY",
           "url": "https://www.youtube.com/watch?v=2C_cIhu1ktY",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Г.И.С",
           "videoId": "Ad8xHfwM-IQ",
           "url": "https://www.youtube.com/watch?v=Ad8xHfwM-IQ",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Мерзост",
           "videoId": "x3Otwn88Eq8",
           "url": "https://www.youtube.com/watch?v=x3Otwn88Eq8",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Одговор",
           "videoId": "TpGMGN0uj1g",
           "url": "https://www.youtube.com/watch?v=TpGMGN0uj1g",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Суд",
           "videoId": "191xKBCTi9g",
           "url": "https://www.youtube.com/watch?v=191xKBCTi9g",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Лице",
           "videoId": "gq9kpzp1Lq0",
           "url": "https://www.youtube.com/watch?v=gq9kpzp1Lq0",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Пулс",
           "videoId": "qWJR5kcKAvU",
           "url": "https://www.youtube.com/watch?v=qWJR5kcKAvU",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Никој",
+          "videoId": "mKfwAI9z_q4",
+          "url": "https://www.youtube.com/watch?v=mKfwAI9z_q4",
+          "verified": true
+        },
+        {
+          "name": "Народ",
+          "videoId": "Qo8VHK3lXV0",
+          "url": "https://www.youtube.com/watch?v=Qo8VHK3lXV0",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -8827,7 +8831,7 @@
           "name": "Quedate Luna - Karno B Remix",
           "videoId": "pP7V0bcCnqk",
           "url": "https://www.youtube.com/watch?v=pP7V0bcCnqk",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -8864,7 +8868,27 @@
         "Free Form"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3qLOr53J2CEki757CCfrKX?si=DHhkHl4WTHCRjQP8lO-CMw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Neural Function",
+          "videoId": "t6kOmwZluss",
+          "url": "https://www.youtube.com/watch?v=t6kOmwZluss",
+          "verified": true
+        },
+        {
+          "name": "Mental Clarity",
+          "videoId": "Gv1EXJZ708I",
+          "url": "https://www.youtube.com/watch?v=Gv1EXJZ708I",
+          "verified": true
+        },
+        {
+          "name": "Free Form",
+          "videoId": "JYlLPMoQEyg",
+          "url": "https://www.youtube.com/watch?v=JYlLPMoQEyg",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Druggy",
@@ -8883,7 +8907,33 @@
         "Sloboda"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/70xws8EBJkG4B40rz6hadI?si=QmeNybxdTziKrAGdoXG87Q",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Sine Morbo",
+          "videoId": "46yHIJjUC8M",
+          "url": "https://www.youtube.com/watch?v=46yHIJjUC8M",
+          "verified": true
+        },
+        {
+          "name": "Hanibal Lektor",
+          "videoId": "-DnPIyihQAw",
+          "url": "https://www.youtube.com/watch?v=-DnPIyihQAw",
+          "verified": true
+        },
+        {
+          "name": "M.E.V.",
+          "videoId": "rXMCS55_bOk",
+          "url": "https://www.youtube.com/watch?v=rXMCS55_bOk",
+          "verified": true
+        },
+        {
+          "name": "Sloboda",
+          "videoId": "r5mXvR4tyzs",
+          "url": "https://www.youtube.com/watch?v=r5mXvR4tyzs",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Леб и Сол",
@@ -8908,7 +8958,117 @@
         "SAKAM DA TI DOJDAM"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5hNernryMZIWE1Nrygbxp0?si=CsX7vM-KT66QmzH-FSYytA",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "LEB I IGRI",
+          "videoId": "nH0zEbdfQYg",
+          "url": "https://www.youtube.com/watch?v=nH0zEbdfQYg",
+          "verified": true
+        },
+        {
+          "name": "GALEB",
+          "videoId": "kwNQZotHN9A",
+          "url": "https://www.youtube.com/watch?v=kwNQZotHN9A",
+          "verified": true
+        },
+        {
+          "name": "GALEB",
+          "videoId": "pk9cYhb2v9M",
+          "url": "https://www.youtube.com/watch?v=pk9cYhb2v9M",
+          "verified": true
+        },
+        {
+          "name": "GOODBYE PEPE",
+          "videoId": "3mQQlrONnqI",
+          "url": "https://www.youtube.com/watch?v=3mQQlrONnqI",
+          "verified": true
+        },
+        {
+          "name": "GOODBYE PEPE",
+          "videoId": "HHbFk_LHoVU",
+          "url": "https://www.youtube.com/watch?v=HHbFk_LHoVU",
+          "verified": true
+        },
+        {
+          "name": "MANDARINA",
+          "videoId": "jxZKimVQIFM",
+          "url": "https://www.youtube.com/watch?v=jxZKimVQIFM",
+          "verified": true
+        },
+        {
+          "name": "MANDARINA",
+          "videoId": "SzAHOAg0e0Q",
+          "url": "https://www.youtube.com/watch?v=SzAHOAg0e0Q",
+          "verified": true
+        },
+        {
+          "name": "ASTROLAB",
+          "videoId": "P28oLvr-BAU",
+          "url": "https://www.youtube.com/watch?v=P28oLvr-BAU",
+          "verified": true
+        },
+        {
+          "name": "SI ZALJUBIV EDNO MOME",
+          "videoId": "vnOn2o4Ec-I",
+          "url": "https://www.youtube.com/watch?v=vnOn2o4Ec-I",
+          "verified": true
+        },
+        {
+          "name": "PARAMATMA",
+          "videoId": "2LYW0e2u-h0",
+          "url": "https://www.youtube.com/watch?v=2LYW0e2u-h0",
+          "verified": true
+        },
+        {
+          "name": "PARAMATMA",
+          "videoId": "I_IrOjfHG3Y",
+          "url": "https://www.youtube.com/watch?v=I_IrOjfHG3Y",
+          "verified": true
+        },
+        {
+          "name": "ITS WARMING UP",
+          "videoId": "BOv8KDOQuPY",
+          "url": "https://www.youtube.com/watch?v=BOv8KDOQuPY",
+          "verified": true
+        },
+        {
+          "name": "ITS WARMING UP",
+          "videoId": "TEDkiAZ74jw",
+          "url": "https://www.youtube.com/watch?v=TEDkiAZ74jw",
+          "verified": true
+        },
+        {
+          "name": "SAKAM DA TI DOJDAM",
+          "videoId": "QOL-1QKgv5M",
+          "url": "https://www.youtube.com/watch?v=QOL-1QKgv5M",
+          "verified": true
+        },
+        {
+          "name": "SAKAM DA TI DOJDAM",
+          "videoId": "QfyLjXwmGng",
+          "url": "https://www.youtube.com/watch?v=QfyLjXwmGng",
+          "verified": true
+        },
+        {
+          "name": "SAKAM DA TI DOJDAM",
+          "videoId": "zE3UGsmEwXw",
+          "url": "https://www.youtube.com/watch?v=zE3UGsmEwXw",
+          "verified": true
+        },
+        {
+          "name": "SAKAM DA TI DOJDAM",
+          "videoId": "iu4q5com2N0",
+          "url": "https://www.youtube.com/watch?v=iu4q5com2N0",
+          "verified": true
+        },
+        {
+          "name": "SAKAM DA TI DOJDAM",
+          "videoId": "52qQuQc9ltA",
+          "url": "https://www.youtube.com/watch?v=52qQuQc9ltA",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "2bona, Таско",
