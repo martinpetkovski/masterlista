@@ -960,16 +960,21 @@
         return { valid: true };
     }
 
+    function firstLink(val) {
+        return Array.isArray(val) ? val[0] : val;
+    }
+
     function getPreferredLink(band) {
         const linkPriority = ['youtube', 'spotify'];
         for (const platform of linkPriority) {
-            if (band.links[platform] && band.links[platform] !== 'недостигаат податоци') {
-                return { platform, url: platform === 'spotify' ? convertSpotifyUrlToAppUri(band.links[platform]) : band.links[platform] };
+            const url = firstLink(band.links[platform]);
+            if (url && url !== 'недостигаат податоци') {
+                return { platform, url: platform === 'spotify' ? convertSpotifyUrlToAppUri(url) : url };
             }
         }
-        const firstPlatform = Object.keys(band.links).find(p => p !== 'none' && band.links[p] !== 'недостигаат податоци');
+        const firstPlatform = Object.keys(band.links).find(p => p !== 'none' && firstLink(band.links[p]) !== 'недостигаат податоци');
         if (firstPlatform) {
-            return { platform: firstPlatform, url: band.links[firstPlatform] };
+            return { platform: firstPlatform, url: firstLink(band.links[firstPlatform]) };
         }
         return { platform: 'none', url: null };
     }

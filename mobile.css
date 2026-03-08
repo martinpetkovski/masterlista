@@ -36,6 +36,7 @@ body {
 body.guide-page { overflow: auto; height: auto; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
 body.vesti-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 body.curators-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
+body.yt-links-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 
 /* Generic button (matches index quick-action style) */
 .btn-generic {

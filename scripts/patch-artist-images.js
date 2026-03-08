@@ -210,7 +210,8 @@ async function fetchFallbackArtistImage(band) {
 
   // Priority: YouTube channel/video → Instagram → Deezer → iTunes → Bandcamp → SoundCloud → Last.fm → Website → Facebook → Deezer search
   if (links.youtube || links.youtube_music) {
-    const url = links.youtube || links.youtube_music;
+    const raw = links.youtube || links.youtube_music;
+    const url = Array.isArray(raw) ? raw[0] : raw;
     const img = await fetchYouTubeImage(url);
     if (img) return { source: 'YouTube', url: img };
   }

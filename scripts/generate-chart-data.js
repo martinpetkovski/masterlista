@@ -84,6 +84,13 @@ async function fetchWithRetry(url, options, retries = 3, timeout = 10000) {
  */
 function loadExistingChartData() {
   try {
+    // Load releases.json for existing release IDs (primary catalog)
+    const releasesPath = path.join(__dirname, '..', 'releases.json');
+    if (fs.existsSync(releasesPath)) {
+      const data = JSON.parse(fs.readFileSync(releasesPath, 'utf8'));
+      return data;
+    }
+    // Fallback to chart-data.json for backward compat
     const chartPath = path.join(__dirname, '..', 'chart-data.json');
     if (fs.existsSync(chartPath)) {
       const data = JSON.parse(fs.readFileSync(chartPath, 'utf8'));
@@ -93,6 +100,23 @@ function loadExistingChartData() {
     console.log('Could not load existing chart data:', e.message);
   }
   return null;
+}
+
+function loadExistingReleases() {
+  try {
+    const releasesPath = path.join(__dirname, '..', 'releases.json');
+    if (fs.existsSync(releasesPath)) {
+      const data = JSON.parse(fs.readFileSync(releasesPath, 'utf8'));
+      const map = new Map();
+      for (const r of (data.releases || [])) {
+        map.set(r.releaseId, r);
+      }
+      return map;
+    }
+  } catch (e) {
+    console.log('Could not load existing releases.json:', e.message);
+  }
+  return new Map();
 }
 
 /**
@@ -222,7 +246,8 @@ async function fetchFallbackArtistImage(band) {
 
   // 1-2. YouTube — channel page scraping for channel URLs, oembed for video URLs
   if (links.youtube || links.youtube_music) {
-    const url = links.youtube || links.youtube_music;
+    const raw = links.youtube || links.youtube_music;
+    const url = Array.isArray(raw) ? raw[0] : raw;
     const img = await fetchYouTubeImage(url);
     if (img) return { source: 'youtube', url: img };
   }
@@ -723,6 +748,9 @@ async function main() {
           const albumsWithPopularity = albums.map((album) => {
               const fullAlbum = fullAlbumDetails[album.id];
               const albumPopularity = fullAlbum?.popularity || 0;
+
+              // Extract track names for YouTube matching
+              const trackNames = (fullAlbum?.tracks?.items || []).map(t => t.name);
               
               return {
                 bandName: band.name,
@@ -735,6 +763,7 @@ async function main() {
                 releaseUrl: album.external_urls?.spotify,
                 thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
                 totalTracks: album.total_tracks,
+                trackNames: trackNames.length > 0 ? trackNames : undefined,
                 popularity: albumPopularity, // Spotify album/single popularity (0-100)
                 followers: artistInfo?.followers?.total || 0,
                 spotifyUrl: band.links.spotify
@@ -760,26 +789,76 @@ async function main() {
   
   console.log(`Collected ${releases.length} releases`);
   
-  // Generate chart data
+  // Generate data
   const now = new Date();
-  const chartData = {
-    generatedAt: now.toISOString(),
-    totalReleases: releases.length,
-    totalArtists: artistIds.length,
-    releases: releases.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate))
-  };
+  const sortedReleases = releases.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
   
   const outputPath = path.join(__dirname, '..', 'chart-data.json');
+  const releasesPath = path.join(__dirname, '..', 'releases.json');
   const historyDir = path.join(__dirname, '..', 'chart-history');
   
-  // Save weekly historical snapshot
+  // Load existing releases.json to preserve youtube track data
+  const existingReleases = loadExistingReleases();
+  
+  // ==================== Build releases.json (catalog) ====================
+  const releaseCatalog = sortedReleases.map(r => {
+    const existing = existingReleases.get(r.releaseId);
+    const entry = {
+      bandName: r.bandName,
+      ...(r.spotifyName ? { spotifyName: r.spotifyName } : {}),
+      artistId: r.artistId,
+      releaseId: r.releaseId,
+      releaseTitle: r.releaseTitle,
+      releaseType: r.releaseType,
+      releaseDate: r.releaseDate,
+      releaseUrl: r.releaseUrl,
+      thumbnail: r.thumbnail,
+      totalTracks: r.totalTracks,
+      ...(r.trackNames ? { trackNames: r.trackNames } : {}),
+      spotifyUrl: r.spotifyUrl
+    };
+    // Preserve existing youtube track data (with verified flags)
+    if (existing?.youtubeTracks?.length > 0) {
+      entry.youtubeTracks = existing.youtubeTracks;
+    }
+    return entry;
+  });
+  
+  const releasesOutput = {
+    generatedAt: now.toISOString(),
+    totalReleases: releaseCatalog.length,
+    totalArtists: artistIds.length,
+    releases: releaseCatalog
+  };
+  
+  // ==================== Build chart-data.json (weekly views only) ====================
+  const weeklyData = sortedReleases.map(r => ({
+    releaseId: r.releaseId,
+    popularity: r.popularity || 0,
+    followers: r.followers || 0,
+    youtubeViews: 0,
+    spotifyPopularity: 0
+  }));
+  
+  const chartData = {
+    generatedAt: now.toISOString(),
+    totalReleases: weeklyData.length,
+    totalArtists: artistIds.length,
+    releases: weeklyData
+  };
+  
+  // Save weekly historical snapshot (uses chart-data format)
   saveWeeklySnapshot(chartData, historyDir, now);
   
   // ==================== Save updated bands.json ====================
   fs.writeFileSync(bandsPath, JSON.stringify(bandsData, null, 2), 'utf8');
   console.log('Saved updated bands.json with artist images');
 
-  // Write current chart data
+  // Write releases.json (catalog)
+  fs.writeFileSync(releasesPath, JSON.stringify(releasesOutput, null, 2), 'utf8');
+  console.log(`Releases catalog written to ${releasesPath}`);
+  
+  // Write chart-data.json (weekly views)
   fs.writeFileSync(outputPath, JSON.stringify(chartData, null, 2));
   console.log(`Chart data written to ${outputPath}`);
   console.log(`Total releases: ${chartData.totalReleases}`);
@@ -787,7 +866,7 @@ async function main() {
   
   // Send Discord notifications for new releases
   if (discordWebhookUrl) {
-    const newReleases = findNewReleases(chartData.releases, existingChartData);
+    const newReleases = findNewReleases(sortedReleases, existingChartData);
     if (newReleases.length > 0) {
       console.log(`Found ${newReleases.length} new release(s) to announce`);
       await sendDiscordNotification(newReleases, discordWebhookUrl);

@@ -217,6 +217,8 @@ window.MMMDrafts = (function () {
                 lines.push.apply(lines, _diffBands(original, data));
             } else if (filePath === 'events.json') {
                 lines.push.apply(lines, _diffEvents(original, data));
+            } else if (filePath === 'releases.json') {
+                lines.push.apply(lines, _diffReleases(original, data));
             } else {
                 lines.push('• ' + filePath + ': ' + t('drafts.changes'));
             }
@@ -283,6 +285,55 @@ window.MMMDrafts = (function () {
         if (added.length) lines.push(t('drafts.newEvents') + ' (' + added.length + '): ' + added.join(', '));
         if (removed.length) lines.push(t('drafts.removedEvents') + ' (' + removed.length + '): ' + removed.join(', '));
         if (changed.length) lines.push(t('drafts.editedEvents') + ' (' + changed.length + '): ' + changed.join('; '));
+        return lines;
+    }
+
+    function _diffReleases(original, modified) {
+        var origList = (original && original.releases) || [];
+        var modList = (modified && modified.releases) || [];
+        var origMap = {}; origList.forEach(function (r) { origMap[r.releaseId] = r; });
+
+        var verified = 0, added = 0, removed = 0, changedReleases = [];
+
+        modList.forEach(function (r) {
+            var o = origMap[r.releaseId];
+            if (!o) return;
+            var origYt = o.youtubeTracks || [];
+            var modYt = r.youtubeTracks || [];
+            var origYtJson = JSON.stringify(origYt);
+            var modYtJson = JSON.stringify(modYt);
+            if (origYtJson === modYtJson) return;
+
+            // Count specific changes
+            var origVidMap = {}; origYt.forEach(function (t) { origVidMap[t.videoId] = t; });
+            var modVidMap = {}; modYt.forEach(function (t) { modVidMap[t.videoId] = t; });
+
+            var changes = [];
+            modYt.forEach(function (t) {
+                if (!origVidMap[t.videoId]) { added++; changes.push('+YT'); }
+                else if (t.verified && !origVidMap[t.videoId].verified) { verified++; changes.push('✓'); }
+            });
+            origYt.forEach(function (t) {
+                if (!modVidMap[t.videoId]) { removed++; changes.push('-YT'); }
+            });
+
+            if (changes.length) {
+                changedReleases.push(r.bandName + ' — ' + r.releaseTitle + ' [' + changes.join(', ') + ']');
+            }
+        });
+
+        var lines = [];
+        var summary = [];
+        if (verified) summary.push(verified + ' верификувани');
+        if (added) summary.push(added + ' додадени');
+        if (removed) summary.push(removed + ' отстранети');
+        if (summary.length) lines.push('YouTube линкови (' + summary.join(', ') + ')');
+        if (changedReleases.length <= 5) {
+            changedReleases.forEach(function (c) { lines.push('  • ' + c); });
+        } else {
+            changedReleases.slice(0, 3).forEach(function (c) { lines.push('  • ' + c); });
+            lines.push('  ... и ' + (changedReleases.length - 3) + ' други');
+        }
         return lines;
     }
 
@@ -453,6 +504,18 @@ window.MMMDrafts = (function () {
                     }
                 });
                 origEvts.forEach(function (e) { if (!modEvtMap[e.id]) total++; });
+            } else if (filePath === 'releases.json') {
+                var origRels = (original && original.releases) || [];
+                var modRels = (data && data.releases) || [];
+                var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
+
+                modRels.forEach(function (r) {
+                    var o = origRelMap[r.releaseId];
+                    if (!o) return;
+                    if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
+                        total++;
+                    }
+                });
             } else {
                 total += 1;
             }
@@ -517,6 +580,22 @@ window.MMMDrafts = (function () {
             });
         }
 
+        if (all['releases.json'] && all['releases.json'].original) {
+            var origRels = (all['releases.json'].original.releases) || [];
+            var modRels = (all['releases.json'].data && all['releases.json'].data.releases) || [];
+            var origRelMap = {}; origRels.forEach(function (r) { origRelMap[r.releaseId] = r; });
+
+            modRels.forEach(function (r) {
+                var o = origRelMap[r.releaseId];
+                if (!o) return;
+                if (JSON.stringify(r.youtubeTracks || []) !== JSON.stringify(o.youtubeTracks || [])) {
+                    var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                    var link = isLocalhost ? '/artist.html?id=' + encodeURIComponent(r.artistId) : '/artist/' + encodeURIComponent(r.artistId);
+                    items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(r.bandName) + ' – ' + _esc(r.releaseTitle) + '</a>');
+                }
+            });
+        }
+
         return items;
     }
 
@@ -545,6 +624,7 @@ window.MMMDrafts = (function () {
                 var labels = files.map(function (f) {
                     if (f === 'bands.json') return t('drafts.masterList');
                     if (f === 'events.json') return t('drafts.events');
+                    if (f === 'releases.json') return 'YouTube Линкови';
                     return f;
                 });
                 textEl.textContent = t('drafts.unsavedLabel') + labels.join(', ');
@@ -575,6 +655,7 @@ window.MMMDrafts = (function () {
         var fileLabels = files.map(function (f) {
             if (f === 'bands.json') return '<li><i class="fas fa-list"></i> ' + t('drafts.masterList') + '</li>';
             if (f === 'events.json') return '<li><i class="fas fa-calendar-days"></i> ' + t('drafts.events') + '</li>';
+            if (f === 'releases.json') return '<li><i class="fas fa-music"></i> YouTube Линкови</li>';
             return '<li><i class="fas fa-file"></i> ' + f + '</li>';
         }).join('');
 

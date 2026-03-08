@@ -1048,6 +1048,65 @@
         .chart-history-section {
             margin-top: 1.5rem;
         }
+
+        /* Add-release button */
+        .add-release-btn {
+            margin-left: auto;
+            background: none; border: 1px dashed var(--border-color);
+            color: var(--text-muted); cursor: pointer;
+            padding: 0.2rem 0.55rem; border-radius: 6px;
+            font-size: 0.68rem; font-family: 'Inter', sans-serif;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            transition: all 0.15s;
+        }
+        .add-release-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
+        /* Add-release overlay form */
+        .add-release-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.15s ease;
+        }
+        .add-release-dialog {
+            background: var(--bg-primary); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem; width: 90%; max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .add-release-dialog h3 {
+            margin: 0 0 1rem; font-size: 0.95rem;
+            font-family: 'Montserrat', sans-serif;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .add-release-dialog label {
+            display: block; font-size: 0.72rem; font-weight: 600;
+            color: var(--text-muted); margin-bottom: 0.25rem; margin-top: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        .add-release-dialog label:first-of-type { margin-top: 0; }
+        .add-release-dialog input, .add-release-dialog select {
+            width: 100%; padding: 0.45rem 0.6rem; border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary); color: var(--text-primary);
+            font-size: 0.82rem; font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        .add-release-dialog input:focus, .add-release-dialog select:focus {
+            outline: none; border-color: var(--text-primary);
+        }
+        .add-release-actions {
+            display: flex; gap: 0.5rem; margin-top: 1.2rem; justify-content: flex-end;
+        }
+        .add-release-actions button {
+            padding: 0.45rem 1rem; border-radius: 8px; font-size: 0.78rem;
+            font-family: 'Inter', sans-serif; cursor: pointer; border: 1px solid var(--border-color);
+            transition: all 0.15s;
+        }
+        .add-release-cancel { background: var(--bg-secondary); color: var(--text-primary); }
+        .add-release-cancel:hover { background: var(--bg-tertiary); }
+        .add-release-save { background: #22c55e; color: #fff; border-color: #22c55e; font-weight: 600; }
+        .add-release-save:hover { background: #16a34a; }
+        .add-release-save:disabled { opacity: 0.4; cursor: default; }
         
         .section-title {
             font-family: 'Montserrat', sans-serif;
@@ -1188,6 +1247,16 @@ a.chart-history-item {
         .chart-history-type.single { color: #228be6; }
         .chart-history-type.album { color: #7950f2; }
         
+        .release-yt-views {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            color: #ff0000;
+            font-size: 0.65rem;
+            opacity: 0.75;
+        }
+        .release-yt-views .fa-youtube { font-size: 0.6rem; }
+
         .chart-history-link {
             margin-left: auto;
             color: var(--accent-orange);
@@ -2846,6 +2915,7 @@ a.chart-history-item {
                                     <i class="${typeIcon}"></i> ${typeLabel}
                                 </span>
                                 <span>${dateStr}</span>
+                                ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${release.youtubeViews >= 1000000 ? (release.youtubeViews / 1000000).toFixed(1) + 'M' : release.youtubeViews >= 1000 ? (release.youtubeViews / 1000).toFixed(1) + 'K' : release.youtubeViews}</span>` : ''}
                             </div>
                             ${vuMeterHtml}
                         </div>
@@ -2859,6 +2929,7 @@ a.chart-history-item {
                     <h3 class="section-title">
                         <i class="fas fa-compact-disc"></i>
                         ${t('artist.releases')} <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
+                        <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додади издание</button>
                     </h3>
                     <div class="chart-history-list">
                         ${releasesHtml}
@@ -3713,6 +3784,166 @@ a.chart-history-item {
                         console.error('Failed to load data for verify modal:', err);
                     }
                 })();
+            });
+        })();
+
+        // ==================== ADD RELEASE ====================
+        (function () {
+            var _releasesData = null;
+            var _originalData = null;
+
+            function _esc(s) {
+                if (!s) return '';
+                return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            function _toast(msg, type) {
+                var c = document.getElementById('mmm-notifications');
+                if (!c) { c = document.createElement('div'); c.id = 'mmm-notifications'; c.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:10001;max-width:340px;'; document.body.appendChild(c); }
+                var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+                var el = document.createElement('div'); el.className = 'notification ' + (type || 'info');
+                el.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + msg;
+                c.appendChild(el);
+                setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.remove(); }, 300); }, 4000);
+            }
+
+            function _getArtistName() {
+                var params = new URLSearchParams(window.location.search);
+                var p = params.get('a') || params.get('artist') || params.get('name');
+                if (p) return decodeURIComponent(p);
+                var slug = decodeURIComponent(window.location.pathname.replace(/^\//, '').replace(/\/$/, ''));
+                return slug || null;
+            }
+
+            function _resolveArtistFromBands(nameParam) {
+                var bd = window.bandsData || [];
+                var lower = nameParam.toLowerCase().trim();
+                for (var i = 0; i < bd.length; i++) {
+                    if (bd[i].name && bd[i].name.toLowerCase().trim() === lower) return bd[i];
+                }
+                // Also try matching slug-style names (spaces → dashes etc.)
+                var slug = lower.replace(/[\s]+/g, '-');
+                for (var i = 0; i < bd.length; i++) {
+                    if (bd[i].name && bd[i].name.toLowerCase().trim().replace(/[\s]+/g, '-') === slug) return bd[i];
+                }
+                return null;
+            }
+
+            async function _loadReleases() {
+                if (_releasesData) return _releasesData;
+                var draft = window.MMMDrafts ? MMMDrafts.load('releases.json') : null;
+                var resp = await fetch('/releases.json?_=' + Date.now());
+                var data = await resp.json();
+                _originalData = JSON.parse(JSON.stringify(data));
+                _releasesData = draft || data;
+                return _releasesData;
+            }
+
+            function _showAddReleaseForm() {
+                var nameParam = _getArtistName();
+                if (!nameParam) return;
+                var band = _resolveArtistFromBands(nameParam);
+                var artistName = band ? band.name : nameParam;
+
+                var overlay = document.createElement('div');
+                overlay.className = 'add-release-overlay';
+                overlay.innerHTML =
+                    '<div class="add-release-dialog">' +
+                        '<h3><i class="fas fa-plus-circle"></i> Ново издание за ' + _esc(artistName) + '</h3>' +
+                        '<label>Наслов на издание *</label>' +
+                        '<input type="text" id="ar-title" placeholder="Име на песна / албум...">' +
+                        '<label>Тип</label>' +
+                        '<select id="ar-type"><option value="single">Сингл</option><option value="album">Албум</option></select>' +
+                        '<label>Датум на издавање</label>' +
+                        '<input type="date" id="ar-date" value="' + new Date().toISOString().slice(0, 10) + '">' +
+                        '<label>Spotify линк (по избор)</label>' +
+                        '<input type="text" id="ar-spotify" placeholder="https://open.spotify.com/album/...">' +
+                        '<label>YouTube линк (по избор)</label>' +
+                        '<input type="text" id="ar-youtube" placeholder="https://youtube.com/watch?v=...">' +
+                        '<div class="add-release-actions">' +
+                            '<button class="add-release-cancel">Откажи</button>' +
+                            '<button class="add-release-save" id="ar-save"><i class="fas fa-check"></i> Додади</button>' +
+                        '</div>' +
+                    '</div>';
+
+                document.body.appendChild(overlay);
+
+                overlay.querySelector('.add-release-cancel').addEventListener('click', function () {
+                    overlay.remove();
+                });
+                overlay.addEventListener('click', function (e) {
+                    if (e.target === overlay) overlay.remove();
+                });
+
+                var titleInput = overlay.querySelector('#ar-title');
+                titleInput.focus();
+                titleInput.addEventListener('input', function () {
+                    overlay.querySelector('#ar-save').disabled = !titleInput.value.trim();
+                });
+                overlay.querySelector('#ar-save').disabled = true;
+
+                overlay.querySelector('#ar-save').addEventListener('click', async function () {
+                    var title = titleInput.value.trim();
+                    if (!title) return;
+                    var type = overlay.querySelector('#ar-type').value;
+                    var date = overlay.querySelector('#ar-date').value || new Date().toISOString().slice(0, 10);
+                    var spotifyUrl = overlay.querySelector('#ar-spotify').value.trim();
+                    var youtubeUrl = overlay.querySelector('#ar-youtube').value.trim();
+
+                    try {
+                        var data = await _loadReleases();
+                        var releaseId = 'manual-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+                        var newRelease = {
+                            bandName: artistName,
+                            artistId: band ? (band.spotifyId || '') : '',
+                            releaseId: releaseId,
+                            releaseTitle: title,
+                            releaseType: type,
+                            releaseDate: date,
+                            releaseUrl: spotifyUrl || '',
+                            thumbnail: '',
+                            totalTracks: type === 'album' ? 0 : 1,
+                            trackNames: [title],
+                            spotifyUrl: band ? (band.links && band.links.spotify || '') : ''
+                        };
+
+                        // Add youtube track if provided
+                        if (youtubeUrl) {
+                            var videoId = null;
+                            var m = youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+                            if (m) videoId = m[1];
+                            if (!videoId) { m = youtubeUrl.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/); if (m) videoId = m[1]; }
+                            if (videoId) {
+                                newRelease.youtubeTracks = [{
+                                    name: title,
+                                    videoId: videoId,
+                                    url: 'https://www.youtube.com/watch?v=' + videoId,
+                                    verified: true
+                                }];
+                            }
+                        }
+
+                        data.releases.unshift(newRelease);
+                        data.totalReleases = data.releases.length;
+
+                        if (window.MMMDrafts) {
+                            MMMDrafts.save('releases.json', data, _originalData);
+                        }
+
+                        overlay.remove();
+                        _toast('Изданието "' + _esc(title) + '" е додадено', 'success');
+                    } catch (err) {
+                        console.error('Failed to add release:', err);
+                        _toast('Грешка: ' + err.message, 'error');
+                    }
+                });
+            }
+
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('#add-release-btn')) {
+                    e.preventDefault();
+                    _showAddReleaseForm();
+                }
             });
         })();
     </script>

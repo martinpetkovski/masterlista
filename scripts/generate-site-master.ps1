@@ -26,6 +26,7 @@ $startTime = Get-Date
 Write-Host "  > Loading source data..." -ForegroundColor Yellow
 
 $bandsPath = Join-Path $projectRoot "bands.json"
+$releasesPath = Join-Path $projectRoot "releases.json"
 $chartPath = Join-Path $projectRoot "chart-data.json"
 $articlesPath = Join-Path $projectRoot "articles.json"
 $eventsPath = Join-Path $projectRoot "events.json"
@@ -38,9 +39,39 @@ $chartHistoryDir = Join-Path $projectRoot "chart-history"
 $bandsJson = Get-Content $bandsPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $bandsData = $bandsJson.muzickaMasterLista
 
-# Load chart-data.json
+# Load releases.json (release catalog)
+$releasesJson = Get-Content $releasesPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$releaseCatalog = $releasesJson.releases
+
+# Load chart-data.json (weekly views/popularity)
 $chartJson = Get-Content $chartPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$releases = $chartJson.releases
+$chartReleases = $chartJson.releases
+
+# Merge releases.json + chart-data.json into unified releases array
+$chartMap = @{}
+foreach ($cr in $chartReleases) {
+    $chartMap[$cr.releaseId] = $cr
+}
+$releases = @($releaseCatalog | ForEach-Object {
+    $r = $_
+    $cr = $chartMap[$r.releaseId]
+    $merged = [ordered]@{}
+    foreach ($p in $r.PSObject.Properties) {
+        $merged[$p.Name] = $p.Value
+    }
+    if ($cr) {
+        $merged['popularity'] = $cr.popularity
+        $merged['followers'] = $cr.followers
+        $merged['youtubeViews'] = $cr.youtubeViews
+        $merged['spotifyPopularity'] = $cr.spotifyPopularity
+    } else {
+        $merged['popularity'] = 0
+        $merged['followers'] = 0
+        $merged['youtubeViews'] = 0
+        $merged['spotifyPopularity'] = 0
+    }
+    [PSCustomObject]$merged
+})
 
 # Load articles.json
 $articlesJson = Get-Content $articlesPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -659,7 +690,7 @@ foreach ($r in $mainReleasesDeduped) {
 Write-Host "  > Global peak popularity: $globalPeakPopularity" -ForegroundColor DarkGray
 
 # ============================================================================
-#  4. ALL-TIME ARTISTS (sorted by followers, per genre)
+#  4. ALL-TIME ARTISTS (sorted by total YouTube views, per genre)
 # ============================================================================
 
 Write-Host "  > Building all-time artist rankings..." -ForegroundColor Yellow
@@ -668,18 +699,27 @@ $deduped = $mainReleasesDeduped
 $allTimeArtistsByGenre = @{}  # genre -> array of top 100 artists
 
 foreach ($genre in $genreFilters) {
-    $artistFollowerMap = @{}  # artistId -> { bandName, followers, spotifyUrl, thumbnail }
+    $artistViewsMap = @{}  # artistId -> { bandName, totalViews, followers, spotifyUrl, thumbnail }
     # Use pre-filtered genre data
     $genreDeduped = $mainByGenre[$genre]
     foreach ($r in $genreDeduped) {
         $aid = $r.artistId
         if (-not $aid) { continue }
-        $existing = $artistFollowerMap[$aid]
-        if (-not $existing -or ([int]($r.followers -as [int])) -gt $existing.followers) {
+        $views = [long]($r.youtubeViews -as [long])
+        $existing = $artistViewsMap[$aid]
+        if ($existing) {
+            $existing.totalViews += $views
+            # Keep the best thumbnail/followers
+            if (([int]($r.followers -as [int])) -gt $existing.followers) {
+                $existing.followers = [int]($r.followers -as [int])
+                $existing.thumbnail = $r.thumbnail
+            }
+        } else {
             $bandInfo = Get-ArtistInfo $r.bandName
-            $artistFollowerMap[$aid] = [ordered]@{
+            $artistViewsMap[$aid] = [ordered]@{
                 artistId = $aid
                 bandName = if ($bandInfo) { $bandInfo.name } else { $r.bandName }
+                totalViews = $views
                 followers = [int]($r.followers -as [int])
                 spotifyUrl = $r.spotifyUrl
                 thumbnail = $r.thumbnail
@@ -687,7 +727,7 @@ foreach ($genre in $genreFilters) {
             }
         }
     }
-    $allTimeArtistsByGenre[$genre] = @($artistFollowerMap.Values | Sort-Object { -$_.followers } | Select-Object -First 100)
+    $allTimeArtistsByGenre[$genre] = @($artistViewsMap.Values | Sort-Object { -$_.totalViews } | Select-Object -First 100)
 }
 
 Write-Host "  > Ranked all-time artists for $($genreFilters.Count) genres" -ForegroundColor DarkGray
@@ -1182,8 +1222,7 @@ $siteMaster = [PSCustomObject]@{
     # Per-release chart history (for tooltips), keyed by genre
     releaseHistory = $historyMapOutput
     
-    # All-time top artists sorted by followers, keyed by genre
-    # (allTimeArtistsByGenre['all'] serves as the fallback — no separate allTimeArtists needed)
+    # All-time top artists sorted by total YouTube views, keyed by genre
     allTimeArtistsByGenre = $allTimeArtistsByGenreOutput
     
     # Top 100 artists sorted by cumulative popularity (sum of all release popularities)

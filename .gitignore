@@ -1,9 +1,12 @@
 # Update script state
 .last-run-state.json
+.youtube-id-cache.json
+chart-data-youtube.json
 
 # Credentials
 spotify-credentials.json
 instagram-credentials.json
+youtube-credentials.json
 
 # Runtime backups
 bands.json.backup

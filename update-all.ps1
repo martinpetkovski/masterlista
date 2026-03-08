@@ -3,13 +3,13 @@
 #
 # Tasks:
 #   1. Chart data - Fetches Spotify data and generates chart-data.json + weekly snapshots
+#   1b. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
 #   2. Articles   - Fetches RSS feeds for today's articles, archives to articles.json
 #   2b. Scrape    - Scrapes sites for articles not in RSS, merges into articles.json
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
 #   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
 #   5. Curators   - Fetches playlist tracklists for curators from streaming APIs
-#   6. YouTube    - Scrapes latest Xotel YouTube videos via RSS feed
-#   7. Site Master - Generates site-master.json with all pre-computed data for client pages
+#   6. Site Master - Generates site-master.json with all pre-computed data for client pages
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
@@ -19,8 +19,10 @@
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipInstagram # Skip Instagram posting
 #   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
+#   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only chart   # Run only chart task
+#   ./update-all.ps1 -Only ytpopularity # Run only YouTube popularity calculation
 #   ./update-all.ps1 -Only articles # Run only articles task
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
@@ -34,10 +36,10 @@ param(
     [switch]$SkipScrape,
     [switch]$SkipLinks,
     [switch]$SkipInstagram,
+    [switch]$SkipYouTubePopularity,
     [switch]$SkipCurators,
-    [switch]$SkipYouTube,
     [switch]$SkipSiteMaster,
-    [ValidateSet("chart", "articles", "scrape", "links", "instagram", "curators", "youtube", "sitemaster")]
+    [ValidateSet("chart", "ytpopularity", "articles", "scrape", "links", "instagram", "curators", "sitemaster")]
     [string]$Only
 )
 
@@ -287,6 +289,146 @@ function Update-ChartData {
     }
 
     Write-Elapsed $chartStart
+    return $true
+}
+
+# ============================================================================
+#  TASK 1b: YOUTUBE POPULARITY
+# ============================================================================
+
+function Update-YouTubePopularity {
+    Write-Section "TASK 1b: YOUTUBE POPULARITY"
+
+    $credentialsPath = Join-Path $scriptRoot "youtube-credentials.json"
+
+    if (-not (Test-Path $credentialsPath)) {
+        Write-Step "youtube-credentials.json not found, skipping YouTube popularity" "Red"
+        return $false
+    }
+
+    Write-Step "Reading YouTube credentials..."
+    try {
+        $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        Write-Step "Failed to parse youtube-credentials.json" "Red"
+        return $false
+    }
+
+    if (-not $creds.apiKey) {
+        Write-Step "youtube-credentials.json must contain apiKey" "Red"
+        return $false
+    }
+
+    $env:YOUTUBE_API_KEY = $creds.apiKey
+
+    $nodeScript = Join-Path $scriptRoot "scripts\generate-chart-data-youtube.js"
+    if (-not (Test-Path $nodeScript)) {
+        Write-Step "scripts/generate-chart-data-youtube.js not found" "Red"
+        return $false
+    }
+
+    Write-Step "Running YouTube popularity calculation..."
+    $ytStart = Get-Date
+    try {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "node"
+        $psi.Arguments = "`"$nodeScript`""
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+        $psi.WorkingDirectory = $scriptRoot
+
+        $proc = New-Object System.Diagnostics.Process
+        $proc.StartInfo = $psi
+
+        $outputQueue = [System.Collections.Concurrent.ConcurrentQueue[PSCustomObject]]::new()
+
+        $stdoutEvent = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'out'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $stderrEvent = Register-ObjectEvent -InputObject $proc -EventName ErrorDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'err'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $null = $proc.Start()
+        $proc.BeginOutputReadLine()
+        $proc.BeginErrorReadLine()
+
+        $lastOutputTime = Get-Date
+        $lastStatus = "Starting..."
+        $lastPct = -1
+
+        while (-not $proc.HasExited) {
+            $item = $null
+
+            while ($outputQueue.TryDequeue([ref]$item)) {
+                $lastOutputTime = Get-Date
+
+                if ($item.Stream -eq 'out') {
+                    if ($item.Text -match '\((\d+)%\)') {
+                        $lastPct = [int]$Matches[1]
+                    }
+                    $lastStatus = $item.Text
+                    Write-Host "    [yt] $($item.Text)" -ForegroundColor DarkGray
+                }
+                else {
+                    Write-Host "    [yt] $($item.Text)" -ForegroundColor DarkYellow
+                }
+            }
+
+            $elapsed = [math]::Round(((Get-Date) - $ytStart).TotalSeconds, 0)
+            $progressParams = @{
+                Id       = 1
+                Activity = "YouTube Popularity  [${elapsed}s elapsed]"
+                Status   = $lastStatus
+            }
+            if ($lastPct -ge 0) {
+                $progressParams.PercentComplete = $lastPct
+            }
+            Write-Progress @progressParams
+
+            Start-Sleep -Milliseconds 500
+        }
+
+        # Drain remaining output
+        $item = $null
+        while ($outputQueue.TryDequeue([ref]$item)) {
+            if ($item.Stream -eq 'out') {
+                Write-Host "    [yt] $($item.Text)" -ForegroundColor DarkGray
+            }
+            else {
+                Write-Host "    [yt] $($item.Text)" -ForegroundColor DarkYellow
+            }
+        }
+
+        $proc.WaitForExit()
+        Write-Progress -Id 1 -Activity "YouTube Popularity" -Completed
+
+        Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
+        Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
+        Remove-Job -Id $stdoutEvent.Id -Force -ErrorAction SilentlyContinue
+        Remove-Job -Id $stderrEvent.Id -Force -ErrorAction SilentlyContinue
+
+        if ($proc.ExitCode -ne 0) {
+            Write-Step "YouTube popularity script exited with code $($proc.ExitCode)" "Red"
+            return $false
+        }
+    }
+    catch {
+        Write-Progress -Id 1 -Activity "YouTube Popularity" -Completed
+        Write-Step "Failed to run YouTube popularity script: $_" "Red"
+        return $false
+    }
+
+    Write-Step "YouTube popularity updated successfully" "Green"
+    Write-Elapsed $ytStart
     return $true
 }
 
@@ -949,77 +1091,6 @@ function Update-CuratorTracklists {
 }
 
 
-function Update-YouTube {
-    Write-Section "TASK 6: XOTEL YOUTUBE VIDEOS"
-
-    $channelId = "UC3Etl3X-9ev1T_OweXAh09w"
-    $rssUrl = "https://www.youtube.com/feeds/videos.xml?channel_id=$channelId"
-    $outputPath = Join-Path $scriptRoot "xotel-videos.json"
-
-    Write-Step "Fetching YouTube RSS feed for Xotel..."
-    try {
-        [xml]$rss = (Invoke-WebRequest -Uri $rssUrl -UseBasicParsing -TimeoutSec 15).Content
-    }
-    catch {
-        Write-Step "Failed to fetch YouTube RSS: $($_.Exception.Message)" "Red"
-        return $false
-    }
-
-    $ns = @{ atom = "http://www.w3.org/2005/Atom"; yt = "http://www.youtube.com/xml/schemas/2015"; media = "http://search.yahoo.com/mrss/" }
-    $entries = $rss.feed.entry
-
-    if (-not $entries -or $entries.Count -eq 0) {
-        Write-Step "No videos found in RSS feed" "Red"
-        return $false
-    }
-
-    $videos = @()
-    $maxVideos = 20
-    $count = 0
-
-    foreach ($entry in $entries) {
-        if ($count -ge $maxVideos) { break }
-        $videoId = $entry.getElementsByTagName("yt:videoId") | ForEach-Object { $_.'#text' }
-        if (-not $videoId) {
-            # Fallback: extract from link
-            $link = ($entry.link | Where-Object { $_.rel -eq "alternate" }).href
-            if ($link -match '[?&]v=([a-zA-Z0-9_-]+)') { $videoId = $Matches[1] }
-        }
-        if (-not $videoId) { continue }
-
-        $title = $entry.title
-        if ($title -is [System.Xml.XmlElement]) { $title = $title.'#text' }
-
-        $published = $entry.published
-        if ($published -is [System.Xml.XmlElement]) { $published = $published.'#text' }
-
-        # Skip shorts/promos (titles containing #)
-        if ($title -match '#') { continue }
-
-        $thumbnail = "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
-
-        $videos += @{
-            id        = $videoId
-            title     = $title
-            published = $published
-            thumbnail = $thumbnail
-        }
-        $count++
-    }
-
-    Write-Step "Found $($videos.Count) videos"
-
-    $json = $videos | ConvertTo-Json -Depth 5
-    [System.IO.File]::WriteAllText($outputPath, $json, [System.Text.Encoding]::UTF8)
-
-    $size = [math]::Round((Get-Item $outputPath).Length / 1KB, 1)
-    Write-Step "Generated xotel-videos.json (${size} KB)" "Green"
-
-    Write-Step "YouTube scraping completed" "Green"
-    return $true
-}
-
-
 # ============================================================================
 #  MAIN
 # ============================================================================
@@ -1034,22 +1105,22 @@ Write-Host ("=" * 70) -ForegroundColor Magenta
 
 # Determine which tasks to run
 $runChart     = -not $SkipChart
+$runYouTubePopularity = -not $SkipYouTubePopularity
 $runArticles  = -not $SkipArticles
 $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
 $runInstagram = -not $SkipInstagram
 $runCurators  = -not $SkipCurators
-$runYouTube   = -not $SkipYouTube
 $runSiteMaster = -not $SkipSiteMaster
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
+    $runYouTubePopularity = $Only -eq "ytpopularity"
     $runArticles  = $Only -eq "articles"
     $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
     $runInstagram = $Only -eq "instagram"
     $runCurators  = $Only -eq "curators"
-    $runYouTube   = $Only -eq "youtube"
     $runSiteMaster = $Only -eq "sitemaster"
 }
 
@@ -1057,7 +1128,7 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runYouTube, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runYouTubePopularity, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -1069,6 +1140,17 @@ if ($runChart) {
 }
 else {
     Write-Step "Skipping chart data" "DarkGray"
+}
+
+# --- Task 1b: YouTube Popularity ---
+if ($runYouTubePopularity) {
+    Set-OverallProgress "YouTube Popularity"
+    $t = Get-Date
+    $results["YouTube Popularity"] = Update-YouTubePopularity
+    $taskTimings["YouTube Popularity"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping YouTube popularity" "DarkGray"
 }
 
 # --- Task 2: Articles ---
@@ -1126,21 +1208,10 @@ else {
     Write-Step "Skipping curator tracklists" "DarkGray"
 }
 
-# --- Task 6: YouTube ---
-if ($runYouTube) {
-    Set-OverallProgress "YouTube"
-    $t = Get-Date
-    $results["YouTube"] = Update-YouTube
-    $taskTimings["YouTube"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
-}
-else {
-    Write-Step "Skipping YouTube scraping" "DarkGray"
-}
-
-# --- Task 7: Site Master ---
+# --- Task 6: Site Master ---
 if ($runSiteMaster) {
     Set-OverallProgress "Site Master"
-    Write-Section "TASK 7: SITE MASTER (PRE-COMPUTED DATA)"
+    Write-Section "TASK 6: SITE MASTER (PRE-COMPUTED DATA)"
     $t = Get-Date
     try {
         $smScript = Join-Path (Join-Path $scriptRoot "scripts") "generate-site-master.ps1"

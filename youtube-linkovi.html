@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Линкови | ТопЛиста.мк</title>
+
+    <meta name="title" content="YouTube Линкови | ТопЛиста.мк">
+    <meta name="description" content="Верификација на YouTube линкови за изданија на македонски музичари.">
+    <meta name="author" content="ТопЛиста.мк">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="language" content="Macedonian">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="YouTube Линкови | ТопЛиста.мк">
+    <meta property="og:description" content="Верификација на YouTube линкови за изданија на македонски музичари.">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
+    <script src="mmm-drafts.js?v=1"></script>
+    <script src="/tour.js?v=1" defer></script>
+    <style>
+    /* === YouTube Links page styles === */
+
+    .yt-page { padding: 1rem; max-width: 1400px; margin: 0 auto; }
+
+    .yt-stats {
+        display: flex; gap: 1.5rem; flex-wrap: wrap;
+        margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted);
+    }
+    .yt-stats .stat { display: flex; align-items: center; gap: 0.3rem; }
+    .yt-stats .stat i { font-size: 0.75rem; }
+    .yt-stats .stat-value { font-weight: 700; color: var(--text-primary); }
+
+    .yt-controls {
+        display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+        align-items: center;
+    }
+    .yt-controls input[type="text"] {
+        flex: 1; min-width: 200px;
+        padding: 0.45rem 0.75rem; border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+        font-size: 0.8rem; font-family: 'Inter', sans-serif;
+    }
+    .yt-controls select {
+        padding: 0.45rem 0.6rem; border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+        font-size: 0.8rem; font-family: 'Inter', sans-serif;
+    }
+
+    .yt-table-wrap {
+        overflow-x: auto; border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+    }
+    .yt-table {
+        width: 100%; border-collapse: collapse; font-size: 0.78rem;
+    }
+    .yt-table thead th {
+        position: sticky; top: 0; z-index: 2;
+        background: var(--bg-secondary); font-weight: 700;
+        text-align: left; padding: 0.6rem 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        white-space: nowrap; font-size: 0.72rem;
+        text-transform: uppercase; letter-spacing: 0.04em;
+        color: var(--text-muted);
+    }
+    .yt-table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.15s;
+    }
+    .yt-table tbody tr:hover { background: var(--bg-hover); }
+    .yt-table td { padding: 0.5rem 0.75rem; vertical-align: middle; }
+
+    /* Reset leaked master-list nth-child column rules */
+    .yt-table th, .yt-table td {
+        width: auto !important;
+        white-space: normal;
+        overflow: visible;
+    }
+    .yt-table th:first-child, .yt-table td:first-child { width: 2rem !important; white-space: nowrap; }
+    .yt-table th:nth-child(3), .yt-table td:nth-child(3) { width: 2rem !important; text-align: center; }
+    .yt-table th:nth-child(4), .yt-table td:nth-child(4) { width: 2rem !important; text-align: center; }
+    .yt-table th:last-child, .yt-table td:last-child { width: 60% !important; }
+
+    .yt-release-info {
+        display: flex; align-items: center; gap: 0.6rem;
+    }
+    .yt-release-thumb {
+        width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
+        flex-shrink: 0;
+    }
+    .yt-release-meta { display: flex; flex-direction: column; gap: 0.1rem; }
+    .yt-release-title { font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+    .yt-release-artist { font-size: 0.72rem; color: var(--text-muted); }
+    .yt-release-type {
+        display: inline-block; font-size: 0.6rem; font-weight: 700;
+        padding: 0.1rem 0.35rem; border-radius: 4px;
+        background: var(--bg-tertiary); color: var(--text-muted);
+        text-transform: uppercase; margin-left: 0.3rem;
+    }
+
+    .yt-tracks-cell { min-width: 350px; }
+    .yt-track-row {
+        display: flex; align-items: center; gap: 0.4rem;
+        padding: 0.2rem 0; flex-wrap: wrap;
+    }
+    .yt-track-name {
+        font-size: 0.72rem; color: var(--text-muted); min-width: 120px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        max-width: 180px;
+    }
+    .yt-link-pill {
+        display: inline-flex; align-items: center; gap: 0.25rem;
+        padding: 0.15rem 0.45rem; border-radius: 999px;
+        font-size: 0.68rem; font-weight: 600;
+        text-decoration: none; transition: all 0.15s;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+    }
+    .yt-link-pill:hover { background: var(--bg-tertiary); }
+    .yt-link-pill.verified {
+        border-color: #22c55e; background: rgba(34, 197, 94, 0.1);
+    }
+    .yt-link-pill.unverified {
+        border-color: #f59e0b; background: rgba(245, 158, 11, 0.08);
+    }
+    .yt-link-pill .fa-check-circle { color: #22c55e; font-size: 0.65rem; }
+    .yt-link-pill .fa-question-circle { color: #f59e0b; font-size: 0.65rem; }
+
+    .yt-verify-btn, .yt-remove-btn {
+        background: none; border: none; cursor: pointer;
+        padding: 0.15rem 0.3rem; border-radius: 4px;
+        font-size: 0.65rem; transition: all 0.15s;
+        color: var(--text-muted);
+    }
+    .yt-verify-btn:hover { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+    .yt-remove-btn:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+    .yt-add-link-btn {
+        display: inline-flex; align-items: center; gap: 0.2rem;
+        background: none; border: 1px dashed var(--border-color);
+        cursor: pointer; padding: 0.15rem 0.4rem; border-radius: 999px;
+        font-size: 0.65rem; color: var(--text-muted); transition: all 0.15s;
+        font-family: 'Inter', sans-serif;
+    }
+    .yt-add-link-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+    .yt-no-yt {
+        font-size: 0.7rem; color: var(--text-muted); opacity: 0.5;
+        font-style: italic;
+    }
+
+    /* Add link inline form */
+    .yt-add-form {
+        display: flex; align-items: center; gap: 0.3rem; margin-top: 0.2rem;
+    }
+    .yt-add-form input {
+        width: 260px; padding: 0.25rem 0.5rem; border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+        font-size: 0.72rem; font-family: 'Inter', sans-serif;
+    }
+    .yt-add-form button {
+        padding: 0.25rem 0.5rem; border-radius: 6px;
+        border: 1px solid var(--border-color);
+        cursor: pointer; font-size: 0.72rem; font-family: 'Inter', sans-serif;
+    }
+    .yt-add-form .yt-add-confirm {
+        background: #22c55e; color: white; border-color: #22c55e;
+    }
+    .yt-add-form .yt-add-cancel {
+        background: var(--bg-secondary); color: var(--text-muted);
+    }
+
+    /* Loading */
+    .yt-loading {
+        text-align: center; padding: 3rem; color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    .yt-loading i { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+
+    /* Spotify link */
+    .yt-spotify-link {
+        display: inline-flex; align-items: center; gap: 0.2rem;
+        color: #1DB954; font-size: 0.7rem; text-decoration: none;
+    }
+    .yt-spotify-link:hover { text-decoration: underline; }
+
+    .yt-yt-search-link {
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #f00; font-size: 0.85rem; text-decoration: none;
+        opacity: 0.6; transition: opacity 0.15s;
+    }
+    .yt-yt-search-link:hover { opacity: 1; }
+
+    .yt-track-search {
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #f00; font-size: 0.6rem; text-decoration: none;
+        opacity: 0.4; transition: opacity 0.15s;
+        padding: 0.1rem; margin-left: 0.1rem;
+    }
+    .yt-track-search:hover { opacity: 1; }
+
+    .yt-submit-btn {
+        padding: 0.45rem 0.9rem; border-radius: 8px;
+        border: 1px solid #22c55e; background: #22c55e; color: #fff;
+        font-size: 0.78rem; font-weight: 600; font-family: 'Inter', sans-serif;
+        cursor: pointer; transition: all 0.15s;
+        display: inline-flex; align-items: center; gap: 0.35rem;
+        white-space: nowrap;
+    }
+    .yt-submit-btn:hover { background: #16a34a; }
+    .yt-submit-btn:disabled { opacity: 0.4; cursor: default; background: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-muted); }
+
+    .yt-artist-link {
+        color: var(--text-muted); text-decoration: none;
+        transition: color 0.15s;
+    }
+    .yt-artist-link:hover { color: var(--text-primary); text-decoration: underline; }
+
+    /* Pagination */
+    .yt-pagination {
+        display: flex; justify-content: center; gap: 0.3rem;
+        margin-top: 1rem; flex-wrap: wrap;
+    }
+    .yt-pagination button {
+        padding: 0.35rem 0.7rem; border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+        cursor: pointer; font-size: 0.75rem; font-family: 'Inter', sans-serif;
+        transition: all 0.15s;
+    }
+    .yt-pagination button:hover { background: var(--bg-tertiary); }
+    .yt-pagination button.active {
+        background: var(--text-primary); color: var(--bg-primary);
+        font-weight: 700;
+    }
+    .yt-pagination button:disabled { opacity: 0.4; cursor: default; }
+
+    @media (max-width: 600px) {
+        .yt-page { padding: 0.5rem; }
+        .yt-release-info { min-width: unset; }
+        .yt-tracks-cell { min-width: unset; }
+        .yt-table td { padding: 0.4rem 0.5rem; }
+        .yt-track-name { max-width: 100px; }
+    }
+    </style>
+</head>
+<body class="compact yt-links-page">
+    <header id="site-header" data-active="/youtube-linkovi" data-title="YouTube Линкови">
+    </header>
+    <script src="load-header.js"></script>
+
+    <main class="yt-page">
+        <div class="yt-stats" id="yt-stats"></div>
+
+        <div class="yt-controls">
+            <input type="text" id="yt-search" placeholder="Пребарај по артист или издание...">
+            <select id="yt-filter-status">
+                <option value="all">Сите</option>
+                <option value="has-unverified">Со неверификувани</option>
+                <option value="all-verified">Целосно верификувани</option>
+                <option value="no-yt">Без YouTube</option>
+            </select>
+            <select id="yt-filter-type">
+                <option value="all">Сите типови</option>
+                <option value="single">Сингли</option>
+                <option value="album">Албуми</option>
+            </select>
+            <button class="yt-submit-btn" id="yt-submit-btn" disabled><i class="fas fa-paper-plane"></i> Прати промени</button>
+        </div>
+
+        <div id="yt-content">
+            <div class="yt-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Се вчитуваат изданија...
+            </div>
+        </div>
+
+        <div class="yt-pagination" id="yt-pagination"></div>
+    </main>
+
+    <div id="notification-area" class="notification-area" style="position:fixed;bottom:80px;right:16px;z-index:10001;max-width:340px;"></div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var PAGE_SIZE = 50;
+        var releasesData = null;
+        var originalData = null;
+        var filteredReleases = [];
+        var currentPage = 0;
+        var hasUnsavedChanges = false;
+
+        // ── Notifications ────────────────────────────────────────────
+        window.showNotification = function (msg, type) {
+            type = type || 'info';
+            var container = document.getElementById('notification-area');
+            var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+            var el = document.createElement('div');
+            el.className = 'notification ' + type;
+            el.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + msg;
+            container.appendChild(el);
+            setTimeout(function () {
+                el.style.opacity = '0';
+                setTimeout(function () { el.remove(); }, 300);
+            }, 4000);
+        };
+
+        // ── Escape HTML ──────────────────────────────────────────────
+        function esc(s) {
+            if (!s) return '';
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ── Parse YouTube URL ────────────────────────────────────────
+        function parseYouTubeUrl(url) {
+            if (!url) return null;
+            var m;
+            m = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+            if (m) return m[1];
+            m = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+            if (m) return m[1];
+            m = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+            if (m) return m[1];
+            return null;
+        }
+
+        // ── Load data ────────────────────────────────────────────────
+        function loadData() {
+            // Check for pending drafts first
+            var draft = window.MMMDrafts ? MMMDrafts.load('releases.json') : null;
+            if (draft) {
+                releasesData = draft;
+                originalData = null; // Will be set from fetch
+            }
+
+            fetch('/releases.json?_=' + Date.now())
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!releasesData) {
+                        releasesData = data;
+                    }
+                    originalData = JSON.parse(JSON.stringify(data));
+                    applyFilters();
+                    renderStats();
+                    updateSubmitBtn();
+                })
+                .catch(function (err) {
+                    document.getElementById('yt-content').innerHTML =
+                        '<div class="yt-loading"><i class="fas fa-exclamation-triangle"></i> Грешка при вчитување: ' + esc(err.message) + '</div>';
+                });
+        }
+
+        // ── Stats ────────────────────────────────────────────────────
+        function renderStats() {
+            var releases = releasesData.releases;
+            var total = releases.length;
+            var withYt = 0, verifiedCount = 0, unverifiedCount = 0, noYt = 0;
+            for (var i = 0; i < releases.length; i++) {
+                var yt = releases[i].youtubeTracks;
+                if (yt && yt.length > 0) {
+                    withYt++;
+                    for (var j = 0; j < yt.length; j++) {
+                        if (yt[j].verified) verifiedCount++;
+                        else unverifiedCount++;
+                    }
+                } else {
+                    noYt++;
+                }
+            }
+            document.getElementById('yt-stats').innerHTML =
+                '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
+                '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
+                '<div class="stat"><i class="fas fa-check-circle" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> верификувани</div>' +
+                '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
+                '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>';
+        }
+
+        // ── Filtering ────────────────────────────────────────────────
+        function applyFilters() {
+            var search = document.getElementById('yt-search').value.toLowerCase().trim();
+            var status = document.getElementById('yt-filter-status').value;
+            var typeFilter = document.getElementById('yt-filter-type').value;
+            var releases = releasesData.releases;
+
+            filteredReleases = [];
+            for (var i = 0; i < releases.length; i++) {
+                var r = releases[i];
+
+                // Type filter
+                if (typeFilter !== 'all') {
+                    if (typeFilter === 'album' && r.releaseType !== 'album') continue;
+                    if (typeFilter === 'single' && r.releaseType === 'album') continue;
+                }
+
+                // Status filter
+                var yt = r.youtubeTracks || [];
+                if (status === 'has-unverified') {
+                    if (yt.length === 0 || yt.every(function (t) { return t.verified; })) continue;
+                } else if (status === 'all-verified') {
+                    if (yt.length === 0 || yt.some(function (t) { return !t.verified; })) continue;
+                } else if (status === 'no-yt') {
+                    if (yt.length > 0) continue;
+                }
+
+                // Search
+                if (search) {
+                    var hay = (r.bandName + ' ' + (r.spotifyName || '') + ' ' + r.releaseTitle).toLowerCase();
+                    if (hay.indexOf(search) === -1) continue;
+                }
+
+                filteredReleases.push({ index: i, release: r });
+            }
+
+            currentPage = 0;
+            renderTable();
+            renderPagination();
+        }
+
+        // ── Render table ─────────────────────────────────────────────
+        function renderTable() {
+            var start = currentPage * PAGE_SIZE;
+            var end = Math.min(start + PAGE_SIZE, filteredReleases.length);
+            var page = filteredReleases.slice(start, end);
+
+            if (page.length === 0) {
+                document.getElementById('yt-content').innerHTML =
+                    '<div class="yt-loading"><i class="fas fa-search"></i> Нема резултати.</div>';
+                return;
+            }
+
+            var html = '<div class="yt-table-wrap"><table class="yt-table"><thead><tr>' +
+                '<th>#</th><th>Издание</th><th><i class="fab fa-spotify" style="color:#1DB954"></i></th><th><i class="fab fa-youtube" style="color:#f00"></i></th><th>YouTube линкови</th>' +
+                '</tr></thead><tbody>';
+
+            for (var i = 0; i < page.length; i++) {
+                var r = page[i].release;
+                var idx = page[i].index;
+                var num = start + i + 1;
+                var typeLabel = r.releaseType === 'album' ? 'АЛБ' : r.releaseType === 'compilation' ? 'КОМ' : 'СИН';
+
+                html += '<tr data-idx="' + idx + '">';
+                html += '<td style="color:var(--text-muted);font-size:0.7rem">' + num + '</td>';
+
+                // Release info
+                html += '<td><div class="yt-release-info">';
+                if (r.thumbnail) html += '<img class="yt-release-thumb" src="' + esc(r.thumbnail) + '" alt="" loading="lazy">';
+                html += '<div class="yt-release-meta">';
+                html += '<span class="yt-release-title">' + esc(r.releaseTitle) + '<span class="yt-release-type">' + typeLabel + '</span></span>';
+                var artistUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+                    ? '/artist.html?name=' + encodeURIComponent(r.bandName)
+                    : '/' + encodeURIComponent(r.bandName);
+                html += '<span class="yt-release-artist"><a class="yt-artist-link" href="' + artistUrl + '">' + esc(r.bandName) + '</a>' + (r.spotifyName ? ' <span style="opacity:.5">(' + esc(r.spotifyName) + ')</span>' : '') + '</span>';
+                html += '</div></div></td>';
+
+                // Spotify
+                html += '<td>';
+                if (r.releaseUrl) {
+                    html += '<a class="yt-spotify-link" href="' + esc(r.releaseUrl) + '" target="_blank" rel="noopener"><i class="fab fa-spotify"></i></a>';
+                }
+                html += '</td>';
+
+                // YouTube search
+                var ytQuery = encodeURIComponent(r.bandName + ' ' + r.releaseTitle);
+                html += '<td><a class="yt-yt-search-link" href="https://www.youtube.com/results?search_query=' + ytQuery + '" target="_blank" rel="noopener" title="Пребарај на YouTube"><i class="fas fa-search"></i></a></td>';
+
+                // YouTube tracks
+                html += '<td class="yt-tracks-cell">';
+                html += renderYouTubeTracks(r, idx);
+                html += '</td>';
+
+                html += '</tr>';
+            }
+
+            html += '</tbody></table></div>';
+            document.getElementById('yt-content').innerHTML = html;
+
+            // Bind event listeners
+            bindTrackActions();
+        }
+
+        function renderYouTubeTracks(release, releaseIdx) {
+            var yt = release.youtubeTracks || [];
+            var html = '';
+
+            if (yt.length === 0) {
+                html += '<span class="yt-no-yt">Нема YouTube линкови</span> ';
+            }
+
+            for (var j = 0; j < yt.length; j++) {
+                var t = yt[j];
+                var pillClass = t.verified ? 'verified' : 'unverified';
+                var iconClass = t.verified ? 'fa-check-circle' : 'fa-question-circle';
+                html += '<div class="yt-track-row">';
+                html += '<span class="yt-track-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>';
+                html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
+                html += '<i class="fas ' + iconClass + '"></i> ';
+                html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
+                html += '</a>';
+                var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);
+                html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(t.name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
+                if (!t.verified) {
+                    html += ' <button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
+                }
+                html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
+                html += '</div>';
+            }
+
+            html += '<button class="yt-add-link-btn" data-release="' + releaseIdx + '"><i class="fas fa-plus"></i> Додади линк</button>';
+            return html;
+        }
+
+        // ── Bind track action buttons ────────────────────────────────
+        function bindTrackActions() {
+            // Verify buttons
+            var verifyBtns = document.querySelectorAll('.yt-verify-btn');
+            for (var i = 0; i < verifyBtns.length; i++) {
+                verifyBtns[i].addEventListener('click', function () {
+                    var ri = parseInt(this.dataset.release, 10);
+                    var ti = parseInt(this.dataset.track, 10);
+                    verifyTrack(ri, ti);
+                });
+            }
+
+            // Remove buttons
+            var removeBtns = document.querySelectorAll('.yt-remove-btn');
+            for (var i = 0; i < removeBtns.length; i++) {
+                removeBtns[i].addEventListener('click', function () {
+                    var ri = parseInt(this.dataset.release, 10);
+                    var ti = parseInt(this.dataset.track, 10);
+                    removeTrack(ri, ti);
+                });
+            }
+
+            // Add link buttons
+            var addBtns = document.querySelectorAll('.yt-add-link-btn');
+            for (var i = 0; i < addBtns.length; i++) {
+                addBtns[i].addEventListener('click', function () {
+                    var ri = parseInt(this.dataset.release, 10);
+                    showAddForm(this, ri);
+                });
+            }
+        }
+
+        // ── Actions ──────────────────────────────────────────────────
+        function verifyTrack(releaseIdx, trackIdx) {
+            var r = releasesData.releases[releaseIdx];
+            if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
+            r.youtubeTracks[trackIdx].verified = true;
+            markChanged();
+            renderTable();
+            renderStats();
+            showNotification('Линкот е верификуван', 'success');
+        }
+
+        function removeTrack(releaseIdx, trackIdx) {
+            var r = releasesData.releases[releaseIdx];
+            if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
+            r.youtubeTracks.splice(trackIdx, 1);
+            if (r.youtubeTracks.length === 0) delete r.youtubeTracks;
+            markChanged();
+            renderTable();
+            renderStats();
+            showNotification('Линкот е отстранет', 'info');
+        }
+
+        function showAddForm(btn, releaseIdx) {
+            // Don't add multiple forms
+            if (btn.parentNode.querySelector('.yt-add-form')) return;
+
+            var release = releasesData.releases[releaseIdx];
+            var trackNames = release.trackNames || [release.releaseTitle];
+
+            var form = document.createElement('div');
+            form.className = 'yt-add-form';
+
+            // Build track name dropdown
+            var selectHtml = '<select class="yt-add-track-select" style="padding:0.25rem 0.4rem;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);font-size:0.72rem;font-family:Inter,sans-serif;max-width:150px">';
+            for (var i = 0; i < trackNames.length; i++) {
+                selectHtml += '<option value="' + esc(trackNames[i]) + '">' + esc(trackNames[i]) + '</option>';
+            }
+            selectHtml += '</select>';
+
+            form.innerHTML =
+                selectHtml +
+                '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +
+                '<button class="yt-add-confirm" title="Додади"><i class="fas fa-check"></i></button>' +
+                '<button class="yt-add-cancel" title="Откажи"><i class="fas fa-times"></i></button>';
+
+            btn.parentNode.appendChild(form);
+
+            var urlInput = form.querySelector('.yt-add-url');
+            urlInput.focus();
+
+            form.querySelector('.yt-add-cancel').addEventListener('click', function () {
+                form.remove();
+            });
+
+            form.querySelector('.yt-add-confirm').addEventListener('click', function () {
+                var url = urlInput.value.trim();
+                var trackName = form.querySelector('.yt-add-track-select').value;
+                addYouTubeLink(releaseIdx, trackName, url);
+                form.remove();
+            });
+
+            urlInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    var url = urlInput.value.trim();
+                    var trackName = form.querySelector('.yt-add-track-select').value;
+                    addYouTubeLink(releaseIdx, trackName, url);
+                    form.remove();
+                } else if (e.key === 'Escape') {
+                    form.remove();
+                }
+            });
+        }
+
+        function addYouTubeLink(releaseIdx, trackName, url) {
+            var videoId = parseYouTubeUrl(url);
+            if (!videoId) {
+                showNotification('Невалиден YouTube линк. Користи формат: https://youtube.com/watch?v=...', 'error');
+                return;
+            }
+
+            var r = releasesData.releases[releaseIdx];
+            if (!r.youtubeTracks) r.youtubeTracks = [];
+
+            // Check for duplicate
+            for (var i = 0; i < r.youtubeTracks.length; i++) {
+                if (r.youtubeTracks[i].videoId === videoId) {
+                    showNotification('Овој линк веќе постои за ова издание', 'warning');
+                    return;
+                }
+            }
+
+            r.youtubeTracks.push({
+                name: trackName,
+                videoId: videoId,
+                url: 'https://www.youtube.com/watch?v=' + videoId,
+                verified: true // manually added = auto-verified
+            });
+
+            markChanged();
+            renderTable();
+            renderStats();
+            showNotification('Нов YouTube линк додаден (верификуван)', 'success');
+        }
+
+        // ── Change tracking ──────────────────────────────────────────
+        function markChanged() {
+            hasUnsavedChanges = true;
+            if (window.MMMDrafts) {
+                MMMDrafts.save('releases.json', releasesData, originalData);
+            }
+            updateSubmitBtn();
+        }
+
+        function updateSubmitBtn() {
+            var btn = document.getElementById('yt-submit-btn');
+            if (!btn) return;
+            var hasPending = window.MMMDrafts && MMMDrafts.hasPending && MMMDrafts.hasPending();
+            btn.disabled = !hasPending;
+        }
+
+        // ── Pagination ───────────────────────────────────────────────
+        function renderPagination() {
+            var totalPages = Math.ceil(filteredReleases.length / PAGE_SIZE);
+            if (totalPages <= 1) {
+                document.getElementById('yt-pagination').innerHTML = '';
+                return;
+            }
+
+            var html = '';
+            html += '<button ' + (currentPage === 0 ? 'disabled' : '') + ' data-page="' + (currentPage - 1) + '">&laquo;</button>';
+            for (var p = 0; p < totalPages; p++) {
+                if (totalPages > 10 && Math.abs(p - currentPage) > 2 && p !== 0 && p !== totalPages - 1) {
+                    if (p === currentPage - 3 || p === currentPage + 3) html += '<button disabled>…</button>';
+                    continue;
+                }
+                html += '<button class="' + (p === currentPage ? 'active' : '') + '" data-page="' + p + '">' + (p + 1) + '</button>';
+            }
+            html += '<button ' + (currentPage === totalPages - 1 ? 'disabled' : '') + ' data-page="' + (currentPage + 1) + '">&raquo;</button>';
+
+            var el = document.getElementById('yt-pagination');
+            el.innerHTML = html;
+
+            var btns = el.querySelectorAll('button[data-page]');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].addEventListener('click', function () {
+                    if (this.disabled) return;
+                    currentPage = parseInt(this.dataset.page, 10);
+                    renderTable();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        }
+
+        // ── Listen for draft events ──────────────────────────────────
+        window.addEventListener('mmm-drafts-submitted', function () {
+            originalData = JSON.parse(JSON.stringify(releasesData));
+            hasUnsavedChanges = false;
+            updateSubmitBtn();
+        });
+
+        window.addEventListener('mmm-drafts-discarded', function () {
+            if (originalData) {
+                releasesData = JSON.parse(JSON.stringify(originalData));
+                hasUnsavedChanges = false;
+                applyFilters();
+                renderStats();
+                updateSubmitBtn();
+            }
+        });
+
+        // ── Init ─────────────────────────────────────────────────────────────
+        document.getElementById('yt-search').addEventListener('input', debounce(applyFilters, 150));
+        document.getElementById('yt-filter-status').addEventListener('change', applyFilters);
+        document.getElementById('yt-filter-type').addEventListener('change', applyFilters);
+        document.getElementById('yt-submit-btn').addEventListener('click', function () {
+            if (window.MMMDrafts && MMMDrafts.hasPending && MMMDrafts.hasPending()) {
+                // Trigger the mmm-drafts submit dialog
+                var submitBtn = document.querySelector('.mmm-draft-bar-submit');
+                if (submitBtn) submitBtn.click();
+            }
+        });
+
+        function debounce(fn, ms) {
+            var timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(fn, ms);
+            };
+        }
+
+        loadData();
+    })();
+    </script>
+</body>
+</html>

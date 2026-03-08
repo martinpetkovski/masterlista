@@ -3318,7 +3318,7 @@
                     chartDataStore.latest = [];
                     
                 } else if (chart === 'alltime') {
-                    // All-time: Show single artists chart sorted by followers
+                    // All-time: Show single artists chart sorted by total YouTube views
                     document.getElementById('singles-section').style.display = 'none';
                     document.getElementById('albums-section').style.display = 'none';
                     document.getElementById('latest-section').style.display = 'none';
@@ -3348,11 +3348,18 @@
                             if (!artistMatchesGenreById(release.artistId, genre)) continue;
                             if (!artistMatchesCityById(release.artistId, city)) continue;
                             const existing = artistMap.get(release.artistId);
-                            if (!existing || (release.followers || 0) > (existing.followers || 0)) {
+                            if (existing) {
+                                existing.totalViews += (release.youtubeViews || 0);
+                                if ((release.followers || 0) > (existing.followers || 0)) {
+                                    existing.followers = release.followers || 0;
+                                    existing.thumbnail = release.thumbnail;
+                                }
+                            } else {
                                 const bandInfo = getArtistInfoById(release.artistId);
                                 artistMap.set(release.artistId, {
                                     artistId: release.artistId,
                                     bandName: bandInfo?.name || release.bandName,
+                                    totalViews: release.youtubeViews || 0,
                                     followers: release.followers || 0,
                                     spotifyUrl: release.spotifyUrl,
                                     thumbnail: release.thumbnail
@@ -3360,7 +3367,7 @@
                             }
                         }
                         topArtists = Array.from(artistMap.values())
-                            .sort((a, b) => b.followers - a.followers)
+                            .sort((a, b) => b.totalViews - a.totalViews)
                             .slice(0, 100);
                     }
                     
@@ -4117,12 +4124,12 @@
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
                     const itemClass = rank <= 3 ? `rank-${rank}` : '';
                     
-                    const followers = artist.followers || 0;
-                    const followersDisplay = followers >= 1000000 
-                        ? (followers / 1000000).toFixed(1) + 'M'
-                        : followers >= 1000 
-                            ? (followers / 1000).toFixed(1) + 'K' 
-                            : followers;
+                    const totalViews = artist.totalViews || 0;
+                    const viewsDisplay = totalViews >= 1000000 
+                        ? (totalViews / 1000000).toFixed(1) + 'M'
+                        : totalViews >= 1000 
+                            ? (totalViews / 1000).toFixed(1) + 'K' 
+                            : totalViews;
                     
                     // Get artist info from bands.json for genre/city
                     const artistInfo = getArtistInfo(artist.bandName);
@@ -4154,8 +4161,8 @@
                                 <div class="chart-artist artist-details">${localizeGenreString(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
                             </div>
                             <div class="chart-meta">
-                                <span class="chart-stat followers" title="${t('charts.followersOnSpotify').replace('{0}', followers.toLocaleString())}">
-                                    <i class="fas fa-users"></i> ${followersDisplay}
+                                <span class="chart-stat followers" title="${t('charts.youtubeViews').replace('{0}', totalViews.toLocaleString())}">
+                                    <i class="fab fa-youtube"></i> ${viewsDisplay}
                                 </span>
                             </div>
                         </li>
