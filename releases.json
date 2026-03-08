@@ -1446,7 +1446,7 @@
           "name": "Tak Tak",
           "videoId": "16taltNieAA",
           "url": "https://www.youtube.com/watch?v=16taltNieAA",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1545,7 +1545,7 @@
           "name": "Dozd Na Hauba",
           "videoId": "LGqwTAIVFW4",
           "url": "https://www.youtube.com/watch?v=LGqwTAIVFW4",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1569,7 +1569,13 @@
           "name": "Onashtoe",
           "videoId": "_Z6JxihEx0s",
           "url": "https://www.youtube.com/watch?v=_Z6JxihEx0s",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Onashtoe",
+          "videoId": "jEuEKzpablM",
+          "url": "https://www.youtube.com/watch?v=jEuEKzpablM",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1588,7 +1594,15 @@
         "Midnight Stroll"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Midnight Stroll",
+          "videoId": "r6248DhIxfs",
+          "url": "https://www.youtube.com/watch?v=r6248DhIxfs",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Алембик",
@@ -1611,7 +1625,57 @@
         "Прашина"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5Eeb8Yye277viH48LC6RSx?si=ib1vm2tQT1isOLaWBIeUhw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Export Ready",
+          "videoId": "lECHI_LbRD0",
+          "url": "https://www.youtube.com/watch?v=lECHI_LbRD0",
+          "verified": true
+        },
+        {
+          "name": "Алхемиско чистење",
+          "videoId": "1ni2AKwTJYg",
+          "url": "https://www.youtube.com/watch?v=1ni2AKwTJYg",
+          "verified": true
+        },
+        {
+          "name": "Лет во место",
+          "videoId": "W_nwTO0TJFs",
+          "url": "https://www.youtube.com/watch?v=W_nwTO0TJFs",
+          "verified": true
+        },
+        {
+          "name": "Милосрдие",
+          "videoId": "DbqYIOf5L_U",
+          "url": "https://www.youtube.com/watch?v=DbqYIOf5L_U",
+          "verified": true
+        },
+        {
+          "name": "Горчлив талог на искуството",
+          "videoId": "pyjz89o8ebw",
+          "url": "https://www.youtube.com/watch?v=pyjz89o8ebw",
+          "verified": true
+        },
+        {
+          "name": "Анемоја",
+          "videoId": "xyL46QwTOwI",
+          "url": "https://www.youtube.com/watch?v=xyL46QwTOwI",
+          "verified": true
+        },
+        {
+          "name": "Дали ќе дозволиш да",
+          "videoId": "j2_LUJoi6v4",
+          "url": "https://www.youtube.com/watch?v=j2_LUJoi6v4",
+          "verified": true
+        },
+        {
+          "name": "Прашина",
+          "videoId": "LvpWQyABcjs",
+          "url": "https://www.youtube.com/watch?v=LvpWQyABcjs",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Billy Esteban",
@@ -1627,7 +1691,15 @@
         "Tujh Bin"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Tujh Bin",
+          "videoId": "nQN2cx6CIqI",
+          "url": "https://www.youtube.com/watch?v=nQN2cx6CIqI",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Billy Esteban",
@@ -1648,7 +1720,7 @@
           "name": "Ethnic Bloom",
           "videoId": "A7XfH4nskME",
           "url": "https://www.youtube.com/watch?v=A7XfH4nskME",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1668,7 +1740,21 @@
         "Патка"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/68RQLM42FdtwIn5Vqlumcl?si=bczqHbFuRBWvDOjLZgHqWA",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Повторно (повторно)",
+          "videoId": "pdVjeRad_VQ",
+          "url": "https://www.youtube.com/watch?v=pdVjeRad_VQ",
+          "verified": true
+        },
+        {
+          "name": "Патка",
+          "videoId": "KYt2YczheDk",
+          "url": "https://www.youtube.com/watch?v=KYt2YczheDk",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Dijana OG",
@@ -1684,7 +1770,21 @@
         "Smoking Killa"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6uvwGBuyKgkxnBjCochV2h?si=CkWbwY49Q8SbTG5-xNQk_w",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Smoking Killa",
+          "videoId": "ahh-ocU1p30",
+          "url": "https://www.youtube.com/watch?v=ahh-ocU1p30",
+          "verified": true
+        },
+        {
+          "name": "Smoking Killa",
+          "videoId": "wsHM_7ltpy4",
+          "url": "https://www.youtube.com/watch?v=wsHM_7ltpy4",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Александар Тарабунов",
@@ -1706,7 +1806,13 @@
           "name": "Francuski vagoni",
           "videoId": "cv-CPEGkUyk",
           "url": "https://www.youtube.com/watch?v=cv-CPEGkUyk",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Francuski vagoni",
+          "videoId": "3qInzvVeYGs",
+          "url": "https://www.youtube.com/watch?v=3qInzvVeYGs",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1731,7 +1837,13 @@
           "name": "Sestro",
           "videoId": "3-7i8feMFjE",
           "url": "https://www.youtube.com/watch?v=3-7i8feMFjE",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Sestro",
+          "videoId": "bWML88MVRCQ",
+          "url": "https://www.youtube.com/watch?v=bWML88MVRCQ",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1751,7 +1863,15 @@
         "mozhe mozhe mozhe - SEMPRE Remix"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3MgabjdhjMZu4qF91PUvLw?si=zBxAIcjjTuSI3g10w3mGrg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "mozhe mozhe mozhe - SEMPRE Remix",
+          "videoId": "3-_HmCTBcAM",
+          "url": "https://www.youtube.com/watch?v=3-_HmCTBcAM",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Лозано",
@@ -1773,7 +1893,7 @@
           "name": "Kupi Me",
           "videoId": "oMVEjbu4dTY",
           "url": "https://www.youtube.com/watch?v=oMVEjbu4dTY",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1798,7 +1918,13 @@
           "name": "Ja Sum Taj",
           "videoId": "QihVFaYbTMk",
           "url": "https://www.youtube.com/watch?v=QihVFaYbTMk",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Ja Sum Taj",
+          "videoId": "eAxKIbwQXS4",
+          "url": "https://www.youtube.com/watch?v=eAxKIbwQXS4",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1817,7 +1943,15 @@
         "Condensation Blues"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Condensation Blues",
+          "videoId": "aJwTXPlQSI0",
+          "url": "https://www.youtube.com/watch?v=aJwTXPlQSI0",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Славица Ангелова",
@@ -1839,7 +1973,13 @@
           "name": "101 RANA",
           "videoId": "jYhTRSTMBj0",
           "url": "https://www.youtube.com/watch?v=jYhTRSTMBj0",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "101 RANA",
+          "videoId": "X4KHHJksuTw",
+          "url": "https://www.youtube.com/watch?v=X4KHHJksuTw",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1863,7 +2003,7 @@
           "name": "Paradise",
           "videoId": "EEz7SZxVCKQ",
           "url": "https://www.youtube.com/watch?v=EEz7SZxVCKQ",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1915,7 +2055,7 @@
           "name": "Solace Break",
           "videoId": "8kI2Ng1Wduo",
           "url": "https://www.youtube.com/watch?v=8kI2Ng1Wduo",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1956,7 +2096,7 @@
           "name": "Bez Nas",
           "videoId": "d5PoKuprEmM",
           "url": "https://www.youtube.com/watch?v=d5PoKuprEmM",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -1981,6 +2121,12 @@
           "videoId": "8p7XIlhxvCw",
           "url": "https://www.youtube.com/watch?v=8p7XIlhxvCw",
           "verified": false
+        },
+        {
+          "name": "Tainted by Time",
+          "videoId": "UePhdBwcE-k",
+          "url": "https://www.youtube.com/watch?v=UePhdBwcE-k",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2004,7 +2150,7 @@
           "name": "Pass",
           "videoId": "Qong_stNlUc",
           "url": "https://www.youtube.com/watch?v=Qong_stNlUc",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2028,7 +2174,7 @@
           "name": "Glas",
           "videoId": "pVwgLmt_vy8",
           "url": "https://www.youtube.com/watch?v=pVwgLmt_vy8",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2052,7 +2198,13 @@
           "name": "Late Hours",
           "videoId": "J0s7P2k5woM",
           "url": "https://www.youtube.com/watch?v=J0s7P2k5woM",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Late Hours",
+          "videoId": "Gf2dkP_bDDo",
+          "url": "https://www.youtube.com/watch?v=Gf2dkP_bDDo",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2120,7 +2272,13 @@
           "name": "Dijamant",
           "videoId": "KcFi-v1VlaM",
           "url": "https://www.youtube.com/watch?v=KcFi-v1VlaM",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Dijamant",
+          "videoId": "0dcfGiDvL5Q",
+          "url": "https://www.youtube.com/watch?v=0dcfGiDvL5Q",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2144,7 +2302,7 @@
           "name": "Lotus",
           "videoId": "RZejjmDIBqQ",
           "url": "https://www.youtube.com/watch?v=RZejjmDIBqQ",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2196,7 +2354,13 @@
           "name": "PRAV RAP",
           "videoId": "jsAWZGAslrU",
           "url": "https://www.youtube.com/watch?v=jsAWZGAslrU",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "PRAV RAP",
+          "videoId": "XvYqAzNn-R8",
+          "url": "https://www.youtube.com/watch?v=XvYqAzNn-R8",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2221,7 +2385,7 @@
           "name": "Hey Baby",
           "videoId": "14ziIPZAS34",
           "url": "https://www.youtube.com/watch?v=14ziIPZAS34",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2272,7 +2436,15 @@
         "Dijagonala"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/79XvNtUxP1krMoZT9Pe0dm?si=kWebdH0CQN63ID86hD_Q9w",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Dijagonala",
+          "videoId": "ptXDP3ZInUQ",
+          "url": "https://www.youtube.com/watch?v=ptXDP3ZInUQ",
+          "verified": true
+        }
+      ]
     },
     {
       "bandName": "Billy Esteban",
@@ -2310,7 +2482,7 @@
           "name": "Mi Amor",
           "videoId": "7oBCk8wbYE8",
           "url": "https://www.youtube.com/watch?v=7oBCk8wbYE8",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2335,7 +2507,7 @@
           "name": "ANGELA - Live",
           "videoId": "Latmr2QLL9Q",
           "url": "https://www.youtube.com/watch?v=Latmr2QLL9Q",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2359,7 +2531,13 @@
           "name": "KJE SE SHEKNAM",
           "videoId": "SxMAvG4uxsQ",
           "url": "https://www.youtube.com/watch?v=SxMAvG4uxsQ",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "KJE SE SHEKNAM",
+          "videoId": "jRWVAz_o_go",
+          "url": "https://www.youtube.com/watch?v=jRWVAz_o_go",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2390,43 +2568,43 @@
           "name": "Na Minus 23",
           "videoId": "1yfp8bJE06M",
           "url": "https://www.youtube.com/watch?v=1yfp8bJE06M",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Zena Kako Ti",
           "videoId": "mBMC8NCF2jc",
           "url": "https://www.youtube.com/watch?v=mBMC8NCF2jc",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Vrati Me",
           "videoId": "W5K6f8ly5eE",
           "url": "https://www.youtube.com/watch?v=W5K6f8ly5eE",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Kamo Tebe Da Te Imam",
           "videoId": "qg-19NTDbLs",
           "url": "https://www.youtube.com/watch?v=qg-19NTDbLs",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Kako Tebe Nema Druga",
           "videoId": "EgxGMR5DZQ8",
           "url": "https://www.youtube.com/watch?v=EgxGMR5DZQ8",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Jako Jako",
           "videoId": "7f35KskkBKo",
           "url": "https://www.youtube.com/watch?v=7f35KskkBKo",
-          "verified": false
+          "verified": true
         },
         {
           "name": "Ne Te Vadam Od Pamet",
           "videoId": "ltTYNjHnChA",
           "url": "https://www.youtube.com/watch?v=ltTYNjHnChA",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2468,6 +2646,12 @@
           "videoId": "CBqoYWH8H1w",
           "url": "https://www.youtube.com/watch?v=CBqoYWH8H1w",
           "verified": false
+        },
+        {
+          "name": "Nedogled",
+          "videoId": "7OxZgRkIdvg",
+          "url": "https://www.youtube.com/watch?v=7OxZgRkIdvg",
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2645,7 +2829,7 @@
           "name": "Daj Uzivaj",
           "videoId": "vL0WRGmFX28",
           "url": "https://www.youtube.com/watch?v=vL0WRGmFX28",
-          "verified": false
+          "verified": true
         }
       ],
       "youtubeViews": 0
@@ -2669,7 +2853,13 @@
           "name": "Bounce",
           "videoId": "yVjd_E0Onw0",
           "url": "https://www.youtube.com/watch?v=yVjd_E0Onw0",
-          "verified": false
+          "verified": true
+        },
+        {
+          "name": "Bounce",
+          "videoId": "msV2D073ty8",
+          "url": "https://www.youtube.com/watch?v=msV2D073ty8",
+          "verified": true
         }
       ],
       "youtubeViews": 0

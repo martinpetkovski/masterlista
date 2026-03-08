@@ -18,6 +18,11 @@ window.MMMDrafts = (function () {
     var PR_ENDPOINT_KEY = 'mmm_pr_endpoint';
     var DEFAULT_ENDPOINT = 'https://muzichka-master-lista.deeeeelay.workers.dev';
 
+    // Per-file target branch overrides (defaults to worker's GITHUB_DEFAULT_BRANCH / 'master')
+    var FILE_BRANCH_MAP = {
+        'releases.json': 'youtube-chart-tracking'
+    };
+
     // ── Storage helpers ──────────────────────────────────────────
 
     function _readAll() {
@@ -432,6 +437,9 @@ window.MMMDrafts = (function () {
                 description: description || '',
                 path: filePath
             };
+            if (FILE_BRANCH_MAP[filePath]) {
+                bodyObj.baseBranch = FILE_BRANCH_MAP[filePath];
+            }
             if (extras.length) {
                 bodyObj.additionalFiles = extras.map(function (f) {
                     return { path: f.path, contentBase64: f.content };
