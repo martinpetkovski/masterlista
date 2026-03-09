@@ -303,7 +303,7 @@ window.MMMDrafts = (function () {
         var v = 0, a = 0, rem = 0, changes = [];
         modYt.forEach(function (t) {
             if (!origVidMap[t.videoId]) { a++; changes.push('+YT'); }
-            else if (t.verified && !origVidMap[t.videoId].verified) { v++; changes.push('✓'); }
+            else if (t.verified === 'verified' && origVidMap[t.videoId].verified !== 'verified') { v++; changes.push('✓'); }
         });
         origYt.forEach(function (t) {
             if (!modVidMap[t.videoId]) { rem++; changes.push('-YT'); }

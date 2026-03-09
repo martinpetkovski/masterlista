@@ -605,7 +605,7 @@ async function main() {
         if (r.youtubeTracks?.length > 0) {
             const trackMap = new Map();
             for (const t of r.youtubeTracks) {
-                trackMap.set(t.videoId, { verified: t.verified || false, name: t.name });
+                trackMap.set(t.videoId, { verified: t.verified || 'unverified', name: t.name });
             }
             existingYtMap.set(r.releaseId, trackMap);
         }
@@ -621,12 +621,12 @@ async function main() {
             for (const vid of (t.videoIds || [])) {
                 totalMatchedIds++;
                 const existing = existingTracks.get(vid);
-                if (existing?.verified) verifiedVideoIds.add(vid);
+                if (existing?.verified === 'verified') verifiedVideoIds.add(vid);
             }
         }
         // Also include manually-added verified tracks not in cache
         for (const [vid, info] of existingTracks) {
-            if (info.verified) verifiedVideoIds.add(vid);
+            if (info.verified === 'verified') verifiedVideoIds.add(vid);
         }
     }
     console.log(`\n── Step 3: Fetching view counts for ${verifiedVideoIds.size} verified videos (of ${totalMatchedIds} total matched) ──`);
@@ -645,14 +645,14 @@ async function main() {
         for (const t of trackMatches) {
             for (const vid of (t.videoIds || [])) {
                 const existing = existingTracks.get(vid);
-                const isVerified = existing?.verified || false;
+                const isVerified = existing?.verified === 'verified';
                 const stats = isVerified ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
                 ytTracks.push({
                     name: t.trackName,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: isVerified,
+                    verified: isVerified ? 'verified' : 'unverified',
                     ...(views > 0 ? { views } : {})
                 });
                 if (isVerified) totalViews += views;
@@ -662,7 +662,7 @@ async function main() {
 
         // Preserve any manually-added verified youtube tracks that weren't auto-matched
         for (const [vid, info] of existingTracks) {
-            if (info.verified) {
+            if (info.verified === 'verified') {
                 const stats = allStats.get(vid);
                 const views = stats?.viewCount || 0;
                 totalViews += views;
@@ -670,7 +670,7 @@ async function main() {
                     name: info.name,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: true,
+                    verified: 'verified',
                     ...(views > 0 ? { views } : {})
                 });
             }
