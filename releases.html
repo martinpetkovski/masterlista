@@ -149,7 +149,7 @@
     .yt-link-pill.unverified {
         border-color: #f59e0b; background: rgba(245, 158, 11, 0.08);
     }
-    .yt-link-pill.not-verified {
+    .yt-link-pill.will-not-verify {
         border-color: #ef4444; background: rgba(239, 68, 68, 0.08);
     }
     .yt-link-pill .fa-check-circle { color: #22c55e; font-size: 0.65rem; }
@@ -225,6 +225,31 @@
     }
     .yt-add-form .yt-add-cancel {
         background: var(--bg-secondary); color: var(--text-muted);
+    }
+
+    /* Artist autocomplete dropdown */
+    .ar-artist-wrapper { position: relative; }
+    .ar-artist-dropdown {
+        position: absolute; left: 0; right: 0; top: 100%;
+        max-height: 200px; overflow-y: auto; z-index: 100;
+        background: var(--bg-secondary); border: 1px solid var(--border-color);
+        border-radius: 0 0 8px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: none;
+    }
+    .ar-artist-dropdown.open { display: block; }
+    .ar-artist-option {
+        padding: 0.4rem 0.6rem; cursor: pointer; font-size: 0.8rem;
+        display: flex; align-items: center; gap: 0.5rem;
+        color: var(--text-primary); transition: background 0.1s;
+    }
+    .ar-artist-option:hover, .ar-artist-option.active {
+        background: var(--bg-hover);
+    }
+    .ar-artist-option img {
+        width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    }
+    .ar-artist-option .ar-artist-city {
+        font-size: 0.65rem; color: var(--text-muted); margin-left: auto;
     }
 
     /* Loading */
@@ -317,7 +342,7 @@
             <select id="yt-filter-status">
                 <option value="all">Сите</option>
                 <option value="has-unverified">Со неверификувани</option>
-                <option value="has-not-verified">Со не-верификувани</option>
+                <option value="has-will-not-verify">Нема да се верификуваат</option>
                 <option value="all-verified">Целосно верификувани</option>
                 <option value="no-yt">Без YouTube</option>
             </select>
@@ -350,6 +375,7 @@
         var filteredReleases = [];
         var currentPage = 0;
         var hasUnsavedChanges = false;
+        var bandsData = null;
 
         // Migrate legacy draft key (one-time cleanup)
         try { localStorage.removeItem('mmm-yt-link-drafts'); } catch (_) {}
@@ -390,9 +416,12 @@
 
         // ── Load data ────────────────────────────────────────────────
         function loadData() {
-            fetch('/releases.json?_=' + Date.now())
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
+            Promise.all([
+                fetch('/releases.json?_=' + Date.now()).then(function (r) { return r.json(); }),
+                fetch('/bands.json?_=' + Date.now()).then(function (r) { return r.json(); }).catch(function () { return null; })
+            ]).then(function (results) {
+                    var data = results[0];
+                    bandsData = results[1];
                     originalData = JSON.parse(JSON.stringify(data));
                     releasesData = data;
                     // Apply any pending mmm-drafts diff
@@ -433,7 +462,7 @@
                     withYt++;
                     for (var j = 0; j < yt.length; j++) {
                         if (yt[j].verified === 'verified') verifiedCount++;
-                        else if (yt[j].verified === 'not-verified') notVerifiedCount++;
+                        else if (yt[j].verified === 'will-not-verify') notVerifiedCount++;
                         else unverifiedCount++;
                     }
                 } else {
@@ -447,7 +476,7 @@
                 '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
                 '<div class="stat"><i class="fas fa-check-circle" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> верификувани</div>' +
                 '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
-                '<div class="stat"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="stat-value">' + notVerifiedCount + '</span> не-верификувани</div>' +
+                '<div class="stat"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="stat-value">' + notVerifiedCount + '</span> нема да се верификуваат</div>' +
                 '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>' +
                 (totalViews > 0 ? '<div class="stat"><i class="fas fa-eye"></i> <span class="stat-value">' + viewsStr + '</span> прегледи</div>' : '');
         }
@@ -473,8 +502,8 @@
                 var yt = r.youtubeTracks || [];
                 if (status === 'has-unverified') {
                     if (yt.length === 0 || !yt.some(function (t) { return t.verified === 'unverified'; })) continue;
-                } else if (status === 'has-not-verified') {
-                    if (yt.length === 0 || !yt.some(function (t) { return t.verified === 'not-verified'; })) continue;
+                } else if (status === 'has-will-not-verify') {
+                    if (yt.length === 0 || !yt.some(function (t) { return t.verified === 'will-not-verify'; })) continue;
                 } else if (status === 'all-verified') {
                     if (yt.length === 0 || yt.some(function (t) { return t.verified !== 'verified'; })) continue;
                 } else if (status === 'no-yt') {
@@ -614,8 +643,8 @@
                     for (var k = 0; k < ytIndices.length; k++) {
                         var j = ytIndices[k];
                         var t = yt[j];
-                        var pillClass = t.verified === 'verified' ? 'verified' : t.verified === 'not-verified' ? 'not-verified' : 'unverified';
-                        var iconClass = t.verified === 'verified' ? 'fa-check-circle' : t.verified === 'not-verified' ? 'fa-times-circle' : 'fa-question-circle';
+                        var pillClass = t.verified === 'verified' ? 'verified' : t.verified === 'will-not-verify' ? 'will-not-verify' : 'unverified';
+                        var iconClass = t.verified === 'verified' ? 'fa-check-circle' : t.verified === 'will-not-verify' ? 'fa-times-circle' : 'fa-question-circle';
                         html += '<div class="yt-track-row">';
                         html += '<span class="yt-track-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>';
                         html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
@@ -631,8 +660,8 @@
                         if (t.verified !== 'verified') {
                             html += ' <button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
                         }
-                        if (t.verified !== 'not-verified') {
-                            html += ' <button class="yt-notverify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Означи како не-верификуван"><i class="fas fa-ban"></i></button>';
+                        if (t.verified !== 'will-not-verify') {
+                            html += ' <button class="yt-notverify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Нема да се верификува"><i class="fas fa-ban"></i></button>';
                         }
                         html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
                         html += '</div>';
@@ -774,11 +803,11 @@
         function notVerifyTrack(releaseIdx, trackIdx) {
             var r = releasesData.releases[releaseIdx];
             if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
-            r.youtubeTracks[trackIdx].verified = 'not-verified';
+            r.youtubeTracks[trackIdx].verified = 'will-not-verify';
             markChanged();
             renderTable();
             renderStats();
-            showNotification('Линкот е означен како не-верификуван', 'warning');
+            showNotification('Линкот нема да се верификува', 'warning');
         }
 
         function removeTrack(releaseIdx, trackIdx) {
@@ -1036,7 +1065,10 @@
                     '<h2><i class="fas ' + (isEdit ? 'fa-edit' : 'fa-plus-circle') + '"></i> ' + (isEdit ? 'Измени издание' : 'Ново издание') + '</h2>' +
                     '<div class="mmm-draft-field">' +
                         '<label for="ar-artist">Артист *</label>' +
-                        '<input type="text" id="ar-artist" placeholder="Име на артист..." value="' + esc(existing ? existing.bandName : '') + '">' +
+                        '<div class="ar-artist-wrapper">' +
+                            '<input type="text" id="ar-artist" placeholder="Пребарај артист..." value="' + esc(existing ? existing.bandName : '') + '" autocomplete="off">' +
+                            '<div class="ar-artist-dropdown" id="ar-artist-dropdown"></div>' +
+                        '</div>' +
                     '</div>' +
                     '<div class="mmm-draft-field">' +
                         '<label for="ar-title">Наслов на издание *</label>' +
@@ -1074,14 +1106,115 @@
             document.getElementById('ar-cancel').addEventListener('click', function () { overlay.remove(); });
 
             var artistInput = overlay.querySelector('#ar-artist');
+            var artistDropdown = overlay.querySelector('#ar-artist-dropdown');
             var titleInput = overlay.querySelector('#ar-title');
             var tracksContainer = overlay.querySelector('#ar-tracks');
+            var selectedArtist = existing ? existing.bandName : '';
             (isEdit ? titleInput : artistInput).focus();
 
-            function updateSaveBtn() {
-                overlay.querySelector('#ar-save').disabled = !artistInput.value.trim() || !titleInput.value.trim();
+            // Build list of artist names from master list
+            var masterArtists = [];
+            if (bandsData && bandsData.muzickaMasterLista) {
+                for (var b = 0; b < bandsData.muzickaMasterLista.length; b++) {
+                    var band = bandsData.muzickaMasterLista[b];
+                    masterArtists.push({ name: band.name, city: band.city || '', image: band.image || '' });
+                }
+                masterArtists.sort(function (a, b) { return a.name.localeCompare(b.name); });
             }
-            artistInput.addEventListener('input', updateSaveBtn);
+
+            function isValidArtist(name) {
+                if (!name) return false;
+                var lower = name.toLowerCase().trim();
+                for (var i = 0; i < masterArtists.length; i++) {
+                    if (masterArtists[i].name.toLowerCase().trim() === lower) return true;
+                }
+                return false;
+            }
+
+            function updateSaveBtn() {
+                var validArtist = isValidArtist(artistInput.value.trim());
+                overlay.querySelector('#ar-save').disabled = !validArtist || !titleInput.value.trim();
+                artistInput.style.borderColor = artistInput.value.trim() && !validArtist ? '#ef4444' : '';
+            }
+
+            // Artist autocomplete
+            var activeDropdownIdx = -1;
+
+            function renderDropdown(query) {
+                if (!query || masterArtists.length === 0) {
+                    artistDropdown.classList.remove('open');
+                    return;
+                }
+                var lower = query.toLowerCase();
+                var matches = [];
+                for (var i = 0; i < masterArtists.length; i++) {
+                    if (masterArtists[i].name.toLowerCase().indexOf(lower) !== -1) {
+                        matches.push(masterArtists[i]);
+                    }
+                    if (matches.length >= 20) break;
+                }
+                if (matches.length === 0 || (matches.length === 1 && matches[0].name.toLowerCase() === lower)) {
+                    artistDropdown.classList.remove('open');
+                    return;
+                }
+                var html = '';
+                for (var j = 0; j < matches.length; j++) {
+                    html += '<div class="ar-artist-option" data-name="' + esc(matches[j].name) + '">';
+                    if (matches[j].image) html += '<img src="' + esc(matches[j].image) + '" alt="" loading="lazy">';
+                    html += '<span>' + esc(matches[j].name) + '</span>';
+                    if (matches[j].city) html += '<span class="ar-artist-city">' + esc(matches[j].city) + '</span>';
+                    html += '</div>';
+                }
+                artistDropdown.innerHTML = html;
+                artistDropdown.classList.add('open');
+                activeDropdownIdx = -1;
+
+                var options = artistDropdown.querySelectorAll('.ar-artist-option');
+                for (var k = 0; k < options.length; k++) {
+                    options[k].addEventListener('mousedown', function (e) {
+                        e.preventDefault();
+                        selectArtist(this.dataset.name);
+                    });
+                }
+            }
+
+            function selectArtist(name) {
+                artistInput.value = name;
+                selectedArtist = name;
+                artistDropdown.classList.remove('open');
+                updateSaveBtn();
+                titleInput.focus();
+            }
+
+            artistInput.addEventListener('input', function () {
+                selectedArtist = '';
+                renderDropdown(this.value.trim());
+                updateSaveBtn();
+            });
+            artistInput.addEventListener('focus', function () {
+                if (this.value.trim()) renderDropdown(this.value.trim());
+            });
+            artistInput.addEventListener('blur', function () {
+                artistDropdown.classList.remove('open');
+            });
+            artistInput.addEventListener('keydown', function (e) {
+                var options = artistDropdown.querySelectorAll('.ar-artist-option');
+                if (!artistDropdown.classList.contains('open') || options.length === 0) return;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeDropdownIdx = Math.min(activeDropdownIdx + 1, options.length - 1);
+                    for (var i = 0; i < options.length; i++) options[i].classList.toggle('active', i === activeDropdownIdx);
+                    options[activeDropdownIdx].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeDropdownIdx = Math.max(activeDropdownIdx - 1, 0);
+                    for (var i = 0; i < options.length; i++) options[i].classList.toggle('active', i === activeDropdownIdx);
+                    options[activeDropdownIdx].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter' && activeDropdownIdx >= 0) {
+                    e.preventDefault();
+                    selectArtist(options[activeDropdownIdx].dataset.name);
+                }
+            });
             titleInput.addEventListener('input', updateSaveBtn);
             updateSaveBtn();
 
@@ -1118,7 +1251,7 @@
             overlay.querySelector('#ar-save').addEventListener('click', function () {
                 var artist = artistInput.value.trim();
                 var title = titleInput.value.trim();
-                if (!artist || !title) return;
+                if (!artist || !title || !isValidArtist(artist)) return;
                 var type = overlay.querySelector('#ar-type').value;
                 var date = overlay.querySelector('#ar-date').value || new Date().toISOString().slice(0, 10);
                 var spotifyUrl = overlay.querySelector('#ar-spotify').value.trim();

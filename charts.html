@@ -4275,8 +4275,8 @@
                                 <div class="chart-artist artist-details">${localizeGenreString(genre)}${genre && city ? ' • ' : ''}${localizeText(city)}</div>
                             </div>
                             <div class="chart-meta">
+                                <div class="vu-meter" title="${t('charts.youtubeViews').replace('{0}', cumPop.toLocaleString())}">${vuSegs}</div>
                                 <span class="chart-stat followers" title="${t('charts.youtubeViews').replace('{0}', cumPop.toLocaleString())}">
-                                    <div class="vu-meter" style="margin-right:0.35rem">${vuSegs}</div>
                                     <i class="fab fa-youtube"></i> ${cumDisplay}
                                 </span>
                             </div>
