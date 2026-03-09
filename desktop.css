@@ -110,6 +110,38 @@ html.dark-mode .btn-generic:hover {
     color: #fff;
 }
 
+/* Maintenance Banner */
+#maintenance-banner {
+    background: #fff3cd;
+    color: #664d03;
+    text-align: center;
+    padding: 6px 1rem;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #e9d58b;
+    flex-shrink: 0;
+}
+#maintenance-banner i {
+    margin-right: 4px;
+}
+#maintenance-banner a {
+    color: #664d03;
+    font-weight: 600;
+    text-decoration: underline;
+}
+#maintenance-banner a:hover {
+    color: #3d2e02;
+}
+body.dark-mode #maintenance-banner,
+html.dark-mode #maintenance-banner {
+    background: #3b3517;
+    color: #f5deb3;
+    border-bottom-color: #5c4f21;
+}
+body.dark-mode #maintenance-banner a,
+html.dark-mode #maintenance-banner a {
+    color: #f5deb3;
+}
+
 /* Header */
 header {
     background: #fff;

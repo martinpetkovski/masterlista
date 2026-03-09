@@ -46,6 +46,16 @@
         btnContainer.insertBefore(fragment, insertionPoint);
     }
 
+    // Inject maintenance notification banner after the header
+    var banner = document.createElement('div');
+    banner.id = 'maintenance-banner';
+    banner.innerHTML = '<i class="fas fa-wrench"></i> '
+        + 'Сервисот е привремено во одржување додека се прилагодуваме на новите промени во Spotify API. '
+        + '<a href="https://developer.spotify.com/blog/2026-02-06-update-on-developer-access-and-platform-security" target="_blank" rel="noopener">Повеќе информации</a>'
+        + ' · '
+        + '<a href="https://github.com/martinpetkovski/masterlista/tree/youtube-chart-tracking" target="_blank" rel="noopener">Промени на GitHub</a>';
+    header.parentNode.insertBefore(banner, header.nextSibling);
+
     // Apply i18n translations to the freshly injected header
     if (typeof applyTranslations === 'function') applyTranslations();
 })();
