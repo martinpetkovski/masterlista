@@ -55,21 +55,15 @@ foreach ($cr in $chartReleases) {
 $releases = @($releaseCatalog | ForEach-Object {
     $r = $_
     $cr = $chartMap[$r.releaseId]
+    if (-not $cr) { return }  # Skip releases not in chart-data.json
     $merged = [ordered]@{}
     foreach ($p in $r.PSObject.Properties) {
         $merged[$p.Name] = $p.Value
     }
-    if ($cr) {
-        $merged['popularity'] = $cr.popularity
-        $merged['followers'] = $cr.followers
-        $merged['youtubeViews'] = $cr.youtubeViews
-        $merged['spotifyPopularity'] = $cr.spotifyPopularity
-    } else {
-        $merged['popularity'] = 0
-        $merged['followers'] = 0
-        $merged['youtubeViews'] = 0
-        $merged['spotifyPopularity'] = 0
-    }
+    $merged['popularity'] = $cr.popularity
+    $merged['followers'] = $cr.followers
+    $merged['youtubeViews'] = $cr.youtubeViews
+    $merged['spotifyPopularity'] = $cr.spotifyPopularity
     [PSCustomObject]$merged
 })
 
@@ -235,6 +229,8 @@ function Invoke-DeduplicateCollabs {
             }
             if (($r.popularity -as [int]) -gt ($existing.popularity -as [int])) { $existing.popularity = $r.popularity }
             if (($r.followers -as [int]) -gt ($existing.followers -as [int])) { $existing.followers = $r.followers }
+            if (($r.youtubeViews -as [int]) -gt ($existing.youtubeViews -as [int])) { $existing.youtubeViews = $r.youtubeViews }
+            if (($r.viewsDelta -as [int]) -gt ($existing.viewsDelta -as [int])) { $existing | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $r.viewsDelta -Force }
             $existing | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
         } else {
             # Clone via property copy (avoids expensive JSON roundtrip)
@@ -249,12 +245,13 @@ function Invoke-DeduplicateCollabs {
     return @($map.Values)
 }
 
-# Chart sort comparator (matching common.js chartSort: popularity desc, followers desc, name asc)
+# Chart sort comparator (matching common.js chartSort: null-delta last, viewsDelta desc, youtubeViews desc, name asc)
 function Sort-ChartRanking {
     param([array]$items)
     return $items | Sort-Object @(
-        @{ Expression = { -([int]($_.popularity -as [int])) } },
-        @{ Expression = { -([int]($_.followers -as [int])) } },
+        @{ Expression = { if ($null -eq $_.viewsDelta) { 1 } else { 0 } } },
+        @{ Expression = { -([int]($_.viewsDelta -as [int])) } },
+        @{ Expression = { -([int]($_.youtubeViews -as [int])) } },
         @{ Expression = { $_.bandName } }
     )
 }
@@ -380,12 +377,9 @@ foreach ($file in $historyFiles) {
 
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
-# Get previous week's data (second newest)
+# Get previous week's data (most recent history entry — chart-data.json minus this = the delta)
 $previousWeekReleases = @()
-if ($chartHistoryWeeks.Count -ge 2) {
-    $previousWeekReleases = $chartHistoryWeeks[1].releases
-} elseif ($chartHistoryWeeks.Count -ge 1) {
-    # If only one history week, use it as previous (current chart-data.json is "this week")
+if ($chartHistoryWeeks.Count -ge 1) {
     $previousWeekReleases = $chartHistoryWeeks[0].releases
 }
 
@@ -401,6 +395,31 @@ $typeFilters = @('single', 'album')
 # Pre-deduplicate releases once for reuse across all chart computations
 $mainReleasesDeduped = Invoke-DeduplicateCollabs $releases
 $prevReleasesDeduped = Invoke-DeduplicateCollabs $previousWeekReleases
+
+# Pre-compute viewsDelta (current - previous week youtubeViews) and attach to each release
+$prevViewsMap = @{}
+foreach ($pr in $prevReleasesDeduped) {
+    $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
+}
+foreach ($r in $mainReleasesDeduped) {
+    if ($prevViewsMap.ContainsKey($r.releaseId)) {
+        $curViews = [int]($r.youtubeViews -as [int])
+        $prevViews = $prevViewsMap[$r.releaseId]
+        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue ($curViews - $prevViews) -Force
+    } else {
+        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+    }
+}
+# Also attach viewsDelta to original $releases so it's included in chartData output
+foreach ($r in $releases) {
+    if ($prevViewsMap.ContainsKey($r.releaseId)) {
+        $curViews = [int]($r.youtubeViews -as [int])
+        $prevViews = $prevViewsMap[$r.releaseId]
+        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue ($curViews - $prevViews) -Force
+    } else {
+        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+    }
+}
 
 # Pre-filter releases by genre once (avoids re-filtering inside every Build-ChartRanking call)
 $mainByGenre = @{}
@@ -426,6 +445,7 @@ foreach ($genre in $genreFilters) {
             $prevMap[$prevRanked[$i].releaseId] = @{
                 position = $i + 1
                 popularity = [int]($prevRanked[$i].popularity -as [int])
+                youtubeViews = [int]($prevRanked[$i].youtubeViews -as [int])
             }
         }
         $prevMapsUnlimited[$key] = $prevMap
@@ -464,10 +484,12 @@ function Enrich-ChartItems {
             totalTracks      = $r.totalTracks
             popularity       = [int]($r.popularity -as [int])
             followers        = [int]($r.followers -as [int])
+            youtubeViews     = [int]($r.youtubeViews -as [int])
             spotifyUrl       = $r.spotifyUrl
             position         = $pos
             positionChange   = $posChange
             popularityChange = $popChange
+            viewsDelta       = $r.viewsDelta
             isNewEntry       = $isNew
             confirmed        = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
             isCollab         = if ($r.isCollab) { $true } else { $false }
@@ -496,6 +518,7 @@ foreach ($genre in $genreFilters) {
             $prevMapStd[$prevRankedStd[$i].releaseId] = @{
                 position = $i + 1
                 popularity = [int]($prevRankedStd[$i].popularity -as [int])
+                youtubeViews = [int]($prevRankedStd[$i].youtubeViews -as [int])
             }
         }
         
@@ -563,6 +586,7 @@ foreach ($genre in $genreFilters) {
             [void]$genreHistoryMap[$rid].Add([ordered]@{
                 weekId = $weekId
                 popularity = [int]($r.popularity -as [int])
+                youtubeViews = [int]($r.youtubeViews -as [int])
                 singlesPos = if ($singlesPos.ContainsKey($rid)) { $singlesPos[$rid] } else { $null }
                 albumsPos = if ($albumsPos.ContainsKey($rid)) { $albumsPos[$rid] } else { $null }
             })
@@ -618,7 +642,7 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
             $artistWeekPop[$key] = 0
             $artistNewRelease[$key] = $false
         }
-        $artistWeekPop[$key] += [int]($r.popularity -as [int])
+        $artistWeekPop[$key] += [int]($r.youtubeViews -as [int])
         
         # Check if release date falls within this week
         if ($r.releaseDate -ge $weekMondayStr -and $r.releaseDate -le $weekSundayStr) {
@@ -646,39 +670,62 @@ foreach ($key in @($artistPopularityGraphs.Keys)) {
 Write-Host "  > Built popularity graphs for $($artistPopularityGraphs.Count) artists" -ForegroundColor DarkGray
 
 # ============================================================================
-#  3b. ARTIST CUMULATIVE RANKING (by cumulative popularity)
+#  3b. ARTIST CUMULATIVE RANKING (by sum of viewsDeltas across all releases)
 # ============================================================================
 
 Write-Host "  > Building artist cumulative ranking..." -ForegroundColor Yellow
 
+# Build per-artist cumulative delta from mainReleasesDeduped (which has viewsDelta attached)
+$artistDeltaMap = @{}  # artistKey -> total viewsDelta
+foreach ($r in $mainReleasesDeduped) {
+    foreach ($name in $r.bandName.ToLower().Trim().Split(', ')) {
+        $name = $name.Trim()
+        if (-not $name) { continue }
+        if (-not $artistDeltaMap.ContainsKey($name)) { $artistDeltaMap[$name] = 0 }
+        $artistDeltaMap[$name] += [int]($r.viewsDelta -as [int])
+    }
+}
+
 $artistCumulativeRanking = [System.Collections.ArrayList]::new()
 $maxCumulativePopularity = 0
 
-foreach ($artistKey in $artistPopularityGraphs.Keys) {
-    $graph = $artistPopularityGraphs[$artistKey]
-    if ($graph.Count -eq 0) { continue }
-    # Latest week cumulative value
-    $latestEntry = $graph[$graph.Count - 1]
-    $cumulativePop = [int]($latestEntry.value -as [int])
-    if ($cumulativePop -le 0) { continue }
+# Deduplicate by resolved bandName to avoid duplicates from collabs
+$cumulativeByName = [ordered]@{}  # resolvedName -> entry
 
-    if ($cumulativePop -gt $maxCumulativePopularity) { $maxCumulativePopularity = $cumulativePop }
+foreach ($artistKey in $artistDeltaMap.Keys) {
+    $cumulativePop = $artistDeltaMap[$artistKey]
+    if ($cumulativePop -le 0) { continue }
 
     # Find a representative release for thumbnail and artistId
     $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
-    $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
+    $topRelease = $artistReleases | Sort-Object { [int]($_.viewsDelta -as [int]) } -Descending | Select-Object -First 1
 
     if ($topRelease) {
-        $bandInfo = Get-ArtistInfo $topRelease.bandName
-        [void]$artistCumulativeRanking.Add([ordered]@{
-            bandName = if ($bandInfo) { $bandInfo.name } else { $topRelease.bandName }
-            artistId = $topRelease.artistId
-            cumulativePopularity = $cumulativePop
-            thumbnail = $topRelease.thumbnail
-            spotifyUrl = $topRelease.spotifyUrl
-            confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
-        })
+        $bandInfo = Get-ArtistInfo $artistKey
+        $resolvedName = if ($bandInfo) { $bandInfo.name } else { $topRelease.bandName }
+        $resolvedKey = $resolvedName.ToLower().Trim()
+
+        if ($cumulativeByName.Contains($resolvedKey)) {
+            # Merge: add delta, keep best thumbnail
+            $existing = $cumulativeByName[$resolvedKey]
+            $existing.cumulativePopularity += $cumulativePop
+        } else {
+            $artistImage = if ($bandInfo -and $bandInfo.image) { $bandInfo.image } else { $topRelease.thumbnail }
+            $cumulativeByName[$resolvedKey] = [ordered]@{
+                bandName = $resolvedName
+                artistId = $topRelease.artistId
+                cumulativePopularity = $cumulativePop
+                thumbnail = $artistImage
+                spotifyUrl = $topRelease.spotifyUrl
+                confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
+            }
+        }
     }
+}
+
+foreach ($entry in $cumulativeByName.Values) {
+    if ($entry.cumulativePopularity -gt $maxCumulativePopularity) { $maxCumulativePopularity = $entry.cumulativePopularity }
+    [void]$artistCumulativeRanking.Add($entry)
 }
 
 $artistCumulativeRanking = @($artistCumulativeRanking | Sort-Object { -$_.cumulativePopularity } | Select-Object -First 100)
@@ -689,7 +736,7 @@ foreach ($artistKey in $artistPopularityGraphs.Keys) {
     $graph = $artistPopularityGraphs[$artistKey]
     if ($graph.Count -eq 0) { continue }
     $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
-    $topRelease = $artistReleases | Sort-Object { [int]($_.popularity -as [int]) } -Descending | Select-Object -First 1
+    $topRelease = $artistReleases | Sort-Object { [int]($_.youtubeViews -as [int]) } -Descending | Select-Object -First 1
     if ($topRelease) {
         $bandInfo = Get-ArtistInfo $topRelease.bandName
         $name = if ($bandInfo) { $bandInfo.name } else { $topRelease.bandName }
@@ -697,19 +744,19 @@ foreach ($artistKey in $artistPopularityGraphs.Keys) {
     }
 }
 
-Write-Host "  > Ranked $($artistCumulativeRanking.Count) artists by cumulative popularity (max: $maxCumulativePopularity), $($artistsWithChartData.Count) total with chart data" -ForegroundColor DarkGray
+Write-Host "  > Ranked $($artistCumulativeRanking.Count) artists by cumulative viewsDelta (max: $maxCumulativePopularity), $($artistsWithChartData.Count) total with chart data" -ForegroundColor DarkGray
 
 # ============================================================================
-#  3c. GLOBAL PEAK POPULARITY (max popularity of any single release)
+#  3c. GLOBAL PEAK POPULARITY (max viewsDelta of any single release)
 # ============================================================================
 
 $globalPeakPopularity = 0
 foreach ($r in $mainReleasesDeduped) {
-    $pop = [int]($r.popularity -as [int])
-    if ($pop -gt $globalPeakPopularity) { $globalPeakPopularity = $pop }
+    $delta = [int]($r.viewsDelta -as [int])
+    if ($delta -gt $globalPeakPopularity) { $globalPeakPopularity = $delta }
 }
 
-Write-Host "  > Global peak popularity: $globalPeakPopularity" -ForegroundColor DarkGray
+Write-Host "  > Global peak viewsDelta: $globalPeakPopularity" -ForegroundColor DarkGray
 
 # ============================================================================
 #  4. ALL-TIME ARTISTS (sorted by total YouTube views, per genre)
@@ -721,16 +768,18 @@ $deduped = $mainReleasesDeduped
 $allTimeArtistsByGenre = @{}  # genre -> array of top 100 artists
 
 foreach ($genre in $genreFilters) {
-    $artistViewsMap = @{}  # artistId -> { bandName, totalViews, followers, spotifyUrl, thumbnail }
+    $artistViewsMap = @{}  # artistId -> { bandName, totalViews, totalDelta, followers, spotifyUrl, thumbnail }
     # Use pre-filtered genre data
     $genreDeduped = $mainByGenre[$genre]
     foreach ($r in $genreDeduped) {
         $aid = $r.artistId
         if (-not $aid) { continue }
         $views = [long]($r.youtubeViews -as [long])
+        $delta = [long]($r.viewsDelta -as [long])
         $existing = $artistViewsMap[$aid]
         if ($existing) {
             $existing.totalViews += $views
+            $existing.totalDelta += $delta
             # Keep the best thumbnail/followers
             if (([int]($r.followers -as [int])) -gt $existing.followers) {
                 $existing.followers = [int]($r.followers -as [int])
@@ -738,13 +787,15 @@ foreach ($genre in $genreFilters) {
             }
         } else {
             $bandInfo = Get-ArtistInfo $r.bandName
+            $artistImage = if ($bandInfo -and $bandInfo.image) { $bandInfo.image } else { $r.thumbnail }
             $artistViewsMap[$aid] = [ordered]@{
                 artistId = $aid
                 bandName = if ($bandInfo) { $bandInfo.name } else { $r.bandName }
                 totalViews = $views
+                totalDelta = $delta
                 followers = [int]($r.followers -as [int])
                 spotifyUrl = $r.spotifyUrl
-                thumbnail = $r.thumbnail
+                thumbnail = $artistImage
                 confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
             }
         }
@@ -785,6 +836,8 @@ foreach ($genre in $genreFilters) {
                 totalTracks  = $_.totalTracks
                 popularity   = [int]($_.popularity -as [int])
                 followers    = [int]($_.followers -as [int])
+                youtubeViews = [int]($_.youtubeViews -as [int])
+                viewsDelta   = $_.viewsDelta
                 spotifyUrl   = $_.spotifyUrl
                 typeLabel    = $typeLabel
                 confirmed    = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
@@ -843,8 +896,8 @@ for ($i = 0; $i -lt $currentRanked.Count; $i++) {
     $r = $currentRanked[$i]
     if ($prevMapHot.ContainsKey($r.releaseId)) {
         $prev = $prevMapHot[$r.releaseId]
-        $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
-        if ($popChange -gt 0) {
+        $viewsDelta = ([int]($r.youtubeViews -as [int])) - [int]($prev.youtubeViews -as [int])
+        if ($viewsDelta -gt 0) {
             $artistInfo = Get-ArtistInfo $r.bandName
             [void]$hotSongs.Add([PSCustomObject]@{
                 releaseId    = $r.releaseId
@@ -852,8 +905,9 @@ for ($i = 0; $i -lt $currentRanked.Count; $i++) {
                 releaseTitle = $r.releaseTitle
                 releaseUrl   = $r.releaseUrl
                 thumbnail    = $r.thumbnail
-                popularity   = [int]($r.popularity -as [int])
-                popularityChange = $popChange
+                youtubeViews = [int]($r.youtubeViews -as [int])
+                viewsDelta   = $viewsDelta
+                popularityChange = $viewsDelta
                 confirmed    = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
             })
         }
@@ -892,23 +946,23 @@ foreach ($name in $artistReleaseGroups.Keys) {
     if ($rels.Count -ge 10) { continue }
     
     $latestRelease = $rels[-1]
-    $latestPop = [int]($latestRelease.popularity -as [int])
-    $earliestPop = [int]($rels[0].popularity -as [int])
-    $maxPop = ($rels | ForEach-Object { [int]($_.popularity -as [int]) } | Measure-Object -Maximum).Maximum
+    $latestViews = [int]($latestRelease.youtubeViews -as [int])
+    $earliestViews = [int]($rels[0].youtubeViews -as [int])
+    $maxViews = ($rels | ForEach-Object { [int]($_.youtubeViews -as [int]) } | Measure-Object -Maximum).Maximum
     
-    # Minimum popularity threshold
-    if ($maxPop -lt 3) { continue }
+    # Minimum views threshold
+    if ($maxViews -lt 100) { continue }
     
-    $popTrend = if ($rels.Count -gt 1) { $latestPop - $earliestPop } else { 0 }
+    $viewsTrend = if ($rels.Count -gt 1) { $latestViews - $earliestViews } else { 0 }
     $daysSinceLatest = [Math]::Floor(($now - [DateTime]::ParseExact($latestRelease.releaseDate, 'yyyy-MM-dd', $null)).TotalDays)
     $recencyBonus = [Math]::Max(0, 180 - $daysSinceLatest)
     $activityBonus = if ($rels.Count -ge 2) { 25 } else { 0 }
-    $score = $latestPop + [Math]::Max(0, $popTrend) * 2 + $recencyBonus + $activityBonus
+    $score = [Math]::Round($latestViews / 100) + [Math]::Max(0, [Math]::Round($viewsTrend / 100)) * 2 + $recencyBonus + $activityBonus
     
     $bandInfo = Get-ArtistInfo $name
     
     # Determine badge
-    $badge = if ($popTrend -gt 5) { "hot" }
+    $badge = if ($viewsTrend -gt 500) { "hot" }
              elseif ($rels.Count -ge 3) { "rising" }
              else { "fresh" }
     $badgeLabel = switch ($badge) {
@@ -923,9 +977,9 @@ foreach ($name in $artistReleaseGroups.Keys) {
         genre      = if ($bandInfo) { $bandInfo.genre } else { '' }
         score      = $score
         count      = $rels.Count
-        maxPop     = $maxPop
-        latestPop  = $latestPop
-        popTrend   = $popTrend
+        maxViews   = $maxViews
+        latestViews = $latestViews
+        viewsTrend = $viewsTrend
         badge      = $badge
         badgeLabel = $badgeLabel
         confirmed  = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
@@ -1131,7 +1185,7 @@ for ($w = 0; $w -lt $sparkWeekCount; $w++) {
         }
         [void]$releaseSparklines[$rid].Add([ordered]@{
             weekId = $weekId
-            popularity = [int]($r.popularity -as [int])
+            youtubeViews = [int]($r.youtubeViews -as [int])
         })
     }
 }

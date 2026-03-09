@@ -4,42 +4,34 @@
 # Tasks:
 #   1. Chart data - Fetches Spotify data and generates chart-data.json + weekly snapshots
 #   1b. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
-#   2. Articles   - Fetches RSS feeds for today's articles, archives to articles.json
-#   2b. Scrape    - Scrapes sites for articles not in RSS, merges into articles.json
+#   2. Scrape    - Scrapes sites for articles, merges into articles.json
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
-#   4. Instagram  - Delegates to scripts/instagram.ps1 (weekly chart carousel)
-#   5. Curators   - Fetches playlist tracklists for curators from streaming APIs
-#   6. Site Master - Generates site-master.json with all pre-computed data for client pages
+#   4. Curators   - Fetches playlist tracklists for curators from streaming APIs
+#   5. Site Master - Generates site-master.json with all pre-computed data for client pages
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
 #   ./update-all.ps1 -SkipChart    # Skip chart generation
-#   ./update-all.ps1 -SkipArticles # Skip RSS archiving
 #   ./update-all.ps1 -SkipScrape   # Skip article scraping
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
-#   ./update-all.ps1 -SkipInstagram # Skip Instagram posting
 #   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only ytpopularity # Run only YouTube popularity calculation
-#   ./update-all.ps1 -Only articles # Run only articles task
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
-#   ./update-all.ps1 -Only instagram # Run only Instagram posting
 #   ./update-all.ps1 -Only curators # Run only curator tracklists
 #   ./update-all.ps1 -Only sitemaster # Run only site-master generation
 
 param(
     [switch]$SkipChart,
-    [switch]$SkipArticles,
     [switch]$SkipScrape,
     [switch]$SkipLinks,
-    [switch]$SkipInstagram,
     [switch]$SkipYouTubePopularity,
     [switch]$SkipCurators,
     [switch]$SkipSiteMaster,
-    [ValidateSet("chart", "ytpopularity", "articles", "scrape", "links", "instagram", "curators", "sitemaster")]
+    [ValidateSet("chart", "ytpopularity", "scrape", "links", "curators", "sitemaster")]
     [string]$Only
 )
 
@@ -433,284 +425,11 @@ function Update-YouTubePopularity {
 }
 
 # ============================================================================
-#  TASK 2: RSS FEED ARTICLES
-# ============================================================================
-
-function Update-Articles {
-    Write-Section "TASK 2: RSS FEED ARTICLES"
-    $articleStart = Get-Date
-
-    $feedsPath = Join-Path $scriptRoot "rss-feeds.json"
-    $articlesPath = Join-Path $scriptRoot "articles.json"
-
-    if (-not (Test-Path $feedsPath)) {
-        Write-Step "rss-feeds.json not found, skipping" "Red"
-        return $false
-    }
-
-    Write-Step "Loading RSS feeds..."
-    $feeds = Get-Content $feedsPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    Write-Step "Found $($feeds.Count) feed(s)"
-
-    # Load existing articles archive
-    $existingArticles = @()
-    if (Test-Path $articlesPath) {
-        try {
-            $articlesJson = Get-Content $articlesPath -Raw -Encoding UTF8 | ConvertFrom-Json
-            $existingArticles = @($articlesJson.articles)
-            Write-Step "Loaded $($existingArticles.Count) existing article(s) from archive"
-        }
-        catch {
-            Write-Step "Could not parse existing articles.json, starting fresh" "DarkYellow"
-            $existingArticles = @()
-        }
-    }
-    else {
-        Write-Step "No articles.json found, creating new archive"
-    }
-
-    # Build a set of existing article links for deduplication
-    $existingLinks = @{}
-    foreach ($article in $existingArticles) {
-        if ($article.link) {
-            $existingLinks[$article.link] = $true
-        }
-    }
-
-    Write-Step "Fetching all articles from feeds..."
-
-    $newArticles = [System.Collections.ArrayList]::new()
-    $feedErrors = 0
-    $feedIndex = 0
-
-    foreach ($feed in $feeds) {
-        $feedIndex++
-        $feedName = $feed.name
-        $pct = [math]::Floor(($feedIndex / $feeds.Count) * 100)
-        $elapsed = [math]::Round(((Get-Date) - $articleStart).TotalSeconds, 0)
-        Write-Progress -Id 1 -Activity "RSS Feeds  [${elapsed}s elapsed]" `
-            -Status "[$feedIndex/$($feeds.Count)] $feedName" `
-            -PercentComplete $pct
-        Write-Host "    $feedName... " -NoNewline -ForegroundColor Gray
-
-        try {
-            # Fetch the RSS/Atom feed
-            $response = Invoke-WebRequest -Uri $feed.feedUrl -TimeoutSec 15 -UseBasicParsing -ErrorAction Stop
-            [xml]$xml = $response.Content
-
-            $items = @()
-
-            # Set up namespace manager for media: elements (used by rss.app feeds etc.)
-            $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
-            $nsMgr.AddNamespace("media", "http://search.yahoo.com/mrss/")
-
-            # Handle RSS 2.0 format
-            if ($xml.rss) {
-                $items = @($xml.rss.channel.item)
-            }
-            # Handle Atom format
-            elseif ($xml.feed) {
-                $items = @($xml.feed.entry)
-            }
-            # Handle RDF/RSS 1.0
-            elseif ($xml.SelectNodes("//*[local-name()='item']")) {
-                $items = @($xml.SelectNodes("//*[local-name()='item']"))
-            }
-
-            $feedCount = 0
-
-            foreach ($item in $items) {
-                if (-not $item) { continue }
-
-                # Extract the article date
-                $articleDate = $null
-                $dateStr = $null
-
-                # RSS 2.0: pubDate
-                if ($item.pubDate) {
-                    $dateStr = $item.pubDate
-                }
-                # Atom: published or updated
-                elseif ($item.published) {
-                    $dateStr = $item.published
-                }
-                elseif ($item.updated) {
-                    $dateStr = $item.updated
-                }
-                # dc:date (Dublin Core)
-                elseif ($item.date) {
-                    $dateStr = $item.date
-                }
-
-                if ($dateStr) {
-                    try {
-                        $articleDate = [DateTime]::Parse($dateStr)
-                    }
-                    catch {
-                        # Try RFC 822 format common in RSS
-                        try {
-                            $articleDate = [System.DateTimeOffset]::Parse($dateStr).DateTime
-                        }
-                        catch {
-                            # No parseable date, skip
-                            continue
-                        }
-                    }
-                }
-
-                $articleDay = if ($articleDate) { $articleDate.ToString("yyyy-MM-dd") } else { $null }
-
-                # Extract link
-                $link = $null
-                if ($item.link -and $item.link -is [string]) {
-                    $link = $item.link.Trim()
-                }
-                elseif ($item.link.href) {
-                    $link = $item.link.href.Trim()
-                }
-                elseif ($item.link.'#text') {
-                    $link = $item.link.'#text'.Trim()
-                }
-                elseif ($item.link -is [System.Xml.XmlElement]) {
-                    $link = $item.link.GetAttribute("href")
-                }
-
-                if (-not $link) { continue }
-
-                # Skip if already archived
-                if ($existingLinks.ContainsKey($link)) { continue }
-
-                # Extract title
-                $title = ""
-                if ($item.title -is [string]) {
-                    $title = $item.title.Trim()
-                }
-                elseif ($item.title.'#text') {
-                    $title = $item.title.'#text'.Trim()
-                }
-                elseif ($item.title -is [System.Xml.XmlElement]) {
-                    $title = $item.title.InnerText.Trim()
-                }
-
-                # Extract description/summary (first 300 chars)
-                $description = ""
-                if ($item.description -is [string]) {
-                    $description = $item.description
-                }
-                elseif ($item.description.'#cdata-section') {
-                    $description = $item.description.'#cdata-section'
-                }
-                elseif ($item.summary -is [string]) {
-                    $description = $item.summary
-                }
-                elseif ($item.content -is [string]) {
-                    $description = $item.content
-                }
-
-                # Strip HTML tags and trim
-                if ($description) {
-                    $description = $description -replace '<[^>]+>', '' -replace '&nbsp;', ' ' -replace '&#\d+;', '' -replace '&amp;', '&'
-                    $description = ($description -replace '\s+', ' ').Trim()
-                    if ($description.Length -gt 300) {
-                        $description = $description.Substring(0, 297) + "..."
-                    }
-                }
-
-                # Extract thumbnail/image if available
-                $thumbnail = $null
-                if ($item.enclosure -and $item.enclosure.url -and $item.enclosure.type -match "image") {
-                    $thumbnail = $item.enclosure.url
-                }
-                if (-not $thumbnail -and $item -is [System.Xml.XmlElement]) {
-                    # Use XPath for namespace-prefixed media elements (PowerShell property access fails on these)
-                    $mediaThumbnail = $item.SelectSingleNode("media:thumbnail", $nsMgr)
-                    if ($mediaThumbnail -and $mediaThumbnail.url) {
-                        $thumbnail = $mediaThumbnail.url
-                    }
-                    if (-not $thumbnail) {
-                        $mediaContent = $item.SelectSingleNode("media:content[@medium='image']", $nsMgr)
-                        if ($mediaContent -and $mediaContent.url) {
-                            $thumbnail = $mediaContent.url
-                        }
-                    }
-                }
-                # Fallback: extract first <img src="..."> from description HTML
-                if (-not $thumbnail) {
-                    $rawDesc = ""
-                    if ($item.description -is [string]) { $rawDesc = $item.description }
-                    elseif ($item.description.'#cdata-section') { $rawDesc = $item.description.'#cdata-section' }
-                    if ($rawDesc -match '<img[^>]+src=["'']([^"'']+)["'']') {
-                        $thumbnail = $Matches[1]
-                    }
-                }
-
-                $articleObj = [PSCustomObject]@{
-                    title       = $title
-                    link        = $link
-                    description = $description
-                    date        = if ($articleDay) { $articleDay } else { $null }
-                    source      = $feedName
-                    siteUrl     = $feed.siteUrl
-                    iconUrl     = $feed.iconUrl
-                    thumbnail   = $thumbnail
-                    fetchedAt   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-                }
-
-                $null = $newArticles.Add($articleObj)
-                $existingLinks[$link] = $true
-                $feedCount++
-            }
-
-            if ($feedCount -gt 0) {
-                Write-Host "$feedCount new article(s)" -ForegroundColor Green
-            }
-            else {
-                Write-Host "no new articles" -ForegroundColor DarkGray
-            }
-        }
-        catch {
-            Write-Host "error: $($_.Exception.Message)" -ForegroundColor Red
-            $feedErrors++
-        }
-    }
-
-    Write-Progress -Id 1 -Activity "RSS Feeds" -Completed
-    Write-Host ""
-
-    if ($newArticles.Count -gt 0) {
-        Write-Step "Adding $($newArticles.Count) new article(s) to archive..."
-
-        # Merge new articles with existing ones (newest first)
-        $allArticles = @($newArticles) + @($existingArticles)
-        $allArticles = $allArticles | Sort-Object { $_.date } -Descending
-
-        $archiveData = [PSCustomObject]@{
-            lastUpdated   = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-            totalArticles = $allArticles.Count
-            articles      = @($allArticles)
-        }
-
-        $archiveData | ConvertTo-Json -Depth 5 | Set-Content $articlesPath -Encoding UTF8
-        Write-Step "articles.json updated: $($allArticles.Count) total articles" "Green"
-    }
-    else {
-        Write-Step "No new articles found" "DarkGray"
-    }
-
-    if ($feedErrors -gt 0) {
-        Write-Step "$feedErrors feed(s) had errors" "DarkYellow"
-    }
-
-    Write-Elapsed $articleStart
-    return $true
-}
-
-# ============================================================================
-#  TASK 2b: SCRAPE ARTICLES (complement to RSS)
+#  TASK 2: SCRAPE ARTICLES
 # ============================================================================
 
 function Update-ScrapeArticles {
-    Write-Section "TASK 2b: SCRAPE ARTICLES"
+    Write-Section "TASK 2: SCRAPE ARTICLES"
     $scrapeStart = Get-Date
 
     $scrapeScript = Join-Path (Join-Path $scriptRoot "scripts") "scrape-articles.js"
@@ -1019,47 +738,8 @@ function Update-ServiceLinks {
     return $true
 }
 
-# ============================================================================
-#  TASK 4: INSTAGRAM WEEKLY CHART POST
-#  (Delegated to scripts/instagram.ps1 - can also run independently)
-# ============================================================================
-
-function Update-Instagram {
-    Write-Section "TASK 4: INSTAGRAM WEEKLY CHART"
-
-    # Delegate to standalone script (supports review, alt charts, etc.)
-    $igScript = Join-Path $scriptRoot "scripts\instagram.ps1"
-    if (-not (Test-Path $igScript)) {
-        Write-Step "scripts/instagram.ps1 not found" "Red"
-        return $false
-    }
-
-    # When called from update-all, skip review (automated) and force (ignore day check)
-    $isForced = $Only -eq "instagram"
-    $forceFlag = if ($isForced) { "-Force" } else { "" }
-
-    Write-Step "Running scripts/instagram.ps1 -SkipReview $forceFlag..."
-    try {
-        $igArgs = @{ SkipReview = $true }
-        if ($isForced) { $igArgs["Force"] = $true }
-        & $igScript @igArgs
-        if ($LASTEXITCODE -ne 0) {
-            Write-Step "Instagram script exited with code $LASTEXITCODE" "Red"
-            return $false
-        }
-    }
-    catch {
-        Write-Step "Instagram script failed: $_" "Red"
-        return $false
-    }
-
-    Write-Step "Instagram task completed" "Green"
-    return $true
-}
-
-
 function Update-CuratorTracklists {
-    Write-Section "TASK 5: CURATOR TRACKLISTS"
+    Write-Section "TASK 4: CURATOR TRACKLISTS"
 
     $curatorScript = Join-Path $scriptRoot "scripts\generate-curator-tracklists.ps1"
     if (-not (Test-Path $curatorScript)) {
@@ -1106,20 +786,16 @@ Write-Host ("=" * 70) -ForegroundColor Magenta
 # Determine which tasks to run
 $runChart     = -not $SkipChart
 $runYouTubePopularity = -not $SkipYouTubePopularity
-$runArticles  = -not $SkipArticles
 $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
-$runInstagram = -not $SkipInstagram
 $runCurators  = -not $SkipCurators
 $runSiteMaster = -not $SkipSiteMaster
 
 if ($Only) {
     $runChart     = $Only -eq "chart"
     $runYouTubePopularity = $Only -eq "ytpopularity"
-    $runArticles  = $Only -eq "articles"
     $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
-    $runInstagram = $Only -eq "instagram"
     $runCurators  = $Only -eq "curators"
     $runSiteMaster = $Only -eq "sitemaster"
 }
@@ -1128,7 +804,7 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runYouTubePopularity, $runArticles, $runScrape, $runLinks, $runInstagram, $runCurators, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -1153,18 +829,7 @@ else {
     Write-Step "Skipping YouTube popularity" "DarkGray"
 }
 
-# --- Task 2: Articles ---
-if ($runArticles) {
-    Set-OverallProgress "Articles"
-    $t = Get-Date
-    $results["Articles"] = Update-Articles
-    $taskTimings["Articles"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
-}
-else {
-    Write-Step "Skipping articles" "DarkGray"
-}
-
-# --- Task 2b: Scrape Articles ---
+# --- Task 2: Scrape Articles ---
 if ($runScrape) {
     Set-OverallProgress "Scrape Articles"
     $t = Get-Date
@@ -1186,18 +851,7 @@ else {
     Write-Step "Skipping service links" "DarkGray"
 }
 
-# --- Task 4: Instagram ---
-if ($runInstagram) {
-    Set-OverallProgress "Instagram"
-    $t = Get-Date
-    $results["Instagram"] = Update-Instagram
-    $taskTimings["Instagram"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
-}
-else {
-    Write-Step "Skipping Instagram posting" "DarkGray"
-}
-
-# --- Task 5: Curator Tracklists ---
+# --- Task 4: Curator Tracklists ---
 if ($runCurators) {
     Set-OverallProgress "Curator Tracklists"
     $t = Get-Date
@@ -1208,10 +862,10 @@ else {
     Write-Step "Skipping curator tracklists" "DarkGray"
 }
 
-# --- Task 6: Site Master ---
+# --- Task 5: Site Master ---
 if ($runSiteMaster) {
     Set-OverallProgress "Site Master"
-    Write-Section "TASK 6: SITE MASTER (PRE-COMPUTED DATA)"
+    Write-Section "TASK 5: SITE MASTER (PRE-COMPUTED DATA)"
     $t = Get-Date
     try {
         $smScript = Join-Path (Join-Path $scriptRoot "scripts") "generate-site-master.ps1"

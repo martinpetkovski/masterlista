@@ -89,6 +89,8 @@ function deduplicateCollabs(releases) {
             if (names.indexOf(r.bandName) === -1) existing.bandName = names.concat(r.bandName).join(', ');
             existing.popularity = Math.max(existing.popularity || 0, r.popularity || 0);
             existing.followers = Math.max(existing.followers || 0, r.followers || 0);
+            existing.youtubeViews = Math.max(existing.youtubeViews || 0, r.youtubeViews || 0);
+            existing.viewsDelta = Math.max(existing.viewsDelta || 0, r.viewsDelta || 0);
             existing.isCollab = true;
         } else {
             map.set(r.releaseId, Object.assign({}, r));
@@ -328,13 +330,16 @@ function trimPerArtist(releases) {
 
 /**
  * Deterministic sort comparator for chart ranking.
- * Primary: popularity desc, Secondary: followers desc, Tertiary: name asc.
+ * Primary: null viewsDelta last, then viewsDelta desc, youtubeViews desc, name asc.
  */
 function chartSort(a, b) {
-    var popDiff = (b.popularity || 0) - (a.popularity || 0);
-    if (popDiff !== 0) return popDiff;
-    var folDiff = (b.followers || 0) - (a.followers || 0);
-    if (folDiff !== 0) return folDiff;
+    var aNull = (a.viewsDelta == null) ? 1 : 0;
+    var bNull = (b.viewsDelta == null) ? 1 : 0;
+    if (aNull !== bNull) return aNull - bNull;
+    var deltaDiff = (b.viewsDelta || 0) - (a.viewsDelta || 0);
+    if (deltaDiff !== 0) return deltaDiff;
+    var viewsDiff = (b.youtubeViews || 0) - (a.youtubeViews || 0);
+    if (viewsDiff !== 0) return viewsDiff;
     return (a.bandName || '').localeCompare(b.bandName || '');
 }
 

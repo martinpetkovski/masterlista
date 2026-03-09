@@ -434,7 +434,7 @@
                 }
                 if (releases[i].youtubeViews) totalViews += releases[i].youtubeViews;
             }
-            var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K' : String(totalViews);
+            var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : String(totalViews);
             document.getElementById('yt-stats').innerHTML =
                 '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
                 '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
@@ -524,7 +524,7 @@
                 if (r.totalTracks) dateInfo += ' · ' + r.totalTracks + (r.totalTracks === 1 ? ' песна' : ' песни');
                 if (r.youtubeViews) {
                     var views = r.youtubeViews;
-                    dateInfo += ' · <i class="fab fa-youtube" style="color:#f00"></i> ' + (views >= 1000000 ? (views / 1000000).toFixed(1) + 'M' : views >= 1000 ? (views / 1000).toFixed(1) + 'K' : views);
+                    dateInfo += ' · <i class="fab fa-youtube" style="color:#f00"></i> ' + (views >= 1000000 ? (views / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : views >= 1000 ? (views / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : views);
                 }
                 if (dateInfo) html += '<span class="yt-release-date">' + dateInfo + '</span>';
                 html += '</div>';
@@ -613,7 +613,7 @@
                         html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
                         if (t.views) {
                             var v = t.views;
-                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v) + ')</span>';
+                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : v >= 1000 ? (v / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : v) + ')</span>';
                         }
                         html += '</a>';
                         var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);

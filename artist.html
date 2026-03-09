@@ -1251,43 +1251,48 @@ a.chart-history-item {
             display: inline-flex;
             align-items: center;
             gap: 0.2rem;
-            color: #ff0000;
+            color: var(--text-muted);
             font-size: 0.65rem;
             opacity: 0.75;
         }
-        .release-yt-views .fa-youtube { font-size: 0.6rem; }
+        .release-yt-views .fa-youtube { font-size: 0.6rem; color: #ff0000; }
 
         /* YouTube link pills on artist releases */
         .release-track-list {
-            list-style: none; margin: 0; padding: 0;
+            list-style: none; margin: 0.35rem 0 0; padding: 0;
             display: flex; flex-direction: column;
         }
         .release-track-item {
             display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.4rem 0.15rem;
+            padding: 0.45rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.82rem;
-            cursor: pointer; transition: background 0.12s;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s;
+            border-radius: 4px;
+            margin: 0 -0.25rem;
         }
         .release-track-item:last-child { border-bottom: none; }
         .release-track-item:hover { background: var(--bg-secondary); }
         .release-track-num {
             width: 1.5rem; text-align: right; flex-shrink: 0;
             font-size: 0.7rem; color: var(--text-muted); font-weight: 600;
+            font-variant-numeric: tabular-nums;
         }
         .release-track-name {
             flex: 1; min-width: 0;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             color: var(--text-primary); font-weight: 500;
         }
-        .release-track-item:hover .release-track-name { color: var(--accent-blue, #5b8fb9); }
+        .release-track-item:hover .release-track-name { color: inherit; }
         .release-track-verified {
-            flex-shrink: 0; color: #22c55e; font-size: 0.65rem; opacity: 0.85;
+            flex-shrink: 0; color: var(--text-muted); font-size: 0.7rem; opacity: 0.9;
         }
         .release-track-views {
-            flex-shrink: 0; font-size: 0.6rem; color: var(--text-muted); opacity: 0.7; margin-left: auto;
+            flex-shrink: 0; font-size: 0.65rem; color: var(--text-muted); opacity: 0.75; margin-left: auto;
+            font-variant-numeric: tabular-nums;
+            display: inline-flex; align-items: center; gap: 0.2rem;
         }
-        .release-track-views i { color: #ff4444; margin-right: 0.15rem; }
+        .release-track-views i { color: #ff4444; font-size: 0.55rem; }
 
         .chart-history-link {
             margin-left: auto;
@@ -1583,9 +1588,49 @@ a.chart-history-item {
             border-color: var(--va-card-border);
             color: var(--va-text);
         }
+        .verified-accent .chart-history-item:hover {
+            background: var(--va-card-hover-bg);
+            box-shadow: var(--va-card-shadow);
+        }
         .verified-accent .chart-history-title { color: var(--va-text); }
         .verified-accent .chart-history-meta { color: var(--va-text-muted); }
         .verified-accent .chart-history-type { background: var(--va-type-bg); }
+
+        /* Glass release tracklist */
+        .verified-accent .release-track-item {
+            border-bottom-color: var(--va-card-border);
+        }
+        .verified-accent .release-track-item:hover {
+            background: var(--va-card-hover-bg);
+        }
+        .verified-accent .release-track-num {
+            color: var(--va-text-muted);
+        }
+        .verified-accent .release-track-name {
+            color: var(--va-text);
+        }
+        .verified-accent .release-track-item:hover .release-track-name {
+            color: inherit;
+        }
+        .verified-accent .release-track-views {
+            color: var(--va-text-muted);
+        }
+        .verified-accent .release-track-views i {
+            color: #ff4444;
+        }
+        .verified-accent .release-track-verified {
+            color: var(--va-text-muted);
+        }
+        .verified-accent .release-yt-views {
+            color: var(--va-text-muted);
+            opacity: 0.85;
+        }
+        .verified-accent .release-yt-views .fa-youtube {
+            color: #ff4444;
+        }
+        .verified-accent .vu-pop-value {
+            color: var(--va-text-muted);
+        }
 
         /* Glass popularity graph */
         .verified-accent .popularity-graph-container {
@@ -2570,6 +2615,12 @@ a.chart-history-item {
             }
         }
         
+        function formatViewsAbsolute(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return String(n);
+        }
+
         // Build artistHistory from pre-computed site-master.json data
         // Returns the same format as the old loadChartHistory() for compatibility with renderers
         function buildArtistHistoryFromSiteMaster(artistName, siteMaster) {
@@ -2605,7 +2656,7 @@ a.chart-history-item {
                 const sparkline = siteMaster.releaseSparklines?.[rid] || [];
                 const chartWeeks = sparkline.map(s => ({
                     week: s.weekId,
-                    popularity: s.popularity || 0,
+                    youtubeViews: s.youtubeViews || 0,
                     date: null
                 }));
                 
@@ -2619,7 +2670,7 @@ a.chart-history-item {
                 if (r.followers) artistHistory.followers = r.followers;
                 
                 // Update peak
-                const maxPop = Math.max(...chartWeeks.map(w => w.popularity), r.popularity || 0);
+                const maxPop = Math.max(...chartWeeks.map(w => w.youtubeViews), r.youtubeViews || 0);
                 if (maxPop > artistHistory.peakPopularity) artistHistory.peakPopularity = maxPop;
                 
                 artistHistory.totalWeeksOnChart += chartWeeks.length;
@@ -2708,7 +2759,7 @@ a.chart-history-item {
             
             // Create dots for weekly data points
             const dotsHtml = points.map(p => {
-                return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5"/>`;
+                return `<circle class="graph-dot" cx="${p.x}" cy="${p.y}" r="3" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5"/>`;
             }).join('');
 
             // Create release date dots with sub-week interpolation
@@ -2767,8 +2818,8 @@ a.chart-history-item {
             
             // Y-axis labels (min and max)
             const yAxisLabels = `
-                <text x="${leftPadding - 5}" y="${padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${maxPopularity}</text>
-                <text x="${leftPadding - 5}" y="${height - padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${minPopularity}</text>
+                <text x="${leftPadding - 5}" y="${padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${formatViewsAbsolute(maxPopularity)}</text>
+                <text x="${leftPadding - 5}" y="${height - padding + 3}" text-anchor="end" fill="var(--text-muted)" font-size="9" font-weight="600">${formatViewsAbsolute(minPopularity)}</text>
                 <line x1="${leftPadding - 2}" y1="${padding}" x2="${leftPadding + 3}" y2="${padding}" stroke="var(--text-muted)" stroke-width="1"/>
                 <line x1="${leftPadding - 2}" y1="${height - padding}" x2="${leftPadding + 3}" y2="${height - padding}" stroke="var(--text-muted)" stroke-width="1"/>
             `;
@@ -2786,13 +2837,21 @@ a.chart-history-item {
                    </div>`
                 : '';
             
-            // Build VU meter for cumulative popularity
+            // Build VU meter for cumulative popularity (sum of viewsDeltas)
             let cumulativeVuHtml = '';
-            const latestPop = weeklyData[weeklyData.length - 1]?.popularity || 0;
+            let cumulativePop = 0;
+            let cumulativeRankIndex = -1;
+            if (artistName && siteMaster?.artistCumulativeRanking) {
+                const artistNameLower = artistName.toLowerCase().trim();
+                cumulativeRankIndex = siteMaster.artistCumulativeRanking.findIndex(a => a.bandName.toLowerCase().trim() === artistNameLower);
+                if (cumulativeRankIndex >= 0) {
+                    cumulativePop = siteMaster.artistCumulativeRanking[cumulativeRankIndex].cumulativePopularity || 0;
+                }
+            }
             const globalMaxCumulative = siteMaster?.maxCumulativePopularity || maxPopularity;
-            if (latestPop > 0 && globalMaxCumulative > 0) {
+            if (cumulativePop > 0 && globalMaxCumulative > 0) {
                 const totalSegs = 16;
-                const litSegs = Math.max(1, Math.round((latestPop / globalMaxCumulative) * totalSegs));
+                const litSegs = Math.max(1, Math.round((cumulativePop / globalMaxCumulative) * totalSegs));
                 let segs = '';
                 for (let s = 0; s < totalSegs; s++) {
                     const isOn = s < litSegs;
@@ -2802,16 +2861,8 @@ a.chart-history-item {
                     else color = '#ef4444';
                     segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
                 }
-                // Find artist position in cumulative ranking
-                let positionHtml = '';
-                if (artistName && siteMaster?.artistCumulativeRanking) {
-                    const artistNameLower = artistName.toLowerCase().trim();
-                    const rankIndex = siteMaster.artistCumulativeRanking.findIndex(a => a.bandName.toLowerCase().trim() === artistNameLower);
-                    if (rankIndex >= 0) {
-                        positionHtml = `<span class="vu-pop-value">#${rankIndex + 1}</span>`;
-                    }
-                }
-                cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${latestPop}</span>${positionHtml}</div>`;
+                let positionHtml = cumulativeRankIndex >= 0 ? `<span class="vu-pop-value">#${cumulativeRankIndex + 1}</span>` : '';
+                cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(cumulativePop)}</span>${positionHtml}</div>`;
             }
 
             container.innerHTML = `
@@ -2873,8 +2924,8 @@ a.chart-history-item {
                     const isNewA = new Date(a.releaseDate) >= fourWeeksAgo ? 1 : 0;
                     const isNewB = new Date(b.releaseDate) >= fourWeeksAgo ? 1 : 0;
                     if (isNewA !== isNewB) return isNewB - isNewA;
-                    const peakA = a.chartWeeks && a.chartWeeks.length ? Math.max(...a.chartWeeks.map(w => w.popularity)) : (a.popularity || 0);
-                    const peakB = b.chartWeeks && b.chartWeeks.length ? Math.max(...b.chartWeeks.map(w => w.popularity)) : (b.popularity || 0);
+                    const peakA = a.chartWeeks && a.chartWeeks.length ? Math.max(...a.chartWeeks.map(w => w.youtubeViews)) : (a.youtubeViews || 0);
+                    const peakB = b.chartWeeks && b.chartWeeks.length ? Math.max(...b.chartWeeks.map(w => w.youtubeViews)) : (b.youtubeViews || 0);
                     return peakB - peakA;
                 });
             
@@ -2925,7 +2976,7 @@ a.chart-history-item {
                         ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
                         : '';
                     const viewsHtml = ytEntry && ytEntry.views
-                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${ytEntry.views >= 1000000 ? (ytEntry.views / 1000000).toFixed(1) + 'M' : ytEntry.views >= 1000 ? (ytEntry.views / 1000).toFixed(1) + 'K' : ytEntry.views}</span>`
+                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(ytEntry.views)}</span>`
                         : '';
                     return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${ytUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${viewsHtml}${tick}</li>`;
                 }).join('');
@@ -2934,15 +2985,15 @@ a.chart-history-item {
                 const releaseDate = new Date(release.releaseDate);
                 const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
 
-                // Build VU meter
+                // Build VU meter based on current week's viewsDelta
                 let vuMeterHtml = '';
-                const peakPop = (release.chartWeeks && release.chartWeeks.length >= 1)
-                    ? Math.max(...release.chartWeeks.map(w => w.popularity))
-                    : (release.popularity || 0);
-                if (peakPop > 0) {
+                const currentDelta = release.viewsDelta || (release.chartWeeks && release.chartWeeks.length >= 2
+                    ? release.chartWeeks[release.chartWeeks.length - 1].youtubeViews - release.chartWeeks[release.chartWeeks.length - 2].youtubeViews
+                    : 0);
+                if (currentDelta > 0) {
                     const totalSegs = 16;
-                    const globalPeak = siteMaster?.globalPeakPopularity || artistHistory.peakPopularity;
-                    const litSegs = globalPeak > 0 ? Math.max(1, Math.round((peakPop / globalPeak) * totalSegs)) : 0;
+                    const globalPeak = siteMaster?.globalPeakPopularity || 1;
+                    const litSegs = globalPeak > 0 ? Math.max(1, Math.round((currentDelta / globalPeak) * totalSegs)) : 0;
                     let segs = '';
                     for (let s = 0; s < totalSegs; s++) {
                         const isOn = s < litSegs;
@@ -2952,7 +3003,7 @@ a.chart-history-item {
                         else color = '#ef4444';
                         segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
                     }
-                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${peakPop}</span></div>`;
+                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(currentDelta)}</span></div>`;
                 }
 
                 return `
@@ -2971,7 +3022,7 @@ a.chart-history-item {
                                         <i class="${typeIcon}"></i> ${typeLabel}
                                     </span>
                                     <span>${dateStr}</span>
-                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${release.youtubeViews >= 1000000 ? (release.youtubeViews / 1000000).toFixed(1) + 'M' : release.youtubeViews >= 1000 ? (release.youtubeViews / 1000).toFixed(1) + 'K' : release.youtubeViews}</span>` : ''}
+                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(release.youtubeViews)}</span>` : ''}
                                 </div>
                                 ${vuMeterHtml}
                             </div>
@@ -2984,7 +3035,7 @@ a.chart-history-item {
             // Calculate cumulative YouTube views across all releases
             const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
             const ytViewsHtml = totalYtViews > 0
-                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fab fa-youtube"></i> ${totalYtViews >= 1000000 ? (totalYtViews / 1000000).toFixed(1) + 'M' : totalYtViews >= 1000 ? (totalYtViews / 1000).toFixed(1) + 'K' : totalYtViews}</span>`
+                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
                 : '';
             
             container.innerHTML = `
@@ -3252,12 +3303,13 @@ a.chart-history-item {
                         link.style.animationDelay = (idx * 0.06) + 's';
                     });
 
-                    // c2-themed graph & sparkline overrides
+                    // c1-themed graph & c2-themed sparkline overrides
                     const c2Style = document.createElement('style');
                     c2Style.textContent =
-                        '.popularity-graph-container svg [id="areaGradient"] stop:first-child { stop-color: ' + c2 + ' !important; }' +
-                        '.popularity-graph-container svg [id="areaGradient"] stop:last-child { stop-color: ' + c2 + ' !important; }' +
-                        '.popularity-graph-container svg path[stroke] { stroke: ' + c2 + ' !important; }' +
+                        '.popularity-graph-container svg [id="areaGradient"] stop:first-child { stop-color: ' + c1 + ' !important; }' +
+                        '.popularity-graph-container svg [id="areaGradient"] stop:last-child { stop-color: ' + c1 + ' !important; }' +
+                        '.popularity-graph-container svg path[stroke] { stroke: ' + c1 + ' !important; }' +
+                        '.popularity-graph-container svg circle.graph-dot { fill: ' + c1 + ' !important; }' +
                         '.popularity-graph-container .graph-value-label span { color: ' + c2 + ' !important; }' +
                         '.vu-pop-value { color: ' + c2 + ' !important; }' +
                         '.release-play-btn { background: ' + c2 + ' !important; }' +

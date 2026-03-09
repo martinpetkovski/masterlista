@@ -2624,6 +2624,24 @@
         }
 
         // ==================== RENDER: MINI CHART (uses pre-computed data from site-master.json) ====================
+        function formatViewsCompact(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
+            if (n >= 1000) return (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
+            return String(n);
+        }
+        function formatViewsCompactPlain(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return String(n);
+        }
+        function formatViewsDeltaCompact(n) {
+            if (n === null || n === undefined) return '·';
+            if (n === 0) return '·';
+            var prefix = n > 0 ? '+' : '';
+            if (Math.abs(n) >= 1000000) return prefix + (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
+            if (Math.abs(n) >= 1000) return prefix + (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
+            return prefix + n;
+        }
         function renderMiniChart(containerId, loadingId, genreKey) {
             var chartKey = genreKey + '_single';
             var top3 = siteMaster && siteMaster.charts && siteMaster.charts[chartKey]
@@ -2633,9 +2651,9 @@
 
             var container = document.getElementById(containerId);
             var loading = document.getElementById(loadingId);
-            var maxPop = Math.max.apply(null, top3.map(function(r) { return r.popularity || 1; }));
+            var maxPop = Math.max.apply(null, top3.map(function(r) { return r.viewsDelta || 0; })) || 1;
             container.innerHTML = top3.map(function(r, i) {
-                var popPct = Math.min(100, Math.round(((r.popularity || 0) / maxPop) * 100));
+                var popPct = Math.min(100, Math.round(((r.viewsDelta || 0) / maxPop) * 100));
                 var barClass = i === 0 ? 'pop-gold' : i === 1 ? 'pop-silver' : 'pop-bronze';
 
                 // Sparkle SVG overlay for #1 cover
@@ -2659,7 +2677,7 @@
                         '<div class="mini-chart-artist">' + buildArtistLinks(r.bandName) + '</div>' +
                     '</div>' +
                     '<div class="chart-pop-wrap">' +
-                        '<span class="mini-chart-pop">' + (r.popularity || 0) + '</span>' +
+                        '<span class="mini-chart-pop">' + formatViewsDeltaCompact(r.viewsDelta) + '</span>' +
                         '<div class="pop-bar-track"><div class="pop-bar-fill ' + barClass + '" style="width:' + popPct + '%"></div></div>' +
                     '</div>' +
                 '</li>';
@@ -2910,14 +2928,14 @@
             }
 
             list.innerHTML = picked.map(function(r) {
-                var popChangeVal = r.popularityChange || r._popChange || 0;
-                var chevCount = Math.max(0, Math.floor(popChangeVal));
+                var viewsDeltaVal = r.viewsDelta || 0;
+                var chevCount = viewsDeltaVal > 0 ? Math.min(5, Math.max(1, Math.ceil(Math.log10(viewsDeltaVal + 1)))) : 0;
                 var chevHtml = '';
                 if (chevCount > 0) {
                     var chevItems = Array.from({ length: chevCount }, function(_, idx) {
                         return '<i style="--chev-index:' + idx + ';--chev-total:' + chevCount + '"></i>';
                     }).join('');
-                    chevHtml = '<span class="trending-chevrons" title="+' + popChangeVal + ' ' + t('dashboard.popularity') + '">' + chevItems + '</span>';
+                    chevHtml = '<span class="trending-chevrons" title="+' + formatViewsCompactPlain(viewsDeltaVal) + ' ' + t('dashboard.views') + '">' + chevItems + '</span>';
                 }
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
