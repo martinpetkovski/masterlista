@@ -651,13 +651,14 @@ async function main() {
                 globalSeenVideoIds.add(vid);
                 const existing = existingTracks.get(vid);
                 const isVerified = existing?.verified === 'verified';
+                const isWillNotVerify = existing?.verified === 'will-not-verify';
                 const stats = isVerified ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
                 ytTracks.push({
                     name: t.trackName,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: isVerified ? 'verified' : 'unverified',
+                    verified: isWillNotVerify ? 'will-not-verify' : isVerified ? 'verified' : 'unverified',
                     ...(views > 0 ? { views } : {})
                 });
                 if (isVerified && !alreadyCounted) totalViews += views;
@@ -665,19 +666,20 @@ async function main() {
             }
         }
 
-        // Preserve any manually-added verified youtube tracks that weren't auto-matched
+        // Preserve any manually-added verified/will-not-verify youtube tracks that weren't auto-matched
         for (const [vid, info] of existingTracks) {
-            if (info.verified === 'verified') {
+            if (info.verified === 'verified' || info.verified === 'will-not-verify') {
                 const alreadyCounted = globalSeenVideoIds.has(vid);
                 globalSeenVideoIds.add(vid);
-                const stats = allStats.get(vid);
+                const isVerified = info.verified === 'verified';
+                const stats = isVerified ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
-                if (!alreadyCounted) totalViews += views;
+                if (isVerified && !alreadyCounted) totalViews += views;
                 ytTracks.push({
                     name: info.name,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
-                    verified: 'verified',
+                    verified: info.verified,
                     ...(views > 0 ? { views } : {})
                 });
             }
@@ -770,17 +772,21 @@ async function main() {
     fs.writeFileSync(CHART_DATA, JSON.stringify(chartData, null, 2), 'utf8');
     console.log(`Updated chart-data.json with YouTube-based popularity`);
 
-    // Also update the current week's history file (if it exists) so it has YouTube-based popularity
+    // Also update the current week's history file — only on Mondays (when the snapshot is first created)
     const now = new Date();
-    const d = new Date(now); d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    const yearStart = new Date(d.getFullYear(), 0, 1);
-    const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-    const weekFileName = `chart-${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}.json`;
-    const weekFilePath = path.join(HISTORY_DIR, weekFileName);
-    if (fs.existsSync(weekFilePath)) {
-        fs.writeFileSync(weekFilePath, JSON.stringify(chartData, null, 2), 'utf8');
-        console.log(`Updated chart-history/${weekFileName} with YouTube-based popularity`);
+    if (now.getDay() === 1) {
+        const d = new Date(now); d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+        const yearStart = new Date(d.getFullYear(), 0, 1);
+        const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        const weekFileName = `chart-${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}.json`;
+        const weekFilePath = path.join(HISTORY_DIR, weekFileName);
+        if (fs.existsSync(weekFilePath)) {
+            fs.writeFileSync(weekFilePath, JSON.stringify(chartData, null, 2), 'utf8');
+            console.log(`Updated chart-history/${weekFileName} with YouTube-based popularity`);
+        }
+    } else {
+        console.log(`Skipping chart-history update (today is not Monday)`);
     }
 
     // Also save channel video cache (strip to save space — only keep titles, not full data)

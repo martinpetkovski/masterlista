@@ -191,6 +191,24 @@
         opacity: 1 !important;
     }
 
+    /* Multi-link track grouping */
+    .yt-track-group { display: flex; flex-direction: column; gap: 0.1rem; }
+    .yt-track-group.yt-multi-link {
+        background: var(--bg-secondary); border-radius: 6px;
+        padding: 0.25rem 0.4rem; margin: 0.15rem 0;
+        border-left: 2px solid var(--accent-blue, #5b8fb9);
+    }
+    .yt-track-link-row {
+        display: flex; align-items: center; gap: 0.4rem;
+        padding: 0.15rem 0 0.15rem 0.5rem; flex-wrap: wrap;
+    }
+    .yt-multi-badge {
+        display: inline-block; font-size: 0.55rem; font-weight: 700;
+        padding: 0.05rem 0.3rem; border-radius: 999px;
+        background: var(--accent-blue, #5b8fb9); color: #fff;
+        vertical-align: middle; margin-left: 0.2rem;
+    }
+
     .yt-add-track-btn {
         background: none; border: 1px dashed var(--border-color);
         cursor: pointer; padding: 0.1rem 0.3rem; border-radius: 4px;
@@ -471,10 +489,24 @@
                 if (releases[i].youtubeViews) totalViews += releases[i].youtubeViews;
             }
             var totalSongs = verifiedCount + unverifiedCount + notVerifiedCount;
+            // Count unique verified songs (distinct track names with at least one verified video)
+            var verifiedSongNames = {};
+            for (var vi = 0; vi < releases.length; vi++) {
+                var vt = releases[vi].youtubeTracks;
+                if (vt) {
+                    for (var vj = 0; vj < vt.length; vj++) {
+                        if (vt[vj].verified === 'verified') {
+                            verifiedSongNames[releases[vi].releaseId + '::' + vt[vj].name] = true;
+                        }
+                    }
+                }
+            }
+            var verifiedSongs = Object.keys(verifiedSongNames).length;
             var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : String(totalViews);
             document.getElementById('yt-stats').innerHTML =
                 '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
-                '<div class="stat"><i class="fas fa-music"></i> <span class="stat-value">' + verifiedCount + ' / ' + totalSongs + '</span> верификувани песни</div>' +
+                '<div class="stat"><i class="fas fa-video" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> потврдени видеа</div>' +
+                '<div class="stat"><i class="fas fa-music" style="color:#22c55e"></i> <span class="stat-value">' + verifiedSongs + ' / ' + totalSongs + '</span> верификувани песни</div>' +
                 '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
                 '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
                 '<div class="stat"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="stat-value">' + notVerifiedCount + '</span> нема да се верификуваат</div>' +
@@ -640,14 +672,18 @@
                 var ytIndices = ytByName[key] || [];
 
                 if (ytIndices.length > 0) {
-                    // Track has YouTube link(s)
+                    // Track has YouTube link(s) — group under one track name
+                    var isMulti = ytIndices.length > 1;
+                    html += '<div class="yt-track-group' + (isMulti ? ' yt-multi-link' : '') + '">';
+                    html += '<div class="yt-track-row">';
+                    html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + (isMulti ? ' <span class="yt-multi-badge">' + ytIndices.length + ' видеа</span>' : '') + '</span>';
+                    html += '</div>';
                     for (var k = 0; k < ytIndices.length; k++) {
                         var j = ytIndices[k];
                         var t = yt[j];
                         var pillClass = t.verified === 'verified' ? 'verified' : t.verified === 'will-not-verify' ? 'will-not-verify' : 'unverified';
                         var iconClass = t.verified === 'verified' ? 'fa-check-circle' : t.verified === 'will-not-verify' ? 'fa-times-circle' : 'fa-question-circle';
-                        html += '<div class="yt-track-row">';
-                        html += '<span class="yt-track-name" title="' + esc(t.name) + '">' + esc(t.name) + '</span>';
+                        html += '<div class="yt-track-link-row">';
                         html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
                         html += '<i class="fas ' + iconClass + '"></i> ';
                         html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
@@ -667,6 +703,7 @@
                         html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
                         html += '</div>';
                     }
+                    html += '</div>';
                 } else {
                     // Track has no YouTube link — show with add button and search
                     var trackQuery = encodeURIComponent(release.bandName + ' ' + name);
