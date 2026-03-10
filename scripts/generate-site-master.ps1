@@ -550,10 +550,82 @@ foreach ($genre in $genreFilters) {
         $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 20 -preDeduped $mainByGenre[$genre]
         $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd)
         
-        # Advanced (unlimited) — reuse the pre-computed prev map
+        # Advanced (unlimited)
         $advKey = "${genre}_${type}_advanced"
-        $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre[$genre]
-        $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -includeGenreCity $true)
+        
+        if ($type -eq 'single') {
+            # Songs expansion: include individual tracks from ALL release types (singles + albums)
+            # Group by song name within each release to sum views from multiple YouTube links
+            $genreDeduped = $mainByGenre[$genre]
+            $songs = [System.Collections.ArrayList]::new()
+            
+            foreach ($r in $genreDeduped) {
+                $tracks = $r.youtubeTracks
+                if (-not $tracks -or $tracks.Count -eq 0) {
+                    # No track data — include release as a single entry
+                    [void]$songs.Add($r)
+                    continue
+                }
+                
+                $totalViews = [int]($r.youtubeViews -as [int])
+                $releaseDelta = $r.viewsDelta
+                
+                # Group tracks by name (same song may have multiple YouTube links)
+                $tracksByName = [ordered]@{}
+                foreach ($track in $tracks) {
+                    $tName = $track.name
+                    if (-not $tracksByName.Contains($tName)) {
+                        $tracksByName[$tName] = @{ views = 0; index = $tracksByName.Count }
+                    }
+                    $tracksByName[$tName].views += [int]($track.views -as [int])
+                }
+                
+                foreach ($tName in $tracksByName.Keys) {
+                    $tData = $tracksByName[$tName]
+                    $trackViews = $tData.views
+                    $ti = $tData.index
+                    
+                    # Proportional viewsDelta from release-level delta
+                    $trackDelta = $null
+                    if ($null -ne $releaseDelta -and $totalViews -gt 0) {
+                        $trackDelta = [int]([math]::Round([double]$releaseDelta * $trackViews / $totalViews))
+                    }
+                    
+                    # Single-song releases keep original releaseId (matches prevMap);
+                    # multi-song releases get composite ID (shows as NEW)
+                    $songId = if ($tracksByName.Count -eq 1) { $r.releaseId } else { "$($r.releaseId):t$ti" }
+                    
+                    $song = [PSCustomObject]@{
+                        releaseId    = $songId
+                        bandName     = $r.bandName
+                        artistId     = $r.artistId
+                        releaseTitle = $tName
+                        releaseType  = $r.releaseType
+                        releaseDate  = $r.releaseDate
+                        releaseUrl   = $r.releaseUrl
+                        thumbnail    = $r.thumbnail
+                        totalTracks  = $r.totalTracks
+                        popularity   = [int]($r.popularity -as [int])
+                        followers    = [int]($r.followers -as [int])
+                        youtubeViews = $trackViews
+                        spotifyUrl   = $r.spotifyUrl
+                    }
+                    $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $trackDelta -Force
+                    if ($r.isCollab) {
+                        $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
+                    }
+                    
+                    [void]$songs.Add($song)
+                }
+            }
+            
+            $sortedSongs = @(Sort-ChartRanking $songs)
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMap -includeGenreCity $true)
+        } else {
+            # Albums: unchanged — reuse the pre-computed prev map
+            $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre[$genre]
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -includeGenreCity $true)
+        }
     }
 }
 

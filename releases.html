@@ -470,11 +470,12 @@
                 }
                 if (releases[i].youtubeViews) totalViews += releases[i].youtubeViews;
             }
+            var totalSongs = verifiedCount + unverifiedCount + notVerifiedCount;
             var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : String(totalViews);
             document.getElementById('yt-stats').innerHTML =
                 '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
+                '<div class="stat"><i class="fas fa-music"></i> <span class="stat-value">' + verifiedCount + ' / ' + totalSongs + '</span> верификувани песни</div>' +
                 '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
-                '<div class="stat"><i class="fas fa-check-circle" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> верификувани</div>' +
                 '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
                 '<div class="stat"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="stat-value">' + notVerifiedCount + '</span> нема да се верификуваат</div>' +
                 '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>' +

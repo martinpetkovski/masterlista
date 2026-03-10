@@ -1747,6 +1747,11 @@
             flex-shrink: 0;
             margin-right: 10px;
         }
+        .artist-item .chart-meta {
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.15rem;
+        }
         
         .chart-stat {
             display: flex;
@@ -2258,7 +2263,7 @@
                 </div>
                 <div class="adv-tables-container">
                     <div class="adv-table-wrapper" id="adv-singles-wrapper">
-                        <div class="adv-table-label"><span data-i18n="charts.singles">Синглови</span> <span id="adv-singles-count"></span></div>
+                        <div class="adv-table-label"><span data-i18n="charts.songs">Песни</span> <span id="adv-singles-count"></span></div>
                         <div class="adv-table-scroll">
                             <table class="adv-table" id="adv-singles-table">
                                 <thead></thead>
@@ -3854,8 +3859,8 @@
             function renderAdvancedChart(singles, albums, prevSinglesMap, prevAlbumsMap) {
                 // Store data for re-sorting
                 advChartData = { singles, albums, prevSinglesMap, prevAlbumsMap };
-                // Reset sort state when data changes
-                advSortState = { singles: [], albums: [] };
+                // Default sort: viewsDelta descending
+                advSortState = { singles: [{ column: 'pdelta', direction: 'desc' }], albums: [{ column: 'pdelta', direction: 'desc' }] };
 
                 renderAdvancedTable('singles');
                 renderAdvancedTable('albums');

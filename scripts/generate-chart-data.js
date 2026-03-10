@@ -905,10 +905,16 @@ async function main() {
 
 /**
  * Save a weekly snapshot of chart data to the history folder.
- * Only saves one snapshot per week (first generation of the week).
+ * Only saves on Mondays, and only if this week's file doesn't exist yet.
  * Format: chart-YYYY-WXX.json (e.g., chart-2026-W03.json)
  */
 function saveWeeklySnapshot(chartData, historyDir, now) {
+  // Only save snapshots on Mondays (day 1)
+  if (now.getDay() !== 1) {
+    console.log(`Skipping weekly snapshot (today is not Monday)`);
+    return;
+  }
+
   // Ensure history directory exists
   if (!fs.existsSync(historyDir)) {
     fs.mkdirSync(historyDir, { recursive: true });
@@ -920,7 +926,7 @@ function saveWeeklySnapshot(chartData, historyDir, now) {
   const weekFileName = `chart-${weekInfo.year}-W${String(weekInfo.week).padStart(2, '0')}.json`;
   const weekFilePath = path.join(historyDir, weekFileName);
   
-  // Only save if this week's file doesn't exist yet (first generation of the week)
+  // Only save if this week's file doesn't exist yet
   if (!fs.existsSync(weekFilePath)) {
     fs.writeFileSync(weekFilePath, JSON.stringify(chartData, null, 2));
     console.log(`Saved weekly snapshot: ${weekFileName}`);
