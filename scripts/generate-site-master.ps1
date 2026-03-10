@@ -401,24 +401,49 @@ $prevViewsMap = @{}
 foreach ($pr in $prevReleasesDeduped) {
     $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
 }
-foreach ($r in $mainReleasesDeduped) {
-    if ($prevViewsMap.ContainsKey($r.releaseId)) {
-        $curViews = [int]($r.youtubeViews -as [int])
-        $prevViews = $prevViewsMap[$r.releaseId]
-        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue ($curViews - $prevViews) -Force
-    } else {
-        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+
+# Determine the Monday of the previous chart-history week
+$prevChartMonday = $null
+if ($chartHistoryWeeks.Count -ge 1) {
+    $prevWeekId = $chartHistoryWeeks[0].weekId  # e.g. "2026-W11"
+    if ($prevWeekId -match '^(\d{4})-W(\d{2})$') {
+        $isoYear = [int]$Matches[1]
+        $isoWeek = [int]$Matches[2]
+        # ISO week 1 contains Jan 4; Monday of week 1 = Jan 4 minus its weekday offset
+        $jan4 = [datetime]::new($isoYear, 1, 4)
+        $dow = [int]$jan4.DayOfWeek; if ($dow -eq 0) { $dow = 7 }  # Sunday=7
+        $week1Monday = $jan4.AddDays(1 - $dow)
+        $prevChartMonday = $week1Monday.AddDays(7 * ($isoWeek - 1))
+        Write-Host "  > Previous chart Monday: $($prevChartMonday.ToString('yyyy-MM-dd'))" -ForegroundColor DarkGray
     }
+}
+
+function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
+    $curViews = [int]($r.youtubeViews -as [int])
+    # If the release came out after the previous chart Monday, all views are this week's
+    $relDate = $null
+    if ($r.releaseDate) { try { $relDate = [datetime]::Parse($r.releaseDate) } catch {} }
+    if ($relDate -and $prevChartMonday -and $relDate -ge $prevChartMonday) {
+        return $curViews
+    }
+    # Otherwise use the delta from prev week
+    if ($prevViewsMap.ContainsKey($r.releaseId)) {
+        $prevViews = $prevViewsMap[$r.releaseId]
+        # If prev had 0 views but current has views, tracking wasn't active yet — delta unknown
+        if ($prevViews -le 0 -and $curViews -gt 0) { return $null }
+        return ($curViews - $prevViews)
+    }
+    return $null
+}
+
+foreach ($r in $mainReleasesDeduped) {
+    $delta = Get-ViewsDelta $r $prevViewsMap $prevChartMonday
+    $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 # Also attach viewsDelta to original $releases so it's included in chartData output
 foreach ($r in $releases) {
-    if ($prevViewsMap.ContainsKey($r.releaseId)) {
-        $curViews = [int]($r.youtubeViews -as [int])
-        $prevViews = $prevViewsMap[$r.releaseId]
-        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue ($curViews - $prevViews) -Force
-    } else {
-        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
-    }
+    $delta = Get-ViewsDelta $r $prevViewsMap $prevChartMonday
+    $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 
 # Pre-filter releases by genre once (avoids re-filtering inside every Build-ChartRanking call)

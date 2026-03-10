@@ -3369,6 +3369,7 @@
                             const existing = artistMap.get(release.artistId);
                             if (existing) {
                                 existing.totalViews += (release.youtubeViews || 0);
+                                existing.totalDelta += (release.viewsDelta || 0);
                                 if ((release.followers || 0) > (existing.followers || 0)) {
                                     existing.followers = release.followers || 0;
                                     existing.thumbnail = release.thumbnail;
@@ -3379,6 +3380,7 @@
                                     artistId: release.artistId,
                                     bandName: bandInfo?.name || release.bandName,
                                     totalViews: release.youtubeViews || 0,
+                                    totalDelta: release.viewsDelta || 0,
                                     followers: release.followers || 0,
                                     spotifyUrl: release.spotifyUrl,
                                     thumbnail: release.thumbnail

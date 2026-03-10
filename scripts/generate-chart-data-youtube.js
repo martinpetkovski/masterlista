@@ -350,7 +350,7 @@ function loadPreviousWeekData() {
     try {
         const data = JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, latestFile), 'utf8'));
         console.log(`  Loaded previous week data: ${latestFile} (${data.releases?.length || 0} releases)`);
-        return { weekId: latestFile.replace('chart-', '').replace('.json', ''), releases: data.releases || [] };
+        return { weekId: latestFile.replace('chart-', '').replace('.json', ''), releases: data.releases || [], generatedAt: data.generatedAt || null };
     } catch {
         return null;
     }
@@ -636,6 +636,9 @@ async function main() {
     // ── Step 4: Compute per-release total views and update releases.json ─────
     console.log('\n── Step 4: Computing YouTube views per release ──');
 
+    // Track globally seen video IDs so each YouTube video is counted only once
+    const globalSeenVideoIds = new Set();
+
     for (const r of releases) {
         const trackMatches = cache.tracks[r.releaseId] || [];
         let totalViews = 0;
@@ -644,6 +647,8 @@ async function main() {
 
         for (const t of trackMatches) {
             for (const vid of (t.videoIds || [])) {
+                const alreadyCounted = globalSeenVideoIds.has(vid);
+                globalSeenVideoIds.add(vid);
                 const existing = existingTracks.get(vid);
                 const isVerified = existing?.verified === 'verified';
                 const stats = isVerified ? allStats.get(vid) : null;
@@ -655,7 +660,7 @@ async function main() {
                     verified: isVerified ? 'verified' : 'unverified',
                     ...(views > 0 ? { views } : {})
                 });
-                if (isVerified) totalViews += views;
+                if (isVerified && !alreadyCounted) totalViews += views;
                 existingTracks.delete(vid); // Mark as processed
             }
         }
@@ -663,9 +668,11 @@ async function main() {
         // Preserve any manually-added verified youtube tracks that weren't auto-matched
         for (const [vid, info] of existingTracks) {
             if (info.verified === 'verified') {
+                const alreadyCounted = globalSeenVideoIds.has(vid);
+                globalSeenVideoIds.add(vid);
                 const stats = allStats.get(vid);
                 const views = stats?.viewCount || 0;
-                totalViews += views;
+                if (!alreadyCounted) totalViews += views;
                 ytTracks.push({
                     name: info.name,
                     videoId: vid,
@@ -689,17 +696,58 @@ async function main() {
         }
     }
 
+    const dupeCount = globalSeenVideoIds.size;
+    console.log(`  Counted ${dupeCount} unique YouTube videos across all releases`);
+
     // ── Step 5: Compute popularity ──────────────────────────────────────────
     if (useYTHistory) {
         // Real YouTube history available — compute delta-based popularity
         console.log('\n── Step 5: Computing popularity from YouTube view deltas ──');
-        for (const cr of chartReleases) {
-            const prev = prevMap.get(cr.releaseId);
-            if (prev) {
-                cr._viewDelta = Math.max(0, (cr.youtubeViews || 0) - (prev.youtubeViews || 0));
-            } else {
-                cr._viewDelta = 0;
+
+        // Build release lookup for date checking
+        const releaseById = new Map();
+        for (const r of releases) releaseById.set(r.releaseId, r);
+
+        let newReleaseDeltaCount = 0;
+
+        // Determine the Monday of the previous chart-history week from weekId (e.g. "2026-W11")
+        let prevChartMonday = null;
+        if (prevWeek?.weekId) {
+            const m = prevWeek.weekId.match(/^(\d{4})-W(\d{2})$/);
+            if (m) {
+                const isoYear = parseInt(m[1], 10);
+                const isoWeek = parseInt(m[2], 10);
+                // ISO week 1 contains Jan 4; Monday of week 1 = Jan 4 minus its weekday offset
+                const jan4 = new Date(Date.UTC(isoYear, 0, 4));
+                const dow = jan4.getUTCDay() || 7; // Sunday=7
+                const week1Monday = new Date(jan4);
+                week1Monday.setUTCDate(jan4.getUTCDate() + 1 - dow);
+                prevChartMonday = new Date(week1Monday);
+                prevChartMonday.setUTCDate(week1Monday.getUTCDate() + 7 * (isoWeek - 1));
+                console.log(`  Previous chart Monday: ${prevChartMonday.toISOString().slice(0, 10)}`);
             }
+        }
+
+        for (const cr of chartReleases) {
+            const rel = releaseById.get(cr.releaseId);
+            const releaseDate = rel?.releaseDate ? new Date(rel.releaseDate) : null;
+
+            // If the release came out after the previous chart Monday, all views are this week's
+            if (releaseDate && prevChartMonday && releaseDate >= prevChartMonday) {
+                cr._viewDelta = cr.youtubeViews || 0;
+                newReleaseDeltaCount++;
+            } else {
+                const prev = prevMap.get(cr.releaseId);
+                if (prev && prev.youtubeViews > 0) {
+                    cr._viewDelta = Math.max(0, (cr.youtubeViews || 0) - prev.youtubeViews);
+                } else {
+                    // No prev data or prev had 0 views (tracking wasn't active) — delta unknown
+                    cr._viewDelta = 0;
+                }
+            }
+        }
+        if (newReleaseDeltaCount > 0) {
+            console.log(`  ${newReleaseDeltaCount} new release(s) released after previous chart Monday — using total views as delta`);
         }
         const typeMap = new Map();
         for (const r of releases) typeMap.set(r.releaseId, r.releaseType);
