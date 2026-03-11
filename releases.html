@@ -129,6 +129,10 @@
         align-items: center; gap: 0.35rem;
         padding: 0.15rem 0;
     }
+    .yt-track-name-wrap {
+        display: inline-flex; align-items: center; gap: 0.2rem;
+        min-width: 0; overflow: hidden;
+    }
     .yt-track-name {
         font-size: 0.72rem; color: var(--text-muted);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -702,7 +706,7 @@
                         viewsStr += '<i class="fab fa-youtube"></i>' + (songViews >= 1000000 ? (songViews / 1000000).toFixed(1) + 'M' : songViews >= 1000 ? (songViews / 1000).toFixed(1) + 'K' : songViews);
                     }
                     viewsStr += '</span>';
-                    html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + (isMulti ? ' <span class="yt-multi-badge">' + ytIndices.length + '</span>' : '') + '</span>';
+                    html += '<span class="yt-track-name-wrap"><span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + '</span>' + (isMulti ? '<span class="yt-multi-badge">' + ytIndices.length + '</span>' : '') + '</span>';
                     html += viewsStr;
                     html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
                     // Inline link pills with action buttons inside
@@ -826,7 +830,7 @@
                         var ri = parseInt(row.closest('tr').dataset.idx, 10);
                         var trackName = row.querySelector('.yt-track-name');
                         if (isNaN(ri) || !trackName) return;
-                        var name = trackName.textContent || trackName.innerText;
+                        var name = trackName.getAttribute('title') || trackName.textContent || trackName.innerText;
                         var raw = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || '';
                         var url = raw.split(/[\r\n]/)[0].trim();
                         var videoId = parseYouTubeUrl(url);
