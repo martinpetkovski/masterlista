@@ -584,15 +584,11 @@
             border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         .adv-tables-container {
             display: flex;
             flex-direction: row;
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
             gap: 0;
         }
 
@@ -600,11 +596,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0;
             min-width: 0;
-            overflow: hidden;
-            /* allow horizontal scroll from adv-table-scroll to be visible */
-            overflow-x: clip;
         }
 
         .adv-table-wrapper + .adv-table-wrapper {
@@ -625,12 +617,9 @@
         }
 
         .adv-table-scroll {
-            flex: 1;
-            overflow: auto;
-            min-height: 0;
-            /* clip the table within the flex cell on desktop */
             min-width: 0;
             width: 100%;
+            overflow-x: auto;
         }
 
         .adv-table {
@@ -771,6 +760,8 @@
         .adv-sort-reset.visible { display: inline-flex; }
         .adv-sort-reset:hover { background: var(--bg-hover); color: var(--text-primary); }
 
+        .adv-sentinel { height: 1px; }
+
         /* Dark mode overrides */
         body.dark-mode .advanced-chart-view {
             background: var(--bg-secondary);
@@ -792,11 +783,6 @@
         @media (max-width: 600px) {
             .adv-tables-container {
                 flex-direction: column;
-            }
-
-            .adv-table-wrapper {
-                /* on mobile allow the wrapper to show the scrollbar */
-                overflow: visible;
             }
 
             .adv-table-wrapper + .adv-table-wrapper {
@@ -2269,6 +2255,7 @@
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
+                            <div id="adv-singles-sentinel" class="adv-sentinel"></div>
                         </div>
                     </div>
                     <div class="adv-table-wrapper" id="adv-albums-wrapper">
@@ -2278,6 +2265,7 @@
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
+                            <div id="adv-albums-sentinel" class="adv-sentinel"></div>
                         </div>
                     </div>
                 </div>
@@ -3601,6 +3589,11 @@
             let advChartData = { singles: [], albums: [], prevSinglesMap: {}, prevAlbumsMap: {} };
             // Sort state per table: array of { column, direction } in priority order
             let advSortState = { singles: [], albums: [] };
+            // Lazy-loading state
+            const ADV_BATCH_SIZE = 150;
+            let advSortedData = { singles: [], albums: [] };
+            let advRenderedCount = { singles: 0, albums: 0 };
+            let advObservers = { singles: null, albums: null };
 
             // Column definitions for the advanced table
             const advColumns = [
@@ -3787,9 +3780,17 @@
                 // Sort
                 const sorted = sortAdvancedReleases(enriched, advSortState[tableKey]);
 
-                // Render
+                // Store for lazy loading
+                advSortedData[tableKey] = sorted;
+                advRenderedCount[tableKey] = 0;
+
+                // Render header
                 table.querySelector('thead').innerHTML = buildAdvancedThead(tableKey);
-                table.querySelector('tbody').innerHTML = buildAdvancedTbody(sorted);
+
+                // Clear tbody and render first batch
+                const tbody = table.querySelector('tbody');
+                tbody.innerHTML = '';
+                advLoadMoreRows(tableKey);
 
                 // Count label
                 const countEl = document.getElementById(countId);
@@ -3807,21 +3808,57 @@
                     });
                 });
 
-                // Attach click handlers to release title links (service chooser)
-                table.querySelectorAll('.adv-release-link[data-url]').forEach(el => {
-                    el.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const url = el.dataset.url;
-                        const title = el.dataset.title || '';
-                        const artist = el.dataset.artist || '';
-                        const thumb = el.dataset.thumb || '';
-                        const info = getArtistInfo(artist);
-                        if (url) {
-                            openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed);
-                        }
+                // Set up IntersectionObserver for lazy scroll
+                if (advObservers[tableKey]) advObservers[tableKey].disconnect();
+                const sentinel = document.getElementById(`adv-${tableKey}-sentinel`);
+                if (sentinel) {
+                    sentinel.style.display = advRenderedCount[tableKey] < sorted.length ? '' : 'none';
+                    advObservers[tableKey] = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) advLoadMoreRows(tableKey);
+                    }, { rootMargin: '400px' });
+                    advObservers[tableKey].observe(sentinel);
+                }
+            }
+
+            // Append next batch of rows to an advanced table
+            function advLoadMoreRows(tableKey) {
+                const tableId = tableKey === 'singles' ? 'adv-singles-table' : 'adv-albums-table';
+                const table = document.getElementById(tableId);
+                if (!table) return;
+                const data = advSortedData[tableKey];
+                const start = advRenderedCount[tableKey];
+                if (start >= data.length) return;
+                const end = Math.min(start + ADV_BATCH_SIZE, data.length);
+                const batchHtml = buildAdvancedTbody(data.slice(start, end));
+                const tbody = table.querySelector('tbody');
+                tbody.insertAdjacentHTML('beforeend', batchHtml);
+                advRenderedCount[tableKey] = end;
+
+                // Attach click handlers to newly added release links
+                const rows = tbody.querySelectorAll('tr');
+                for (let i = start; i < end && i < rows.length; i++) {
+                    rows[i].querySelectorAll('.adv-release-link[data-url]').forEach(el => {
+                        el.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const url = el.dataset.url;
+                            const title = el.dataset.title || '';
+                            const artist = el.dataset.artist || '';
+                            const thumb = el.dataset.thumb || '';
+                            const info = getArtistInfo(artist);
+                            if (url) {
+                                openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed);
+                            }
+                        });
                     });
-                });
+                }
+
+                // Hide sentinel when all rows loaded
+                if (end >= data.length) {
+                    if (advObservers[tableKey]) advObservers[tableKey].disconnect();
+                    const sentinel = document.getElementById(`adv-${tableKey}-sentinel`);
+                    if (sentinel) sentinel.style.display = 'none';
+                }
             }
 
             // Handle sort column click

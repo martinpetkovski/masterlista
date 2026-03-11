@@ -85,9 +85,7 @@
     }
     .yt-table tbody tr {
         border-bottom: 1px solid var(--border-color);
-        transition: background 0.15s;
     }
-    .yt-table tbody tr:hover { background: var(--bg-hover); }
     .yt-table td { padding: 0.5rem 0.75rem; vertical-align: middle; }
 
     /* Reset leaked master-list nth-child column rules */
@@ -126,61 +124,82 @@
 
     .yt-tracks-cell { min-width: 350px; }
     .yt-track-row {
-        display: flex; align-items: center; gap: 0.4rem;
-        padding: 0.2rem 0; flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: minmax(100px, 200px) auto auto 1fr;
+        align-items: center; gap: 0.35rem;
+        padding: 0.15rem 0;
     }
     .yt-track-name {
-        font-size: 0.72rem; color: var(--text-muted); min-width: 120px;
+        font-size: 0.72rem; color: var(--text-muted);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        max-width: 180px;
     }
+    .yt-track-views {
+        font-size: 0.6rem; color: var(--text-muted); opacity: 0.65;
+        white-space: nowrap; font-variant-numeric: tabular-nums;
+        text-align: right;
+    }
+    .yt-track-views .fa-youtube { color: #ff4444; font-size: 0.5rem; margin-right: 0.1rem; }
+    .yt-track-links {
+        display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;
+    }
+    .yt-link-group {
+        display: inline-flex; align-items: stretch; gap: 0;
+        border-radius: 999px; overflow: hidden;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .yt-link-group:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
     .yt-link-pill {
         display: inline-flex; align-items: center; gap: 0.25rem;
-        padding: 0.15rem 0.45rem; border-radius: 999px;
+        padding: 0.2rem 0.5rem;
         font-size: 0.68rem; font-weight: 600;
         text-decoration: none; transition: all 0.15s;
-        border: 1px solid var(--border-color);
-        background: var(--bg-secondary); color: var(--text-primary);
+        border: none; color: #fff;
+        background: #6b7280;
     }
-    .yt-link-pill:hover { background: var(--bg-tertiary); }
-    .yt-link-pill.verified {
-        border-color: #22c55e; background: rgba(34, 197, 94, 0.1);
-    }
-    .yt-link-pill.unverified {
-        border-color: #f59e0b; background: rgba(245, 158, 11, 0.08);
-    }
-    .yt-link-pill.will-not-verify {
-        border-color: #ef4444; background: rgba(239, 68, 68, 0.08);
-    }
-    .yt-link-pill .fa-check-circle { color: #22c55e; font-size: 0.65rem; }
-    .yt-link-pill .fa-question-circle { color: #f59e0b; font-size: 0.65rem; }
-    .yt-link-pill .fa-times-circle { color: #ef4444; font-size: 0.65rem; }
+    .yt-link-pill:hover { filter: brightness(1.15); }
+    .yt-link-pill.verified { background: #16a34a; }
+    .yt-link-pill.unverified { background: #d97706; }
+    .yt-link-pill.will-not-verify { background: #dc2626; }
+    .yt-link-pill .fa-check-circle,
+    .yt-link-pill .fa-question-circle,
+    .yt-link-pill .fa-times-circle { color: rgba(255,255,255,0.8); font-size: 0.65rem; }
+    .yt-link-pill .fa-youtube { color: rgba(255,255,255,0.85) !important; }
 
     .yt-verify-btn, .yt-remove-btn, .yt-notverify-btn {
-        background: none; border: none; cursor: pointer;
-        padding: 0.15rem 0.3rem; border-radius: 4px;
-        font-size: 0.65rem; transition: all 0.15s;
-        color: var(--text-muted);
+        border: none; cursor: pointer;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.6rem; transition: all 0.15s;
+        line-height: 1; color: #fff;
     }
-    .yt-verify-btn:hover { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
-    .yt-notverify-btn:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-    .yt-remove-btn:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .yt-verify-btn { background: #22c55e; }
+    .yt-verify-btn:hover { background: #16a34a; filter: brightness(1.2); }
+    .yt-notverify-btn { background: #f59e0b; }
+    .yt-notverify-btn:hover { background: #d97706; filter: brightness(1.2); }
+    .yt-remove-btn { background: #ef4444; }
+    .yt-remove-btn:hover { background: #dc2626; filter: brightness(1.2); }
 
     .yt-add-link-btn {
         display: inline-flex; align-items: center; gap: 0.2rem;
-        background: none; border: 1px dashed var(--border-color);
-        cursor: pointer; padding: 0.15rem 0.4rem; border-radius: 999px;
+        background: var(--bg-tertiary); border: none;
+        cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 999px;
         font-size: 0.65rem; color: var(--text-muted); transition: all 0.15s;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', sans-serif; margin-top: 0.15rem;
     }
-    .yt-add-link-btn:hover { border-color: #ef4444; color: #ef4444; }
+    .yt-add-link-btn:hover { background: #ef4444; color: #fff; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(239,68,68,0.3); }
 
     .yt-no-yt {
         font-size: 0.7rem; color: var(--text-muted); opacity: 0.5;
         font-style: italic;
     }
 
-    .yt-track-unlinked { opacity: 0.55; }
+    .yt-track-unlinked {
+        opacity: 0.55;
+        grid-template-columns: minmax(100px, 200px) auto auto;
+    }
     .yt-track-unlinked:hover { opacity: 0.85; }
 
     .yt-track-row.yt-drop-target {
@@ -191,16 +210,11 @@
         opacity: 1 !important;
     }
 
-    /* Multi-link track grouping */
-    .yt-track-group { display: flex; flex-direction: column; gap: 0.1rem; }
-    .yt-track-group.yt-multi-link {
-        background: var(--bg-secondary); border-radius: 6px;
-        padding: 0.25rem 0.4rem; margin: 0.15rem 0;
-        border-left: 2px solid var(--accent-blue, #5b8fb9);
-    }
-    .yt-track-link-row {
-        display: flex; align-items: center; gap: 0.4rem;
-        padding: 0.15rem 0 0.15rem 0.5rem; flex-wrap: wrap;
+    /* Track grouping */
+    .yt-track-group {
+        display: flex; flex-direction: column; gap: 0;
+        padding: 0.1rem 0 0.1rem 0.5rem; margin: 0.1rem 0;
+        border-left: 2px solid var(--border-color);
     }
     .yt-multi-badge {
         display: inline-block; font-size: 0.55rem; font-weight: 700;
@@ -210,11 +224,13 @@
     }
 
     .yt-add-track-btn {
-        background: none; border: 1px dashed var(--border-color);
-        cursor: pointer; padding: 0.1rem 0.3rem; border-radius: 4px;
-        font-size: 0.6rem; color: var(--text-muted); transition: all 0.15s;
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 1.2rem; height: 1.2rem; border-radius: 50%;
+        background: var(--bg-tertiary); border: none;
+        cursor: pointer; font-size: 0.55rem; color: var(--text-muted);
+        transition: all 0.15s;
     }
-    .yt-add-track-btn:hover { border-color: #ef4444; color: #ef4444; }
+    .yt-add-track-btn:hover { background: #ef4444; color: #fff; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(239,68,68,0.3); }
 
     .yt-form-search {
         display: inline-flex; align-items: center; gap: 0.15rem;
@@ -293,11 +309,12 @@
 
     .yt-track-search {
         display: inline-flex; align-items: center; justify-content: center;
-        color: #f00; font-size: 0.6rem; text-decoration: none;
-        opacity: 0.4; transition: opacity 0.15s;
-        padding: 0.1rem; margin-left: 0.1rem;
+        width: 1.2rem; height: 1.2rem; border-radius: 50%;
+        background: #ef4444; color: #fff; font-size: 0.55rem;
+        text-decoration: none; transition: all 0.15s;
+        flex-shrink: 0;
     }
-    .yt-track-search:hover { opacity: 1; }
+    .yt-track-search:hover { background: #dc2626; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(239,68,68,0.3); }
 
     .yt-artist-link {
         color: var(--text-muted); text-decoration: none;
@@ -672,18 +689,30 @@
                 var ytIndices = ytByName[key] || [];
 
                 if (ytIndices.length > 0) {
-                    // Track has YouTube link(s) — group under one track name
+                    // Track has YouTube link(s) — single compact line per song
                     var isMulti = ytIndices.length > 1;
                     html += '<div class="yt-track-group' + (isMulti ? ' yt-multi-link' : '') + '">';
                     html += '<div class="yt-track-row">';
-                    html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + (isMulti ? ' <span class="yt-multi-badge">' + ytIndices.length + ' видеа</span>' : '') + '</span>';
-                    html += '</div>';
+                    var trackQuery = encodeURIComponent(release.bandName + ' ' + name);
+                    // Sum views for this song across all links
+                    var songViews = 0;
+                    for (var k2 = 0; k2 < ytIndices.length; k2++) { songViews += yt[ytIndices[k2]].views || 0; }
+                    var viewsStr = '<span class="yt-track-views">';
+                    if (songViews > 0) {
+                        viewsStr += '<i class="fab fa-youtube"></i>' + (songViews >= 1000000 ? (songViews / 1000000).toFixed(1) + 'M' : songViews >= 1000 ? (songViews / 1000).toFixed(1) + 'K' : songViews);
+                    }
+                    viewsStr += '</span>';
+                    html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + (isMulti ? ' <span class="yt-multi-badge">' + ytIndices.length + '</span>' : '') + '</span>';
+                    html += viewsStr;
+                    html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
+                    // Inline link pills with action buttons inside
+                    html += '<span class="yt-track-links">';
                     for (var k = 0; k < ytIndices.length; k++) {
                         var j = ytIndices[k];
                         var t = yt[j];
                         var pillClass = t.verified === 'verified' ? 'verified' : t.verified === 'will-not-verify' ? 'will-not-verify' : 'unverified';
                         var iconClass = t.verified === 'verified' ? 'fa-check-circle' : t.verified === 'will-not-verify' ? 'fa-times-circle' : 'fa-question-circle';
-                        html += '<div class="yt-track-link-row">';
+                        html += '<span class="yt-link-group">';
                         html += '<a class="yt-link-pill ' + pillClass + '" href="' + esc(t.url) + '" target="_blank" rel="noopener">';
                         html += '<i class="fas ' + iconClass + '"></i> ';
                         html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
@@ -692,17 +721,17 @@
                             html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : v >= 1000 ? (v / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : v) + ')</span>';
                         }
                         html += '</a>';
-                        var trackQuery = encodeURIComponent(release.bandName + ' ' + t.name);
-                        html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(t.name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
                         if (t.verified !== 'verified') {
-                            html += ' <button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
+                            html += '<button class="yt-verify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Верификувај"><i class="fas fa-check"></i></button>';
                         }
                         if (t.verified !== 'will-not-verify') {
-                            html += ' <button class="yt-notverify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Нема да се верификува"><i class="fas fa-ban"></i></button>';
+                            html += '<button class="yt-notverify-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Нема да се верификува"><i class="fas fa-ban"></i></button>';
                         }
-                        html += ' <button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
-                        html += '</div>';
+                        html += '<button class="yt-remove-btn" data-release="' + releaseIdx + '" data-track="' + j + '" title="Отстрани"><i class="fas fa-times"></i></button>';
+                        html += '</span>';
                     }
+                    html += '</span>';
+                    html += '</div>';
                     html += '</div>';
                 } else {
                     // Track has no YouTube link — show with add button and search
@@ -864,19 +893,29 @@
             if (btn.parentNode.querySelector('.yt-add-form')) return;
 
             var release = releasesData.releases[releaseIdx];
-            var trackNames = release.trackNames || [release.releaseTitle];
+            // Merge trackNames + existing yt track names, deduplicated
+            var srcNames = release.trackNames || [];
+            var ytNames = (release.youtubeTracks || []).map(function (t) { return t.name; });
+            var allNames = [];
+            var seenKeys = {};
+            var merged = srcNames.concat(ytNames);
+            for (var ni = 0; ni < merged.length; ni++) {
+                var nk = merged[ni].toLowerCase().trim();
+                if (!seenKeys[nk]) { allNames.push(merged[ni]); seenKeys[nk] = true; }
+            }
+            if (allNames.length === 0) allNames.push(release.releaseTitle);
 
             var form = document.createElement('div');
             form.className = 'yt-add-form';
 
             // Build track name dropdown
             var selectHtml = '<select class="yt-add-track-select" style="padding:0.25rem 0.4rem;border-radius:6px;border:1px solid var(--border-color);background:var(--bg-secondary);color:var(--text-primary);font-size:0.72rem;font-family:Inter,sans-serif;max-width:150px">';
-            for (var i = 0; i < trackNames.length; i++) {
-                selectHtml += '<option value="' + esc(trackNames[i]) + '">' + esc(trackNames[i]) + '</option>';
+            for (var i = 0; i < allNames.length; i++) {
+                selectHtml += '<option value="' + esc(allNames[i]) + '">' + esc(allNames[i]) + '</option>';
             }
             selectHtml += '</select>';
 
-            var defaultQuery = encodeURIComponent(release.bandName + ' ' + trackNames[0]);
+            var defaultQuery = encodeURIComponent(release.bandName + ' ' + allNames[0]);
             form.innerHTML =
                 selectHtml +
                 '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +

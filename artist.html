@@ -1294,6 +1294,17 @@ a.chart-history-item {
         }
         .release-track-views i { color: #ff4444; font-size: 0.55rem; }
 
+        .release-track-links {
+            display: inline-flex; align-items: center; gap: 0.15rem; margin-left: auto; flex-shrink: 0;
+        }
+        .release-track-yt-pill {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1rem; height: 1rem; border-radius: 50%;
+            background: rgba(255,0,0,0.08); color: #ff0000; font-size: 0.5rem;
+            text-decoration: none; transition: background 0.15s;
+        }
+        .release-track-yt-pill:hover { background: rgba(255,0,0,0.2); }
+
         .chart-history-link {
             margin-left: auto;
             color: var(--accent-orange);
@@ -2938,13 +2949,15 @@ a.chart-history-item {
             window.artistReleases = releases;
             window.artistLinks = artistLinks || {};
 
-            // Build a YouTube track lookup: trackName → { videoId, url, verified }
-            // per release for quick matching
+            // Build a YouTube track lookup: trackName → [{ videoId, url, verified, views, name }]
+            // per release for quick matching (supports multi-link songs)
             function getYtMap(release) {
                 const map = {};
                 if (release.youtubeTracks) {
                     release.youtubeTracks.forEach(yt => {
-                        map[yt.name.toLowerCase().trim()] = yt;
+                        const key = yt.name.toLowerCase().trim();
+                        if (!map[key]) map[key] = [];
+                        map[key].push(yt);
                     });
                 }
                 return map;
@@ -2966,19 +2979,40 @@ a.chart-history-item {
                     : (release.youtubeTracks && release.youtubeTracks.length > 0
                         ? release.youtubeTracks.map(yt => yt.name)
                         : [release.releaseTitle]);
+                // Deduplicate track names (for yt-only fallback with multi-link songs)
+                const seenTrackKeys = {};
+                tracks = tracks.filter(name => {
+                    const key = name.toLowerCase().trim();
+                    if (seenTrackKeys[key]) return false;
+                    seenTrackKeys[key] = true;
+                    return true;
+                });
 
                 const tracksHtml = tracks.map(trackName => {
                     trackNum++;
-                    const ytEntry = ytMap[trackName.toLowerCase().trim()];
-                    const isVerified = ytEntry && ytEntry.verified === 'verified';
-                    const ytUrl = ytEntry ? (ytEntry.url || 'https://www.youtube.com/watch?v=' + ytEntry.videoId) : '';
+                    const ytEntries = ytMap[trackName.toLowerCase().trim()] || [];
+                    const firstEntry = ytEntries[0];
+                    const isVerified = firstEntry && firstEntry.verified === 'verified';
+                    const firstYtUrl = firstEntry ? (firstEntry.url || 'https://www.youtube.com/watch?v=' + firstEntry.videoId) : '';
                     const tick = isVerified
                         ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
                         : '';
-                    const viewsHtml = ytEntry && ytEntry.views
-                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(ytEntry.views)}</span>`
+                    // Sum views across all links for the same song
+                    const totalViews = ytEntries.reduce((sum, yt) => sum + (yt.views || 0), 0);
+                    const viewsHtml = totalViews > 0
+                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(totalViews)}</span>`
                         : '';
-                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${ytUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${viewsHtml}${tick}</li>`;
+                    // Show individual YouTube link pills if multi-link
+                    let linksHtml = '';
+                    if (ytEntries.length > 1) {
+                        linksHtml = '<span class="release-track-links">' + ytEntries.map(yt => {
+                            const url = yt.url || 'https://www.youtube.com/watch?v=' + yt.videoId;
+                            const v = yt.views || 0;
+                            const viewStr = v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v;
+                            return `<a class="release-track-yt-pill" href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" title="${viewStr}"><i class="fab fa-youtube"></i></a>`;
+                        }).join('') + '</span>';
+                    }
+                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${firstYtUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
                 }).join('');
 
                 // Release header with release type, date, cover thumbnail
