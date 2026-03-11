@@ -334,7 +334,33 @@
         "Ne Che Prochi"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/04lvZ5kSu11neciYn03EtR?si=QduNWVykT0S28z0yNjKlSg",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Valeva Va Tumba",
+          "videoId": "nyGPxpd5RcA",
+          "url": "https://www.youtube.com/watch?v=nyGPxpd5RcA",
+          "verified": "verified"
+        },
+        {
+          "name": "Shoreless",
+          "videoId": "zvIOKpMw5Ow",
+          "url": "https://www.youtube.com/watch?v=zvIOKpMw5Ow",
+          "verified": "verified"
+        },
+        {
+          "name": "Queen",
+          "videoId": "CSXvMu-ixn0",
+          "url": "https://www.youtube.com/watch?v=CSXvMu-ixn0",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Che Prochi",
+          "videoId": "-pi3Hid-5BY",
+          "url": "https://www.youtube.com/watch?v=-pi3Hid-5BY",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Лара Иванова",
@@ -33057,19 +33083,7 @@
           "name": "More, Sokol Pie",
           "videoId": "XScnoTpGav4",
           "url": "https://www.youtube.com/watch?v=XScnoTpGav4",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "More, Sokol Pie",
-          "videoId": "6HHSWy4R_KU",
-          "url": "https://www.youtube.com/watch?v=6HHSWy4R_KU",
-          "verified": "verified"
-        },
-        {
-          "name": "More, Sokol Pie",
-          "videoId": "asSetXE4B20",
-          "url": "https://www.youtube.com/watch?v=asSetXE4B20",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33093,7 +33107,7 @@
           "name": "M-Mark",
           "videoId": "hnnAZKDj9pk",
           "url": "https://www.youtube.com/watch?v=hnnAZKDj9pk",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33202,25 +33216,7 @@
           "name": "Kruta",
           "videoId": "-dkKl9wTMUQ",
           "url": "https://www.youtube.com/watch?v=-dkKl9wTMUQ",
-          "verified": "verified"
-        },
-        {
-          "name": "Kruta",
-          "videoId": "OoFydHIYzG8",
-          "url": "https://www.youtube.com/watch?v=OoFydHIYzG8",
-          "verified": "verified"
-        },
-        {
-          "name": "Kruta",
-          "videoId": "JwUjgw8e0Wo",
-          "url": "https://www.youtube.com/watch?v=JwUjgw8e0Wo",
-          "verified": "verified"
-        },
-        {
-          "name": "Kruta",
-          "videoId": "53364saiWOk",
-          "url": "https://www.youtube.com/watch?v=53364saiWOk",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33245,7 +33241,7 @@
           "name": "Heroina",
           "videoId": "ajZveHHDRpM",
           "url": "https://www.youtube.com/watch?v=ajZveHHDRpM",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33303,7 +33299,7 @@
           "name": "On a flight to Ibiza",
           "videoId": "fWJ6YUqXps4",
           "url": "https://www.youtube.com/watch?v=fWJ6YUqXps4",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33344,13 +33340,7 @@
           "name": "Živote brate (feat. Naum Petreski & Džambo Aguševi Orchestra)",
           "videoId": "7X7D0gdmn20",
           "url": "https://www.youtube.com/watch?v=7X7D0gdmn20",
-          "verified": "verified"
-        },
-        {
-          "name": "Živote brate (feat. Naum Petreski & Džambo Aguševi Orchestra)",
-          "videoId": "o54eLt4MY9Y",
-          "url": "https://www.youtube.com/watch?v=o54eLt4MY9Y",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33375,13 +33365,7 @@
           "name": "Srce Ladno",
           "videoId": "WxzPgijJnuw",
           "url": "https://www.youtube.com/watch?v=WxzPgijJnuw",
-          "verified": "verified"
-        },
-        {
-          "name": "Srce Ladno",
-          "videoId": "87mTps6TrCc",
-          "url": "https://www.youtube.com/watch?v=87mTps6TrCc",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33434,55 +33418,55 @@
           "name": "Fash Is In!",
           "videoId": "VUajCQMIh1E",
           "url": "https://www.youtube.com/watch?v=VUajCQMIh1E",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Тивко и без глас / Tivko i bez glas",
           "videoId": "EiM1sqb_nto",
           "url": "https://www.youtube.com/watch?v=EiM1sqb_nto",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Удобно дно / Udobno dno",
           "videoId": "4gSTB7AdWjc",
           "url": "https://www.youtube.com/watch?v=4gSTB7AdWjc",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Heavy fucking metal",
           "videoId": "HR19FCTzIOY",
           "url": "https://www.youtube.com/watch?v=HR19FCTzIOY",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Тивки битки, гласни крици / Tivki bitki, glasni krici",
           "videoId": "-l8vbRQaPUY",
           "url": "https://www.youtube.com/watch?v=-l8vbRQaPUY",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Ништо озбилно / Nisto ozbilno",
           "videoId": "txPYUApCz8w",
           "url": "https://www.youtube.com/watch?v=txPYUApCz8w",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Смрден гад / Smrden gad",
           "videoId": "LBTd2qhCj5k",
           "url": "https://www.youtube.com/watch?v=LBTd2qhCj5k",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Избор / Izbor",
           "videoId": "UPPUK4t6WmI",
           "url": "https://www.youtube.com/watch?v=UPPUK4t6WmI",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Ѕид / Zid",
           "videoId": "WzoMaZ0Sekw",
           "url": "https://www.youtube.com/watch?v=WzoMaZ0Sekw",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33552,109 +33536,61 @@
           "name": "Ela",
           "videoId": "uIk6Fm4ilAo",
           "url": "https://www.youtube.com/watch?v=uIk6Fm4ilAo",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Zašto",
           "videoId": "CwFz3yIS3Sc",
           "url": "https://www.youtube.com/watch?v=CwFz3yIS3Sc",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Kazna",
           "videoId": "QBMc7GFg0iI",
           "url": "https://www.youtube.com/watch?v=QBMc7GFg0iI",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Pogledaj me sad",
           "videoId": "QVPOv5TcmwM",
           "url": "https://www.youtube.com/watch?v=QVPOv5TcmwM",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Paramparče",
           "videoId": "a6XCP9u7uf8",
           "url": "https://www.youtube.com/watch?v=a6XCP9u7uf8",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Kad osvane",
           "videoId": "5IEVVJa4aZo",
           "url": "https://www.youtube.com/watch?v=5IEVVJa4aZo",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Vo zemjata na čudata",
           "videoId": "l8HYTZYj7pw",
           "url": "https://www.youtube.com/watch?v=l8HYTZYj7pw",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Daj mi komad duše",
           "videoId": "pjwVcdjePU0",
           "url": "https://www.youtube.com/watch?v=pjwVcdjePU0",
-          "verified": "will-not-verify"
+          "verified": "unverified"
         },
         {
           "name": "Daj, daj mi daj",
           "videoId": "DRbAja7o9-s",
           "url": "https://www.youtube.com/watch?v=DRbAja7o9-s",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Znam",
           "videoId": "C6j3Mw_iREk",
           "url": "https://www.youtube.com/watch?v=C6j3Mw_iREk",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "Ela",
-          "videoId": "YhqCkSUPhlQ",
-          "url": "https://www.youtube.com/watch?v=YhqCkSUPhlQ",
-          "verified": "verified"
-        },
-        {
-          "name": "Zašto",
-          "videoId": "BQnN70XcDd8",
-          "url": "https://www.youtube.com/watch?v=BQnN70XcDd8",
-          "verified": "verified"
-        },
-        {
-          "name": "Kazna",
-          "videoId": "mV6Hcxw5nXA",
-          "url": "https://www.youtube.com/watch?v=mV6Hcxw5nXA",
-          "verified": "verified"
-        },
-        {
-          "name": "Pogledaj me sad",
-          "videoId": "JFK69rrsMBg",
-          "url": "https://www.youtube.com/watch?v=JFK69rrsMBg",
-          "verified": "verified"
-        },
-        {
-          "name": "Kad osvane",
-          "videoId": "umgUvwbYs-4",
-          "url": "https://www.youtube.com/watch?v=umgUvwbYs-4",
-          "verified": "verified"
-        },
-        {
-          "name": "Daj mi komad duše",
-          "videoId": "LBtzGJQIHHI",
-          "url": "https://www.youtube.com/watch?v=LBtzGJQIHHI",
-          "verified": "verified"
-        },
-        {
-          "name": "Daj, daj mi daj",
-          "videoId": "gzKyUyfN1x4",
-          "url": "https://www.youtube.com/watch?v=gzKyUyfN1x4",
-          "verified": "verified"
-        },
-        {
-          "name": "Znam",
-          "videoId": "x4wSpVakc_U",
-          "url": "https://www.youtube.com/watch?v=x4wSpVakc_U",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
@@ -33709,439 +33645,85 @@
           "name": "Ajde! Kade?",
           "videoId": "L17DbQg4l8Y",
           "url": "https://www.youtube.com/watch?v=L17DbQg4l8Y",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Mekvej",
           "videoId": "35TEoXbPbpU",
           "url": "https://www.youtube.com/watch?v=35TEoXbPbpU",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Bekjar",
           "videoId": "0CGZCTTorAw",
           "url": "https://www.youtube.com/watch?v=0CGZCTTorAw",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Tursija",
           "videoId": "sg1-xpYdcEc",
           "url": "https://www.youtube.com/watch?v=sg1-xpYdcEc",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Kurvi",
           "videoId": "Tg1pUfPZPzQ",
           "url": "https://www.youtube.com/watch?v=Tg1pUfPZPzQ",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Swati me Swat",
           "videoId": "6pAZ-UT7Cbk",
           "url": "https://www.youtube.com/watch?v=6pAZ-UT7Cbk",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Denot da e radosen",
           "videoId": "xaypZGoq5js",
           "url": "https://www.youtube.com/watch?v=xaypZGoq5js",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Psychobilly Rock",
           "videoId": "lis35rawxM4",
           "url": "https://www.youtube.com/watch?v=lis35rawxM4",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Pilot / Ruzni",
           "videoId": "l2Gk3am_HyU",
           "url": "https://www.youtube.com/watch?v=l2Gk3am_HyU",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Soba",
           "videoId": "hV7VtCWYFGA",
           "url": "https://www.youtube.com/watch?v=hV7VtCWYFGA",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Riste",
           "videoId": "QfetMetmXyI",
           "url": "https://www.youtube.com/watch?v=QfetMetmXyI",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "22 Divizija",
           "videoId": "Ym6Fp3kPgpI",
           "url": "https://www.youtube.com/watch?v=Ym6Fp3kPgpI",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Nema da bidam kraj tebe",
           "videoId": "pF7u1ipYXv0",
           "url": "https://www.youtube.com/watch?v=pF7u1ipYXv0",
-          "verified": "verified"
+          "verified": "unverified"
         },
         {
           "name": "Ljubovta nema znacenje",
           "videoId": "jmObXh7mWqY",
           "url": "https://www.youtube.com/watch?v=jmObXh7mWqY",
-          "verified": "verified"
-        },
-        {
-          "name": "Ajde! Kade?",
-          "videoId": "nMd_E6OiQ-8",
-          "url": "https://www.youtube.com/watch?v=nMd_E6OiQ-8",
-          "verified": "verified"
-        },
-        {
-          "name": "Mekvej",
-          "videoId": "Re0BrIs-bxI",
-          "url": "https://www.youtube.com/watch?v=Re0BrIs-bxI",
-          "verified": "verified"
-        },
-        {
-          "name": "Bekjar",
-          "videoId": "Cbc8QMHiH1E",
-          "url": "https://www.youtube.com/watch?v=Cbc8QMHiH1E",
-          "verified": "verified"
-        },
-        {
-          "name": "Bekjar",
-          "videoId": "_XJoSN3-TIk",
-          "url": "https://www.youtube.com/watch?v=_XJoSN3-TIk",
-          "verified": "verified"
-        },
-        {
-          "name": "Tursija",
-          "videoId": "D2JxQsYv0os",
-          "url": "https://www.youtube.com/watch?v=D2JxQsYv0os",
-          "verified": "verified"
-        },
-        {
-          "name": "Tursija",
-          "videoId": "jcOcJs3wpDc",
-          "url": "https://www.youtube.com/watch?v=jcOcJs3wpDc",
-          "verified": "verified"
-        },
-        {
-          "name": "Tursija",
-          "videoId": "UX1aECc1yL8",
-          "url": "https://www.youtube.com/watch?v=UX1aECc1yL8",
-          "verified": "verified"
-        },
-        {
-          "name": "Kurvi",
-          "videoId": "Azb4zHnMCLA",
-          "url": "https://www.youtube.com/watch?v=Azb4zHnMCLA",
-          "verified": "verified"
-        },
-        {
-          "name": "Kurvi",
-          "videoId": "E4rIBKHK2v0",
-          "url": "https://www.youtube.com/watch?v=E4rIBKHK2v0",
-          "verified": "verified"
-        },
-        {
-          "name": "Kurvi",
-          "videoId": "uK7ukw67Ldw",
-          "url": "https://www.youtube.com/watch?v=uK7ukw67Ldw",
-          "verified": "verified"
-        },
-        {
-          "name": "Swati me Swat",
-          "videoId": "BPQF_oQeUzQ",
-          "url": "https://www.youtube.com/watch?v=BPQF_oQeUzQ",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "KjlD5tS8gsw",
-          "url": "https://www.youtube.com/watch?v=KjlD5tS8gsw",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "VgRiKbFqYLc",
-          "url": "https://www.youtube.com/watch?v=VgRiKbFqYLc",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "LmadYLh9qHE",
-          "url": "https://www.youtube.com/watch?v=LmadYLh9qHE",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "nla_kT3FuwY",
-          "url": "https://www.youtube.com/watch?v=nla_kT3FuwY",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "M_Cq6pML0II",
-          "url": "https://www.youtube.com/watch?v=M_Cq6pML0II",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "iorkuos4I24",
-          "url": "https://www.youtube.com/watch?v=iorkuos4I24",
-          "verified": "verified"
-        },
-        {
-          "name": "Denot da e radosen",
-          "videoId": "KauK_YXAW5I",
-          "url": "https://www.youtube.com/watch?v=KauK_YXAW5I",
-          "verified": "verified"
-        },
-        {
-          "name": "Psychobilly Rock",
-          "videoId": "h24NEP1Qsag",
-          "url": "https://www.youtube.com/watch?v=h24NEP1Qsag",
-          "verified": "verified"
-        },
-        {
-          "name": "Psychobilly Rock",
-          "videoId": "AqyvQ5bazFo",
-          "url": "https://www.youtube.com/watch?v=AqyvQ5bazFo",
-          "verified": "verified"
-        },
-        {
-          "name": "Psychobilly Rock",
-          "videoId": "B7Dhzt4G3yM",
-          "url": "https://www.youtube.com/watch?v=B7Dhzt4G3yM",
-          "verified": "verified"
-        },
-        {
-          "name": "Psychobilly Rock",
-          "videoId": "am_KTnz2w50",
-          "url": "https://www.youtube.com/watch?v=am_KTnz2w50",
-          "verified": "verified"
-        },
-        {
-          "name": "Psychobilly Rock",
-          "videoId": "xIEafLuAtCQ",
-          "url": "https://www.youtube.com/watch?v=xIEafLuAtCQ",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "JK7BvUVWT5M",
-          "url": "https://www.youtube.com/watch?v=JK7BvUVWT5M",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "LNcJEi6jf3k",
-          "url": "https://www.youtube.com/watch?v=LNcJEi6jf3k",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "KJOmfkR3oLQ",
-          "url": "https://www.youtube.com/watch?v=KJOmfkR3oLQ",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "-7FM6_T0TIo",
-          "url": "https://www.youtube.com/watch?v=-7FM6_T0TIo",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "Vt0nFjBo9eA",
-          "url": "https://www.youtube.com/watch?v=Vt0nFjBo9eA",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "d_hyK3McsCU",
-          "url": "https://www.youtube.com/watch?v=d_hyK3McsCU",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "IninRAD24xc",
-          "url": "https://www.youtube.com/watch?v=IninRAD24xc",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "cSAkivozfd4",
-          "url": "https://www.youtube.com/watch?v=cSAkivozfd4",
-          "verified": "verified"
-        },
-        {
-          "name": "Pilot / Ruzni",
-          "videoId": "okgJE6gkuWw",
-          "url": "https://www.youtube.com/watch?v=okgJE6gkuWw",
-          "verified": "verified"
-        },
-        {
-          "name": "Soba",
-          "videoId": "O7vd7XtMSXE",
-          "url": "https://www.youtube.com/watch?v=O7vd7XtMSXE",
-          "verified": "verified"
-        },
-        {
-          "name": "Soba",
-          "videoId": "OmUFkSeZt7w",
-          "url": "https://www.youtube.com/watch?v=OmUFkSeZt7w",
-          "verified": "verified"
-        },
-        {
-          "name": "Riste",
-          "videoId": "SKxqRsZui1k",
-          "url": "https://www.youtube.com/watch?v=SKxqRsZui1k",
-          "verified": "verified"
-        },
-        {
-          "name": "Riste",
-          "videoId": "sA9kdMPub4Y",
-          "url": "https://www.youtube.com/watch?v=sA9kdMPub4Y",
-          "verified": "verified"
-        },
-        {
-          "name": "Riste",
-          "videoId": "bugL32cnnbk",
-          "url": "https://www.youtube.com/watch?v=bugL32cnnbk",
-          "verified": "verified"
-        },
-        {
-          "name": "Riste",
-          "videoId": "kf0BN4k7at0",
-          "url": "https://www.youtube.com/watch?v=kf0BN4k7at0",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "Ub8b1Ib2Mxc",
-          "url": "https://www.youtube.com/watch?v=Ub8b1Ib2Mxc",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "SBEQNSHi4mk",
-          "url": "https://www.youtube.com/watch?v=SBEQNSHi4mk",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "UmMD8D190yo",
-          "url": "https://www.youtube.com/watch?v=UmMD8D190yo",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "TqpIQeLBAog",
-          "url": "https://www.youtube.com/watch?v=TqpIQeLBAog",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "GAZEi99Qa3E",
-          "url": "https://www.youtube.com/watch?v=GAZEi99Qa3E",
-          "verified": "verified"
-        },
-        {
-          "name": "22 Divizija",
-          "videoId": "svAEYOtXDf8",
-          "url": "https://www.youtube.com/watch?v=svAEYOtXDf8",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "wDtqeZe-L_A",
-          "url": "https://www.youtube.com/watch?v=wDtqeZe-L_A",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "8XhKLbxrh2I",
-          "url": "https://www.youtube.com/watch?v=8XhKLbxrh2I",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "P1yFNGXJa5s",
-          "url": "https://www.youtube.com/watch?v=P1yFNGXJa5s",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "eYWnDQIVRqk",
-          "url": "https://www.youtube.com/watch?v=eYWnDQIVRqk",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "WSEihIkr6RI",
-          "url": "https://www.youtube.com/watch?v=WSEihIkr6RI",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "3HscFq2Jf08",
-          "url": "https://www.youtube.com/watch?v=3HscFq2Jf08",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "o_ou-1drwxI",
-          "url": "https://www.youtube.com/watch?v=o_ou-1drwxI",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "myQQBg53fNw",
-          "url": "https://www.youtube.com/watch?v=myQQBg53fNw",
-          "verified": "verified"
-        },
-        {
-          "name": "Nema da bidam kraj tebe",
-          "videoId": "stuPob-LvP8",
-          "url": "https://www.youtube.com/watch?v=stuPob-LvP8",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "_Awa0F9AMLc",
-          "url": "https://www.youtube.com/watch?v=_Awa0F9AMLc",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "N0N-4fugMIk",
-          "url": "https://www.youtube.com/watch?v=N0N-4fugMIk",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "mR1QGl6JOiA",
-          "url": "https://www.youtube.com/watch?v=mR1QGl6JOiA",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "zzbBiEq4lb0",
-          "url": "https://www.youtube.com/watch?v=zzbBiEq4lb0",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "wulGMiVU2o8",
-          "url": "https://www.youtube.com/watch?v=wulGMiVU2o8",
-          "verified": "verified"
-        },
-        {
-          "name": "Ljubovta nema znacenje",
-          "videoId": "1vE5-p0-abk",
-          "url": "https://www.youtube.com/watch?v=1vE5-p0-abk",
-          "verified": "verified"
+          "verified": "unverified"
         }
       ],
       "youtubeViews": 0
