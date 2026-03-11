@@ -39,13 +39,72 @@
     .yt-page { padding: 0; max-width: none; margin: 0; }
 
     .yt-stats {
-        display: flex; gap: 1.5rem; flex-wrap: wrap;
+        display: flex; flex-direction: column; gap: 0;
         margin-bottom: 0; font-size: 0.8rem; color: var(--text-muted);
-        padding: 0.5rem 0.75rem;
+        padding: 0.6rem 0.75rem;
     }
-    .yt-stats .stat { display: flex; align-items: center; gap: 0.3rem; }
-    .yt-stats .stat i { font-size: 0.75rem; }
-    .yt-stats .stat-value { font-weight: 700; color: var(--text-primary); }
+
+    /* ── Progress bar hero card ── */
+    .yt-progress-card {
+        display: flex; flex-direction: column; gap: 0.5rem;
+        padding: 0.75rem 0.85rem;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: var(--bg-secondary);
+    }
+    .yt-progress-head {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 0.5rem;
+    }
+    .yt-progress-label {
+        font-size: 0.78rem; font-weight: 600; color: var(--text-primary);
+    }
+    .yt-progress-label .frac {
+        font-variant-numeric: tabular-nums;
+    }
+    .yt-progress-pct {
+        font-size: 0.9rem; font-weight: 800; color: #16a34a;
+        font-variant-numeric: tabular-nums;
+    }
+    .yt-progress-bar {
+        display: flex; width: 100%; height: 8px;
+        border-radius: 999px; overflow: hidden;
+        background: var(--bg-tertiary);
+    }
+    .yt-progress-seg { height: 100%; min-width: 0; transition: width 0.4s ease; }
+    .yt-progress-seg.s-verified { background: #16a34a; }
+    .yt-progress-seg.s-unverified { background: #f59e0b; }
+    .yt-progress-seg.s-willnot { background: #ef4444; }
+    .yt-progress-seg.s-noyt { background: var(--border-color); }
+    .yt-progress-legend {
+        display: flex; flex-wrap: wrap; gap: 0.25rem 0.85rem;
+        font-size: 0.68rem; color: var(--text-muted);
+    }
+    .yt-progress-legend span {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .yt-legend-dot {
+        width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .yt-legend-dot.s-verified { background: #16a34a; }
+    .yt-legend-dot.s-unverified { background: #f59e0b; }
+    .yt-legend-dot.s-willnot { background: #ef4444; }
+    .yt-legend-dot.s-noyt { background: var(--border-color); }
+
+    /* ── Stat chips row ── */
+    .yt-stat-row {
+        display: flex; flex-wrap: wrap; gap: 0.5rem;
+        margin-top: 0.55rem;
+    }
+    .yt-chip {
+        display: flex; align-items: center; gap: 0.35rem;
+        padding: 0.3rem 0.6rem; border-radius: 8px;
+        background: var(--bg-secondary); border: 1px solid var(--border-color);
+        font-size: 0.72rem; white-space: nowrap;
+    }
+    .yt-chip i { font-size: 0.7rem; flex-shrink: 0; }
+    .yt-chip .cv { font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .yt-chip .cl { color: var(--text-muted); }
 
     .yt-controls {
         display: flex; gap: 0.75rem; margin-bottom: 0; flex-wrap: wrap;
@@ -360,6 +419,8 @@
     .yt-release-title-link:hover { color: var(--accent-blue, #5b8fb9); text-decoration: underline; }
 
     @media (max-width: 600px) {
+        .yt-stat-row { gap: 0.35rem; }
+        .yt-chip { padding: 0.25rem 0.45rem; font-size: 0.68rem; }
         .yt-release-info { min-width: unset; }
         .yt-tracks-cell { min-width: unset; }
         .yt-table td { padding: 0.4rem 0.5rem; }
@@ -453,6 +514,77 @@
             return null;
         }
 
+        function getReleaseSongNames(release) {
+            var sourceNames = release.trackNames || [];
+            var ytNames = (release.youtubeTracks || []).map(function (track) { return track.name; });
+            var merged = sourceNames.concat(ytNames);
+            var allNames = [];
+            var seenKeys = {};
+
+            for (var i = 0; i < merged.length; i++) {
+                if (!merged[i]) continue;
+                var key = merged[i].toLowerCase().trim();
+                if (!key || seenKeys[key]) continue;
+                seenKeys[key] = true;
+                allNames.push(merged[i]);
+            }
+
+            if (allNames.length === 0 && release.releaseTitle) allNames.push(release.releaseTitle);
+            return allNames;
+        }
+
+        function getReleaseSongStatusCounts(release) {
+            var yt = release.youtubeTracks || [];
+            var ytByName = {};
+            var songNames = getReleaseSongNames(release);
+            var counts = {
+                total: songNames.length,
+                verified: 0,
+                unverified: 0,
+                willNotVerify: 0,
+                noYt: 0
+            };
+
+            for (var i = 0; i < yt.length; i++) {
+                if (!yt[i].name) continue;
+                var key = yt[i].name.toLowerCase().trim();
+                if (!key) continue;
+                if (!ytByName[key]) ytByName[key] = [];
+                ytByName[key].push(yt[i]);
+            }
+
+            for (var j = 0; j < songNames.length; j++) {
+                var songKey = songNames[j].toLowerCase().trim();
+                var matches = ytByName[songKey] || [];
+                var hasVerified = false;
+                var hasUnverified = false;
+                var hasWillNotVerify = false;
+
+                if (matches.length === 0) {
+                    counts.noYt++;
+                    continue;
+                }
+
+                for (var k = 0; k < matches.length; k++) {
+                    if (matches[k].verified === 'verified') hasVerified = true;
+                    else if (matches[k].verified === 'will-not-verify') hasWillNotVerify = true;
+                    else hasUnverified = true;
+                }
+
+                if (hasVerified) counts.verified++;
+                else if (hasUnverified) counts.unverified++;
+                else if (hasWillNotVerify) counts.willNotVerify++;
+                else counts.unverified++;
+            }
+
+            return counts;
+        }
+
+        function formatPercent(value) {
+            var rounded = Math.round(value * 10) / 10;
+            return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + '%';
+        }
+
         // ── Load data ────────────────────────────────────────────────
         function loadData() {
             Promise.all([
@@ -493,46 +625,65 @@
         // ── Stats ────────────────────────────────────────────────────
         function renderStats() {
             var releases = releasesData.releases;
-            var total = releases.length;
-            var withYt = 0, verifiedCount = 0, unverifiedCount = 0, notVerifiedCount = 0, noYt = 0, totalViews = 0;
+            var totalReleases = releases.length;
+            var verifiedVideos = 0, unverifiedVideos = 0, willNotVerifyVideos = 0, totalViews = 0;
+            var totalSongs = 0, verifiedSongs = 0, unverifiedSongs = 0, willNotVerifySongs = 0, noYtSongs = 0;
             for (var i = 0; i < releases.length; i++) {
                 var yt = releases[i].youtubeTracks;
+                var songCounts = getReleaseSongStatusCounts(releases[i]);
+                totalSongs += songCounts.total;
+                verifiedSongs += songCounts.verified;
+                unverifiedSongs += songCounts.unverified;
+                willNotVerifySongs += songCounts.willNotVerify;
+                noYtSongs += songCounts.noYt;
                 if (yt && yt.length > 0) {
-                    withYt++;
                     for (var j = 0; j < yt.length; j++) {
-                        if (yt[j].verified === 'verified') verifiedCount++;
-                        else if (yt[j].verified === 'will-not-verify') notVerifiedCount++;
-                        else unverifiedCount++;
+                        if (yt[j].verified === 'verified') verifiedVideos++;
+                        else if (yt[j].verified === 'will-not-verify') willNotVerifyVideos++;
+                        else unverifiedVideos++;
                     }
-                } else {
-                    noYt++;
                 }
                 if (releases[i].youtubeViews) totalViews += releases[i].youtubeViews;
             }
-            var totalSongs = verifiedCount + unverifiedCount + notVerifiedCount;
-            // Count unique verified songs (distinct track names with at least one verified video)
-            var verifiedSongNames = {};
-            for (var vi = 0; vi < releases.length; vi++) {
-                var vt = releases[vi].youtubeTracks;
-                if (vt) {
-                    for (var vj = 0; vj < vt.length; vj++) {
-                        if (vt[vj].verified === 'verified') {
-                            verifiedSongNames[releases[vi].releaseId + '::' + vt[vj].name] = true;
-                        }
-                    }
-                }
-            }
-            var verifiedSongs = Object.keys(verifiedSongNames).length;
-            var viewsStr = totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : String(totalViews);
+            var totalVideos = verifiedVideos + unverifiedVideos + willNotVerifyVideos;
+            var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
+            var segW = function (n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
+
+            var viewsStr = totalViews >= 1000000
+                ? (totalViews / 1000000).toFixed(1) + 'M'
+                : totalViews >= 1000
+                    ? (totalViews / 1000).toFixed(1) + 'K'
+                    : String(totalViews);
+
             document.getElementById('yt-stats').innerHTML =
-                '<div class="stat"><i class="fas fa-compact-disc"></i> <span class="stat-value">' + total + '</span> изданија</div>' +
-                '<div class="stat"><i class="fas fa-video" style="color:#22c55e"></i> <span class="stat-value">' + verifiedCount + '</span> потврдени видеа</div>' +
-                '<div class="stat"><i class="fas fa-music" style="color:#22c55e"></i> <span class="stat-value">' + verifiedSongs + ' / ' + totalSongs + '</span> верификувани песни</div>' +
-                '<div class="stat"><i class="fab fa-youtube" style="color:#f00"></i> <span class="stat-value">' + withYt + '</span> со YouTube</div>' +
-                '<div class="stat"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="stat-value">' + unverifiedCount + '</span> неверификувани</div>' +
-                '<div class="stat"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="stat-value">' + notVerifiedCount + '</span> нема да се верификуваат</div>' +
-                '<div class="stat"><i class="fas fa-minus-circle" style="color:var(--text-muted)"></i> <span class="stat-value">' + noYt + '</span> без YouTube</div>' +
-                (totalViews > 0 ? '<div class="stat"><i class="fas fa-eye"></i> <span class="stat-value">' + viewsStr + '</span> прегледи</div>' : '');
+                /* ── Progress bar card ── */
+                '<div class="yt-progress-card">' +
+                    '<div class="yt-progress-head">' +
+                        '<span class="yt-progress-label"><i class="fas fa-check-circle" style="color:#16a34a"></i> <span class="frac">' + verifiedSongs + ' / ' + totalSongs + '</span> песни со потврден линк</span>' +
+                        '<span class="yt-progress-pct">' + formatPercent(pct) + '</span>' +
+                    '</div>' +
+                    '<div class="yt-progress-bar">' +
+                        '<span class="yt-progress-seg s-verified" style="width:' + segW(verifiedSongs) + '%" title="Верификувани: ' + verifiedSongs + '"></span>' +
+                        '<span class="yt-progress-seg s-unverified" style="width:' + segW(unverifiedSongs) + '%" title="Чекаат: ' + unverifiedSongs + '"></span>' +
+                        '<span class="yt-progress-seg s-willnot" style="width:' + segW(willNotVerifySongs) + '%" title="Нема да се верификуваат: ' + willNotVerifySongs + '"></span>' +
+                        '<span class="yt-progress-seg s-noyt" style="width:' + segW(noYtSongs) + '%" title="Без YouTube: ' + noYtSongs + '"></span>' +
+                    '</div>' +
+                    '<div class="yt-progress-legend">' +
+                        '<span><i class="yt-legend-dot s-verified"></i>' + verifiedSongs + ' верификувани</span>' +
+                        '<span><i class="yt-legend-dot s-unverified"></i>' + unverifiedSongs + ' чекаат</span>' +
+                        '<span><i class="yt-legend-dot s-willnot"></i>' + willNotVerifySongs + ' нема да се верификуваат</span>' +
+                        '<span><i class="yt-legend-dot s-noyt"></i>' + noYtSongs + ' без YouTube</span>' +
+                    '</div>' +
+                '</div>' +
+                /* ── Stat chips ── */
+                '<div class="yt-stat-row">' +
+                    '<div class="yt-chip"><i class="fas fa-compact-disc" style="color:var(--text-muted)"></i> <span class="cv">' + totalReleases + '</span> <span class="cl">изданија</span></div>' +
+                    '<div class="yt-chip"><i class="fas fa-video" style="color:#16a34a"></i> <span class="cv">' + verifiedVideos + ' / ' + totalVideos + '</span> <span class="cl">потврдени видеа</span></div>' +
+                    '<div class="yt-chip"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="cv">' + unverifiedVideos + '</span> <span class="cl">неверификувани</span></div>' +
+                    '<div class="yt-chip"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="cv">' + willNotVerifyVideos + '</span> <span class="cl">нема да се верификуваат</span></div>' +
+                    '<div class="yt-chip"><i class="fas fa-music" style="color:var(--text-muted);opacity:.5"></i> <span class="cv">' + noYtSongs + '</span> <span class="cl">песни без YouTube</span></div>' +
+                    (totalViews > 0 ? '<div class="yt-chip"><i class="fas fa-eye" style="color:var(--text-muted)"></i> <span class="cv">' + viewsStr + '</span> <span class="cl">прегледи</span></div>' : '') +
+                '</div>';
         }
 
         // ── Filtering ────────────────────────────────────────────────
@@ -658,7 +809,6 @@
 
         function renderYouTubeTracks(release, releaseIdx) {
             var yt = release.youtubeTracks || [];
-            var trackNames = release.trackNames || [];
             var html = '';
 
             // Build a map from lowercase track name → youtubeTracks index
@@ -670,22 +820,7 @@
             }
 
             // Collect all track names (from trackNames + any yt tracks not in trackNames)
-            var allTracks = [];
-            var coveredKeys = {};
-            for (var i = 0; i < trackNames.length; i++) {
-                allTracks.push(trackNames[i]);
-                coveredKeys[trackNames[i].toLowerCase().trim()] = true;
-            }
-            // Add yt tracks whose name doesn't match any trackName
-            for (var j = 0; j < yt.length; j++) {
-                var key = yt[j].name.toLowerCase().trim();
-                if (!coveredKeys[key]) {
-                    allTracks.push(yt[j].name);
-                    coveredKeys[key] = true;
-                }
-            }
-            // Fallback: if no tracks at all, show release title
-            if (allTracks.length === 0) allTracks.push(release.releaseTitle);
+            var allTracks = getReleaseSongNames(release);
 
             for (var i = 0; i < allTracks.length; i++) {
                 var name = allTracks[i];
@@ -897,17 +1032,7 @@
             if (btn.parentNode.querySelector('.yt-add-form')) return;
 
             var release = releasesData.releases[releaseIdx];
-            // Merge trackNames + existing yt track names, deduplicated
-            var srcNames = release.trackNames || [];
-            var ytNames = (release.youtubeTracks || []).map(function (t) { return t.name; });
-            var allNames = [];
-            var seenKeys = {};
-            var merged = srcNames.concat(ytNames);
-            for (var ni = 0; ni < merged.length; ni++) {
-                var nk = merged[ni].toLowerCase().trim();
-                if (!seenKeys[nk]) { allNames.push(merged[ni]); seenKeys[nk] = true; }
-            }
-            if (allNames.length === 0) allNames.push(release.releaseTitle);
+            var allNames = getReleaseSongNames(release);
 
             var form = document.createElement('div');
             form.className = 'yt-add-form';

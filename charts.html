@@ -590,6 +590,8 @@
             display: flex;
             flex-direction: row;
             gap: 0;
+            flex: 1;
+            min-height: 0;
         }
 
         .adv-table-wrapper {
@@ -597,6 +599,7 @@
             display: flex;
             flex-direction: column;
             min-width: 0;
+            min-height: 0;
         }
 
         .adv-table-wrapper + .adv-table-wrapper {
@@ -620,7 +623,14 @@
             min-width: 0;
             width: 100%;
             overflow-x: auto;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
+
+        .adv-table-scroll::-webkit-scrollbar { width: 4px; }
+        .adv-table-scroll::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        .adv-table-scroll::-webkit-scrollbar-thumb { background: var(--border-color); }
 
         .adv-table {
             width: 100%;
@@ -792,6 +802,7 @@
 
             .adv-table-scroll {
                 overflow-x: auto;
+                overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
 
@@ -2255,7 +2266,6 @@
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
-                            <div id="adv-singles-sentinel" class="adv-sentinel"></div>
                         </div>
                     </div>
                     <div class="adv-table-wrapper" id="adv-albums-wrapper">
@@ -2265,7 +2275,6 @@
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
-                            <div id="adv-albums-sentinel" class="adv-sentinel"></div>
                         </div>
                     </div>
                 </div>
@@ -3590,10 +3599,10 @@
             // Sort state per table: array of { column, direction } in priority order
             let advSortState = { singles: [], albums: [] };
             // Lazy-loading state
-            const ADV_BATCH_SIZE = 150;
+            const ADV_RENDER_CHUNK = 300;
             let advSortedData = { singles: [], albums: [] };
             let advRenderedCount = { singles: 0, albums: 0 };
-            let advObservers = { singles: null, albums: null };
+            let advRenderRaf = { singles: 0, albums: 0 };
 
             // Column definitions for the advanced table
             const advColumns = [
@@ -3771,6 +3780,12 @@
                 const table = document.getElementById(tableId);
                 if (!table) return;
 
+                // Cancel any in-progress chunked render
+                if (advRenderRaf[tableKey]) {
+                    cancelAnimationFrame(advRenderRaf[tableKey]);
+                    advRenderRaf[tableKey] = 0;
+                }
+
                 const releases = advChartData[tableKey];
                 const prevMap = tableKey === 'singles' ? advChartData.prevSinglesMap : advChartData.prevAlbumsMap;
 
@@ -3780,17 +3795,17 @@
                 // Sort
                 const sorted = sortAdvancedReleases(enriched, advSortState[tableKey]);
 
-                // Store for lazy loading
+                // Store for chunked rendering
                 advSortedData[tableKey] = sorted;
                 advRenderedCount[tableKey] = 0;
 
                 // Render header
                 table.querySelector('thead').innerHTML = buildAdvancedThead(tableKey);
 
-                // Clear tbody and render first batch
+                // Clear tbody and start chunked render
                 const tbody = table.querySelector('tbody');
                 tbody.innerHTML = '';
-                advLoadMoreRows(tableKey);
+                advRenderAllChunked(tableKey);
 
                 // Count label
                 const countEl = document.getElementById(countId);
@@ -3807,58 +3822,55 @@
                         handleAdvancedSort(tableKey, th.dataset.col, e.shiftKey);
                     });
                 });
-
-                // Set up IntersectionObserver for lazy scroll
-                if (advObservers[tableKey]) advObservers[tableKey].disconnect();
-                const sentinel = document.getElementById(`adv-${tableKey}-sentinel`);
-                if (sentinel) {
-                    sentinel.style.display = advRenderedCount[tableKey] < sorted.length ? '' : 'none';
-                    advObservers[tableKey] = new IntersectionObserver((entries) => {
-                        if (entries[0].isIntersecting) advLoadMoreRows(tableKey);
-                    }, { rootMargin: '400px' });
-                    advObservers[tableKey].observe(sentinel);
-                }
             }
 
-            // Append next batch of rows to an advanced table
-            function advLoadMoreRows(tableKey) {
+            // Render all rows in chunks via requestAnimationFrame to avoid blocking UI
+            function advRenderAllChunked(tableKey) {
                 const tableId = tableKey === 'singles' ? 'adv-singles-table' : 'adv-albums-table';
                 const table = document.getElementById(tableId);
                 if (!table) return;
                 const data = advSortedData[tableKey];
-                const start = advRenderedCount[tableKey];
-                if (start >= data.length) return;
-                const end = Math.min(start + ADV_BATCH_SIZE, data.length);
-                const batchHtml = buildAdvancedTbody(data.slice(start, end));
                 const tbody = table.querySelector('tbody');
-                tbody.insertAdjacentHTML('beforeend', batchHtml);
-                advRenderedCount[tableKey] = end;
 
-                // Attach click handlers to newly added release links
-                const rows = tbody.querySelectorAll('tr');
-                for (let i = start; i < end && i < rows.length; i++) {
-                    rows[i].querySelectorAll('.adv-release-link[data-url]').forEach(el => {
-                        el.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const url = el.dataset.url;
-                            const title = el.dataset.title || '';
-                            const artist = el.dataset.artist || '';
-                            const thumb = el.dataset.thumb || '';
-                            const info = getArtistInfo(artist);
-                            if (url) {
-                                openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed);
-                            }
+                function renderNextChunk() {
+                    const start = advRenderedCount[tableKey];
+                    if (start >= data.length) {
+                        advRenderRaf[tableKey] = 0;
+                        return;
+                    }
+                    const end = Math.min(start + ADV_RENDER_CHUNK, data.length);
+                    const batchHtml = buildAdvancedTbody(data.slice(start, end));
+                    tbody.insertAdjacentHTML('beforeend', batchHtml);
+
+                    // Attach click handlers to newly added release links
+                    const rows = tbody.querySelectorAll('tr');
+                    for (let i = start; i < end && i < rows.length; i++) {
+                        rows[i].querySelectorAll('.adv-release-link[data-url]').forEach(el => {
+                            el.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const url = el.dataset.url;
+                                const title = el.dataset.title || '';
+                                const artist = el.dataset.artist || '';
+                                const thumb = el.dataset.thumb || '';
+                                const info = getArtistInfo(artist);
+                                if (url) {
+                                    openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed);
+                                }
+                            });
                         });
-                    });
+                    }
+
+                    advRenderedCount[tableKey] = end;
+
+                    if (end < data.length) {
+                        advRenderRaf[tableKey] = requestAnimationFrame(renderNextChunk);
+                    } else {
+                        advRenderRaf[tableKey] = 0;
+                    }
                 }
 
-                // Hide sentinel when all rows loaded
-                if (end >= data.length) {
-                    if (advObservers[tableKey]) advObservers[tableKey].disconnect();
-                    const sentinel = document.getElementById(`adv-${tableKey}-sentinel`);
-                    if (sentinel) sentinel.style.display = 'none';
-                }
+                advRenderRaf[tableKey] = requestAnimationFrame(renderNextChunk);
             }
 
             // Handle sort column click

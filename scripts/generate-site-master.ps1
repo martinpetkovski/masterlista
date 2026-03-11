@@ -562,8 +562,38 @@ foreach ($genre in $genreFilters) {
             foreach ($r in $genreDeduped) {
                 $tracks = $r.youtubeTracks
                 if (-not $tracks -or $tracks.Count -eq 0) {
-                    # No track data — include release as a single entry
-                    [void]$songs.Add($r)
+                    # No YouTube tracks — expand Spotify trackNames if available
+                    $spotifyNames = $r.trackNames
+                    if ($spotifyNames -and $spotifyNames.Count -gt 1) {
+                        for ($ti = 0; $ti -lt $spotifyNames.Count; $ti++) {
+                            $tName = $spotifyNames[$ti]
+                            if (-not $tName) { continue }
+                            $songId = "$($r.releaseId):t$ti"
+                            $song = [PSCustomObject]@{
+                                releaseId    = $songId
+                                bandName     = $r.bandName
+                                artistId     = $r.artistId
+                                releaseTitle = $tName
+                                releaseType  = $r.releaseType
+                                releaseDate  = $r.releaseDate
+                                releaseUrl   = $r.releaseUrl
+                                thumbnail    = $r.thumbnail
+                                totalTracks  = $r.totalTracks
+                                popularity   = [int]($r.popularity -as [int])
+                                followers    = [int]($r.followers -as [int])
+                                youtubeViews = 0
+                                spotifyUrl   = $r.spotifyUrl
+                            }
+                            $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+                            if ($r.isCollab) {
+                                $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
+                            }
+                            [void]$songs.Add($song)
+                        }
+                    } else {
+                        # Single track or no trackNames — include release as a single entry
+                        [void]$songs.Add($r)
+                    }
                     continue
                 }
                 
@@ -616,6 +646,40 @@ foreach ($genre in $genreFilters) {
                     }
                     
                     [void]$songs.Add($song)
+                }
+                
+                # Also add any Spotify trackNames not already covered by YouTube tracks
+                $spotifyNames = $r.trackNames
+                if ($spotifyNames -and $spotifyNames.Count -gt 0) {
+                    $ytNamesLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+                    foreach ($tn in $tracksByName.Keys) { [void]$ytNamesLower.Add($tn.ToLower().Trim()) }
+                    $extraIdx = $tracksByName.Count
+                    foreach ($sn in $spotifyNames) {
+                        if (-not $sn) { continue }
+                        if ($ytNamesLower.Contains($sn.ToLower().Trim())) { continue }
+                        $songId = "$($r.releaseId):t$extraIdx"
+                        $song = [PSCustomObject]@{
+                            releaseId    = $songId
+                            bandName     = $r.bandName
+                            artistId     = $r.artistId
+                            releaseTitle = $sn
+                            releaseType  = $r.releaseType
+                            releaseDate  = $r.releaseDate
+                            releaseUrl   = $r.releaseUrl
+                            thumbnail    = $r.thumbnail
+                            totalTracks  = $r.totalTracks
+                            popularity   = [int]($r.popularity -as [int])
+                            followers    = [int]($r.followers -as [int])
+                            youtubeViews = 0
+                            spotifyUrl   = $r.spotifyUrl
+                        }
+                        $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+                        if ($r.isCollab) {
+                            $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
+                        }
+                        [void]$songs.Add($song)
+                        $extraIdx++
+                    }
                 }
             }
             
