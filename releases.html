@@ -390,6 +390,7 @@
         display: flex; justify-content: center; gap: 0.3rem;
         margin: 0; flex-wrap: wrap; padding: 0.5rem 0.75rem;
         flex-shrink: 0; border-top: 1px solid var(--border-color);
+        align-items: center;
     }
     .yt-pagination button {
         padding: 0.35rem 0.7rem; border-radius: 6px;
@@ -404,6 +405,27 @@
         font-weight: 700;
     }
     .yt-pagination button:disabled { opacity: 0.4; cursor: default; }
+    .yt-pagination-summary {
+        font-size: 0.72rem; color: var(--text-muted);
+        white-space: nowrap; margin-left: 0.4rem;
+    }
+    .yt-pagination-jump {
+        display: inline-flex; align-items: center; gap: 0.35rem;
+        color: var(--text-muted); font-size: 0.72rem;
+        padding-left: 0.45rem; margin-left: 0.1rem;
+        border-left: 1px solid var(--border-color);
+    }
+    .yt-pagination-jump input {
+        width: 4.5rem;
+        padding: 0.35rem 0.45rem; border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary); color: var(--text-primary);
+        font-size: 0.75rem; font-family: 'Inter', sans-serif;
+    }
+    .yt-pagination-jump input::-webkit-outer-spin-button,
+    .yt-pagination-jump input::-webkit-inner-spin-button {
+        margin: 0;
+    }
 
     .yt-release-date {
         font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
@@ -1193,6 +1215,18 @@
             MMMDrafts.save('releases.json', diff, null);
         }
 
+        function goToPage(pageIndex) {
+            var totalPages = Math.ceil(filteredReleases.length / PAGE_SIZE);
+            if (totalPages <= 0) return;
+
+            currentPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
+            renderTable();
+            renderPagination();
+
+            var content = document.getElementById('yt-content');
+            if (content) content.scrollTop = 0;
+        }
+
         // ── Pagination ───────────────────────────────────────────────
         function renderPagination() {
             var totalPages = Math.ceil(filteredReleases.length / PAGE_SIZE);
@@ -1200,6 +1234,8 @@
                 document.getElementById('yt-pagination').innerHTML = '';
                 return;
             }
+
+            currentPage = Math.min(currentPage, totalPages - 1);
 
             var html = '';
             html += '<button ' + (currentPage === 0 ? 'disabled' : '') + ' data-page="' + (currentPage - 1) + '">&laquo;</button>';
@@ -1211,6 +1247,12 @@
                 html += '<button class="' + (p === currentPage ? 'active' : '') + '" data-page="' + p + '">' + (p + 1) + '</button>';
             }
             html += '<button ' + (currentPage === totalPages - 1 ? 'disabled' : '') + ' data-page="' + (currentPage + 1) + '">&raquo;</button>';
+            html += '<span class="yt-pagination-summary">Страница ' + (currentPage + 1) + ' од ' + totalPages + '</span>';
+            html += '<form class="yt-pagination-jump" id="yt-pagination-jump-form">';
+            html += '<label for="yt-pagination-jump-input">Оди на</label>';
+            html += '<input id="yt-pagination-jump-input" type="number" min="1" max="' + totalPages + '" value="' + (currentPage + 1) + '" inputmode="numeric">';
+            html += '<button type="submit" title="Оди на страница">Оди</button>';
+            html += '</form>';
 
             var el = document.getElementById('yt-pagination');
             el.innerHTML = html;
@@ -1219,11 +1261,21 @@
             for (var i = 0; i < btns.length; i++) {
                 btns[i].addEventListener('click', function () {
                     if (this.disabled) return;
-                    currentPage = parseInt(this.dataset.page, 10);
-                    renderTable();
-                    renderPagination();
-                    var content = document.getElementById('yt-content');
-                    if (content) content.scrollTop = 0;
+                    goToPage(parseInt(this.dataset.page, 10));
+                });
+            }
+
+            var jumpForm = el.querySelector('#yt-pagination-jump-form');
+            if (jumpForm) {
+                jumpForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var input = jumpForm.querySelector('#yt-pagination-jump-input');
+                    var pageNumber = parseInt(input.value, 10);
+                    if (isNaN(pageNumber)) {
+                        input.focus();
+                        return;
+                    }
+                    goToPage(pageNumber - 1);
                 });
             }
         }
