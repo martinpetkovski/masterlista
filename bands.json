@@ -12013,19 +12013,23 @@
     },
     {
       "name": "Емигранти",
-      "city": "недостигаат податоци",
-      "genre": "Trap, Hip Hop",
-      "soundsLike": "недостигаат податоци",
+      "city": "Oxford",
+      "genre": "Трап, Хип Хоп",
+      "soundsLike": "Kako Braka",
       "links": {
         "youtube": "https://www.youtube.com/@EmigrantiOfficial",
-        "instagram": "https://www.instagram.com/emigrantiofficial25"
+        "instagram": "https://www.instagram.com/emigrantiofficial25",
+        "website": "https://www.emigrantimusic.com/",
+        "spotify": "https://open.spotify.com/artist/3Z68F1cWIq0XXxLRotwGOz?si=-MtaMySrRUmJsSYOJa0fzQ",
+        "apple_music": "https://music.apple.com/us/artist/emigranti/1875684518",
+        "generic": [
+          "https://www.boomplay.com/songs/237153017?srModel=COPYLINK&srList=WEB&share_content=music&share_channel=copylink&share_platform=web"
+        ],
+        "amazon_music": "https://amazon.co.uk/music/player/artists/B0GMCYXN31/emigranti?marketplaceId=A1F83G8C2ARO7P&musicTerritory=GB&ref=dm_sh_B3AWvGuIpteLcSWDIgEl8hTh6"
       },
-      "contact": "недостигаат податоци",
+      "contact": "emigrantimusic@yahoo.com",
       "label": null,
-      "accentColors": [
-        "#1d9bf0",
-        "#ff922b"
-      ],
+      "accentColors": null,
       "confirmed": true,
       "image": "https://yt3.googleusercontent.com/NYYgnW4otY3RCbfbsnjW9tx4a6RYcY2jycGjz21adscnEDpK6yFYjZ21iKV-aTmZ2o_UlFxayw=s900-c-k-c0x00ffffff-no-rj",
       "imageSource": "youtube"
