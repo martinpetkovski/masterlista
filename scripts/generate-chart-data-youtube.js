@@ -29,6 +29,8 @@ const path = require('path');
 // ── Config ──────────────────────────────────────────────────────────────────
 const YT_BATCH_SIZE = 50;
 const API_DELAY_MS = 100;
+const API_RETRY_DELAY_MS = 1000;
+const API_MAX_RETRIES = 3;
 const CACHE_FILE = path.join(__dirname, '..', '.youtube-id-cache.json');
 const RELEASES_FILE = path.join(__dirname, '..', 'releases.json');
 const CHART_DATA = path.join(__dirname, '..', 'chart-data.json');
@@ -83,14 +85,31 @@ function getYouTubeApiKey() {
 async function ytApi(endpoint, params, apiKey) {
     const qs = new URLSearchParams({ ...params, key: apiKey }).toString();
     const url = `https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`;
-    const res = await fetch(url);
-    quotaUsed++;
-    if (!res.ok) {
-        const text = await res.text();
-        console.error(`  YT API error ${res.status} on ${endpoint}: ${text.slice(0, 200)}`);
-        return null;
+    for (let attempt = 1; attempt <= API_MAX_RETRIES; attempt++) {
+        try {
+            const res = await fetch(url);
+            quotaUsed++;
+            if (!res.ok) {
+                const text = await res.text();
+                const isRetryable = res.status === 429 || res.status >= 500;
+                if (isRetryable && attempt < API_MAX_RETRIES) {
+                    const waitMs = API_RETRY_DELAY_MS * attempt;
+                    console.warn(`  YT API retry ${attempt}/${API_MAX_RETRIES} on ${endpoint}: ${res.status}; waiting ${waitMs}ms`);
+                    await sleep(waitMs);
+                    continue;
+                }
+                console.error(`  YT API error ${res.status} on ${endpoint}: ${text.slice(0, 200)}`);
+                return null;
+            }
+            return res.json();
+        } catch (error) {
+            if (attempt >= API_MAX_RETRIES) throw error;
+            const waitMs = API_RETRY_DELAY_MS * attempt;
+            console.warn(`  YT API retry ${attempt}/${API_MAX_RETRIES} on ${endpoint}: ${error.code || error.message}; waiting ${waitMs}ms`);
+            await sleep(waitMs);
+        }
     }
-    return res.json();
+    return null;
 }
 
 // ── Channel resolution ──────────────────────────────────────────────────────
@@ -230,6 +249,32 @@ function matchVariants(s) {
     return [s, lat, simple];
 }
 
+/** Levenshtein edit distance between two strings */
+function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    let prev = Array.from({ length: n + 1 }, (_, i) => i);
+    for (let i = 1; i <= m; i++) {
+        const curr = [i];
+        for (let j = 1; j <= n; j++) {
+            curr[j] = a[i - 1] === b[j - 1]
+                ? prev[j - 1]
+                : 1 + Math.min(prev[j - 1], prev[j], curr[j - 1]);
+        }
+        prev = curr;
+    }
+    return prev[n];
+}
+
+/** Similarity ratio 0–1 based on Levenshtein distance */
+function stringSimilarity(a, b) {
+    if (a === b) return 1;
+    const maxLen = Math.max(a.length, b.length);
+    if (maxLen === 0) return 1;
+    return 1 - levenshtein(a, b) / maxLen;
+}
+
 function matchScore(videoTitle, trackName, artistName, spotifyName) {
     const normVideo = normalize(videoTitle);
     const normTrack = normalize(trackName);
@@ -277,6 +322,21 @@ function matchScore(videoTitle, trackName, artistName, spotifyName) {
         else if (trackWords.length === 1 && matched.length >= 1) score = 0.7;
         if (score > bestWordScore) bestWordScore = score;
     }
+
+    if (bestWordScore >= 0.6) return bestWordScore;
+
+    // Fuzzy match — useful when video title is just the song name with slight differences
+    let bestFuzzy = 0;
+    for (const vv of videoVars) {
+        for (const tv of trackVars) {
+            if (tv.length < 3) continue;
+            const sim = stringSimilarity(vv, tv);
+            if (sim > bestFuzzy) bestFuzzy = sim;
+        }
+    }
+    if (bestFuzzy >= 0.85) return Math.max(bestWordScore, 0.8);
+    if (bestFuzzy >= 0.75) return Math.max(bestWordScore, 0.65);
+
     return bestWordScore;
 }
 
@@ -554,6 +614,16 @@ async function main() {
         }
     }
     if (invalidated > 0) console.log(`  Invalidated ${invalidated} cached track entries for multi-channel re-matching`);
+
+    // Invalidate releases where ALL tracks have empty videoIds (failed matches should be retried)
+    let emptyInvalidated = 0;
+    for (const [releaseId, tracks] of Object.entries(cache.tracks)) {
+        if (tracks.length > 0 && tracks.every(t => (t.videoIds || []).length === 0)) {
+            delete cache.tracks[releaseId];
+            emptyInvalidated++;
+        }
+    }
+    if (emptyInvalidated > 0) console.log(`  Invalidated ${emptyInvalidated} cached entries with no matched videos (will retry)`);
 
     // ── Step 2: Match release tracks to YouTube videos ──────────────────────
     console.log('\n── Step 2: Matching release tracks to YouTube videos ──');
