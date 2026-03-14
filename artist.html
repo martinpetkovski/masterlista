@@ -1204,6 +1204,19 @@
             text-overflow: ellipsis;
             margin-bottom: 0.15rem;
         }
+        .release-collab-artists {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.15rem;
+        }
+        .release-collab-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .release-collab-link:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
         
 a.chart-history-item {
                 text-decoration: none;
@@ -1604,6 +1617,9 @@ a.chart-history-item {
         }
         .verified-accent .chart-history-title { color: var(--va-text); }
         .verified-accent .chart-history-meta { color: var(--va-text-muted); }
+        .verified-accent .release-collab-artists { color: var(--va-text-muted); }
+        .verified-accent .release-collab-link { color: var(--va-text); opacity: 0.7; }
+        .verified-accent .release-collab-link:hover { opacity: 1; }
         .verified-accent .chart-history-type { background: var(--va-type-bg); }
 
         /* Glass release tracklist */
@@ -2658,7 +2674,10 @@ a.chart-history-item {
             // 2. Build per-release data from chartData.releases + releaseSparklines
             const releases = siteMaster.chartData?.releases || [];
             releases.forEach(r => {
-                if (!r.bandName || !r.bandName.toLowerCase().trim().split(', ').some(n => n === artistNameLower)) return;
+                // Only list releases where this artist is the primary (first) artist
+                if (!r.bandName) return;
+                const firstArtist = r.bandName.split(',')[0].trim().toLowerCase();
+                if (firstArtist !== artistNameLower) return;
                 const rid = r.releaseId;
                 if (artistHistory.releases.has(rid)) return;
                 
@@ -3075,6 +3094,15 @@ a.chart-history-item {
                     vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(currentDelta)}</span></div>`;
                 }
 
+                // Build collab artist links (show featuring artists if this is a collaboration)
+                const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
+                const collabArtists = allArtists.slice(1); // Skip the first (primary) artist — that's the page owner
+                const collabHtml = collabArtists.length > 0
+                    ? `<div class="release-collab-artists"><span style="opacity:0.5">feat.</span> ${collabArtists.map(name =>
+                        `<a href="${getArtistPageUrl(name)}" class="release-collab-link">${name}</a>`
+                      ).join(', ')}</div>`
+                    : '';
+
                 return `
                     <div class="chart-history-item" style="flex-direction:column;align-items:stretch;cursor:default;">
                         <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -3086,6 +3114,7 @@ a.chart-history-item {
                             </div>
                             <div class="chart-history-info">
                                 <div class="chart-history-title">${release.releaseTitle}${newBadge}</div>
+                                ${collabHtml}
                                 <div class="chart-history-meta">
                                     <span class="chart-history-type ${typeClass}">
                                         <i class="${typeIcon}"></i> ${typeLabel}

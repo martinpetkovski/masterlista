@@ -946,7 +946,7 @@ $deduped = $mainReleasesDeduped
 $allTimeArtistsByGenre = @{}  # genre -> array of top 100 artists
 
 foreach ($genre in $genreFilters) {
-    $artistViewsMap = @{}  # artistId -> { bandName, totalViews, totalDelta, followers, spotifyUrl, thumbnail }
+    $artistViewsMap = @{}  # artistKey(lower) -> { bandName, totalViews, totalDelta, followers, spotifyUrl, thumbnail }
     # Use pre-filtered genre data
     $genreDeduped = $mainByGenre[$genre]
     foreach ($r in $genreDeduped) {
@@ -954,27 +954,32 @@ foreach ($genre in $genreFilters) {
         if (-not $aid) { continue }
         $views = [long]($r.youtubeViews -as [long])
         $delta = [long]($r.viewsDelta -as [long])
-        $existing = $artistViewsMap[$aid]
-        if ($existing) {
-            $existing.totalViews += $views
-            $existing.totalDelta += $delta
-            # Keep the best thumbnail/followers
-            if (([int]($r.followers -as [int])) -gt $existing.followers) {
-                $existing.followers = [int]($r.followers -as [int])
-                $existing.thumbnail = $r.thumbnail
-            }
-        } else {
-            $bandInfo = Get-ArtistInfo $r.bandName
-            $artistImage = if ($bandInfo -and $bandInfo.image) { $bandInfo.image } else { $r.thumbnail }
-            $artistViewsMap[$aid] = [ordered]@{
-                artistId = $aid
-                bandName = if ($bandInfo) { $bandInfo.name } else { $r.bandName }
-                totalViews = $views
-                totalDelta = $delta
-                followers = [int]($r.followers -as [int])
-                spotifyUrl = $r.spotifyUrl
-                thumbnail = $artistImage
-                confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
+        # Split collab names so each artist gets credit for the views
+        $artistNames = @($r.bandName -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        foreach ($artistName in $artistNames) {
+            $key = $artistName.ToLower().Trim()
+            $existing = $artistViewsMap[$key]
+            if ($existing) {
+                $existing.totalViews += $views
+                $existing.totalDelta += $delta
+                # Keep the best thumbnail/followers
+                if (([int]($r.followers -as [int])) -gt $existing.followers) {
+                    $existing.followers = [int]($r.followers -as [int])
+                    $existing.thumbnail = $r.thumbnail
+                }
+            } else {
+                $bandInfo = Get-ArtistInfo $artistName
+                $artistImage = if ($bandInfo -and $bandInfo.image) { $bandInfo.image } else { $r.thumbnail }
+                $artistViewsMap[$key] = [ordered]@{
+                    artistId = $aid
+                    bandName = if ($bandInfo) { $bandInfo.name } else { $artistName }
+                    totalViews = $views
+                    totalDelta = $delta
+                    followers = [int]($r.followers -as [int])
+                    spotifyUrl = $r.spotifyUrl
+                    thumbnail = $artistImage
+                    confirmed = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
+                }
             }
         }
     }
