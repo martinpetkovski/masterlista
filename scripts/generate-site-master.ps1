@@ -812,16 +812,19 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
     $artistNewRelease = @{}
     
     foreach ($r in $weekReleases) {
-        $key = $r.bandName.ToLower().Trim()
-        if (-not $artistWeekPop.ContainsKey($key)) {
-            $artistWeekPop[$key] = 0
-            $artistNewRelease[$key] = $false
-        }
-        $artistWeekPop[$key] += [int]($r.youtubeViews -as [int])
-        
-        # Check if release date falls within this week
-        if ($r.releaseDate -ge $weekMondayStr -and $r.releaseDate -le $weekSundayStr) {
-            $artistNewRelease[$key] = $true
+        # Split collab artist names so each gets credit for the views
+        $artistKeys = @($r.bandName.ToLower().Trim() -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        foreach ($key in $artistKeys) {
+            if (-not $artistWeekPop.ContainsKey($key)) {
+                $artistWeekPop[$key] = 0
+                $artistNewRelease[$key] = $false
+            }
+            $artistWeekPop[$key] += [int]($r.youtubeViews -as [int])
+            
+            # Check if release date falls within this week
+            if ($r.releaseDate -ge $weekMondayStr -and $r.releaseDate -le $weekSundayStr) {
+                $artistNewRelease[$key] = $true
+            }
         }
     }
     

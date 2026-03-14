@@ -797,11 +797,14 @@
                 }
                 if (dateInfo) html += '<span class="yt-release-date">' + dateInfo + '</span>';
                 html += '</div>';
-                // Row 2: Artist
-                var artistUrl = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-                    ? '/artist.html?name=' + encodeURIComponent(r.bandName)
-                    : '/' + encodeURIComponent(r.bandName);
-                html += '<span class="yt-release-artist"><a class="yt-artist-link" href="' + artistUrl + '">' + esc(r.bandName) + '</a>' + (r.spotifyName ? ' <span style="opacity:.5">(' + esc(r.spotifyName) + ')</span>' : '') + '</span>';
+                // Row 2: Artist (split collabs into individual links)
+                var artistNames = r.bandName.split(',').map(function(a) { return a.trim(); }).filter(function(a) { return a; });
+                var artistLinksHtml = artistNames.map(function(name, ai) {
+                    var url = getArtistPageUrl(name);
+                    var sep = ai < artistNames.length - 1 ? ', ' : '';
+                    return '<a class="yt-artist-link" href="' + url + '">' + esc(name) + '</a>' + sep;
+                }).join('');
+                html += '<span class="yt-release-artist">' + artistLinksHtml + (r.spotifyName ? ' <span style="opacity:.5">(' + esc(r.spotifyName) + ')</span>' : '') + '</span>';
                 html += '</div>';
                 html += '<button class="yt-edit-btn" data-release="' + idx + '" title="Измени издание"><i class="fas fa-pen"></i></button>';
                 html += '</div></td>';
