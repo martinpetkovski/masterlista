@@ -1255,7 +1255,7 @@ a.chart-history-item {
             font-size: 0.65rem;
             opacity: 0.75;
         }
-        .release-yt-views .fa-youtube { font-size: 0.6rem; color: #ff0000; }
+        .release-yt-views .fa-eye { font-size: 0.6rem; color: var(--text-muted); }
 
         /* YouTube link pills on artist releases */
         .release-track-list {
@@ -1292,7 +1292,7 @@ a.chart-history-item {
             font-variant-numeric: tabular-nums;
             display: inline-flex; align-items: center; gap: 0.2rem;
         }
-        .release-track-views i { color: #ff4444; font-size: 0.55rem; }
+        .release-track-views i { color: var(--text-muted); font-size: 0.55rem; }
 
         .release-track-links {
             display: inline-flex; align-items: center; gap: 0.15rem; margin-left: auto; flex-shrink: 0;
@@ -1369,7 +1369,6 @@ a.chart-history-item {
             font-weight: 600;
             color: var(--text-primary);
             min-width: 1.2em;
-            opacity: 0.75;
         }
         
         .release-new-badge {
@@ -1627,7 +1626,7 @@ a.chart-history-item {
             color: var(--va-text-muted);
         }
         .verified-accent .release-track-views i {
-            color: #ff4444;
+            color: var(--va-text-muted);
         }
         .verified-accent .release-track-verified {
             color: var(--va-text-muted);
@@ -1636,8 +1635,8 @@ a.chart-history-item {
             color: var(--va-text-muted);
             opacity: 0.85;
         }
-        .verified-accent .release-yt-views .fa-youtube {
-            color: #ff4444;
+        .verified-accent .release-yt-views .fa-eye {
+            color: var(--va-text-muted);
         }
         .verified-accent .vu-pop-value {
             color: var(--va-text);
@@ -2955,6 +2954,7 @@ a.chart-history-item {
                 const map = {};
                 if (release.youtubeTracks) {
                     release.youtubeTracks.forEach(yt => {
+                        if (yt.verified !== 'verified') return;
                         const key = yt.name.toLowerCase().trim();
                         if (!map[key]) map[key] = [];
                         map[key].push(yt);
@@ -2962,6 +2962,30 @@ a.chart-history-item {
                 }
                 return map;
             }
+
+            // Compute peak viewsDelta per release type from all chart data (last 4 weeks scope)
+            let vuPeakSingle = 1, vuPeakAlbum = 1;
+            const allChartReleases = siteMaster && siteMaster.chartData && siteMaster.chartData.releases || [];
+            allChartReleases.forEach(r => {
+                const vd = r.viewsDelta || 0;
+                if (vd > 0) {
+                    if (r.releaseType === 'single') { if (vd > vuPeakSingle) vuPeakSingle = vd; }
+                    else { if (vd > vuPeakAlbum) vuPeakAlbum = vd; }
+                }
+            });
+            // Also check chartWeeks sparklines for this artist's releases (historical deltas)
+            releases.forEach(r => {
+                const cw = r.chartWeeks || [];
+                const len = cw.length;
+                const start = Math.max(0, len - 4);
+                for (let i = Math.max(start, 1); i < len; i++) {
+                    const d = (cw[i].youtubeViews || 0) - (cw[i-1].youtubeViews || 0);
+                    if (d > 0) {
+                        if (r.releaseType === 'single') { if (d > vuPeakSingle) vuPeakSingle = d; }
+                        else { if (d > vuPeakAlbum) vuPeakAlbum = d; }
+                    }
+                }
+            });
 
             // Build numbered track list per release
             const releasesHtml = releases.map((release, rIdx) => {
@@ -2987,6 +3011,16 @@ a.chart-history-item {
                     seenTrackKeys[key] = true;
                     return true;
                 });
+                // Add any YouTube tracks not already matched by trackNames
+                if (release.youtubeTracks) {
+                    for (const yt of release.youtubeTracks) {
+                        const key = yt.name.toLowerCase().trim();
+                        if (!seenTrackKeys[key]) {
+                            seenTrackKeys[key] = true;
+                            tracks.push(yt.name);
+                        }
+                    }
+                }
 
                 const tracksHtml = tracks.map(trackName => {
                     trackNum++;
@@ -3000,11 +3034,11 @@ a.chart-history-item {
                     // Sum views across all links for the same song
                     const totalViews = ytEntries.reduce((sum, yt) => sum + (yt.views || 0), 0);
                     const viewsHtml = totalViews > 0
-                        ? `<span class="release-track-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(totalViews)}</span>`
+                        ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalViews)}</span>`
                         : '';
-                    // Show individual YouTube link pills if multi-link
+                    // Show individual YouTube link pills for all verified entries
                     let linksHtml = '';
-                    if (ytEntries.length > 1) {
+                    if (ytEntries.length >= 1) {
                         linksHtml = '<span class="release-track-links">' + ytEntries.map(yt => {
                             const url = yt.url || 'https://www.youtube.com/watch?v=' + yt.videoId;
                             const v = yt.views || 0;
@@ -3024,11 +3058,11 @@ a.chart-history-item {
                 const currentDelta = release.viewsDelta || (release.chartWeeks && release.chartWeeks.length >= 2
                     ? release.chartWeeks[release.chartWeeks.length - 1].youtubeViews - release.chartWeeks[release.chartWeeks.length - 2].youtubeViews
                     : 0);
-                // Find max delta among this artist's releases for relative VU meter
-                const artistMaxDelta = Math.max(1, ...releases.map(r => r.viewsDelta || 0));
+                // Use type-specific 4-week peak computed from chartWeeks across all releases on this page
+                const vuMaxDelta = release.releaseType === 'single' ? vuPeakSingle : vuPeakAlbum;
                 if (currentDelta > 0) {
                     const totalSegs = 16;
-                    const litSegs = Math.max(1, Math.round((currentDelta / artistMaxDelta) * totalSegs));
+                    const litSegs = Math.max(1, Math.round((currentDelta / vuMaxDelta) * totalSegs));
                     let segs = '';
                     for (let s = 0; s < totalSegs; s++) {
                         const isOn = s < litSegs;
@@ -3057,7 +3091,7 @@ a.chart-history-item {
                                         <i class="${typeIcon}"></i> ${typeLabel}
                                     </span>
                                     <span>${dateStr}</span>
-                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(release.youtubeViews)}</span>` : ''}
+                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(release.youtubeViews)}</span>` : ''}
                                 </div>
                                 ${vuMeterHtml}
                             </div>
@@ -3070,7 +3104,7 @@ a.chart-history-item {
             // Calculate cumulative YouTube views across all releases
             const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
             const ytViewsHtml = totalYtViews > 0
-                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fab fa-youtube"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
+                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
                 : '';
             
             container.innerHTML = `
@@ -3346,7 +3380,6 @@ a.chart-history-item {
                         '.popularity-graph-container svg path[stroke] { stroke: ' + c1 + ' !important; }' +
                         '.popularity-graph-container svg circle.graph-dot { fill: ' + c1 + ' !important; }' +
                         '.popularity-graph-container .graph-value-label span { color: ' + c2 + ' !important; }' +
-                        '.vu-pop-value { color: ' + c2 + ' !important; }' +
                         '.release-play-btn { background: ' + c2 + ' !important; }' +
                         '.verified-accent .artist-link:hover { border-color: ' + c2 + '60 !important; }' +
                         '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +

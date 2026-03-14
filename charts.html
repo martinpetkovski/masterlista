@@ -2908,10 +2908,13 @@
             function formatViewsDelta(n) {
                 if (n === null || n === undefined) return '<span class="adv-same">·</span>';
                 if (n === 0) return '<span class="adv-same">·</span>';
-                const prefix = n > 0 ? '+' : '';
-                if (Math.abs(n) >= 1000000) return prefix + (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
-                if (Math.abs(n) >= 1000) return prefix + (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
-                return prefix + n;
+                const abs = Math.abs(n);
+                const formatted = abs >= 1000000 ? (abs / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : abs >= 1000 ? (abs / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : abs;
+                if (n > 0) {
+                    return '<span style="color:#16c953">+</span>' + formatted;
+                } else {
+                    return '<span style="color:#f03e3e">−</span>' + formatted;
+                }
             }
             
             /**
@@ -3299,9 +3302,9 @@
                     
                     let advSingles, advAlbums;
                     if (!useCityFilter) {
-                        // Use pre-computed advanced charts
-                        advSingles = siteMaster.advancedCharts[genre + '_single_advanced'] || [];
-                        advAlbums = siteMaster.advancedCharts[genre + '_album_advanced'] || [];
+                        // Use pre-computed advanced charts (genre filtered from all-chart via _gc field)
+                        advSingles = _filterAdvancedChart(siteMaster.advancedCharts['all_single_advanced'] || [], genre);
+                        advAlbums = _filterAdvancedChart(siteMaster.advancedCharts['all_album_advanced'] || [], genre);
                     } else {
                         // City filter: compute from raw releases
                         const rawReleases = siteMaster.chartData?.releases || [];
@@ -3724,10 +3727,11 @@
             }
 
             // Build tbody HTML from enriched (and sorted) releases
-            function buildAdvancedTbody(enrichedReleases) {
+            function buildAdvancedTbody(enrichedReleases, startIndex) {
                 if (enrichedReleases.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:1rem;">' + t('charts.noReleases') + '</td></tr>';
-                return enrichedReleases.map(r => {
-                    const posStr = r._pos;
+                return enrichedReleases.map((r, i) => {
+                    const rowNum = (startIndex || 0) + i + 1;
+                    const posStr = rowNum;
                     // Position change display
                     let chgStr;
                     if (r._isNew) chgStr = `<span class="adv-new">NEW</span>`;
@@ -3839,7 +3843,7 @@
                         return;
                     }
                     const end = Math.min(start + ADV_RENDER_CHUNK, data.length);
-                    const batchHtml = buildAdvancedTbody(data.slice(start, end));
+                    const batchHtml = buildAdvancedTbody(data.slice(start, end), start);
                     tbody.insertAdjacentHTML('beforeend', batchHtml);
 
                     // Attach click handlers to newly added release links
@@ -3904,12 +3908,26 @@
                 renderAdvancedTable(tableKey);
             }
 
+            // Filter advanced chart entries by genre category (_gc field), re-ranking positions.
+            // all_single/album_advanced stores all entries with _gc codes: a=alt, r=rap, e=electronic, p=pop
+            function _filterAdvancedChart(entries, genre) {
+                if (genre === 'all') return entries;
+                var codeMap = { alt: 'a', rap: 'r', electronic: 'e', pop: 'p' };
+                var code = codeMap[genre];
+                if (!code) return entries;
+                var filtered = entries.filter(function(r) { return r._gc && r._gc.indexOf(code) >= 0; });
+                for (var i = 0; i < filtered.length; i++) {
+                    filtered[i] = Object.assign({}, filtered[i], { position: i + 1, positionChange: null });
+                }
+                return filtered;
+            }
+
             // Main entry: render both advanced tables
             function renderAdvancedChart(singles, albums, prevSinglesMap, prevAlbumsMap) {
                 // Store data for re-sorting
                 advChartData = { singles, albums, prevSinglesMap, prevAlbumsMap };
                 // Default sort: viewsDelta descending
-                advSortState = { singles: [{ column: 'pdelta', direction: 'desc' }], albums: [{ column: 'pdelta', direction: 'desc' }] };
+                advSortState = { singles: [{ column: 'pdelta', direction: 'desc' }, { column: 'pop', direction: 'desc' }], albums: [{ column: 'pdelta', direction: 'desc' }, { column: 'pop', direction: 'desc' }] };
 
                 renderAdvancedTable('singles');
                 renderAdvancedTable('albums');
@@ -3985,7 +4003,6 @@
                     // Format release date for display
                     const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                     let changeIndicator = '';
-                    let popChangeIndicator = '';
                     
                     // Mark as new only if released within the last 7 days
                     if (daysElapsed <= 7) {
@@ -3999,7 +4016,6 @@
                         
                         if (hasPrecomputed && release.isNewEntry === true) {
                             changeIndicator = 'rank-up';
-                            popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
                         } else if (hasPrecomputed) {
                             const posChange = release.positionChange || 0;
                             if (posChange > 0) {
@@ -4008,13 +4024,6 @@
                                 changeIndicator = 'rank-down';
                             } else {
                                 changeIndicator = 'rank-same';
-                            }
-                            
-                            const viewsDiff = release.viewsDelta || 0;
-                            if (viewsDiff > 0) {
-                                popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
-                            } else if (viewsDiff < 0) {
-                                popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
                             }
                         } else if (prev) {
                             // Position change
@@ -4026,20 +4035,9 @@
                             } else {
                                 changeIndicator = 'rank-same';
                             }
-                            
-                            // Views change - only show if changed
-                            const viewsDiff = (ytViews) - (prev.youtubeViews || 0);
-                            if (viewsDiff > 0) {
-                                popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
-                            } else if (viewsDiff < 0) {
-                                popChangeIndicator = `<span class="pop-change down"><i></i><i></i><i></i></span>`;
-                            } else {
-                                popChangeIndicator = '';
-                            }
                         } else {
                             // New entry (no previous data) — show as up
                             changeIndicator = 'rank-up';
-                            popChangeIndicator = `<span class="pop-change up"><i></i><i></i><i></i></span>`;
                         }
                     }
                     
@@ -4097,7 +4095,7 @@
                             </div>
                             <div class="chart-meta">
                                 ${metaContent}
-                                <span class="chart-stat followers" title="${popTitle}"${popTooltipAttr}>${metricDisplay}${popChangeIndicator}</span>
+                                <span class="chart-stat followers" title="${popTitle}"${popTooltipAttr}>${metricDisplay}</span>
                             </div>
                         </li>
                     `;
@@ -4242,7 +4240,7 @@
                             </div>
                             <div class="chart-meta">
                                 <span class="chart-stat followers" title="${t('charts.youtubeViews').replace('{0}', totalViews.toLocaleString())}">
-                                    <i class="fab fa-youtube"></i> ${viewsDisplay}
+                                    <i class="fas fa-eye"></i> ${viewsDisplay}
                                 </span>
                             </div>
                         </li>
@@ -4333,7 +4331,7 @@
                             <div class="chart-meta">
                                 <div class="vu-meter" title="${t('charts.youtubeViews').replace('{0}', cumPop.toLocaleString())}">${vuSegs}</div>
                                 <span class="chart-stat followers" title="${t('charts.youtubeViews').replace('{0}', cumPop.toLocaleString())}">
-                                    <i class="fab fa-youtube"></i> ${cumDisplay}
+                                    <i class="fas fa-eye"></i> ${cumDisplay}
                                 </span>
                             </div>
                         </li>

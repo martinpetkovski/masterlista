@@ -184,24 +184,26 @@
     .yt-tracks-cell { min-width: 350px; }
     .yt-track-row {
         display: grid;
-        grid-template-columns: minmax(100px, 200px) auto auto 1fr;
+        grid-template-columns: minmax(100px, 240px) auto 1fr;
         align-items: center; gap: 0.35rem;
         padding: 0.15rem 0;
     }
     .yt-track-name-wrap {
-        display: inline-flex; align-items: center; gap: 0.2rem;
+        display: inline-flex; align-items: center; gap: 0.3rem;
         min-width: 0; overflow: hidden;
     }
     .yt-track-name {
         font-size: 0.72rem; color: var(--text-muted);
+        min-width: 0; flex: 1 1 auto;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .yt-track-views {
         font-size: 0.6rem; color: var(--text-muted); opacity: 0.65;
         white-space: nowrap; font-variant-numeric: tabular-nums;
-        text-align: right;
+        display: inline-flex; align-items: center; gap: 0.2rem;
+        flex-shrink: 0;
     }
-    .yt-track-views .fa-youtube { color: #ff4444; font-size: 0.5rem; margin-right: 0.1rem; }
+    .yt-track-views .fa-eye { color: var(--text-muted); font-size: 0.5rem; }
     .yt-track-links {
         display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;
     }
@@ -261,7 +263,7 @@
 
     .yt-track-unlinked {
         opacity: 0.55;
-        grid-template-columns: minmax(100px, 200px) auto auto;
+        grid-template-columns: minmax(100px, 240px) auto auto;
     }
     .yt-track-unlinked:hover { opacity: 0.85; }
 
@@ -607,6 +609,13 @@
             return (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)) + '%';
         }
 
+        function formatCompactViews(value) {
+            if (value == null) return '';
+            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+            if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+            return String(value);
+        }
+
         // ── Load data ────────────────────────────────────────────────
         function loadData() {
             Promise.all([
@@ -671,11 +680,7 @@
             var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
             var segW = function (n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
 
-            var viewsStr = totalViews >= 1000000
-                ? (totalViews / 1000000).toFixed(1) + 'M'
-                : totalViews >= 1000
-                    ? (totalViews / 1000).toFixed(1) + 'K'
-                    : String(totalViews);
+            var viewsStr = formatCompactViews(totalViews);
 
             document.getElementById('yt-stats').innerHTML =
                 /* ── Progress bar card ── */
@@ -703,7 +708,6 @@
                     '<div class="yt-chip"><i class="fas fa-video" style="color:#16a34a"></i> <span class="cv">' + verifiedVideos + ' / ' + totalVideos + '</span> <span class="cl">потврдени видеа</span></div>' +
                     '<div class="yt-chip"><i class="fas fa-question-circle" style="color:#f59e0b"></i> <span class="cv">' + unverifiedVideos + '</span> <span class="cl">неверификувани</span></div>' +
                     '<div class="yt-chip"><i class="fas fa-times-circle" style="color:#ef4444"></i> <span class="cv">' + willNotVerifyVideos + '</span> <span class="cl">нема да се верификуваат</span></div>' +
-                    '<div class="yt-chip"><i class="fas fa-music" style="color:var(--text-muted);opacity:.5"></i> <span class="cv">' + noYtSongs + '</span> <span class="cl">песни без YouTube</span></div>' +
                     (totalViews > 0 ? '<div class="yt-chip"><i class="fas fa-eye" style="color:var(--text-muted)"></i> <span class="cv">' + viewsStr + '</span> <span class="cl">прегледи</span></div>' : '') +
                 '</div>';
         }
@@ -789,8 +793,7 @@
                 var dateInfo = esc(dateStr);
                 if (r.totalTracks) dateInfo += ' · ' + r.totalTracks + (r.totalTracks === 1 ? ' песна' : ' песни');
                 if (r.youtubeViews) {
-                    var views = r.youtubeViews;
-                    dateInfo += ' · <i class="fab fa-youtube" style="color:#f00"></i> ' + (views >= 1000000 ? (views / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : views >= 1000 ? (views / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : views);
+                    dateInfo += ' · <i class="fas fa-eye"></i> ' + formatCompactViews(r.youtubeViews);
                 }
                 if (dateInfo) html += '<span class="yt-release-date">' + dateInfo + '</span>';
                 html += '</div>';
@@ -858,13 +861,10 @@
                     // Sum views for this song across all links
                     var songViews = 0;
                     for (var k2 = 0; k2 < ytIndices.length; k2++) { songViews += yt[ytIndices[k2]].views || 0; }
-                    var viewsStr = '<span class="yt-track-views">';
-                    if (songViews > 0) {
-                        viewsStr += '<i class="fab fa-youtube"></i>' + (songViews >= 1000000 ? (songViews / 1000000).toFixed(1) + 'M' : songViews >= 1000 ? (songViews / 1000).toFixed(1) + 'K' : songViews);
-                    }
-                    viewsStr += '</span>';
-                    html += '<span class="yt-track-name-wrap"><span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + '</span>' + (isMulti ? '<span class="yt-multi-badge">' + ytIndices.length + '</span>' : '') + '</span>';
-                    html += viewsStr;
+                    var viewsHtml = songViews > 0
+                        ? '<span class="yt-track-views"><i class="fas fa-eye"></i>' + formatCompactViews(songViews) + '</span>'
+                        : '';
+                    html += '<span class="yt-track-name-wrap"><span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + '</span>' + viewsHtml + (isMulti ? '<span class="yt-multi-badge">' + ytIndices.length + '</span>' : '') + '</span>';
                     html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
                     // Inline link pills with action buttons inside
                     html += '<span class="yt-track-links">';
@@ -878,8 +878,7 @@
                         html += '<i class="fas ' + iconClass + '"></i> ';
                         html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
                         if (t.views) {
-                            var v = t.views;
-                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + (v >= 1000000 ? (v / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : v >= 1000 ? (v / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : v) + ')</span>';
+                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + formatCompactViews(t.views) + ')</span>';
                         }
                         html += '</a>';
                         if (t.verified !== 'verified') {

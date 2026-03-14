@@ -459,22 +459,21 @@ foreach ($genre in $genreFilters) {
     }
 }
 
-# Pre-compute previous-week ranked maps once per genre/type (shared between standard and advanced)
+# Pre-compute previous-week ranked maps for unlimited charts (only 'all' genre needed;
+# genre subsets are reconstructed client-side from the all-chart data)
 $prevMapsUnlimited = @{}
-foreach ($genre in $genreFilters) {
-    foreach ($type in $typeFilters) {
-        $key = "${genre}_${type}"
-        $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 0 -preDeduped $prevByGenre[$genre]
-        $prevMap = @{}
-        for ($i = 0; $i -lt $prevRanked.Count; $i++) {
-            $prevMap[$prevRanked[$i].releaseId] = @{
-                position = $i + 1
-                popularity = [int]($prevRanked[$i].popularity -as [int])
-                youtubeViews = [int]($prevRanked[$i].youtubeViews -as [int])
-            }
+foreach ($type in $typeFilters) {
+    $key = "all_${type}"
+    $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 0 -preDeduped $prevByGenre['all']
+    $prevMap = @{}
+    for ($i = 0; $i -lt $prevRanked.Count; $i++) {
+        $prevMap[$prevRanked[$i].releaseId] = @{
+            position = $i + 1
+            popularity = [int]($prevRanked[$i].popularity -as [int])
+            youtubeViews = [int]($prevRanked[$i].youtubeViews -as [int])
         }
-        $prevMapsUnlimited[$key] = $prevMap
     }
+    $prevMapsUnlimited[$key] = $prevMap
 }
 
 # Helper: enrich ranked items with position changes, returns ArrayList
@@ -522,19 +521,31 @@ function Enrich-ChartItems {
         if ($includeGenreCity) {
             $item | Add-Member -NotePropertyName genre -NotePropertyValue $(if ($artistInfo) { $artistInfo.genre } else { $null })
             $item | Add-Member -NotePropertyName city -NotePropertyValue $(if ($artistInfo) { $artistInfo.city } else { $null })
+            # Genre category code for client-side filtering (a=alt, r=rap, e=electronic, p=pop)
+            $artistKey = $r.bandName.ToLower().Trim()
+            $gCache = $artistGenreCache[$artistKey]
+            if (-not $gCache) { $gCache = $artistGenreCache[($r.bandName -split ',')[0].Trim().ToLower()] }
+            $gcCode = ''
+            if ($gCache) {
+                if ($gCache.alt) { $gcCode += 'a' }
+                if ($gCache.rap) { $gcCode += 'r' }
+                if ($gCache.electronic) { $gcCode += 'e' }
+                if ($gCache.pop) { $gcCode += 'p' }
+            }
+            $item | Add-Member -NotePropertyName _gc -NotePropertyValue $gcCode -Force
         }
         [void]$enriched.Add($item)
     }
     return @($enriched)
 }
 
-# Build ranked charts for all genre combinations (standard = count 20, plus count 0 for advanced)
+# Build ranked charts for all genre combinations (standard = count 20)
+# Advanced (unlimited) charts only for 'all' genre — genre subsets reconstructed client-side
 $charts = @{}
 $advancedCharts = @{}
 foreach ($genre in $genreFilters) {
     foreach ($type in $typeFilters) {
         $key = "${genre}_${type}"
-        $prevMap = $prevMapsUnlimited[$key]
         
         # Standard (top 20) — build prev map with count=20 positions using pre-filtered data
         $prevRankedStd = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 20 -preDeduped $prevByGenre[$genre]
@@ -550,13 +561,15 @@ foreach ($genre in $genreFilters) {
         $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 20 -preDeduped $mainByGenre[$genre]
         $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd)
         
-        # Advanced (unlimited)
-        $advKey = "${genre}_${type}_advanced"
+        # Advanced (unlimited) — only for 'all' genre; genre subsets reconstructed client-side via _gc field
+        if ($genre -eq 'all') {
+        $prevMap = $prevMapsUnlimited["all_${type}"]
+        $advKey = "all_${type}_advanced"
         
         if ($type -eq 'single') {
             # Songs expansion: include individual tracks from ALL release types (singles + albums)
             # Group by song name within each release to sum views from multiple YouTube links
-            $genreDeduped = $mainByGenre[$genre]
+            $genreDeduped = $mainByGenre['all']
             $songs = [System.Collections.ArrayList]::new()
             
             foreach ($r in $genreDeduped) {
@@ -687,13 +700,14 @@ foreach ($genre in $genreFilters) {
             $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMap -includeGenreCity $true)
         } else {
             # Albums: unchanged — reuse the pre-computed prev map
-            $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre[$genre]
+            $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre['all']
             $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -includeGenreCity $true)
         }
+        }  # end if ($genre -eq 'all')
     }
 }
 
-Write-Host "  > Built charts for $($charts.Keys.Count) genre/type combos + $($advancedCharts.Keys.Count) advanced" -ForegroundColor DarkGray
+Write-Host "  > Built charts for $($charts.Keys.Count) genre/type combos + $($advancedCharts.Keys.Count) advanced (all-genre only; genre subsets via _gc)" -ForegroundColor DarkGray
 
 # ============================================================================
 #  2. BUILD CHART HISTORY MAP (for tooltips, per-release weekly positions)
@@ -1373,6 +1387,43 @@ Write-Host "  > Built sparklines for $($releaseSparklines.Count) releases (remov
 Write-Host ""
 Write-Host "  > Assembling site-master.json..." -ForegroundColor Yellow
 
+# Helper: Convert array of objects to columnar format { _cols: [...], _rows: [[...], ...] }
+# This reduces JSON size dramatically by storing property names only once (in _cols) instead of
+# repeating them for every entry. Trailing null values are trimmed from each row.
+function ConvertTo-Columnar {
+    param(
+        [array]$Items,
+        [string[]]$ExcludeFields = @()
+    )
+    if (-not $Items -or $Items.Count -eq 0) {
+        return [ordered]@{ _cols = @(); _rows = @() }
+    }
+    
+    # Determine column order from first item, excluding specified fields
+    $cols = @($Items[0].PSObject.Properties.Name | Where-Object { $_ -notin $ExcludeFields })
+    
+    $rows = [System.Collections.ArrayList]::new($Items.Count)
+    foreach ($item in $Items) {
+        $row = [object[]]::new($cols.Count)
+        for ($ci = 0; $ci -lt $cols.Count; $ci++) {
+            $row[$ci] = $item.($cols[$ci])
+        }
+        # Trim trailing nulls from each row to save space
+        $lastNonNull = $cols.Count - 1
+        while ($lastNonNull -ge 0 -and $null -eq $row[$lastNonNull]) { $lastNonNull-- }
+        if ($lastNonNull -lt $cols.Count - 1) {
+            if ($lastNonNull -lt 0) {
+                $row = @()
+            } else {
+                $row = $row[0..$lastNonNull]
+            }
+        }
+        [void]$rows.Add($row)
+    }
+    
+    return [ordered]@{ _cols = $cols; _rows = @($rows) }
+}
+
 # Convert hashtable-based structures to proper objects for JSON serialization
 # IMPORTANT: Use [ordered]@{} and sort keys to ensure deterministic JSON output.
 # Regular @{} hashtables have non-deterministic enumeration order, causing
@@ -1382,9 +1433,10 @@ foreach ($key in $charts.Keys | Sort-Object) {
     $chartsOutput[$key] = @($charts[$key])
 }
 
+# Convert advancedCharts to columnar format (excludes isCollab — always false, never read by clients)
 $advancedChartsOutput = [ordered]@{}
 foreach ($key in $advancedCharts.Keys | Sort-Object) {
-    $advancedChartsOutput[$key] = @($advancedCharts[$key])
+    $advancedChartsOutput[$key] = ConvertTo-Columnar -Items $advancedCharts[$key] -ExcludeFields @('isCollab')
 }
 
 # Convert releaseHistoryMap (per-genre)
@@ -1427,33 +1479,46 @@ foreach ($rid in $releaseSparklines.Keys | Sort-Object) {
     $sparklinesOutput[$rid] = @($releaseSparklines[$rid])
 }
 
-# Strip fields from chartData.releases that are unused by client code
-# (topTrackName, topTrackId, topTrackUrl are only in pre-computed charts, not accessed from raw data)
+# Strip fields from chartData.releases that are unused by client code, remove derivable
+# YouTube URLs (clients reconstruct from videoId), and convert to columnar format
 $strippedReleases = @($releases | ForEach-Object {
     $props = [ordered]@{}
     foreach ($p in $_.PSObject.Properties) {
-        if ($p.Name -notin @('topTrackName', 'topTrackId', 'topTrackUrl')) {
+        # Skip unused fields
+        if ($p.Name -in @('topTrackName', 'topTrackId', 'topTrackUrl', 'spotifyPopularity')) { continue }
+        if ($p.Name -eq 'youtubeTracks' -and $p.Value) {
+            # Strip 'url' from each youtube track (derivable from videoId)
+            $cleaned = @($p.Value | ForEach-Object {
+                $tp = [ordered]@{}
+                foreach ($tp2 in $_.PSObject.Properties) {
+                    if ($tp2.Name -ne 'url') { $tp[$tp2.Name] = $tp2.Value }
+                }
+                [PSCustomObject]$tp
+            })
+            $props[$p.Name] = $cleaned
+        } else {
             $props[$p.Name] = $p.Value
         }
     }
     [PSCustomObject]$props
 })
+$columnarReleases = ConvertTo-Columnar -Items $strippedReleases
 
 $siteMaster = [PSCustomObject]@{
     generatedAt = $chartJson.generatedAt
     
-    # Chart data (stripped of unused fields)
+    # Chart data (stripped of unused fields, releases in columnar format)
     chartData = [PSCustomObject]@{
         generatedAt   = $chartJson.generatedAt
         totalReleases = $chartJson.totalReleases
         totalArtists  = $chartJson.totalArtists
-        releases      = $strippedReleases
+        releases      = $columnarReleases
     }
     
     # Pre-ranked charts: keys like "all_single", "alt_album", etc.
     charts = $chartsOutput
     
-    # Advanced (unlimited) charts
+    # Advanced (unlimited) charts — columnar format, all-genre only (genre subsets via _gc field)
     advancedCharts = $advancedChartsOutput
     
     # Per-release chart history (for tooltips), keyed by genre

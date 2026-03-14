@@ -714,6 +714,61 @@ var _siteMasterCache = null;
 var _siteMasterPromise = null;
 
 /**
+ * Hydrate columnar format { _cols, _rows } back to array of objects.
+ */
+function _hydrateColumnar(data) {
+    if (!data || !data._cols || !data._rows) return data;
+    var cols = data._cols;
+    var rows = data._rows;
+    var result = new Array(rows.length);
+    for (var i = 0; i < rows.length; i++) {
+        var obj = {};
+        var row = rows[i];
+        for (var j = 0; j < cols.length; j++) {
+            if (j < row.length && row[j] != null) obj[cols[j]] = row[j];
+        }
+        result[i] = obj;
+    }
+    return result;
+}
+
+/**
+ * Post-process site-master.json: hydrate columnar data, reconstruct
+ * YouTube URLs, restore omitted defaults.
+ */
+function _hydrateSiteMaster(data) {
+    if (!data) return data;
+
+    // Hydrate chartData.releases from columnar format
+    if (data.chartData && data.chartData.releases && data.chartData.releases._cols) {
+        data.chartData.releases = _hydrateColumnar(data.chartData.releases);
+        // Reconstruct YouTube URLs (stripped to save space; derivable from videoId)
+        for (var i = 0; i < data.chartData.releases.length; i++) {
+            var r = data.chartData.releases[i];
+            if (r.youtubeTracks) {
+                for (var j = 0; j < r.youtubeTracks.length; j++) {
+                    var t = r.youtubeTracks[j];
+                    if (!t.url && t.videoId) {
+                        t.url = 'https://www.youtube.com/watch?v=' + t.videoId;
+                    }
+                }
+            }
+        }
+    }
+
+    // Hydrate advancedCharts from columnar format
+    if (data.advancedCharts) {
+        for (var key in data.advancedCharts) {
+            if (data.advancedCharts[key] && data.advancedCharts[key]._cols) {
+                data.advancedCharts[key] = _hydrateColumnar(data.advancedCharts[key]);
+            }
+        }
+    }
+
+    return data;
+}
+
+/**
  * Load site-master.json (cached — only one fetch per page).
  * Returns a Promise that resolves to the parsed JSON object.
  */
@@ -723,8 +778,8 @@ function loadSiteMaster() {
     _siteMasterPromise = fetch('/site-master.json?t=' + Date.now())
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(data) {
-            _siteMasterCache = data;
-            return data;
+            _siteMasterCache = _hydrateSiteMaster(data);
+            return _siteMasterCache;
         })
         .catch(function() { return null; });
     return _siteMasterPromise;
