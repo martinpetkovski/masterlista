@@ -378,9 +378,16 @@ foreach ($file in $historyFiles) {
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
 # Get previous week's data (most recent history entry — chart-data.json minus this = the delta)
+# On Monday, the current week's snapshot was just created/updated and is identical to chart-data.json,
+# so we need to skip it and use the actual previous week for meaningful deltas.
 $previousWeekReleases = @()
-if ($chartHistoryWeeks.Count -ge 1) {
-    $previousWeekReleases = $chartHistoryWeeks[0].releases
+$prevWeekIndex = 0
+if ([datetime]::Now.DayOfWeek -eq 'Monday' -and $chartHistoryWeeks.Count -ge 2) {
+    $prevWeekIndex = 1
+    Write-Host "  > Monday detected — skipping current week ($($chartHistoryWeeks[0].weekId)), using $($chartHistoryWeeks[1].weekId) as previous" -ForegroundColor DarkYellow
+}
+if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
+    $previousWeekReleases = $chartHistoryWeeks[$prevWeekIndex].releases
 }
 
 # ============================================================================
@@ -404,8 +411,8 @@ foreach ($pr in $prevReleasesDeduped) {
 
 # Determine the Monday of the previous chart-history week
 $prevChartMonday = $null
-if ($chartHistoryWeeks.Count -ge 1) {
-    $prevWeekId = $chartHistoryWeeks[0].weekId  # e.g. "2026-W11"
+if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
+    $prevWeekId = $chartHistoryWeeks[$prevWeekIndex].weekId  # e.g. "2026-W11"
     if ($prevWeekId -match '^(\d{4})-W(\d{2})$') {
         $isoYear = [int]$Matches[1]
         $isoWeek = [int]$Matches[2]

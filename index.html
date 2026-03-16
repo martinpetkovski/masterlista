@@ -1379,6 +1379,60 @@
         }
 
 
+        /* ==================== RELEASE STATS (mirrors releases page) ==================== */
+        #release-stats-card .yt-progress-card {
+            display: flex; flex-direction: column; gap: 0.5rem;
+            padding: 0.75rem 0.85rem;
+            border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+            border-radius: 10px;
+            background: var(--bg-secondary, rgba(255,255,255,0.03));
+        }
+        #release-stats-card .yt-progress-head {
+            display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+        }
+        #release-stats-card .yt-progress-label {
+            font-size: 0.78rem; font-weight: 600; color: var(--text-primary, #e0e0e0);
+        }
+        #release-stats-card .yt-progress-label .frac { font-variant-numeric: tabular-nums; }
+        #release-stats-card .yt-progress-pct {
+            font-size: 0.9rem; font-weight: 800; color: #16a34a; font-variant-numeric: tabular-nums;
+        }
+        #release-stats-card .yt-progress-bar {
+            display: flex; width: 100%; height: 8px; border-radius: 999px; overflow: hidden;
+            background: var(--bg-tertiary, rgba(255,255,255,0.06));
+        }
+        #release-stats-card .yt-progress-seg { height: 100%; min-width: 0; transition: width 0.4s ease; }
+        #release-stats-card .yt-progress-seg.s-verified { background: #16a34a; }
+        #release-stats-card .yt-progress-seg.s-unverified { background: #f59e0b; }
+        #release-stats-card .yt-progress-seg.s-willnot { background: #ef4444; }
+        #release-stats-card .yt-progress-seg.s-noyt { background: var(--border-color, rgba(255,255,255,0.1)); }
+        #release-stats-card .yt-progress-legend {
+            display: flex; flex-wrap: wrap; gap: 0.25rem 0.85rem;
+            font-size: 0.68rem; color: var(--text-muted, #888);
+        }
+        #release-stats-card .yt-progress-legend span {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+        }
+        #release-stats-card .yt-legend-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+        #release-stats-card .yt-legend-dot.s-verified { background: #16a34a; }
+        #release-stats-card .yt-legend-dot.s-unverified { background: #f59e0b; }
+        #release-stats-card .yt-legend-dot.s-willnot { background: #ef4444; }
+        #release-stats-card .yt-legend-dot.s-noyt { background: var(--border-color, rgba(255,255,255,0.1)); }
+        #release-stats-card .yt-stat-row {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.55rem;
+        }
+        #release-stats-card .yt-chip {
+            display: flex; align-items: center; gap: 0.35rem;
+            padding: 0.3rem 0.6rem; border-radius: 8px;
+            background: var(--bg-secondary, rgba(255,255,255,0.03)); border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+            font-size: 0.72rem; white-space: nowrap;
+        }
+        #release-stats-card .yt-chip i { font-size: 0.7rem; flex-shrink: 0; }
+        #release-stats-card .yt-chip .cv { font-weight: 700; color: var(--text-primary, #e0e0e0); font-variant-numeric: tabular-nums; }
+        #release-stats-card .yt-chip .cl { color: var(--text-muted, #888); }
+
         /* ==================== VERIFY ARTISTS ==================== */
         .verify-card-intro {
             font-size: 0.85rem;
@@ -1766,6 +1820,11 @@
             z-index: 2;
         }
 
+        .site-title-main-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
         .site-title-main {
             font-family: 'Dela Gothic One', 'Montserrat', sans-serif;
             font-size: 2rem;
@@ -1783,6 +1842,26 @@
             letter-spacing: 0.04em;
             text-transform: uppercase;
             color: rgba(255,255,255,0.45);
+        }
+
+        .site-title-beta {
+            position: absolute;
+            top: -0.1rem;
+            right: -2.2rem;
+            padding: 0.12rem 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.5rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #000;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 3px;
+            line-height: 1;
+            transform: rotate(12deg);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+            pointer-events: none;
+            z-index: 5;
         }
 
         .site-title-logo-wrap {
@@ -2174,7 +2253,9 @@
                 </div>
             </div>
             <div class="site-title-text">
-                <span class="site-title-main" data-i18n="common.siteTitle">Топ Листа</span>
+                <span class="site-title-main-wrap">
+                    <span class="site-title-main" data-i18n="common.siteTitle">Топ Листа</span><span class="site-title-beta" data-i18n="common.beta">БЕТА</span>
+                </span>
                 <span class="site-title-sub" id="site-last-update">—</span>
             </div>
             <nav class="title-nav">
@@ -2361,6 +2442,15 @@
             <p class="verify-card-intro" data-i18n="dashboard.verifyIntro">Ги познаваш овие артисти или нивните претставници?</p>
             <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="verify-list" id="verify-list" style="display:none;"></ul>
+        </div>
+
+        <!-- ==================== RELEASE STATS ==================== -->
+        <div class="dash-card full-width" id="release-stats-card">
+            <div class="dash-card-header">
+                <h2><i class="fas fa-database"></i> <span data-i18n="dashboard.releaseStats">Статистика</span></h2>
+                <a href="/releases" class="more-link"><span data-i18n="common.releases">Изданија</span> &raquo;</a>
+            </div>
+            <div id="release-stats-content" style="display:none"></div>
         </div>
 
         <!-- ==================== XOTEL YOUTUBE ==================== -->
@@ -2570,6 +2660,7 @@
             renderEvents();
             renderNews();
             renderVerifyArtists();
+            renderReleaseStats();
             renderYouTube();
             renderTitleCollage();
         }
@@ -2625,11 +2716,13 @@
 
         // ==================== RENDER: MINI CHART (uses pre-computed data from site-master.json) ====================
         function formatViewsCompact(n) {
+            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>';
             if (n >= 1000000) return (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
             if (n >= 1000) return (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
             return String(n);
         }
         function formatViewsCompactPlain(n) {
+            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
             if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
             if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
             return String(n);
@@ -2638,6 +2731,7 @@
             if (n === null || n === undefined) return '·';
             if (n === 0) return '·';
             var prefix = n > 0 ? '+' : '';
+            if (Math.abs(n) >= 1000000000) return prefix + (n / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>';
             if (Math.abs(n) >= 1000000) return prefix + (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
             if (Math.abs(n) >= 1000) return prefix + (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
             return prefix + n;
@@ -3134,6 +3228,105 @@
             loading.style.display = 'none';
             list.style.display = '';
 
+        }
+
+        // ==================== RENDER: RELEASE STATS ====================
+        function renderReleaseStats() {
+            var container = document.getElementById('release-stats-content');
+            if (!container) return;
+
+            // Fetch releases.json for live stats
+            fetch('releases.json?t=' + Date.now()).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
+                if (!data || !data.releases) return;
+                var rels = data.releases;
+                var totalReleases = rels.length;
+                var totalArtists = data.totalArtists || 0;
+                var totalSongs = 0, verifiedSongs = 0, unverifiedSongs = 0, wnvSongs = 0, noYtSongs = 0, totalViews = 0;
+
+                // Use the same counting logic as releases page
+                for (var i = 0; i < rels.length; i++) {
+                    var r = rels[i];
+                    var yt = r.youtubeTracks || [];
+
+                    // Merge trackNames + youtubeTracks names (deduped) to get song list
+                    var sourceNames = r.trackNames || [];
+                    var merged = sourceNames.slice();
+                    for (var m = 0; m < yt.length; m++) { if (yt[m].name) merged.push(yt[m].name); }
+                    var songNames = [], seenKeys = {};
+                    for (var m = 0; m < merged.length; m++) {
+                        if (!merged[m]) continue;
+                        var key = merged[m].toLowerCase().trim();
+                        if (!key || seenKeys[key]) continue;
+                        seenKeys[key] = true;
+                        songNames.push(merged[m]);
+                    }
+                    if (songNames.length === 0 && r.releaseTitle) songNames.push(r.releaseTitle);
+
+                    // Build ytByName lookup
+                    var ytByName = {};
+                    for (var j = 0; j < yt.length; j++) {
+                        if (!yt[j].name) continue;
+                        var nk = yt[j].name.toLowerCase().trim();
+                        if (!nk) continue;
+                        if (!ytByName[nk]) ytByName[nk] = [];
+                        ytByName[nk].push(yt[j]);
+                    }
+
+                    totalSongs += songNames.length;
+                    for (var j = 0; j < songNames.length; j++) {
+                        var songKey = songNames[j].toLowerCase().trim();
+                        var matches = ytByName[songKey] || [];
+                        if (matches.length === 0) { noYtSongs++; continue; }
+                        var hasV = false, hasU = false, hasW = false;
+                        for (var k = 0; k < matches.length; k++) {
+                            if (matches[k].verified === 'verified') hasV = true;
+                            else if (matches[k].verified === 'will-not-verify') hasW = true;
+                            else hasU = true;
+                        }
+                        if (hasV) verifiedSongs++;
+                        else if (hasU) unverifiedSongs++;
+                        else if (hasW) wnvSongs++;
+                        else unverifiedSongs++;
+                    }
+                    if (r.youtubeViews) totalViews += r.youtubeViews;
+                }
+
+                var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
+                var segW = function(n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
+                var viewsStr = totalViews >= 1000000000 ? (totalViews / 1000000000).toFixed(1) + 'B'
+                    : totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M'
+                    : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K'
+                    : String(totalViews);
+                var pctStr = (Math.round(pct * 10) / 10);
+                pctStr = (pctStr % 1 === 0 ? pctStr.toFixed(0) : pctStr.toFixed(1)) + '%';
+
+                container.innerHTML =
+                    '<div class="yt-progress-card">' +
+                        '<div class="yt-progress-head">' +
+                            '<span class="yt-progress-label"><i class="fas fa-check-circle" style="color:#16a34a"></i> <span class="frac">' + verifiedSongs + ' / ' + totalSongs + '</span> <span data-i18n="stats.songsVerified">' + t('stats.songsVerified', 'песни со потврден линк') + '</span></span>' +
+                            '<span class="yt-progress-pct">' + pctStr + '</span>' +
+                        '</div>' +
+                        '<div class="yt-progress-bar">' +
+                            '<span class="yt-progress-seg s-verified" style="width:' + segW(verifiedSongs) + '%"></span>' +
+                            '<span class="yt-progress-seg s-unverified" style="width:' + segW(unverifiedSongs) + '%"></span>' +
+                            '<span class="yt-progress-seg s-willnot" style="width:' + segW(wnvSongs) + '%"></span>' +
+                            '<span class="yt-progress-seg s-noyt" style="width:' + segW(noYtSongs) + '%"></span>' +
+                        '</div>' +
+                        '<div class="yt-progress-legend">' +
+                            '<span><i class="yt-legend-dot s-verified"></i>' + verifiedSongs + ' <span data-i18n="stats.verified">' + t('stats.verified', 'верификувани') + '</span></span>' +
+                            '<span><i class="yt-legend-dot s-unverified"></i>' + unverifiedSongs + ' <span data-i18n="stats.pending">' + t('stats.pending', 'чекаат') + '</span></span>' +
+                            '<span><i class="yt-legend-dot s-willnot"></i>' + wnvSongs + ' <span data-i18n="stats.willNotVerify">' + t('stats.willNotVerify', 'нема да се верификуваат') + '</span></span>' +
+                            '<span><i class="yt-legend-dot s-noyt"></i>' + noYtSongs + ' <span data-i18n="stats.noYoutube">' + t('stats.noYoutube', 'без YouTube') + '</span></span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="yt-stat-row">' +
+                        '<div class="yt-chip"><i class="fas fa-compact-disc" style="color:var(--text-muted)"></i> <span class="cv">' + totalReleases + '</span> <span class="cl" data-i18n="stats.releases">' + t('stats.releases', 'изданија') + '</span></div>' +
+                        '<div class="yt-chip"><i class="fas fa-users" style="color:var(--text-muted)"></i> <span class="cv">' + totalArtists + '</span> <span class="cl" data-i18n="stats.artists">' + t('stats.artists', 'артисти') + '</span></div>' +
+                        '<div class="yt-chip"><i class="fas fa-music" style="color:var(--text-muted)"></i> <span class="cv">' + totalSongs + '</span> <span class="cl" data-i18n="stats.songs">' + t('stats.songs', 'песни') + '</span></div>' +
+                        (totalViews > 0 ? '<div class="yt-chip"><i class="fas fa-eye" style="color:var(--text-muted)"></i> <span class="cv">' + viewsStr + '</span> <span class="cl" data-i18n="stats.views">' + t('stats.views', 'прегледи') + '</span></div>' : '') +
+                    '</div>';
+                container.style.display = '';
+            }).catch(function() {});
         }
 
         // ==================== RENDER: VERIFY ARTISTS ====================

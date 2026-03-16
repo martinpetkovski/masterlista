@@ -454,7 +454,7 @@
 </head>
 <body class="compact yt-links-page">
     <header id="site-header" data-active="/releases" data-title="Изданија">
-        <button id="yt-add-release-btn" class="header-btn add-band" title="Додади издание"><i class="fas fa-plus"></i></button>
+        <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener" id="yt-add-release-btn" class="header-btn add-band" title="Побарај ново издание на Discord"><i class="fab fa-discord"></i></a>
     </header>
     <script src="load-header.js"></script>
 
@@ -611,6 +611,7 @@
 
         function formatCompactViews(value) {
             if (value == null) return '';
+            if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
             if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
             if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
             return String(value);
@@ -902,12 +903,12 @@
                     html += '<div class="yt-track-row yt-track-unlinked">';
                     html += '<span class="yt-track-name" title="' + esc(name) + '">' + esc(name) + '</span>';
                     html += '<a class="yt-track-search" href="https://www.youtube.com/results?search_query=' + trackQuery + '" target="_blank" rel="noopener" title="Пребарај \'' + esc(name) + '\' на YouTube"><i class="fas fa-search"></i></a>';
-                    html += ' <button class="yt-add-track-btn" data-release="' + releaseIdx + '" data-track-name="' + esc(name) + '" title="Додади YouTube линк"><i class="fas fa-plus"></i></button>';
+                    html += ' <button class="yt-add-track-btn" data-release="' + releaseIdx + '" data-track-name="' + esc(name) + '" title="Додај YouTube линк"><i class="fas fa-plus"></i></button>';
                     html += '</div>';
                 }
             }
 
-            html += '<button class="yt-add-link-btn" data-release="' + releaseIdx + '"><i class="fas fa-plus"></i> Додади линк</button>';
+            html += '<button class="yt-add-link-btn" data-release="' + releaseIdx + '"><i class="fas fa-plus"></i> Додај линк</button>';
             return html;
         }
 
@@ -1073,7 +1074,7 @@
                 selectHtml +
                 '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +
                 '<a class="yt-form-search" href="https://www.youtube.com/results?search_query=' + defaultQuery + '" target="_blank" rel="noopener" title="Пребарај на YouTube"><i class="fab fa-youtube"></i> <i class="fas fa-search"></i></a>' +
-                '<button class="yt-add-confirm" title="Додади"><i class="fas fa-check"></i></button>' +
+                '<button class="yt-add-confirm" title="Додај"><i class="fas fa-check"></i></button>' +
                 '<button class="yt-add-cancel" title="Откажи"><i class="fas fa-times"></i></button>';
 
             btn.parentNode.appendChild(form);
@@ -1124,7 +1125,7 @@
             form.innerHTML =
                 '<input type="text" class="yt-add-url" placeholder="https://youtube.com/watch?v=...">' +
                 '<a class="yt-form-search" href="https://www.youtube.com/results?search_query=' + searchQuery + '" target="_blank" rel="noopener" title="Пребарај на YouTube"><i class="fab fa-youtube"></i> <i class="fas fa-search"></i></a>' +
-                '<button class="yt-add-confirm" title="Додади"><i class="fas fa-check"></i></button>' +
+                '<button class="yt-add-confirm" title="Додај"><i class="fas fa-check"></i></button>' +
                 '<button class="yt-add-cancel" title="Откажи"><i class="fas fa-times"></i></button>';
 
             rowEl.appendChild(form);
@@ -1348,7 +1349,7 @@
                     '<div class="mmm-draft-field">' +
                         '<label>Песни</label>' +
                         '<div id="ar-tracks">' + tracksHtml + '</div>' +
-                        '<button type="button" id="ar-add-track" style="background:none;border:1px dashed var(--border-color);color:var(--text-muted);cursor:pointer;padding:0.3rem 0.6rem;border-radius:6px;font-size:0.75rem;font-family:inherit;margin-top:0.3rem;width:100%"><i class="fas fa-plus"></i> Додади песна</button>' +
+                        '<button type="button" id="ar-add-track" style="background:none;border:1px dashed var(--border-color);color:var(--text-muted);cursor:pointer;padding:0.3rem 0.6rem;border-radius:6px;font-size:0.75rem;font-family:inherit;margin-top:0.3rem;width:100%"><i class="fas fa-plus"></i> Додај песна</button>' +
                     '</div>' +
                     '<div class="mmm-draft-field">' +
                         '<label for="ar-spotify">Spotify линк (по избор)</label>' +
@@ -1356,7 +1357,7 @@
                     '</div>' +
                     '<div class="mmm-draft-dialog-buttons">' +
                         '<button type="button" class="mmm-draft-btn discard" id="ar-cancel">Откажи</button>' +
-                        '<button type="button" class="mmm-draft-btn submit" id="ar-save" disabled><i class="fas fa-check"></i> ' + (isEdit ? 'Зачувај' : 'Додади') + '</button>' +
+                        '<button type="button" class="mmm-draft-btn submit" id="ar-save" disabled><i class="fas fa-check"></i> ' + (isEdit ? 'Зачувај' : 'Додај') + '</button>' +
                     '</div>' +
                 '</div>';
 
@@ -1565,10 +1566,6 @@
         document.getElementById('yt-search').addEventListener('input', debounce(applyFilters, 150));
         document.getElementById('yt-filter-status').addEventListener('change', applyFilters);
         document.getElementById('yt-filter-type').addEventListener('change', applyFilters);
-        document.getElementById('yt-add-release-btn').addEventListener('click', function () {
-            showAddReleaseForm();
-        });
-
         function debounce(fn, ms) {
             var timer;
             return function () {

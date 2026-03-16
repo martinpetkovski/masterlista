@@ -2642,6 +2642,7 @@ a.chart-history-item {
         }
         
         function formatViewsAbsolute(n) {
+            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
             if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
             if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
             return String(n);
@@ -3142,7 +3143,7 @@ a.chart-history-item {
                         <i class="fas fa-compact-disc"></i>
                         ${t('artist.releases')} <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
                         ${ytViewsHtml}
-                        <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додади издание</button>
+                        <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додај издание</button>
                     </h3>
                     <div class="chart-history-list">
                         ${releasesHtml}
@@ -4097,7 +4098,7 @@ a.chart-history-item {
                         '<input type="text" id="ar-youtube" placeholder="https://youtube.com/watch?v=...">' +
                         '<div class="add-release-actions">' +
                             '<button class="add-release-cancel">Откажи</button>' +
-                            '<button class="add-release-save" id="ar-save"><i class="fas fa-check"></i> Додади</button>' +
+                            '<button class="add-release-save" id="ar-save"><i class="fas fa-check"></i> Додај</button>' +
                         '</div>' +
                     '</div>';
 

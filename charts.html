@@ -2899,6 +2899,7 @@
             /** Format a views number with K/M suffix */
             function formatViews(n) {
                 if (n === null || n === undefined) return '-';
+                if (n >= 1000000000) return (n / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>';
                 if (n >= 1000000) return (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
                 if (n >= 1000) return (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
                 return String(n);
@@ -2909,7 +2910,7 @@
                 if (n === null || n === undefined) return '<span class="adv-same">·</span>';
                 if (n === 0) return '<span class="adv-same">·</span>';
                 const abs = Math.abs(n);
-                const formatted = abs >= 1000000 ? (abs / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : abs >= 1000 ? (abs / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : abs;
+                const formatted = abs >= 1000000000 ? (abs / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>' : abs >= 1000000 ? (abs / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : abs >= 1000 ? (abs / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : abs;
                 if (n > 0) {
                     return '<span style="color:#16c953">+</span>' + formatted;
                 } else {

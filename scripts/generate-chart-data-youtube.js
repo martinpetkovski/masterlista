@@ -396,6 +396,16 @@ async function getVideoStatsBatch(videoIds, apiKey) {
 
 // ── Load previous week data ─────────────────────────────────────────────────
 
+function getCurrentWeekId() {
+    const now = new Date();
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}`;
+}
+
 function loadPreviousWeekData() {
     if (!fs.existsSync(HISTORY_DIR)) return null;
 
@@ -405,12 +415,27 @@ function loadPreviousWeekData() {
 
     if (files.length === 0) return null;
 
-    // Most recent history file = last week's snapshot
-    const latestFile = files[files.length - 1];
+    // On Monday, the current week's snapshot was just created by generate-chart-data.js
+    // with youtubeViews: 0, so we need to skip it and use the actual previous week.
+    // On Tuesday+, the latest file IS the previous week (current week snapshot won't exist yet
+    // or has already been updated with YouTube views).
+    const now = new Date();
+    let targetFile;
+    if (now.getDay() === 1) {
+        const currentWeekId = getCurrentWeekId();
+        const currentWeekFile = `chart-${currentWeekId}.json`;
+        const filtered = files.filter(f => f !== currentWeekFile);
+        if (filtered.length === 0) return null;
+        targetFile = filtered[filtered.length - 1];
+        console.log(`  Monday detected — skipping current week (${currentWeekFile}), using ${targetFile}`);
+    } else {
+        targetFile = files[files.length - 1];
+    }
+
     try {
-        const data = JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, latestFile), 'utf8'));
-        console.log(`  Loaded previous week data: ${latestFile} (${data.releases?.length || 0} releases)`);
-        return { weekId: latestFile.replace('chart-', '').replace('.json', ''), releases: data.releases || [], generatedAt: data.generatedAt || null };
+        const data = JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, targetFile), 'utf8'));
+        console.log(`  Loaded previous week data: ${targetFile} (${data.releases?.length || 0} releases)`);
+        return { weekId: targetFile.replace('chart-', '').replace('.json', ''), releases: data.releases || [], generatedAt: data.generatedAt || null };
     } catch {
         return null;
     }
@@ -681,8 +706,8 @@ async function main() {
         }
     }
 
-    // Collect only verified video IDs (saves API quota — unverified don't count toward charts)
-    const verifiedVideoIds = new Set();
+    // Collect video IDs for verified and unverified tracks (skip will-not-verify)
+    const fetchVideoIds = new Set();
     let totalMatchedIds = 0;
     for (const r of releases) {
         const trackMatches = cache.tracks[r.releaseId] || [];
@@ -691,16 +716,16 @@ async function main() {
             for (const vid of (t.videoIds || [])) {
                 totalMatchedIds++;
                 const existing = existingTracks.get(vid);
-                if (existing?.verified === 'verified') verifiedVideoIds.add(vid);
+                if (existing?.verified !== 'will-not-verify') fetchVideoIds.add(vid);
             }
         }
-        // Also include manually-added verified tracks not in cache
+        // Also include manually-added verified/unverified tracks not in cache
         for (const [vid, info] of existingTracks) {
-            if (info.verified === 'verified') verifiedVideoIds.add(vid);
+            if (info.verified !== 'will-not-verify') fetchVideoIds.add(vid);
         }
     }
-    console.log(`\n── Step 3: Fetching view counts for ${verifiedVideoIds.size} verified videos (of ${totalMatchedIds} total matched) ──`);
-    const allStats = await getVideoStatsBatch([...verifiedVideoIds], apiKey);
+    console.log(`\n── Step 3: Fetching view counts for ${fetchVideoIds.size} verified+unverified videos (of ${totalMatchedIds} total matched) ──`);
+    const allStats = await getVideoStatsBatch([...fetchVideoIds], apiKey);
     console.log(`  Got stats for ${allStats.size} videos`);
 
     // ── Step 4: Compute per-release total views and update releases.json ─────
@@ -722,7 +747,7 @@ async function main() {
                 const existing = existingTracks.get(vid);
                 const isVerified = existing?.verified === 'verified';
                 const isWillNotVerify = existing?.verified === 'will-not-verify';
-                const stats = isVerified ? allStats.get(vid) : null;
+                const stats = !isWillNotVerify ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
                 ytTracks.push({
                     name: t.trackName,
@@ -731,6 +756,7 @@ async function main() {
                     verified: isWillNotVerify ? 'will-not-verify' : isVerified ? 'verified' : 'unverified',
                     ...(views > 0 ? { views } : {})
                 });
+                // Only verified views count toward charts
                 if (isVerified && !alreadyCounted) totalViews += views;
                 existingTracks.delete(vid); // Mark as processed
             }
