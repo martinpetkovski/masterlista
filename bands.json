@@ -1,4 +1,4 @@
-﻿{
+{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -6830,13 +6830,15 @@
         "spotify": "https://open.spotify.com/artist/5Nx3CHdbm41V16y5Ew7353?si=cyJXfYjRTjWDcMtjwHySlQ",
         "instagram": "https://www.instagram.com/tamarastojkovska/"
       },
-      "contact": "недостигаат податоци",
+      "contact": "stojkovskatamara@gmail.com",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#df90a8",
+        "#b01c1c"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5ebd3158ca081894af2cf13dc9c",
-      "imageSource": "spotify",
-      "spotifyName": "Tamara Stojkovska"
+      "imageSource": "spotify"
     },
     {
       "name": "Тамара Тодевска",
