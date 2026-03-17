@@ -27,8 +27,38 @@
           "name": "OhRID",
           "videoId": "Bq7Erbauiks",
           "url": "https://www.youtube.com/watch?v=Bq7Erbauiks",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1442
+        },
+        {
+          "name": "BARE HEART",
+          "videoId": "GebZ3atbtyE",
+          "url": "https://www.youtube.com/watch?v=GebZ3atbtyE",
+          "verified": "verified"
+        },
+        {
+          "name": "BURIED HOPE",
+          "videoId": "akQhlXAIZPI",
+          "url": "https://www.youtube.com/watch?v=akQhlXAIZPI",
+          "verified": "verified"
+        },
+        {
+          "name": "BLINDED FAITH",
+          "videoId": "DkCfiXukXBM",
+          "url": "https://www.youtube.com/watch?v=DkCfiXukXBM",
+          "verified": "verified"
+        },
+        {
+          "name": "BENEATH SILENCE",
+          "videoId": "olLtKF-ajNk",
+          "url": "https://www.youtube.com/watch?v=olLtKF-ajNk",
+          "verified": "verified"
+        },
+        {
+          "name": "OhRID",
+          "videoId": "edV5g-leyoc",
+          "url": "https://www.youtube.com/watch?v=edV5g-leyoc",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 0
@@ -53,7 +83,7 @@
           "name": "Nema Uteha",
           "videoId": "l5oguGSoI2E",
           "url": "https://www.youtube.com/watch?v=l5oguGSoI2E",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 199
         }
       ],
@@ -79,7 +109,7 @@
           "name": "Srce skršeno",
           "videoId": "ueDp3bpXl9o",
           "url": "https://www.youtube.com/watch?v=ueDp3bpXl9o",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1016
         }
       ],
@@ -150,7 +180,15 @@
         "SuperMen - Radio Edit"
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3Z68F1cWIq0XXxLRotwGOz?si=-MtaMySrRUmJsSYOJa0fzQ",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "SuperMen - Radio Edit",
+          "videoId": "eRMunw2jw-E",
+          "url": "https://www.youtube.com/watch?v=eRMunw2jw-E",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Karma Scale",
@@ -1412,8 +1450,14 @@
           "name": "Noki Dolgi",
           "videoId": "djVX9sc3OEs",
           "url": "https://www.youtube.com/watch?v=djVX9sc3OEs",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 7312
+        },
+        {
+          "name": "Noki Dolgi",
+          "videoId": "_62hrheAl4c",
+          "url": "https://www.youtube.com/watch?v=_62hrheAl4c",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 0
@@ -1663,8 +1707,140 @@
           "name": "Има или Нема",
           "videoId": "VW2i31e6zx0",
           "url": "https://www.youtube.com/watch?v=VW2i31e6zx0",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 240
+        },
+        {
+          "name": "Денот на Медот",
+          "videoId": "1AZQCETTv7g",
+          "url": "https://www.youtube.com/watch?v=1AZQCETTv7g",
+          "verified": "verified"
+        },
+        {
+          "name": "Огледало",
+          "videoId": "6_4PR6t-ttA",
+          "url": "https://www.youtube.com/watch?v=6_4PR6t-ttA",
+          "verified": "verified"
+        },
+        {
+          "name": "Ко(мета)",
+          "videoId": "Jw9XnVrYdtY",
+          "url": "https://www.youtube.com/watch?v=Jw9XnVrYdtY",
+          "verified": "verified"
+        },
+        {
+          "name": "Сила од Небес",
+          "videoId": "N5HZktFmguU",
+          "url": "https://www.youtube.com/watch?v=N5HZktFmguU",
+          "verified": "verified"
+        },
+        {
+          "name": "Бунар",
+          "videoId": "TgdNcJx0L80",
+          "url": "https://www.youtube.com/watch?v=TgdNcJx0L80",
+          "verified": "verified"
+        },
+        {
+          "name": "Мртов",
+          "videoId": "cMJhWbMUCyY",
+          "url": "https://www.youtube.com/watch?v=cMJhWbMUCyY",
+          "verified": "verified"
+        },
+        {
+          "name": "Стој Подалеку",
+          "videoId": "k_0X4xkgF58",
+          "url": "https://www.youtube.com/watch?v=k_0X4xkgF58",
+          "verified": "verified"
+        },
+        {
+          "name": "Билка",
+          "videoId": "sKj3-ZMzky8",
+          "url": "https://www.youtube.com/watch?v=sKj3-ZMzky8",
+          "verified": "verified"
+        },
+        {
+          "name": "Маѓепсан",
+          "videoId": "qSRxpB9ybYU",
+          "url": "https://www.youtube.com/watch?v=qSRxpB9ybYU",
+          "verified": "verified"
+        },
+        {
+          "name": "Денот на Медот",
+          "videoId": "QAoHdqv3qj0",
+          "url": "https://www.youtube.com/watch?v=QAoHdqv3qj0",
+          "verified": "verified"
+        },
+        {
+          "name": "Има или Нема",
+          "videoId": "WFXFSk2oi4Q",
+          "url": "https://www.youtube.com/watch?v=WFXFSk2oi4Q",
+          "verified": "verified"
+        },
+        {
+          "name": "Има или Нема",
+          "videoId": "ogjgzs-Cbto",
+          "url": "https://www.youtube.com/watch?v=ogjgzs-Cbto",
+          "verified": "verified"
+        },
+        {
+          "name": "Сила од Небес",
+          "videoId": "KtB0bgImK0g",
+          "url": "https://www.youtube.com/watch?v=KtB0bgImK0g",
+          "verified": "verified"
+        },
+        {
+          "name": "Денот на Медот",
+          "videoId": "A9dEytZ5_Ew",
+          "url": "https://www.youtube.com/watch?v=A9dEytZ5_Ew",
+          "verified": "verified"
+        },
+        {
+          "name": "Стој Подалеку",
+          "videoId": "no6sqJYucME",
+          "url": "https://www.youtube.com/watch?v=no6sqJYucME",
+          "verified": "verified"
+        },
+        {
+          "name": "Има или Нема",
+          "videoId": "pC4jcY84LN0",
+          "url": "https://www.youtube.com/watch?v=pC4jcY84LN0",
+          "verified": "verified"
+        },
+        {
+          "name": "Мртов",
+          "videoId": "ON_enqtNZJA",
+          "url": "https://www.youtube.com/watch?v=ON_enqtNZJA",
+          "verified": "verified"
+        },
+        {
+          "name": "Бунар",
+          "videoId": "-4_TbBYkLAs",
+          "url": "https://www.youtube.com/watch?v=-4_TbBYkLAs",
+          "verified": "verified"
+        },
+        {
+          "name": "Огледало",
+          "videoId": "HfgA1rX3Bu8",
+          "url": "https://www.youtube.com/watch?v=HfgA1rX3Bu8",
+          "verified": "verified"
+        },
+        {
+          "name": "Ко(мета)",
+          "videoId": "GIsOQ_sblaI",
+          "url": "https://www.youtube.com/watch?v=GIsOQ_sblaI",
+          "verified": "verified"
+        },
+        {
+          "name": "Маѓепсан",
+          "videoId": "rKIOOd2FESI",
+          "url": "https://www.youtube.com/watch?v=rKIOOd2FESI",
+          "verified": "verified"
+        },
+        {
+          "name": "Билка",
+          "videoId": "VQNikQasclg",
+          "url": "https://www.youtube.com/watch?v=VQNikQasclg",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 0
