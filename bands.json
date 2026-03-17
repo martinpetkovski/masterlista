@@ -3966,7 +3966,7 @@
         "#808060"
       ],
       "confirmed": false,
-      "image": "https://i.scdn.co/image/ab67616d0000b273e7c54a7c300a38f031769f35",
+      "image": "https://i.scdn.co/image/ab67616d0000b2734a77bbf7fe8dc40d46862193",
       "imageSource": "spotify",
       "spotifyName": "Laz Vegjas"
     },
@@ -5063,7 +5063,7 @@
       "label": null,
       "accentColors": null,
       "confirmed": false,
-      "image": "https://scontent.cdninstagram.com/v/t51.2885-19/193769579_402924270766033_2375732531839687092_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMyIn0%3D&amp;_nc_ohc=Ekdw3LjLzq8Q7kNvwGMGatv&amp;_nc_oc=Adm5qCCVAcwKVgmCdi2wBf9JlyZs7_dHgXR-eqMw77bxave0Mn73QoEMD7anUpuz4bQ&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=8&amp;oh=00_AfxDp7jpJ08lcAmoBSKUWY3u0w5s4RUE7yFx9WHgHdpuqg&amp;oe=69BE5B12",
+      "image": "https://scontent.cdninstagram.com/v/t51.2885-19/193769579_402924270766033_2375732531839687092_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=Ekdw3LjLzq8Q7kNvwHHISAa&amp;_nc_oc=AdnKIFUo2LYD0sZMp2l-qisL_uy4f53Le-N2qYvX4tyd_kF5mEYNojCBE_ebi9JTUKI&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=8&amp;oh=00_AfxCxKFhcNpPcMld_mmeL839EOuRpy02SZOGlYLYtbrw-A&amp;oe=69BF3C12",
       "imageSource": "instagram"
     },
     {
@@ -12037,8 +12037,9 @@
         "#ff922b"
       ],
       "confirmed": true,
-      "image": "https://yt3.googleusercontent.com/NYYgnW4otY3RCbfbsnjW9tx4a6RYcY2jycGjz21adscnEDpK6yFYjZ21iKV-aTmZ2o_UlFxayw=s900-c-k-c0x00ffffff-no-rj",
-      "imageSource": "youtube"
+      "image": "https://i.scdn.co/image/ab67616d0000b2733cb729d65a4664790b45c736",
+      "imageSource": "spotify",
+      "spotifyName": "Emigranti"
     },
     {
       "name": "MG",
@@ -12218,7 +12219,9 @@
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": null,
-      "confirmed": false
+      "confirmed": false,
+      "image": "https://i.ytimg.com/vi/QukjUfNG6Ec/hqdefault.jpg",
+      "imageSource": "youtube"
     },
     {
       "name": "Max",
@@ -12231,7 +12234,9 @@
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": null,
-      "confirmed": false
+      "confirmed": false,
+      "image": "https://yt3.googleusercontent.com/pXSc8F40ltxkIS4z6-LOVlg_9tx565w02iGhgsZcnYZW_RV3e1gJc599UPdNPkCuIQeuU-duJQ=s900-c-k-c0x00ffffff-no-rj",
+      "imageSource": "youtube"
     },
     {
       "name": "Vntonio",
@@ -12251,7 +12256,9 @@
         "#bfa900",
         "#ffff00"
       ],
-      "confirmed": true
+      "confirmed": true,
+      "image": "https://i.scdn.co/image/ab6761610000e5eb96156d397f7b6d5765aa0276",
+      "imageSource": "spotify"
     }
   ]
 }
