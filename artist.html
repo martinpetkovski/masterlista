@@ -970,18 +970,14 @@
         
         /* Per-section fade-in transitions */
         #popularity-graph-container,
-        #chart-history-container,
-        #rss-media-container,
-        #events-container {
+        #timeline-container {
             opacity: 0;
             max-height: 0;
             overflow: hidden;
             transition: opacity 0.5s ease, max-height 0.5s ease;
         }
         #popularity-graph-container.section-loaded,
-        #chart-history-container.section-loaded,
-        #rss-media-container.section-loaded,
-        #events-container.section-loaded {
+        #timeline-container.section-loaded {
             opacity: 1;
             max-height: 5000px;
             overflow: visible;
@@ -1475,8 +1471,24 @@ a.chart-history-item {
             background: rgba(34, 197, 94, 0.2);
         }
 
-        #rss-media-container, #events-container {
-            margin-top: 1.5rem;
+        .timeline-month-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1.2rem 0 0.4rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 0.8rem;
+        }
+        .timeline-month-header:first-child {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .timeline-item-article,
+        .timeline-item-event {
+            margin-top: 0.5rem;
         }
 
         /* ===== VERIFIED CONTENT STYLING ===== */
@@ -2241,11 +2253,7 @@ a.chart-history-item {
                 
                 <div id="popularity-graph-container"></div>
                 
-                <div id="chart-history-container"></div>
-                
-                <div id="rss-media-container"></div>
-                
-                <div id="events-container"></div>
+                <div id="timeline-container"></div>
                 
                 <div class="artist-footer">
                     <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.75rem;">
@@ -2941,35 +2949,22 @@ a.chart-history-item {
             return mon;
         }
 
-        // Render releases section
-        function renderReleases(artistHistory, artistLinks, siteMaster) {
-            const container = document.getElementById('chart-history-container');
+        // Render unified timeline of releases, articles, and events
+        function renderTimeline(artistHistory, artistLinks, siteMaster, articles, matchedEvents) {
+            const container = document.getElementById('timeline-container');
             if (!container) return;
-            
-            // Convert map to array and sort: new releases (past week) first, then by delta views
+
+            const today = new Date(); today.setHours(0,0,0,0);
             const oneWeekAgo = new Date();
             oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            const releases = Array.from(artistHistory.releases.values())
-                .sort((a, b) => {
-                    const isNewA = new Date(a.releaseDate) >= oneWeekAgo ? 1 : 0;
-                    const isNewB = new Date(b.releaseDate) >= oneWeekAgo ? 1 : 0;
-                    if (isNewA !== isNewB) return isNewB - isNewA;
-                    const deltaA = a.viewsDelta || 0;
-                    const deltaB = b.viewsDelta || 0;
-                    return deltaB - deltaA;
-                });
-            
-            if (releases.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-            
-            // Store releases for music player
+            const MK_MONTHS = t('months.full');
+            const MK_DAYS = t('days.short');
+
+            // ---- RELEASES ----
+            const releases = Array.from(artistHistory.releases.values());
             window.artistReleases = releases;
             window.artistLinks = artistLinks || {};
 
-            // Build a YouTube track lookup: trackName → [{ videoId, url, verified, views, name }]
-            // per release for quick matching (supports multi-link songs)
             function getYtMap(release) {
                 const map = {};
                 if (release.youtubeTracks) {
@@ -2983,7 +2978,6 @@ a.chart-history-item {
                 return map;
             }
 
-            // Compute peak viewsDelta per release type from all chart data (last 4 weeks scope)
             let vuPeakSingle = 1, vuPeakAlbum = 1;
             const allChartReleases = siteMaster && siteMaster.chartData && siteMaster.chartData.releases || [];
             allChartReleases.forEach(r => {
@@ -2993,7 +2987,6 @@ a.chart-history-item {
                     else { if (vd > vuPeakAlbum) vuPeakAlbum = vd; }
                 }
             });
-            // Also check chartWeeks sparklines for this artist's releases (historical deltas)
             releases.forEach(r => {
                 const cw = r.chartWeeks || [];
                 const len = cw.length;
@@ -3007,8 +3000,7 @@ a.chart-history-item {
                 }
             });
 
-            // Build numbered track list per release
-            const releasesHtml = releases.map((release, rIdx) => {
+            const releaseItems = releases.map((release, rIdx) => {
                 const typeLabel = release.releaseType === 'album' ? t('artist.album') : t('artist.single');
                 const typeClass = release.releaseType === 'album' ? 'album' : 'single';
                 const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
@@ -3016,14 +3008,12 @@ a.chart-history-item {
                 const newBadge = isNew ? '<span class="release-new-badge">НОВО</span>' : '';
 
                 const ytMap = getYtMap(release);
-                // Use trackNames if available, otherwise fall back to youtubeTracks names, or just releaseTitle
                 let trackNum = 0;
                 let tracks = release.trackNames && release.trackNames.length > 0
                     ? release.trackNames
                     : (release.youtubeTracks && release.youtubeTracks.length > 0
                         ? release.youtubeTracks.map(yt => yt.name)
                         : [release.releaseTitle]);
-                // Deduplicate track names (for yt-only fallback with multi-link songs)
                 const seenTrackKeys = {};
                 tracks = tracks.filter(name => {
                     const key = name.toLowerCase().trim();
@@ -3031,7 +3021,6 @@ a.chart-history-item {
                     seenTrackKeys[key] = true;
                     return true;
                 });
-                // Add any YouTube tracks not already matched by trackNames
                 if (release.youtubeTracks) {
                     for (const yt of release.youtubeTracks) {
                         const key = yt.name.toLowerCase().trim();
@@ -3051,12 +3040,10 @@ a.chart-history-item {
                     const tick = isVerified
                         ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
                         : '';
-                    // Sum views across all links for the same song
                     const totalViews = ytEntries.reduce((sum, yt) => sum + (yt.views || 0), 0);
                     const viewsHtml = totalViews > 0
                         ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalViews)}</span>`
                         : '';
-                    // Show individual YouTube link pills for all verified entries
                     let linksHtml = '';
                     if (ytEntries.length >= 1) {
                         linksHtml = '<span class="release-track-links">' + ytEntries.map(yt => {
@@ -3069,16 +3056,13 @@ a.chart-history-item {
                     return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${firstYtUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
                 }).join('');
 
-                // Release header with release type, date, cover thumbnail
                 const releaseDate = new Date(release.releaseDate);
                 const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
 
-                // Build VU meter based on current week's viewsDelta
                 let vuMeterHtml = '';
                 const currentDelta = release.viewsDelta || (release.chartWeeks && release.chartWeeks.length >= 2
                     ? release.chartWeeks[release.chartWeeks.length - 1].youtubeViews - release.chartWeeks[release.chartWeeks.length - 2].youtubeViews
                     : 0);
-                // Use type-specific 4-week peak computed from chartWeeks across all releases on this page
                 const vuMaxDelta = release.releaseType === 'single' ? vuPeakSingle : vuPeakAlbum;
                 if (currentDelta > 0) {
                     const totalSegs = 16;
@@ -3095,16 +3079,18 @@ a.chart-history-item {
                     vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(currentDelta)}</span></div>`;
                 }
 
-                // Build collab artist links (show featuring artists if this is a collaboration)
                 const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
-                const collabArtists = allArtists.slice(1); // Skip the first (primary) artist — that's the page owner
+                const collabArtists = allArtists.slice(1);
                 const collabHtml = collabArtists.length > 0
                     ? `<div class="release-collab-artists"><span style="opacity:0.5">feat.</span> ${collabArtists.map(name =>
                         `<a href="${getArtistPageUrl(name)}" class="release-collab-link">${name}</a>`
                       ).join(', ')}</div>`
                     : '';
 
-                return `
+                return {
+                    type: 'release',
+                    date: releaseDate,
+                    html: `
                     <div class="chart-history-item" style="flex-direction:column;align-items:stretch;cursor:default;">
                         <div style="display:flex;align-items:center;gap:0.75rem;">
                             <div class="chart-history-cover">
@@ -3127,17 +3113,119 @@ a.chart-history-item {
                             </div>
                         </div>
                         <ol class="release-track-list">${tracksHtml}</ol>
+                    </div>`
+                };
+            });
+
+            // ---- ARTICLES ----
+            const articleItems = (articles || []).map(article => {
+                const dateStr = article.pubDate.getTime() > 0
+                    ? String(article.pubDate.getDate()).padStart(2,'0') + '.' + String(article.pubDate.getMonth()+1).padStart(2,'0') + '.' + article.pubDate.getFullYear()
+                    : '';
+                return {
+                    type: 'article',
+                    date: article.pubDate.getTime() > 0 ? article.pubDate : new Date(0),
+                    html: `<a href="${article.link}" target="_blank" rel="noopener" class="artist-link rss-article timeline-item-article">
+                        <img src="${article.sourceIcon}" alt="${article.source}" style="width:24px;height:24px;border-radius:3px;flex-shrink:0">
+                        <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-newspaper" style="margin-right:0.3rem;opacity:0.5"></i>${article.source} &middot; ${dateStr}</span>` : ''}</span>
+                        <i class="fas fa-chevron-right artist-link-arrow"></i>
+                    </a>`
+                };
+            });
+
+            // ---- EVENTS ----
+            const upcoming = (matchedEvents || []).filter(e => {
+                const parts = e.date.split('-');
+                const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                return d >= today;
+            }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const past = (matchedEvents || []).filter(e => {
+                const parts = e.date.split('-');
+                const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                return d < today;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+            function buildEventHtml(evt, isPast) {
+                const parts = evt.date.split('-');
+                const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                const daysDiff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+                let badge = '';
+                if (!isPast) {
+                    if (daysDiff === 0) badge = '<span style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.3);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">' + t('artist.today') + '</span>';
+                    else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${daysDiff === 1 ? t('artist.inDays').replace('{0}', daysDiff) : t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
+                    else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
+                }
+                const dateStr = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+                const dayStr = MK_DAYS[d.getDay()];
+                return `<a href="/nastan/${encodeURIComponent(evt.id)}" class="artist-link timeline-item-event" style="text-decoration:none;${isPast ? 'opacity:0.55;' : ''}">
+                    <div style="width:40px;height:40px;border-radius:8px;background:var(--bg-secondary);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                        <i class="fas fa-calendar-day" style="font-size:1rem;color:${isPast ? 'var(--text-muted)' : 'var(--accent-blue)'}"></i>
                     </div>
+                    <span class="artist-link-text">
+                        ${evt.title}${badge}
+                        <span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem">
+                            ${dateStr} (${dayStr})${evt.time ? ' · ' + evt.time : ''}${evt.place ? ' · ' + evt.place : ''}
+                        </span>
+                    </span>
+                    <i class="fas fa-chevron-right artist-link-arrow"></i>
+                </a>`;
+            }
+
+            const upcomingItems = upcoming.map(evt => ({
+                type: 'event-upcoming',
+                date: new Date(evt.date),
+                html: buildEventHtml(evt, false)
+            }));
+
+            const pastEventItems = past.map(evt => ({
+                type: 'event-past',
+                date: new Date(evt.date),
+                html: buildEventHtml(evt, true)
+            }));
+
+            // ---- MERGE & SORT ----
+            // Past items sorted newest-first
+            const timelineItems = [...releaseItems, ...articleItems, ...pastEventItems]
+                .sort((a, b) => b.date - a.date);
+
+            // ---- BUILD HTML ----
+            // Upcoming events section (pinned at top)
+            let upcomingHtml = '';
+            if (upcomingItems.length > 0) {
+                upcomingHtml = `
+                    <h3 class="section-title"><i class="fas fa-calendar-days"></i> ${t('artist.upcomingEvents')}</h3>
+                    <div class="chart-history-list">${upcomingItems.map(i => i.html).join('')}</div>
                 `;
-            }).join('');
-            
-            // Calculate cumulative YouTube views across all releases
+            }
+
+            // Releases summary line
             const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
             const ytViewsHtml = totalYtViews > 0
                 ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
                 : '';
-            
+
+            // Group timeline items by month/year
+            let timelineHtml = '';
+            let lastMonthKey = '';
+            timelineItems.forEach(item => {
+                const monthKey = item.date.getFullYear() > 1970
+                    ? `${MK_MONTHS[item.date.getMonth()]} ${item.date.getFullYear()}`
+                    : '';
+                if (monthKey && monthKey !== lastMonthKey) {
+                    timelineHtml += `<div class="timeline-month-header">${monthKey}</div>`;
+                    lastMonthKey = monthKey;
+                }
+                timelineHtml += item.html;
+            });
+
+            if (timelineItems.length === 0 && upcomingItems.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
             container.innerHTML = `
+                ${upcomingHtml}
                 <div class="chart-history-section">
                     <h3 class="section-title">
                         <i class="fas fa-compact-disc"></i>
@@ -3146,15 +3234,16 @@ a.chart-history-item {
                         <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додај издание</button>
                     </h3>
                     <div class="chart-history-list">
-                        ${releasesHtml}
+                        ${timelineHtml}
                     </div>
                 </div>
             `;
-            // Fade in the section
+
+            // Fade in
             void container.offsetWidth;
             container.classList.add('section-loaded');
-            
-            // Add click handlers for track items - open service chooser
+
+            // Add click handlers for release track items
             container.querySelectorAll('.release-track-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -3418,7 +3507,7 @@ a.chart-history-item {
 
                     // Intersection Observer for parallax reveal of content sections
                     var revealEls = document.querySelectorAll(
-                        '.artist-header, .artist-links, #popularity-graph-container, #chart-history-container, #rss-media-container, #events-container, .artist-footer'
+                        '.artist-header, .artist-links, #popularity-graph-container, #timeline-container, .artist-footer'
                     );
                     revealEls.forEach(function(el) { el.classList.add('vfx-reveal'); });
                     var revealObserver = new IntersectionObserver(function(entries) {
@@ -3464,9 +3553,13 @@ a.chart-history-item {
                     }
                 }
                 
-                // Build chart history from pre-computed site-master data
+                // Build chart history and unified timeline
+                let chartHistory = null;
+                let timelineArticles = [];
+                let timelineEvents = [];
+
                 try {
-                    const chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
+                    chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
                     renderPopularityGraph(chartHistory, siteMaster, artist.name);
                     // Overlay verified youtube data from releases.json (site-master may have stale verified flags)
                     try {
@@ -3480,144 +3573,41 @@ a.chart-history-item {
                             if (ytOverlay[rel.releaseId]) rel.youtubeTracks = ytOverlay[rel.releaseId];
                         });
                     } catch (_) {}
-                    renderReleases(chartHistory, artist.links, siteMaster);
                 } catch (e) {
                     console.warn('Could not build chart history:', e);
+                    chartHistory = { releases: new Map() };
                 }
-                
-                // Load and render media articles from pre-computed site-master data
+
+                // Load articles
                 try {
-                    const matched = getArtistArticles(siteMaster, artist.name);
-                    if (matched.length > 0) {
-                        const mediaContainer = document.getElementById('rss-media-container');
-                        if (mediaContainer) {
-                            const mediaTitle = document.createElement('h3');
-                            mediaTitle.className = 'section-title';
-                            mediaTitle.innerHTML = '<i class="fas fa-newspaper"></i> ' + t('artist.media');
-                            mediaContainer.appendChild(mediaTitle);
-                            
-                            const articlesList = document.createElement('div');
-                            articlesList.className = 'artist-links';
-                            mediaContainer.appendChild(articlesList);
-                            
-                            matched.forEach(article => {
-                            const dateStr = article.pubDate.getTime() > 0 
-                                    ? String(article.pubDate.getDate()).padStart(2,'0') + '.' + String(article.pubDate.getMonth()+1).padStart(2,'0') + '.' + article.pubDate.getFullYear()
-                                    : '';
-                                const a = document.createElement('a');
-                                a.href = article.link;
-                                a.target = '_blank';
-                                a.rel = 'noopener';
-                                a.className = 'artist-link rss-article';
-                                a.innerHTML = `
-                                    <img src="${article.sourceIcon}" alt="${article.source}" style="width:24px;height:24px;border-radius:3px;flex-shrink:0">
-                                    <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem">${article.source} &middot; ${dateStr}</span>` : ''}</span>
-                                    <i class="fas fa-chevron-right artist-link-arrow"></i>
-                                `;
-                                articlesList.appendChild(a);
-                            });
-                            // Fade in media section
-                            void mediaContainer.offsetWidth;
-                            mediaContainer.classList.add('section-loaded');
-                        }
-                    }
+                    timelineArticles = getArtistArticles(siteMaster, artist.name);
                 } catch (e) {
                     console.warn('Could not load articles:', e);
                 }
-                
-                // Load and render upcoming events for this artist from events.json
+
+                // Load events
                 try {
                     const evResp = await fetch('events.json');
                     const evJson = await evResp.json();
                     const events = evJson.events || [];
-                        const today = new Date(); today.setHours(0,0,0,0);
-                        const MK_MONTHS = t('months.short');
-                        const MK_DAYS = t('days.short');
-                        const artistSlug = generateSlug(artist.name);
-                        const artistNameLower = artist.name.toLowerCase();
-                        const artistTranslit = transliterate(artist.name).toLowerCase();
-                        const matched = events.filter(e => {
-                            const artists = (e.artists || e.bands || []);
-                            return artists.some(a => {
-                                if (generateSlug(a) === artistSlug) return true;
-                                if (a.toLowerCase() === artistNameLower) return true;
-                                if (transliterate(a).toLowerCase() === artistTranslit) return true;
-                                return false;
-                            });
+                    const artistSlugEv = generateSlug(artist.name);
+                    const artistNameLowerEv = artist.name.toLowerCase();
+                    const artistTranslitEv = transliterate(artist.name).toLowerCase();
+                    timelineEvents = events.filter(e => {
+                        const artists = (e.artists || e.bands || []);
+                        return artists.some(a => {
+                            if (generateSlug(a) === artistSlugEv) return true;
+                            if (a.toLowerCase() === artistNameLowerEv) return true;
+                            if (transliterate(a).toLowerCase() === artistTranslitEv) return true;
+                            return false;
                         });
-                        const upcoming = matched.filter(e => {
-                            const parts = e.date.split('-');
-                            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                            return d >= today;
-                        }).sort((a, b) => new Date(a.date) - new Date(b.date));
-                        const past = matched.filter(e => {
-                            const parts = e.date.split('-');
-                            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                            return d < today;
-                        }).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
-
-                        function renderEventCard(evt, isPast) {
-                            const parts = evt.date.split('-');
-                            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                            const daysDiff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
-                            let badge = '';
-                            if (!isPast) {
-                                if (daysDiff === 0) badge = '<span style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.3);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">' + t('artist.today') + '</span>';
-                                else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${daysDiff === 1 ? t('artist.inDays').replace('{0}', daysDiff) : t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
-                                else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
-                            }
-                            const dateStr = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
-                            const dayStr = MK_DAYS[d.getDay()];
-                            const item = document.createElement('a');
-                            item.href = '/nastan/' + encodeURIComponent(evt.id);
-                            item.className = 'artist-link';
-                            item.style.textDecoration = 'none';
-                            if (isPast) item.style.opacity = '0.55';
-                            item.innerHTML = `
-                                <div style="width:40px;height:40px;border-radius:8px;background:var(--bg-secondary);border:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                                    <i class="fas fa-calendar-day" style="font-size:1rem;color:${isPast ? 'var(--text-muted)' : 'var(--accent-blue)'}"></i>
-                                </div>
-                                <span class="artist-link-text">
-                                    ${evt.title}${badge}
-                                    <span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem">
-                                        ${dateStr} (${dayStr})${evt.time ? ' · ' + evt.time : ''}${evt.place ? ' · ' + evt.place : ''}
-                                    </span>
-                                </span>
-                                <i class="fas fa-chevron-right artist-link-arrow"></i>
-                            `;
-                            return item;
-                        }
-
-                        const evtContainer = document.getElementById('events-container');
-                        if (evtContainer && (upcoming.length > 0 || past.length > 0)) {
-                            if (upcoming.length > 0) {
-                                const title = document.createElement('h3');
-                                title.className = 'section-title';
-                                title.innerHTML = '<i class="fas fa-calendar-days"></i> ' + t('artist.upcomingEvents');
-                                evtContainer.appendChild(title);
-                                const list = document.createElement('div');
-                                list.className = 'chart-history-list';
-                                evtContainer.appendChild(list);
-                                upcoming.forEach(evt => list.appendChild(renderEventCard(evt, false)));
-                            }
-                            if (past.length > 0) {
-                                const title = document.createElement('h3');
-                                title.className = 'section-title';
-                                title.style.marginTop = '1.5rem';
-                                title.innerHTML = '<i class="fas fa-clock-rotate-left"></i> ' + t('artist.pastEvents');
-                                evtContainer.appendChild(title);
-                                const list = document.createElement('div');
-                                list.className = 'chart-history-list';
-                                evtContainer.appendChild(list);
-                                past.forEach(evt => list.appendChild(renderEventCard(evt, true)));
-                            }
-                            // Fade in events section
-                            void evtContainer.offsetWidth;
-                            evtContainer.classList.add('section-loaded');
-                        }
+                    });
                 } catch (e) {
                     console.warn('Could not load events:', e);
                 }
+
+                // Render unified timeline
+                renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineEvents);
                 
             } catch (error) {
                 console.error('Error loading artist:', error);

@@ -63,6 +63,7 @@ $releases = @($releaseCatalog | ForEach-Object {
     $merged['popularity'] = $cr.popularity
     $merged['followers'] = $cr.followers
     $merged['youtubeViews'] = $cr.youtubeViews
+    $merged['youtubeTrackCount'] = $cr.youtubeTrackCount
     $merged['spotifyPopularity'] = $cr.spotifyPopularity
     [PSCustomObject]$merged
 })
@@ -316,12 +317,12 @@ function Build-ChartRanking {
     $cutoff = $cutoffDate.ToString("yyyy-MM-dd")
     
     # 1. Start with recent releases, enforce 2-per-artist (keep most popular)
-    $recent = @($filtered | Where-Object { $_.releaseDate -ge $cutoff })
+    $recent = @($filtered | Where-Object { ($_.effectiveReleaseDate, $_.releaseDate -ne $null)[0] -ge $cutoff })
     $pool = @(Limit-PerArtist $recent)
     
     # 2. Backfill with most recent older releases, one at a time,
     #    re-enforcing 2-per-artist after each addition
-    $older = @($filtered | Where-Object { $_.releaseDate -lt $cutoff } | Sort-Object { $_.releaseDate } -Descending)
+    $older = @($filtered | Where-Object { ($_.effectiveReleaseDate, $_.releaseDate -ne $null)[0] -lt $cutoff } | Sort-Object { ($_.effectiveReleaseDate, $_.releaseDate -ne $null)[0] } -Descending)
     
     $oi = 0
     while ($pool.Count -lt $count -and $oi -lt $older.Count) {
@@ -366,6 +367,7 @@ foreach ($file in $historyFiles) {
         $merged['popularity'] = $compact.popularity
         $merged['followers'] = $compact.followers
         $merged['youtubeViews'] = if ($null -ne $compact.youtubeViews) { $compact.youtubeViews } else { 0 }
+        $merged['youtubeTrackCount'] = if ($null -ne $compact.youtubeTrackCount) { $compact.youtubeTrackCount } else { 0 }
         $merged['spotifyPopularity'] = if ($null -ne $compact.spotifyPopularity) { $compact.spotifyPopularity } else { 0 }
         [PSCustomObject]$merged
     })
@@ -405,8 +407,10 @@ $prevReleasesDeduped = Invoke-DeduplicateCollabs $previousWeekReleases
 
 # Pre-compute viewsDelta (current - previous week youtubeViews) and attach to each release
 $prevViewsMap = @{}
+$prevTrackCountMap = @{}
 foreach ($pr in $prevReleasesDeduped) {
     $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
+    if ($pr.youtubeTrackCount) { $prevTrackCountMap[$pr.releaseId] = [int]($pr.youtubeTrackCount -as [int]) }
 }
 
 # Determine the Monday of the previous chart-history week
@@ -429,7 +433,8 @@ function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
     $curViews = [int]($r.youtubeViews -as [int])
     # If the release came out after the previous chart Monday, all views are this week's
     $relDate = $null
-    if ($r.releaseDate) { try { $relDate = [datetime]::Parse($r.releaseDate) } catch {} }
+    $effectiveDateStr = if ($r.effectiveReleaseDate) { $r.effectiveReleaseDate } else { $r.releaseDate }
+    if ($effectiveDateStr) { try { $relDate = [datetime]::Parse($effectiveDateStr) } catch {} }
     if ($relDate -and $prevChartMonday -and $relDate -ge $prevChartMonday) {
         return $curViews
     }
@@ -438,6 +443,10 @@ function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
         $prevViews = $prevViewsMap[$r.releaseId]
         # If prev had 0 views but current has views, tracking wasn't active yet — delta unknown
         if ($prevViews -le 0 -and $curViews -gt 0) { return $null }
+        # If youtube track count changed, videos were re-matched — delta unreliable
+        $curTracks = [int]($r.youtubeTrackCount -as [int])
+        $prevTracks = [int]($prevTrackCountMap[$r.releaseId] -as [int])
+        if ($curTracks -gt 0 -and $prevTracks -gt 0 -and $curTracks -ne $prevTracks) { return $null }
         return ($curViews - $prevViews)
     }
     return $null
@@ -510,6 +519,7 @@ function Enrich-ChartItems {
             releaseTitle     = $r.releaseTitle
             releaseType      = $r.releaseType
             releaseDate      = $r.releaseDate
+            effectiveReleaseDate = $r.effectiveReleaseDate
             releaseUrl       = $r.releaseUrl
             thumbnail        = $r.thumbnail
             totalTracks      = $r.totalTracks
@@ -828,8 +838,9 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
             }
             $artistWeekPop[$key] += [int]($r.youtubeViews -as [int])
             
-            # Check if release date falls within this week
-            if ($r.releaseDate -ge $weekMondayStr -and $r.releaseDate -le $weekSundayStr) {
+            # Check if release date falls within this week (use effectiveReleaseDate for singles/songs)
+            $effDate = if ($r.effectiveReleaseDate) { $r.effectiveReleaseDate } else { $r.releaseDate }
+            if ($effDate -ge $weekMondayStr -and $effDate -le $weekSundayStr) {
                 $artistNewRelease[$key] = $true
             }
         }
@@ -863,9 +874,7 @@ Write-Host "  > Building artist cumulative ranking..." -ForegroundColor Yellow
 # Build per-artist cumulative delta from mainReleasesDeduped (which has viewsDelta attached)
 $artistDeltaMap = @{}  # artistKey -> total viewsDelta
 foreach ($r in $mainReleasesDeduped) {
-    foreach ($name in $r.bandName.ToLower().Trim().Split(', ')) {
-        $name = $name.Trim()
-        if (-not $name) { continue }
+    foreach ($name in @($r.bandName.ToLower().Trim() -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
         if (-not $artistDeltaMap.ContainsKey($name)) { $artistDeltaMap[$name] = 0 }
         $artistDeltaMap[$name] += [int]($r.viewsDelta -as [int])
     }
@@ -882,7 +891,7 @@ foreach ($artistKey in $artistDeltaMap.Keys) {
     if ($cumulativePop -le 0) { continue }
 
     # Find a representative release for thumbnail and artistId
-    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
+    $artistReleases = @($mainReleasesDeduped | Where-Object { @($_.bandName.ToLower().Trim() -split ',' | ForEach-Object { $_.Trim() }) -contains $artistKey })
     $topRelease = $artistReleases | Sort-Object { [int]($_.viewsDelta -as [int]) } -Descending | Select-Object -First 1
 
     if ($topRelease) {
@@ -920,7 +929,7 @@ $artistsWithChartData = [System.Collections.ArrayList]::new()
 foreach ($artistKey in $artistPopularityGraphs.Keys) {
     $graph = $artistPopularityGraphs[$artistKey]
     if ($graph.Count -eq 0) { continue }
-    $artistReleases = @($mainReleasesDeduped | Where-Object { $_.bandName.ToLower().Trim().Split(', ') -contains $artistKey })
+    $artistReleases = @($mainReleasesDeduped | Where-Object { @($_.bandName.ToLower().Trim() -split ',' | ForEach-Object { $_.Trim() }) -contains $artistKey })
     $topRelease = $artistReleases | Sort-Object { [int]($_.youtubeViews -as [int]) } -Descending | Select-Object -First 1
     if ($topRelease) {
         $bandInfo = Get-ArtistInfo $topRelease.bandName
@@ -1021,6 +1030,7 @@ foreach ($genre in $genreFilters) {
                 releaseTitle = $_.releaseTitle
                 releaseType  = $_.releaseType
                 releaseDate  = $_.releaseDate
+                effectiveReleaseDate = $_.effectiveReleaseDate
                 releaseUrl   = $_.releaseUrl
                 thumbnail    = $_.thumbnail
                 totalTracks  = $_.totalTracks
@@ -1127,10 +1137,11 @@ foreach ($r in $releases) {
 
 $risingArtists = @()
 foreach ($name in $artistReleaseGroups.Keys) {
-    $rels = @($artistReleaseGroups[$name] | Sort-Object releaseDate)
+    $rels = @($artistReleaseGroups[$name] | Sort-Object { ($_.effectiveReleaseDate, $_.releaseDate -ne $null)[0] })
     
     # Skip if ANY release is older than 2 years
-    if ($rels[0].releaseDate -lt $twoYearCutoff) { continue }
+    $earliestEffDate = ($rels[0].effectiveReleaseDate, $rels[0].releaseDate -ne $null)[0]
+    if ($earliestEffDate -lt $twoYearCutoff) { continue }
     
     # Skip if 10+ releases (Spotify API cap — can't verify truly new)
     if ($rels.Count -ge 10) { continue }
@@ -1144,7 +1155,8 @@ foreach ($name in $artistReleaseGroups.Keys) {
     if ($maxViews -lt 100) { continue }
     
     $viewsTrend = if ($rels.Count -gt 1) { $latestViews - $earliestViews } else { 0 }
-    $daysSinceLatest = [Math]::Floor(($now - [DateTime]::ParseExact($latestRelease.releaseDate, 'yyyy-MM-dd', $null)).TotalDays)
+    $latestEffDate = if ($latestRelease.effectiveReleaseDate) { $latestRelease.effectiveReleaseDate } else { $latestRelease.releaseDate }
+    $daysSinceLatest = [Math]::Floor(($now - [DateTime]::ParseExact($latestEffDate, 'yyyy-MM-dd', $null)).TotalDays)
     $recencyBonus = [Math]::Max(0, 180 - $daysSinceLatest)
     $activityBonus = if ($rels.Count -ge 2) { 25 } else { 0 }
     $score = [Math]::Round($latestViews / 100) + [Math]::Max(0, [Math]::Round($viewsTrend / 100)) * 2 + $recencyBonus + $activityBonus

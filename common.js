@@ -290,14 +290,14 @@ function buildChartRanking(releases, opts) {
     var cutoff = cutoffDate.toISOString().slice(0, 10);
 
     // 1. Start with recent releases, enforce 2-per-artist (keep most popular)
-    var recent = filtered.filter(function(r) { return r.releaseDate >= cutoff; });
+    var recent = filtered.filter(function(r) { return (r.effectiveReleaseDate || r.releaseDate) >= cutoff; });
     var pool = trimPerArtist(recent);
 
     // 2. Backfill with most recent older releases, one at a time,
     //    re-enforcing 2-per-artist after each addition
     var older = filtered
-        .filter(function(r) { return r.releaseDate < cutoff; })
-        .sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
+        .filter(function(r) { return (r.effectiveReleaseDate || r.releaseDate) < cutoff; })
+        .sort(function(a, b) { return new Date(b.effectiveReleaseDate || b.releaseDate) - new Date(a.effectiveReleaseDate || a.releaseDate); });
 
     var oi = 0;
     while (pool.length < count && oi < older.length) {

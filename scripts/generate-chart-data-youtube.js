@@ -379,13 +379,14 @@ async function getVideoStatsBatch(videoIds, apiKey) {
     const results = new Map();
     for (let i = 0; i < videoIds.length; i += YT_BATCH_SIZE) {
         const batch = videoIds.slice(i, i + YT_BATCH_SIZE);
-        const data = await ytApi('videos', { part: 'statistics', id: batch.join(',') }, apiKey);
+        const data = await ytApi('videos', { part: 'statistics,snippet', id: batch.join(',') }, apiKey);
         if (data?.items) {
             for (const item of data.items) {
                 results.set(item.id, {
                     viewCount: parseInt(item.statistics.viewCount || '0', 10),
                     likeCount: parseInt(item.statistics.likeCount || '0', 10),
                     commentCount: parseInt(item.statistics.commentCount || '0', 10),
+                    publishedAt: item.snippet?.publishedAt || null,
                 });
             }
         }
@@ -749,12 +750,14 @@ async function main() {
                 const isWillNotVerify = existing?.verified === 'will-not-verify';
                 const stats = !isWillNotVerify ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
+                const publishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : null;
                 ytTracks.push({
                     name: t.trackName,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
                     verified: isWillNotVerify ? 'will-not-verify' : isVerified ? 'verified' : 'unverified',
-                    ...(views > 0 ? { views } : {})
+                    ...(views > 0 ? { views } : {}),
+                    ...(publishedAt ? { publishedAt } : {})
                 });
                 // Only verified views count toward charts
                 if (isVerified && !alreadyCounted) totalViews += views;
@@ -770,15 +773,35 @@ async function main() {
                 const isVerified = info.verified === 'verified';
                 const stats = isVerified ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
+                const manualPublishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : null;
                 if (isVerified && !alreadyCounted) totalViews += views;
                 ytTracks.push({
                     name: info.name,
                     videoId: vid,
                     url: `https://www.youtube.com/watch?v=${vid}`,
                     verified: info.verified,
-                    ...(views > 0 ? { views } : {})
+                    ...(views > 0 ? { views } : {}),
+                    ...(manualPublishedAt ? { publishedAt: manualPublishedAt } : {})
                 });
             }
+        }
+
+        // Compute effectiveReleaseDate for singles/songs:
+        // Use the earliest YouTube video publishedAt date, falling back to Spotify releaseDate.
+        // For albums, always use the Spotify releaseDate.
+        if (r.releaseType !== 'album') {
+            const ytDates = ytTracks
+                .filter(t => t.publishedAt && t.verified !== 'will-not-verify')
+                .map(t => t.publishedAt);
+            if (ytDates.length > 0) {
+                const earliestYt = ytDates.sort()[0]; // YYYY-MM-DD string sort
+                r.effectiveReleaseDate = (r.releaseDate && r.releaseDate < earliestYt)
+                    ? r.releaseDate : earliestYt;
+            } else {
+                r.effectiveReleaseDate = r.releaseDate;
+            }
+        } else {
+            r.effectiveReleaseDate = r.releaseDate;
         }
 
         // Update release catalog entry
@@ -789,6 +812,7 @@ async function main() {
         const chartEntry = chartMap.get(r.releaseId);
         if (chartEntry) {
             chartEntry.youtubeViews = totalViews;
+            chartEntry.youtubeTrackCount = ytTracks.length;
             chartEntry.spotifyPopularity = chartEntry.popularity || 0;
             chartEntry._totalViews = totalViews;
         }
@@ -828,7 +852,8 @@ async function main() {
 
         for (const cr of chartReleases) {
             const rel = releaseById.get(cr.releaseId);
-            const releaseDate = rel?.releaseDate ? new Date(rel.releaseDate) : null;
+            const effectiveDate = rel?.effectiveReleaseDate || rel?.releaseDate;
+            const releaseDate = effectiveDate ? new Date(effectiveDate) : null;
 
             // If the release came out after the previous chart Monday, all views are this week's
             if (releaseDate && prevChartMonday && releaseDate >= prevChartMonday) {

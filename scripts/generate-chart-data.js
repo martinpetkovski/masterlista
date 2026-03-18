@@ -848,6 +848,9 @@ async function main() {
     if (existing?.youtubeViews) {
       entry.youtubeViews = existing.youtubeViews;
     }
+    if (existing?.effectiveReleaseDate) {
+      entry.effectiveReleaseDate = existing.effectiveReleaseDate;
+    }
     return entry;
   });
   
