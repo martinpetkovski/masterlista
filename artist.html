@@ -1045,17 +1045,7 @@
             margin-top: 1.5rem;
         }
 
-        /* Add-release button */
-        .add-release-btn {
-            margin-left: auto;
-            background: none; border: 1px dashed var(--border-color);
-            color: var(--text-muted); cursor: pointer;
-            padding: 0.2rem 0.55rem; border-radius: 6px;
-            font-size: 0.68rem; font-family: 'Inter', sans-serif;
-            display: inline-flex; align-items: center; gap: 0.3rem;
-            transition: all 0.15s;
-        }
-        .add-release-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
 
         /* Add-release overlay form */
         .add-release-overlay {
@@ -1141,12 +1131,6 @@
             color: var(--text-primary);
         }
         
-        .chart-history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
         .chart-history-item {
             display: flex;
             align-items: center;
@@ -1164,6 +1148,19 @@
         body.dark-mode .chart-history-item {
             background: var(--bg-secondary);
             border-color: rgba(255, 255, 255, 0.06);
+        }
+        body.dark-mode .chart-history-list > .chart-history-item::before,
+        body.dark-mode .chart-history-list > .timeline-item-event::before {
+            border-color: var(--bg-secondary);
+        }
+        body.dark-mode .chart-history-list > .timeline-item-article::before {
+            border-color: var(--bg-secondary);
+        }
+        body.dark-mode .timeline-month-header {
+            background: var(--bg-primary);
+        }
+        body.dark-mode .timeline-month-header::before {
+            background: var(--bg-primary);
         }
         
         .chart-history-item:hover {
@@ -1471,24 +1468,174 @@ a.chart-history-item {
             background: rgba(34, 197, 94, 0.2);
         }
 
+        /* ===== VERTICAL TIMELINE ===== */
+        .chart-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            padding-left: 28px;
+        }
+        .chart-history-list::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-blue, #4a7fa5) 0%, var(--border-color) 8%, var(--border-color) 85%, transparent);
+            border-radius: 1px;
+        }
+        .chart-history-list > .timeline-month-header,
+        .chart-history-list > .chart-history-item,
+        .chart-history-list > .timeline-item-article,
+        .chart-history-list > .timeline-item-event {
+            position: relative;
+        }
+        /* Timeline dot for items */
+        .chart-history-list > .chart-history-item::before,
+        .chart-history-list > .timeline-item-article::before,
+        .chart-history-list > .timeline-item-event::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        /* Release marker: solid blue disc with ring */
+        .chart-history-list > .chart-history-item::before {
+            left: -27px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-blue, #4a7fa5);
+            border: 2px solid var(--bg-primary);
+            box-shadow: 0 0 0 1px var(--accent-blue, #4a7fa5);
+        }
+        /* New-release marker highlight */
+        .chart-history-list > .chart-history-item:has(.release-new-badge)::before {
+            background: #22c55e;
+            box-shadow: 0 0 0 1px #22c55e, 0 0 8px rgba(34, 197, 94, 0.45);
+        }
+        /* Article marker: amber diamond */
+        .chart-history-list > .timeline-item-article::before {
+            left: -26px;
+            width: 7px;
+            height: 7px;
+            border-radius: 1px;
+            background: #f59e0b;
+            border: 2px solid var(--bg-primary);
+            transform: translateY(-50%) rotate(45deg);
+        }
+        /* Event marker: green dot */
+        .chart-history-list > .timeline-item-event::before {
+            left: -26px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            border: 2px solid var(--bg-primary);
+        }
+        /* Past event marker: hollow */
+        .chart-history-list > .timeline-item-event[style*="opacity"]::before {
+            background: var(--bg-primary);
+            border-color: var(--text-muted);
+            box-shadow: none;
+        }
+        /* Card type corner notch: small colored triangle in top-left corner */
+        .chart-history-list > .chart-history-item::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 12px 12px 0 0;
+            border-color: var(--accent-blue, #4a7fa5) transparent transparent transparent;
+            opacity: 0.45;
+        }
+        .chart-history-list > .chart-history-item:has(.release-new-badge)::after {
+            border-color: #22c55e transparent transparent transparent;
+            opacity: 0.55;
+        }
+        .chart-history-list > .timeline-item-article::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 10px 10px 0 0;
+            border-color: #f59e0b transparent transparent transparent;
+            opacity: 0.35;
+        }
+        .chart-history-list > .timeline-item-event::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 10px 10px 0 0;
+            border-color: #22c55e transparent transparent transparent;
+            opacity: 0.4;
+        }
+        .chart-history-list > .timeline-item-event[style*="opacity"]::after {
+            border-color: var(--text-muted) transparent transparent transparent;
+            opacity: 0.2;
+        }
+        /* Month header: pill badge on the timeline */
         .timeline-month-header {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 1.2rem 0 0.4rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 0.8rem;
+            letter-spacing: 0.06em;
+            padding: 0.2rem 0.6rem 0.2rem 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            margin: 0.75rem 0 0.25rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            position: relative;
+            z-index: 2;
+            margin-left: -30px;
+            padding-left: 22px;
+        }
+        .timeline-month-header::before {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--text-muted);
+            z-index: 1;
         }
         .timeline-month-header:first-child {
-            border-top: none;
             margin-top: 0;
-            padding-top: 0;
         }
         .timeline-item-article,
         .timeline-item-event {
-            margin-top: 0.5rem;
+            margin-top: 0.35rem;
+            overflow: hidden;
+        }
+        /* Timeline stats row under section title */
+        .tl-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .tl-stats span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         /* ===== VERIFIED CONTENT STYLING ===== */
@@ -1633,6 +1780,13 @@ a.chart-history-item {
         .verified-accent .release-collab-link { color: var(--va-text); opacity: 0.7; }
         .verified-accent .release-collab-link:hover { opacity: 1; }
         .verified-accent .chart-history-type { background: var(--va-type-bg); }
+        .verified-accent .chart-history-list::before { background: linear-gradient(to bottom, var(--va-card-border) 8%, var(--va-card-border) 85%, transparent); }
+        .verified-accent .chart-history-list > .chart-history-item::before { border-color: var(--va-bg); }
+        .verified-accent .chart-history-list > .timeline-item-article::before,
+        .verified-accent .chart-history-list > .timeline-item-event::before { border-color: var(--va-bg); }
+        .verified-accent .timeline-month-header { color: var(--va-text-muted); background: var(--va-bg); border-color: var(--va-card-border); }
+        .verified-accent .timeline-month-header::before { background: var(--va-bg); border-color: var(--va-text-muted); }
+        .verified-accent .tl-stats { color: var(--va-text-muted); }
 
         /* Glass release tracklist */
         .verified-accent .release-track-item {
@@ -1753,6 +1907,50 @@ a.chart-history-item {
             
             .chart-history-title {
                 font-size: 0.8rem;
+            }
+
+            .chart-history-list {
+                padding-left: 24px;
+            }
+            .chart-history-list::before {
+                left: 6px;
+            }
+            .chart-history-list > .chart-history-item::before {
+                left: -24px;
+                width: 8px;
+                height: 8px;
+                box-shadow: 0 0 0 1px var(--accent-blue, #4a7fa5);
+            }
+            .chart-history-list > .timeline-item-article::before {
+                left: -23px;
+                width: 6px;
+                height: 6px;
+            }
+            .chart-history-list > .timeline-item-event::before {
+                left: -23px;
+                width: 6px;
+                height: 6px;
+            }
+            .chart-history-list > .chart-history-item::after {
+                border-width: 10px 10px 0 0;
+            }
+            .chart-history-list > .timeline-item-article::after,
+            .chart-history-list > .timeline-item-event::after {
+                border-width: 8px 8px 0 0;
+            }
+            .timeline-month-header {
+                margin-left: -26px;
+                padding-left: 20px;
+                font-size: 0.55rem;
+            }
+            .timeline-month-header::before {
+                left: 2px;
+                width: 8px;
+                height: 8px;
+            }
+            .tl-stats {
+                gap: 0.6rem;
+                font-size: 0.6rem;
             }
         }
     </style>
@@ -3185,24 +3383,18 @@ a.chart-history-item {
             }));
 
             // ---- MERGE & SORT ----
-            // Past items sorted newest-first
-            const timelineItems = [...releaseItems, ...articleItems, ...pastEventItems]
+            // All items sorted newest-first (upcoming events naturally appear at top)
+            const timelineItems = [...releaseItems, ...articleItems, ...pastEventItems, ...upcomingItems]
                 .sort((a, b) => b.date - a.date);
 
             // ---- BUILD HTML ----
-            // Upcoming events section (pinned at top)
-            let upcomingHtml = '';
-            if (upcomingItems.length > 0) {
-                upcomingHtml = `
-                    <h3 class="section-title"><i class="fas fa-calendar-days"></i> ${t('artist.upcomingEvents')}</h3>
-                    <div class="chart-history-list">${upcomingItems.map(i => i.html).join('')}</div>
-                `;
-            }
-
-            // Releases summary line
+            // Stats for the section header
             const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
+            const releaseCountHtml = `<span><i class="fas fa-compact-disc"></i> ${releases.length}</span>`;
+            const articleCountHtml = articles && articles.length > 0 ? `<span><i class="fas fa-newspaper"></i> ${articles.length}</span>` : '';
+            const eventCountHtml = (upcoming.length + past.length) > 0 ? `<span><i class="fas fa-calendar-day"></i> ${upcoming.length + past.length}</span>` : '';
             const ytViewsHtml = totalYtViews > 0
-                ? `<span class="release-yt-views" style="margin-left:auto;font-size:0.8em;"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
+                ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
                 : '';
 
             // Group timeline items by month/year
@@ -3219,19 +3411,22 @@ a.chart-history-item {
                 timelineHtml += item.html;
             });
 
-            if (timelineItems.length === 0 && upcomingItems.length === 0) {
+            if (timelineItems.length === 0) {
                 container.innerHTML = '';
                 return;
             }
 
             container.innerHTML = `
-                ${upcomingHtml}
                 <div class="chart-history-section">
                     <h3 class="section-title">
-                        <i class="fas fa-compact-disc"></i>
-                        ${t('artist.releases')} <span style="font-weight:400;font-size:0.75em;opacity:0.6;">(${releases.length})</span>
-                        ${ytViewsHtml}
-                        <button class="add-release-btn" id="add-release-btn"><i class="fas fa-plus"></i> Додај издание</button>
+                        <i class="fas fa-timeline"></i>
+                        ${t('artist.timeline')}
+                        <div class="tl-stats">
+                            ${releaseCountHtml}
+                            ${articleCountHtml}
+                            ${eventCountHtml}
+                            ${ytViewsHtml}
+                        </div>
                     </h3>
                     <div class="chart-history-list">
                         ${timelineHtml}
@@ -4164,13 +4359,6 @@ a.chart-history-item {
                     }
                 });
             }
-
-            document.addEventListener('click', function (e) {
-                if (e.target.closest('#add-release-btn')) {
-                    e.preventDefault();
-                    window.location.href = '/releases';
-                }
-            });
         })();
     </script>
 </body>

@@ -1915,11 +1915,18 @@
             if (editIndex !== undefined && editIndex !== '') {
                 const name = document.getElementById('band-name').value.trim();
                 if (name) {
+                    // Filter out invalid genres before auto-save
+                    let genreValue = document.getElementById('band-genre').value.trim() || 'недостигаат податоци';
+                    if (genreValue && genreValue !== 'недостигаат податоци' && predefinedGenres.length > 0) {
+                        const predefinedLower = predefinedGenres.map(g => g.toLowerCase());
+                        const validGenres = genreValue.split(',').map(g => g.trim()).filter(g => g && predefinedLower.includes(g.toLowerCase()));
+                        genreValue = validGenres.length > 0 ? validGenres.join(', ') : 'недостигаат податоци';
+                    }
                     // Silently save the current form data
                     const band = {
                         name,
                         city: document.getElementById('band-city').value.trim() || 'недостигаат податоци',
-                        genre: document.getElementById('band-genre').value.trim() || 'недостигаат податоци',
+                        genre: genreValue,
                         soundsLike: document.getElementById('band-sounds-like').value.trim() || 'недостигаат податоци',
                         label: document.getElementById('band-label').value.trim() || null,
                         contact: document.getElementById('band-contact').value.trim() || 'недостигаат податоци',
@@ -2069,10 +2076,13 @@
                 const tagClass = inputId === 'band-city' ? 'city-tag' :
                                  inputId === 'band-genre' ? 'genre-tag' : 
                                  inputId === 'band-label' ? 'label-tag' : 'sounds-like-tag';
+                const predefinedLower = inputId === 'band-genre' ? predefinedGenres.map(g => g.toLowerCase()) : null;
                 items.forEach(item => {
                     const tag = document.createElement('span');
-                    tag.className = `tag-item ${tagClass}`;
+                    const isInvalid = predefinedLower && !predefinedLower.includes(item.toLowerCase());
+                    tag.className = `tag-item ${tagClass}${isInvalid ? ' tag-invalid' : ''}`;
                     tag.textContent = localizeText(item);
+                    if (isInvalid) tag.title = 'Непознат жанр';
                     tagContainer.appendChild(tag);
                 });
             }
@@ -2122,6 +2132,18 @@
                 }
                 error.textContent = linkValidation.message;
                 hasError = true;
+            }
+
+            // Validate genres against predefined list
+            const genreRaw = document.getElementById('band-genre').value.trim();
+            if (genreRaw && genreRaw !== 'недостигаат податоци' && predefinedGenres.length > 0) {
+                const enteredGenres = genreRaw.split(',').map(g => g.trim()).filter(Boolean);
+                const predefinedLower = predefinedGenres.map(g => g.toLowerCase());
+                const invalidGenres = enteredGenres.filter(g => !predefinedLower.includes(g.toLowerCase()));
+                if (invalidGenres.length > 0) {
+                    showError(document.getElementById('band-genre'), `Непознати жанрови: ${invalidGenres.join(', ')}`);
+                    hasError = true;
+                }
             }
 
             if (hasError) {

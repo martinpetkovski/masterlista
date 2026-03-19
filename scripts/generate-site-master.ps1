@@ -379,7 +379,7 @@ foreach ($file in $historyFiles) {
 
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
-# Get previous week's data (most recent history entry — chart-data.json minus this = the delta)
+# Get previous week's data for viewsDelta calculation (current views - prev views)
 # On Monday, the current week's snapshot was just created/updated and is identical to chart-data.json,
 # so we need to skip it and use the actual previous week for meaningful deltas.
 $previousWeekReleases = @()
@@ -390,6 +390,21 @@ if ([datetime]::Now.DayOfWeek -eq 'Monday' -and $chartHistoryWeeks.Count -ge 2) 
 }
 if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
     $previousWeekReleases = $chartHistoryWeeks[$prevWeekIndex].releases
+}
+
+# For chevron indicators: compare the two most recent chart-history snapshots
+# (last Monday vs previous Monday) so chevrons stay stable throughout the week
+$chevronCurrentReleases = @()
+$chevronPreviousReleases = @()
+$chevronCurrentIndex = $prevWeekIndex   # most recent snapshot
+$chevronPreviousIndex = $prevWeekIndex + 1  # the one before that
+if ($chartHistoryWeeks.Count -gt $chevronCurrentIndex) {
+    $chevronCurrentReleases = $chartHistoryWeeks[$chevronCurrentIndex].releases
+    Write-Host "  > Chevron current week: $($chartHistoryWeeks[$chevronCurrentIndex].weekId)" -ForegroundColor DarkGray
+}
+if ($chartHistoryWeeks.Count -gt $chevronPreviousIndex) {
+    $chevronPreviousReleases = $chartHistoryWeeks[$chevronPreviousIndex].releases
+    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[$chevronPreviousIndex].weekId)" -ForegroundColor DarkGray
 }
 
 # ============================================================================
@@ -477,10 +492,27 @@ foreach ($genre in $genreFilters) {
 
 # Pre-compute previous-week ranked maps for unlimited charts (only 'all' genre needed;
 # genre subsets are reconstructed client-side from the all-chart data)
+# Chevron maps: compare the two most recent chart-history snapshots for stable week-over-week indicators
+$chevronPrevDeduped = Invoke-DeduplicateCollabs $chevronPreviousReleases
+$chevronCurDeduped = Invoke-DeduplicateCollabs $chevronCurrentReleases
+$chevronPrevByGenre = @{}
+$chevronCurByGenre = @{}
+foreach ($genre in $genreFilters) {
+    if ($genre -eq 'all') {
+        $chevronPrevByGenre[$genre] = $chevronPrevDeduped
+        $chevronCurByGenre[$genre] = $chevronCurDeduped
+    } else {
+        $chevronPrevByGenre[$genre] = @($chevronPrevDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
+        $chevronCurByGenre[$genre] = @($chevronCurDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
+    }
+}
+
 $prevMapsUnlimited = @{}
+$curSnapshotMapsUnlimited = @{}
 foreach ($type in $typeFilters) {
     $key = "all_${type}"
-    $prevRanked = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 0 -preDeduped $prevByGenre['all']
+    # Build map from chevronPrevious (W11) — what position each release had in W11
+    $prevRanked = Build-ChartRanking -releasesArr $chevronPreviousReleases -type $type -genre 'all' -count 0 -preDeduped $chevronPrevByGenre['all']
     $prevMap = @{}
     for ($i = 0; $i -lt $prevRanked.Count; $i++) {
         $prevMap[$prevRanked[$i].releaseId] = @{
@@ -490,11 +522,26 @@ foreach ($type in $typeFilters) {
         }
     }
     $prevMapsUnlimited[$key] = $prevMap
+
+    # Build map from chevronCurrent (W12) — what position each release had in W12
+    $curRanked = Build-ChartRanking -releasesArr $chevronCurrentReleases -type $type -genre 'all' -count 0 -preDeduped $chevronCurByGenre['all']
+    $curMap = @{}
+    for ($i = 0; $i -lt $curRanked.Count; $i++) {
+        $curMap[$curRanked[$i].releaseId] = @{
+            position = $i + 1
+            popularity = [int]($curRanked[$i].popularity -as [int])
+            youtubeViews = [int]($curRanked[$i].youtubeViews -as [int])
+        }
+    }
+    $curSnapshotMapsUnlimited[$key] = $curMap
 }
 
 # Helper: enrich ranked items with position changes, returns ArrayList
+# $prevMap: previous chart-history snapshot for chevron comparison (W11)
+# $curSnapshotMap: current chart-history snapshot for chevron comparison (W12)
+# When both are provided, chevrons compare W12 position vs W11 position (stable week-over-week)
 function Enrich-ChartItems {
-    param([array]$ranked, [hashtable]$prevMap, [bool]$includeGenreCity = $false)
+    param([array]$ranked, [hashtable]$prevMap, [hashtable]$curSnapshotMap = @{}, [bool]$includeGenreCity = $false)
     $enriched = [System.Collections.ArrayList]::new($ranked.Count)
     for ($i = 0; $i -lt $ranked.Count; $i++) {
         $r = $ranked[$i]
@@ -503,9 +550,22 @@ function Enrich-ChartItems {
         $popChange = $null
         $isNew = $true
         
-        if ($prevMap.ContainsKey($r.releaseId)) {
+        # Use snapshot-based comparison for chevrons (W12 vs W11)
+        $curSnap = if ($curSnapshotMap.Count -gt 0) { $curSnapshotMap[$r.releaseId] } else { $null }
+        $prevSnap = if ($prevMap.Count -gt 0) { $prevMap[$r.releaseId] } else { $null }
+        
+        if ($curSnap -and $prevSnap) {
+            # Both snapshots exist: compare W11 position to W12 position
+            $posChange = $prevSnap.position - $curSnap.position  # positive = moved up
+            $popChange = $curSnap.popularity - $prevSnap.popularity
+            $isNew = $false
+        } elseif ($curSnap -and -not $prevSnap) {
+            # In W12 but not in W11: new entry
+            $isNew = $true
+        } elseif (-not $curSnap -and $prevMap.ContainsKey($r.releaseId)) {
+            # Fallback: not in current snapshot but was in prev (e.g., brand-new release added after W12)
             $prev = $prevMap[$r.releaseId]
-            $posChange = $prev.position - $pos  # positive = moved up
+            $posChange = $prev.position - $pos
             $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
             $isNew = $false
         }
@@ -564,8 +624,8 @@ foreach ($genre in $genreFilters) {
     foreach ($type in $typeFilters) {
         $key = "${genre}_${type}"
         
-        # Standard (top 20) — build prev map with count=20 positions using pre-filtered data
-        $prevRankedStd = Build-ChartRanking -releasesArr $previousWeekReleases -type $type -genre 'all' -count 20 -preDeduped $prevByGenre[$genre]
+        # Standard (top 20) — build chevron maps from chart-history snapshots
+        $prevRankedStd = Build-ChartRanking -releasesArr $chevronPreviousReleases -type $type -genre 'all' -count 20 -preDeduped $chevronPrevByGenre[$genre]
         $prevMapStd = @{}
         for ($i = 0; $i -lt $prevRankedStd.Count; $i++) {
             $prevMapStd[$prevRankedStd[$i].releaseId] = @{
@@ -574,13 +634,23 @@ foreach ($genre in $genreFilters) {
                 youtubeViews = [int]($prevRankedStd[$i].youtubeViews -as [int])
             }
         }
+        $curRankedStd = Build-ChartRanking -releasesArr $chevronCurrentReleases -type $type -genre 'all' -count 20 -preDeduped $chevronCurByGenre[$genre]
+        $curMapStd = @{}
+        for ($i = 0; $i -lt $curRankedStd.Count; $i++) {
+            $curMapStd[$curRankedStd[$i].releaseId] = @{
+                position = $i + 1
+                popularity = [int]($curRankedStd[$i].popularity -as [int])
+                youtubeViews = [int]($curRankedStd[$i].youtubeViews -as [int])
+            }
+        }
         
         $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 20 -preDeduped $mainByGenre[$genre]
-        $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd)
+        $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd -curSnapshotMap $curMapStd)
         
         # Advanced (unlimited) — only for 'all' genre; genre subsets reconstructed client-side via _gc field
         if ($genre -eq 'all') {
         $prevMap = $prevMapsUnlimited["all_${type}"]
+        $curSnapshotMap = $curSnapshotMapsUnlimited["all_${type}"]
         $advKey = "all_${type}_advanced"
         
         if ($type -eq 'single') {
@@ -714,11 +784,11 @@ foreach ($genre in $genreFilters) {
             }
             
             $sortedSongs = @(Sort-ChartRanking $songs)
-            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMap -includeGenreCity $true)
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMap -curSnapshotMap $curSnapshotMap -includeGenreCity $true)
         } else {
             # Albums: unchanged — reuse the pre-computed prev map
             $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre['all']
-            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -includeGenreCity $true)
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -curSnapshotMap $curSnapshotMap -includeGenreCity $true)
         }
         }  # end if ($genre -eq 'all')
     }

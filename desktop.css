@@ -1603,6 +1603,7 @@ body.dark-mode .cancel-band-btn:hover {
 .tag-item.genre-tag { background: var(--accent-purple); }
 .tag-item.sounds-like-tag { background: var(--accent-blue); }
 .tag-item.label-tag { background: var(--accent-orange); }
+.tag-item.tag-invalid { background: #d32f2f; opacity: 0.85; }
 
 .edit-hidden { display: inline-block; }
 th.edit-hidden, td.edit-hidden, .action-buttons { display: table-cell; }
