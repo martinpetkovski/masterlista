@@ -24,7 +24,7 @@
           "name": "Milion Zvezdi",
           "videoId": "mGQV5O3nMAk",
           "url": "https://www.youtube.com/watch?v=mGQV5O3nMAk",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 362,
           "publishedAt": "2026-03-18"
         }
@@ -50,7 +50,39 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
       "effectiveReleaseDate": "2026-03-17",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Movement I (The Start)",
+          "videoId": "ZLPKSYcF4jU",
+          "url": "https://www.youtube.com/watch?v=ZLPKSYcF4jU",
+          "verified": "verified"
+        },
+        {
+          "name": "Movement II (One for the Reverie)",
+          "videoId": "ms-j3ESYIJU",
+          "url": "https://www.youtube.com/watch?v=ms-j3ESYIJU",
+          "verified": "verified"
+        },
+        {
+          "name": "Movement III (Labyrinth)",
+          "videoId": "j4cfm0yDhik",
+          "url": "https://www.youtube.com/watch?v=j4cfm0yDhik",
+          "verified": "verified"
+        },
+        {
+          "name": "Movement IV (Continuum)",
+          "videoId": "bY40rQP_UoE",
+          "url": "https://www.youtube.com/watch?v=bY40rQP_UoE",
+          "verified": "verified"
+        },
+        {
+          "name": "Movement V (Goodbyes Take a Thousand Years)",
+          "videoId": "cwvmpIyWxq0",
+          "url": "https://www.youtube.com/watch?v=cwvmpIyWxq0",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Amplidyne Effect",
@@ -67,7 +99,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
       "effectiveReleaseDate": "2026-03-17",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Live at ToBe Continued 2021",
+          "videoId": "PSwcp1QmqBk",
+          "url": "https://www.youtube.com/watch?v=PSwcp1QmqBk",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Климе Ковачески",
@@ -327,7 +367,7 @@
           "name": "Svoja",
           "videoId": "dGmE3YYRnXQ",
           "url": "https://www.youtube.com/watch?v=dGmE3YYRnXQ",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 19402,
           "publishedAt": "2026-03-10"
         }
