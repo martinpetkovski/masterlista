@@ -520,7 +520,7 @@ async function main() {
     const prevMap = new Map(); // releaseId -> { popularity, youtubeViews }
     if (prevWeek) {
         for (const r of prevWeek.releases) {
-            prevMap.set(r.releaseId, { popularity: r.popularity || 0, youtubeViews: r.youtubeViews || 0 });
+            prevMap.set(r.releaseId, { popularity: r.popularity || 0, youtubeViews: r.youtubeViews || 0, youtubeVideoIds: r.youtubeVideoIds || null });
         }
     }
     const useYTHistory = hasYouTubeHistory(prevWeek);
@@ -739,6 +739,7 @@ async function main() {
         const trackMatches = cache.tracks[r.releaseId] || [];
         let totalViews = 0;
         const ytTracks = [];
+        const contributingVideoIds = [];
         const existingTracks = existingYtMap.get(r.releaseId) || new Map();
 
         for (const t of trackMatches) {
@@ -760,7 +761,10 @@ async function main() {
                     ...(publishedAt ? { publishedAt } : {})
                 });
                 // Only verified views count toward charts
-                if (isVerified && !alreadyCounted) totalViews += views;
+                if (isVerified && !alreadyCounted) {
+                    totalViews += views;
+                    contributingVideoIds.push(vid);
+                }
                 existingTracks.delete(vid); // Mark as processed
             }
         }
@@ -774,7 +778,10 @@ async function main() {
                 const stats = isVerified ? allStats.get(vid) : null;
                 const views = stats?.viewCount || 0;
                 const manualPublishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : null;
-                if (isVerified && !alreadyCounted) totalViews += views;
+                if (isVerified && !alreadyCounted) {
+                    totalViews += views;
+                    contributingVideoIds.push(vid);
+                }
                 ytTracks.push({
                     name: info.name,
                     videoId: vid,
@@ -813,6 +820,7 @@ async function main() {
         if (chartEntry) {
             chartEntry.youtubeViews = totalViews;
             chartEntry.youtubeTrackCount = ytTracks.length;
+            chartEntry.youtubeVideoIds = contributingVideoIds.length > 0 ? contributingVideoIds : undefined;
             chartEntry.spotifyPopularity = chartEntry.popularity || 0;
             chartEntry._totalViews = totalViews;
         }
@@ -831,6 +839,7 @@ async function main() {
         for (const r of releases) releaseById.set(r.releaseId, r);
 
         let newReleaseDeltaCount = 0;
+        let videoFilteredCount = 0;
 
         // Determine the Monday of the previous chart-history week from weekId (e.g. "2026-W11")
         let prevChartMonday = null;
@@ -862,15 +871,34 @@ async function main() {
             } else {
                 const prev = prevMap.get(cr.releaseId);
                 if (prev && prev.youtubeViews > 0) {
-                    cr._viewDelta = Math.max(0, (cr.youtubeViews || 0) - prev.youtubeViews);
+                    if (prev.youtubeVideoIds && prev.youtubeVideoIds.length > 0) {
+                        // Per-video comparison: only count views from videos that existed last week
+                        const prevIdSet = new Set(prev.youtubeVideoIds);
+                        const currVideoIds = cr.youtubeVideoIds || [];
+                        let comparableViews = 0;
+                        for (const vid of currVideoIds) {
+                            if (prevIdSet.has(vid)) {
+                                const stats = allStats.get(vid);
+                                comparableViews += stats?.viewCount || 0;
+                            }
+                        }
+                        cr._viewDelta = Math.max(0, comparableViews - prev.youtubeViews);
+                        if (currVideoIds.length > prevIdSet.size) videoFilteredCount++;
+                    } else {
+                        // No per-video data in prev week — fall back to total comparison
+                        cr._viewDelta = Math.max(0, (cr.youtubeViews || 0) - prev.youtubeViews);
+                    }
                 } else {
-                    // No prev data or prev had 0 views (tracking wasn't active) — delta unknown
-                    cr._viewDelta = 0;
+                    // Not in previous chart-history: all views are new this week
+                    cr._viewDelta = cr.youtubeViews || 0;
                 }
             }
         }
         if (newReleaseDeltaCount > 0) {
             console.log(`  ${newReleaseDeltaCount} new release(s) released after previous chart Monday — using total views as delta`);
+        }
+        if (videoFilteredCount > 0) {
+            console.log(`  ${videoFilteredCount} release(s) had newly matched videos filtered out of delta calculation`);
         }
         const typeMap = new Map();
         for (const r of releases) typeMap.set(r.releaseId, r.releaseType);
@@ -888,12 +916,8 @@ async function main() {
     fs.writeFileSync(RELEASES_FILE, JSON.stringify(releasesData, null, 2), 'utf8');
     console.log(`\nUpdated releases.json with YouTube track matches`);
 
-    // Save chart-data.json (with updated views and popularity)
+    // Save chart history FIRST (includes youtubeVideoIds for per-video delta tracking)
     chartData.generatedAt = new Date().toISOString();
-    fs.writeFileSync(CHART_DATA, JSON.stringify(chartData, null, 2), 'utf8');
-    console.log(`Updated chart-data.json with YouTube-based popularity`);
-
-    // Also update the current week's history file — only on Mondays (when the snapshot is first created)
     const now = new Date();
     if (now.getDay() === 1) {
         const d = new Date(now); d.setHours(0, 0, 0, 0);
@@ -909,6 +933,13 @@ async function main() {
     } else {
         console.log(`Skipping chart-history update (today is not Monday)`);
     }
+
+    // Strip youtubeVideoIds before saving chart-data.json (only needed in chart history for delta tracking)
+    for (const cr of chartReleases) { delete cr.youtubeVideoIds; }
+
+    // Save chart-data.json (with updated views and popularity, without video ID lists)
+    fs.writeFileSync(CHART_DATA, JSON.stringify(chartData, null, 2), 'utf8');
+    console.log(`Updated chart-data.json with YouTube-based popularity`);
 
     // Also save channel video cache (strip to save space — only keep titles, not full data)
     delete cache.channelVideos; // Don't persist full channel video lists (refreshed each run)

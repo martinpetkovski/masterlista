@@ -274,6 +274,124 @@ function Limit-PerArtist {
     return @($items | Where-Object { $keepIds.Contains($_.releaseId) })
 }
 
+# Expand releases to individual songs for the advanced singles chart.
+# Single-track releases keep their original releaseId; multi-track get composite IDs.
+function Expand-ReleasesToSongs {
+    param([array]$deduped)
+    $songs = [System.Collections.ArrayList]::new()
+    foreach ($r in $deduped) {
+        $tracks = $r.youtubeTracks
+        if (-not $tracks -or $tracks.Count -eq 0) {
+            $spotifyNames = $r.trackNames
+            if ($spotifyNames -and $spotifyNames.Count -gt 1) {
+                for ($ti = 0; $ti -lt $spotifyNames.Count; $ti++) {
+                    $tName = $spotifyNames[$ti]
+                    if (-not $tName) { continue }
+                    $songId = "$($r.releaseId):t$ti"
+                    $song = [PSCustomObject]@{
+                        releaseId    = $songId
+                        bandName     = $r.bandName
+                        artistId     = $r.artistId
+                        releaseTitle = $tName
+                        releaseType  = $r.releaseType
+                        releaseDate  = $r.releaseDate
+                        releaseUrl   = $r.releaseUrl
+                        thumbnail    = $r.thumbnail
+                        totalTracks  = $r.totalTracks
+                        popularity   = [int]($r.popularity -as [int])
+                        followers    = [int]($r.followers -as [int])
+                        youtubeViews = 0
+                        spotifyUrl   = $r.spotifyUrl
+                    }
+                    $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+                    if ($r.isCollab) { $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force }
+                    [void]$songs.Add($song)
+                }
+            } else {
+                [void]$songs.Add($r)
+            }
+            continue
+        }
+
+        $totalViews = [int]($r.youtubeViews -as [int])
+        $releaseDelta = $r.viewsDelta
+
+        $tracksByName = [ordered]@{}
+        foreach ($track in $tracks) {
+            $tName = $track.name
+            if (-not $tracksByName.Contains($tName)) {
+                $tracksByName[$tName] = @{ views = 0; index = $tracksByName.Count }
+            }
+            $tracksByName[$tName].views += [int]($track.views -as [int])
+        }
+
+        foreach ($tName in $tracksByName.Keys) {
+            $tData = $tracksByName[$tName]
+            $trackViews = $tData.views
+            $ti = $tData.index
+
+            $trackDelta = $null
+            if ($null -ne $releaseDelta -and $totalViews -gt 0) {
+                $trackDelta = [int]([math]::Round([double]$releaseDelta * $trackViews / $totalViews))
+            }
+
+            $songId = if ($tracksByName.Count -eq 1) { $r.releaseId } else { "$($r.releaseId):t$ti" }
+
+            $song = [PSCustomObject]@{
+                releaseId    = $songId
+                bandName     = $r.bandName
+                artistId     = $r.artistId
+                releaseTitle = $tName
+                releaseType  = $r.releaseType
+                releaseDate  = $r.releaseDate
+                releaseUrl   = $r.releaseUrl
+                thumbnail    = $r.thumbnail
+                totalTracks  = $r.totalTracks
+                popularity   = [int]($r.popularity -as [int])
+                followers    = [int]($r.followers -as [int])
+                youtubeViews = $trackViews
+                spotifyUrl   = $r.spotifyUrl
+            }
+            $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $trackDelta -Force
+            if ($r.isCollab) { $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force }
+            [void]$songs.Add($song)
+        }
+
+        # Spotify trackNames not covered by YouTube tracks
+        $spotifyNames = $r.trackNames
+        if ($spotifyNames -and $spotifyNames.Count -gt 0) {
+            $ytNamesLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+            foreach ($tn in $tracksByName.Keys) { [void]$ytNamesLower.Add($tn.ToLower().Trim()) }
+            $extraIdx = $tracksByName.Count
+            foreach ($sn in $spotifyNames) {
+                if (-not $sn) { continue }
+                if ($ytNamesLower.Contains($sn.ToLower().Trim())) { continue }
+                $songId = "$($r.releaseId):t$extraIdx"
+                $song = [PSCustomObject]@{
+                    releaseId    = $songId
+                    bandName     = $r.bandName
+                    artistId     = $r.artistId
+                    releaseTitle = $sn
+                    releaseType  = $r.releaseType
+                    releaseDate  = $r.releaseDate
+                    releaseUrl   = $r.releaseUrl
+                    thumbnail    = $r.thumbnail
+                    totalTracks  = $r.totalTracks
+                    popularity   = [int]($r.popularity -as [int])
+                    followers    = [int]($r.followers -as [int])
+                    youtubeViews = 0
+                    spotifyUrl   = $r.spotifyUrl
+                }
+                $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
+                if ($r.isCollab) { $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force }
+                [void]$songs.Add($song)
+                $extraIdx++
+            }
+        }
+    }
+    return @($songs)
+}
+
 # Build chart ranking (matching common.js buildChartRanking)
 # Accepts optional $preDeduped to skip internal dedup when already done
 function Build-ChartRanking {
@@ -380,31 +498,25 @@ foreach ($file in $historyFiles) {
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
 # Get previous week's data for viewsDelta calculation (current views - prev views)
-# On Monday, the current week's snapshot was just created/updated and is identical to chart-data.json,
-# so we need to skip it and use the actual previous week for meaningful deltas.
+# Chart-history is only updated on Mondays by the YouTube script, so index 0
+# (the most recent snapshot) is the proper baseline for weekly delta calculation.
 $previousWeekReleases = @()
-$prevWeekIndex = 0
-if ([datetime]::Now.DayOfWeek -eq 'Monday' -and $chartHistoryWeeks.Count -ge 2) {
-    $prevWeekIndex = 1
-    Write-Host "  > Monday detected — skipping current week ($($chartHistoryWeeks[0].weekId)), using $($chartHistoryWeeks[1].weekId) as previous" -ForegroundColor DarkYellow
-}
-if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
-    $previousWeekReleases = $chartHistoryWeeks[$prevWeekIndex].releases
+$viewsDeltaPrevIndex = 0
+if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
+    $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
+    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
 }
 
 # For chevron indicators: compare the two most recent chart-history snapshots
-# (last Monday vs previous Monday) so chevrons stay stable throughout the week
 $chevronCurrentReleases = @()
 $chevronPreviousReleases = @()
-$chevronCurrentIndex = $prevWeekIndex   # most recent snapshot
-$chevronPreviousIndex = $prevWeekIndex + 1  # the one before that
-if ($chartHistoryWeeks.Count -gt $chevronCurrentIndex) {
-    $chevronCurrentReleases = $chartHistoryWeeks[$chevronCurrentIndex].releases
-    Write-Host "  > Chevron current week: $($chartHistoryWeeks[$chevronCurrentIndex].weekId)" -ForegroundColor DarkGray
+if ($chartHistoryWeeks.Count -ge 1) {
+    $chevronCurrentReleases = $chartHistoryWeeks[0].releases
+    Write-Host "  > Chevron current week: $($chartHistoryWeeks[0].weekId)" -ForegroundColor DarkGray
 }
-if ($chartHistoryWeeks.Count -gt $chevronPreviousIndex) {
-    $chevronPreviousReleases = $chartHistoryWeeks[$chevronPreviousIndex].releases
-    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[$chevronPreviousIndex].weekId)" -ForegroundColor DarkGray
+if ($chartHistoryWeeks.Count -ge 2) {
+    $chevronPreviousReleases = $chartHistoryWeeks[1].releases
+    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[1].weekId)" -ForegroundColor DarkGray
 }
 
 # ============================================================================
@@ -430,8 +542,8 @@ foreach ($pr in $prevReleasesDeduped) {
 
 # Determine the Monday of the previous chart-history week
 $prevChartMonday = $null
-if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
-    $prevWeekId = $chartHistoryWeeks[$prevWeekIndex].weekId  # e.g. "2026-W11"
+if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
+    $prevWeekId = $chartHistoryWeeks[$viewsDeltaPrevIndex].weekId  # e.g. "2026-W11"
     if ($prevWeekId -match '^(\d{4})-W(\d{2})$') {
         $isoYear = [int]$Matches[1]
         $isoWeek = [int]$Matches[2]
@@ -446,24 +558,25 @@ if ($chartHistoryWeeks.Count -gt $prevWeekIndex) {
 
 function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
     $curViews = [int]($r.youtubeViews -as [int])
-    # If the release came out after the previous chart Monday, all views are this week's
+    if ($curViews -le 0) { return $null }
+
+    # Determine release date
     $relDate = $null
     $effectiveDateStr = if ($r.effectiveReleaseDate) { $r.effectiveReleaseDate } else { $r.releaseDate }
     if ($effectiveDateStr) { try { $relDate = [datetime]::Parse($effectiveDateStr) } catch {} }
+
+    # Released AFTER previous chart Monday → all current views are the delta
     if ($relDate -and $prevChartMonday -and $relDate -ge $prevChartMonday) {
         return $curViews
     }
-    # Otherwise use the delta from prev week
+
+    # Released BEFORE previous chart Monday → delta = current - previous
     if ($prevViewsMap.ContainsKey($r.releaseId)) {
         $prevViews = $prevViewsMap[$r.releaseId]
-        # If prev had 0 views but current has views, tracking wasn't active yet — delta unknown
-        if ($prevViews -le 0 -and $curViews -gt 0) { return $null }
-        # If youtube track count changed, videos were re-matched — delta unreliable
-        $curTracks = [int]($r.youtubeTrackCount -as [int])
-        $prevTracks = [int]($prevTrackCountMap[$r.releaseId] -as [int])
-        if ($curTracks -gt 0 -and $prevTracks -gt 0 -and $curTracks -ne $prevTracks) { return $null }
+        if ($prevViews -le 0) { return $null }   # no baseline data → skip
         return ($curViews - $prevViews)
     }
+
     return $null
 }
 
@@ -536,6 +649,27 @@ foreach ($type in $typeFilters) {
     $curSnapshotMapsUnlimited[$key] = $curMap
 }
 
+# Build song-expanded prev/cur maps for the advanced singles chart.
+# These use the same song expansion logic so composite IDs (releaseId:tN) match.
+$prevSongsExpanded = @(Sort-ChartRanking (Expand-ReleasesToSongs $chevronPrevByGenre['all']))
+$prevMapSongsUnlimited = @{}
+for ($i = 0; $i -lt $prevSongsExpanded.Count; $i++) {
+    $prevMapSongsUnlimited[$prevSongsExpanded[$i].releaseId] = @{
+        position = $i + 1
+        popularity = [int]($prevSongsExpanded[$i].popularity -as [int])
+        youtubeViews = [int]($prevSongsExpanded[$i].youtubeViews -as [int])
+    }
+}
+$curSongsExpanded = @(Sort-ChartRanking (Expand-ReleasesToSongs $chevronCurByGenre['all']))
+$curMapSongsUnlimited = @{}
+for ($i = 0; $i -lt $curSongsExpanded.Count; $i++) {
+    $curMapSongsUnlimited[$curSongsExpanded[$i].releaseId] = @{
+        position = $i + 1
+        popularity = [int]($curSongsExpanded[$i].popularity -as [int])
+        youtubeViews = [int]($curSongsExpanded[$i].youtubeViews -as [int])
+    }
+}
+
 # Helper: enrich ranked items with position changes, returns ArrayList
 # $prevMap: previous chart-history snapshot for chevron comparison (W11)
 # $curSnapshotMap: current chart-history snapshot for chevron comparison (W12)
@@ -550,25 +684,22 @@ function Enrich-ChartItems {
         $popChange = $null
         $isNew = $true
         
-        # Use snapshot-based comparison for chevrons (W12 vs W11)
+        # Use last week's snapshot (curSnap = W12) to compare against current position
         $curSnap = if ($curSnapshotMap.Count -gt 0) { $curSnapshotMap[$r.releaseId] } else { $null }
-        $prevSnap = if ($prevMap.Count -gt 0) { $prevMap[$r.releaseId] } else { $null }
         
-        if ($curSnap -and $prevSnap) {
-            # Both snapshots exist: compare W11 position to W12 position
-            $posChange = $prevSnap.position - $curSnap.position  # positive = moved up
-            $popChange = $curSnap.popularity - $prevSnap.popularity
+        if ($curSnap) {
+            # Song was in last week's chart — compare last week position to current position
+            $posChange = $curSnap.position - $pos  # positive = moved up
+            $popChange = ([int]($r.youtubeViews -as [int])) - $curSnap.youtubeViews
             $isNew = $false
-        } elseif ($curSnap -and -not $prevSnap) {
-            # In W12 but not in W11: new entry
-            $isNew = $true
-        } elseif (-not $curSnap -and $prevMap.ContainsKey($r.releaseId)) {
-            # Fallback: not in current snapshot but was in prev (e.g., brand-new release added after W12)
+        } elseif ($prevMap.Count -gt 0 -and $prevMap.ContainsKey($r.releaseId)) {
+            # Not in last week but was in the week before — still compare to current
             $prev = $prevMap[$r.releaseId]
             $posChange = $prev.position - $pos
-            $popChange = ([int]($r.popularity -as [int])) - $prev.popularity
+            $popChange = ([int]($r.youtubeViews -as [int])) - $prev.youtubeViews
             $isNew = $false
         }
+        # Otherwise: not in any previous week — new entry ($isNew = $true)
         
         $artistInfo = Get-ArtistInfo $r.bandName
         
@@ -655,136 +786,10 @@ foreach ($genre in $genreFilters) {
         
         if ($type -eq 'single') {
             # Songs expansion: include individual tracks from ALL release types (singles + albums)
-            # Group by song name within each release to sum views from multiple YouTube links
-            $genreDeduped = $mainByGenre['all']
-            $songs = [System.Collections.ArrayList]::new()
-            
-            foreach ($r in $genreDeduped) {
-                $tracks = $r.youtubeTracks
-                if (-not $tracks -or $tracks.Count -eq 0) {
-                    # No YouTube tracks — expand Spotify trackNames if available
-                    $spotifyNames = $r.trackNames
-                    if ($spotifyNames -and $spotifyNames.Count -gt 1) {
-                        for ($ti = 0; $ti -lt $spotifyNames.Count; $ti++) {
-                            $tName = $spotifyNames[$ti]
-                            if (-not $tName) { continue }
-                            $songId = "$($r.releaseId):t$ti"
-                            $song = [PSCustomObject]@{
-                                releaseId    = $songId
-                                bandName     = $r.bandName
-                                artistId     = $r.artistId
-                                releaseTitle = $tName
-                                releaseType  = $r.releaseType
-                                releaseDate  = $r.releaseDate
-                                releaseUrl   = $r.releaseUrl
-                                thumbnail    = $r.thumbnail
-                                totalTracks  = $r.totalTracks
-                                popularity   = [int]($r.popularity -as [int])
-                                followers    = [int]($r.followers -as [int])
-                                youtubeViews = 0
-                                spotifyUrl   = $r.spotifyUrl
-                            }
-                            $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
-                            if ($r.isCollab) {
-                                $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
-                            }
-                            [void]$songs.Add($song)
-                        }
-                    } else {
-                        # Single track or no trackNames — include release as a single entry
-                        [void]$songs.Add($r)
-                    }
-                    continue
-                }
-                
-                $totalViews = [int]($r.youtubeViews -as [int])
-                $releaseDelta = $r.viewsDelta
-                
-                # Group tracks by name (same song may have multiple YouTube links)
-                $tracksByName = [ordered]@{}
-                foreach ($track in $tracks) {
-                    $tName = $track.name
-                    if (-not $tracksByName.Contains($tName)) {
-                        $tracksByName[$tName] = @{ views = 0; index = $tracksByName.Count }
-                    }
-                    $tracksByName[$tName].views += [int]($track.views -as [int])
-                }
-                
-                foreach ($tName in $tracksByName.Keys) {
-                    $tData = $tracksByName[$tName]
-                    $trackViews = $tData.views
-                    $ti = $tData.index
-                    
-                    # Proportional viewsDelta from release-level delta
-                    $trackDelta = $null
-                    if ($null -ne $releaseDelta -and $totalViews -gt 0) {
-                        $trackDelta = [int]([math]::Round([double]$releaseDelta * $trackViews / $totalViews))
-                    }
-                    
-                    # Single-song releases keep original releaseId (matches prevMap);
-                    # multi-song releases get composite ID (shows as NEW)
-                    $songId = if ($tracksByName.Count -eq 1) { $r.releaseId } else { "$($r.releaseId):t$ti" }
-                    
-                    $song = [PSCustomObject]@{
-                        releaseId    = $songId
-                        bandName     = $r.bandName
-                        artistId     = $r.artistId
-                        releaseTitle = $tName
-                        releaseType  = $r.releaseType
-                        releaseDate  = $r.releaseDate
-                        releaseUrl   = $r.releaseUrl
-                        thumbnail    = $r.thumbnail
-                        totalTracks  = $r.totalTracks
-                        popularity   = [int]($r.popularity -as [int])
-                        followers    = [int]($r.followers -as [int])
-                        youtubeViews = $trackViews
-                        spotifyUrl   = $r.spotifyUrl
-                    }
-                    $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $trackDelta -Force
-                    if ($r.isCollab) {
-                        $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
-                    }
-                    
-                    [void]$songs.Add($song)
-                }
-                
-                # Also add any Spotify trackNames not already covered by YouTube tracks
-                $spotifyNames = $r.trackNames
-                if ($spotifyNames -and $spotifyNames.Count -gt 0) {
-                    $ytNamesLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-                    foreach ($tn in $tracksByName.Keys) { [void]$ytNamesLower.Add($tn.ToLower().Trim()) }
-                    $extraIdx = $tracksByName.Count
-                    foreach ($sn in $spotifyNames) {
-                        if (-not $sn) { continue }
-                        if ($ytNamesLower.Contains($sn.ToLower().Trim())) { continue }
-                        $songId = "$($r.releaseId):t$extraIdx"
-                        $song = [PSCustomObject]@{
-                            releaseId    = $songId
-                            bandName     = $r.bandName
-                            artistId     = $r.artistId
-                            releaseTitle = $sn
-                            releaseType  = $r.releaseType
-                            releaseDate  = $r.releaseDate
-                            releaseUrl   = $r.releaseUrl
-                            thumbnail    = $r.thumbnail
-                            totalTracks  = $r.totalTracks
-                            popularity   = [int]($r.popularity -as [int])
-                            followers    = [int]($r.followers -as [int])
-                            youtubeViews = 0
-                            spotifyUrl   = $r.spotifyUrl
-                        }
-                        $song | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $null -Force
-                        if ($r.isCollab) {
-                            $song | Add-Member -NotePropertyName isCollab -NotePropertyValue $true -Force
-                        }
-                        [void]$songs.Add($song)
-                        $extraIdx++
-                    }
-                }
-            }
-            
+            $songs = Expand-ReleasesToSongs $mainByGenre['all']
             $sortedSongs = @(Sort-ChartRanking $songs)
-            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMap -curSnapshotMap $curSnapshotMap -includeGenreCity $true)
+            # Use song-expanded prev/cur maps so composite IDs match and positions are comparable
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMapSongsUnlimited -curSnapshotMap $curMapSongsUnlimited -includeGenreCity $true)
         } else {
             # Albums: unchanged — reuse the pre-computed prev map
             $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre['all']
@@ -1406,10 +1411,10 @@ $matchedArticles = @($matchedArticles | Sort-Object { $_.date } -Descending)
 Write-Host "  > Filtered articles: $($matchedArticles.Count) matched artists" -ForegroundColor DarkGray
 
 # ============================================================================
-#  10. RELEASE RADAR (latest 5 releases)
+#  10. RELEASE RADAR (latest 10 releases)
 # ============================================================================
 
-$releaseRadar = @($deduped | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 5 |
+$releaseRadar = @($deduped | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 10 |
     ForEach-Object {
         $typeLabel = switch ($_.releaseType) {
             'album' { 'Албум' }
@@ -1646,7 +1651,7 @@ $siteMaster = [PSCustomObject]@{
     # Rising artist candidates (sorted by score desc)
     risingArtists = $risingArtists
     
-    # Release radar (latest 5)
+    # Release radar (latest 10)
     releaseRadar = $releaseRadar
     
     # Activity status per artist: artistName(lower) -> status string

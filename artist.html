@@ -1162,6 +1162,9 @@
         body.dark-mode .timeline-month-header::before {
             background: var(--bg-primary);
         }
+        body.dark-mode .timeline-today-marker::before {
+            border-color: var(--bg-secondary);
+        }
         
         .chart-history-item:hover {
             transform: translateY(-1px);
@@ -1622,6 +1625,44 @@ a.chart-history-item {
             margin-top: 0.35rem;
             overflow: hidden;
         }
+        /* Today marker on the timeline */
+        .timeline-today-marker {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 0.6rem 0 0.4rem -30px;
+            padding-left: 0;
+            z-index: 2;
+        }
+        .timeline-today-marker::before {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: 2px solid var(--bg-primary);
+            box-shadow: 0 0 0 1px #ef4444, 0 0 6px rgba(239, 68, 68, 0.4);
+            z-index: 2;
+        }
+        .timeline-today-marker .today-label {
+            font-size: 0.55rem;
+            font-weight: 800;
+            color: #ef4444;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-left: 22px;
+            white-space: nowrap;
+        }
+        .timeline-today-marker .today-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, #ef4444 0%, transparent 100%);
+            margin-left: 0.4rem;
+        }
         /* Timeline stats row under section title */
         .tl-stats {
             display: flex;
@@ -1787,6 +1828,7 @@ a.chart-history-item {
         .verified-accent .timeline-month-header { color: var(--va-text-muted); background: var(--va-bg); border-color: var(--va-card-border); }
         .verified-accent .timeline-month-header::before { background: var(--va-bg); border-color: var(--va-text-muted); }
         .verified-accent .tl-stats { color: var(--va-text-muted); }
+        .verified-accent .timeline-today-marker::before { border-color: var(--va-bg); }
 
         /* Glass release tracklist */
         .verified-accent .release-track-item {
@@ -1951,6 +1993,18 @@ a.chart-history-item {
             .tl-stats {
                 gap: 0.6rem;
                 font-size: 0.6rem;
+            }
+            .timeline-today-marker {
+                margin-left: -26px;
+            }
+            .timeline-today-marker::before {
+                width: 10px;
+                height: 10px;
+                left: 2px;
+            }
+            .timeline-today-marker .today-label {
+                margin-left: 18px;
+                font-size: 0.5rem;
             }
         }
     </style>
@@ -3400,7 +3454,16 @@ a.chart-history-item {
             // Group timeline items by month/year
             let timelineHtml = '';
             let lastMonthKey = '';
+            let todayInserted = false;
+            const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+            const todayMarkerHtml = `<div class="timeline-today-marker"><span class="today-label">${t('artist.today')}</span><span class="today-line"></span></div>`;
+
             timelineItems.forEach(item => {
+                // Insert today marker before the first item that's in the past
+                if (!todayInserted && item.date < todayStart) {
+                    timelineHtml += todayMarkerHtml;
+                    todayInserted = true;
+                }
                 const monthKey = item.date.getFullYear() > 1970
                     ? `${MK_MONTHS[item.date.getMonth()]} ${item.date.getFullYear()}`
                     : '';
@@ -3410,6 +3473,10 @@ a.chart-history-item {
                 }
                 timelineHtml += item.html;
             });
+            // If all items are in the future/today, append marker at the end
+            if (!todayInserted && timelineItems.length > 0) {
+                timelineHtml += todayMarkerHtml;
+            }
 
             if (timelineItems.length === 0) {
                 container.innerHTML = '';

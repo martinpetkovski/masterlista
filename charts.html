@@ -176,8 +176,15 @@
         }
         
         body.dark-mode .chart-stat.followers {
-            color: var(--accent-orange);
-            text-shadow: none;
+            color: var(--text-primary, #d5d8de);
+        }
+        body.dark-mode .chart-stat.followers .delta-sign.up {
+            color: #4ade80;
+            display: none;
+        }
+        body.dark-mode .chart-stat.followers .delta-sign.down {
+            color: #f87171;
+            display: none;
         }
         
         body.dark-mode .chart-stat.weeks {
@@ -1732,10 +1739,21 @@
             background: var(--accent-orange);
             color: #fff;
             padding: 0.1rem 0.25rem;
-            border-radius: 3px;
+                border-radius: 0;
             margin-left: 0.35rem;
             vertical-align: middle;
         }
+
+            .chart-title-row {
+                display: flex;
+                align-items: center;
+                gap: 0.45rem;
+                min-width: 0;
+            }
+
+            .chart-title-row .chart-stat.weeks {
+                flex-shrink: 0;
+            }
         
         .chart-meta {
             display: flex;
@@ -1761,24 +1779,34 @@
         
         .chart-stat.weeks {
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: #94a3b8;
-            min-width: 26px;
-            text-align: right;
+            text-align: left;
         }
         
         .chart-stat.followers {
-            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: #8b929a;
-            min-width: 36px;
-            text-align: right;
+            padding: 0;
+            border-radius: 0;
+            background: none;
+            color: var(--text-muted, #1a1d21);
+            letter-spacing: 0.02em;
             cursor: default;
-            text-shadow: none;
-            letter-spacing: -0.04em;
+            white-space: nowrap;
+            line-height: 1.2;
         }
+        .chart-stat.followers .delta-sign {
+            font-size: 0.35em;
+            line-height: 1;
+            display: none;
+        }
+        .chart-stat.followers .delta-sign.up { color: #22c55e; }
+        .chart-stat.followers .delta-sign.down { color: #ef4444; }
         
         .chart-stat i { display: none; }
         
@@ -2912,9 +2940,9 @@
                 const abs = Math.abs(n);
                 const formatted = abs >= 1000000000 ? (abs / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>' : abs >= 1000000 ? (abs / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>' : abs >= 1000 ? (abs / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>' : abs;
                 if (n > 0) {
-                    return '<span style="color:#16c953">+</span>' + formatted;
+                    return '<span class="delta-sign up">▲</span>' + formatted;
                 } else {
-                    return '<span style="color:#f03e3e">−</span>' + formatted;
+                    return '<span class="delta-sign down">▼</span>' + formatted;
                 }
             }
             
@@ -4089,13 +4117,15 @@
                                 }
                             </div>
                             <div class="chart-info">
-                                <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="${t('charts.clickToOpen')}">${localizeText(release.releaseTitle)}</div>
+                                <div class="chart-title-row">
+                                    <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" title="${t('charts.clickToOpen')}">${localizeText(release.releaseTitle)}</div>
+                                    ${metaContent}
+                                </div>
                                 <div class="chart-artist">
                                     ${renderArtistLinks(release.bandName)}${isConfirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                                 </div>
                             </div>
                             <div class="chart-meta">
-                                ${metaContent}
                                 <span class="chart-stat followers" title="${popTitle}"${popTooltipAttr}>${metricDisplay}</span>
                             </div>
                         </li>
