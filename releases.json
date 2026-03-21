@@ -137706,7 +137706,27 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5iXyY2yra1nQpFOxXyvnkB?si=3HRfP2asTsSFz7bSZNzWzg",
       "effectiveReleaseDate": "2010",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Ista si",
+          "videoId": "56YbUxVdNn8",
+          "url": "https://www.youtube.com/watch?v=56YbUxVdNn8",
+          "verified": "verified"
+        },
+        {
+          "name": "Ista si",
+          "videoId": "AtBU4h_VJk8",
+          "url": "https://www.youtube.com/watch?v=AtBU4h_VJk8",
+          "verified": "verified"
+        },
+        {
+          "name": "Ista si",
+          "videoId": "KQebJkC-l2s",
+          "url": "https://www.youtube.com/watch?v=KQebJkC-l2s",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Тони Зен",
@@ -137744,7 +137764,7 @@
           "name": "Intro (Vo moj stil)",
           "videoId": "dJb1VaBPucg",
           "url": "https://www.youtube.com/watch?v=dJb1VaBPucg",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 79681,
           "publishedAt": "2013-01-11"
         },
@@ -137752,9 +137772,393 @@
           "name": "Skandal",
           "videoId": "TXGrxt8LDnU",
           "url": "https://www.youtube.com/watch?v=TXGrxt8LDnU",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 9884,
           "publishedAt": "2013-01-11"
+        },
+        {
+          "name": "Intro (Vo moj stil)",
+          "videoId": "weDj45VOZcs",
+          "url": "https://www.youtube.com/watch?v=weDj45VOZcs",
+          "verified": "verified"
+        },
+        {
+          "name": "Vo moj stil",
+          "videoId": "a68yW-uX5dQ",
+          "url": "https://www.youtube.com/watch?v=a68yW-uX5dQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne me zamaraj (feat. Slatkaristika & Tamara Todevska)",
+          "videoId": "bZdnoFZhOKw",
+          "url": "https://www.youtube.com/watch?v=bZdnoFZhOKw",
+          "verified": "verified"
+        },
+        {
+          "name": "Toni Zeeen!",
+          "videoId": "rW_l_UNE4kc",
+          "url": "https://www.youtube.com/watch?v=rW_l_UNE4kc",
+          "verified": "verified"
+        },
+        {
+          "name": "Okay",
+          "videoId": "52fqnM8Das8",
+          "url": "https://www.youtube.com/watch?v=52fqnM8Das8",
+          "verified": "verified"
+        },
+        {
+          "name": "Intervju (feat. Slatkaristika)",
+          "videoId": "49tNOnRfZlI",
+          "url": "https://www.youtube.com/watch?v=49tNOnRfZlI",
+          "verified": "verified"
+        },
+        {
+          "name": "Plukaj",
+          "videoId": "dMx7kTmTfV0",
+          "url": "https://www.youtube.com/watch?v=dMx7kTmTfV0",
+          "verified": "verified"
+        },
+        {
+          "name": "Nova škola, star aspekt",
+          "videoId": "I-d26B67bRQ",
+          "url": "https://www.youtube.com/watch?v=I-d26B67bRQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Bi sakal (feat. Žele and Dejan Janušev)",
+          "videoId": "DmWqRHnWpUw",
+          "url": "https://www.youtube.com/watch?v=DmWqRHnWpUw",
+          "verified": "verified"
+        },
+        {
+          "name": "Ja bi te (feat. Slatkaristika)",
+          "videoId": "IzxnsHaOBTo",
+          "url": "https://www.youtube.com/watch?v=IzxnsHaOBTo",
+          "verified": "verified"
+        },
+        {
+          "name": "Skokaj (feat. Kacar, Ace NL & Sigi)",
+          "videoId": "Gw35FJL5j24",
+          "url": "https://www.youtube.com/watch?v=Gw35FJL5j24",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "xgmED4pF5nY",
+          "url": "https://www.youtube.com/watch?v=xgmED4pF5nY",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "pZw8cueVi6M",
+          "url": "https://www.youtube.com/watch?v=pZw8cueVi6M",
+          "verified": "verified"
+        },
+        {
+          "name": "Spušti se dole (feat. Slatkaristika)",
+          "videoId": "4w4GA99MrMA",
+          "url": "https://www.youtube.com/watch?v=4w4GA99MrMA",
+          "verified": "verified"
+        },
+        {
+          "name": "Na vrvot - Remix",
+          "videoId": "C_h7VW0G3iw",
+          "url": "https://www.youtube.com/watch?v=C_h7VW0G3iw",
+          "verified": "verified"
+        },
+        {
+          "name": "Dva prsta (feat. Dejan Janušev)",
+          "videoId": "jSs8th2nU8Y",
+          "url": "https://www.youtube.com/watch?v=jSs8th2nU8Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Sega znam (feat. Martin Srbinoski)",
+          "videoId": "GR3XsL1zvnU",
+          "url": "https://www.youtube.com/watch?v=GR3XsL1zvnU",
+          "verified": "verified"
+        },
+        {
+          "name": "Vo moj stil",
+          "videoId": "mdplzZzccMM",
+          "url": "https://www.youtube.com/watch?v=mdplzZzccMM",
+          "verified": "verified"
+        },
+        {
+          "name": "Intro (Vo moj stil)",
+          "videoId": "nVhozTbVWJo",
+          "url": "https://www.youtube.com/watch?v=nVhozTbVWJo",
+          "verified": "verified"
+        },
+        {
+          "name": "Intro (Vo moj stil)",
+          "videoId": "z2VMEcFdQX0",
+          "url": "https://www.youtube.com/watch?v=z2VMEcFdQX0",
+          "verified": "verified"
+        },
+        {
+          "name": "Vo moj stil",
+          "videoId": "c9Lfej4mfdI",
+          "url": "https://www.youtube.com/watch?v=c9Lfej4mfdI",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne me zamaraj (feat. Slatkaristika & Tamara Todevska)",
+          "videoId": "KODRld8s8A8",
+          "url": "https://www.youtube.com/watch?v=KODRld8s8A8",
+          "verified": "verified"
+        },
+        {
+          "name": "Toni Zeeen!",
+          "videoId": "If79We6nMDU",
+          "url": "https://www.youtube.com/watch?v=If79We6nMDU",
+          "verified": "verified"
+        },
+        {
+          "name": "Okay",
+          "videoId": "l8TFFL5hnxs",
+          "url": "https://www.youtube.com/watch?v=l8TFFL5hnxs",
+          "verified": "verified"
+        },
+        {
+          "name": "Intervju (feat. Slatkaristika)",
+          "videoId": "2FDh_HOKjzw",
+          "url": "https://www.youtube.com/watch?v=2FDh_HOKjzw",
+          "verified": "verified"
+        },
+        {
+          "name": "Plukaj",
+          "videoId": "RuOspS8F1B8",
+          "url": "https://www.youtube.com/watch?v=RuOspS8F1B8",
+          "verified": "verified"
+        },
+        {
+          "name": "Nova škola, star aspekt",
+          "videoId": "u2wH1DHAVBU",
+          "url": "https://www.youtube.com/watch?v=u2wH1DHAVBU",
+          "verified": "verified"
+        },
+        {
+          "name": "Bi sakal (feat. Žele and Dejan Janušev)",
+          "videoId": "aQnHz6bOpVw",
+          "url": "https://www.youtube.com/watch?v=aQnHz6bOpVw",
+          "verified": "verified"
+        },
+        {
+          "name": "Ja bi te (feat. Slatkaristika)",
+          "videoId": "jwEr2q6Imv0",
+          "url": "https://www.youtube.com/watch?v=jwEr2q6Imv0",
+          "verified": "verified"
+        },
+        {
+          "name": "Skokaj (feat. Kacar, Ace NL & Sigi)",
+          "videoId": "KPtO9CeihG0",
+          "url": "https://www.youtube.com/watch?v=KPtO9CeihG0",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "bDd146zZQUI",
+          "url": "https://www.youtube.com/watch?v=bDd146zZQUI",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "bAKvOnIAZMY",
+          "url": "https://www.youtube.com/watch?v=bAKvOnIAZMY",
+          "verified": "verified"
+        },
+        {
+          "name": "Spušti se dole (feat. Slatkaristika)",
+          "videoId": "BSJXMWkJwHM",
+          "url": "https://www.youtube.com/watch?v=BSJXMWkJwHM",
+          "verified": "verified"
+        },
+        {
+          "name": "Na vrvot - Remix",
+          "videoId": "bNNWxzz-eVw",
+          "url": "https://www.youtube.com/watch?v=bNNWxzz-eVw",
+          "verified": "verified"
+        },
+        {
+          "name": "Dva prsta (feat. Dejan Janušev)",
+          "videoId": "wBGBJoC4qTo",
+          "url": "https://www.youtube.com/watch?v=wBGBJoC4qTo",
+          "verified": "verified"
+        },
+        {
+          "name": "Sega znam (feat. Martin Srbinoski)",
+          "videoId": "c7ijyYGshpA",
+          "url": "https://www.youtube.com/watch?v=c7ijyYGshpA",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne me zamaraj (feat. Slatkaristika & Tamara Todevska)",
+          "videoId": "LG-9ckhMMzU",
+          "url": "https://www.youtube.com/watch?v=LG-9ckhMMzU",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne me zamaraj (feat. Slatkaristika & Tamara Todevska)",
+          "videoId": "GVunIq8flx0",
+          "url": "https://www.youtube.com/watch?v=GVunIq8flx0",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne me zamaraj (feat. Slatkaristika & Tamara Todevska)",
+          "videoId": "RQH7j8-Ufs8",
+          "url": "https://www.youtube.com/watch?v=RQH7j8-Ufs8",
+          "verified": "verified"
+        },
+        {
+          "name": "Plukaj",
+          "videoId": "m7P2Lgwr5ZU",
+          "url": "https://www.youtube.com/watch?v=m7P2Lgwr5ZU",
+          "verified": "verified"
+        },
+        {
+          "name": "Plukaj",
+          "videoId": "OP0BsjFxltg",
+          "url": "https://www.youtube.com/watch?v=OP0BsjFxltg",
+          "verified": "verified"
+        },
+        {
+          "name": "Nova škola, star aspekt",
+          "videoId": "N78oJqMmpIA",
+          "url": "https://www.youtube.com/watch?v=N78oJqMmpIA",
+          "verified": "verified"
+        },
+        {
+          "name": "Nova škola, star aspekt",
+          "videoId": "jBfNpi76CsI",
+          "url": "https://www.youtube.com/watch?v=jBfNpi76CsI",
+          "verified": "verified"
+        },
+        {
+          "name": "Bi sakal (feat. Žele and Dejan Janušev)",
+          "videoId": "bPcYK2yUyYk",
+          "url": "https://www.youtube.com/watch?v=bPcYK2yUyYk",
+          "verified": "verified"
+        },
+        {
+          "name": "Ja bi te (feat. Slatkaristika)",
+          "videoId": "G66DWfv6AuU",
+          "url": "https://www.youtube.com/watch?v=G66DWfv6AuU",
+          "verified": "verified"
+        },
+        {
+          "name": "Skokaj (feat. Kacar, Ace NL & Sigi)",
+          "videoId": "nIfZRVzyJeM",
+          "url": "https://www.youtube.com/watch?v=nIfZRVzyJeM",
+          "verified": "verified"
+        },
+        {
+          "name": "Skokaj (feat. Kacar, Ace NL & Sigi)",
+          "videoId": "vVUcyTmfppQ",
+          "url": "https://www.youtube.com/watch?v=vVUcyTmfppQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "qL6gB8cyzPA",
+          "url": "https://www.youtube.com/watch?v=qL6gB8cyzPA",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "mH4FLTfWjts",
+          "url": "https://www.youtube.com/watch?v=mH4FLTfWjts",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "w9hz-e9HZrY",
+          "url": "https://www.youtube.com/watch?v=w9hz-e9HZrY",
+          "verified": "verified"
+        },
+        {
+          "name": "Jas sum hip hop",
+          "videoId": "L_Dt2bwU_FI",
+          "url": "https://www.youtube.com/watch?v=L_Dt2bwU_FI",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "YNhzx8oYNxs",
+          "url": "https://www.youtube.com/watch?v=YNhzx8oYNxs",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "F_nav6xbeW0",
+          "url": "https://www.youtube.com/watch?v=F_nav6xbeW0",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "B9_DVdzBEvY",
+          "url": "https://www.youtube.com/watch?v=B9_DVdzBEvY",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "padM1jLzvqs",
+          "url": "https://www.youtube.com/watch?v=padM1jLzvqs",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "BWOiSsGyAEQ",
+          "url": "https://www.youtube.com/watch?v=BWOiSsGyAEQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Skandal",
+          "videoId": "FiP7MPLves4",
+          "url": "https://www.youtube.com/watch?v=FiP7MPLves4",
+          "verified": "verified"
+        },
+        {
+          "name": "Spušti se dole (feat. Slatkaristika)",
+          "videoId": "kegI2d1wQmw",
+          "url": "https://www.youtube.com/watch?v=kegI2d1wQmw",
+          "verified": "verified"
+        },
+        {
+          "name": "Spušti se dole (feat. Slatkaristika)",
+          "videoId": "HsyI0aOXbjQ",
+          "url": "https://www.youtube.com/watch?v=HsyI0aOXbjQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Spušti se dole (feat. Slatkaristika)",
+          "videoId": "Wa4CkCVfD_A",
+          "url": "https://www.youtube.com/watch?v=Wa4CkCVfD_A",
+          "verified": "verified"
+        },
+        {
+          "name": "Na vrvot - Remix",
+          "videoId": "OnOsujo7QC4",
+          "url": "https://www.youtube.com/watch?v=OnOsujo7QC4",
+          "verified": "verified"
+        },
+        {
+          "name": "Na vrvot - Remix",
+          "videoId": "QyQxlbld6do",
+          "url": "https://www.youtube.com/watch?v=QyQxlbld6do",
+          "verified": "verified"
+        },
+        {
+          "name": "Dva prsta (feat. Dejan Janušev)",
+          "videoId": "xBAqy3arCW0",
+          "url": "https://www.youtube.com/watch?v=xBAqy3arCW0",
+          "verified": "verified"
+        },
+        {
+          "name": "Sega znam (feat. Martin Srbinoski)",
+          "videoId": "gqozCTpxcbU",
+          "url": "https://www.youtube.com/watch?v=gqozCTpxcbU",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-12-04",
@@ -137776,7 +138180,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
       "effectiveReleaseDate": "2009-12-01",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Sreќa i taga",
+          "videoId": "556gG8buGYQ",
+          "url": "https://www.youtube.com/watch?v=556gG8buGYQ",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "String Forces",
@@ -137806,9 +138218,111 @@
           "name": "One",
           "videoId": "i5GeYhe3HdY",
           "url": "https://www.youtube.com/watch?v=i5GeYhe3HdY",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 79,
           "publishedAt": "2024-09-19"
+        },
+        {
+          "name": "What Has Come to Be",
+          "videoId": "u78cdmCBOfU",
+          "url": "https://www.youtube.com/watch?v=u78cdmCBOfU",
+          "verified": "verified"
+        },
+        {
+          "name": "What Has Come to Be",
+          "videoId": "SDcMBDiCEgk",
+          "url": "https://www.youtube.com/watch?v=SDcMBDiCEgk",
+          "verified": "verified"
+        },
+        {
+          "name": "Reflection Chamber",
+          "videoId": "19mWZS-birg",
+          "url": "https://www.youtube.com/watch?v=19mWZS-birg",
+          "verified": "verified"
+        },
+        {
+          "name": "Dantalion",
+          "videoId": "pLE5jx8wsTM",
+          "url": "https://www.youtube.com/watch?v=pLE5jx8wsTM",
+          "verified": "verified"
+        },
+        {
+          "name": "Custodis",
+          "videoId": "J0zC23Z3Ydk",
+          "url": "https://www.youtube.com/watch?v=J0zC23Z3Ydk",
+          "verified": "verified"
+        },
+        {
+          "name": "Wish",
+          "videoId": "1UqZFtCyotw",
+          "url": "https://www.youtube.com/watch?v=1UqZFtCyotw",
+          "verified": "verified"
+        },
+        {
+          "name": "Embrace",
+          "videoId": "fggtaxc8Dk8",
+          "url": "https://www.youtube.com/watch?v=fggtaxc8Dk8",
+          "verified": "verified"
+        },
+        {
+          "name": "Grieve",
+          "videoId": "8omp3Daqaf4",
+          "url": "https://www.youtube.com/watch?v=8omp3Daqaf4",
+          "verified": "verified"
+        },
+        {
+          "name": "One",
+          "videoId": "NxW_5-Mh_0w",
+          "url": "https://www.youtube.com/watch?v=NxW_5-Mh_0w",
+          "verified": "verified"
+        },
+        {
+          "name": "Septem Loci",
+          "videoId": "R5VUvUiaHd8",
+          "url": "https://www.youtube.com/watch?v=R5VUvUiaHd8",
+          "verified": "verified"
+        },
+        {
+          "name": "The Power Circle",
+          "videoId": "OMQN5xzDvYA",
+          "url": "https://www.youtube.com/watch?v=OMQN5xzDvYA",
+          "verified": "verified"
+        },
+        {
+          "name": "Reflection Chamber",
+          "videoId": "8i43nXNthJs",
+          "url": "https://www.youtube.com/watch?v=8i43nXNthJs",
+          "verified": "verified"
+        },
+        {
+          "name": "Dantalion",
+          "videoId": "chijQ-oJnJI",
+          "url": "https://www.youtube.com/watch?v=chijQ-oJnJI",
+          "verified": "verified"
+        },
+        {
+          "name": "Custodis",
+          "videoId": "LKGabofic20",
+          "url": "https://www.youtube.com/watch?v=LKGabofic20",
+          "verified": "verified"
+        },
+        {
+          "name": "Wish",
+          "videoId": "SUlZVYMHJpc",
+          "url": "https://www.youtube.com/watch?v=SUlZVYMHJpc",
+          "verified": "verified"
+        },
+        {
+          "name": "Embrace",
+          "videoId": "MgHqqvCv2E8",
+          "url": "https://www.youtube.com/watch?v=MgHqqvCv2E8",
+          "verified": "verified"
+        },
+        {
+          "name": "Septem Loci",
+          "videoId": "m5UI0ib8UYQ",
+          "url": "https://www.youtube.com/watch?v=m5UI0ib8UYQ",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-11-27",
@@ -137845,9 +138359,177 @@
           "name": "Ic Ne Me Boli",
           "videoId": "cmBeu7bekaw",
           "url": "https://www.youtube.com/watch?v=cmBeu7bekaw",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 1030624,
           "publishedAt": "2018-08-12"
+        },
+        {
+          "name": "Ic Ne Me Boli",
+          "videoId": "fZGdlxEsepU",
+          "url": "https://www.youtube.com/watch?v=fZGdlxEsepU",
+          "verified": "verified"
+        },
+        {
+          "name": "Ic Ne Me Boli",
+          "videoId": "W8zQ6LtL6kY",
+          "url": "https://www.youtube.com/watch?v=W8zQ6LtL6kY",
+          "verified": "verified"
+        },
+        {
+          "name": "Ic Ne Me Boli",
+          "videoId": "C26cKtNFs58",
+          "url": "https://www.youtube.com/watch?v=C26cKtNFs58",
+          "verified": "verified"
+        },
+        {
+          "name": "Ic Ne Me Boli",
+          "videoId": "ew_WwOfrLag",
+          "url": "https://www.youtube.com/watch?v=ew_WwOfrLag",
+          "verified": "verified"
+        },
+        {
+          "name": "Taj Ti Ne Lici",
+          "videoId": "z4mJSdB4SHc",
+          "url": "https://www.youtube.com/watch?v=z4mJSdB4SHc",
+          "verified": "verified"
+        },
+        {
+          "name": "Taj Ti Ne Lici",
+          "videoId": "S9Z-V3jP3ro",
+          "url": "https://www.youtube.com/watch?v=S9Z-V3jP3ro",
+          "verified": "verified"
+        },
+        {
+          "name": "Taj Ti Ne Lici",
+          "videoId": "WukrSt1UAKQ",
+          "url": "https://www.youtube.com/watch?v=WukrSt1UAKQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Mi Smeta",
+          "videoId": "Raj1h2X7Cyg",
+          "url": "https://www.youtube.com/watch?v=Raj1h2X7Cyg",
+          "verified": "verified"
+        },
+        {
+          "name": "Ona Ne E Od Mojot Grat",
+          "videoId": "pCdvMin5-Eo",
+          "url": "https://www.youtube.com/watch?v=pCdvMin5-Eo",
+          "verified": "verified"
+        },
+        {
+          "name": "Ona Ne E Od Mojot Grat",
+          "videoId": "Z_ycmOmYaJQ",
+          "url": "https://www.youtube.com/watch?v=Z_ycmOmYaJQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Bidi Naporna",
+          "videoId": "kEgYaVjryzc",
+          "url": "https://www.youtube.com/watch?v=kEgYaVjryzc",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Bidi Naporna",
+          "videoId": "4deCEGzdwA8",
+          "url": "https://www.youtube.com/watch?v=4deCEGzdwA8",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Bidi Naporna",
+          "videoId": "PT_X2VONvt4",
+          "url": "https://www.youtube.com/watch?v=PT_X2VONvt4",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Bidi Naporna",
+          "videoId": "wqcrBDeQnS0",
+          "url": "https://www.youtube.com/watch?v=wqcrBDeQnS0",
+          "verified": "verified"
+        },
+        {
+          "name": "Ni Slucajno",
+          "videoId": "3sH36HE1qqs",
+          "url": "https://www.youtube.com/watch?v=3sH36HE1qqs",
+          "verified": "verified"
+        },
+        {
+          "name": "Ni Slucajno",
+          "videoId": "RLrDjVLOVMM",
+          "url": "https://www.youtube.com/watch?v=RLrDjVLOVMM",
+          "verified": "verified"
+        },
+        {
+          "name": "Kako Nov",
+          "videoId": "UvdCpN2vg4Y",
+          "url": "https://www.youtube.com/watch?v=UvdCpN2vg4Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Kako Nov",
+          "videoId": "ZuL4IVWVMLw",
+          "url": "https://www.youtube.com/watch?v=ZuL4IVWVMLw",
+          "verified": "verified"
+        },
+        {
+          "name": "Zasluzuvas",
+          "videoId": "ciQ8uhUN6_w",
+          "url": "https://www.youtube.com/watch?v=ciQ8uhUN6_w",
+          "verified": "verified"
+        },
+        {
+          "name": "Zasluzuvas",
+          "videoId": "j1hxjQcDxsw",
+          "url": "https://www.youtube.com/watch?v=j1hxjQcDxsw",
+          "verified": "verified"
+        },
+        {
+          "name": "Ako Mozes Prosti Mi",
+          "videoId": "BsoIVoHbtrs",
+          "url": "https://www.youtube.com/watch?v=BsoIVoHbtrs",
+          "verified": "verified"
+        },
+        {
+          "name": "Ako Mozes Prosti Mi",
+          "videoId": "YIAeMcQQthc",
+          "url": "https://www.youtube.com/watch?v=YIAeMcQQthc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazi Nesto Draga",
+          "videoId": "nE-6DLl3hr0",
+          "url": "https://www.youtube.com/watch?v=nE-6DLl3hr0",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazi Nesto Draga",
+          "videoId": "l8WMltIcuiU",
+          "url": "https://www.youtube.com/watch?v=l8WMltIcuiU",
+          "verified": "verified"
+        },
+        {
+          "name": "Licno Tvoj",
+          "videoId": "_iDrWDWoePY",
+          "url": "https://www.youtube.com/watch?v=_iDrWDWoePY",
+          "verified": "verified"
+        },
+        {
+          "name": "Armija",
+          "videoId": "f6BlOE3mJI0",
+          "url": "https://www.youtube.com/watch?v=f6BlOE3mJI0",
+          "verified": "verified"
+        },
+        {
+          "name": "Armija",
+          "videoId": "acsaM49MsuM",
+          "url": "https://www.youtube.com/watch?v=acsaM49MsuM",
+          "verified": "verified"
+        },
+        {
+          "name": "Armija",
+          "videoId": "1acZTWtvB6w",
+          "url": "https://www.youtube.com/watch?v=1acZTWtvB6w",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-11-15",
@@ -137883,7 +138565,7 @@
           "name": "Melodia sentimental",
           "videoId": "BeBLf9s3n-A",
           "url": "https://www.youtube.com/watch?v=BeBLf9s3n-A",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1273,
           "publishedAt": "2022-11-04"
         },
@@ -137891,7 +138573,7 @@
           "name": "Oblivion",
           "videoId": "A-oVx5cxo6E",
           "url": "https://www.youtube.com/watch?v=A-oVx5cxo6E",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5439,
           "publishedAt": "2023-01-29"
         },
@@ -137899,7 +138581,7 @@
           "name": "Wachet auf, ruft uns die stimme",
           "videoId": "IdsLrdsbCh8",
           "url": "https://www.youtube.com/watch?v=IdsLrdsbCh8",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 863,
           "publishedAt": "2022-11-04"
         },
@@ -137907,7 +138589,7 @@
           "name": "Cinema Paradiso",
           "videoId": "TyTpc_4N3gY",
           "url": "https://www.youtube.com/watch?v=TyTpc_4N3gY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 873,
           "publishedAt": "2022-11-04"
         },
@@ -137915,7 +138597,7 @@
           "name": "Hallelujah",
           "videoId": "HLIPtO7kjWs",
           "url": "https://www.youtube.com/watch?v=HLIPtO7kjWs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2090,
           "publishedAt": "2023-02-12"
         },
@@ -137923,7 +138605,7 @@
           "name": "Ja vstretil vas",
           "videoId": "NNkAjVXck94",
           "url": "https://www.youtube.com/watch?v=NNkAjVXck94",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1814,
           "publishedAt": "2022-11-04"
         },
@@ -137931,7 +138613,7 @@
           "name": "Amarilli mia bella",
           "videoId": "1PXDGkCf6Zc",
           "url": "https://www.youtube.com/watch?v=1PXDGkCf6Zc",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 685,
           "publishedAt": "2022-11-04"
         },
@@ -137939,7 +138621,7 @@
           "name": "Alfonsina y el mar",
           "videoId": "84uioeBSDbs",
           "url": "https://www.youtube.com/watch?v=84uioeBSDbs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 815,
           "publishedAt": "2022-11-04"
         },
@@ -137947,7 +138629,7 @@
           "name": "So maki sum se rodila",
           "videoId": "FGl5uZyG_KU",
           "url": "https://www.youtube.com/watch?v=FGl5uZyG_KU",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2623,
           "publishedAt": "2022-11-04"
         }
@@ -137983,7 +138665,7 @@
           "name": "Holy Zion",
           "videoId": "xt_VbKNvXPg",
           "url": "https://www.youtube.com/watch?v=xt_VbKNvXPg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 50576,
           "publishedAt": "2010-12-22"
         },
@@ -137991,7 +138673,7 @@
           "name": "Free The World",
           "videoId": "yXA-gEmx6os",
           "url": "https://www.youtube.com/watch?v=yXA-gEmx6os",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5159,
           "publishedAt": "2010-12-22"
         },
@@ -137999,7 +138681,7 @@
           "name": "Jah Love",
           "videoId": "gqKQv46PSpo",
           "url": "https://www.youtube.com/watch?v=gqKQv46PSpo",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 25757,
           "publishedAt": "2010-12-22"
         },
@@ -138007,7 +138689,7 @@
           "name": "Blind",
           "videoId": "CYLrnsH5n4w",
           "url": "https://www.youtube.com/watch?v=CYLrnsH5n4w",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 10227,
           "publishedAt": "2010-12-22"
         },
@@ -138015,7 +138697,7 @@
           "name": "Hypocrisy",
           "videoId": "Uc1Pi8SpQF4",
           "url": "https://www.youtube.com/watch?v=Uc1Pi8SpQF4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 6161,
           "publishedAt": "2010-12-22"
         },
@@ -138023,7 +138705,7 @@
           "name": "Irie Day",
           "videoId": "Hvq4YHY3nmM",
           "url": "https://www.youtube.com/watch?v=Hvq4YHY3nmM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5310,
           "publishedAt": "2010-12-22"
         },
@@ -138031,7 +138713,7 @@
           "name": "Money Pollution",
           "videoId": "UjNS08HuPME",
           "url": "https://www.youtube.com/watch?v=UjNS08HuPME",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5426,
           "publishedAt": "2010-12-22"
         },
@@ -138039,7 +138721,7 @@
           "name": "Tribal Freedom",
           "videoId": "HMwqdfRwc4s",
           "url": "https://www.youtube.com/watch?v=HMwqdfRwc4s",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5885,
           "publishedAt": "2010-12-22"
         },
@@ -138047,7 +138729,7 @@
           "name": "Re-Socialize",
           "videoId": "JycT4XU2rgs",
           "url": "https://www.youtube.com/watch?v=JycT4XU2rgs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 4186,
           "publishedAt": "2010-12-23"
         },
@@ -138055,9 +138737,99 @@
           "name": "Reality",
           "videoId": "6OtXy6yWQec",
           "url": "https://www.youtube.com/watch?v=6OtXy6yWQec",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 8906,
           "publishedAt": "2010-12-23"
+        },
+        {
+          "name": "Holy Zion",
+          "videoId": "FJAKKSZlz_M",
+          "url": "https://www.youtube.com/watch?v=FJAKKSZlz_M",
+          "verified": "verified"
+        },
+        {
+          "name": "Free The World",
+          "videoId": "1ttnXIIM33A",
+          "url": "https://www.youtube.com/watch?v=1ttnXIIM33A",
+          "verified": "verified"
+        },
+        {
+          "name": "Jah Love",
+          "videoId": "-P_vHKyEOKo",
+          "url": "https://www.youtube.com/watch?v=-P_vHKyEOKo",
+          "verified": "verified"
+        },
+        {
+          "name": "Blind",
+          "videoId": "JT5xCTHJbDQ",
+          "url": "https://www.youtube.com/watch?v=JT5xCTHJbDQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Hypocrisy",
+          "videoId": "Im3lt1dO-t4",
+          "url": "https://www.youtube.com/watch?v=Im3lt1dO-t4",
+          "verified": "verified"
+        },
+        {
+          "name": "Irie Day",
+          "videoId": "fsvuX5cR2Ms",
+          "url": "https://www.youtube.com/watch?v=fsvuX5cR2Ms",
+          "verified": "verified"
+        },
+        {
+          "name": "Money Pollution",
+          "videoId": "u40gOp9RmAM",
+          "url": "https://www.youtube.com/watch?v=u40gOp9RmAM",
+          "verified": "verified"
+        },
+        {
+          "name": "Tribal Freedom",
+          "videoId": "6I8J_BRLhdg",
+          "url": "https://www.youtube.com/watch?v=6I8J_BRLhdg",
+          "verified": "verified"
+        },
+        {
+          "name": "Re-Socialize",
+          "videoId": "dmjsxoYUzOY",
+          "url": "https://www.youtube.com/watch?v=dmjsxoYUzOY",
+          "verified": "verified"
+        },
+        {
+          "name": "Reality",
+          "videoId": "aV0IX_At3MU",
+          "url": "https://www.youtube.com/watch?v=aV0IX_At3MU",
+          "verified": "verified"
+        },
+        {
+          "name": "Free The World",
+          "videoId": "8DS8QpDSQz8",
+          "url": "https://www.youtube.com/watch?v=8DS8QpDSQz8",
+          "verified": "verified"
+        },
+        {
+          "name": "Blind",
+          "videoId": "Q3VDfj3f_vU",
+          "url": "https://www.youtube.com/watch?v=Q3VDfj3f_vU",
+          "verified": "verified"
+        },
+        {
+          "name": "Hypocrisy",
+          "videoId": "j6I5obzNSog",
+          "url": "https://www.youtube.com/watch?v=j6I5obzNSog",
+          "verified": "verified"
+        },
+        {
+          "name": "Irie Day",
+          "videoId": "ByQxAm1LH7E",
+          "url": "https://www.youtube.com/watch?v=ByQxAm1LH7E",
+          "verified": "verified"
+        },
+        {
+          "name": "Tribal Freedom",
+          "videoId": "OEzbzO4d-ns",
+          "url": "https://www.youtube.com/watch?v=OEzbzO4d-ns",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-10-01",
@@ -138096,7 +138868,7 @@
           "name": "Belo zname",
           "videoId": "jQQlsZrqpIg",
           "url": "https://www.youtube.com/watch?v=jQQlsZrqpIg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 6022,
           "publishedAt": "2017-02-19"
         },
@@ -138104,7 +138876,7 @@
           "name": "Cveke za izvini",
           "videoId": "dXSfNODTtvs",
           "url": "https://www.youtube.com/watch?v=dXSfNODTtvs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 7559,
           "publishedAt": "2017-02-18"
         },
@@ -138112,7 +138884,7 @@
           "name": "Vistina",
           "videoId": "PPmOALHjXLI",
           "url": "https://www.youtube.com/watch?v=PPmOALHjXLI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1211,
           "publishedAt": "2017-02-19"
         },
@@ -138120,7 +138892,7 @@
           "name": "Solzi i vino",
           "videoId": "yZLvjlasK5s",
           "url": "https://www.youtube.com/watch?v=yZLvjlasK5s",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1450,
           "publishedAt": "2017-02-18"
         },
@@ -138128,7 +138900,7 @@
           "name": "Raduvaj se",
           "videoId": "F059O9oKbmg",
           "url": "https://www.youtube.com/watch?v=F059O9oKbmg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1022,
           "publishedAt": "2017-02-19"
         },
@@ -138136,7 +138908,7 @@
           "name": "Zivotot e...",
           "videoId": "4u800_NGKAs",
           "url": "https://www.youtube.com/watch?v=4u800_NGKAs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1570,
           "publishedAt": "2017-02-20"
         },
@@ -138144,7 +138916,7 @@
           "name": "Kapka pot",
           "videoId": "nqiJ4p8cOFo",
           "url": "https://www.youtube.com/watch?v=nqiJ4p8cOFo",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 54598,
           "publishedAt": "2017-02-18"
         },
@@ -138152,7 +138924,7 @@
           "name": "Kuckin sin",
           "videoId": "gE2ebTX7a2c",
           "url": "https://www.youtube.com/watch?v=gE2ebTX7a2c",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 125036,
           "publishedAt": "2017-02-20"
         },
@@ -138160,7 +138932,7 @@
           "name": "Daj mi vino",
           "videoId": "71M6awqVupI",
           "url": "https://www.youtube.com/watch?v=71M6awqVupI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2066,
           "publishedAt": "2017-02-20"
         },
@@ -138168,7 +138940,7 @@
           "name": "Tvoite oci",
           "videoId": "SdvTIZ7078s",
           "url": "https://www.youtube.com/watch?v=SdvTIZ7078s",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2341,
           "publishedAt": "2017-02-20"
         },
@@ -138176,7 +138948,7 @@
           "name": "Bez zdiv",
           "videoId": "1YQFCcdPT1c",
           "url": "https://www.youtube.com/watch?v=1YQFCcdPT1c",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 5071,
           "publishedAt": "2017-02-18"
         },
@@ -138184,7 +138956,7 @@
           "name": "Nema zosto",
           "videoId": "NQQnByyR0ik",
           "url": "https://www.youtube.com/watch?v=NQQnByyR0ik",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1551,
           "publishedAt": "2017-02-18"
         },
@@ -138192,9 +138964,183 @@
           "name": "Raduj se",
           "videoId": "gDuocCQTTxY",
           "url": "https://www.youtube.com/watch?v=gDuocCQTTxY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 459,
           "publishedAt": "2025-05-21"
+        },
+        {
+          "name": "Raspukala Sar Planina",
+          "videoId": "nrpFr4L2wD0",
+          "url": "https://www.youtube.com/watch?v=nrpFr4L2wD0",
+          "verified": "verified"
+        },
+        {
+          "name": "Belo zname",
+          "videoId": "oS5GMA2IRjI",
+          "url": "https://www.youtube.com/watch?v=oS5GMA2IRjI",
+          "verified": "verified"
+        },
+        {
+          "name": "Cveke za izvini",
+          "videoId": "4VBZhf9jsTc",
+          "url": "https://www.youtube.com/watch?v=4VBZhf9jsTc",
+          "verified": "verified"
+        },
+        {
+          "name": "Vistina",
+          "videoId": "sKZg1HjfY5s",
+          "url": "https://www.youtube.com/watch?v=sKZg1HjfY5s",
+          "verified": "verified"
+        },
+        {
+          "name": "Solzi i vino",
+          "videoId": "4sifO8JPWbQ",
+          "url": "https://www.youtube.com/watch?v=4sifO8JPWbQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Raduvaj se",
+          "videoId": "08gvLm46QOE",
+          "url": "https://www.youtube.com/watch?v=08gvLm46QOE",
+          "verified": "verified"
+        },
+        {
+          "name": "Zivotot e...",
+          "videoId": "Hq25FkWx5Zc",
+          "url": "https://www.youtube.com/watch?v=Hq25FkWx5Zc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kapka pot",
+          "videoId": "TQyswOsGKJ8",
+          "url": "https://www.youtube.com/watch?v=TQyswOsGKJ8",
+          "verified": "verified"
+        },
+        {
+          "name": "Kuckin sin",
+          "videoId": "zfYeqxWIAFk",
+          "url": "https://www.youtube.com/watch?v=zfYeqxWIAFk",
+          "verified": "verified"
+        },
+        {
+          "name": "Daj mi vino",
+          "videoId": "HQo1UEsJCGQ",
+          "url": "https://www.youtube.com/watch?v=HQo1UEsJCGQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Tvoite oci",
+          "videoId": "p5TOqsGQL_w",
+          "url": "https://www.youtube.com/watch?v=p5TOqsGQL_w",
+          "verified": "verified"
+        },
+        {
+          "name": "Bez zdiv",
+          "videoId": "d127j-4B1wU",
+          "url": "https://www.youtube.com/watch?v=d127j-4B1wU",
+          "verified": "verified"
+        },
+        {
+          "name": "Nema zosto",
+          "videoId": "mnJfSaDLhkI",
+          "url": "https://www.youtube.com/watch?v=mnJfSaDLhkI",
+          "verified": "verified"
+        },
+        {
+          "name": "Raduj se",
+          "videoId": "fWqsKKJyvdY",
+          "url": "https://www.youtube.com/watch?v=fWqsKKJyvdY",
+          "verified": "verified"
+        },
+        {
+          "name": "Kuckin sin",
+          "videoId": "DB0yyslQmDM",
+          "url": "https://www.youtube.com/watch?v=DB0yyslQmDM",
+          "verified": "verified"
+        },
+        {
+          "name": "Kapka pot",
+          "videoId": "ssTAjgOmEpI",
+          "url": "https://www.youtube.com/watch?v=ssTAjgOmEpI",
+          "verified": "verified"
+        },
+        {
+          "name": "Bez zdiv",
+          "videoId": "jllJ_FU1XE4",
+          "url": "https://www.youtube.com/watch?v=jllJ_FU1XE4",
+          "verified": "verified"
+        },
+        {
+          "name": "Zivotot e...",
+          "videoId": "-iLnSq0Ynt4",
+          "url": "https://www.youtube.com/watch?v=-iLnSq0Ynt4",
+          "verified": "verified"
+        },
+        {
+          "name": "Belo zname",
+          "videoId": "rHmZrQmmek8",
+          "url": "https://www.youtube.com/watch?v=rHmZrQmmek8",
+          "verified": "verified"
+        },
+        {
+          "name": "Nema zosto",
+          "videoId": "qI2OOGNc7z4",
+          "url": "https://www.youtube.com/watch?v=qI2OOGNc7z4",
+          "verified": "verified"
+        },
+        {
+          "name": "Kuckin sin",
+          "videoId": "U4uhsTXi9qA",
+          "url": "https://www.youtube.com/watch?v=U4uhsTXi9qA",
+          "verified": "verified"
+        },
+        {
+          "name": "Daj mi vino",
+          "videoId": "ufFVf0RWVrU",
+          "url": "https://www.youtube.com/watch?v=ufFVf0RWVrU",
+          "verified": "verified"
+        },
+        {
+          "name": "Cveke za izvini",
+          "videoId": "6DWs1xOJrSk",
+          "url": "https://www.youtube.com/watch?v=6DWs1xOJrSk",
+          "verified": "verified"
+        },
+        {
+          "name": "Raspukala Sar Planina",
+          "videoId": "sN6aSKCY-f4",
+          "url": "https://www.youtube.com/watch?v=sN6aSKCY-f4",
+          "verified": "verified"
+        },
+        {
+          "name": "Raspukala Sar Planina",
+          "videoId": "mX_U4EqgPNw",
+          "url": "https://www.youtube.com/watch?v=mX_U4EqgPNw",
+          "verified": "verified"
+        },
+        {
+          "name": "Cveke za izvini",
+          "videoId": "uu-KiLEcYQE",
+          "url": "https://www.youtube.com/watch?v=uu-KiLEcYQE",
+          "verified": "verified"
+        },
+        {
+          "name": "Kapka pot",
+          "videoId": "RBp2iVkzD_I",
+          "url": "https://www.youtube.com/watch?v=RBp2iVkzD_I",
+          "verified": "verified"
+        },
+        {
+          "name": "Belo zname",
+          "videoId": "IIpz-UgPF5U",
+          "url": "https://www.youtube.com/watch?v=IIpz-UgPF5U",
+          "verified": "verified"
+        },
+        {
+          "name": "Vistina",
+          "videoId": "DX34rmtsMMY",
+          "url": "https://www.youtube.com/watch?v=DX34rmtsMMY",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-09-08",
@@ -138233,7 +139179,7 @@
           "name": "Zvezdo Severnice",
           "videoId": "HlN10I3UdvQ",
           "url": "https://www.youtube.com/watch?v=HlN10I3UdvQ",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 41,
           "publishedAt": "2026-01-30"
         },
@@ -138241,7 +139187,7 @@
           "name": "Kad Varas Ti",
           "videoId": "qvH0fp9G1Zw",
           "url": "https://www.youtube.com/watch?v=qvH0fp9G1Zw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 525,
           "publishedAt": "2025-07-20"
         },
@@ -138249,7 +139195,7 @@
           "name": "Zena Balkanska",
           "videoId": "bl9KwOoDnaA",
           "url": "https://www.youtube.com/watch?v=bl9KwOoDnaA",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1194,
           "publishedAt": "2025-07-20"
         },
@@ -138257,7 +139203,7 @@
           "name": "Ima Li Dan Za Nas",
           "videoId": "3utpGOIwB0U",
           "url": "https://www.youtube.com/watch?v=3utpGOIwB0U",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 59,
           "publishedAt": "2026-01-30"
         },
@@ -138265,7 +139211,7 @@
           "name": "Kazem Lejdi",
           "videoId": "Fr_-MKTpWyA",
           "url": "https://www.youtube.com/watch?v=Fr_-MKTpWyA",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 727,
           "publishedAt": "2025-07-20"
         },
@@ -138273,7 +139219,7 @@
           "name": "Nikada",
           "videoId": "i8dYzzwRcIM",
           "url": "https://www.youtube.com/watch?v=i8dYzzwRcIM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 92,
           "publishedAt": "2026-01-30"
         },
@@ -138281,7 +139227,7 @@
           "name": "Cija Si",
           "videoId": "IsCGFQzrrz4",
           "url": "https://www.youtube.com/watch?v=IsCGFQzrrz4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 550,
           "publishedAt": "2025-07-20"
         },
@@ -138289,7 +139235,7 @@
           "name": "Life",
           "videoId": "GBlLR25jma8",
           "url": "https://www.youtube.com/watch?v=GBlLR25jma8",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 3,
           "publishedAt": "2026-01-30"
         },
@@ -138297,7 +139243,7 @@
           "name": "Life",
           "videoId": "c1wUAf-subk",
           "url": "https://www.youtube.com/watch?v=c1wUAf-subk",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 159,
           "publishedAt": "2023-10-01"
         },
@@ -138305,7 +139251,7 @@
           "name": "Pogledaj U Mene",
           "videoId": "56D8S_9jftE",
           "url": "https://www.youtube.com/watch?v=56D8S_9jftE",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 74,
           "publishedAt": "2026-01-30"
         },
@@ -138313,7 +139259,7 @@
           "name": "San Egzotican",
           "videoId": "NywGVi60scE",
           "url": "https://www.youtube.com/watch?v=NywGVi60scE",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 534,
           "publishedAt": "2025-07-20"
         },
@@ -138321,7 +139267,7 @@
           "name": "Oprosti",
           "videoId": "LTzWnfFUaCY",
           "url": "https://www.youtube.com/watch?v=LTzWnfFUaCY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 13,
           "publishedAt": "2026-01-30"
         },
@@ -138329,7 +139275,7 @@
           "name": "Sto Si Otisla",
           "videoId": "jBfml85Ic6Q",
           "url": "https://www.youtube.com/watch?v=jBfml85Ic6Q",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1020,
           "publishedAt": "2025-07-20"
         },
@@ -138337,7 +139283,7 @@
           "name": "Hej Plavooka,Hej Bosonoga",
           "videoId": "Kx56ELmjByI",
           "url": "https://www.youtube.com/watch?v=Kx56ELmjByI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 12,
           "publishedAt": "2026-01-30"
         },
@@ -138345,9 +139291,1029 @@
           "name": "Kad Srce Plati Stari Dug",
           "videoId": "JGUahmE3mm4",
           "url": "https://www.youtube.com/watch?v=JGUahmE3mm4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 23,
           "publishedAt": "2026-01-30"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "9UpHueb88o8",
+          "url": "https://www.youtube.com/watch?v=9UpHueb88o8",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "EOn4JIO7cLY",
+          "url": "https://www.youtube.com/watch?v=EOn4JIO7cLY",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "AybUp6giOGo",
+          "url": "https://www.youtube.com/watch?v=AybUp6giOGo",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "0j--6A9FoZs",
+          "url": "https://www.youtube.com/watch?v=0j--6A9FoZs",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "HIBlDYwC0lw",
+          "url": "https://www.youtube.com/watch?v=HIBlDYwC0lw",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "ioFSccjNHMI",
+          "url": "https://www.youtube.com/watch?v=ioFSccjNHMI",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "q2-5d9KjLXA",
+          "url": "https://www.youtube.com/watch?v=q2-5d9KjLXA",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "LPpdTtCxWTY",
+          "url": "https://www.youtube.com/watch?v=LPpdTtCxWTY",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "pwrCQSUGG4Q",
+          "url": "https://www.youtube.com/watch?v=pwrCQSUGG4Q",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "iVpxhzsxoN0",
+          "url": "https://www.youtube.com/watch?v=iVpxhzsxoN0",
+          "verified": "verified"
+        },
+        {
+          "name": "Zvezdo Severnice",
+          "videoId": "Qu7Thk_J6P4",
+          "url": "https://www.youtube.com/watch?v=Qu7Thk_J6P4",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "f5HDMQZJ73o",
+          "url": "https://www.youtube.com/watch?v=f5HDMQZJ73o",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "43qOwOUmvTU",
+          "url": "https://www.youtube.com/watch?v=43qOwOUmvTU",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "904eUVgOHBw",
+          "url": "https://www.youtube.com/watch?v=904eUVgOHBw",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "pbG6zEsZumo",
+          "url": "https://www.youtube.com/watch?v=pbG6zEsZumo",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "4RBMBPnkYHU",
+          "url": "https://www.youtube.com/watch?v=4RBMBPnkYHU",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "fHw9roidBUc",
+          "url": "https://www.youtube.com/watch?v=fHw9roidBUc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "RrZoGkkhgQ0",
+          "url": "https://www.youtube.com/watch?v=RrZoGkkhgQ0",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "w_3ixEhxNko",
+          "url": "https://www.youtube.com/watch?v=w_3ixEhxNko",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "oLcVri0Kjo0",
+          "url": "https://www.youtube.com/watch?v=oLcVri0Kjo0",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "KjR96ZFml5k",
+          "url": "https://www.youtube.com/watch?v=KjR96ZFml5k",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "OnDUyJXwjeA",
+          "url": "https://www.youtube.com/watch?v=OnDUyJXwjeA",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "l2u_NHJwfyc",
+          "url": "https://www.youtube.com/watch?v=l2u_NHJwfyc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "6BQ_VxtCRBc",
+          "url": "https://www.youtube.com/watch?v=6BQ_VxtCRBc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "0GbpmvbcDgg",
+          "url": "https://www.youtube.com/watch?v=0GbpmvbcDgg",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Varas Ti",
+          "videoId": "qLdf6pO4eH0",
+          "url": "https://www.youtube.com/watch?v=qLdf6pO4eH0",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "_1FeG1LKQ1M",
+          "url": "https://www.youtube.com/watch?v=_1FeG1LKQ1M",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "vp9Q4VPO8L0",
+          "url": "https://www.youtube.com/watch?v=vp9Q4VPO8L0",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "eqFlyd5sJfQ",
+          "url": "https://www.youtube.com/watch?v=eqFlyd5sJfQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "sB-9qBdYi1Q",
+          "url": "https://www.youtube.com/watch?v=sB-9qBdYi1Q",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "Zb76lmU68Tw",
+          "url": "https://www.youtube.com/watch?v=Zb76lmU68Tw",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "TZvSLSRqcnA",
+          "url": "https://www.youtube.com/watch?v=TZvSLSRqcnA",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "f1UFucYdF-Y",
+          "url": "https://www.youtube.com/watch?v=f1UFucYdF-Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "a_lybO-rjUw",
+          "url": "https://www.youtube.com/watch?v=a_lybO-rjUw",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "lzxKEfDV72M",
+          "url": "https://www.youtube.com/watch?v=lzxKEfDV72M",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "PjjbTP22qvg",
+          "url": "https://www.youtube.com/watch?v=PjjbTP22qvg",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "dt1g4lu3gC4",
+          "url": "https://www.youtube.com/watch?v=dt1g4lu3gC4",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "_zjByJaGsZg",
+          "url": "https://www.youtube.com/watch?v=_zjByJaGsZg",
+          "verified": "verified"
+        },
+        {
+          "name": "Zena Balkanska",
+          "videoId": "u6IaCycoUP4",
+          "url": "https://www.youtube.com/watch?v=u6IaCycoUP4",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "VP3xHOYNqDM",
+          "url": "https://www.youtube.com/watch?v=VP3xHOYNqDM",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "BfwYxgxLHPQ",
+          "url": "https://www.youtube.com/watch?v=BfwYxgxLHPQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "yZnUfrqHuho",
+          "url": "https://www.youtube.com/watch?v=yZnUfrqHuho",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "KVaLlm7tvzo",
+          "url": "https://www.youtube.com/watch?v=KVaLlm7tvzo",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "yVPrRMD09Yc",
+          "url": "https://www.youtube.com/watch?v=yVPrRMD09Yc",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "fPMn-WqXqxk",
+          "url": "https://www.youtube.com/watch?v=fPMn-WqXqxk",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "fPHhL1aXsjY",
+          "url": "https://www.youtube.com/watch?v=fPHhL1aXsjY",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "bFXdtY2wHu4",
+          "url": "https://www.youtube.com/watch?v=bFXdtY2wHu4",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "uFLzZcjuerU",
+          "url": "https://www.youtube.com/watch?v=uFLzZcjuerU",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "PsQYPQgyRjU",
+          "url": "https://www.youtube.com/watch?v=PsQYPQgyRjU",
+          "verified": "verified"
+        },
+        {
+          "name": "Ima Li Dan Za Nas",
+          "videoId": "MnDcdq47AiA",
+          "url": "https://www.youtube.com/watch?v=MnDcdq47AiA",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "wo5c9y4InAo",
+          "url": "https://www.youtube.com/watch?v=wo5c9y4InAo",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "BRcj_7Yz0gI",
+          "url": "https://www.youtube.com/watch?v=BRcj_7Yz0gI",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "UsdqNNpMm38",
+          "url": "https://www.youtube.com/watch?v=UsdqNNpMm38",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "tNuXze0vJ6Y",
+          "url": "https://www.youtube.com/watch?v=tNuXze0vJ6Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "ciGAG1eFRAM",
+          "url": "https://www.youtube.com/watch?v=ciGAG1eFRAM",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "OyLRBoouz5A",
+          "url": "https://www.youtube.com/watch?v=OyLRBoouz5A",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "M4QeJDcJPsg",
+          "url": "https://www.youtube.com/watch?v=M4QeJDcJPsg",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "9uPL8gyx2EA",
+          "url": "https://www.youtube.com/watch?v=9uPL8gyx2EA",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "WwyYwseG8H4",
+          "url": "https://www.youtube.com/watch?v=WwyYwseG8H4",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "CM97nZtVFyU",
+          "url": "https://www.youtube.com/watch?v=CM97nZtVFyU",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "2zt5DNdWFtc",
+          "url": "https://www.youtube.com/watch?v=2zt5DNdWFtc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "wOjMXdWNouo",
+          "url": "https://www.youtube.com/watch?v=wOjMXdWNouo",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "McCVHq41p4s",
+          "url": "https://www.youtube.com/watch?v=McCVHq41p4s",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "9CQmi8Ib-UI",
+          "url": "https://www.youtube.com/watch?v=9CQmi8Ib-UI",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "IUcMqQz6zY8",
+          "url": "https://www.youtube.com/watch?v=IUcMqQz6zY8",
+          "verified": "verified"
+        },
+        {
+          "name": "Kazem Lejdi",
+          "videoId": "nnWKySIaiYk",
+          "url": "https://www.youtube.com/watch?v=nnWKySIaiYk",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "_AA6zN-BQC0",
+          "url": "https://www.youtube.com/watch?v=_AA6zN-BQC0",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "t6XbB9HfxYQ",
+          "url": "https://www.youtube.com/watch?v=t6XbB9HfxYQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "biAf7qbBmuY",
+          "url": "https://www.youtube.com/watch?v=biAf7qbBmuY",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "CnlVnOn4MpY",
+          "url": "https://www.youtube.com/watch?v=CnlVnOn4MpY",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "rLXmdPtAdzk",
+          "url": "https://www.youtube.com/watch?v=rLXmdPtAdzk",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "DASTSwprOiw",
+          "url": "https://www.youtube.com/watch?v=DASTSwprOiw",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "K580aSLK-VI",
+          "url": "https://www.youtube.com/watch?v=K580aSLK-VI",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "NN59PuwGZmw",
+          "url": "https://www.youtube.com/watch?v=NN59PuwGZmw",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "HcI3DBHzooo",
+          "url": "https://www.youtube.com/watch?v=HcI3DBHzooo",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "PoX2DR2-33U",
+          "url": "https://www.youtube.com/watch?v=PoX2DR2-33U",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "IRZHb0tMUYU",
+          "url": "https://www.youtube.com/watch?v=IRZHb0tMUYU",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "mUOL0VG1gCY",
+          "url": "https://www.youtube.com/watch?v=mUOL0VG1gCY",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "__8Iewp6Mjo",
+          "url": "https://www.youtube.com/watch?v=__8Iewp6Mjo",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "6UGhTXeS0zE",
+          "url": "https://www.youtube.com/watch?v=6UGhTXeS0zE",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "0sQ-bfbX7VU",
+          "url": "https://www.youtube.com/watch?v=0sQ-bfbX7VU",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "nD8AF_qmrmE",
+          "url": "https://www.youtube.com/watch?v=nD8AF_qmrmE",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "z48zo_6tTFE",
+          "url": "https://www.youtube.com/watch?v=z48zo_6tTFE",
+          "verified": "verified"
+        },
+        {
+          "name": "Nikada",
+          "videoId": "luPrwaWLXKY",
+          "url": "https://www.youtube.com/watch?v=luPrwaWLXKY",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "7ByaJ08xO9o",
+          "url": "https://www.youtube.com/watch?v=7ByaJ08xO9o",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "s4mmaHYZaU8",
+          "url": "https://www.youtube.com/watch?v=s4mmaHYZaU8",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "LkJghgD8tPA",
+          "url": "https://www.youtube.com/watch?v=LkJghgD8tPA",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "iuec5KbH3qY",
+          "url": "https://www.youtube.com/watch?v=iuec5KbH3qY",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "gxBq7gHSEEU",
+          "url": "https://www.youtube.com/watch?v=gxBq7gHSEEU",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "kNCxNqdvJvg",
+          "url": "https://www.youtube.com/watch?v=kNCxNqdvJvg",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "tZrHqPhD4jM",
+          "url": "https://www.youtube.com/watch?v=tZrHqPhD4jM",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "DtuZ_EOsVM4",
+          "url": "https://www.youtube.com/watch?v=DtuZ_EOsVM4",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "s6gQZsAsbJE",
+          "url": "https://www.youtube.com/watch?v=s6gQZsAsbJE",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "Na3Mwdl5l3U",
+          "url": "https://www.youtube.com/watch?v=Na3Mwdl5l3U",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "o9S7J-7VqQU",
+          "url": "https://www.youtube.com/watch?v=o9S7J-7VqQU",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "zGQqf25H5lI",
+          "url": "https://www.youtube.com/watch?v=zGQqf25H5lI",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "aBYUNVT9ZVU",
+          "url": "https://www.youtube.com/watch?v=aBYUNVT9ZVU",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "Sfe3vne9ojA",
+          "url": "https://www.youtube.com/watch?v=Sfe3vne9ojA",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "GmBOfvAotAI",
+          "url": "https://www.youtube.com/watch?v=GmBOfvAotAI",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "9ZSqsJBzv9Y",
+          "url": "https://www.youtube.com/watch?v=9ZSqsJBzv9Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "XWc3kuUIxc4",
+          "url": "https://www.youtube.com/watch?v=XWc3kuUIxc4",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "vY_qKe-HeuE",
+          "url": "https://www.youtube.com/watch?v=vY_qKe-HeuE",
+          "verified": "verified"
+        },
+        {
+          "name": "Cija Si",
+          "videoId": "v6O-o83E4-k",
+          "url": "https://www.youtube.com/watch?v=v6O-o83E4-k",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "5_NX0usepUI",
+          "url": "https://www.youtube.com/watch?v=5_NX0usepUI",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "ngxalTQCBy4",
+          "url": "https://www.youtube.com/watch?v=ngxalTQCBy4",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "IBfBtlRpcXo",
+          "url": "https://www.youtube.com/watch?v=IBfBtlRpcXo",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "WmRGcVqKWlw",
+          "url": "https://www.youtube.com/watch?v=WmRGcVqKWlw",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "Pf5wxPcOV5E",
+          "url": "https://www.youtube.com/watch?v=Pf5wxPcOV5E",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "L2fLKLVeigE",
+          "url": "https://www.youtube.com/watch?v=L2fLKLVeigE",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "foXEyGTlqQA",
+          "url": "https://www.youtube.com/watch?v=foXEyGTlqQA",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "M9vAgstCd40",
+          "url": "https://www.youtube.com/watch?v=M9vAgstCd40",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "cmRmPAIDGwU",
+          "url": "https://www.youtube.com/watch?v=cmRmPAIDGwU",
+          "verified": "verified"
+        },
+        {
+          "name": "Life",
+          "videoId": "l2-gTSLam2M",
+          "url": "https://www.youtube.com/watch?v=l2-gTSLam2M",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "MIUAmtMT1As",
+          "url": "https://www.youtube.com/watch?v=MIUAmtMT1As",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "Zj_t-xq2PRE",
+          "url": "https://www.youtube.com/watch?v=Zj_t-xq2PRE",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "EJ8OQb4CKlY",
+          "url": "https://www.youtube.com/watch?v=EJ8OQb4CKlY",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "XGHgh9ktL1A",
+          "url": "https://www.youtube.com/watch?v=XGHgh9ktL1A",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "4F7E2VDp1Wk",
+          "url": "https://www.youtube.com/watch?v=4F7E2VDp1Wk",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "X9bvPmblv5M",
+          "url": "https://www.youtube.com/watch?v=X9bvPmblv5M",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "WxIu5_lq6rU",
+          "url": "https://www.youtube.com/watch?v=WxIu5_lq6rU",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "JqM1fcjQAuo",
+          "url": "https://www.youtube.com/watch?v=JqM1fcjQAuo",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "bJwoLSiL6-A",
+          "url": "https://www.youtube.com/watch?v=bJwoLSiL6-A",
+          "verified": "verified"
+        },
+        {
+          "name": "Pogledaj U Mene",
+          "videoId": "O6b6LFKRll0",
+          "url": "https://www.youtube.com/watch?v=O6b6LFKRll0",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "Sxwa2SyogCY",
+          "url": "https://www.youtube.com/watch?v=Sxwa2SyogCY",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "h7ifEgisrVk",
+          "url": "https://www.youtube.com/watch?v=h7ifEgisrVk",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "BTjc5b7GheI",
+          "url": "https://www.youtube.com/watch?v=BTjc5b7GheI",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "QFq_SfvCK70",
+          "url": "https://www.youtube.com/watch?v=QFq_SfvCK70",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "0vZmCh0XEcY",
+          "url": "https://www.youtube.com/watch?v=0vZmCh0XEcY",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "YNd4b6M193s",
+          "url": "https://www.youtube.com/watch?v=YNd4b6M193s",
+          "verified": "verified"
+        },
+        {
+          "name": "San Egzotican",
+          "videoId": "i9nMHe82ey4",
+          "url": "https://www.youtube.com/watch?v=i9nMHe82ey4",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "iqwBHQOgYds",
+          "url": "https://www.youtube.com/watch?v=iqwBHQOgYds",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "NVYOGu1bUPQ",
+          "url": "https://www.youtube.com/watch?v=NVYOGu1bUPQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "G8JTVdFoQg4",
+          "url": "https://www.youtube.com/watch?v=G8JTVdFoQg4",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "cwpq9m51-lY",
+          "url": "https://www.youtube.com/watch?v=cwpq9m51-lY",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "-fgMiI7NVbU",
+          "url": "https://www.youtube.com/watch?v=-fgMiI7NVbU",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "7uC6pe4XVh8",
+          "url": "https://www.youtube.com/watch?v=7uC6pe4XVh8",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "v0Xc5UQOAg4",
+          "url": "https://www.youtube.com/watch?v=v0Xc5UQOAg4",
+          "verified": "verified"
+        },
+        {
+          "name": "Oprosti",
+          "videoId": "MkTFVL-dPhk",
+          "url": "https://www.youtube.com/watch?v=MkTFVL-dPhk",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "Ua32JG270sk",
+          "url": "https://www.youtube.com/watch?v=Ua32JG270sk",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "D2DJ7n960UU",
+          "url": "https://www.youtube.com/watch?v=D2DJ7n960UU",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "wDVnVgS5668",
+          "url": "https://www.youtube.com/watch?v=wDVnVgS5668",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "HBO8wioGuDM",
+          "url": "https://www.youtube.com/watch?v=HBO8wioGuDM",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "D_OlyfAhk0Y",
+          "url": "https://www.youtube.com/watch?v=D_OlyfAhk0Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "WyCdhVTiQk8",
+          "url": "https://www.youtube.com/watch?v=WyCdhVTiQk8",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "g3UmYlly1Hk",
+          "url": "https://www.youtube.com/watch?v=g3UmYlly1Hk",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "5aSp8eRE0p0",
+          "url": "https://www.youtube.com/watch?v=5aSp8eRE0p0",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto Si Otisla",
+          "videoId": "APiunwhi_S0",
+          "url": "https://www.youtube.com/watch?v=APiunwhi_S0",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "vvs5jz0refk",
+          "url": "https://www.youtube.com/watch?v=vvs5jz0refk",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "EyP-H9wJ8I0",
+          "url": "https://www.youtube.com/watch?v=EyP-H9wJ8I0",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "GfbSeIG3wt4",
+          "url": "https://www.youtube.com/watch?v=GfbSeIG3wt4",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "knJy9OXujc0",
+          "url": "https://www.youtube.com/watch?v=knJy9OXujc0",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "vaAOfz0qC4o",
+          "url": "https://www.youtube.com/watch?v=vaAOfz0qC4o",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "M-D_we881A8",
+          "url": "https://www.youtube.com/watch?v=M-D_we881A8",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "UuTkXh8Eel0",
+          "url": "https://www.youtube.com/watch?v=UuTkXh8Eel0",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "_hzDDHmlxBs",
+          "url": "https://www.youtube.com/watch?v=_hzDDHmlxBs",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "8mWYBqXkFxo",
+          "url": "https://www.youtube.com/watch?v=8mWYBqXkFxo",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "U2b2PuIFx_w",
+          "url": "https://www.youtube.com/watch?v=U2b2PuIFx_w",
+          "verified": "verified"
+        },
+        {
+          "name": "Hej Plavooka,Hej Bosonoga",
+          "videoId": "7eoRhvVRNOE",
+          "url": "https://www.youtube.com/watch?v=7eoRhvVRNOE",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "eHeoeYzqObc",
+          "url": "https://www.youtube.com/watch?v=eHeoeYzqObc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "FVTLbd42TdI",
+          "url": "https://www.youtube.com/watch?v=FVTLbd42TdI",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "R8hqktFk3BU",
+          "url": "https://www.youtube.com/watch?v=R8hqktFk3BU",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "k4RTtQaxqlE",
+          "url": "https://www.youtube.com/watch?v=k4RTtQaxqlE",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "0nfzS-gNbOE",
+          "url": "https://www.youtube.com/watch?v=0nfzS-gNbOE",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "mf2rS_NJsrI",
+          "url": "https://www.youtube.com/watch?v=mf2rS_NJsrI",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "O9URci2DCNU",
+          "url": "https://www.youtube.com/watch?v=O9URci2DCNU",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "TWsRqLh4LXQ",
+          "url": "https://www.youtube.com/watch?v=TWsRqLh4LXQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "gyyDieKd-wo",
+          "url": "https://www.youtube.com/watch?v=gyyDieKd-wo",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "lAtS4f1FONY",
+          "url": "https://www.youtube.com/watch?v=lAtS4f1FONY",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "4-6gKqHb2ws",
+          "url": "https://www.youtube.com/watch?v=4-6gKqHb2ws",
+          "verified": "verified"
+        },
+        {
+          "name": "Kad Srce Plati Stari Dug",
+          "videoId": "lYNK1z9dEW4",
+          "url": "https://www.youtube.com/watch?v=lYNK1z9dEW4",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-07-01",
@@ -138382,7 +140348,7 @@
           "name": "Faltzer",
           "videoId": "xAn2gocW3Do",
           "url": "https://www.youtube.com/watch?v=xAn2gocW3Do",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 235,
           "publishedAt": "2015-11-11"
         },
@@ -138390,7 +140356,7 @@
           "name": "Sambe",
           "videoId": "tyUxWUTQDbM",
           "url": "https://www.youtube.com/watch?v=tyUxWUTQDbM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 165,
           "publishedAt": "2015-11-11"
         },
@@ -138398,7 +140364,7 @@
           "name": "Tri Osmin Jasmin",
           "videoId": "49cHEbpjpak",
           "url": "https://www.youtube.com/watch?v=49cHEbpjpak",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 113,
           "publishedAt": "2015-11-11"
         },
@@ -138406,7 +140372,7 @@
           "name": "Butterfly",
           "videoId": "V0mgZBBaHLY",
           "url": "https://www.youtube.com/watch?v=V0mgZBBaHLY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 175,
           "publishedAt": "2015-11-11"
         },
@@ -138414,7 +140380,7 @@
           "name": "Ace buljoto",
           "videoId": "nhAZqGb6ZWo",
           "url": "https://www.youtube.com/watch?v=nhAZqGb6ZWo",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 102,
           "publishedAt": "2015-11-11"
         },
@@ -138422,7 +140388,7 @@
           "name": "Nekojsi tamu",
           "videoId": "Dyl86vrxbrw",
           "url": "https://www.youtube.com/watch?v=Dyl86vrxbrw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 162,
           "publishedAt": "2015-11-11"
         },
@@ -138430,7 +140396,7 @@
           "name": "Cacak",
           "videoId": "qkEkmnZ-RQI",
           "url": "https://www.youtube.com/watch?v=qkEkmnZ-RQI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 157,
           "publishedAt": "2015-11-11"
         },
@@ -138438,7 +140404,7 @@
           "name": "Skopje Blues",
           "videoId": "-uu67Dx_ULM",
           "url": "https://www.youtube.com/watch?v=-uu67Dx_ULM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 433,
           "publishedAt": "2015-11-11"
         },
@@ -138446,7 +140412,7 @@
           "name": "Bosa",
           "videoId": "BS7uuV6s8AY",
           "url": "https://www.youtube.com/watch?v=BS7uuV6s8AY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 84,
           "publishedAt": "2015-11-11"
         },
@@ -138454,7 +140420,7 @@
           "name": "Koza go ubi Valerij",
           "videoId": "cVSyvOeumUo",
           "url": "https://www.youtube.com/watch?v=cVSyvOeumUo",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 224,
           "publishedAt": "2015-11-11"
         }
@@ -138492,9 +140458,99 @@
           "name": "Girl",
           "videoId": "CfMvTxuCogw",
           "url": "https://www.youtube.com/watch?v=CfMvTxuCogw",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 7989,
           "publishedAt": "2015-01-29"
+        },
+        {
+          "name": "Something Starting",
+          "videoId": "Jq2fhbTcZEg",
+          "url": "https://www.youtube.com/watch?v=Jq2fhbTcZEg",
+          "verified": "verified"
+        },
+        {
+          "name": "SMS Song",
+          "videoId": "ZKjHNZ8pEoE",
+          "url": "https://www.youtube.com/watch?v=ZKjHNZ8pEoE",
+          "verified": "verified"
+        },
+        {
+          "name": "All The Time",
+          "videoId": "HUs2LuXY4c8",
+          "url": "https://www.youtube.com/watch?v=HUs2LuXY4c8",
+          "verified": "verified"
+        },
+        {
+          "name": "True Story",
+          "videoId": "QM9FEYjnhtc",
+          "url": "https://www.youtube.com/watch?v=QM9FEYjnhtc",
+          "verified": "verified"
+        },
+        {
+          "name": "And After All",
+          "videoId": "w38s5nSw-RA",
+          "url": "https://www.youtube.com/watch?v=w38s5nSw-RA",
+          "verified": "verified"
+        },
+        {
+          "name": "Holiday",
+          "videoId": "JD3o2Bdi41c",
+          "url": "https://www.youtube.com/watch?v=JD3o2Bdi41c",
+          "verified": "verified"
+        },
+        {
+          "name": "Girl",
+          "videoId": "Zy2QQr2ig-8",
+          "url": "https://www.youtube.com/watch?v=Zy2QQr2ig-8",
+          "verified": "verified"
+        },
+        {
+          "name": "When You Let Me",
+          "videoId": "MfOH8AXYhNM",
+          "url": "https://www.youtube.com/watch?v=MfOH8AXYhNM",
+          "verified": "verified"
+        },
+        {
+          "name": "Living In A Box",
+          "videoId": "7Mz5p37XIgE",
+          "url": "https://www.youtube.com/watch?v=7Mz5p37XIgE",
+          "verified": "verified"
+        },
+        {
+          "name": "Time To Make Things Right",
+          "videoId": "HgkBYIlDEp8",
+          "url": "https://www.youtube.com/watch?v=HgkBYIlDEp8",
+          "verified": "verified"
+        },
+        {
+          "name": "Sexy Night,Lovely Shoes",
+          "videoId": "3i_QzAEKsKk",
+          "url": "https://www.youtube.com/watch?v=3i_QzAEKsKk",
+          "verified": "verified"
+        },
+        {
+          "name": "Living In A Box",
+          "videoId": "ZBm1xPzxLrI",
+          "url": "https://www.youtube.com/watch?v=ZBm1xPzxLrI",
+          "verified": "verified"
+        },
+        {
+          "name": "Living In A Box",
+          "videoId": "XGaxTDviNMM",
+          "url": "https://www.youtube.com/watch?v=XGaxTDviNMM",
+          "verified": "verified"
+        },
+        {
+          "name": "Living In A Box",
+          "videoId": "qLSvRh5ew78",
+          "url": "https://www.youtube.com/watch?v=qLSvRh5ew78",
+          "verified": "verified"
+        },
+        {
+          "name": "True Story",
+          "videoId": "BLHIWXROAWA",
+          "url": "https://www.youtube.com/watch?v=BLHIWXROAWA",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-06-13",
@@ -138547,7 +140603,7 @@
           "name": "Itno Mi Trebas",
           "videoId": "dsf3hAmiPrk",
           "url": "https://www.youtube.com/watch?v=dsf3hAmiPrk",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1788896,
           "publishedAt": "2019-07-23"
         },
@@ -138555,7 +140611,7 @@
           "name": "Ne Sum Bog Znae Sto",
           "videoId": "cvOL-OhQ4L4",
           "url": "https://www.youtube.com/watch?v=cvOL-OhQ4L4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 23487,
           "publishedAt": "2019-07-23"
         },
@@ -138563,7 +140619,7 @@
           "name": "Slaba Tocka",
           "videoId": "cVPQxWfnUaY",
           "url": "https://www.youtube.com/watch?v=cVPQxWfnUaY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 257364,
           "publishedAt": "2019-07-23"
         },
@@ -138571,7 +140627,7 @@
           "name": "Mozam Da Ukradam",
           "videoId": "S8Nmn8iCUIw",
           "url": "https://www.youtube.com/watch?v=S8Nmn8iCUIw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 13834,
           "publishedAt": "2019-07-23"
         },
@@ -138579,7 +140635,7 @@
           "name": "Model",
           "videoId": "oih_ovoHjl0",
           "url": "https://www.youtube.com/watch?v=oih_ovoHjl0",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 27138,
           "publishedAt": "2019-07-23"
         },
@@ -138587,7 +140643,7 @@
           "name": "Ne Bidi Naporna",
           "videoId": "PT_X2VONvt4",
           "url": "https://www.youtube.com/watch?v=PT_X2VONvt4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 9681,
           "publishedAt": "2019-07-23"
         },
@@ -138595,7 +140651,7 @@
           "name": "Stom Se Saka",
           "videoId": "L4MA7RwitKQ",
           "url": "https://www.youtube.com/watch?v=L4MA7RwitKQ",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 10250,
           "publishedAt": "2021-02-05"
         },
@@ -138603,7 +140659,7 @@
           "name": "Moeto Mesto",
           "videoId": "Kv3Cr6l1qnY",
           "url": "https://www.youtube.com/watch?v=Kv3Cr6l1qnY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2525,
           "publishedAt": "2019-07-23"
         },
@@ -138611,7 +140667,7 @@
           "name": "Kalino Mome",
           "videoId": "a-17fcNrQdc",
           "url": "https://www.youtube.com/watch?v=a-17fcNrQdc",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 4465,
           "publishedAt": "2019-07-23"
         },
@@ -138619,9 +140675,81 @@
           "name": "Ne Sum Bog Znae Sto (Remix)",
           "videoId": "uGP1Uve1hgs",
           "url": "https://www.youtube.com/watch?v=uGP1Uve1hgs",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 4222,
           "publishedAt": "2019-07-23"
+        },
+        {
+          "name": "Itno Mi Trebas",
+          "videoId": "ulo98ULXhpc",
+          "url": "https://www.youtube.com/watch?v=ulo98ULXhpc",
+          "verified": "verified"
+        },
+        {
+          "name": "Itno Mi Trebas",
+          "videoId": "dejFCf6Po8A",
+          "url": "https://www.youtube.com/watch?v=dejFCf6Po8A",
+          "verified": "verified"
+        },
+        {
+          "name": "Itno Mi Trebas",
+          "videoId": "d43zux-ulek",
+          "url": "https://www.youtube.com/watch?v=d43zux-ulek",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Sum Bog Znae Sto",
+          "videoId": "duOz1tTBMAE",
+          "url": "https://www.youtube.com/watch?v=duOz1tTBMAE",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Sum Bog Znae Sto",
+          "videoId": "oNKz_UhMnsQ",
+          "url": "https://www.youtube.com/watch?v=oNKz_UhMnsQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Sum Bog Znae Sto",
+          "videoId": "viaDgEAsAos",
+          "url": "https://www.youtube.com/watch?v=viaDgEAsAos",
+          "verified": "verified"
+        },
+        {
+          "name": "Ne Sum Bog Znae Sto",
+          "videoId": "3sXY1r43O4k",
+          "url": "https://www.youtube.com/watch?v=3sXY1r43O4k",
+          "verified": "verified"
+        },
+        {
+          "name": "Slaba Tocka",
+          "videoId": "f2v8oXfYsLk",
+          "url": "https://www.youtube.com/watch?v=f2v8oXfYsLk",
+          "verified": "verified"
+        },
+        {
+          "name": "Mozam Da Ukradam",
+          "videoId": "17E3XcdFMnI",
+          "url": "https://www.youtube.com/watch?v=17E3XcdFMnI",
+          "verified": "verified"
+        },
+        {
+          "name": "Kalino Mome",
+          "videoId": "LBfE_zk0xMc",
+          "url": "https://www.youtube.com/watch?v=LBfE_zk0xMc",
+          "verified": "verified"
+        },
+        {
+          "name": "Kalino Mome",
+          "videoId": "r8LnfpmvZgw",
+          "url": "https://www.youtube.com/watch?v=r8LnfpmvZgw",
+          "verified": "verified"
+        },
+        {
+          "name": "Kalino Mome",
+          "videoId": "SYH1ZuJ8bbk",
+          "url": "https://www.youtube.com/watch?v=SYH1ZuJ8bbk",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-05-27",
@@ -138662,9 +140790,327 @@
           "name": "Sakas da si faca",
           "videoId": "XN42cubtfFc",
           "url": "https://www.youtube.com/watch?v=XN42cubtfFc",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 1553,
           "publishedAt": "2025-12-02"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "zj_tVZJ9wk8",
+          "url": "https://www.youtube.com/watch?v=zj_tVZJ9wk8",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "iKL05OP8EPw",
+          "url": "https://www.youtube.com/watch?v=iKL05OP8EPw",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "wJTSp4PcAIM",
+          "url": "https://www.youtube.com/watch?v=wJTSp4PcAIM",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "y5RXXWHDB0c",
+          "url": "https://www.youtube.com/watch?v=y5RXXWHDB0c",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "xPOHgf7OeuA",
+          "url": "https://www.youtube.com/watch?v=xPOHgf7OeuA",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "Jy930W1qZ84",
+          "url": "https://www.youtube.com/watch?v=Jy930W1qZ84",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "LU2fSRxTO70",
+          "url": "https://www.youtube.com/watch?v=LU2fSRxTO70",
+          "verified": "verified"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "nBt8rGD2C1s",
+          "url": "https://www.youtube.com/watch?v=nBt8rGD2C1s",
+          "verified": "verified"
+        },
+        {
+          "name": "Sakas da si faca",
+          "videoId": "Vs7GtNdDO1I",
+          "url": "https://www.youtube.com/watch?v=Vs7GtNdDO1I",
+          "verified": "verified"
+        },
+        {
+          "name": "Sakas da si faca",
+          "videoId": "7FHx5FVwXdg",
+          "url": "https://www.youtube.com/watch?v=7FHx5FVwXdg",
+          "verified": "verified"
+        },
+        {
+          "name": "Sakas da si faca",
+          "videoId": "xHhs7mjtBXE",
+          "url": "https://www.youtube.com/watch?v=xHhs7mjtBXE",
+          "verified": "verified"
+        },
+        {
+          "name": "Mister Kompleks",
+          "videoId": "EpUQ167pDGg",
+          "url": "https://www.youtube.com/watch?v=EpUQ167pDGg",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "XhIdk9myiPA",
+          "url": "https://www.youtube.com/watch?v=XhIdk9myiPA",
+          "verified": "verified"
+        },
+        {
+          "name": "Idiot",
+          "videoId": "cz4K4LCRsoQ",
+          "url": "https://www.youtube.com/watch?v=cz4K4LCRsoQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Site momenti",
+          "videoId": "nX7nWa8DkTk",
+          "url": "https://www.youtube.com/watch?v=nX7nWa8DkTk",
+          "verified": "verified"
+        },
+        {
+          "name": "Cubase",
+          "videoId": "bMZcDO9pwZ4",
+          "url": "https://www.youtube.com/watch?v=bMZcDO9pwZ4",
+          "verified": "verified"
+        },
+        {
+          "name": "Top",
+          "videoId": "WXrBHQyE4-I",
+          "url": "https://www.youtube.com/watch?v=WXrBHQyE4-I",
+          "verified": "verified"
+        },
+        {
+          "name": "FM",
+          "videoId": "lIKsH0Cq6pE",
+          "url": "https://www.youtube.com/watch?v=lIKsH0Cq6pE",
+          "verified": "verified"
+        },
+        {
+          "name": "Top",
+          "videoId": "MkmGXkMKSc4",
+          "url": "https://www.youtube.com/watch?v=MkmGXkMKSc4",
+          "verified": "verified"
+        },
+        {
+          "name": "Shoping",
+          "videoId": "YiAYLf-rW9c",
+          "url": "https://www.youtube.com/watch?v=YiAYLf-rW9c",
+          "verified": "verified"
+        },
+        {
+          "name": "Shoping",
+          "videoId": "X0l2asPAT90",
+          "url": "https://www.youtube.com/watch?v=X0l2asPAT90",
+          "verified": "verified"
+        },
+        {
+          "name": "Igra",
+          "videoId": "iNMxP5-zpQ8",
+          "url": "https://www.youtube.com/watch?v=iNMxP5-zpQ8",
+          "verified": "verified"
+        },
+        {
+          "name": "Igra",
+          "videoId": "aWU0Vpmzv0U",
+          "url": "https://www.youtube.com/watch?v=aWU0Vpmzv0U",
+          "verified": "verified"
+        },
+        {
+          "name": "Igra",
+          "videoId": "IH6WEwpGFTQ",
+          "url": "https://www.youtube.com/watch?v=IH6WEwpGFTQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Igra",
+          "videoId": "uNvAOQ6hz8Y",
+          "url": "https://www.youtube.com/watch?v=uNvAOQ6hz8Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Sekoj Den",
+          "videoId": "58ejXyFOM8k",
+          "url": "https://www.youtube.com/watch?v=58ejXyFOM8k",
+          "verified": "verified"
+        },
+        {
+          "name": "Sekoj Den",
+          "videoId": "Z6Wxo7Nc8Ew",
+          "url": "https://www.youtube.com/watch?v=Z6Wxo7Nc8Ew",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "qkjrPhAlqTU",
+          "url": "https://www.youtube.com/watch?v=qkjrPhAlqTU",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "MO10h8QwPcU",
+          "url": "https://www.youtube.com/watch?v=MO10h8QwPcU",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "hhKHQqIGiik",
+          "url": "https://www.youtube.com/watch?v=hhKHQqIGiik",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "uar9-qaVlSk",
+          "url": "https://www.youtube.com/watch?v=uar9-qaVlSk",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "qYW0LKIY-P0",
+          "url": "https://www.youtube.com/watch?v=qYW0LKIY-P0",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "qN5XEU97Pzs",
+          "url": "https://www.youtube.com/watch?v=qN5XEU97Pzs",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "Rdo3NjuXPH0",
+          "url": "https://www.youtube.com/watch?v=Rdo3NjuXPH0",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "pgA1i-n3shU",
+          "url": "https://www.youtube.com/watch?v=pgA1i-n3shU",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "tQtygKkYtUM",
+          "url": "https://www.youtube.com/watch?v=tQtygKkYtUM",
+          "verified": "verified"
+        },
+        {
+          "name": "Idiot",
+          "videoId": "GpIPTXTSmSo",
+          "url": "https://www.youtube.com/watch?v=GpIPTXTSmSo",
+          "verified": "verified"
+        },
+        {
+          "name": "FM",
+          "videoId": "IpjaUZa6rqI",
+          "url": "https://www.youtube.com/watch?v=IpjaUZa6rqI",
+          "verified": "verified"
+        },
+        {
+          "name": "FM",
+          "videoId": "F-vKD3tcPS8",
+          "url": "https://www.youtube.com/watch?v=F-vKD3tcPS8",
+          "verified": "verified"
+        },
+        {
+          "name": "Ostaj me da pisuvam",
+          "videoId": "A7-ReOhNivM",
+          "url": "https://www.youtube.com/watch?v=A7-ReOhNivM",
+          "verified": "verified"
+        },
+        {
+          "name": "Ostaj me da pisuvam",
+          "videoId": "K-PNcsnz7C0",
+          "url": "https://www.youtube.com/watch?v=K-PNcsnz7C0",
+          "verified": "verified"
+        },
+        {
+          "name": "Ostaj me da pisuvam",
+          "videoId": "7v-IRJjre0A",
+          "url": "https://www.youtube.com/watch?v=7v-IRJjre0A",
+          "verified": "verified"
+        },
+        {
+          "name": "Ostaj me da pisuvam",
+          "videoId": "DgUKKSdGBDE",
+          "url": "https://www.youtube.com/watch?v=DgUKKSdGBDE",
+          "verified": "verified"
+        },
+        {
+          "name": "Site momenti",
+          "videoId": "JtlSXuZBIzA",
+          "url": "https://www.youtube.com/watch?v=JtlSXuZBIzA",
+          "verified": "verified"
+        },
+        {
+          "name": "Site momenti",
+          "videoId": "LhRtCKb5ONM",
+          "url": "https://www.youtube.com/watch?v=LhRtCKb5ONM",
+          "verified": "verified"
+        },
+        {
+          "name": "Site momenti",
+          "videoId": "5QEXUsjLcfU",
+          "url": "https://www.youtube.com/watch?v=5QEXUsjLcfU",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "qryATIPnlJw",
+          "url": "https://www.youtube.com/watch?v=qryATIPnlJw",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "RfiH_RAmFRM",
+          "url": "https://www.youtube.com/watch?v=RfiH_RAmFRM",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "zlv_TEhV0IY",
+          "url": "https://www.youtube.com/watch?v=zlv_TEhV0IY",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "Co5OZ5tXUME",
+          "url": "https://www.youtube.com/watch?v=Co5OZ5tXUME",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "MBMGpvdeyiY",
+          "url": "https://www.youtube.com/watch?v=MBMGpvdeyiY",
+          "verified": "verified"
+        },
+        {
+          "name": "Chekeraukc",
+          "videoId": "LI-RvQIdSuA",
+          "url": "https://www.youtube.com/watch?v=LI-RvQIdSuA",
+          "verified": "verified"
+        },
+        {
+          "name": "Chekeraukc",
+          "videoId": "kRFmxNkDU88",
+          "url": "https://www.youtube.com/watch?v=kRFmxNkDU88",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-05-25",
@@ -138686,7 +141132,27 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
       "effectiveReleaseDate": "2009-05-15",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Ljubičice",
+          "videoId": "Lcxt2tQqVLE",
+          "url": "https://www.youtube.com/watch?v=Lcxt2tQqVLE",
+          "verified": "verified"
+        },
+        {
+          "name": "Ljubičice",
+          "videoId": "EJj55SQrtuI",
+          "url": "https://www.youtube.com/watch?v=EJj55SQrtuI",
+          "verified": "verified"
+        },
+        {
+          "name": "Ljubičice",
+          "videoId": "g5Fnh36DnvA",
+          "url": "https://www.youtube.com/watch?v=g5Fnh36DnvA",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Новиот Почеток",
@@ -138719,7 +141185,7 @@
           "name": "Parada",
           "videoId": "GpXHSlITgIw",
           "url": "https://www.youtube.com/watch?v=GpXHSlITgIw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2027,
           "publishedAt": "2011-03-16"
         },
@@ -138727,9 +141193,171 @@
           "name": "Agnozija",
           "videoId": "jZ_hzNDofqg",
           "url": "https://www.youtube.com/watch?v=jZ_hzNDofqg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 117275,
           "publishedAt": "2010-11-03"
+        },
+        {
+          "name": "Posledna Esen",
+          "videoId": "YAp0fczAGD4",
+          "url": "https://www.youtube.com/watch?v=YAp0fczAGD4",
+          "verified": "verified"
+        },
+        {
+          "name": "Parada",
+          "videoId": "nxGSXsWL4lw",
+          "url": "https://www.youtube.com/watch?v=nxGSXsWL4lw",
+          "verified": "verified"
+        },
+        {
+          "name": "Tvojot Macho",
+          "videoId": "oMKIqL9gpEk",
+          "url": "https://www.youtube.com/watch?v=oMKIqL9gpEk",
+          "verified": "verified"
+        },
+        {
+          "name": "Roden Vo Pustinata Bez Kamenja",
+          "videoId": "vz9scazxQaY",
+          "url": "https://www.youtube.com/watch?v=vz9scazxQaY",
+          "verified": "verified"
+        },
+        {
+          "name": "Paraliziran Delirium",
+          "videoId": "wkpnj_VnBt8",
+          "url": "https://www.youtube.com/watch?v=wkpnj_VnBt8",
+          "verified": "verified"
+        },
+        {
+          "name": "Mojot Hardcore Prijatel",
+          "videoId": "Alpp5wRb6-s",
+          "url": "https://www.youtube.com/watch?v=Alpp5wRb6-s",
+          "verified": "verified"
+        },
+        {
+          "name": "1963ta",
+          "videoId": "wMxv6DIc01M",
+          "url": "https://www.youtube.com/watch?v=wMxv6DIc01M",
+          "verified": "verified"
+        },
+        {
+          "name": "Mojata Republika",
+          "videoId": "4CpkI_ureGo",
+          "url": "https://www.youtube.com/watch?v=4CpkI_ureGo",
+          "verified": "verified"
+        },
+        {
+          "name": "Na Shto Si Tolku Gord",
+          "videoId": "4Ultxh0dqqs",
+          "url": "https://www.youtube.com/watch?v=4Ultxh0dqqs",
+          "verified": "verified"
+        },
+        {
+          "name": "Laga",
+          "videoId": "o4hfAaKplmw",
+          "url": "https://www.youtube.com/watch?v=o4hfAaKplmw",
+          "verified": "verified"
+        },
+        {
+          "name": "Samoubistvena Misija",
+          "videoId": "s_eN6z3eb2w",
+          "url": "https://www.youtube.com/watch?v=s_eN6z3eb2w",
+          "verified": "verified"
+        },
+        {
+          "name": "Posledna Esen",
+          "videoId": "PgWpmaU8xpo",
+          "url": "https://www.youtube.com/watch?v=PgWpmaU8xpo",
+          "verified": "verified"
+        },
+        {
+          "name": "Parada",
+          "videoId": "3LRyavQni6M",
+          "url": "https://www.youtube.com/watch?v=3LRyavQni6M",
+          "verified": "verified"
+        },
+        {
+          "name": "Agnozija",
+          "videoId": "7l7pVjZqp7s",
+          "url": "https://www.youtube.com/watch?v=7l7pVjZqp7s",
+          "verified": "verified"
+        },
+        {
+          "name": "Agnozija",
+          "videoId": "-bdU2IN87as",
+          "url": "https://www.youtube.com/watch?v=-bdU2IN87as",
+          "verified": "verified"
+        },
+        {
+          "name": "Tvojot Macho",
+          "videoId": "k2zIVFSCoo8",
+          "url": "https://www.youtube.com/watch?v=k2zIVFSCoo8",
+          "verified": "verified"
+        },
+        {
+          "name": "Tvojot Macho",
+          "videoId": "JYP5O0_WbQo",
+          "url": "https://www.youtube.com/watch?v=JYP5O0_WbQo",
+          "verified": "verified"
+        },
+        {
+          "name": "Roden Vo Pustinata Bez Kamenja",
+          "videoId": "4k2tvaIcdJo",
+          "url": "https://www.youtube.com/watch?v=4k2tvaIcdJo",
+          "verified": "verified"
+        },
+        {
+          "name": "Paraliziran Delirium",
+          "videoId": "2xZamITefp8",
+          "url": "https://www.youtube.com/watch?v=2xZamITefp8",
+          "verified": "verified"
+        },
+        {
+          "name": "Paraliziran Delirium",
+          "videoId": "aNk2x4Z3kmA",
+          "url": "https://www.youtube.com/watch?v=aNk2x4Z3kmA",
+          "verified": "verified"
+        },
+        {
+          "name": "Mojot Hardcore Prijatel",
+          "videoId": "ME6Km6qd850",
+          "url": "https://www.youtube.com/watch?v=ME6Km6qd850",
+          "verified": "verified"
+        },
+        {
+          "name": "1963ta",
+          "videoId": "u5P_rOBFlRI",
+          "url": "https://www.youtube.com/watch?v=u5P_rOBFlRI",
+          "verified": "verified"
+        },
+        {
+          "name": "Mojata Republika",
+          "videoId": "dPBI3o0Mico",
+          "url": "https://www.youtube.com/watch?v=dPBI3o0Mico",
+          "verified": "verified"
+        },
+        {
+          "name": "Na Shto Si Tolku Gord",
+          "videoId": "cwHyaZLd7R4",
+          "url": "https://www.youtube.com/watch?v=cwHyaZLd7R4",
+          "verified": "verified"
+        },
+        {
+          "name": "Na Shto Si Tolku Gord",
+          "videoId": "7wVziUkSfI0",
+          "url": "https://www.youtube.com/watch?v=7wVziUkSfI0",
+          "verified": "verified"
+        },
+        {
+          "name": "Laga",
+          "videoId": "cntRSZmwHVE",
+          "url": "https://www.youtube.com/watch?v=cntRSZmwHVE",
+          "verified": "verified"
+        },
+        {
+          "name": "Samoubistvena Misija",
+          "videoId": "DAgHlw8yfNc",
+          "url": "https://www.youtube.com/watch?v=DAgHlw8yfNc",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2009-05-15",
