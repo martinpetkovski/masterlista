@@ -3254,61 +3254,18 @@
             var container = document.getElementById('release-stats-content');
             if (!container) return;
 
-            // Fetch releases.json for live stats
-            fetch('releases.json?t=' + Date.now()).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
-                if (!data || !data.releases) return;
-                var rels = data.releases;
-                var totalReleases = rels.length;
-                var totalArtists = data.totalArtists || 0;
-                var totalSongs = 0, verifiedSongs = 0, unverifiedSongs = 0, wnvSongs = 0, noYtSongs = 0, totalViews = 0;
+            // Use precomputed stats from site-master.json
+            var stats = siteMaster && siteMaster.releaseStats;
+            if (!stats) return;
 
-                // Use the same counting logic as releases page
-                for (var i = 0; i < rels.length; i++) {
-                    var r = rels[i];
-                    var yt = r.youtubeTracks || [];
-
-                    // Merge trackNames + youtubeTracks names (deduped) to get song list
-                    var sourceNames = r.trackNames || [];
-                    var merged = sourceNames.slice();
-                    for (var m = 0; m < yt.length; m++) { if (yt[m].name) merged.push(yt[m].name); }
-                    var songNames = [], seenKeys = {};
-                    for (var m = 0; m < merged.length; m++) {
-                        if (!merged[m]) continue;
-                        var key = merged[m].toLowerCase().trim();
-                        if (!key || seenKeys[key]) continue;
-                        seenKeys[key] = true;
-                        songNames.push(merged[m]);
-                    }
-                    if (songNames.length === 0 && r.releaseTitle) songNames.push(r.releaseTitle);
-
-                    // Build ytByName lookup
-                    var ytByName = {};
-                    for (var j = 0; j < yt.length; j++) {
-                        if (!yt[j].name) continue;
-                        var nk = yt[j].name.toLowerCase().trim();
-                        if (!nk) continue;
-                        if (!ytByName[nk]) ytByName[nk] = [];
-                        ytByName[nk].push(yt[j]);
-                    }
-
-                    totalSongs += songNames.length;
-                    for (var j = 0; j < songNames.length; j++) {
-                        var songKey = songNames[j].toLowerCase().trim();
-                        var matches = ytByName[songKey] || [];
-                        if (matches.length === 0) { noYtSongs++; continue; }
-                        var hasV = false, hasU = false, hasW = false;
-                        for (var k = 0; k < matches.length; k++) {
-                            if (matches[k].verified === 'verified') hasV = true;
-                            else if (matches[k].verified === 'will-not-verify') hasW = true;
-                            else hasU = true;
-                        }
-                        if (hasV) verifiedSongs++;
-                        else if (hasU) unverifiedSongs++;
-                        else if (hasW) wnvSongs++;
-                        else unverifiedSongs++;
-                    }
-                    if (r.youtubeViews) totalViews += r.youtubeViews;
-                }
+            var totalReleases = stats.totalReleases || 0;
+            var totalArtists = stats.totalArtists || 0;
+            var totalSongs = stats.totalSongs || 0;
+            var verifiedSongs = stats.verifiedSongs || 0;
+            var unverifiedSongs = stats.unverifiedSongs || 0;
+            var wnvSongs = stats.wnvSongs || 0;
+            var noYtSongs = stats.noYtSongs || 0;
+            var totalViews = stats.totalViews || 0;
 
                 var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
                 var segW = function(n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
@@ -3345,7 +3302,6 @@
                         (totalViews > 0 ? '<div class="yt-chip"><i class="fas fa-eye" style="color:var(--text-muted)"></i> <span class="cv">' + viewsStr + '</span> <span class="cl" data-i18n="stats.views">' + t('stats.views', 'прегледи') + '</span></div>' : '') +
                     '</div>';
                 container.style.display = '';
-            }).catch(function() {});
         }
 
         // ==================== RENDER: VERIFY ARTISTS ====================

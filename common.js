@@ -756,7 +756,7 @@ function _hydrateSiteMaster(data) {
         }
     }
 
-    // Hydrate advancedCharts from columnar format
+    // Hydrate advancedCharts from columnar format (if still embedded — legacy compat)
     if (data.advancedCharts) {
         for (var key in data.advancedCharts) {
             if (data.advancedCharts[key] && data.advancedCharts[key]._cols) {
@@ -790,6 +790,60 @@ function loadSiteMaster() {
  */
 function getSiteMaster() {
     return _siteMasterCache;
+}
+
+/**
+ * Lazy-load advanced-charts.json (only needed by charts.html).
+ * Hydrates columnar data and attaches to the cached site-master object.
+ * Returns a Promise resolving to the advancedCharts object.
+ */
+var _advChartsPromise = null;
+function loadAdvancedCharts() {
+    if (_siteMasterCache && _siteMasterCache.advancedCharts) {
+        return Promise.resolve(_siteMasterCache.advancedCharts);
+    }
+    if (_advChartsPromise) return _advChartsPromise;
+    _advChartsPromise = fetch('/advanced-charts.json?t=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            if (data) {
+                for (var key in data) {
+                    if (data[key] && data[key]._cols) {
+                        data[key] = _hydrateColumnar(data[key]);
+                    }
+                }
+                if (_siteMasterCache) _siteMasterCache.advancedCharts = data;
+            }
+            return data;
+        })
+        .catch(function() { return null; });
+    return _advChartsPromise;
+}
+
+/**
+ * Lazy-load artist-data.json (only needed by artist.html).
+ * Merges releaseSparklines, artistPopularityGraphs, artistActivity
+ * into the cached site-master object.
+ * Returns a Promise resolving to the artist data object.
+ */
+var _artistDataPromise = null;
+function loadArtistData() {
+    if (_siteMasterCache && _siteMasterCache.releaseSparklines) {
+        return Promise.resolve(_siteMasterCache);
+    }
+    if (_artistDataPromise) return _artistDataPromise;
+    _artistDataPromise = fetch('/artist-data.json?t=' + Date.now())
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            if (data && _siteMasterCache) {
+                _siteMasterCache.artistPopularityGraphs = data.artistPopularityGraphs || {};
+                _siteMasterCache.releaseSparklines = data.releaseSparklines || {};
+                _siteMasterCache.artistActivity = data.artistActivity || {};
+            }
+            return _siteMasterCache;
+        })
+        .catch(function() { return null; });
+    return _artistDataPromise;
 }
 
 // ==================== HEADER COLLAGE ====================

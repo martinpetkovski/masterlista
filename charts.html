@@ -3100,9 +3100,10 @@
                 // Load genre config from chart-genres.json
                 await loadChartGenres();
                 
-                // Load site-master.json (all pre-computed data)
+                // Load site-master.json + advanced-charts.json in parallel
                 try {
-                    siteMaster = await loadSiteMaster();
+                    const [sm, _ac] = await Promise.all([loadSiteMaster(), loadAdvancedCharts()]);
+                    siteMaster = sm;
                 } catch (err) {
                     console.warn('Could not load site-master.json:', err);
                 }

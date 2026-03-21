@@ -3584,10 +3584,11 @@ a.chart-history-item {
         }
         
         async function init() {
-            // Load site-master.json early
+            // Load site-master.json + artist-data.json in parallel
             let siteMaster = null;
             try {
-                siteMaster = await loadSiteMaster();
+                const [sm, _ad] = await Promise.all([loadSiteMaster(), loadArtistData()]);
+                siteMaster = sm;
             } catch (e) {
                 console.warn('Could not load site-master.json:', e);
             }

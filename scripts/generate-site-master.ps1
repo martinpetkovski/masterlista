@@ -1189,7 +1189,82 @@ for ($i = 0; $i -lt $currentRanked.Count; $i++) {
     }
 }
 
-Write-Host "  > Found $($hotSongs.Count) hot songs" -ForegroundColor DarkGray
+# Sort hot songs by viewsDelta descending and keep top 100 for index page
+$hotSongsAll = $hotSongs
+$hotSongs = [System.Collections.ArrayList]::new()
+$hotSongsAll | Sort-Object -Property viewsDelta -Descending | Select-Object -First 100 | ForEach-Object { [void]$hotSongs.Add($_) }
+Write-Host "  > Found $($hotSongs.Count) hot songs (capped at 100 from $($hotSongsAll.Count))" -ForegroundColor DarkGray
+
+# ============================================================================
+#  6b. RELEASE STATS (precomputed for index page — avoids loading releases.json)
+# ============================================================================
+
+Write-Host "  > Precomputing release stats..." -ForegroundColor Yellow
+
+$totalSongs = 0; $verifiedSongs = 0; $unverifiedSongs = 0; $wnvSongs = 0; $noYtSongs = 0; [long]$totalViews = 0
+foreach ($r in $releaseCatalog) {
+    $yt = $r.youtubeTracks
+    if (-not $yt) { $yt = @() }
+    $sourceNames = $r.trackNames
+    if (-not $sourceNames) { $sourceNames = @() }
+    # Merge trackNames + youtubeTracks names (deduped)
+    $seenKeys = @{}
+    $songNames = [System.Collections.ArrayList]::new()
+    foreach ($sn in $sourceNames) {
+        if (-not $sn) { continue }
+        $key = $sn.ToLower().Trim()
+        if (-not $key -or $seenKeys.ContainsKey($key)) { continue }
+        $seenKeys[$key] = $true
+        [void]$songNames.Add($sn)
+    }
+    foreach ($y in $yt) {
+        if (-not $y.name) { continue }
+        $key = $y.name.ToLower().Trim()
+        if (-not $key -or $seenKeys.ContainsKey($key)) { continue }
+        $seenKeys[$key] = $true
+        [void]$songNames.Add($y.name)
+    }
+    if ($songNames.Count -eq 0 -and $r.releaseTitle) { [void]$songNames.Add($r.releaseTitle) }
+    # Build ytByName lookup
+    $ytByName = @{}
+    foreach ($y in $yt) {
+        if (-not $y.name) { continue }
+        $nk = $y.name.ToLower().Trim()
+        if (-not $nk) { continue }
+        if (-not $ytByName.ContainsKey($nk)) { $ytByName[$nk] = [System.Collections.ArrayList]::new() }
+        [void]$ytByName[$nk].Add($y)
+    }
+    $totalSongs += $songNames.Count
+    foreach ($sn in $songNames) {
+        $songKey = $sn.ToLower().Trim()
+        $matches2 = $ytByName[$songKey]
+        if (-not $matches2 -or $matches2.Count -eq 0) { $noYtSongs++; continue }
+        $hasV = $false; $hasU = $false; $hasW = $false
+        foreach ($mk in $matches2) {
+            if ($mk.verified -eq 'verified') { $hasV = $true }
+            elseif ($mk.verified -eq 'will-not-verify') { $hasW = $true }
+            else { $hasU = $true }
+        }
+        if ($hasV) { $verifiedSongs++ }
+        elseif ($hasU) { $unverifiedSongs++ }
+        elseif ($hasW) { $wnvSongs++ }
+        else { $unverifiedSongs++ }
+    }
+    if ($r.youtubeViews) { $totalViews += [long]$r.youtubeViews }
+}
+
+$releaseStats = [PSCustomObject]@{
+    totalReleases   = $releaseCatalog.Count
+    totalArtists    = [int]$releasesJson.totalArtists
+    totalSongs      = $totalSongs
+    verifiedSongs   = $verifiedSongs
+    unverifiedSongs = $unverifiedSongs
+    wnvSongs        = $wnvSongs
+    noYtSongs       = $noYtSongs
+    totalViews      = $totalViews
+}
+
+Write-Host "  > Release stats: $totalSongs songs, $verifiedSongs verified, $totalViews views" -ForegroundColor DarkGray
 
 # ============================================================================
 #  7. RISING ARTISTS
@@ -1606,6 +1681,28 @@ $strippedReleases = @($releases | ForEach-Object {
 })
 $columnarReleases = ConvertTo-Columnar -Items $strippedReleases
 
+# ============================================================================
+#  WRITE SPLIT FILES (loaded only by pages that need them)
+# ============================================================================
+
+# advanced-charts.json — only loaded by charts.html (Напредно view)
+$advancedChartsJson = $advancedChartsOutput | ConvertTo-Json -Depth 15 -Compress
+$advChartsPath = Join-Path $projectRoot "advanced-charts.json"
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText($advChartsPath, $advancedChartsJson, $utf8NoBom)
+Write-Host "  > Wrote advanced-charts.json ($([math]::Round((Get-Item $advChartsPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
+
+# artist-data.json — only loaded by artist.html (sparklines, graphs, activity)
+$artistData = [PSCustomObject]@{
+    artistPopularityGraphs = $graphsOutput
+    releaseSparklines      = $sparklinesOutput
+    artistActivity         = $activityOutput
+}
+$artistDataJson = $artistData | ConvertTo-Json -Depth 15 -Compress
+$artistDataPath = Join-Path $projectRoot "artist-data.json"
+[System.IO.File]::WriteAllText($artistDataPath, $artistDataJson, $utf8NoBom)
+Write-Host "  > Wrote artist-data.json ($([math]::Round((Get-Item $artistDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
+
 $siteMaster = [PSCustomObject]@{
     generatedAt = $chartJson.generatedAt
     
@@ -1619,9 +1716,6 @@ $siteMaster = [PSCustomObject]@{
     
     # Pre-ranked charts: keys like "all_single", "alt_album", etc.
     charts = $chartsOutput
-    
-    # Advanced (unlimited) charts — columnar format, all-genre only (genre subsets via _gc field)
-    advancedCharts = $advancedChartsOutput
     
     # Per-release chart history (for tooltips), keyed by genre
     releaseHistory = $historyMapOutput
@@ -1642,10 +1736,9 @@ $siteMaster = [PSCustomObject]@{
     globalPeakPopularity = $globalPeakPopularity
     
     # Latest 20 releases sorted by date, keyed by genre
-    # (latestReleasesByGenre['all'] serves as the fallback — no separate latestReleases needed)
     latestReleasesByGenre = $latestReleasesByGenreOutput
     
-    # Hot songs (positive popularity change vs last week)
+    # Hot songs (top 100 with positive popularity change vs last week)
     hotSongs = $hotSongs
     
     # Rising artist candidates (sorted by score desc)
@@ -1654,14 +1747,8 @@ $siteMaster = [PSCustomObject]@{
     # Release radar (latest 10)
     releaseRadar = $releaseRadar
     
-    # Activity status per artist: artistName(lower) -> status string
-    artistActivity = $activityOutput
-    
-    # Artist popularity graphs: artistName(lower) -> [{weekId, value, hasNewRelease}]
-    artistPopularityGraphs = $graphsOutput
-    
-    # Per-release sparklines: releaseId -> [{weekId, popularity}]
-    releaseSparklines = $sparklinesOutput
+    # Precomputed release stats (avoids loading releases.json on index page)
+    releaseStats = $releaseStats
     
     # Filtered news articles (matched against artist names, blacklist applied)
     news = [PSCustomObject]@{
@@ -1676,7 +1763,7 @@ $siteMaster = [PSCustomObject]@{
 # Write to file
 $outputPath = Join-Path $projectRoot "site-master.json"
 $json = $siteMaster | ConvertTo-Json -Depth 15 -Compress
-[System.IO.File]::WriteAllText($outputPath, $json, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText($outputPath, $json, $utf8NoBom)
 
 $fileSize = [Math]::Round((Get-Item $outputPath).Length / 1KB, 1)
 $elapsed = [Math]::Round(((Get-Date) - $startTime).TotalSeconds, 1)
