@@ -103,7 +103,10 @@ async function ytApi(endpoint, params, apiKey) {
             }
             return res.json();
         } catch (error) {
-            if (attempt >= API_MAX_RETRIES) throw error;
+            if (attempt >= API_MAX_RETRIES) {
+                console.error(`  YT API network error on ${endpoint} after ${API_MAX_RETRIES} retries: ${error.code || error.message}`);
+                return null;
+            }
             const waitMs = API_RETRY_DELAY_MS * attempt;
             console.warn(`  YT API retry ${attempt}/${API_MAX_RETRIES} on ${endpoint}: ${error.code || error.message}; waiting ${waitMs}ms`);
             await sleep(waitMs);
@@ -668,9 +671,15 @@ async function main() {
 
         // Fetch videos from ALL channels for this artist
         const allChannelVideos = [];
-        for (const chId of channelIds) {
-            const videos = await getChannelVideos(chId, apiKey, cache);
-            allChannelVideos.push(videos);
+        try {
+            for (const chId of channelIds) {
+                const videos = await getChannelVideos(chId, apiKey, cache);
+                allChannelVideos.push(videos);
+            }
+        } catch (err) {
+            console.warn(`  Skipping ${artist.name}: channel fetch failed (${err.code || err.message})`);
+            artistsDone++;
+            continue;
         }
 
         // Match each uncached release's tracks across all channels

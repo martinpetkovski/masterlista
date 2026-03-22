@@ -500,8 +500,14 @@ Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated
 # Get previous week's data for viewsDelta calculation (current views - prev views)
 # Chart-history is only updated on Mondays by the YouTube script, so index 0
 # (the most recent snapshot) is the proper baseline for weekly delta calculation.
+# On Monday, chart-history index 0 was just written with the same views as chart-data.json,
+# so deltas would all be 0. Use index 1 (the week before) to get meaningful deltas.
 $previousWeekReleases = @()
 $viewsDeltaPrevIndex = 0
+if ([datetime]::Now.DayOfWeek -eq [System.DayOfWeek]::Monday -and $chartHistoryWeeks.Count -gt 1) {
+    $viewsDeltaPrevIndex = 1
+    Write-Host "  > Monday detected — using previous week (index 1) for viewsDelta baseline" -ForegroundColor Cyan
+}
 if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
     $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
     Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
