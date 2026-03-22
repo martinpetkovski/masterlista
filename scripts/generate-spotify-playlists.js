@@ -80,18 +80,33 @@ async function apiFetch(endpoint, token, options = {}) {
   return res.json();
 }
 
-async function getAlbumTrackUris(albumId, token) {
+async function getTopTrackUri(albumId, token) {
+  // Get track listing from album
   let url = `/albums/${albumId}/tracks?limit=50`;
-  const uris = [];
+  const trackIds = [];
+  const trackUris = {};
   while (url) {
     const data = await apiFetch(url, token);
     if (!data?.items) break;
     for (const track of data.items) {
-      if (track.uri) uris.push(track.uri);
+      if (track.id && track.uri) {
+        trackIds.push(track.id);
+        trackUris[track.id] = track.uri;
+      }
     }
     url = data.next || null;
   }
-  return uris;
+  if (trackIds.length === 0) return null;
+  if (trackIds.length === 1) return trackUris[trackIds[0]];
+
+  // Batch-fetch full track objects to get popularity
+  const data = await apiFetch(`/tracks?ids=${trackIds.join(',')}`, token);
+  if (!data?.tracks) return trackUris[trackIds[0]];
+
+  const best = data.tracks
+    .filter(t => t && t.id)
+    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))[0];
+  return best ? trackUris[best.id] : trackUris[trackIds[0]];
 }
 
 /**
@@ -406,15 +421,15 @@ async function main() {
     const albumIds = def.getIds();
     console.log(`  ${albumIds.length} releases selected`);
 
-    // Resolve album IDs → track URIs
+    // Resolve album IDs → one top track URI per release
     const allTrackUris = [];
     for (const albumId of albumIds) {
-      const uris = await getAlbumTrackUris(albumId, token);
-      if (uris.length > 0) allTrackUris.push(...uris);
+      const uri = await getTopTrackUri(albumId, token);
+      if (uri) allTrackUris.push(uri);
       await new Promise(r => setTimeout(r, 50));
     }
 
-    console.log(`  ${allTrackUris.length} total tracks resolved`);
+    console.log(`  ${allTrackUris.length} tracks resolved (1 per release)`);
 
     if (allTrackUris.length === 0) {
       console.log(`  No tracks found, skipping playlist update`);

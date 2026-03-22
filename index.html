@@ -2319,7 +2319,7 @@
             <div class="dash-card-header">
                 <h2><i class="fas fa-chart-line"></i> <span data-i18n="dashboard.topChart">Топ Листа</span></h2>
                 <div class="dash-card-header-actions">
-                    <a id="main-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Playlist</span></a>
+                    <a id="main-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Spotify</span></a>
                     <a href="/charts" class="more-link"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
                 </div>
             </div>
@@ -2347,7 +2347,7 @@
             <div class="dash-card-header">
                 <h2><i class="fas fa-guitar"></i> <span data-i18n="dashboard.alternative">Алтернативна</span></h2>
                 <div class="dash-card-header-actions">
-                    <a id="alt-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Playlist</span></a>
+                    <a id="alt-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Spotify</span></a>
                     <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
                 </div>
             </div>
@@ -2359,7 +2359,10 @@
         <div class="dash-card full-width" id="radar-card">
             <div class="dash-card-header">
                 <h2><i class="fas fa-bolt"></i> <span data-i18n="dashboard.latestReleases">Најнови изданија</span></h2>
-                <a href="/charts" class="more-link"><span data-i18n="common.allReleases">Сите изданија</span> &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <a id="radar-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Spotify</span></a>
+                    <a href="/charts" class="more-link"><span data-i18n="common.allReleases">Сите изданија</span> &raquo;</a>
+                </div>
             </div>
             <div class="dash-loading" id="radar-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="release-radar-grid" id="radar-list" style="display:none;"></ul>
@@ -2720,6 +2723,7 @@
                     }
                     show('main-chart-spotify', p.topSongsCurrent);
                     show('alt-chart-spotify', p.topAlternativeCurrent);
+                    show('radar-spotify', p.newSongs);
                     // Quick action: link to the main current playlist
                     if (p.topSongsCurrent) {
                         show('spotify-quick-action', p.topSongsCurrent);
