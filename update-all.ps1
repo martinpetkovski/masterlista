@@ -7,6 +7,7 @@
 #   2. Scrape    - Scrapes sites for articles, merges into articles.json
 #   3. Service links - Detects new bands.json entries and extracts streaming links for them
 #   4. Curators   - Fetches playlist tracklists for curators from streaming APIs
+#   4b. Playlists  - Updates Spotify playlists (top current, top all-time, new releases)
 #   5. Site Master - Generates site-master.json with all pre-computed data for client pages
 #
 # Usage:
@@ -15,6 +16,7 @@
 #   ./update-all.ps1 -SkipScrape   # Skip article scraping
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
+#   ./update-all.ps1 -SkipPlaylists # Skip Spotify playlist update
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only chart   # Run only chart task
@@ -22,6 +24,7 @@
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
 #   ./update-all.ps1 -Only curators # Run only curator tracklists
+#   ./update-all.ps1 -Only playlists # Run only Spotify playlist update
 #   ./update-all.ps1 -Only sitemaster # Run only site-master generation
 
 param(
@@ -30,8 +33,9 @@ param(
     [switch]$SkipLinks,
     [switch]$SkipYouTubePopularity,
     [switch]$SkipCurators,
+    [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
-    [ValidateSet("chart", "ytpopularity", "scrape", "links", "curators", "sitemaster")]
+    [ValidateSet("chart", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
     [string]$Only
 )
 
@@ -770,6 +774,76 @@ function Update-CuratorTracklists {
     return $true
 }
 
+# ============================================================================
+#  TASK 4b: SPOTIFY PLAYLISTS
+# ============================================================================
+
+function Update-SpotifyPlaylists {
+    Write-Section "TASK 4b: SPOTIFY PLAYLISTS"
+
+    $playlistConfig = Join-Path $scriptRoot "spotify-playlists.json"
+    if (-not (Test-Path $playlistConfig)) {
+        Write-Step "spotify-playlists.json not found, skipping" "Red"
+        return $false
+    }
+
+    $credentialsPath = Join-Path $scriptRoot "spotify-credentials.json"
+    if (-not (Test-Path $credentialsPath)) {
+        Write-Step "spotify-credentials.json not found, skipping" "Red"
+        return $false
+    }
+
+    try {
+        $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        Write-Step "Failed to parse spotify-credentials.json" "Red"
+        return $false
+    }
+
+    if (-not $creds.refreshToken) {
+        Write-Step "spotify-credentials.json must contain refreshToken for playlist updates" "Yellow"
+        Write-Step "Skipping playlist generation (no refresh token)" "DarkGray"
+        return $true
+    }
+
+    $env:SPOTIFY_CLIENT_ID = $creds.clientId
+    $env:SPOTIFY_CLIENT_SECRET = $creds.clientSecret
+    $env:SPOTIFY_REFRESH_TOKEN = $creds.refreshToken
+
+    $nodeScript = Join-Path $scriptRoot "scripts\generate-spotify-playlists.js"
+    if (-not (Test-Path $nodeScript)) {
+        Write-Step "scripts/generate-spotify-playlists.js not found" "Red"
+        return $false
+    }
+
+    Write-Step "Running Spotify playlist generation..."
+    $plStart = Get-Date
+    try {
+        $output = & node $nodeScript 2>&1
+        foreach ($line in $output) {
+            if ($line -is [System.Management.Automation.ErrorRecord]) {
+                Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
+            } else {
+                Write-Host "    $line" -ForegroundColor Gray
+            }
+        }
+
+        if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+            Write-Step "Playlist script exited with code $LASTEXITCODE" "Red"
+            return $false
+        }
+    }
+    catch {
+        Write-Step "Playlist generation failed: $_" "Red"
+        return $false
+    }
+
+    Write-Step "Spotify playlists updated" "Green"
+    Write-Elapsed $plStart
+    return $true
+}
+
 
 # ============================================================================
 #  MAIN
@@ -789,6 +863,7 @@ $runYouTubePopularity = -not $SkipYouTubePopularity
 $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
 $runCurators  = -not $SkipCurators
+$runPlaylists = -not $SkipPlaylists
 $runSiteMaster = -not $SkipSiteMaster
 
 if ($Only) {
@@ -797,6 +872,7 @@ if ($Only) {
     $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
     $runCurators  = $Only -eq "curators"
+    $runPlaylists = $Only -eq "playlists"
     $runSiteMaster = $Only -eq "sitemaster"
 }
 
@@ -804,7 +880,7 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 1: Chart Data ---
@@ -860,6 +936,17 @@ if ($runCurators) {
 }
 else {
     Write-Step "Skipping curator tracklists" "DarkGray"
+}
+
+# --- Task 4b: Spotify Playlists ---
+if ($runPlaylists) {
+    Set-OverallProgress "Spotify Playlists"
+    $t = Get-Date
+    $results["Spotify Playlists"] = Update-SpotifyPlaylists
+    $taskTimings["Spotify Playlists"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping Spotify playlists" "DarkGray"
 }
 
 # --- Task 5: Site Master ---

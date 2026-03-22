@@ -164,14 +164,21 @@ class SpotifyAPI {
             return cached.releases;
         }
 
-        // Fetch albums, singles, and appears_on
-        const data = await this.apiRequest(
-            `/artists/${artistId}/albums?include_groups=album,single&limit=${limit}&market=US`
-        );
-        
-        if (data?.items) {
-            this.cache.artistReleases.set(artistId, { releases: data.items, timestamp: Date.now() });
-            return data.items;
+        // Fetch albums and singles, paginating if the artist has more than 50
+        let allItems = [];
+        let url = `/artists/${artistId}/albums?include_groups=album,single&limit=${limit}&market=US`;
+
+        while (url) {
+            const data = await this.apiRequest(url);
+            if (!data?.items) break;
+            allItems = allItems.concat(data.items);
+            // data.next is a full URL; if present, fetch the next page
+            url = data.next ? data.next.replace('https://api.spotify.com/v1', '') : null;
+        }
+
+        if (allItems.length > 0) {
+            this.cache.artistReleases.set(artistId, { releases: allItems, timestamp: Date.now() });
+            return allItems;
         }
         return [];
     }

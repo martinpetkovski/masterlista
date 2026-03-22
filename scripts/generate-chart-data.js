@@ -553,15 +553,23 @@ async function getArtistsBatch(artistIds, token) {
 }
 
 async function getArtistAlbums(artistId, token, limit = 50) {
-  const response = await fetchWithRetry(
-    `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album,single&market=MK&limit=${limit}`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
-  );
-  
-  if (!response.ok) return [];
-  
-  const data = await response.json();
-  return data.items || [];
+  let allItems = [];
+  let url = `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album,single&market=MK&limit=${limit}`;
+
+  while (url) {
+    const response = await fetchWithRetry(
+      url,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (!response.ok) break;
+
+    const data = await response.json();
+    if (data.items) allItems = allItems.concat(data.items);
+    url = data.next || null;
+  }
+
+  return allItems;
 }
 
 // Fetch full album objects in batch (up to 20) to get album.popularity
