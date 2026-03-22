@@ -19,6 +19,7 @@
 #   ./update-all.ps1 -SkipPlaylists # Skip Spotify playlist update
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
+#   ./update-all.ps1 -Only cleanup  # Run only release cleanup
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only ytpopularity # Run only YouTube popularity calculation
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
@@ -35,7 +36,8 @@ param(
     [switch]$SkipCurators,
     [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
-    [ValidateSet("chart", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
+    [switch]$SkipCleanup,
+    [ValidateSet("cleanup", "chart", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
     [string]$Only
 )
 
@@ -858,6 +860,7 @@ Write-Host "  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor DarkGr
 Write-Host ("=" * 70) -ForegroundColor Magenta
 
 # Determine which tasks to run
+$runCleanup   = -not $SkipCleanup
 $runChart     = -not $SkipChart
 $runYouTubePopularity = -not $SkipYouTubePopularity
 $runScrape    = -not $SkipScrape
@@ -867,6 +870,7 @@ $runPlaylists = -not $SkipPlaylists
 $runSiteMaster = -not $SkipSiteMaster
 
 if ($Only) {
+    $runCleanup   = $Only -eq "cleanup"
     $runChart     = $Only -eq "chart"
     $runYouTubePopularity = $Only -eq "ytpopularity"
     $runScrape    = $Only -eq "scrape"
@@ -880,8 +884,35 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runCleanup, $runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
+
+# --- Task 0: Cleanup Releases ---
+if ($runCleanup) {
+    Set-OverallProgress "Cleanup Releases"
+    Write-Section "TASK 0: CLEANUP RELEASES"
+    $t = Get-Date
+    try {
+        $cleanupScript = Join-Path (Join-Path $scriptRoot "scripts") "cleanup-releases.js"
+        if (Test-Path $cleanupScript) {
+            $output = node $cleanupScript 2>&1
+            $output | ForEach-Object { Write-Step $_ }
+            $results["Cleanup Releases"] = $true
+        }
+        else {
+            Write-Step "scripts/cleanup-releases.js not found" "Red"
+            $results["Cleanup Releases"] = $false
+        }
+    }
+    catch {
+        Write-Step "Cleanup failed: $_" "Red"
+        $results["Cleanup Releases"] = $false
+    }
+    $taskTimings["Cleanup Releases"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping release cleanup" "DarkGray"
+}
 
 # --- Task 1: Chart Data ---
 if ($runChart) {
