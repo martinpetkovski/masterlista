@@ -2249,6 +2249,9 @@
         body.dark-mode .settings-tour-btn { background: var(--bg-hover); border-color: var(--border-color); color: var(--text-secondary); }
 
         /* Service chooser styles are in desktop.css / mobile.css via common.js */
+        .spotify-playlist-link { display: inline-flex; align-items: center; gap: 0.25rem; color: #1DB954; font-size: 0.7rem; font-weight: 500; text-decoration: none; opacity: 0.85; transition: opacity 0.15s; margin-right: 0.5rem; }
+        .spotify-playlist-link:hover { opacity: 1; }
+        .spotify-playlist-link i { font-size: 0.85rem; }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
@@ -2315,7 +2318,10 @@
             </div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-chart-line"></i> <span data-i18n="dashboard.topChart">Топ Листа</span></h2>
-                <a href="/charts" class="more-link"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <a id="main-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Playlist</span></a>
+                    <a href="/charts" class="more-link"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
+                </div>
             </div>
             <div class="dash-loading" id="main-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="main-chart-list" style="display:none;"></ol>
@@ -2340,7 +2346,10 @@
             </div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-guitar"></i> <span data-i18n="dashboard.alternative">Алтернативна</span></h2>
-                <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
+                <div class="dash-card-header-actions">
+                    <a id="alt-chart-spotify" class="spotify-playlist-link" target="_blank" rel="noopener" style="display:none" title="Spotify плејлиста"><i class="fab fa-spotify"></i> <span>Playlist</span></a>
+                    <a href="/charts" class="more-link" onclick="sessionStorage.setItem('chartPreset','alt')"><span data-i18n="common.fullList">Целосна листа</span> &raquo;</a>
+                </div>
             </div>
             <div class="dash-loading" id="alt-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="alt-chart-list" style="display:none;"></ol>
@@ -2402,6 +2411,9 @@
                 </a>
                 <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener" class="quick-action-btn">
                     <i class="fab fa-discord"></i> Discord
+                </a>
+                <a id="spotify-quick-action" href="#" target="_blank" rel="noopener" class="quick-action-btn" style="display:none">
+                    <i class="fab fa-spotify"></i> Spotify
                 </a>
             </div>
         </div>
@@ -2687,6 +2699,32 @@
             renderReleaseStats();
             renderYouTube();
             renderTitleCollage();
+            loadSpotifyPlaylistLinks();
+        }
+
+        // ==================== SPOTIFY PLAYLIST LINKS ====================
+        function loadSpotifyPlaylistLinks() {
+            fetch('spotify-playlists.json?t=' + Date.now())
+                .then(function(r) { return r.ok ? r.json() : null; })
+                .catch(function() { return null; })
+                .then(function(config) {
+                    if (!config || !config.playlists) return;
+                    var p = config.playlists;
+                    var base = 'https://open.spotify.com/playlist/';
+                    function show(id, playlistId) {
+                        if (!playlistId) return;
+                        var el = document.getElementById(id);
+                        if (!el) return;
+                        el.href = base + encodeURIComponent(playlistId);
+                        el.style.display = '';
+                    }
+                    show('main-chart-spotify', p.topSongsCurrent);
+                    show('alt-chart-spotify', p.topAlternativeCurrent);
+                    // Quick action: link to the main current playlist
+                    if (p.topSongsCurrent) {
+                        show('spotify-quick-action', p.topSongsCurrent);
+                    }
+                });
         }
 
         function updateLastUpdateLabel() {

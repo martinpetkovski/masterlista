@@ -1,11 +1,15 @@
 {
   "playlists": {
-    "topSongsCurrent": "",
-    "topSongsAllTime": "",
-    "newSongs": ""
+    "topSongsCurrent": "https://open.spotify.com/playlist/6X7vEB9Om0B4csG7ynGEDB?si=f0c11cc854c84630",
+    "topSongsAllTime": "https://open.spotify.com/playlist/7HE5a5bUW7HkAnfVCqrU4o?si=0ff079a7c82b4af8",
+    "newSongs": "https://open.spotify.com/playlist/7xAgUyLvelZlodKz55Az3C?si=d179af6f8de24d7b",
+    "topAlternativeCurrent": "https://open.spotify.com/playlist/7AfoyIPdwKnfdFltAW86ij?si=4dec247f48054a19",
+    "topAlternativeAllTime": "https://open.spotify.com/playlist/7AmGPuctjptcRRYYqjxuVi?si=b3722d46769f4827",
+    "newAlternativeSongs": "https://open.spotify.com/playlist/5fPdiRE0qPW14gYlRubEEx?si=d5869a7aebaa4ff8"
   },
   "settings": {
     "maxTracksPerPlaylist": 50,
+    "maxPerArtist": 2,
     "newReleaseDays": 30
   }
 }
