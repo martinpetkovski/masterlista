@@ -52,7 +52,6 @@
     <style>
         /* ==================== CURATOR PAGE ==================== */
         body.curator-page {
-            background: #f2f3f5;
             min-height: 100vh;
             min-height: 100dvh;
             height: auto !important;
@@ -69,7 +68,6 @@
 
         body.curator-page.dark-mode,
         html.dark-mode body.curator-page {
-            background: #111318;
         }
 
         .curator-container {
@@ -575,6 +573,70 @@
             .curator-avatar { width: 80px; height: 80px; }
             .curator-name { font-size: 1.35rem; }
             .track-art { width: 34px; height: 34px; }
+        }
+
+        /* ==================== HEADER BUTTONS – match site-wide black style ==================== */
+        .curator-page .header-btn {
+            background: #000;
+            border: 2px solid #000;
+            color: #fff;
+            border-radius: 0;
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), filter 0.18s ease, box-shadow 0.18s ease;
+            overflow: visible;
+            position: relative;
+        }
+        .curator-page .header-btn::before,
+        .curator-page .header-btn::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-style: solid;
+            border-color: #fff;
+            transition: all 0.25s cubic-bezier(.4,2,.6,1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .curator-page .header-btn::before {
+            top: -3px; left: -3px;
+            border-width: 2px 0 0 2px;
+        }
+        .curator-page .header-btn::after {
+            bottom: -3px; right: -3px;
+            border-width: 0 2px 2px 0;
+        }
+        .curator-page .header-btn:hover {
+            transform: scale(1.06);
+            filter: brightness(1.2);
+            box-shadow: 0 0 10px rgba(255,255,255,0.12);
+            background: #000;
+            color: #fff;
+        }
+        .curator-page .header-btn:hover::before,
+        .curator-page .header-btn:hover::after {
+            opacity: 1;
+            width: 10px;
+            height: 10px;
+        }
+        .curator-page .header-btn:active {
+            transform: scale(0.95);
+            filter: brightness(1.5);
+            transition-duration: 0.06s;
+        }
+        body.dark-mode .curator-page .header-btn {
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+        }
+        body.dark-mode .curator-page .header-btn::before,
+        body.dark-mode .curator-page .header-btn::after {
+            border-color: #000;
+        }
+        body.dark-mode .curator-page .header-btn:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
         }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>

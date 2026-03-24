@@ -95,7 +95,6 @@
             --accent-red: #ef4444;
             --accent-purple: #8a7db5;
             --accent-teal: #5a9e92;
-            background: #111318;
             color: #d5d8de;
         }
         
@@ -404,11 +403,9 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: #f2f3f5;
         }
         
         body.dark-mode.chart-page {
-            background: #111318;
         }
         
         /* Chart Filter Bar */
@@ -3114,12 +3111,22 @@
                     .then(function(config) {
                         if (!config || !config.playlists) return;
                         var p = config.playlists;
-                        var base = 'https://open.spotify.com/playlist/';
-                        function show(id, playlistId) {
-                            if (!playlistId) return;
+                        function getSpotifyPlaylistHref(playlistRef) {
+                            if (!playlistRef || typeof playlistRef !== 'string') return null;
+                            var trimmed = playlistRef.trim();
+                            if (!trimmed) return null;
+                            if (/^https?:\/\/open\.spotify\.com\/playlist\/[A-Za-z0-9]+/i.test(trimmed)) return trimmed;
+                            var uriMatch = trimmed.match(/^spotify:playlist:([A-Za-z0-9]+)$/i);
+                            if (uriMatch) return 'https://open.spotify.com/playlist/' + uriMatch[1];
+                            if (/^[A-Za-z0-9]{22}$/.test(trimmed)) return 'https://open.spotify.com/playlist/' + trimmed;
+                            return null;
+                        }
+                        function show(id, playlistRef) {
+                            var href = getSpotifyPlaylistHref(playlistRef);
+                            if (!href) return;
                             var el = document.getElementById(id);
                             if (!el) return;
-                            el.href = base + encodeURIComponent(playlistId);
+                            el.href = href;
                             el.style.display = '';
                         }
                         show('singles-spotify-btn', p.topSongsCurrent);
