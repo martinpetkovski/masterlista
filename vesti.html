@@ -205,9 +205,41 @@
 		gap: 0.4rem;
 		padding: 0.5rem 0.3rem;
 		border-radius: 8px;
-		transition: background 0.12s;
+		transition: background 0.15s;
+		position: relative;
+		overflow: visible;
 	}
-	.vesti-page .news-item:hover { background: var(--bg-hover, #eceef1); }
+	.vesti-page .news-item::before,
+	.vesti-page .news-item::after {
+		content: '';
+		position: absolute;
+		width: 0;
+		height: 0;
+		border: 2px solid transparent;
+		transition: width 0.22s cubic-bezier(.4,2,.6,1), height 0.22s cubic-bezier(.4,2,.6,1), opacity 0.18s ease, border-color 0.18s ease;
+		opacity: 0;
+		pointer-events: none;
+		z-index: 2;
+	}
+	.vesti-page .news-item::before {
+		top: -4px; left: -4px;
+		border-right: none; border-bottom: none;
+		border-radius: 8px 0 0 0;
+	}
+	.vesti-page .news-item::after {
+		bottom: -4px; right: -4px;
+		border-left: none; border-top: none;
+		border-radius: 0 0 8px 0;
+	}
+	.vesti-page .news-item:hover::before,
+	.vesti-page .news-item:hover::after {
+		width: 8px; height: 8px;
+		border-color: var(--accent-blue, #4a7fa5);
+		opacity: 0.5;
+	}
+	.vesti-page .news-item:hover {
+		background: var(--bg-hover, #eceef1);
+	}
 	.vesti-page .news-thumb {
 		width: 100%;
 		aspect-ratio: 16 / 10;

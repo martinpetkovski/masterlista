@@ -88,6 +88,88 @@
             color: #d5d8de;
         }
 
+        /* ==================== GAME-STYLE HOVER FOR LIST ITEMS ==================== */
+        .mini-chart-item,
+        .radar-item,
+        .news-item,
+        .discover-artist,
+        .sotd-item,
+        .trending-item {
+            position: relative;
+            overflow: visible;
+        }
+
+        .mini-chart-item::before,
+        .mini-chart-item::after,
+        .radar-item::before,
+        .radar-item::after,
+        .news-item::before,
+        .news-item::after,
+        .discover-artist::before,
+        .discover-artist::after,
+        .sotd-item::before,
+        .sotd-item::after,
+        .trending-item::before,
+        .trending-item::after {
+            content: '';
+            position: absolute;
+            width: 0px;
+            height: 0px;
+            border-style: solid;
+            border-color: var(--accent-blue, #4a7fa5);
+            transition: all 0.3s cubic-bezier(.4,2,.6,1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .mini-chart-item::before,
+        .discover-artist::before,
+        .sotd-item::before,
+        .trending-item::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+            border-radius: 6px 0 0 0;
+        }
+        .radar-item::before,
+        .news-item::before {
+            top: -2px; left: -2px;
+            border-width: 2px 0 0 2px;
+            border-radius: 8px 0 0 0;
+        }
+
+        .mini-chart-item::after,
+        .discover-artist::after,
+        .sotd-item::after,
+        .trending-item::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+            border-radius: 0 0 6px 0;
+        }
+        .radar-item::after,
+        .news-item::after {
+            bottom: -2px; right: -2px;
+            border-width: 0 2px 2px 0;
+            border-radius: 0 0 8px 0;
+        }
+
+        .mini-chart-item:hover::before,
+        .mini-chart-item:hover::after,
+        .radar-item:hover::before,
+        .radar-item:hover::after,
+        .news-item:hover::before,
+        .news-item:hover::after,
+        .discover-artist:hover::before,
+        .discover-artist:hover::after,
+        .sotd-item:hover::before,
+        .sotd-item:hover::after,
+        .trending-item:hover::before,
+        .trending-item:hover::after {
+            opacity: 0.5;
+            width: 8px;
+            height: 8px;
+        }
+
         /* ==================== DASHBOARD LAYOUT ==================== */
         body.dashboard-page {
             overflow-y: auto;
@@ -326,12 +408,8 @@
             gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             cursor: pointer;
-            transition: background 0.12s;
+            transition: background 0.15s;
             border-radius: 6px;
-        }
-
-        .mini-chart-item:hover {
-            background: var(--bg-hover, #eceef1);
         }
 
         .mini-chart-rank {
@@ -805,7 +883,7 @@
             padding: 0.5rem 0.3rem;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.12s;
+            transition: background 0.15s;
             min-width: 0;
         }
 
@@ -1014,7 +1092,7 @@
             gap: 0.4rem;
             padding: 0.5rem 0.3rem;
             border-radius: 8px;
-            transition: background 0.12s;
+            transition: background 0.15s;
         }
 
         .news-item:hover { background: var(--bg-hover, #eceef1); }
@@ -1153,7 +1231,7 @@
             gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             border-radius: 6px;
-            transition: background 0.12s;
+            transition: background 0.15s;
             cursor: pointer;
         }
         .discover-artist:hover {
@@ -1302,7 +1380,7 @@
             gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             border-radius: 6px;
-            transition: background 0.12s;
+            transition: background 0.15s;
             cursor: pointer;
         }
         .sotd-item:hover { background: var(--bg-hover, #eceef1); }
@@ -1637,7 +1715,7 @@
             gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             cursor: pointer;
-            transition: background 0.12s;
+            transition: background 0.15s;
             border-radius: 6px;
         }
         .trending-item:hover { background: var(--bg-hover, #eceef1); }
