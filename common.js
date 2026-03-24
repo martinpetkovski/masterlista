@@ -1277,7 +1277,8 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             var l1 = shadeHexColor(c1, 84) || c1, l2 = shadeHexColor(c2, 87) || c2, l3 = shadeHexColor(c1, 92) || c1;
             chooserEl.style.background = 'linear-gradient(135deg, ' + l1 + ' 0%, ' + l2 + ' 50%, ' + l3 + ' 100%)';
         }
-        headerEl.style.background = c1;
+        var hDark = shadeHexColor(c1, -15) || c1;
+        headerEl.style.background = 'linear-gradient(135deg, ' + c1 + ' 0%, ' + hDark + ' 50%, ' + c1 + ' 100%)';
 
         // Header text color
         songEl.style.color = headerTc;

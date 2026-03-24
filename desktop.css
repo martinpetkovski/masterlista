@@ -70,55 +70,42 @@ body.yt-links-page { overflow-y: auto; overflow-x: hidden; height: auto; min-hei
     line-height: 1;
     white-space: nowrap;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     z-index: 1;
-    transition: transform 0.18s cubic-bezier(.4,2,.6,1), filter 0.18s ease, box-shadow 0.18s ease;
+    transition: filter 0.12s ease, box-shadow 0.12s ease;
 }
 
-/* Corner bracket decorations */
-.btn-generic::before,
-.btn-generic::after {
+/* Sweep highlight on hover */
+.btn-generic::before {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border-style: solid;
-    border-color: #fff;
-    transition: all 0.25s cubic-bezier(.4,2,.6,1);
-    opacity: 0;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+    transform: translateX(-100%);
     pointer-events: none;
     z-index: 2;
-}
-.btn-generic::before {
-    top: -4px; left: -4px;
-    border-width: 2px 0 0 2px;
+    transition: none;
 }
 .btn-generic::after {
-    bottom: -4px; right: -4px;
-    border-width: 0 2px 2px 0;
+    content: none;
 }
 
 .btn-generic:hover {
-    transform: scale(1.04);
     filter: brightness(1.2);
     box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
 }
-.btn-generic:hover::before,
-.btn-generic:hover::after {
-    opacity: 1;
-    width: 12px;
-    height: 12px;
+.btn-generic:hover::before {
+    animation: btnSweep 0.4s ease-out forwards;
 }
 
 .btn-generic:active {
-    transform: scale(0.97);
     filter: brightness(1.5);
     transition-duration: 0.06s;
 }
 
-@keyframes btnShine {
-    from { left: -60%; }
-    to { left: 100%; }
+@keyframes btnSweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
 }
 
 body.dark-mode .btn-generic,
@@ -130,11 +117,7 @@ html.dark-mode .btn-generic {
 
 body.dark-mode .btn-generic::before,
 html.dark-mode .btn-generic::before {
-    border-color: #000;
-}
-body.dark-mode .btn-generic::after,
-html.dark-mode .btn-generic::after {
-    border-color: #000;
+    background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
 }
 body.dark-mode .btn-generic:hover,
 html.dark-mode .btn-generic:hover {
@@ -2928,7 +2911,25 @@ body.vfx-dark .service-chooser,
 .service-chooser-header {
     position: relative;
     display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.85rem 3rem 0.85rem 1rem; background: #333;
+    padding: 0.85rem 3rem 0.85rem 1rem;
+    background: linear-gradient(135deg, #222 0%, #444 40%, #333 100%);
+    overflow: hidden;
+}
+.service-chooser-header::before {
+    content: none;
+}
+.service-chooser-header::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    animation: scHeaderShimmer 4s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes scHeaderShimmer {
+    0% { left: -50%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
 }
 .service-chooser-close {
     position: absolute; top: 0.55rem; right: 0.7rem;
@@ -2942,7 +2943,7 @@ body.vfx-dark .service-chooser,
 }
 .service-chooser-header-text { min-width: 0; flex: 1; }
 .service-chooser-artist {
-    font-size: 1.08rem; opacity: 0.85; color: #fff;
+    font-size: 1.25rem; opacity: 0.85; color: #fff;
     white-space: nowrap;
     display: flex; align-items: center; gap: 0.35rem;
 }
@@ -2962,7 +2963,7 @@ body.vfx-dark .service-chooser,
     color: currentColor; margin-left: 0.05rem; display: none;
 }
 .service-chooser-song {
-    font-size: 1.32rem; font-weight: 600; color: #fff;
+    font-size: 1.55rem; font-weight: 600; color: #fff;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .service-chooser-links {
@@ -2972,16 +2973,32 @@ body.vfx-dark .service-chooser,
     display: flex; align-items: center; gap: 1.125rem; padding: 0.9rem 1.125rem;
     border-radius: 8px; text-decoration: none; color: #333;
     background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08);
-    transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    transition: background 0.15s, border-color 0.15s, filter 0.15s;
     font-size: 1.275rem;
+    position: relative;
+    overflow: hidden;
 }
 body.dark-mode .service-chooser-links a,
 body.vfx-dark .service-chooser-links a,
 .service-chooser-overlay.sc-dark .service-chooser-links a { color: #e8e8f0; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); }
-.service-chooser-links a:hover { background: rgba(0,0,0,0.08); transform: translateY(-1px); border-color: var(--link-accent, rgba(0,0,0,0.08)); }
+.service-chooser-links a:hover { background: rgba(0,0,0,0.08); border-color: var(--link-accent, rgba(0,0,0,0.08)); filter: brightness(1.04); }
 body.dark-mode .service-chooser-links a:hover,
 body.vfx-dark .service-chooser-links a:hover,
 .service-chooser-overlay.sc-dark .service-chooser-links a:hover { background: rgba(255,255,255,0.12); }
+/* Sweep highlight on service chooser links */
+.service-chooser-links a::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(74,127,165,0.08) 50%, transparent 100%);
+    transform: translateX(-100%); pointer-events: none; z-index: 2;
+}
+.service-chooser-links a::after { content: none; }
+.service-chooser-links a:hover::before {
+    animation: svcLinkSweep 0.45s ease-out forwards;
+}
+@keyframes svcLinkSweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
 .service-chooser-links a i { width: 30px; text-align: center; font-size: 1.65rem; }
 .service-chooser-links a.preferred { border: 1px solid var(--accent-orange, #ff922b); }
 .service-chooser-links .pref-badge { margin-left: auto; color: var(--accent-orange, #ff922b); font-size: 0.7rem; }
@@ -3327,12 +3344,11 @@ body.dark-mode .settings-tour-section {
     border-width: 0 2px 2px 0;
 }
 
-/* Hover state for NON-active links — game-style scanline + bracket effect */
+/* Hover state for NON-active links — magazine button with game-style feedback */
 .site-nav-menu a:hover {
     color: var(--text-primary);
     background: var(--bg-hover);
     border-color: var(--border-color);
-    transform: scale(1.06);
     filter: brightness(1.08);
     box-shadow: 0 0 8px rgba(74, 127, 165, 0.15), inset 0 0 12px rgba(74, 127, 165, 0.04);
 }
@@ -3395,7 +3411,6 @@ body.dark-mode .settings-tour-section {
 }
 
 .site-nav-menu a.active:hover {
-    transform: scale(1.06);
     filter: brightness(1.2);
     box-shadow: 0 0 14px rgba(74, 127, 165, 0.25), 0 0 4px rgba(255,255,255,0.1);
     animation: none;
@@ -3486,12 +3501,12 @@ body.dark-mode .site-nav-menu a.active:hover i {
 .nav-separator {
     width: 1px;
     height: 14px;
-    background: var(--border-color);
+    background: var(--text-secondary);
     margin: 0 0.2rem;
     flex-shrink: 0;
 }
 body.dark-mode .nav-separator {
-    background: rgba(255,255,255,0.12);
+    background: #a0a6b0;
 }
 
 /* News outlet icon in media column */
