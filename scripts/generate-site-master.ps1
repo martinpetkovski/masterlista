@@ -52,6 +52,36 @@ $chartMap = @{}
 foreach ($cr in $chartReleases) {
     $chartMap[$cr.releaseId] = $cr
 }
+# Sync chart-data.json youtubeViews from releases.json (picks up newly verified links).
+# Uses releases.json's youtubeViews field which was computed by generate-chart-data-youtube.js
+# with correct global video deduplication.
+$ytViewsSynced = 0
+$relCatalogMap = @{}
+foreach ($r in $releaseCatalog) {
+    $relCatalogMap[$r.releaseId] = $r
+}
+foreach ($cr in $chartReleases) {
+    $r = $relCatalogMap[$cr.releaseId]
+    [long]$correctViews = if ($r) { [long]($r.youtubeViews -as [long]) } else { 0 }
+    $storedViews = [long]($cr.youtubeViews -as [long])
+    if ($correctViews -ne $storedViews) {
+        $cr.youtubeViews = $correctViews
+        $ytViewsSynced++
+    }
+}
+if ($ytViewsSynced -gt 0) {
+    Write-Host "  > Synced youtubeViews for $ytViewsSynced release(s) from verified youtubeTracks" -ForegroundColor Cyan
+    # Save updated chart-data.json via Node.js (preserves JSON formatting)
+    $syncScriptPath = Join-Path (Join-Path $projectRoot "scripts") "sync-chart-views.js"
+    node $syncScriptPath
+    # Reload chart-data.json to pick up the saved changes
+    $chartJson = Get-Content $chartPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $chartReleases = $chartJson.releases
+    $chartMap = @{}
+    foreach ($cr in $chartReleases) {
+        $chartMap[$cr.releaseId] = $cr
+    }
+}
 $releases = @($releaseCatalog | ForEach-Object {
     $r = $_
     $cr = $chartMap[$r.releaseId]
