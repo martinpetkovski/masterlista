@@ -2,13 +2,15 @@
 # Unified update script for Macedonian Music Master Lista
 #
 # Tasks:
-#   1. Chart data - Fetches Spotify data and generates chart-data.json + weekly snapshots
-#   1b. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
-#   2. Scrape    - Scrapes sites for articles, merges into articles.json
-#   3. Service links - Detects new bands.json entries and extracts streaming links for them
-#   4. Curators   - Fetches playlist tracklists for curators from streaming APIs
-#   4b. Playlists  - Updates Spotify playlists (top current, top all-time, new releases)
-#   5. Site Master - Generates site-master.json with all pre-computed data for client pages
+#   1.  Chart data   - Fetches Spotify data and generates chart-data.json + weekly snapshots
+#   1b. YT Matching  - Matches release tracks to YouTube videos, saves unverified links to releases.json
+#   1c. Verification - Pushes releases.json to GitHub, waits for manual link verification
+#   1d. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
+#   2.  Scrape       - Scrapes sites for articles, merges into articles.json
+#   3.  Service links - Detects new bands.json entries and extracts streaming links for them
+#   4.  Curators     - Fetches playlist tracklists for curators from streaming APIs
+#   4b. Playlists    - Updates Spotify playlists (top current, top all-time, new releases)
+#   5.  Site Master  - Generates site-master.json with all pre-computed data for client pages
 #
 # Usage:
 #   ./update-all.ps1               # Run all tasks
@@ -17,10 +19,13 @@
 #   ./update-all.ps1 -SkipLinks    # Skip service link extraction
 #   ./update-all.ps1 -SkipCurators # Skip curator tracklist generation
 #   ./update-all.ps1 -SkipPlaylists # Skip Spotify playlist update
+#   ./update-all.ps1 -SkipYouTubeMatching   # Skip YouTube link matching
+#   ./update-all.ps1 -SkipVerification       # Skip YouTube verification wait (proceed directly)
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only cleanup  # Run only release cleanup
 #   ./update-all.ps1 -Only chart   # Run only chart task
+#   ./update-all.ps1 -Only ytmatching  # Run only YouTube link matching
 #   ./update-all.ps1 -Only ytpopularity # Run only YouTube popularity calculation
 #   ./update-all.ps1 -Only scrape  # Run only article scraping
 #   ./update-all.ps1 -Only links   # Run only service links task
@@ -32,12 +37,14 @@ param(
     [switch]$SkipChart,
     [switch]$SkipScrape,
     [switch]$SkipLinks,
+    [switch]$SkipYouTubeMatching,
+    [switch]$SkipVerification,
     [switch]$SkipYouTubePopularity,
     [switch]$SkipCurators,
     [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
     [switch]$SkipCleanup,
-    [ValidateSet("cleanup", "chart", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
+    [ValidateSet("cleanup", "chart", "ytmatching", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
     [string]$Only
 )
 
@@ -428,6 +435,277 @@ function Update-YouTubePopularity {
     Write-Step "YouTube popularity updated successfully" "Green"
     Write-Elapsed $ytStart
     return $true
+}
+
+# ============================================================================
+#  TASK 1b: YOUTUBE LINK MATCHING (match-only mode)
+# ============================================================================
+
+function Update-YouTubeMatching {
+    Write-Section "TASK 1b: YOUTUBE LINK MATCHING"
+
+    $credentialsPath = Join-Path $scriptRoot "youtube-credentials.json"
+
+    if (-not (Test-Path $credentialsPath)) {
+        Write-Step "youtube-credentials.json not found, skipping" "Red"
+        return $false
+    }
+
+    Write-Step "Reading YouTube credentials..."
+    try {
+        $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
+    }
+    catch {
+        Write-Step "Failed to parse youtube-credentials.json" "Red"
+        return $false
+    }
+
+    if (-not $creds.apiKey) {
+        Write-Step "youtube-credentials.json must contain apiKey" "Red"
+        return $false
+    }
+
+    $env:YOUTUBE_API_KEY = $creds.apiKey
+
+    $nodeScript = Join-Path $scriptRoot "scripts\generate-chart-data-youtube.js"
+    if (-not (Test-Path $nodeScript)) {
+        Write-Step "scripts/generate-chart-data-youtube.js not found" "Red"
+        return $false
+    }
+
+    Write-Step "Running YouTube link matching (match-only mode)..."
+    $matchStart = Get-Date
+    try {
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = "node"
+        $psi.Arguments = "`"$nodeScript`" --match-only"
+        $psi.UseShellExecute = $false
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.CreateNoWindow = $true
+        $psi.WorkingDirectory = $scriptRoot
+
+        $proc = New-Object System.Diagnostics.Process
+        $proc.StartInfo = $psi
+
+        $outputQueue = [System.Collections.Concurrent.ConcurrentQueue[PSCustomObject]]::new()
+
+        $stdoutEvent = Register-ObjectEvent -InputObject $proc -EventName OutputDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'out'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $stderrEvent = Register-ObjectEvent -InputObject $proc -EventName ErrorDataReceived -Action {
+            if ($EventArgs.Data) {
+                $Event.MessageData.Enqueue([PSCustomObject]@{ Stream = 'err'; Text = $EventArgs.Data })
+            }
+        } -MessageData $outputQueue
+
+        $null = $proc.Start()
+        $proc.BeginOutputReadLine()
+        $proc.BeginErrorReadLine()
+
+        $lastStatus = "Starting..."
+        $lastPct = -1
+
+        while (-not $proc.HasExited) {
+            $item = $null
+
+            while ($outputQueue.TryDequeue([ref]$item)) {
+                if ($item.Stream -eq 'out') {
+                    if ($item.Text -match '\((\d+)%\)') {
+                        $lastPct = [int]$Matches[1]
+                    }
+                    $lastStatus = $item.Text
+                    Write-Host "    [yt-match] $($item.Text)" -ForegroundColor DarkGray
+                }
+                else {
+                    Write-Host "    [yt-match] $($item.Text)" -ForegroundColor DarkYellow
+                }
+            }
+
+            $elapsed = [math]::Round(((Get-Date) - $matchStart).TotalSeconds, 0)
+            $progressParams = @{
+                Id       = 1
+                Activity = "YouTube Link Matching  [${elapsed}s elapsed]"
+                Status   = $lastStatus
+            }
+            if ($lastPct -ge 0) {
+                $progressParams.PercentComplete = $lastPct
+            }
+            Write-Progress @progressParams
+
+            Start-Sleep -Milliseconds 500
+        }
+
+        # Drain remaining output
+        $item = $null
+        while ($outputQueue.TryDequeue([ref]$item)) {
+            if ($item.Stream -eq 'out') {
+                Write-Host "    [yt-match] $($item.Text)" -ForegroundColor DarkGray
+            }
+            else {
+                Write-Host "    [yt-match] $($item.Text)" -ForegroundColor DarkYellow
+            }
+        }
+
+        $proc.WaitForExit()
+        Write-Progress -Id 1 -Activity "YouTube Link Matching" -Completed
+
+        Unregister-Event -SourceIdentifier $stdoutEvent.Name -ErrorAction SilentlyContinue
+        Unregister-Event -SourceIdentifier $stderrEvent.Name -ErrorAction SilentlyContinue
+        Remove-Job -Id $stdoutEvent.Id -Force -ErrorAction SilentlyContinue
+        Remove-Job -Id $stderrEvent.Id -Force -ErrorAction SilentlyContinue
+
+        if ($proc.ExitCode -ne 0) {
+            Write-Step "YouTube matching script exited with code $($proc.ExitCode)" "Red"
+            return $false
+        }
+    }
+    catch {
+        Write-Progress -Id 1 -Activity "YouTube Link Matching" -Completed
+        Write-Step "Failed to run YouTube matching script: $_" "Red"
+        return $false
+    }
+
+    Write-Step "YouTube link matching completed" "Green"
+    Write-Elapsed $matchStart
+    return $true
+}
+
+# ============================================================================
+#  TASK 1c: YOUTUBE LINK VERIFICATION (push + wait for GitHub)
+# ============================================================================
+
+function Wait-ForYouTubeVerification {
+    Write-Section "TASK 1c: YOUTUBE LINK VERIFICATION"
+
+    $checkScript = Join-Path $scriptRoot "scripts\check-yt-verification.js"
+    if (-not (Test-Path $checkScript)) {
+        Write-Step "scripts/check-yt-verification.js not found" "Red"
+        return $false
+    }
+
+    # Check current verification status
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $checkOutput = & node $checkScript 2>&1
+    $checkExit = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+
+    if ($checkExit -eq 0) {
+        Write-Step "All YouTube links are already verified" "Green"
+        return $true
+    }
+
+    try {
+        $stats = $checkOutput | Where-Object { $_ -notmatch '^\s*$' } | Select-Object -Last 1 | ConvertFrom-Json
+    }
+    catch {
+        Write-Step "Could not parse verification status" "Red"
+        return $false
+    }
+
+    Write-Step "Unverified: $($stats.unverified) | Verified: $($stats.verified) | Will-not-verify: $($stats.willNotVerify)"
+
+    # Commit and push releases.json
+    Write-Step "Committing releases.json with unverified YouTube links..."
+    $branch = $null
+    Push-Location $scriptRoot
+    try {
+        $branch = (git branch --show-current).Trim()
+        git add releases.json
+        git commit -m "YouTube link matching - $($stats.unverified) links pending verification" --quiet
+        Write-Step "Pushing to origin/$branch..."
+        git push origin $branch --quiet
+    }
+    catch {
+        Write-Step "Git push failed: $_" "Red"
+        Pop-Location
+        return $false
+    }
+
+    $pushSha = (git log -1 --format="%H" -- releases.json).Trim()
+    Pop-Location
+
+    Write-Step "Pushed releases.json (commit $($pushSha.Substring(0,7)))" "Green"
+    Write-Host ""
+    Write-Host "  +---------------------------------------------------------+" -ForegroundColor Yellow
+    Write-Host "  |  WAITING FOR YOUTUBE LINK VERIFICATION                  |" -ForegroundColor Yellow
+    Write-Host "  |                                                         |" -ForegroundColor Yellow
+    Write-Host "  |  1. Open releases.json and review unverified YT links   |" -ForegroundColor Yellow
+    Write-Host "  |  2. Change 'unverified' to 'verified' or               |" -ForegroundColor Yellow
+    Write-Host "  |     'will-not-verify' for each link                    |" -ForegroundColor Yellow
+    Write-Host "  |  3. Commit and push to GitHub                          |" -ForegroundColor Yellow
+    Write-Host "  |                                                         |" -ForegroundColor Yellow
+    Write-Host "  |  Script will auto-continue when all links are verified  |" -ForegroundColor Yellow
+    Write-Host "  |  Press Ctrl+C to abort                                 |" -ForegroundColor Yellow
+    Write-Host "  +---------------------------------------------------------+" -ForegroundColor Yellow
+    Write-Host ""
+
+    $POLL_INTERVAL_SEC = 30
+    $waitStart = Get-Date
+
+    while ($true) {
+        Start-Sleep -Seconds $POLL_INTERVAL_SEC
+
+        $elapsed = [math]::Round(((Get-Date) - $waitStart).TotalMinutes, 1)
+        Write-Progress -Id 1 -Activity "Waiting for YouTube link verification" `
+            -Status "Polling GitHub every ${POLL_INTERVAL_SEC}s... (${elapsed} min elapsed)"
+
+        # Fetch latest from remote
+        Push-Location $scriptRoot
+        $remoteSha = $null
+        try {
+            git fetch origin $branch --quiet 2>$null
+            $remoteSha = (git log "origin/$branch" -1 --format="%H" -- releases.json).Trim()
+        }
+        catch {
+            Write-Step "Git fetch failed, retrying..." "DarkYellow"
+            Pop-Location
+            continue
+        }
+        Pop-Location
+
+        if ($remoteSha -eq $pushSha) {
+            continue  # No new commits touching releases.json
+        }
+
+        # New commit detected
+        Write-Step "New commit detected on GitHub ($(($remoteSha).Substring(0,7)))" "Cyan"
+        Push-Location $scriptRoot
+        try {
+            git pull --ff-only --quiet
+        }
+        catch {
+            Write-Step "Git pull failed: $_" "Red"
+            Pop-Location
+            continue
+        }
+        Pop-Location
+
+        # Re-check verification
+        $ErrorActionPreference = "Continue"
+        $checkOutput = & node $checkScript 2>&1
+        $checkExit = $LASTEXITCODE
+        $ErrorActionPreference = "Stop"
+
+        if ($checkExit -eq 0) {
+            Write-Progress -Id 1 -Activity "YouTube link verification" -Completed
+            Write-Step "All YouTube links verified!" "Green"
+            return $true
+        }
+
+        try {
+            $stats = $checkOutput | Where-Object { $_ -notmatch '^\s*$' } | Select-Object -Last 1 | ConvertFrom-Json
+        }
+        catch {
+            $stats = @{ unverified = "?" }
+        }
+        Write-Step "Still $($stats.unverified) unverified link(s) remaining. Waiting..." "Yellow"
+        $pushSha = $remoteSha  # Update baseline for next poll cycle
+    }
 }
 
 # ============================================================================
@@ -862,6 +1140,8 @@ Write-Host ("=" * 70) -ForegroundColor Magenta
 # Determine which tasks to run
 $runCleanup   = -not $SkipCleanup
 $runChart     = -not $SkipChart
+$runYouTubeMatching = -not $SkipYouTubeMatching
+$runVerification = -not $SkipVerification
 $runYouTubePopularity = -not $SkipYouTubePopularity
 $runScrape    = -not $SkipScrape
 $runLinks     = -not $SkipLinks
@@ -872,6 +1152,8 @@ $runSiteMaster = -not $SkipSiteMaster
 if ($Only) {
     $runCleanup   = $Only -eq "cleanup"
     $runChart     = $Only -eq "chart"
+    $runYouTubeMatching = $Only -eq "ytmatching"
+    $runVerification = $Only -eq "ytmatching"  # verification pairs with matching
     $runYouTubePopularity = $Only -eq "ytpopularity"
     $runScrape    = $Only -eq "scrape"
     $runLinks     = $Only -eq "links"
@@ -884,7 +1166,7 @@ $results = @{}
 $taskTimings = @{}
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runCleanup, $runChart, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runCleanup, $runChart, $runYouTubeMatching, $runVerification, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 0: Cleanup Releases ---
@@ -925,7 +1207,37 @@ else {
     Write-Step "Skipping chart data" "DarkGray"
 }
 
-# --- Task 1b: YouTube Popularity ---
+# --- Task 1b: YouTube Link Matching ---
+if ($runYouTubeMatching) {
+    Set-OverallProgress "YouTube Link Matching"
+    $t = Get-Date
+    $results["YouTube Matching"] = Update-YouTubeMatching
+    $taskTimings["YouTube Matching"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping YouTube link matching" "DarkGray"
+}
+
+# --- Task 1c: YouTube Link Verification (push + wait for GitHub) ---
+if ($runVerification -and $results["YouTube Matching"] -ne $false) {
+    Set-OverallProgress "YouTube Verification"
+    $t = Get-Date
+    $results["YouTube Verification"] = Wait-ForYouTubeVerification
+    $taskTimings["YouTube Verification"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+
+    if (-not $results["YouTube Verification"]) {
+        Write-Step "Verification failed or aborted — skipping YouTube popularity" "Red"
+        $runYouTubePopularity = $false
+    }
+}
+elseif ($runVerification) {
+    Write-Step "Skipping verification (matching did not run or failed)" "DarkGray"
+}
+else {
+    Write-Step "Skipping YouTube verification" "DarkGray"
+}
+
+# --- Task 1d: YouTube Popularity ---
 if ($runYouTubePopularity) {
     Set-OverallProgress "YouTube Popularity"
     $t = Get-Date

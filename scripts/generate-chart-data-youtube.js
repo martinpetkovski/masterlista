@@ -703,6 +703,82 @@ async function main() {
 
     console.log(`  Done: ${totalTracksMatched} tracks matched, ${totalTracksUnmatched} unmatched`);
 
+    // ── --match-only: Save matches to releases.json and exit ────────────────
+    if (process.argv.includes('--match-only')) {
+        console.log('\n── Match-only mode: Saving YouTube track matches to releases.json ──');
+
+        // Build map of existing youtube tracks (to preserve verified/will-not-verify)
+        const existingYtMapMO = new Map();
+        for (const r of releases) {
+            if (r.youtubeTracks?.length > 0) {
+                const trackMap = new Map();
+                for (const t of r.youtubeTracks) {
+                    trackMap.set(t.videoId, t);
+                }
+                existingYtMapMO.set(r.releaseId, trackMap);
+            }
+        }
+
+        let newMatchCount = 0;
+        for (const r of releases) {
+            const trackMatches = cache.tracks[r.releaseId] || [];
+            const existingTracks = existingYtMapMO.get(r.releaseId) || new Map();
+            const ytTracks = [];
+            const seenVids = new Set();
+
+            // Preserve existing tracks (verified, will-not-verify, or already-unverified)
+            for (const [vid, track] of existingTracks) {
+                seenVids.add(vid);
+                ytTracks.push(track);
+            }
+
+            // Add new matches from cache
+            for (const t of trackMatches) {
+                for (const vid of (t.videoIds || [])) {
+                    if (seenVids.has(vid)) continue;
+                    seenVids.add(vid);
+                    newMatchCount++;
+                    ytTracks.push({
+                        name: t.trackName,
+                        videoId: vid,
+                        url: `https://www.youtube.com/watch?v=${vid}`,
+                        verified: 'unverified'
+                    });
+                }
+            }
+
+            r.youtubeTracks = ytTracks.length > 0 ? ytTracks : undefined;
+        }
+
+        releasesData.generatedAt = new Date().toISOString();
+        fs.writeFileSync(RELEASES_FILE, JSON.stringify(releasesData, null, 2), 'utf8');
+
+        // Count verification status
+        let unverifiedCount = 0, verifiedCount = 0, willNotVerifyCount = 0;
+        for (const r of releases) {
+            for (const t of (r.youtubeTracks || [])) {
+                if (t.verified === 'verified') verifiedCount++;
+                else if (t.verified === 'will-not-verify') willNotVerifyCount++;
+                else unverifiedCount++;
+            }
+        }
+
+        console.log(`\n=== Match-only Summary ===`);
+        console.log(`  New matches added:   ${newMatchCount}`);
+        console.log(`  Verified:            ${verifiedCount}`);
+        console.log(`  Unverified:          ${unverifiedCount}`);
+        console.log(`  Will-not-verify:     ${willNotVerifyCount}`);
+        console.log(`  YouTube API quota:   ~${quotaUsed} units`);
+
+        if (unverifiedCount > 0) {
+            console.log(`\nPlease verify ${unverifiedCount} unverified YouTube link(s) in releases.json`);
+        } else {
+            console.log(`\nAll YouTube links are verified. Ready for popularity calculation.`);
+        }
+
+        return;
+    }
+
     // ── Step 3: Fetch view counts only for verified video IDs ───────────────
     // Build a map of existing youtube tracks from releases.json (need verified status)
     const existingYtMap = new Map(); // releaseId -> Map<videoId, { verified, name }>
