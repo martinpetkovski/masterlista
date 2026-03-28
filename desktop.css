@@ -3308,7 +3308,7 @@ body.dark-mode .settings-tour-section {
     padding: 0.3rem 0.55rem;
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     text-decoration: none;
     border-radius: 0;
     border: 2px solid transparent;
@@ -3329,7 +3329,7 @@ body.dark-mode .settings-tour-section {
     width: 0px;
     height: 0px;
     border-style: solid;
-    border-color: var(--text-primary);
+    border-color: #000;
     transition: all 0.3s cubic-bezier(.4,2,.6,1);
     opacity: 0;
     pointer-events: none;
@@ -3337,20 +3337,19 @@ body.dark-mode .settings-tour-section {
 }
 .site-nav-menu a::before {
     top: -3px; left: -3px;
-    border-width: 2px 0 0 2px;
+    border-width: 3px 0 0 3px;
 }
 .site-nav-menu a::after {
     bottom: -3px; right: -3px;
-    border-width: 0 2px 2px 0;
+    border-width: 0 3px 3px 0;
 }
 
 /* Hover state for NON-active links — magazine button with game-style feedback */
 .site-nav-menu a:hover {
     color: var(--text-primary);
-    background: var(--bg-hover);
-    border-color: var(--border-color);
-    filter: brightness(1.08);
-    box-shadow: 0 0 8px rgba(74, 127, 165, 0.15), inset 0 0 12px rgba(74, 127, 165, 0.04);
+    border-color: transparent;
+    background-color: var(--bg-hover);
+    filter: brightness(1.0);
 }
 
 .site-nav-menu a:hover::before,
@@ -3361,8 +3360,6 @@ body.dark-mode .settings-tour-section {
 }
 
 .site-nav-menu a:hover i {
-    color: var(--accent-blue);
-    filter: drop-shadow(0 0 3px rgba(74, 127, 165, 0.5));
     transition: color 0.2s ease, filter 0.2s ease;
 }
 
@@ -3402,7 +3399,6 @@ body.dark-mode .settings-tour-section {
     opacity: 0.5;
     width: 5px;
     height: 5px;
-    animation: navBracketPulse 2.5s ease-in-out infinite;
 }
 
 @keyframes navBracketPulse {
