@@ -582,8 +582,13 @@ function Wait-ForYouTubeVerification {
     Write-Section "TASK 1c: YOUTUBE LINK VERIFICATION"
 
     $checkScript = Join-Path $scriptRoot "scripts\check-yt-verification.js"
+    $submitScript = Join-Path $scriptRoot "scripts\push-releases-verification.js"
     if (-not (Test-Path $checkScript)) {
         Write-Step "scripts/check-yt-verification.js not found" "Red"
+        return $false
+    }
+    if (-not (Test-Path $submitScript)) {
+        Write-Step "scripts/push-releases-verification.js not found" "Red"
         return $false
     }
 
@@ -609,39 +614,46 @@ function Wait-ForYouTubeVerification {
 
     Write-Step "Unverified: $($stats.unverified) | Verified: $($stats.verified) | Will-not-verify: $($stats.willNotVerify)"
 
-    # Commit and push releases.json
-    Write-Step "Committing releases.json with unverified YouTube links..."
-    $branch = $null
-    Push-Location $scriptRoot
+    # Publish releases.json to GitHub so verification can be done remotely.
+    Write-Step "Publishing releases.json to GitHub for remote verification..."
+    $submitResult = $null
     try {
-        $branch = (git branch --show-current).Trim()
-        git add releases.json
-        git commit -m "YouTube link matching - $($stats.unverified) links pending verification" --quiet
-        Write-Step "Pushing to origin/$branch..."
-        git push origin $branch --quiet
+        $submitRaw = & node $submitScript --unverified $stats.unverified
+        if ($LASTEXITCODE -ne 0) {
+            throw "push-releases-verification.js exited with code $LASTEXITCODE"
+        }
+        $submitResult = $submitRaw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Git push failed: $_" "Red"
-        Pop-Location
+        Write-Step "GitHub publish failed: $_" "Red"
         return $false
     }
 
-    $pushSha = (git log -1 --format="%H" -- releases.json).Trim()
-    Pop-Location
-
-    Write-Step "Pushed releases.json (commit $($pushSha.Substring(0,7)))" "Green"
+    $branch = $submitResult.branch
+    $pushSha = $submitResult.commitSha
+    $shortSha = if ($pushSha.Length -ge 7) { $pushSha.Substring(0, 7) } else { $pushSha }
+    Write-Step "Published releases.json on origin/$branch (commit $shortSha)" "Green"
     Write-Host ""
     Write-Host "  +---------------------------------------------------------+" -ForegroundColor Yellow
     Write-Host "  |  WAITING FOR YOUTUBE LINK VERIFICATION                  |" -ForegroundColor Yellow
     Write-Host "  |                                                         |" -ForegroundColor Yellow
-    Write-Host "  |  1. Open releases.json and review unverified YT links   |" -ForegroundColor Yellow
+    Write-Host "  |  1. Open the GitHub file and review unverified links   |" -ForegroundColor Yellow
     Write-Host "  |  2. Change 'unverified' to 'verified' or               |" -ForegroundColor Yellow
     Write-Host "  |     'will-not-verify' for each link                    |" -ForegroundColor Yellow
-    Write-Host "  |  3. Commit and push to GitHub                          |" -ForegroundColor Yellow
+    Write-Host "  |  3. Commit your edit in GitHub's web UI                |" -ForegroundColor Yellow
     Write-Host "  |                                                         |" -ForegroundColor Yellow
     Write-Host "  |  Script will auto-continue when all links are verified  |" -ForegroundColor Yellow
     Write-Host "  |  Press Ctrl+C to abort                                 |" -ForegroundColor Yellow
     Write-Host "  +---------------------------------------------------------+" -ForegroundColor Yellow
+    Write-Host ""
+    if ($submitResult.editUrl) {
+        Write-Step "Verify from anywhere via GitHub edit URL:" "Cyan"
+        Write-Host "    $($submitResult.editUrl)" -ForegroundColor DarkCyan
+    }
+    if ($submitResult.blobUrl) {
+        Write-Step "Read-only file URL:" "DarkGray"
+        Write-Host "    $($submitResult.blobUrl)" -ForegroundColor DarkGray
+    }
     Write-Host ""
 
     $POLL_INTERVAL_SEC = 30
