@@ -835,10 +835,23 @@ function loadArtistData() {
     _artistDataPromise = fetch('/artist-data.json?t=' + Date.now())
         .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(data) {
-            if (data && _siteMasterCache) {
-                _siteMasterCache.artistPopularityGraphs = data.artistPopularityGraphs || {};
-                _siteMasterCache.releaseSparklines = data.releaseSparklines || {};
-                _siteMasterCache.artistActivity = data.artistActivity || {};
+            if (data) {
+                // If site-master is already cached, merge immediately
+                if (_siteMasterCache) {
+                    _siteMasterCache.artistPopularityGraphs = data.artistPopularityGraphs || {};
+                    _siteMasterCache.releaseSparklines = data.releaseSparklines || {};
+                    _siteMasterCache.artistActivity = data.artistActivity || {};
+                    return _siteMasterCache;
+                }
+                // Otherwise wait for site-master to load, then merge
+                return (_siteMasterPromise || loadSiteMaster()).then(function(sm) {
+                    if (sm) {
+                        sm.artistPopularityGraphs = data.artistPopularityGraphs || {};
+                        sm.releaseSparklines = data.releaseSparklines || {};
+                        sm.artistActivity = data.artistActivity || {};
+                    }
+                    return sm;
+                });
             }
             return _siteMasterCache;
         })

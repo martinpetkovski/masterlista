@@ -129,12 +129,12 @@
             animation: vfxLayerIn 1.2s ease forwards;
         }
         @keyframes vfxLayerIn {
-            from { opacity: 0; transform: scale(1.3); }
-            to { opacity: 1.0; transform: scale(1.3); }
+            from { opacity: 0; transform: scale(1.25); }
+            to { opacity: 1.0; transform: scale(1.25); }
         }
         @keyframes vfxAccentIn {
-            from { opacity: 0; transform: scale(1.3); }
-            to { opacity: 0.9; transform: scale(1.3); }
+            from { opacity: 0; transform: scale(1.25); }
+            to { opacity: 0.9; transform: scale(1.25); }
         }
         .vfx-bg__gradient { display: block; animation-name: vfxAccentIn; animation-delay: 0s; }
         .vfx-bg__radials { display: block; animation-name: vfxAccentIn; animation-delay: 0.1s; }
@@ -142,21 +142,21 @@
         /* Geometric wireframe grid */
         .vfx-bg__grid {
             background-size: 60px 60px;
-            opacity: 0.5;
+            opacity: 1;
         }
 
         /* Frequency wave SVG layer */
         .vfx-bg__waves svg {
             position: absolute;
             bottom: 0; left: 0;
-            width: 100%; height: 60%;
+            width: 100%; height: 80%;
         }
 
         /* Aurora layer (full-page soft glow) */
         .vfx-bg__aurora {
             position: absolute;
             inset: 0;
-            opacity: 0.06;
+            opacity: 0.12;
         }
 
         /* Film grain overlay */
@@ -1249,10 +1249,18 @@
             font-weight: 600;
             font-size: 0.85rem;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 0.15rem;
+            min-width: 0;
+        }
+        .chart-history-title-text {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 0.15rem;
+            min-width: 0;
+            flex: 1;
         }
         .release-collab-artists {
             font-size: 0.75rem;
@@ -1684,6 +1692,7 @@ a.chart-history-item {
         .timeline-item-event {
             margin-top: 0.35rem;
             overflow: hidden;
+            border-radius: 0;
         }
         /* Today marker on the timeline */
         .timeline-today-marker {
@@ -2765,7 +2774,7 @@ a.chart-history-item {
                 // Layer: geometric wireframe grid
                 const grid = document.createElement('div');
                 grid.className = 'vfx-bg__layer vfx-bg__grid';
-                grid.style.backgroundImage = 'linear-gradient(' + c1 + '14 1px, transparent 1px), linear-gradient(90deg, ' + c1 + '14 1px, transparent 1px)';
+                grid.style.backgroundImage = 'linear-gradient(' + c1 + '40 1px, transparent 1px), linear-gradient(90deg, ' + c1 + '40 1px, transparent 1px)';
                 bg.appendChild(grid);
 
                 // Layer: frequency waves + vinyl rings SVG
@@ -2781,14 +2790,14 @@ a.chart-history-item {
                         d += ' L' + x + ' ' + y.toFixed(1);
                     }
                     var wCol = c1;
-                    var wOp = (0.06 + seededRand(w*11) * 0.05).toFixed(3);
-                    waveSvg += '<path d="' + d + '" fill="none" stroke="' + wCol + '" stroke-width="' + (1.8 - w*0.3).toFixed(1) + '" stroke-opacity="' + wOp + '" stroke-linecap="round"/>';
+                    var wOp = (0.12 + seededRand(w*11) * 0.08).toFixed(3);
+                    waveSvg += '<path d="' + d + '" fill="none" stroke="' + wCol + '" stroke-width="' + (2.5 - w*0.3).toFixed(1) + '" stroke-opacity="' + wOp + '" stroke-linecap="round"/>';
                 }
                 var ringCx = (150 + seededRand(99) * 900).toFixed(0);
                 var ringCy = (80 + seededRand(77) * 240).toFixed(0);
                 for (var r = 25; r < 280; r += 22) {
                     var rCol = c1;
-                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="' + rCol + '" stroke-width="0.5" stroke-opacity="0.035"/>';
+                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="' + rCol + '" stroke-width="0.7" stroke-opacity="0.07"/>';
                 }
                 waveSvg += '</svg>';
                 waveLayer.innerHTML = waveSvg;
@@ -2867,15 +2876,17 @@ a.chart-history-item {
                 document.body.insertBefore(bg, document.body.firstChild);
 
                 // Multi-layer parallax: scroll (vertical) + mouse (horizontal) for depth
+                // Parallax depths: grid lines are the background (slow = far away),
+                // foreground decorations move faster (close). Lower scrollY = further back.
                 const parallaxLayers = [
-                    { el: gradientL, scrollY: 0.25, mouseX: 0.012, mouseY: 0.010 },
-                    { el: radials,   scrollY: 0.35, mouseX: 0.022, mouseY: 0.018 },
-                    { el: grid,      scrollY: 0.50, mouseX: 0.030, mouseY: 0.025 },
-                    { el: waveLayer, scrollY: 0.20, mouseX: 0.015, mouseY: 0.012 },
-                    { el: auroraLayer, scrollY: 0.18, mouseX: 0.010, mouseY: 0.008 },
-                    { el: shapesLayer, scrollY: 0.60, mouseX: 0.040, mouseY: 0.035 },
-                    { el: grainEl,   scrollY: 0.05, mouseX: 0.003, mouseY: 0.002 },
-                    { el: sweepLayer, scrollY: 0.30, mouseX: 0.018, mouseY: 0.014 },
+                    { el: grid,      scrollY: 0.03, mouseX: 0.005, mouseY: 0.004 },
+                    { el: gradientL, scrollY: 0.05, mouseX: 0.008, mouseY: 0.006 },
+                    { el: grainEl,   scrollY: 0.02, mouseX: 0.003, mouseY: 0.002 },
+                    { el: auroraLayer, scrollY: 0.06, mouseX: 0.010, mouseY: 0.008 },
+                    { el: waveLayer, scrollY: 0.10, mouseX: 0.018, mouseY: 0.014 },
+                    { el: sweepLayer, scrollY: 0.14, mouseX: 0.025, mouseY: 0.020 },
+                    { el: radials,   scrollY: 0.18, mouseX: 0.035, mouseY: 0.028 },
+                    { el: shapesLayer, scrollY: 0.25, mouseX: 0.050, mouseY: 0.040 },
                 ];
 
                 // Smooth mouse tracking
@@ -2892,9 +2903,9 @@ a.chart-history-item {
                     mouseY += (targetMY - mouseY) * 0.08;
                     const sy = window.scrollY;
                     for (const l of parallaxLayers) {
-                        const tx = mouseX * l.mouseX * 40;
-                        const ty = (-sy * l.scrollY) + (mouseY * l.mouseY * 30);
-                        l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0)';
+                        const tx = mouseX * l.mouseX * 100;
+                        const ty = (-sy * l.scrollY) + (mouseY * l.mouseY * 80);
+                        l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(1.25)';
                     }
                     bgTick = false;
                 }
@@ -3165,18 +3176,68 @@ a.chart-history-item {
             if (!container) return;
             
             // Convert weekly popularity to sorted array
-            const weeklyData = Array.from(artistHistory.weeklyPopularity.values())
+            const weeklyDataRaw = Array.from(artistHistory.weeklyPopularity.values())
                 .sort((a, b) => a.week.localeCompare(b.week));
             
-            if (weeklyData.length === 0) {
+            if (weeklyDataRaw.length === 0) {
+                console.warn('[popularity] No weekly data for artist, skipping chart');
                 container.innerHTML = '';
                 return;
             }
+
+            // Compute delta views per week (how many views gained each week)
+            const weeklyData = weeklyDataRaw.map((d, i) => {
+                const prevPop = i > 0 ? weeklyDataRaw[i - 1].popularity : d.popularity;
+                const delta = d.popularity - prevPop;
+                return {
+                    week: d.week,
+                    popularity: Math.max(0, delta),
+                    date: d.date,
+                    newReleases: d.newReleases || []
+                };
+            });
+
+            // Estimate end-of-week projection: take the current week's actual delta
+            // (last data point) and project forward to next Monday using average daily rate.
+            let estimatedPoint = null;
+            if (weeklyData.length >= 2) {
+                // Average daily views from completed weeks (skip first which is always 0)
+                const completed = weeklyData.slice(1);
+                const avgDaily = completed.length > 0
+                    ? completed.reduce((s, d) => s + d.popularity, 0) / completed.length / 7
+                    : 0;
+                if (avgDaily > 0) {
+                    const lastEntry = weeklyData[weeklyData.length - 1];
+                    const lastWeekId = lastEntry.week;
+                    const lastMonday = isoWeekToMonday(lastWeekId);
+                    const now = new Date();
+                    // Days remaining until next Monday (next chart drop)
+                    const nextMonday = new Date(lastMonday);
+                    nextMonday.setDate(lastMonday.getDate() + 7);
+                    const daysRemaining = Math.max(0, (nextMonday - now) / 86400000);
+                    if (daysRemaining > 0 && daysRemaining < 7) {
+                        // Project: current actual value + average growth for remaining days
+                        const projected = Math.round(lastEntry.popularity + avgDaily * daysRemaining);
+                        if (projected > lastEntry.popularity) {
+                            estimatedPoint = {
+                                week: lastWeekId + '*',
+                                popularity: projected,
+                                isEstimate: true
+                            };
+                        }
+                    }
+                }
+            }
+
+            // Include estimated point in min/max calculation for proper scaling
+            const allPopValues = weeklyData.map(d => d.popularity);
+            if (estimatedPoint) allPopValues.push(estimatedPoint.popularity);
+
             // Will fade in after rendering
             container.classList.remove('section-loaded');
             
-            const maxPopularity = Math.max(...weeklyData.map(d => d.popularity));
-            const minPopularity = Math.min(...weeklyData.map(d => d.popularity));
+            const maxPopularity = Math.max(...allPopValues);
+            const minPopularity = Math.min(...allPopValues);
             const avgPopularity = Math.round(weeklyData.reduce((sum, d) => sum + d.popularity, 0) / weeklyData.length);
             
             // Generate SVG path
@@ -3212,6 +3273,23 @@ a.chart-history-item {
             const dotsHtml = points.map(p => {
                 return `<circle class="graph-dot" cx="${p.x}" cy="${p.y}" r="3" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5"/>`;
             }).join('');
+
+            // Estimated current week: dashed line extending from last point
+            let estimatedHtml = '';
+            if (estimatedPoint && points.length >= 1) {
+                const lastPt = points[points.length - 1];
+                // Position the estimated point one step beyond the last
+                const stepX = points.length >= 2 ? (points[points.length - 1].x - points[points.length - 2].x) : graphWidth * 0.15;
+                const estX = Math.min(lastPt.x + stepX, width - padding);
+                const normalizedEstY = maxPopularity === minPopularity ? 0.5 :
+                    (estimatedPoint.popularity - minPopularity) / (maxPopularity - minPopularity);
+                const estY = height - padding - (normalizedEstY * graphHeight);
+                estimatedHtml = `
+                    <path d="M ${lastPt.x} ${lastPt.y} L ${estX} ${estY}" fill="none" stroke="var(--accent-orange)" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round" opacity="0.5"/>
+                    <circle cx="${estX}" cy="${estY}" r="3" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5" opacity="0.5"/>
+                    <text x="${estX}" y="${estY - 6}" text-anchor="middle" fill="var(--text-muted)" font-size="7" opacity="0.7">~${formatViewsAbsolute(estimatedPoint.popularity)}</text>
+                `;
+            }
 
             // Create release date dots with sub-week interpolation
             // Use string-based date range from ISO weeks to avoid timezone issues
@@ -3324,7 +3402,7 @@ a.chart-history-item {
                         ${cumulativeVuHtml ? '<span class="section-title-vu">' + cumulativeVuHtml + '</span>' : ''}
                     </h3>
                     <div class="popularity-graph-container">
-                        <svg class="popularity-graph" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">
+                        <svg class="popularity-graph" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" style="overflow:visible">
                             <defs>
                                 <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <stop offset="0%" style="stop-color:var(--accent-orange);stop-opacity:0.3" />
@@ -3335,11 +3413,17 @@ a.chart-history-item {
                             <path d="${areaD}" fill="url(#areaGradient)" />
                             <path d="${pathD}" fill="none" stroke="var(--accent-orange)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             ${dotsHtml}
-                            ${releaseDotsHtml}
+                            ${estimatedHtml}
+                            <g class="release-markers">${releaseDotsHtml}</g>
+                            <line class="hover-line" x1="0" y1="${padding}" x2="0" y2="${height - padding}" stroke="var(--text-muted)" stroke-width="0.7" stroke-dasharray="3,2" opacity="0" pointer-events="none"/>
+                            <circle class="hover-dot" cx="0" cy="0" r="4" fill="var(--accent-orange)" stroke="var(--bg-primary)" stroke-width="1.5" opacity="0" pointer-events="none"/>
+                            <text class="hover-label" x="0" y="0" text-anchor="middle" fill="var(--text-primary)" font-size="8" font-weight="600" opacity="0" pointer-events="none"></text>
+                            <text class="hover-week" x="0" y="0" text-anchor="middle" fill="var(--text-muted)" font-size="7" opacity="0" pointer-events="none"></text>
+                            <rect class="hover-area" x="${leftPadding}" y="0" width="${graphWidth}" height="${height}" fill="transparent" cursor="crosshair"/>
                         </svg>
                         <div class="graph-labels">
                             <span style="margin-left: 25px;">${firstWeek}</span>
-                            <span>${lastWeek}</span>
+                            <span>${lastWeek}${estimatedPoint ? ' →' : ''}</span>
                         </div>
                         ${newReleasesHtml}
                     </div>
@@ -3354,6 +3438,52 @@ a.chart-history-item {
                     container.removeEventListener('transitionend', handler);
                 }
             });
+
+            // Hover interaction: show value under cursor
+            const svg = container.querySelector('.popularity-graph');
+            const hoverArea = svg && svg.querySelector('.hover-area');
+            if (svg && hoverArea && points.length >= 2) {
+                const hLine = svg.querySelector('.hover-line');
+                const hDot = svg.querySelector('.hover-dot');
+                const hLabel = svg.querySelector('.hover-label');
+                const hWeek = svg.querySelector('.hover-week');
+                // All data points including estimated
+                const allPts = [...points];
+                if (estimatedPoint && estimatedHtml) {
+                    const lastPt = points[points.length - 1];
+                    const stepX = points.length >= 2 ? (points[points.length - 1].x - points[points.length - 2].x) : graphWidth * 0.15;
+                    const estX = Math.min(lastPt.x + stepX, width - padding);
+                    const normalizedEstY = maxPopularity === minPopularity ? 0.5 :
+                        (estimatedPoint.popularity - minPopularity) / (maxPopularity - minPopularity);
+                    const estY = height - padding - (normalizedEstY * graphHeight);
+                    allPts.push({ x: estX, y: estY, popularity: estimatedPoint.popularity, week: estimatedPoint.week });
+                }
+                function showHover(e) {
+                    const rect = svg.getBoundingClientRect();
+                    const svgX = (e.clientX - rect.left) / rect.width * width;
+                    // Find closest point
+                    let closest = allPts[0], minDist = Math.abs(svgX - allPts[0].x);
+                    for (let i = 1; i < allPts.length; i++) {
+                        const d = Math.abs(svgX - allPts[i].x);
+                        if (d < minDist) { minDist = d; closest = allPts[i]; }
+                    }
+                    hLine.setAttribute('x1', closest.x); hLine.setAttribute('x2', closest.x); hLine.setAttribute('opacity', '0.5');
+                    hDot.setAttribute('cx', closest.x); hDot.setAttribute('cy', closest.y); hDot.setAttribute('opacity', '1');
+                    const labelY = closest.y - 14;
+                    hLabel.setAttribute('x', closest.x); hLabel.setAttribute('y', labelY); hLabel.setAttribute('opacity', '1');
+                    hLabel.textContent = formatViewsAbsolute(closest.popularity);
+                    hWeek.setAttribute('x', closest.x); hWeek.setAttribute('y', labelY - 10); hWeek.setAttribute('opacity', '0.7');
+                    hWeek.textContent = (closest.week || '').replace(/^\d{4}-/, '');
+                }
+                function hideHover() {
+                    hLine.setAttribute('opacity', '0'); hDot.setAttribute('opacity', '0');
+                    hLabel.setAttribute('opacity', '0'); hWeek.setAttribute('opacity', '0');
+                }
+                hoverArea.addEventListener('mousemove', showHover);
+                hoverArea.addEventListener('mouseleave', hideHover);
+                hoverArea.addEventListener('touchmove', e => { e.preventDefault(); showHover(e.touches[0]); }, { passive: false });
+                hoverArea.addEventListener('touchend', hideHover);
+            }
         }
         
         // Convert ISO week string (e.g. "2026-W03") to Monday date
@@ -3519,7 +3649,7 @@ a.chart-history-item {
                                 }
                             </div>
                             <div class="chart-history-info">
-                                <div class="chart-history-title">${release.releaseTitle}${newBadge}</div>
+                                <div class="chart-history-title"><span class="chart-history-title-text">${release.releaseTitle}</span>${newBadge}</div>
                                 ${collabHtml}
                                 <div class="chart-history-meta">
                                     <span class="chart-history-type ${typeClass}">
@@ -3961,7 +4091,7 @@ a.chart-history-item {
                             requestAnimationFrame(function() {
                                 var sy = window.scrollY;
                                 if (artistContainer) {
-                                    artistContainer.style.transform = 'translateY(' + (-sy * 0.03) + 'px)';
+                                    artistContainer.style.transform = 'translateY(' + (-sy * 0.10) + 'px)';
                                 }
                                 contentTick = false;
                             });

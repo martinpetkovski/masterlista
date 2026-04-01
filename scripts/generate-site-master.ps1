@@ -917,6 +917,20 @@ Write-Host "  > Building artist popularity graphs..." -ForegroundColor Yellow
 $artistGraphWeekCount = [Math]::Min(20, $chartHistoryWeeks.Count)
 $artistPopularityGraphs = @{}  # artistName(lower) -> array of { weekId, value, hasNewRelease }
 
+# Build first-seen baseline: for each release, record its youtubeViews in the earliest
+# week where it has non-zero views. Releases often exist with 0 views before their
+# YouTube video is confirmed; when confirmed, views jump to the video's full count.
+# Subtracting the first non-zero snapshot ensures only genuine weekly growth is used.
+$firstSeenViews = @{}  # releaseId -> youtubeViews in first week with views > 0
+for ($w = $artistGraphWeekCount - 1; $w -ge 0; $w--) {
+    foreach ($r in $chartHistoryWeeks[$w].releases) {
+        $views = [int]($r.youtubeViews -as [int])
+        if ($views -gt 0 -and -not $firstSeenViews.ContainsKey($r.releaseId)) {
+            $firstSeenViews[$r.releaseId] = $views
+        }
+    }
+}
+
 for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
     $weekData = $chartHistoryWeeks[$w]
     $weekId = $weekData.weekId
@@ -947,7 +961,7 @@ for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
                 $artistWeekPop[$key] = 0
                 $artistNewRelease[$key] = $false
             }
-            $artistWeekPop[$key] += [int]($r.youtubeViews -as [int])
+            $artistWeekPop[$key] += [Math]::Max(0, [int]($r.youtubeViews -as [int]) - $firstSeenViews[$r.releaseId])
             
             # Check if release date falls within this week (use effectiveReleaseDate for singles/songs)
             $effDate = if ($r.effectiveReleaseDate) { $r.effectiveReleaseDate } else { $r.releaseDate }
