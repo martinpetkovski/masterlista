@@ -519,9 +519,21 @@ foreach ($file in $historyFiles) {
         $merged['spotifyPopularity'] = if ($null -ne $compact.spotifyPopularity) { $compact.spotifyPopularity } else { 0 }
         [PSCustomObject]$merged
     })
+    # Count verified videos (releases with linked YouTube video IDs)
+    $verifiedCount = 0
+    foreach ($cr in $data.releases) {
+        if (($cr.youtubeVideoIds -and $cr.youtubeVideoIds.Count -gt 0) -or ($cr.youtubeTrackCount -and [int]$cr.youtubeTrackCount -gt 0)) {
+            $verifiedCount++
+        }
+    }
+
     $chartHistoryWeeks += @{
         weekId = $weekId
         releases = $hydrated
+        generatedAt = $data.generatedAt
+        totalReleases = if ($data.totalReleases) { [int]$data.totalReleases } else { $data.releases.Count }
+        totalArtists = if ($data.totalArtists) { [int]$data.totalArtists } else { 0 }
+        verifiedVideos = $verifiedCount
     }
 }
 
@@ -836,6 +848,147 @@ foreach ($genre in $genreFilters) {
 }
 
 Write-Host "  > Built charts for $($charts.Keys.Count) genre/type combos + $($advancedCharts.Keys.Count) advanced (all-genre only; genre subsets via _gc)" -ForegroundColor DarkGray
+
+# ============================================================================
+#  1b. PRE-COMPUTE HISTORICAL WEEKLY CHARTS (for chart-history-data.json)
+# ============================================================================
+# For each chart-history week: viewsDelta = weekN.views - weekN-1.views
+# Build ranked charts with position changes, latest releases, and stats.
+
+Write-Host "  > Pre-computing historical weekly charts..." -ForegroundColor Yellow
+
+# ISO week date range string (Monday–Sunday)
+function Get-WeekDateRange {
+    param([string]$wkId)
+    if ($wkId -match '^(\d{4})-W(\d{2})$') {
+        $y = [int]$Matches[1]; $w = [int]$Matches[2]
+        $jan4 = [datetime]::new($y, 1, 4)
+        $dow = [int]$jan4.DayOfWeek; if ($dow -eq 0) { $dow = 7 }
+        $week1Mon = $jan4.AddDays(1 - $dow)
+        $mon = $week1Mon.AddDays(7 * ($w - 1))
+        $sun = $mon.AddDays(6)
+        $pd = { param($n) $n.ToString().PadLeft(2, '0') }
+        if ($mon.Month -eq $sun.Month) {
+            return "$(&$pd $mon.Day).$([char]0x2013)$(&$pd $sun.Day).$(&$pd $mon.Month).$($mon.Year)"
+        }
+        return "$(&$pd $mon.Day).$(&$pd $mon.Month). $([char]0x2013) $(&$pd $sun.Day).$(&$pd $sun.Month).$($sun.Year)"
+    }
+    return ''
+}
+
+$weeksOldestFirst = @($chartHistoryWeeks | Sort-Object { $_.weekId })
+$weeklyChartsComputed = [ordered]@{}
+$allWeekIds = [System.Collections.ArrayList]::new()
+$cachedWeekDedup = @{}  # weekId -> deduped releases with viewsDelta
+
+for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
+    $thisWeek = $weeksOldestFirst[$wi]
+    $prevWeek = if ($wi -gt 0) { $weeksOldestFirst[$wi - 1] } else { $null }
+    $wkId = $thisWeek.weekId
+    [void]$allWeekIds.Add($wkId)
+
+    # Get previous week's deduped+viewsDelta releases (cached from previous iteration)
+    $prevDedWithDelta = if ($prevWeek) { $cachedWeekDedup[$prevWeek.weekId] } else { @() }
+
+    # Build previous-week views map for delta calculation
+    $pvm = @{}
+    $pcm = $null
+    if ($prevDedWithDelta.Count -gt 0) {
+        foreach ($r in $prevDedWithDelta) {
+            $pvm[$r.releaseId] = [int]($r.youtubeViews -as [int])
+        }
+        if ($prevWeek.weekId -match '^(\d{4})-W(\d{2})$') {
+            $iy = [int]$Matches[1]; $iw = [int]$Matches[2]
+            $j4 = [datetime]::new($iy, 1, 4)
+            $dw = [int]$j4.DayOfWeek; if ($dw -eq 0) { $dw = 7 }
+            $w1m = $j4.AddDays(1 - $dw)
+            $pcm = $w1m.AddDays(7 * ($iw - 1))
+        }
+    }
+
+    # Deduplicate and attach viewsDelta for this week
+    $thisDedup = Invoke-DeduplicateCollabs $thisWeek.releases
+    foreach ($r in $thisDedup) {
+        $delta = Get-ViewsDelta $r $pvm $pcm
+        $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
+    }
+    $cachedWeekDedup[$wkId] = $thisDedup
+
+    # Pre-filter by genre
+    $wkByGenre = @{}
+    $prevByGenreW = @{}
+    foreach ($genre in $genreFilters) {
+        if ($genre -eq 'all') {
+            $wkByGenre[$genre] = $thisDedup
+            $prevByGenreW[$genre] = $prevDedWithDelta
+        } else {
+            $wkByGenre[$genre] = @($thisDedup | Where-Object { Test-ArtistGenre $_.bandName $genre })
+            $prevByGenreW[$genre] = @($prevDedWithDelta | Where-Object { Test-ArtistGenre $_.bandName $genre })
+        }
+    }
+
+    # Build ranked charts for all genre/type combos
+    $wkCharts = [ordered]@{}
+    foreach ($genre in $genreFilters) {
+        foreach ($type in $typeFilters) {
+            $key = "${genre}_${type}"
+            $ranked = Build-ChartRanking -releasesArr $thisWeek.releases -type $type -genre 'all' -count 20 -preDeduped $wkByGenre[$genre]
+
+            # Position change: compare against previous week's chart
+            $curSnapW = @{}
+            if ($prevDedWithDelta.Count -gt 0) {
+                $prevRank = Build-ChartRanking -releasesArr @() -type $type -genre 'all' -count 20 -preDeduped $prevByGenreW[$genre]
+                for ($i = 0; $i -lt $prevRank.Count; $i++) {
+                    $curSnapW[$prevRank[$i].releaseId] = @{
+                        position = $i + 1
+                        popularity = [int]($prevRank[$i].popularity -as [int])
+                        youtubeViews = [int]($prevRank[$i].youtubeViews -as [int])
+                    }
+                }
+            }
+            $wkCharts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap @{} -curSnapshotMap $curSnapW)
+        }
+    }
+
+    # Build latest releases per genre
+    $wkLatest = [ordered]@{}
+    foreach ($genre in $genreFilters) {
+        $gf = $wkByGenre[$genre]
+        $wkLatest[$genre] = @($gf | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 20 | ForEach-Object {
+            $ai = Get-ArtistInfo $_.bandName
+            [PSCustomObject]@{
+                releaseId            = $_.releaseId
+                bandName             = $_.bandName
+                artistId             = $_.artistId
+                releaseTitle         = $_.releaseTitle
+                releaseType          = $_.releaseType
+                releaseDate          = $_.releaseDate
+                effectiveReleaseDate = $_.effectiveReleaseDate
+                releaseUrl           = $_.releaseUrl
+                thumbnail            = $_.thumbnail
+                totalTracks          = $_.totalTracks
+                popularity           = [int]($_.popularity -as [int])
+                followers            = [int]($_.followers -as [int])
+                youtubeViews         = [int]($_.youtubeViews -as [int])
+                viewsDelta           = $_.viewsDelta
+                spotifyUrl           = $_.spotifyUrl
+                confirmed            = if ($ai) { [bool]$ai.confirmed } else { $false }
+            }
+        })
+    }
+
+    $weeklyChartsComputed[$wkId] = [ordered]@{
+        generatedAt    = $thisWeek.generatedAt
+        totalReleases  = $thisWeek.totalReleases
+        totalArtists   = $thisWeek.totalArtists
+        verifiedVideos = $thisWeek.verifiedVideos
+        dateRange      = Get-WeekDateRange $wkId
+        charts         = $wkCharts
+        latestReleases = $wkLatest
+    }
+}
+
+Write-Host "  > Pre-computed charts for $($allWeekIds.Count) historical weeks" -ForegroundColor DarkGray
 
 # ============================================================================
 #  2. BUILD CHART HISTORY MAP (for tooltips, per-release weekly positions)
@@ -1752,6 +1905,16 @@ $artistDataJson = $artistData | ConvertTo-Json -Depth 15 -Compress
 $artistDataPath = Join-Path $projectRoot "artist-data.json"
 [System.IO.File]::WriteAllText($artistDataPath, $artistDataJson, $utf8NoBom)
 Write-Host "  > Wrote artist-data.json ($([math]::Round((Get-Item $artistDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
+
+# chart-history-data.json — pre-computed charts per historical week (loaded by charts.html week navigator)
+$chartHistoryDataValue = [PSCustomObject]@{
+    weeks = @($allWeekIds)
+    data = $weeklyChartsComputed
+}
+$chartHistoryDataJson = $chartHistoryDataValue | ConvertTo-Json -Depth 15 -Compress
+$chartHistoryDataPath = Join-Path $projectRoot "chart-history-data.json"
+[System.IO.File]::WriteAllText($chartHistoryDataPath, $chartHistoryDataJson, $utf8NoBom)
+Write-Host "  > Wrote chart-history-data.json ($([math]::Round((Get-Item $chartHistoryDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
 
 $siteMaster = [PSCustomObject]@{
     generatedAt = $chartJson.generatedAt

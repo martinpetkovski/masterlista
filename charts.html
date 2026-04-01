@@ -2112,6 +2112,134 @@
         .spotify-btn:hover { color: #1ed760; border-color: #1DB95480; background: #1DB95410; }
         body.dark-mode .spotify-btn { color: #1DB954; border-color: #1DB95440; }
         body.dark-mode .spotify-btn:hover { color: #1ed760; border-color: #1DB95480; background: #1DB95415; }
+
+        /* Week navigator */
+        .week-navigator {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .week-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.15s ease;
+            padding: 0;
+        }
+        .week-nav-btn:hover:not(:disabled) {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .week-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+        .week-nav-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            min-width: 5.5em;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .week-nav-label:hover {
+            color: var(--accent-blue);
+        }
+        .week-nav-label.is-current {
+            color: var(--text-muted);
+            cursor: default;
+        }
+        .week-nav-label.is-current:hover {
+            color: var(--text-muted);
+        }
+        .week-nav-badge {
+            font-size: 0.55rem;
+            font-weight: 600;
+            padding: 0.15rem 0.35rem;
+            background: var(--accent-blue);
+            color: #fff;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        body.dark-mode .week-nav-btn {
+            background: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        body.dark-mode .week-nav-btn:hover:not(:disabled) {
+            background: var(--bg-hover);
+        }
+        .week-history-banner {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            background: #fff8e1;
+            border-bottom: 1px solid #ffe082;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: #795548;
+            flex-wrap: wrap;
+        }
+        .week-history-banner.visible {
+            display: flex;
+        }
+        .week-history-banner button {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid #795548;
+            background: transparent;
+            color: #795548;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .week-history-banner button:hover {
+            background: #795548;
+            color: #fff;
+        }
+        .week-history-stats {
+            font-size: 0.65rem;
+            opacity: 0.85;
+        }
+        .week-history-stats .stat-sep {
+            margin: 0 0.25rem;
+            opacity: 0.5;
+        }
+        body.dark-mode .week-history-banner {
+            background: #2a2518;
+            border-bottom-color: #3d3520;
+            color: #c8a960;
+        }
+        body.dark-mode .week-history-banner button {
+            border-color: #c8a960;
+            color: #c8a960;
+        }
+        body.dark-mode .week-history-banner button:hover {
+            background: #c8a960;
+            color: #1a1a1a;
+        }
+        @media (max-width: 600px) {
+            .week-navigator { gap: 0.25rem; }
+            .week-nav-label { font-size: 0.65rem; min-width: 4.5em; }
+            .week-nav-btn { width: 26px; height: 26px; }
+            .week-nav-badge { font-size: 0.5rem; }
+        }
         
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -2150,6 +2278,12 @@
                 <button class="filter-btn preset-btn" data-preset="advanced" data-i18n-title="charts.advancedFilters" title="Напредни филтри">
                     <i class="fas fa-sliders-h"></i> <span data-i18n="charts.advanced">Напредно</span>
                 </button>
+            </div>
+            <!-- Week navigator -->
+            <div class="week-navigator" id="week-navigator">
+                <button class="week-nav-btn" id="week-prev-btn" data-i18n-title="charts.prevWeek" title="Претходна недела" disabled><i class="fas fa-chevron-left"></i></button>
+                <span class="week-nav-label is-current" id="week-nav-label">W14</span>
+                <button class="week-nav-btn" id="week-next-btn" data-i18n-title="charts.nextWeek" title="Следна недела" disabled><i class="fas fa-chevron-right"></i></button>
             </div>
             <!-- Advanced filter groups (hidden by default) -->
             <div class="advanced-filters" id="advanced-filters" style="display: none;">
@@ -2197,6 +2331,14 @@
                 </button>
             </div>
         </div>
+    </div>
+    
+    <!-- History week banner -->
+    <div class="week-history-banner" id="week-history-banner">
+        <i class="fas fa-history"></i>
+        <span id="week-history-text"></span>
+        <span class="week-history-stats" id="week-history-stats"></span>
+        <button id="week-return-current" onclick="returnToCurrentWeek()">← <span data-i18n="charts.returnToCurrent">Сегашна</span></button>
     </div>
     
     <div class="chart-container">
@@ -2914,6 +3056,12 @@
             }
         });
         
+        // Return to current week (called from history banner button)
+        function returnToCurrentWeek() {
+            // Dispatch to the DOMContentLoaded scoped function
+            if (window._returnToCurrentWeek) window._returnToCurrentWeek();
+        }
+        
         document.addEventListener('DOMContentLoaded', async () => {
             const now = new Date();
             const twoMonthsAgo = new Date(now);
@@ -2930,6 +3078,241 @@
             
             // Release history map for current genre filter (Map: releaseId -> [{weekId, popularity, youtubeViews, singlesPos, albumsPos}])
             let releaseHistoryMap = new Map();
+            
+            // ==================== WEEK NAVIGATION ====================
+            let currentWeekId = null;   // current ISO week (uses live site-master data)
+            let selectedWeekId = null;  // null = current week, or "2026-W11" etc.
+            let availableWeeks = [];    // sorted array of historical week IDs
+            let chartHistoryData = null; // pre-computed chart data from chart-history-data.json
+            
+            function parseWeekId(wid) {
+                const m = wid.match(/^(\d{4})-W(\d{2})$/);
+                return m ? { year: parseInt(m[1]), week: parseInt(m[2]) } : null;
+            }
+            
+            function formatWeekId(year, week) {
+                return year + '-W' + String(week).padStart(2, '0');
+            }
+            
+            /** Format a date range using pre-computed dateRange or fallback */
+            function formatWeekDateRange(weekId) {
+                if (chartHistoryData?.data?.[weekId]?.dateRange) {
+                    return chartHistoryData.data[weekId].dateRange;
+                }
+                const p = parseWeekId(weekId);
+                if (!p) return '';
+                const jan4 = new Date(p.year, 0, 4);
+                const dayOfWeek = jan4.getDay() || 7;
+                const mon = new Date(jan4);
+                mon.setDate(jan4.getDate() - dayOfWeek + 1 + (p.week - 1) * 7);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+                const pad = n => String(n).padStart(2, '0');
+                if (mon.getMonth() === sun.getMonth()) {
+                    return `${pad(mon.getDate())}.–${pad(sun.getDate())}.${pad(mon.getMonth()+1)}.${mon.getFullYear()}`;
+                }
+                return `${pad(mon.getDate())}.${pad(mon.getMonth()+1)}. – ${pad(sun.getDate())}.${pad(sun.getMonth()+1)}.${sun.getFullYear()}`;
+            }
+            
+            /** Load pre-computed chart history data */
+            async function loadChartHistoryData() {
+                if (chartHistoryData) return;
+                try {
+                    const resp = await fetch('/chart-history-data.json?t=' + Date.now());
+                    if (resp.ok) chartHistoryData = await resp.json();
+                } catch (_) {}
+            }
+            
+            function updateWeekNavigator() {
+                const label = document.getElementById('week-nav-label');
+                const prevBtn = document.getElementById('week-prev-btn');
+                const nextBtn = document.getElementById('week-next-btn');
+                const banner = document.getElementById('week-history-banner');
+                const bannerText = document.getElementById('week-history-text');
+                const bannerStats = document.getElementById('week-history-stats');
+                
+                const activeWeek = selectedWeekId || currentWeekId;
+                if (!activeWeek || availableWeeks.length === 0) return;
+                
+                const activeIdx = availableWeeks.indexOf(activeWeek);
+                const p = parseWeekId(activeWeek);
+                label.textContent = `W${String(p.week).padStart(2, '0')}`;
+                label.title = formatWeekDateRange(activeWeek);
+                
+                const isCurrent = !selectedWeekId || selectedWeekId === currentWeekId;
+                label.classList.toggle('is-current', isCurrent);
+                
+                // Prev/next based on available weeks only
+                prevBtn.disabled = activeIdx <= 0;
+                nextBtn.disabled = isCurrent || activeIdx >= availableWeeks.length - 1;
+                
+                // Show/hide history banner
+                if (!isCurrent) {
+                    banner.classList.add('visible');
+                    bannerText.textContent = formatWeekDateRange(activeWeek);
+                    
+                    // Show stats from pre-computed data
+                    const weekData = chartHistoryData?.data?.[activeWeek];
+                    if (weekData) {
+                        let statsHtml = `${weekData.totalReleases} изданија, ${weekData.totalArtists} артисти`;
+                        if (weekData.verifiedVideos > 0) {
+                            const pct = ((weekData.verifiedVideos / weekData.totalReleases) * 100).toFixed(1);
+                            statsHtml += `<span class="stat-sep">•</span><i class="fab fa-youtube" style="color:#c33"></i> ${weekData.verifiedVideos} видеа (${pct}%)`;
+                        }
+                        bannerStats.innerHTML = statsHtml;
+                    } else {
+                        bannerStats.innerHTML = '';
+                    }
+                } else {
+                    banner.classList.remove('visible');
+                }
+            }
+            
+            async function navigateToWeek(weekId) {
+                if (!siteMaster) return;
+                
+                // If navigating to current week, just reset
+                if (weekId === currentWeekId) {
+                    selectedWeekId = null;
+                    updateWeekNavigator();
+                    applyFilters(); // uses live site-master data
+                    return;
+                }
+                
+                if (!chartHistoryData) await loadChartHistoryData();
+                
+                selectedWeekId = weekId;
+                updateWeekNavigator();
+                
+                const weekData = chartHistoryData?.data?.[weekId];
+                if (!weekData) {
+                    document.querySelectorAll('.chart-loading').forEach(el => el.style.display = 'none');
+                    document.querySelectorAll('.chart-empty').forEach(el => {
+                        el.style.display = 'block';
+                        el.innerHTML = '<p>' + t('charts.noDataForWeek') + '</p>';
+                    });
+                    return;
+                }
+                
+                // Use pre-computed charts from chart-history-data.json
+                const { genre } = currentFilters;
+                const genreKey = genre || 'all';
+                const topSingles = weekData.charts[`${genreKey}_single`] || weekData.charts['all_single'] || [];
+                const topAlbums = weekData.charts[`${genreKey}_album`] || weekData.charts['all_album'] || [];
+                const latestReleases = weekData.latestReleases?.[genreKey] || weekData.latestReleases?.['all'] || [];
+                
+                // Update period text with date range
+                const dateRange = weekData.dateRange || formatWeekDateRange(weekId);
+                const wp = parseWeekId(weekId);
+                const weekLabel = `W${String(wp.week).padStart(2, '0')} • ${dateRange}`;
+                document.getElementById('singles-period').textContent = weekLabel;
+                document.getElementById('albums-period').textContent = weekLabel;
+                document.getElementById('latest-period').textContent = t('charts.last20');
+                
+                // Force standard view when viewing history
+                document.getElementById('singles-section').style.display = 'block';
+                document.getElementById('albums-section').style.display = 'block';
+                document.getElementById('latest-section').style.display = 'block';
+                document.getElementById('artists-section').style.display = 'none';
+                document.getElementById('artists-cumulative-section').style.display = 'none';
+                document.getElementById('advanced-section').style.display = 'none';
+                
+                if (window.innerWidth <= 600) {
+                    const tabs = document.getElementById('mobile-chart-tabs');
+                    if (tabs) tabs.style.display = '';
+                    const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
+                    const activeChart = activeTab?.dataset?.chartTab || 'singles';
+                    ['singles', 'albums', 'latest'].forEach(key => {
+                        const section = document.getElementById(key + '-section');
+                        if (section) section.classList.toggle('mobile-active', key === activeChart);
+                    });
+                }
+                
+                // Render pre-computed charts directly
+                renderChart('singles-chart', topSingles, {}, false);
+                renderChart('albums-chart', topAlbums, {}, false);
+                renderChart('latest-chart', latestReleases, {}, true);
+                
+                chartDataStore.singles = topSingles;
+                chartDataStore.albums = topAlbums;
+                chartDataStore.latest = latestReleases;
+                chartDataStore.artists = [];
+                
+                initScrollShadows();
+            }
+            
+            async function initWeekNavigator() {
+                const w = getISOWeek(new Date());
+                currentWeekId = formatWeekId(w.year, w.week);
+                
+                // Load pre-computed chart history data
+                await loadChartHistoryData();
+                
+                if (chartHistoryData?.weeks) {
+                    availableWeeks = [...chartHistoryData.weeks];
+                    // Ensure current week is in the list as the last entry
+                    if (!availableWeeks.includes(currentWeekId)) {
+                        availableWeeks.push(currentWeekId);
+                    }
+                    availableWeeks.sort();
+                }
+                
+                selectedWeekId = null;
+                
+                // Check URL for ?week= parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlWeek = urlParams.get('week');
+                if (urlWeek && parseWeekId(urlWeek) && availableWeeks.includes(urlWeek) && urlWeek !== currentWeekId) {
+                    selectedWeekId = urlWeek;
+                }
+                
+                updateWeekNavigator();
+                
+                document.getElementById('week-prev-btn').addEventListener('click', () => {
+                    const active = selectedWeekId || currentWeekId;
+                    const idx = availableWeeks.indexOf(active);
+                    if (idx > 0) {
+                        const prev = availableWeeks[idx - 1];
+                        navigateToWeek(prev);
+                        updateWeekUrl(prev);
+                    }
+                });
+                
+                document.getElementById('week-next-btn').addEventListener('click', () => {
+                    const active = selectedWeekId || currentWeekId;
+                    const idx = availableWeeks.indexOf(active);
+                    if (idx >= 0 && idx < availableWeeks.length - 1) {
+                        const next = availableWeeks[idx + 1];
+                        if (next === currentWeekId) {
+                            navigateToWeek(currentWeekId);
+                            updateWeekUrl(null);
+                        } else {
+                            navigateToWeek(next);
+                            updateWeekUrl(next);
+                        }
+                    }
+                });
+                
+                // Click on label returns to current week
+                document.getElementById('week-nav-label').addEventListener('click', () => {
+                    if (selectedWeekId) {
+                        navigateToWeek(currentWeekId);
+                        updateWeekUrl(null);
+                    }
+                });
+            }
+            
+            function updateWeekUrl(weekId) {
+                const url = new URL(window.location);
+                if (weekId && weekId !== currentWeekId) {
+                    url.searchParams.set('week', weekId);
+                } else {
+                    url.searchParams.delete('week');
+                }
+                history.replaceState(null, '', url);
+            }
+            
+            // ==================== END WEEK NAVIGATION ====================
             
             /** Format a views number with K/M suffix */
             function formatViews(n) {
@@ -3337,6 +3720,13 @@
             // Apply combined filters and re-render charts (uses pre-computed data from site-master.json)
             function applyFilters() {
                 if (!siteMaster) return;
+                
+                // If viewing a historical week, re-render with historical data
+                if (selectedWeekId && selectedWeekId !== currentWeekId) {
+                    navigateToWeek(selectedWeekId);
+                    return;
+                }
+                
                 const { chart, genre, city } = currentFilters;
 
                 if (window.innerWidth <= 600 && (chart === 'alltime' || chart === 'artists')) {
@@ -4412,7 +4802,20 @@
                 }).join('');
             }
 
-            loadChartData();
+            loadChartData().then(async () => {
+                await initWeekNavigator();
+                
+                // Expose return-to-current for the global onclick handler
+                window._returnToCurrentWeek = () => {
+                    navigateToWeek(currentWeekId);
+                    updateWeekUrl(null);
+                };
+                
+                // If URL has ?week= param, navigate to that week
+                if (selectedWeekId) {
+                    navigateToWeek(selectedWeekId);
+                }
+            });
             
             // Settings menu from common.js
             initSettingsMenu(serviceDefinitions);
