@@ -8278,8 +8278,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#fafafa",
+        "#da2b68"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb16e3f54fb9c01546de4ea49c",
       "imageSource": "spotify",
       "spotifyName": "Filip Dinev"
