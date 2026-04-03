@@ -12300,8 +12300,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#1d9bf0",
+        "#ff922b"
+      ],
+      "confirmed": true
     }
   ]
 }
