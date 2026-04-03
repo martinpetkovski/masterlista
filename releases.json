@@ -18,7 +18,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6UkAbHBUIN82htBZSpPztE?si=bAbJVTZ7Ts2bqV7qED2BFw",
       "effectiveReleaseDate": "2026-04-03",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Aquastep",
+          "videoId": "lR_wYddXO3A",
+          "url": "https://www.youtube.com/watch?v=lR_wYddXO3A",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Nickarth",
