@@ -116,6 +116,96 @@
             vertical-align: middle;
         }
 
+        .help-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.82rem;
+            table-layout: fixed;
+        }
+
+        .help-container thead {
+            display: table-header-group;
+        }
+
+        .help-container tbody {
+            display: table-row-group;
+        }
+
+        .help-container tbody tr {
+            display: table-row;
+            background: transparent;
+            animation: none;
+            opacity: 1;
+            gap: 0;
+            transform: none;
+            content-visibility: visible;
+            contain: none;
+            contain-intrinsic-size: auto;
+        }
+
+        .help-container tbody tr:nth-child(even) {
+            background: transparent;
+        }
+
+        .help-container table th,
+        .help-container table td {
+            display: table-cell;
+            text-align: left;
+            vertical-align: top;
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
+        }
+
+        .help-container table th:first-child,
+        .help-container table td:first-child {
+            width: 34%;
+        }
+
+        .help-container table th:nth-child(2),
+        .help-container table td:nth-child(2) {
+            width: 4.25rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .help-container table th:nth-child(3),
+        .help-container table td:nth-child(3) {
+            width: auto;
+        }
+
+        .help-container table th {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .help-container table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .help-container .status-yes {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .help-container .status-cond {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .help-container .status-no {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
         @media (max-width: 600px) {
             .help-container {
                 margin: 1rem auto;
@@ -130,6 +220,12 @@
             .help-container li {
                 font-size: 0.78rem;
             }
+
+            .help-container table th,
+            .help-container table td {
+                font-size: 0.75rem;
+                padding: 0.35rem 0.4rem;
+            }
         }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -141,7 +237,7 @@
         <div class="help-container">
             <div class="logo-hero">
                 <img src="/logo.png" alt="MMM">
-                <span class="hero-text">ТопЛиста.мк <span class="version-badge" data-i18n="about.betaBadge">v0.3 БЕТА</span></span>
+                <span class="hero-text">ТопЛиста.мк <span class="version-badge" data-i18n="about.betaBadge">v0.4 БЕТА</span></span>
             </div>
 
             <h2><i class="fas fa-info-circle"></i> <span data-i18n="about.headingAbout">За проектот</span></h2>
@@ -175,8 +271,10 @@
             <p data-i18n-html="about.criteria1">
                 За да биде додаден артист на Мастер Листата, потребно е да постои некаков <strong>доказ дека артистот/бендот навистина постоел</strong> —
                 достапна музика на стриминг платформи, објавени вести или статии, постери од настапи, или самите членови да потврдат дека артистот постоел.
+            </p>            <p data-i18n-html="about.criteria2">
+                Дополнително, артистот мора да има <strong>објавено или изведено барем една оригинална песна</strong>.
+                Кавер бендови (бендови кои изведуваат исклучиво туѓи песни) не се прифаќаат на листата.
             </p>
-
             <h2><i class="fas fa-pen-fancy"></i> <span data-i18n="about.headingFormat">Формат за внесување</span></h2>
             <ul>
                 <li data-i18n-html="about.formatName"><strong>Име на артист:</strong> Мора да биде напишано на кирилица и на македонски јазик, освен ако тоа не е логично (на пример, ако името на бендот е на англиски јазик).</li>
@@ -195,16 +293,15 @@
 
             <h2><i class="fas fa-chart-line"></i> <span data-i18n="about.headingChart">Како функционира Топ Листата</span></h2>
             <p data-i18n-html="about.chart1">
-                Топ листата се генерира автоматски од податоци добиени преку <strong>Spotify Web API</strong>.
-                За секој артист од Мастер Листата кој има Spotify профил, системот ги презема најновите изданија
-                (синглови и албуми) и за секое издание ја проверува <strong>популарноста на песните</strong> — 
-                метрика од 0 до 100 која Spotify ја пресметува врз основа на неодамнешни стрим-броеви.
+                Топ листата се генерира автоматски врз основа на <strong>YouTube прегледи</strong>.
+                За секој артист од Мастер Листата, системот ги презема најновите изданија
+                (синглови и албуми) и ја следи <strong>разликата во YouTube прегледи</strong> од недела во недела.
             </p>
             <p data-i18n="about.chart2">
                 Рангирањето се одредува на следниов начин:
             </p>
             <ul>
-                <li data-i18n-html="about.chartSingles"><strong>Синглови</strong> — Последните 20 синглови објавени во изминатите 4 недели, подредени по Spotify популарност. Напомена: Spotify <a href="https://community.spotify.com/t5/Content-Questions/Why-a-four-song-album-is-considered-a-single/td-p/1644557" target="_blank">автоматски ги категоризира изданијата кои имаат 1-4 песни како сингл</a>.</li>
+                <li data-i18n-html="about.chartSingles"><strong>Синглови</strong> — Последните 20 синглови објавени во изминатите 4 недели, подредени по неделна разлика во YouTube прегледи. Напомена: Spotify <a href="https://community.spotify.com/t5/Content-Questions/Why-a-four-song-album-is-considered-a-single/td-p/1644557" target="_blank">автоматски ги категоризира изданијата кои имаат 1-4 песни како сингл</a>.</li>
                 <li data-i18n-html="about.chartAlbums"><strong>Албуми</strong> — Последните 20 албуми објавени во изминатите 8 недели, подредени по истиот принцип</li>
                 <li data-i18n-html="about.chartLimit"><strong>Лимит по артист</strong> — Секој артист може да има <strong>најмногу 2 изданија</strong> на листата истовремено (двете најпопуларни). Ова обезбедува поголема разновидност на листата.</li>
                 <li data-i18n-html="about.chartAllTime"><strong>Сите времиња</strong> — Топ 100 уникатни артисти, подредени по број на Spotify следбеници</li>
@@ -223,6 +320,128 @@
                 и подобрувања. Кога ќе се направи промена во алгоритамот, можно е да потрае <strong>една до две недели</strong>
                 додека резултатите целосно се стабилизираат и ја одразуваат новата логика. Во тој период, некои позиции
                 може привремено да изгледаат невообичаено.
+            </p>
+
+            <h2><i class="fas fa-compact-disc"></i> <span data-i18n="about.headingReleases">Критериуми за изданија</span></h2>
+            <p data-i18n-html="about.releases1">
+                За да биде издание вклучено во системот и да учествува во топ листата, <strong>мора да биде достапно на Spotify</strong>.
+                Ова е главната разлика помеѓу „издание" и „само содржина" — Spotify профилот служи како основен извор
+                на метаподатоци (име, датум, песни, тип на издание).
+            </p>
+            <p data-i18n-html="about.releases2">
+                Секоја песна од изданието може да има <strong>повеќе YouTube видеа</strong> поврзани со неа.
+                Разликата во прегледи (видеа од оваа недела минус видеа од претходната) се пресметува и се користи
+                за рангирање на топ листата.
+            </p>
+
+            <h2><i class="fas fa-video"></i> <span data-i18n="about.headingVideoCriteria">Кои YouTube видеа се прифаќаат?</span></h2>
+            <p data-i18n="about.videoCriteria1">
+                Не секое YouTube видео се брои. Следната табела ги покажува критериумите за прифаќање:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-i18n="about.videoTableType">Тип на видео</th>
+                        <th data-i18n="about.videoTableStatus">Статус</th>
+                        <th data-i18n="about.videoTableNote">Забелешка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-i18n="about.videoOfficial">Официјално музичко видео</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoUnofficial">Неофицијално музичко видео</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoLyrics">Lyrics видео</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoLive">Видео од живо</td>
+                        <td class="status-cond">⚠️</td>
+                        <td data-i18n="about.videoLiveNote">Само ако го содржи целото видео на песната и не содржи други песни</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoFullAlbum">Цел албум / целосен перформанс</td>
+                        <td class="status-cond">⚠️</td>
+                        <td data-i18n="about.videoFullAlbumNote">Се додава на првата песна од изданието и се брои кон неа</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoFan">Фан видео</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoKaraoke">Караоке видео</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoTopic">Topic видео (автоматски генерирано)</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoAudio">Аудио видео (статична слика)</td>
+                        <td class="status-yes">✅</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoRemix">Ремикс видео</td>
+                        <td class="status-no">❌</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoCover">Кавер видео</td>
+                        <td class="status-no">❌</td>
+                        <td data-i18n="about.videoCoverNote">Не се прифаќа (освен ако не е од оригиналниот артист)</td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoReaction">Реакција / рецензија</td>
+                        <td class="status-no">❌</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td data-i18n="about.videoSnippet">Краток исечок / trailer</td>
+                        <td class="status-no">❌</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p data-i18n-html="about.videoCriteria2">
+                <strong>Генерално правило:</strong> Секое видео кое го содржи изведувањето на песната од самиот артист
+                е прифатливо, без разлика на форматот. Видеа кои не се изведени од артистот (кавери, реакции, рецензии)
+                не се прифаќаат.
+            </p>
+
+            <h2><i class="fas fa-gears"></i> <span data-i18n="about.headingChartGen">Како се генерира топ листата?</span></h2>
+            <p data-i18n-html="about.chartGen1">
+                Топ листата се генерира исклучиво врз основа на <strong>YouTube прегледи</strong>.
+                За секое издание, системот ја пресметува разликата во YouTube прегледи помеѓу тековната и претходната недела (view delta).
+                Оваа разлика се нормализира на скала од 0 до 100 и се користи за рангирање.
+                YouTube е избран како единствен извор бидејќи е најпопуларната платформа за слушање музика во Македонија,
+                и најдобро ја одразува реалната популарност на песните.
+            </p>
+            <p data-i18n-html="about.chartGen2">
+                Изданијата се групираат по тип — <strong>синглови и албуми</strong> се рангираат одделно.
+                Секој артист може да има најмногу 2 изданија на листата истовремено.
+                Листата се „закотвува" еднаш неделно, секој понеделник.
+            </p>
+            <p data-i18n-html="about.chartGen3">
+                <strong>Важно:</strong> Овој систем е <strong>подложен на промени</strong>. Алгоритмите за рангирање,
+                изворите на податоци и критериумите за вклучување може да се менуваат со текот на времето
+                заради подобрување на точноста и квалитетот на листата.
+            </p>
+            <p data-i18n-html="about.chartGen4">
+                <strong>Напомена за купени прегледи:</strong> YouTube прегледите може да бидат вештачки зголемени
+                преку реклами или купени прегледи. Ова <strong>не е против правилата</strong> на листата,
+                но е прилично очигледно кога се случува. Системот не прави разлика помеѓу органски и платени прегледи.
             </p>
 
             <h2><i class="fas fa-tag"></i> <span data-i18n="about.headingPopTag">Што значи „pop" ознаката?</span></h2>
