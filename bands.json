@@ -12305,6 +12305,23 @@
         "#ff922b"
       ],
       "confirmed": true
+    },
+    {
+      "name": "Cruel",
+      "city": "Скопје",
+      "genre": "Alternative Rock",
+      "soundsLike": "Cruel",
+      "links": {
+        "youtube": "https://youtube.com/@crueltheband1?si=wEEmXT8l2rSucKK_",
+        "spotify": "https://open.spotify.com/artist/5LEKHM5C24V8HQjTci801k?si=pgx1DQK7T7-t9HDdMk-XkQ"
+      },
+      "contact": "crueltheband@gmail.com",
+      "label": null,
+      "accentColors": [
+        "#0000ff",
+        "#00ffff"
+      ],
+      "confirmed": true
     }
   ]
 }
