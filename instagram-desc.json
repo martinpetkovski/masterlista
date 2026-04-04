@@ -1,0 +1,64 @@
+{
+  "globalTags": ["#toplista", "#македонскамузика", "#mkmusic", "#macedonia", "#македонија"],
+  "cta": "🔗 toplista.mk",
+  "modes": {
+    "mon": {
+      "title": "🎵 Топ Листа",
+      "listPrefix": "",
+      "listTemplate": "{rank}. {artist} – {song}",
+      "footer": "📊 Комплетна листа на toplista.mk",
+      "engagement": "Кој е твојот фаворит оваа недела? 👇",
+      "tags": ["#chart", "#newmusic", "#spotify", "#топлиста", "#музика"]
+    },
+    "tue": {
+      "title": "🎸 Алтернативна Топ Листа",
+      "listPrefix": "",
+      "listTemplate": "{rank}. {artist} – {song}",
+      "footer": "🎶 Цела листа на toplista.mk",
+      "engagement": "Кој трек те фати? Коментирај 💬",
+      "tags": ["#alternativemusic", "#indie", "#rock", "#алтернатива", "#музика"]
+    },
+    "wed": {
+      "title": "🆕 Нови Изданија",
+      "listPrefix": "▶️",
+      "listTemplate": "{prefix} {artist} – {song}",
+      "footer": "🔗 Слушај на toplista.mk",
+      "engagement": "Кое издание ти е омилено? 🎧",
+      "tags": ["#newrelease", "#newmusic", "#freshmusic", "#новимузика", "#изданија"]
+    },
+    "thu": {
+      "title": "🔙 ТБТ: Четврток Во Минатото",
+      "songTemplate": "🎵 {artist} – {song}",
+      "dateTemplate": "📅 {date}",
+      "viewsTemplate": "👁️ {views} YouTube прегледи",
+      "engagement": "Дали се сеќаваш? Стави ❤️ ако го знаеш!",
+      "tags": ["#throwbackthursday", "#tbt", "#throwback", "#класика", "#носталгија"]
+    },
+    "fri": {
+      "title": "🎪 Настани Викендов",
+      "listPrefix": "📍",
+      "listTemplate": "{prefix} {event} — {place}",
+      "footer": "🎫 Повеќе на toplista.mk",
+      "engagement": "На кој настан одите? 🙋",
+      "tags": ["#events", "#weekend", "#livemusic", "#концерт", "#викенд", "#настани"]
+    },
+    "sat": {
+      "title": "🌟 Артист на Неделата: {artist}",
+      "genreTemplate": "🎶 Жанр: {genre}",
+      "cityTemplate": "📍 {city}",
+      "songsHeader": "🎧 Најслушани песни:",
+      "songListTemplate": "{rank}. {song}",
+      "footer": "🔗 Повеќе на toplista.mk",
+      "engagement": "Која песна ви е омилена? 💬",
+      "tags": ["#artist", "#spotlight", "#артист", "#музичар"]
+    },
+    "sun": {
+      "title": "💎 Скриени Богатства — Hidden Gem",
+      "songTemplate": "🎵 {artist} – {song}",
+      "dateTemplate": "📅 {date}",
+      "viewsTemplate": "👁️ {views} прегледи",
+      "engagement": "Дали ја знаеш оваа песна? Напиши во коментари ⬇️",
+      "tags": ["#deepcut", "#hiddengem", "#скриено", "#богатство"]
+    }
+  }
+}

@@ -52,11 +52,12 @@ const FF_BODY  = ffp(FONT_BODY);
 
 const W = 1080, H = 1920, FPS = 30;
 
-const INTRO_DUR      = 4;
-const GLITCH_DUR     = 0.5;
-const CLIP_DUR_DEF   = 10;
-const CHART_LIST_DUR = 8;
-const OUTRO_DUR      = 4;
+const MAX_DUR        = 30;  // Instagram Reels hard limit
+const INTRO_DUR      = 2.5;
+const GLITCH_DUR     = 0.15;
+const CLIP_DUR_DEF   = 6;
+const CHART_LIST_DUR = 5;
+const OUTRO_DUR      = 2.5;
 
 const T = {
   bg: '0f1117', cardBg: '1a1b2e',
@@ -66,7 +67,7 @@ const T = {
   white: 'ffffff', black: '111111',
 };
 
-const CYR_TOP     = '\u0422\u043E\u043F \u0421\u0438\u043D\u0433\u043B\u043E\u0432\u0438';
+const CYR_TOP     = '\u0422\u043E\u043F \u041B\u0438\u0441\u0442\u0430';
 const CYR_ALT     = '\u0410\u043B\u0442\u0435\u0440\u043D\u0430\u0442\u0438\u0432\u043D\u0430';
 const CYR_TAGLINE = '\u0421\u041B\u0423\u0428\u0410\u0408 \u041C\u0410\u041A\u0415\u0414\u041E\u041D\u0421\u041A\u0410 \u041C\u0423\u0417\u0418\u041A\u0410!';
 // "Топ Листа" — matching the website title
@@ -153,11 +154,58 @@ function rc(r) {
 }
 
 // Ease-out: 0→1 starting at time s over d seconds
-function ease(s, d) { return `(1-pow(max(0\\,1-min(1\\,(t-${s})/${d}))\\,2.5))`; }
+function ease(s, d) { return `max(0\\,(1-pow(max(0\\,1-min(1\\,(t-${s})/${d}))\\,2.5)))`; }
 
-// Static collage background (no zoompan)
 function staticBg(inputLabel) {
-  return `[${inputLabel}]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1,fps=${FPS}[bg]`;
+  // Scale 8% larger, drift-crop with time-varying offset for ambient motion
+  const sW = Math.round(W * 1.08), sH = Math.round(H * 1.08);
+  const ox = Math.round((sW - W) / 2), oy = Math.round((sH - H) / 2);
+  const dx = Math.round((sW - W) / 4), dy = Math.round((sH - H) / 4);
+  return `[${inputLabel}]scale=${sW}:${sH}:force_original_aspect_ratio=increase,` +
+    `fps=${FPS},crop=${W}:${H}:'${ox}+${dx}*sin(t*0.5)':'${oy}+${dy}*cos(t*0.3)',` +
+    `setsar=1,gblur=sigma=22[bg]`;
+}
+
+// Aggressive glitch text: RGB-split that converges as text locks in
+function gTxt(text, font, size, xExpr, yExpr, startT, animDur, color, bw) {
+  if (color === undefined) color = `0x${T.white}`;
+  if (bw === undefined) bw = 3;
+  const e = ease(startT, animDur);
+  const sp = 22;
+  const ga = `gte(t\\,${startT})*(1-${e})*0.8`;
+  return (
+    `drawtext=text='${text}':fontfile='${font}':fontsize=${size}:fontcolor=0xff2020:` +
+    `x='(${xExpr})+${sp}*(1-${e})':y='(${yExpr})':alpha='${ga}',` +
+    `drawtext=text='${text}':fontfile='${font}':fontsize=${size}:fontcolor=0x20ffff:` +
+    `x='(${xExpr})-${sp}*(1-${e})':y='(${yExpr})':alpha='${ga}',` +
+    `drawtext=text='${text}':fontfile='${font}':fontsize=${size}:fontcolor=${color}:borderw=${bw}:bordercolor=black:` +
+    `x='(${xExpr})':y='(${yExpr})':alpha='${e}'`
+  );
+}
+
+// Small watermark: logo + toplista.mk — centered, raised for IG safe area
+function wmFilter(logoIdx, prevLabel, outLabel) {
+  if (!outLabel) outLabel = 'outv';
+  const wmSz = 40, wmY = H - wmSz - 280;
+  const wmX = `(${W}-${wmSz})/2+60`;
+  const txtY = wmY + Math.round((wmSz - 22) / 2);
+  return [
+    `[${logoIdx}:v]scale=${wmSz}:${wmSz},format=rgba,colorchannelmixer=aa=0.5[wm]`,
+    `[${prevLabel}]drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=22:fontcolor=0x${T.white}@0.45:borderw=1:bordercolor=black@0.3:x='(${W}-text_w)/2+24':y=${txtY}[txtdone]`,
+    `[txtdone][wm]overlay=x='${wmX}':y=${wmY}:format=auto[wmcomp]`,
+    `[wmcomp]${hudFrame()}[${outLabel}]`
+  ];
+}
+
+// HUD overlay: subtle edge borders (Macedonian flag red/yellow)
+function hudFrame() {
+  const bw = 3;
+  return (
+    `drawbox=x=0:y=0:w=${W}:h=${bw}:color=0xCE1126@0.2:t=fill,` +
+    `drawbox=x=0:y=${H-bw}:w=${W}:h=${bw}:color=0xFFE600@0.35:t=fill,` +
+    `drawbox=x=0:y=0:w=${bw}:h=${H}:color=0xCE1126@0.2:t=fill,` +
+    `drawbox=x=${W-bw}:y=0:w=${bw}:h=${H}:color=0xFFE600@0.2:t=fill`
+  );
 }
 
 // ============================================================================
@@ -293,6 +341,7 @@ function makeIntro(collagePath, outputPath, audioSrcPath) {
   logStep('Generating intro...');
   const d = INTRO_DUR;
   const chartTitle = isAlt ? `${CYR_ALT} ${CYR_TOP}` : CYR_TOPLISTA;
+  const subtitle = isAlt ? '' : CYR_TOP;
   const dateLabel = getDateRangeLabel();
   const hasLogo = fs.existsSync(LOGO_PATH);
 
@@ -304,40 +353,44 @@ function makeIntro(collagePath, outputPath, audioSrcPath) {
 
   flt.push(staticBg('0:v'));
 
-  const iSiteY = Math.round(H * 0.93);
-  const titleY = Math.round(H * 0.30);
-  const subTitleY = titleY + 90;
-  const dateY = subTitleY + 55;
+  // Split title into separate word lines
+  const allWords = [chartTitle, subtitle].filter(Boolean).join(' ').split(/\s+/).filter(Boolean);
+  const lineH = 100;
+  const totalH = allWords.length * lineH;
+  const startY = Math.round((H * 0.25) - totalH / 2 + lineH / 2);
+  const dateY = startY + allWords.length * lineH + 20;
 
-  // Logo centered above toplista.mk
+  // Large logo centered in lower area
   if (hasLogo) {
-    const sz = 300, lx = (W-sz)/2, ly = iSiteY - sz - 15;
+    const sz = 400, lx = (W-sz)/2, ly = Math.round(H * 0.55);
     flt.push(`[1:v]scale=${sz}:${sz},format=rgba[logo]`);
-    flt.push(`[bg][logo]overlay=x=${lx}:y='${ly}+80*(1-${ease(0.4,0.3)})':format=auto[base]`);
+    flt.push(`[bg][logo]overlay=x=${lx}:y='${ly}+60*(1-${ease(0.35,0.35)})':format=auto[base]`);
   } else {
     flt.push('[bg]copy[base]');
   }
 
-  flt.push(
+  let drawCmd =
     `[base]` +
-    // BAM BAM strobe flashes
-    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='lt(t\\,0.05)',` +
-    `drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='between(t\\,0.05\\,0.10)',` +
-    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t\\,0.10\\,0.14)',` +
-    `drawbox=x=0:y=0:w=iw:h=ih:color=white@0.85:t=fill:enable='between(t\\,0.14\\,0.18)',` +
-    // Title SLAMS in
-    `drawtext=text='${esc(chartTitle)}':fontfile='${FF_TITLE}':fontsize=88:fontcolor=0x${T.white}:borderw=4:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${titleY}+100*(1-${ease(0.20,0.25)})':alpha='${ease(0.20,0.25)}',` +
-    // Subtitle snaps in
-    `drawtext=text='${esc(isAlt ? '' : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=48:fontcolor=0xdddddd:borderw=3:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${subTitleY}+60*(1-${ease(0.35,0.25)})':alpha='${ease(0.35,0.25)}',` +
-    // Date snaps in
-    `drawtext=text='${esc(dateLabel)}':fontfile='${FF_BODY}':fontsize=40:fontcolor=0xbbbbbb:borderw=2:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${dateY}+50*(1-${ease(0.50,0.25)})':alpha='${ease(0.50,0.25)}',` +
-    // Site punches up
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${iSiteY}+60*(1-${ease(0.80,0.3)})':alpha='${ease(0.80,0.3)}'[outv]`
-  );
+    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='lt(t\\,0.04)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=white@0.9:t=fill:enable='between(t\\,0.04\\,0.08)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t\\,0.08\\,0.11)',` +
+    `drawbox=x=0:y=0:w=iw:h=ih:color=white@0.7:t=fill:enable='between(t\\,0.11\\,0.14)'`;
+
+  const titleWordCount = chartTitle.split(/\\s+/).length;
+  allWords.forEach((word, i) => {
+    const y = startY + i * lineH;
+    const st = 0.12 + i * 0.10;
+    drawCmd += ',' + gTxt(esc(word), FF_TITLE, 100, '(w-text_w)/2', `${y}+60*(1-${ease(st, 0.18)})`, st, 0.18, `0x${T.white}`, 5);
+  });
+
+  if (dateLabel) {
+    const dateSt = 0.15 + allWords.length * 0.10;
+    drawCmd += `,drawtext=text='${esc(dateLabel)}':fontfile='${FF_BODY}':fontsize=40:fontcolor=0xbbbbbb:borderw=2:bordercolor=black:` +
+      `x=(w-text_w)/2:y='${dateY}+40*(1-${ease(dateSt, 0.25)})':alpha='${ease(dateSt, 0.25)}'`;
+  }
+
+  drawCmd += `,${hudFrame()}[outv]`;
+  flt.push(drawCmd);
 
   // Audio: LPF from song source, or silence
   if (audioSrcPath && fs.existsSync(audioSrcPath)) {
@@ -366,12 +419,10 @@ function makeGlitch(prevYtPath, nextYtPath, rank, outputPath) {
   logStep(`Generating glitch #${rank}...`);
   const d = GLITCH_DUR;
 
-  // If we have actual video files, extract a single frame from each and glitch them
   const hasPrev = prevYtPath && fs.existsSync(prevYtPath);
   const hasNext = nextYtPath && fs.existsSync(nextYtPath);
 
   if (hasPrev && hasNext) {
-    // Extract frames from both videos, blend + glitch
     const prevDur = dur(prevYtPath), nextDur = dur(nextYtPath);
     const prevSS = Math.max(0, Math.floor(prevDur * 0.35));
     const nextSS = Math.max(0, Math.floor(nextDur * 0.3));
@@ -379,39 +430,33 @@ function makeGlitch(prevYtPath, nextYtPath, rank, outputPath) {
     ff([
       '-ss',String(prevSS),'-i',prevYtPath,'-t',String(d),
       '-ss',String(nextSS),'-i',nextYtPath,'-t',String(d),
-      '-f','lavfi','-i',`anoisesrc=d=${d}:c=pink:r=44100:a=0.15`,
+      '-f','lavfi','-i',`anoisesrc=d=${d}:c=pink:r=44100:a=0.08`,
       '-filter_complex', [
-        // Scale both to frame size
         `[0:v]scale=${W}:${H}:force_original_aspect_ratio=decrease,pad=${W}:${H}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=${FPS}[a]`,
         `[1:v]scale=${W}:${H}:force_original_aspect_ratio=decrease,pad=${W}:${H}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=${FPS}[b]`,
-        // Blend prev and next with shuffled pixels + RGB shift
-        `[a][b]blend=all_mode=difference,` +
-        `shufflepixels=mode=block:width=80:height=40:seed=42,` +
-        `rgbashift=rh=-18:rv=12:gh=10:gv=-8:bh=-5:bv=15:edge=wrap,` +
-        `noise=alls=60:allf=t,hue=H=180*t/${d},` +
-        `drawbox=x=0:y=0:w=${W}:h=${H}:color=white@0.6:t=fill:enable='lt(t\\,0.06)',` +
-        `drawbox=x=0:y=0:w=${W}:h=${H}:color=black@0.8:t=fill:enable='gt(t\\,${d-0.08})',` +
-        `fade=t=in:st=0:d=0.08,fade=t=out:st=${d-0.08}:d=0.08[outv]`,
-        // Glitched audio: pink noise burst with flanger
-        `[2:a]afade=t=in:st=0:d=0.05,afade=t=out:st=${d-0.1}:d=0.1,volume=0.6,aresample=44100[outa]`,
+        `[a][b]blend=all_mode=softlight,` +
+        `gblur=sigma=8,` +
+        `rgbashift=rh=-8:rv=5:gh=4:gv=-3:bh=-2:bv=6:edge=wrap,` +
+        `drawbox=x=0:y=0:w=${W}:h=${H}:color=white@0.3:t=fill:enable='lt(t\\,0.04)',` +
+        `drawbox=x=0:y=0:w=${W}:h=${H}:color=black@0.5:t=fill:enable='gt(t\\,${d-0.05})',` +
+        `fade=t=in:st=0:d=0.06,fade=t=out:st=${d-0.06}:d=0.06[outv]`,
+        `[2:a]afade=t=in:st=0:d=0.03,afade=t=out:st=${d-0.05}:d=0.05,volume=0.35,aresample=44100[outa]`,
       ].join(';\n'),
       '-map','[outv]','-map','[outa]',
       '-c:v','libx264','-preset','fast','-crf','23','-c:a','aac','-b:a','128k','-ar','44100',
       '-pix_fmt','yuv420p','-t',String(d),'-y',outputPath,
     ], `glitch #${rank}`);
   } else {
-    // Fallback: noise + RGB shift on black
     ff([
       '-f','lavfi','-i',`color=c=0x${T.bg}:s=${W}x${H}:d=${d}:r=${FPS}`,
-      '-f','lavfi','-i',`anoisesrc=d=${d}:c=pink:r=44100:a=0.12`,
+      '-f','lavfi','-i',`anoisesrc=d=${d}:c=pink:r=44100:a=0.06`,
       '-filter_complex', [
-        `[0:v]noise=alls=80:allf=t,` +
-        `rgbashift=rh=-12:rv=8:gh=6:gv=-4:bh=-3:bv=10:edge=wrap,` +
-        `hue=H=120*t/${d},` +
-        `drawbox=x=0:y=0:w=${W}:h=${H}:color=white@0.7:t=fill:enable='lt(t\\,0.08)',` +
-        `drawbox=x=0:y=0:w=${W}:h=${H}:color=black@0.9:t=fill:enable='gt(t\\,${d-0.1})',` +
-        `fade=t=in:st=0:d=0.1,fade=t=out:st=${d-0.1}:d=0.1[outv]`,
-        `[1:a]afade=t=in:st=0:d=0.05,afade=t=out:st=${d-0.1}:d=0.1,volume=0.5,aresample=44100[outa]`,
+        `[0:v]gblur=sigma=6,` +
+        `rgbashift=rh=-6:rv=3:gh=3:gv=-2:bh=-1:bv=4:edge=wrap,` +
+        `drawbox=x=0:y=0:w=${W}:h=${H}:color=white@0.3:t=fill:enable='lt(t\\,0.04)',` +
+        `drawbox=x=0:y=0:w=${W}:h=${H}:color=black@0.6:t=fill:enable='gt(t\\,${d-0.05})',` +
+        `fade=t=in:st=0:d=0.06,fade=t=out:st=${d-0.06}:d=0.06[outv]`,
+        `[1:a]afade=t=in:st=0:d=0.03,afade=t=out:st=${d-0.05}:d=0.05,volume=0.3,aresample=44100[outa]`,
       ].join(';\n'),
       '-map','[outv]','-map','[outa]',
       '-c:v','libx264','-preset','fast','-crf','23','-c:a','aac','-b:a','128k','-ar','44100',
@@ -437,17 +482,15 @@ function makeClip(release, rank, ytPath, collagePath, outputPath) {
   const col = rc(rank);
   const hasLogo = fs.existsSync(LOGO_PATH);
 
-  // 90% width, 60% height for the video area
-  const vidW = Math.round(W * 0.90); // 972
-  const vidH = Math.round(H * 0.60); // 1152
+  const vidW = Math.round(W * 0.88), vidH = Math.round(H * 0.55);
   const vidX = Math.round((W - vidW) / 2);
-  const vidY = Math.round(H * 0.10);
+  const vidY = Math.round((H - vidH) / 2);
   const bp = 3;
 
-  // Text area below video
   const textY = vidY + vidH + 30;
   const rankBoxW = 100, rankBoxH = 90;
-  const rankBoxX = 50, rankBoxY = textY;
+  const rankBoxX = Math.round((W - (rankBoxW + 16 + W * 0.60)) / 2);
+  const rankBoxY = textY;
   const titleX = rankBoxX + rankBoxW + 16;
 
   const inp = ['-ss',String(ss),'-i',ytPath, '-loop','1','-i',collagePath];
@@ -456,38 +499,26 @@ function makeClip(release, rank, ytPath, collagePath, outputPath) {
   inp.push('-t',String(d));
 
   const flt = [
-    `[1:v]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1,fps=${FPS}[bg]`,
+    `[1:v]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1,gblur=sigma=22,fps=${FPS}[bg]`,
     `[0:v]scale=${vidW-bp*2}:${vidH-bp*2}:force_original_aspect_ratio=increase,` +
     `crop=${vidW-bp*2}:${vidH-bp*2},` +
     `pad=${vidW}:${vidH}:${bp}:${bp}:color=0x${T.white}30,setsar=1[vid]`,
     `[bg][vid]overlay=x=${vidX}:y=${vidY}:format=auto[comp]`,
   ];
 
-  // Logo centered above toplista.mk
-  let base = 'comp';
-  const cSiteY = Math.round(H * 0.93);
-  if (hasLogo) {
-    const lsz = 160, llx = (W-lsz)/2, lly = cSiteY - lsz - 12;
-    flt.push(`[${logoIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
-    flt.push(`[comp][logo]overlay=x=${llx}:y=${lly}:format=auto[comp2]`);
-    base = 'comp2';
-  }
-
   flt.push(
-    `[${base}]` +
-    // Rank box pops in
-    `drawbox=x=${rankBoxX}:y=${rankBoxY}:w=${rankBoxW}:h=${rankBoxH}:color=0x${col}:t=fill:enable='gte(t\\,0.1)',` +
-    `drawtext=text='${esc(String(rank))}':fontfile='${FF_HEAD}':fontsize=64:fontcolor=0x${T.black}:` +
-    `x=${rankBoxX}+(${rankBoxW}-text_w)/2:y='${rankBoxY}+(${rankBoxH}-text_h)/2+15*(1-${ease(0.1,0.4)})':alpha='${ease(0.1,0.4)}',` +
-    // Title bg + text slides in from right
-    `drawbox=x='${titleX}+(${W - titleX - 50})*(1-${ease(0.15,0.5)})':y=${rankBoxY}:w=${W - titleX - 50}:h=${rankBoxH}:color=black@0.75:t=fill,` +
-    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=52:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
-    `x='${titleX+16}+60*(1-${ease(0.2,0.5)})':y=${rankBoxY+6}:alpha='${ease(0.2,0.5)}',` +
-    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=38:fontcolor=0x${T.textSec}:borderw=2:bordercolor=black:` +
-    `x='${titleX+16}+60*(1-${ease(0.3,0.5)})':y=${rankBoxY+52}:alpha='${ease(0.3,0.5)}',` +
-    // Site
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y='${cSiteY}+20*(1-${ease(0.4,0.5)})':alpha='${ease(0.4,0.5)}'[outv]`
+    `[comp]` +
+    `drawbox=x=${rankBoxX}:y=${rankBoxY}:w=${rankBoxW}:h=${rankBoxH}:color=0x${col}:t=fill:enable='gte(t\\,0.08)',` +
+    gTxt(esc(String(rank)), FF_HEAD, 72, `${rankBoxX}+(${rankBoxW}-text_w)/2`, `${rankBoxY}+(${rankBoxH}-text_h)/2`, 0.08, 0.3, `0x${T.black}`, 0) + ',' +
+    `drawbox=x='${titleX}+(${W - titleX - 50})*(1-${ease(0.12,0.4)})':y=${rankBoxY}:w=${W - titleX - 50}:h=${rankBoxH}:color=black@0.80:t=fill,` +
+    gTxt(esc(title), FF_HEAD, 58, `${titleX+16}`, `${rankBoxY+6}`, 0.15, 0.35, `0x${T.white}`, 2) + ',' +
+    gTxt(esc(artist), FF_BODY, 42, `${titleX+16}`, `${rankBoxY+52}`, 0.22, 0.35, `0x${T.textSec}`, 2) +
+    (hasLogo ? `[clipdraw]` : `,${hudFrame()}[outv]`)
   );
+
+  if (hasLogo) {
+    flt.push(...wmFilter(logoIdx, 'clipdraw', 'outv'));
+  }
 
   // Real audio from the clip
   flt.push(`[0:a]volume=0.85,aresample=44100[outa]`);
@@ -544,16 +575,6 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
     flt.push(`[${fi}:v]scale=${artSize}:${artSize}:force_original_aspect_ratio=increase,crop=${artSize}:${artSize},setsar=1[art${ci}]`);
   }
 
-  // Logo centered above toplista.mk
-  let base = 'bg';
-  const chartSiteY = Math.round(H * 0.93);
-  if (hasLogo) {
-    const lsz = 120, lx = (W-lsz)/2, ly = chartSiteY - lsz - 12;
-    flt.push(`[${logoIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
-    flt.push(`[bg][logo]overlay=x=${lx}:y=${ly}:format=auto[bglogo]`);
-    base = 'bglogo';
-  }
-
   const hdrY = 40, startY = 130, rowH = 148, stag = 0.18;
   const rowMargin = 40, rowW = W - rowMargin*2;
   const rankX = rowMargin + 14;
@@ -561,13 +582,18 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
   const textX = artX + artSize + 14;
   const textAreaW = rowMargin + rowW - textX - 70;
   const hasArts = Object.keys(artIdxMap).length > 0;
-  const txtOutput = hasArts ? 'txout' : 'outv';
+  const preWm = hasLogo ? 'preWm' : 'preHud';
+  const txtOutput = hasArts ? 'txout' : preWm;
+
+  // Header with gTxt + accent underline bar
+  const hdrText = isAlt ? CYR_ALT+' '+CYR_TOP : CYR_TOP;
+  const hdrBarW = 300, hdrBarH = 4, hdrBarX = Math.round((W - hdrBarW) / 2);
+  const hdrBarY = hdrY + 70;
 
   let txt =
-    `[${base}]` +
-    // Header with outline
-    `drawtext=text='${esc(isAlt ? CYR_ALT+' '+CYR_TOP : CYR_TOP)}':fontfile='${FF_HEAD}':fontsize=58:fontcolor=0x${T.white}:borderw=3:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${hdrY}+20*(1-${ease(0.1,0.4)})':alpha='${ease(0.1,0.4)}'`;
+    `[bg]` +
+    gTxt(esc(hdrText), FF_HEAD, 66, `(w-text_w)/2`, `${hdrY}`, 0.1, 0.4, `0x${T.white}`, 3) + ',' +
+    `drawbox=x=${hdrBarX}:y=${hdrBarY}:w=${hdrBarW}:h=${hdrBarH}:color=0x${T.accent}:t=fill:enable='gte(t\\,0.15)'`;
 
   for (let i = 0; i < Math.min(chart10.length, 10); i++) {
     const r = chart10[i], rk = i+1, col = rc(rk);
@@ -579,14 +605,16 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
 
     // Row background
     txt += `,drawbox=x=${rowMargin}:y='${y}':w=${rowW}:h=${rowH-8}:color=black@0.80:t=fill:enable='gte(t\\,${dl})'`;
-    // Rank box (larger, more impactful)
+    // 5px accent stripe on left
+    txt += `,drawbox=x=${rowMargin}:y='${y}':w=5:h=${rowH-8}:color=0x${col}:t=fill:enable='gte(t\\,${dl})'`;
+    // Rank box
     const rbY = y + Math.round((rowH - 8 - rankBoxS) / 2);
     txt += `,drawbox=x=${rankX}:y='${rbY}':w=${rankBoxS}:h=${rankBoxS}:color=0x${col}:t=fill:enable='gte(t\\,${dl})'`;
     txt += `,drawtext=text='${esc(String(rk))}':fontfile='${FF_HEAD}':fontsize=46:fontcolor=0x${T.black}:x=${rankX}+(${rankBoxS}-text_w)/2:y='${rbY}+(${rankBoxS}-text_h)/2':alpha='${e}'`;
     // Song title (centered in text area, bigger)
-    txt += `,drawtext=text='${esc(song)}':fontfile='${FF_HEAD}':fontsize=50:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x='${textX}+(${textAreaW}-text_w)/2':y='${y+26}':alpha='${e}'`;
+    txt += `,drawtext=text='${esc(song)}':fontfile='${FF_HEAD}':fontsize=54:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x='${textX}+(${textAreaW}-text_w)/2':y='${y+26}':alpha='${e}'`;
     // Artist (centered in text area, bigger)
-    txt += `,drawtext=text='${esc(art)}':fontfile='${FF_BODY}':fontsize=40:fontcolor=0x${T.textSec}:x='${textX}+(${textAreaW}-text_w)/2':y='${y+78}':alpha='${e}'`;
+    txt += `,drawtext=text='${esc(art)}':fontfile='${FF_BODY}':fontsize=42:fontcolor=0x${T.textSec}:x='${textX}+(${textAreaW}-text_w)/2':y='${y+78}':alpha='${e}'`;
     // Chevron indicator (right side of row)
     if (posChanges && posChanges[i]) {
       const pc = posChanges[i];
@@ -608,11 +636,10 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
     }
   }
 
-  // Site link
-  txt += `,drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y='${chartSiteY}+20*(1-${ease(0.2,0.4)})':alpha='${ease(0.2,0.4)}'[${txtOutput}]`;
+  txt += `[${txtOutput}]`;
   flt.push(txt);
 
-  // Overlay art thumbnails AFTER row backgrounds (true color, not darkened)
+  // Overlay art thumbnails
   if (hasArts) {
     let artBase = 'txout';
     const artEntries = Object.entries(artIdxMap);
@@ -622,10 +649,17 @@ function makeChartList(chart10, collagePath, artThumbs, outputPath, audioSrcPath
       const y = startY + idx * rowH + Math.round((rowH - 8 - artSize) / 2);
       const dl = (0.3 + idx * stag).toFixed(2);
       const isLast = ai === artEntries.length - 1;
-      const outLabel = isLast ? 'outv' : `ov${idx}`;
+      const outLabel = isLast ? preWm : `ov${idx}`;
       flt.push(`[${artBase}][art${ci}]overlay=x=${artX}:y=${y}:enable='gte(t\\,${dl})':format=auto[${outLabel}]`);
       artBase = outLabel;
     }
+  }
+
+  // Watermark
+  if (hasLogo) {
+    flt.push(...wmFilter(logoIdx, preWm, 'outv'));
+  } else {
+    flt.push(`[preHud]${hudFrame()}[outv]`);
   }
 
   // Audio
@@ -658,10 +692,10 @@ function makeOutro(collagePath, outputPath, audioSrcPath) {
   // Static collage + abstract bottom art
   flt.push(staticBg('0:v'));
 
-  // Logo: large, centered above toplista.mk
-  const siteY = Math.round(H * 0.88);
+  // Logo: large, centered
+  const logoCenter = Math.round(H * 0.55);
   if (hasLogo) {
-    const sz = 500, lx = (W-sz)/2, ly = siteY - sz - 40;
+    const sz = 600, lx = (W-sz)/2, ly = logoCenter - Math.round(sz/2);
     flt.push(`[1:v]scale=${sz}:${sz},format=rgba[logo]`);
     flt.push(`[bg][logo]overlay=x=${lx}:y='${ly}+50*(1-${ease(0.3,0.35)})':format=auto[base]`);
   } else {
@@ -674,25 +708,19 @@ function makeOutro(collagePath, outputPath, audioSrcPath) {
   const word3 = '\u041C\u0423\u0417\u0418\u041A\u0410!';      // МУЗИКА!
 
   const tagY1 = Math.round(H * 0.15);
-  const tagY2 = tagY1 + 100;
-  const tagY3 = tagY2 + 100;
+  const tagY2 = tagY1 + 80;
+  const tagY3 = tagY2 + 80;
 
   flt.push(
     `[base]` +
-    // White flash punch
-    `fade=t=in:st=0:d=0.12:color=white,` +
-    // Word 1: СЛУШАЈ
-    `drawtext=text='${esc(word1)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${tagY1}+60*(1-${ease(0.1,0.3)})':alpha='${ease(0.1,0.3)}',` +
+    // Softer white flash
+    `fade=t=in:st=0:d=0.08:color=white@0.3,` +
+    // Word 1: СЛУШАЈ (smaller tagline)
+    gTxt(esc(word1), FF_TITLE, 40, `(w-text_w)/2`, `${tagY1}`, 0.1, 0.3, `0x${T.gold}`, 3) + ',' +
     // Word 2: МАКЕДОНСКА
-    `drawtext=text='${esc(word2)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${tagY2}+60*(1-${ease(0.3,0.3)})':alpha='${ease(0.3,0.3)}',` +
+    gTxt(esc(word2), FF_TITLE, 40, `(w-text_w)/2`, `${tagY2}`, 0.3, 0.3, `0x${T.gold}`, 3) + ',' +
     // Word 3: МУЗИКА!
-    `drawtext=text='${esc(word3)}':fontfile='${FF_TITLE}':fontsize=64:fontcolor=0x${T.gold}:borderw=3:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${tagY3}+60*(1-${ease(0.5,0.3)})':alpha='${ease(0.5,0.3)}',` +
-    // Site URL
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=50:fontcolor=0x${T.white}:borderw=2:bordercolor=black:` +
-    `x=(w-text_w)/2:y='${siteY}+30*(1-${ease(0.8,0.3)})':alpha='${ease(0.8,0.3)}'[outv]`
+    gTxt(esc(word3), FF_TITLE, 40, `(w-text_w)/2`, `${tagY3}`, 0.5, 0.3, `0x${T.gold}`, 3) + `,${hudFrame()}[outv]`
   );
 
   // Audio: LPF from song source with fadeout, or silence
@@ -764,22 +792,17 @@ function makeExtendedArt(release, rank, artPath, collagePath, outputPath) {
     base = 'artbg';
   }
 
-  const extSiteY = Math.round(H * 0.92);
-  if (hasLogo) {
-    const lsz = 140, lx = (W-lsz)/2, ly = extSiteY - lsz - 10;
-    flt.push(`[${logoInputIdx}:v]scale=${lsz}:${lsz},format=rgba[logo]`);
-    flt.push(`[${base}][logo]overlay=x=${lx}:y=${ly}:format=auto[logobg]`);
-    base = 'logobg';
-  }
-
   const ry = hasArt ? Math.round(H*0.54) : Math.round(H*0.3);
   flt.push(
     `[${base}]` +
-    `drawtext=text='${esc('#'+rank)}':fontfile='${FF_HEAD}':fontsize=80:fontcolor=0x${col}:borderw=3:bordercolor=black:x=(w-text_w)/2:y=${ry},` +
-    `drawtext=text='${esc(title)}':fontfile='${FF_HEAD}':fontsize=48:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${ry+100},` +
-    `drawtext=text='${esc(artist)}':fontfile='${FF_BODY}':fontsize=36:fontcolor=0x${T.textSec}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${ry+160},` +
-    `drawtext=text='toplista.mk':fontfile='${FF_HEAD}':fontsize=44:fontcolor=0x${T.white}:borderw=2:bordercolor=black:x=(w-text_w)/2:y=${extSiteY}[outv]`
+    gTxt(esc('#'+rank), FF_HEAD, 80, '(w-text_w)/2', `${ry}`, 0.08, 0.3, `0x${col}`, 3) + ',' +
+    gTxt(esc(title), FF_HEAD, 48, '(w-text_w)/2', `${ry+100}`, 0.15, 0.35, `0x${T.white}`, 2) + ',' +
+    gTxt(esc(artist), FF_BODY, 36, '(w-text_w)/2', `${ry+160}`, 0.22, 0.35, `0x${T.textSec}`, 2) +
+    (hasLogo ? `[extdraw]` : `[outv]`)
   );
+  if (hasLogo) {
+    flt.push(...wmFilter(logoInputIdx, 'extdraw', 'outv'));
+  }
   flt.push(`[${ni}:a]aresample=44100[outa]`);
 
   ff([...inp,'-filter_complex',flt.join(';\n'),'-map','[outv]','-map','[outa]',
@@ -805,6 +828,14 @@ async function main() {
   // --- Load data ---
   logS('LOADING DATA');
   const chartData = readJSON(path.join(ROOT,'chart-data.json'));
+  const releasesData = readJSON(path.join(ROOT,'releases.json'));
+  // Merge popularity from chart-data into releases catalog
+  const popMap = new Map();
+  for (const c of chartData.releases) popMap.set(c.releaseId, c);
+  const releases = releasesData.releases.map(r => {
+    const c = popMap.get(r.releaseId);
+    return c ? { ...r, popularity: c.popularity||0, followers: c.followers||0 } : r;
+  });
   let bandsData = [];
   const spMap = new Map();
   const bp = path.join(ROOT,'bands.json');
@@ -815,7 +846,7 @@ async function main() {
     logOk(`${bandsData.length} bands`);
   }
 
-  const top20 = getSinglesChart(chartData.releases, 20, isAlt?'alt':'all', bandsData);
+  const top20 = getSinglesChart(releases, 20, isAlt?'alt':'all', bandsData);
   const top3 = top20.slice(0,3);
   if (top3.length<3) { logErr(`Need 3 singles, got ${top3.length}`); process.exit(1); }
 
@@ -955,8 +986,18 @@ async function main() {
   logS('CONCAT');
   const chartLabel = isAlt ? 'alt' : 'standard';
   const weekFile = weekLabel.replace(/\s+/g,'-');
+  const rawPath = path.join(TEMP_DIR, 'concat-raw.mp4');
   const finalPath = path.join(OUTPUT_DIR, `chart-video-${chartLabel}-${weekFile}.mp4`);
-  concatSegments(normPaths, finalPath);
+  concatSegments(normPaths, rawPath);
+
+  // Enforce 30s cap
+  const rawDur = dur(rawPath);
+  if (rawDur > MAX_DUR) {
+    logStep(`Trimming ${rawDur.toFixed(1)}s \u2192 ${MAX_DUR}s`);
+    ff(['-i', rawPath, '-t', String(MAX_DUR), '-c', 'copy', '-y', finalPath], 'trim 30s');
+  } else {
+    fs.renameSync(rawPath, finalPath);
+  }
 
   // --- Cleanup ---
   logStep('Cleaning...');

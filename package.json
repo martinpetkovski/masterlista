@@ -1,0 +1,24 @@
+{
+  "name": "masterlista",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "common.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martinpetkovski/masterlista.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/martinpetkovski/masterlista/issues"
+  },
+  "homepage": "https://github.com/martinpetkovski/masterlista#readme",
+  "dependencies": {
+    "puppeteer": "^24.40.0"
+  }
+}
