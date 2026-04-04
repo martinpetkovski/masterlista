@@ -4965,11 +4965,13 @@
       },
       "contact": "zafirovski001@gmail.com",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#404020",
+        "#806060"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5ebff87ca1f7292412f5cd23db0",
-      "imageSource": "spotify",
-      "spotifyName": "Nema Labavo"
+      "imageSource": "spotify"
     },
     {
       "name": "New Police State",
