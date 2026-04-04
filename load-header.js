@@ -48,4 +48,28 @@
 
     // Apply i18n translations to the freshly injected header
     if (typeof applyTranslations === 'function') applyTranslations();
+
+    // Auto-collapse nav to mobile dropdown when buttons don't fit
+    var navMenu = document.getElementById('site-nav-menu');
+    if (navMenu) {
+        function checkNavOverflow() {
+            // Temporarily remove collapsed class to measure natural width
+            header.classList.remove('nav-collapsed');
+            // Force a layout so measurements are fresh
+            void header.offsetWidth;
+            // Check if the nav links overflow the header
+            var headerWidth = header.clientWidth;
+            var contentEl = header.querySelector('.header-content');
+            if (contentEl && contentEl.scrollWidth > headerWidth + 2) {
+                header.classList.add('nav-collapsed');
+            }
+        }
+        // Run after layout settles
+        checkNavOverflow();
+        window.addEventListener('resize', checkNavOverflow);
+        // Re-check when fonts finish loading (widths may change)
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(checkNavOverflow);
+        }
+    }
 })();

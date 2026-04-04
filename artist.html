@@ -82,20 +82,17 @@
             max-width: 480px;
             margin: 0 auto;
             padding: 1.5rem 1rem 0;
-            flex: 1;
+            flex: 1 0 auto;
             width: 100%;
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
-            min-height: calc(100vh - 49px);
-            min-height: calc(100dvh - 49px);
         }
 
         #artist-content {
             display: flex;
             flex-direction: column;
-            flex: 1;
         }
         .artist-footer {
             flex-shrink: 0;
@@ -1376,6 +1373,18 @@ a.chart-history-item {
         }
         .release-track-yt-pill:hover { background: rgba(255,0,0,0.2); }
 
+        .release-track-yt-expand {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 1rem; height: 1rem; border-radius: 50%;
+            background: rgba(0,0,0,0.06); color: var(--text-muted); font-size: 0.45rem;
+            font-weight: 700; border: none; cursor: pointer; padding: 0 0.2rem;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .release-track-yt-expand:hover { background: rgba(0,0,0,0.12); }
+        body.dark-mode .release-track-yt-expand { background: rgba(255,255,255,0.1); }
+        body.dark-mode .release-track-yt-expand:hover { background: rgba(255,255,255,0.18); }
+
         .chart-history-link {
             margin-left: auto;
             color: var(--accent-orange);
@@ -1531,6 +1540,55 @@ a.chart-history-item {
         
         body.dark-mode .new-release-tag {
             background: rgba(34, 197, 94, 0.2);
+        }
+
+        /* ===== TIMELINE SEARCH ===== */
+        .tl-search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin: 0.5rem 0 0.25rem;
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--border-color, #dfe1e5);
+            border-radius: 8px;
+            background: var(--bg-primary, #fff);
+            cursor: text;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .tl-search-wrap:focus-within {
+            border-color: var(--accent-blue, #4a7fa5);
+            box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
+        }
+        .tl-search-icon {
+            font-size: 0.8rem;
+            color: var(--text-muted, #8b929a);
+            flex-shrink: 0;
+        }
+        .tl-search-input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            background: transparent;
+            color: var(--text-primary, #1a1d21);
+            padding: 0.25rem 0;
+            height: 30px;
+        }
+        .tl-search-input::placeholder {
+            color: var(--text-muted, #8b929a);
+        }
+        body.dark-mode .tl-search-wrap {
+            background: var(--bg-secondary, #1c1f26);
+            border-color: var(--border-color, #2a2e36);
+        }
+        body.dark-mode .tl-search-wrap:focus-within {
+            border-color: var(--accent-blue, #4a7fa5);
+            box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
+        }
+        body.dark-mode .tl-search-input {
+            color: var(--text-primary, #d5d8de);
         }
 
         /* ===== VERTICAL TIMELINE ===== */
@@ -3583,9 +3641,11 @@ a.chart-history-item {
                 const tracksHtml = tracks.map(trackName => {
                     trackNum++;
                     const ytEntries = ytMap[trackName.toLowerCase().trim()] || [];
-                    const firstEntry = ytEntries[0];
-                    const isVerified = firstEntry && firstEntry.verified === 'verified';
-                    const firstYtUrl = firstEntry ? (firstEntry.url || 'https://www.youtube.com/watch?v=' + firstEntry.videoId) : '';
+                    // Sort by views descending so most-viewed is first
+                    const ytEntriesSorted = [...ytEntries].sort((a, b) => (b.views || 0) - (a.views || 0));
+                    const bestEntry = ytEntriesSorted[0];
+                    const isVerified = bestEntry && bestEntry.verified === 'verified';
+                    const bestYtUrl = bestEntry ? (bestEntry.url || 'https://www.youtube.com/watch?v=' + bestEntry.videoId) : '';
                     const tick = isVerified
                         ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
                         : '';
@@ -3593,16 +3653,29 @@ a.chart-history-item {
                     const viewsHtml = totalViews > 0
                         ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalViews)}</span>`
                         : '';
+                    // Build all YT URLs JSON for the service chooser video picker
+                    const allYtData = ytEntriesSorted.map(yt => ({
+                        url: yt.url || 'https://www.youtube.com/watch?v=' + yt.videoId,
+                        views: yt.views || 0
+                    }));
+                    const ytDataAttr = allYtData.length > 1 ? ` data-yt-all="${encodeURIComponent(JSON.stringify(allYtData))}"` : '';
                     let linksHtml = '';
                     if (ytEntries.length >= 1) {
-                        linksHtml = '<span class="release-track-links">' + ytEntries.map(yt => {
+                        const maxVisible = 3;
+                        const visibleEntries = ytEntries.slice(0, maxVisible);
+                        const hiddenEntries = ytEntries.slice(maxVisible);
+                        let pills = visibleEntries.map(yt => {
                             const url = yt.url || 'https://www.youtube.com/watch?v=' + yt.videoId;
                             const v = yt.views || 0;
                             const viewStr = v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v;
                             return `<a class="release-track-yt-pill" href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" title="${viewStr}"><i class="fab fa-youtube"></i></a>`;
-                        }).join('') + '</span>';
+                        }).join('');
+                        if (hiddenEntries.length > 0) {
+                            pills += `<button class="release-track-yt-expand" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" title="+${hiddenEntries.length}">+${hiddenEntries.length}</button>`;
+                        }
+                        linksHtml = '<span class="release-track-links">' + pills + '</span>';
                     }
-                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${firstYtUrl.replace(/"/g, '&quot;')}"><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
+                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${bestYtUrl.replace(/"/g, '&quot;')}"${ytDataAttr}><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
                 }).join('');
 
                 const releaseDate = new Date(release.releaseDate);
@@ -3792,11 +3865,44 @@ a.chart-history-item {
                             ${ytViewsHtml}
                         </div>
                     </h3>
+                    <div class="tl-search-wrap">
+                        <i class="fas fa-search tl-search-icon"></i>
+                        <input type="text" class="tl-search-input" id="tl-search" placeholder="${t('artist.searchTimeline') || 'Пребарај...'}" autocomplete="off" spellcheck="false">
+                    </div>
                     <div class="chart-history-list">
                         ${timelineHtml}
                     </div>
                 </div>
             `;
+
+            // Wire up timeline search filter
+            var tlSearch = document.getElementById('tl-search');
+            if (tlSearch) {
+                tlSearch.addEventListener('input', function() {
+                    var q = this.value.toLowerCase().trim();
+                    var list = container.querySelector('.chart-history-list');
+                    if (!list) return;
+                    var items = list.children;
+                    var lastMonthVisible = false;
+                    var lastMonthHeader = null;
+                    for (var i = 0; i < items.length; i++) {
+                        var el = items[i];
+                        if (el.classList.contains('timeline-month-header')) {
+                            if (lastMonthHeader) lastMonthHeader.style.display = lastMonthVisible ? '' : 'none';
+                            lastMonthHeader = el;
+                            lastMonthVisible = false;
+                            continue;
+                        }
+                        if (el.classList.contains('timeline-today-marker')) continue;
+                        if (!q) { el.style.display = ''; lastMonthVisible = true; continue; }
+                        var text = el.textContent.toLowerCase();
+                        var match = text.indexOf(q) !== -1;
+                        el.style.display = match ? '' : 'none';
+                        if (match) lastMonthVisible = true;
+                    }
+                    if (lastMonthHeader) lastMonthHeader.style.display = lastMonthVisible ? '' : 'none';
+                });
+            }
 
             // Fade in
             void container.offsetWidth;
@@ -3813,26 +3919,45 @@ a.chart-history-item {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    const rIdx = parseInt(item.dataset.releaseIdx);
-                    const trackName = item.dataset.trackName;
-                    const ytUrl = item.dataset.ytUrl || '';
-                    const releases = window.artistReleases || [];
-                    const release = releases[rIdx];
-                    if (!release) return;
-                    const bd = window.bandsData || [];
-                    const band = bd.find(b => b.name && b.name.toLowerCase() === (release.bandName || '').toLowerCase());
-                    showServiceChooserDialog(
-                        release.releaseUrl,
-                        trackName,
-                        release.bandName,
-                        release.thumbnail,
-                        band?.accentColors,
-                        release.spotifyName || band?.spotifyName,
-                        band?.confirmed,
-                        ytUrl || undefined
-                    );
+                    openTrackServiceChooser(item);
                 });
             });
+            // +N expand buttons also open the service chooser
+            container.querySelectorAll('.release-track-yt-expand').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const item = btn.closest('.release-track-item');
+                    if (item) openTrackServiceChooser(item);
+                });
+            });
+        }
+
+        function openTrackServiceChooser(item) {
+            const rIdx = parseInt(item.dataset.releaseIdx);
+            const trackName = item.dataset.trackName;
+            const ytUrl = item.dataset.ytUrl || '';
+            // Parse all YouTube video URLs for the video picker
+            let allYtVideos = null;
+            if (item.dataset.ytAll) {
+                try { allYtVideos = JSON.parse(decodeURIComponent(item.dataset.ytAll)); } catch(_) {}
+            }
+            const releases = window.artistReleases || [];
+            const release = releases[rIdx];
+            if (!release) return;
+            const bd = window.bandsData || [];
+            const band = bd.find(b => b.name && b.name.toLowerCase() === (release.bandName || '').toLowerCase());
+            showServiceChooserDialog(
+                release.releaseUrl,
+                trackName,
+                release.bandName,
+                release.thumbnail,
+                band?.accentColors,
+                release.spotifyName || band?.spotifyName,
+                band?.confirmed,
+                ytUrl || undefined,
+                allYtVideos || undefined
+            );
         }
         
         // ==================== OPEN ON PREFERRED SERVICE ====================
@@ -4084,20 +4209,8 @@ a.chart-history-item {
                     revealEls.forEach(function(el) { revealObserver.observe(el); });
 
                     // Content parallax for the artist container
-                    var artistContainer = document.querySelector('.artist-container');
-                    var contentTick = false;
-                    window.addEventListener('scroll', function() {
-                        if (!contentTick) {
-                            requestAnimationFrame(function() {
-                                var sy = window.scrollY;
-                                if (artistContainer) {
-                                    artistContainer.style.transform = 'translateY(' + (-sy * 0.10) + 'px)';
-                                }
-                                contentTick = false;
-                            });
-                            contentTick = true;
-                        }
-                    }, { passive: true });
+                    // Disabled: translateY on the container causes phantom scroll
+                    // space at the bottom since document flow height is unchanged.
 
                     // No longer need MutationObserver — the vfx theme is determined
                     // once from accent colors and does not change with user dark-mode toggle.

@@ -541,7 +541,8 @@ function initNavMenu() {
     var menuEl = document.getElementById('site-nav-menu');
     if (trigger && menuEl) {
         trigger.addEventListener('click', function(e) {
-            if (window.innerWidth <= 600) {
+            var header = trigger.closest('header');
+            if (window.innerWidth <= 600 || (header && header.classList.contains('nav-collapsed'))) {
                 e.preventDefault();
                 e.stopPropagation();
                 menuEl.classList.toggle('open');
@@ -1127,8 +1128,10 @@ function loadMasterArtistNameSet() {
  * @param {string[]} [accentColors]     — Accent colours from the artist profile
  * @param {string}   [spotifyArtistName]— Spotify (Latin) artist name for search queries
  * @param {boolean}  [verified]         — Whether the artist is verified (enables colourful popup)
+ * @param {string}   [youtubeUrl]       — Direct YouTube URL for the most-viewed video
+ * @param {Array}    [allYtVideos]      — All YouTube video objects [{url, views}] for video picker
  */
-function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified, youtubeUrl) {
+function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, accentColors, spotifyArtistName, verified, youtubeUrl, allYtVideos) {
     if (!releaseUrl) return;
 
     // The name used in service search queries (prefer Spotify/Latin name)
@@ -1352,11 +1355,12 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             url = buildServiceSearchUrl(key, searchArtistName, title || '');
         }
         if (!url) continue;
-        linksHtml +=
+        var linkContent =
             '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + (isPreferred ? 'preferred' : '') + '">' +
                 '<i class="' + svc.icon + '" style="color:' + svc.color + '"></i> ' + escHtml(svc.name) +
                 (isPreferred ? ' <span class="pref-badge">★</span>' : '') +
             '</a>';
+        linksHtml += linkContent;
     }
     linksEl.innerHTML = linksHtml;
 

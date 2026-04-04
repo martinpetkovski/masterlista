@@ -315,6 +315,104 @@
             color: var(--text-muted);
         }
 
+        /* Tabs */
+        .surprise-tabs {
+            display: flex;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+        .surprise-tab {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        .surprise-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        .surprise-tab.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+        .surprise-tab i { font-size: 0.72rem; }
+        body.dark-mode .surprise-tab {
+            color: var(--text-secondary);
+        }
+        body.dark-mode .surprise-tab:hover {
+            background: #2a2e36;
+            color: var(--text-primary);
+        }
+        body.dark-mode .surprise-tab.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        /* Song result card */
+        .song-result-card {
+            display: none;
+            text-align: center;
+            padding: 1.2rem;
+            margin-top: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border-radius: 8px;
+            animation: cardFadeIn 0.35s ease;
+        }
+        .song-result-card.visible { display: block; }
+        .song-result-card .song-thumb {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+        .song-result-card .song-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+        .song-result-card .song-artist {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .song-result-card .song-play-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .song-result-card .song-play-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(74,127,165,0.3);
+        }
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Mobile tweaks */
         @media (max-width: 600px) {
             .surprise-container {
@@ -370,6 +468,12 @@
             <span id="summary-era" style="display:none" data-i18n="surprise.anyEra">Било која ера</span>
             <span id="summary-filters" style="display:none" data-i18n="surprise.noFilters">Без дополнителни филтри</span>
 
+            <!-- Tabs -->
+            <div class="surprise-tabs">
+                <button class="surprise-tab active" data-tab="artist"><i class="fas fa-user"></i> <span data-i18n="surprise.tabArtist">Артист</span></button>
+                <button class="surprise-tab" data-tab="song"><i class="fas fa-music"></i> <span data-i18n="surprise.tabSong">Песна</span></button>
+            </div>
+
             <!-- Genre dropdown -->
             <div class="surprise-dropdown-row">
                 <label for="genre-select" class="surprise-dropdown-label"><i class="fas fa-music"></i> <span data-i18n="surprise.genre">Жанр</span></label>
@@ -423,6 +527,15 @@
                 <i class="fas fa-face-sad-tear"></i>
                 <span data-i18n="surprise.noResults">Нема артисти со избраните критериуми. Пробај друга комбинација.</span>
             </div>
+
+            <div class="song-result-card" id="song-result">
+                <img class="song-thumb" id="song-thumb" src="" alt="">
+                <div class="song-title" id="song-title"></div>
+                <div class="song-artist" id="song-artist"></div>
+                <a class="btn-generic song-play-btn" id="song-play" href="#" target="_blank" rel="noopener">
+                    <i class="fab fa-youtube"></i> <span data-i18n="surprise.playOnYoutube">Пушти на YouTube</span>
+                </a>
+            </div>
         </div>
     </main>
 
@@ -465,6 +578,7 @@
         let selectedGenre = 'all';
         let selectedEra = 'any';
         let activeFilters = new Set();
+        let selectedTab = 'artist';
         let bandsData = [];
         let releasesData = [];
         let eventsData = [];
@@ -545,6 +659,18 @@
                 }
                 updateGoButton();
                 updateSelectionSummary();
+            });
+        });
+
+        // Tab switching
+        document.querySelectorAll('.surprise-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.surprise-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                selectedTab = tab.dataset.tab;
+                document.getElementById('no-results').classList.remove('visible');
+                document.getElementById('song-result').classList.remove('visible');
+                document.querySelector('.surprise-filters-section').style.display = selectedTab === 'song' ? 'none' : '';
             });
         });
 
@@ -679,28 +805,77 @@
 
             const noResultsEl = document.getElementById('no-results');
             const goWrapper = document.querySelector('.surprise-go-wrapper');
+            const songResultEl = document.getElementById('song-result');
+            songResultEl.classList.remove('visible');
 
-            if (candidates.length === 0) {
-                noResultsEl.classList.add('visible');
-                goWrapper.classList.remove('shake');
-                void goWrapper.offsetWidth;
-                goWrapper.classList.add('shake');
-                return;
+            if (selectedTab === 'song') {
+                // Song mode: pick random song from matching artists' releases
+                const candidateNames = new Set(candidates.map(a => a.name));
+                const songReleases = releasesData.filter(r =>
+                    candidateNames.has(r.bandName) &&
+                    r.youtubeTracks && r.youtubeTracks.length > 0
+                );
+
+                if (songReleases.length === 0) {
+                    noResultsEl.classList.add('visible');
+                    goWrapper.classList.remove('shake');
+                    void goWrapper.offsetWidth;
+                    goWrapper.classList.add('shake');
+                    return;
+                }
+
+                noResultsEl.classList.remove('visible');
+                goBtn.classList.add('loading');
+                goBtn.querySelector('i').className = 'fas fa-spinner';
+
+                const randomRelease = songReleases[Math.floor(Math.random() * songReleases.length)];
+                // Get unique track names from YouTube tracks
+                const trackNames = [...new Set(randomRelease.youtubeTracks.map(t => t.name))];
+                const randomTrackName = trackNames[Math.floor(Math.random() * trackNames.length)];
+                // Find most popular video for this track
+                const matchingVideos = randomRelease.youtubeTracks
+                    .filter(t => t.name === randomTrackName)
+                    .sort((a, b) => (b.views || 0) - (a.views || 0));
+                const bestVideo = matchingVideos[0];
+
+                setTimeout(() => {
+                    goBtn.classList.remove('loading');
+                    goBtn.querySelector('i').className = 'fas fa-shuffle';
+
+                    if (bestVideo && bestVideo.url) {
+                        const thumbUrl = randomRelease.thumbnail || 
+                            'https://img.youtube.com/vi/' + bestVideo.videoId + '/mqdefault.jpg';
+                        document.getElementById('song-thumb').src = thumbUrl;
+                        document.getElementById('song-title').textContent = randomTrackName;
+                        document.getElementById('song-artist').textContent = randomRelease.bandName;
+                        document.getElementById('song-play').href = bestVideo.url;
+                        songResultEl.classList.remove('visible');
+                        void songResultEl.offsetWidth;
+                        songResultEl.classList.add('visible');
+                    }
+                }, 400);
+
+            } else {
+                // Artist mode (original behavior)
+                if (candidates.length === 0) {
+                    noResultsEl.classList.add('visible');
+                    goWrapper.classList.remove('shake');
+                    void goWrapper.offsetWidth;
+                    goWrapper.classList.add('shake');
+                    return;
+                }
+
+                noResultsEl.classList.remove('visible');
+                goBtn.classList.add('loading');
+                goBtn.querySelector('i').className = 'fas fa-spinner';
+
+                const randomArtist = candidates[Math.floor(Math.random() * candidates.length)];
+                const artistUrl = 'artist.html?name=' + encodeURIComponent(randomArtist.name);
+
+                setTimeout(() => {
+                    window.location.href = artistUrl;
+                }, 400);
             }
-
-            noResultsEl.classList.remove('visible');
-
-            // Show loading state
-            goBtn.classList.add('loading');
-            goBtn.querySelector('i').className = 'fas fa-spinner';
-
-            // Pick random artist and navigate
-            const randomArtist = candidates[Math.floor(Math.random() * candidates.length)];
-            const artistUrl = 'artist.html?name=' + encodeURIComponent(randomArtist.name);
-
-            setTimeout(() => {
-                window.location.href = artistUrl;
-            }, 400);
         });
 
         // ==================== INIT ====================

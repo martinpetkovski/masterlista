@@ -287,113 +287,12 @@
             color: var(--text-muted);
         }
         
-        /* Chart page icon-only buttons */
-        .chart-page .header-btn {
-            font-size: 0;
-            width: 34px;
-            height: 34px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            position: relative;
-        }
-        
-        .chart-page .header-btn i {
-            font-size: 0.9rem;
-        }
-        
-        /* Tooltip for buttons on chart page */
-        .chart-page .header-btn[title]::after {
-            content: attr(title);
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.35rem 0.6rem;
-            background: #2c3038;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 500;
-            white-space: nowrap;
-            border-radius: 4px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-            z-index: 1000;
-            pointer-events: none;
-        }
-        
-        .chart-page .header-btn[title]::before {
-            content: '';
-            position: absolute;
-            top: calc(100% + 2px);
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-bottom-color: #2c3038;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-            z-index: 1000;
-        }
-        
-        .chart-page .header-btn[title]:hover::after,
-        .chart-page .header-btn[title]:hover::before {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .chart-page .header-btn:hover {
-            background: var(--bg-hover);
-        }
-        
-        /* Dark mode toggle button */
-        .dark-mode-toggle {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-secondary);
-            width: 34px;
-            height: 34px;
-            padding: 0;
-            font-size: 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-            transition: all 0.2s ease;
-        }
-        
-        .dark-mode-toggle i {
-            font-size: 0.9rem;
-        }
-        
-        .dark-mode-toggle:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        
-        body.dark-mode .dark-mode-toggle {
-            background: var(--bg-secondary);
-            border-color: var(--border-color);
-        }
-        
-        body.dark-mode .dark-mode-toggle:hover {
-            background: var(--bg-hover);
-        }
-        
         /* Dark mode header buttons */
         body.dark-mode.chart-page .header-btn {
-            background: var(--bg-secondary);
-            border-color: var(--border-color);
             color: var(--text-secondary);
         }
         
         body.dark-mode.chart-page .header-btn:hover {
-            background: var(--bg-hover);
             color: var(--text-primary);
         }
         
@@ -1760,9 +1659,28 @@
             margin-right: 10px;
         }
         .artist-item .chart-meta {
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.15rem;
+            display: contents;
+        }
+        .artist-item {
+            display: grid;
+            grid-template-columns: 2.6rem 40px 1fr 88px 5.5rem;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .artist-item .chart-rank {
+            width: auto;
+        }
+        .artist-item .vu-meter {
+            width: 88px;
+            justify-self: start;
+        }
+        .artist-item .chart-stat.followers {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 1.4rem;
+            white-space: nowrap;
+            padding-right: 0.3rem;
         }
         
         .chart-stat {
@@ -2011,6 +1929,11 @@
             .chart-header h1 { font-size: 0.8rem; }
             .chart-item { padding: 0.2rem 0.35rem; }
             .chart-cover { width: 24px; height: 24px; }
+            .artist-item {
+                grid-template-columns: 1.8rem 24px 1fr 60px 4rem;
+            }
+            .artist-item .vu-meter { width: 60px; }
+            .artist-item .chart-stat.followers { font-size: 1rem; }
             
             /* Mobile header buttons - more compact */
             .chart-section-header {
