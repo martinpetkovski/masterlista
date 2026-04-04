@@ -2001,6 +2001,27 @@ a.chart-history-item {
         .verified-accent .timeline-today-marker .today-label { color: var(--va-accent2-text, #ef4444); background: var(--va-accent2, transparent); padding: 0.1rem 0.45rem; border-radius: 999px; }
         .verified-accent .timeline-today-marker .today-line { background: linear-gradient(to right, var(--va-accent2, #ef4444) 0%, transparent 100%); }
 
+        /* Glass timeline search input */
+        .verified-accent .tl-search-wrap {
+            background: var(--va-card-bg);
+            border-color: var(--va-card-border);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .verified-accent .tl-search-wrap:focus-within {
+            border-color: var(--artist-accent-2, var(--accent-blue, #4a7fa5));
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--artist-accent-2, var(--accent-blue)) 18%, transparent);
+        }
+        .verified-accent .tl-search-icon {
+            color: var(--va-text-muted);
+        }
+        .verified-accent .tl-search-input {
+            color: var(--va-text);
+        }
+        .verified-accent .tl-search-input::placeholder {
+            color: var(--va-text-muted);
+        }
+
         /* Glass release tracklist */
         .verified-accent .release-track-item {
             border-bottom-color: var(--va-card-border);
