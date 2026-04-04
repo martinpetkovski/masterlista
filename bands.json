@@ -5063,7 +5063,7 @@
       "label": null,
       "accentColors": null,
       "confirmed": false,
-      "image": "https://scontent.cdninstagram.com/v/t51.2885-19/193769579_402924270766033_2375732531839687092_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=qS_9kVlAOnoQ7kNvwFfP_Wr&amp;_nc_oc=AdrnoRt6D-Tz_NQviJwkxnxxI7v0m_5eEgtVYlUjs95WO2PxQyjNANPaiNUu0Y7PYPw&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7a389&amp;oh=00_Af056jQBo8_anPeH369IVjGFmqF-LDgIuyNgopBmJpLW_Q&amp;oe=69D5A592",
+      "image": "https://scontent.cdninstagram.com/v/t51.2885-19/193769579_402924270766033_2375732531839687092_n.jpg?stp=dst-jpg_s100x100_tt6&amp;_nc_cat=104&amp;ccb=7-5&amp;_nc_sid=bf7eb4&amp;efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy4xMDgwLkMzIn0%3D&amp;_nc_ohc=qS_9kVlAOnoQ7kNvwFUnBMu&amp;_nc_oc=AdrB_J_A1o9nc0E8R8JH29VX-yZqNeNZBJSBnfXrty8NFCqQuWTzNlqrZN0N8gEoNaY&amp;_nc_zt=24&amp;_nc_ht=scontent.cdninstagram.com&amp;_nc_ss=7a389&amp;oh=00_Af2iP6WAtiwqDGTr6hpx7afYTIv3REV7flN7g7NmLTuJWA&amp;oe=69D6F712",
       "imageSource": "instagram"
     },
     {
@@ -7493,7 +7493,7 @@
       "label": null,
       "accentColors": null,
       "confirmed": false,
-      "image": "https://i.scdn.co/image/ab6761610000e5eb504c1a4dbfaf1672d1a565da",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebf99542c6b1439141fecfc4a6",
       "imageSource": "spotify",
       "spotifyName": "Vanski"
     },
@@ -8427,7 +8427,7 @@
       "label": null,
       "accentColors": null,
       "confirmed": false,
-      "image": "https://i.scdn.co/image/ab67616d0000b2735abf4e3f7acb2b1491a47bf8",
+      "image": "https://i.scdn.co/image/ab67616d0000b273af5db2ce90ddf46fde5f4136",
       "imageSource": "spotify"
     },
     {
@@ -12305,7 +12305,9 @@
         "#1d9bf0",
         "#ff922b"
       ],
-      "confirmed": true
+      "confirmed": true,
+      "image": "https://i.scdn.co/image/ab67616d0000b27397e6a824172a51e61d3c8de6",
+      "imageSource": "spotify"
     },
     {
       "name": "Cruel",
@@ -12323,7 +12325,10 @@
         "#0000ff",
         "#00ffff"
       ],
-      "confirmed": true
+      "confirmed": true,
+      "image": "https://i.scdn.co/image/ab67616d0000b273d4db00a28766d07ffe38a7fb",
+      "imageSource": "spotify",
+      "spotifyName": "Cruel The Band"
     }
   ]
 }
