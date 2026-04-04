@@ -12290,19 +12290,38 @@
     },
     {
       "name": "ThA PhonkaZ",
-      "city": "недостигаат податоци",
-      "genre": "Electronic",
+      "city": "Скопје",
+      "genre": "Electronic , Hip Hop, Rap, Trap , Post-Punk, House, Boom Bap , Drum and Bass",
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/@ThAPhonkaZ",
         "spotify": "https://open.spotify.com/artist/0hZUAqvibMeRW6QdalOXZ9",
-        "instagram": "https://www.instagram.com/don.sinister/"
+        "instagram": "https://www.instagram.com/don.sinister/",
+        "apple_music": "https://music.apple.com/gh/album/who-let-them-out-single/1862473355"
       },
       "contact": "недостигаат податоци",
       "label": null,
       "accentColors": [
         "#1d9bf0",
         "#ff922b"
+      ],
+      "confirmed": true
+    },
+    {
+      "name": "Cruel",
+      "city": "Скопје",
+      "genre": "Alternative Rock",
+      "soundsLike": "Cruel",
+      "links": {
+        "youtube": "https://youtube.com/@crueltheband1?si=wEEmXT8l2rSucKK_",
+        "spotify": "https://open.spotify.com/artist/5LEKHM5C24V8HQjTci801k?si=pgx1DQK7T7-t9HDdMk-XkQ",
+        "instagram": "https://www.instagram.com/crueltheband?igsh=azJnbXd4NDg5ZDh6"
+      },
+      "contact": "crueltheband@gmail.com",
+      "label": null,
+      "accentColors": [
+        "#0000ff",
+        "#00ffff"
       ],
       "confirmed": true
     }
