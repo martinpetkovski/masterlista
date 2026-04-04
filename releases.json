@@ -16,7 +16,15 @@
       "trackNames": [
         "LUTAM"
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/4De4VVOBroZsnd2YYyWAvG?si=CwPgF4-pTBm7LUSheUu0-w"
+      "spotifyUrl": "https://open.spotify.com/artist/4De4VVOBroZsnd2YYyWAvG?si=CwPgF4-pTBm7LUSheUu0-w",
+      "youtubeTracks": [
+        {
+          "name": "LUTAM",
+          "videoId": "uByUMiKzSy4",
+          "url": "https://www.youtube.com/watch?v=uByUMiKzSy4",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Трифунка",
@@ -38,7 +46,13 @@
           "name": "MVP II",
           "videoId": "xWAPhbfdcBc",
           "url": "https://www.youtube.com/watch?v=xWAPhbfdcBc",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "MVP II",
+          "videoId": "bzwnKa61pZQ",
+          "url": "https://www.youtube.com/watch?v=bzwnKa61pZQ",
+          "verified": "verified"
         }
       ]
     },
@@ -5426,7 +5440,13 @@
           "name": "Who Let Them Out?",
           "videoId": "_tvtxtTcv3U",
           "url": "https://www.youtube.com/watch?v=_tvtxtTcv3U",
-          "verified": "unverified"
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Who Let Them Out?",
+          "videoId": "iGsgIDmyjwE",
+          "url": "https://www.youtube.com/watch?v=iGsgIDmyjwE",
+          "verified": "verified"
         }
       ]
     },
@@ -7672,7 +7692,13 @@
           "name": "Zaguben",
           "videoId": "PwcrisTNq3Q",
           "url": "https://www.youtube.com/watch?v=PwcrisTNq3Q",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Zaguben",
+          "videoId": "yU8EIoybhFs",
+          "url": "https://www.youtube.com/watch?v=yU8EIoybhFs",
+          "verified": "verified"
         }
       ]
     },
@@ -65350,49 +65376,109 @@
           "name": "Intro",
           "videoId": "wKPBJWPazjE",
           "url": "https://www.youtube.com/watch?v=wKPBJWPazjE",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Kraj",
           "videoId": "tNbDUJdR9SQ",
           "url": "https://www.youtube.com/watch?v=tNbDUJdR9SQ",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Edno!",
           "videoId": "k7cp3aWpZFY",
           "url": "https://www.youtube.com/watch?v=k7cp3aWpZFY",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Ova sum jas",
           "videoId": "sTbJbmty6eA",
           "url": "https://www.youtube.com/watch?v=sTbJbmty6eA",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Podobar svet",
           "videoId": "RTC556fGRww",
           "url": "https://www.youtube.com/watch?v=RTC556fGRww",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Se kje pomine",
           "videoId": "y1jITjIHYXQ",
           "url": "https://www.youtube.com/watch?v=y1jITjIHYXQ",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Ti!",
           "videoId": "oLBqrnpDWUA",
           "url": "https://www.youtube.com/watch?v=oLBqrnpDWUA",
-          "verified": "unverified"
+          "verified": "verified"
         },
         {
           "name": "Disconnected",
           "videoId": "agyLpxSy61s",
           "url": "https://www.youtube.com/watch?v=agyLpxSy61s",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Eden son",
+          "videoId": "utmF6WbsVQk",
+          "url": "https://www.youtube.com/watch?v=utmF6WbsVQk",
+          "verified": "verified"
+        },
+        {
+          "name": "Kraj",
+          "videoId": "aWnVEyAw9-0",
+          "url": "https://www.youtube.com/watch?v=aWnVEyAw9-0",
+          "verified": "verified"
+        },
+        {
+          "name": "Intro",
+          "videoId": "-vdqtVzNtGg",
+          "url": "https://www.youtube.com/watch?v=-vdqtVzNtGg",
+          "verified": "verified"
+        },
+        {
+          "name": "Edno!",
+          "videoId": "uKQhhXG17ek",
+          "url": "https://www.youtube.com/watch?v=uKQhhXG17ek",
+          "verified": "verified"
+        },
+        {
+          "name": "Ova sum jas",
+          "videoId": "r3ZbpSMKoic",
+          "url": "https://www.youtube.com/watch?v=r3ZbpSMKoic",
+          "verified": "verified"
+        },
+        {
+          "name": "Podobar svet",
+          "videoId": "XaWhSrIborU",
+          "url": "https://www.youtube.com/watch?v=XaWhSrIborU",
+          "verified": "verified"
+        },
+        {
+          "name": "Dusha",
+          "videoId": "YKT8fwOeJUA",
+          "url": "https://www.youtube.com/watch?v=YKT8fwOeJUA",
+          "verified": "verified"
+        },
+        {
+          "name": "Se kje pomine",
+          "videoId": "uy2M4w6g21Q",
+          "url": "https://www.youtube.com/watch?v=uy2M4w6g21Q",
+          "verified": "verified"
+        },
+        {
+          "name": "Ti!",
+          "videoId": "CdWL2wEgeaQ",
+          "url": "https://www.youtube.com/watch?v=CdWL2wEgeaQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Disconnected",
+          "videoId": "oOoiBVWRAUc",
+          "url": "https://www.youtube.com/watch?v=oOoiBVWRAUc",
+          "verified": "verified"
         }
       ]
     },
@@ -83476,7 +83562,13 @@
           "name": "Gluvci od lugje",
           "videoId": "vpD3HkcZn5Q",
           "url": "https://www.youtube.com/watch?v=vpD3HkcZn5Q",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Gluvci od lugje",
+          "videoId": "LeMn9sqgrDk",
+          "url": "https://www.youtube.com/watch?v=LeMn9sqgrDk",
+          "verified": "verified"
         }
       ]
     },
@@ -83500,7 +83592,7 @@
           "name": "Desert and the rain",
           "videoId": "vE90-wdp-m0",
           "url": "https://www.youtube.com/watch?v=vE90-wdp-m0",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
