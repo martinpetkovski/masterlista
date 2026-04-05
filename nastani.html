@@ -484,7 +484,7 @@
         padding: 0.15rem 0.5rem 0.15rem 0;
         position: relative;
         z-index: 2;
-        border-top: 2px solid var(--border-color);
+        border-top: none;
         background-color: #000;
         color: #fff;
     }
@@ -1675,7 +1675,7 @@
             // Wavy line params — phase animates over time
             var amp = 4.5;
             var freq = 0.038;
-            var timelineColor = getComputedStyle(document.body).getPropertyValue('--accent-blue').trim() || '#4a7fa5';
+            var timelineColor = '#000';
 
             // Helper: get x position on wavy line at a given y with animated phase
             function wavyX(y) { return cx + Math.sin(y * freq + phase) * amp; }
@@ -1732,14 +1732,14 @@
 
             if (todayFrac !== null) {
                 var tp = (todayFrac * 100);
-                addStop('0%', '#4a7fa5', '0.35');
-                addStop(Math.max(0, tp - 3) + '%', '#4a7fa5', '0.55');
+                addStop('0%', timelineColor, '0.35');
+                addStop(Math.max(0, tp - 3) + '%', timelineColor, '0.55');
                 addStop(tp + '%', timelineColor, '1');
-                addStop(Math.min(100, tp + 3) + '%', '#6b7280', '0.25');
-                addStop('100%', '#6b7280', '0.08');
+                addStop(Math.min(100, tp + 3) + '%', timelineColor, '0.25');
+                addStop('100%', timelineColor, '0.08');
             } else {
-                addStop('0%', '#4a7fa5', '0.35');
-                addStop('100%', '#6b7280', '0.12');
+                addStop('0%', timelineColor, '0.35');
+                addStop('100%', timelineColor, '0.12');
             }
 
             defs.appendChild(grad);
@@ -1761,6 +1761,21 @@
             merge.appendChild(mn1); merge.appendChild(mn2);
             filter.appendChild(merge);
             defs.appendChild(filter);
+
+            var arrowFilter = document.createElementNS(ns, 'filter');
+            arrowFilter.id = 'tlArrowGlow';
+            arrowFilter.setAttribute('x', '-120%');
+            arrowFilter.setAttribute('y', '-120%');
+            arrowFilter.setAttribute('width', '340%');
+            arrowFilter.setAttribute('height', '340%');
+            var arrowShadow = document.createElementNS(ns, 'feDropShadow');
+            arrowShadow.setAttribute('dx', '0');
+            arrowShadow.setAttribute('dy', '0');
+            arrowShadow.setAttribute('stdDeviation', isMobile ? '0.9' : '1.2');
+            arrowShadow.setAttribute('flood-color', '#fff');
+            arrowShadow.setAttribute('flood-opacity', '0.95');
+            arrowFilter.appendChild(arrowShadow);
+            defs.appendChild(arrowFilter);
 
             // Mask: line fades to invisible at today, scales up away from it
             if (todayFrac !== null) {
@@ -1844,7 +1859,7 @@
             }
 
             // Draw animated filled-triangle arrows streaming away from the TODAY marker
-            var arrowSize = isMobile ? 7 : 9;
+            var arrowSize = isMobile ? 8 : 10;
             var arrowSpacing = isMobile ? 35 : 40;
             var todayY = todayFrac !== null ? todayFrac * h : -1;
             var todayExclude = isMobile ? 14 : 18; // exclusion zone around today dot
@@ -1905,8 +1920,10 @@
                 var tri = document.createElementNS(ns, 'polygon');
                 tri.setAttribute('points', triD);
                 tri.setAttribute('fill', timelineColor);
-                tri.setAttribute('stroke', 'none');
-                tri.setAttribute('opacity', String(Math.min(1, scale)));
+                tri.setAttribute('stroke', '#fff');
+                tri.setAttribute('stroke-width', String(isMobile ? 0.9 : 1.1));
+                tri.setAttribute('filter', 'url(#tlArrowGlow)');
+                tri.setAttribute('opacity', String(Math.max(0.72, Math.min(1, scale + 0.08))));
                 svg.appendChild(tri);
             }
 
