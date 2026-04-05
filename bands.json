@@ -152,12 +152,14 @@
       "genre": "Metal, Hardcore",
       "soundsLike": "Anti-Flag, Strike Anywhere",
       "links": {
-        "youtube": "https://www.youtube.com/@lebarka19",
-        "lastfm": "https://www.last.fm/music/Against+Them+All"
+        "youtube": "https://www.youtube.com/@lebarka19"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#602020",
+        "#802020"
+      ],
       "confirmed": false,
       "image": "https://yt3.googleusercontent.com/ytc/AIdro_kv_UIL2GXKEp8K_2g73AVJA49NGfffdtfCxWf9f3_iNwI=s900-c-k-c0x00ffffff-no-rj",
       "imageSource": "release"
@@ -4956,20 +4958,17 @@
     {
       "name": "Нема лабаво",
       "city": "Скопје, Битола",
-      "genre": "Punk Rock, Alternative, Acoustic",
-      "soundsLike": "Bad Religion, NOFX, Arcade Fire, Green Day,",
+      "genre": "Punk, Punk Rock",
+      "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/@nemalabavo",
         "spotify": "https://open.spotify.com/artist/100cDA1p2I7qg4lq3ZtOp8?si=lG6xR4qmQC-t5RSu9pPFcA",
-        "instagram": "https://www.instagram.com/nemalabavo_/",
-        "tiktok": "https://www.tiktok.com/@nema.labavo1?_r=1&_t=ZS-95GVDlwshAe",
-        "bandcamp": "https://nemalabavo.bandcamp.com/",
-        "facebook": "https://www.facebook.com/share/1L7CHkfYkN/"
+        "instagram": "https://www.instagram.com/nemalabavo_/"
       },
       "contact": "zafirovski001@gmail.com",
       "label": null,
       "accentColors": [
-        "#ffffff",
+        "#404020",
         "#806060"
       ],
       "confirmed": true,
