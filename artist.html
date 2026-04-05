@@ -101,12 +101,14 @@
         /* ===== VERIFIED CINEMATIC BACKGROUND SYSTEM ===== */
         .vfx-bg {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100vh; height: 100dvh;
+            top: -100vh; left: 0;
+            width: 100%; height: 300vh;
             z-index: 0;
             overflow: hidden;
             pointer-events: none;
             background: #f2f3f5;
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
         }
         body.dark-mode:not(.verified-accent) .vfx-bg,
         html.dark-mode body:not(.verified-accent) .vfx-bg {
@@ -123,23 +125,26 @@
             inset: 0;
             will-change: transform;
             opacity: 0;
+            transform: scale(1.25);
             animation: vfxLayerIn 1.2s ease forwards;
         }
         @keyframes vfxLayerIn {
-            from { opacity: 0; transform: scale(1.25); }
-            to { opacity: 1.0; transform: scale(1.25); }
+            from { opacity: 0; }
+            to { opacity: 1.0; }
         }
         @keyframes vfxAccentIn {
-            from { opacity: 0; transform: scale(1.25); }
-            to { opacity: 0.9; transform: scale(1.25); }
+            from { opacity: 0; }
+            to { opacity: 0.9; }
         }
         .vfx-bg__gradient { display: block; animation-name: vfxAccentIn; animation-delay: 0s; }
         .vfx-bg__radials { display: block; animation-name: vfxAccentIn; animation-delay: 0.1s; }
 
         /* Geometric wireframe grid */
         .vfx-bg__grid {
-            background-size: 60px 60px;
+            background-size: 8px 8px;
             opacity: 1;
+            transform-style: flat;
+            contain: strict;
         }
 
         /* Frequency wave SVG layer */
@@ -153,7 +158,7 @@
         .vfx-bg__aurora {
             position: absolute;
             inset: 0;
-            opacity: 0.12;
+            opacity: 0.25;
         }
 
         /* Film grain overlay */
@@ -190,13 +195,17 @@
         }
         @keyframes vfxSweepBeam {
             0% { top: -5%; opacity: 0; }
-            5% { opacity: 0.2; }
-            95% { opacity: 0.06; }
+            5% { opacity: 0.35; }
+            95% { opacity: 0.12; }
             100% { top: 105%; opacity: 0; }
         }
 
-        /* Bottom gradient fade */
+        /* Bottom gradient fade — pinned to visible viewport */
         .vfx-bg__fade {
+            top: 100vh;
+            bottom: auto;
+            height: 100vh;
+            transform: none;
             background: linear-gradient(to bottom, transparent 30%, #f2f3f5 100%);
         }
         body.dark-mode:not(.verified-accent) .vfx-bg__fade,
@@ -210,8 +219,12 @@
             background: linear-gradient(to bottom, transparent 70%, var(--va-bg) 100%) !important;
         }
 
-        /* Edge vignette */
+        /* Edge vignette — pinned to visible viewport */
         .vfx-bg__vignette {
+            top: 100vh;
+            bottom: auto;
+            height: 100vh;
+            transform: none;
             background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
         }
         /* Softer vignette on light backgrounds */
@@ -234,15 +247,15 @@
         .vfx-shape--rect { border-radius: 2px; }
         @keyframes vfxShapeFloat {
             0%, 100% { opacity: 0; transform: translateY(20px) scale(0.9); }
-            20% { opacity: 0.14; }
-            50% { opacity: 0.07; transform: translateY(-12px) scale(1.04); }
-            80% { opacity: 0.11; }
+            20% { opacity: 0.22; }
+            50% { opacity: 0.12; transform: translateY(-12px) scale(1.04); }
+            80% { opacity: 0.18; }
         }
         @keyframes vfxShapeDiamond {
             0%, 100% { opacity: 0; transform: rotate(45deg) translateY(20px) scale(0.9); }
-            20% { opacity: 0.14; }
-            50% { opacity: 0.07; transform: rotate(45deg) translateY(-12px) scale(1.04); }
-            80% { opacity: 0.11; }
+            20% { opacity: 0.22; }
+            50% { opacity: 0.12; transform: rotate(45deg) translateY(-12px) scale(1.04); }
+            80% { opacity: 0.18; }
         }
         
         /* Artist Header Card */
@@ -2837,12 +2850,12 @@ a.chart-history-item {
                     if (dark) {
                         var g1 = darkenHex(c1, 0.65), g2 = darkenHex(c1, 0.55), g3 = darkenHex(c1, 0.45);
                         gradientL.style.background = 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 50%, ' + g3 + ' 100%)';
-                        radials.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '1e 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '14 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '10 0%, transparent 50%)';
+                        radials.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '30 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '22 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '1a 0%, transparent 50%)';
                         document.body.style.setProperty('--va-bg', darkenHex(c1, 0.55));
                     } else {
                         var l1 = lightenHex(c1, 0.65), l2 = lightenHex(c1, 0.55), l3 = lightenHex(c1, 0.45);
                         gradientL.style.background = 'linear-gradient(135deg, ' + l1 + ' 0%, ' + l2 + ' 50%, ' + l3 + ' 100%)';
-                        radials.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '18 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '10 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '0c 0%, transparent 50%)';
+                        radials.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '28 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '1a 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '14 0%, transparent 50%)';
                         document.body.style.setProperty('--va-bg', lightenHex(c1, 0.55));
                     }
                 }
@@ -2853,7 +2866,7 @@ a.chart-history-item {
                 // Layer: geometric wireframe grid
                 const grid = document.createElement('div');
                 grid.className = 'vfx-bg__layer vfx-bg__grid';
-                grid.style.backgroundImage = 'linear-gradient(' + c1 + '40 1px, transparent 1px), linear-gradient(90deg, ' + c1 + '40 1px, transparent 1px)';
+                grid.style.backgroundImage = 'linear-gradient(' + c1 + '14 0.3px, transparent 0.3px), linear-gradient(90deg, ' + c1 + '14 0.3px, transparent 0.3px)';
                 bg.appendChild(grid);
 
                 // Layer: frequency waves + vinyl rings SVG
@@ -2869,14 +2882,14 @@ a.chart-history-item {
                         d += ' L' + x + ' ' + y.toFixed(1);
                     }
                     var wCol = c1;
-                    var wOp = (0.12 + seededRand(w*11) * 0.08).toFixed(3);
-                    waveSvg += '<path d="' + d + '" fill="none" stroke="' + wCol + '" stroke-width="' + (2.5 - w*0.3).toFixed(1) + '" stroke-opacity="' + wOp + '" stroke-linecap="round"/>';
+                    var wOp = (0.18 + seededRand(w*11) * 0.12).toFixed(3);
+                    waveSvg += '<path d="' + d + '" fill="none" stroke="' + wCol + '" stroke-width="' + (1.2 - w*0.15).toFixed(2) + '" stroke-opacity="' + wOp + '" stroke-linecap="round"/>';
                 }
                 var ringCx = (150 + seededRand(99) * 900).toFixed(0);
                 var ringCy = (80 + seededRand(77) * 240).toFixed(0);
                 for (var r = 25; r < 280; r += 22) {
                     var rCol = c1;
-                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="' + rCol + '" stroke-width="0.7" stroke-opacity="0.07"/>';
+                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="' + rCol + '" stroke-width="0.4" stroke-opacity="0.05"/>';
                 }
                 waveSvg += '</svg>';
                 waveLayer.innerHTML = waveSvg;
@@ -2954,18 +2967,18 @@ a.chart-history-item {
 
                 document.body.insertBefore(bg, document.body.firstChild);
 
-                // Multi-layer parallax: scroll (vertical) + mouse (horizontal) for depth
-                // Parallax depths: grid lines are the background (slow = far away),
-                // foreground decorations move faster (close). Lower scrollY = further back.
+                // Multi-layer parallax with perspective depth
+                // Each layer gets a translateZ for real 3D separation.
+                // Grid also rotates/twists on scroll for a living feel.
                 const parallaxLayers = [
-                    { el: grid,      scrollY: 0.03, mouseX: 0.005, mouseY: 0.004 },
-                    { el: gradientL, scrollY: 0.05, mouseX: 0.008, mouseY: 0.006 },
-                    { el: grainEl,   scrollY: 0.02, mouseX: 0.003, mouseY: 0.002 },
-                    { el: auroraLayer, scrollY: 0.06, mouseX: 0.010, mouseY: 0.008 },
-                    { el: waveLayer, scrollY: 0.10, mouseX: 0.018, mouseY: 0.014 },
-                    { el: sweepLayer, scrollY: 0.14, mouseX: 0.025, mouseY: 0.020 },
-                    { el: radials,   scrollY: 0.18, mouseX: 0.035, mouseY: 0.028 },
-                    { el: shapesLayer, scrollY: 0.25, mouseX: 0.050, mouseY: 0.040 },
+                    { el: grid,        scrollY: 0.10, mouseX: 0.020, mouseY: 0.016, z: 0 },
+                    { el: grainEl,     scrollY: 0.03, mouseX: 0.005, mouseY: 0.004, z: -250 },
+                    { el: gradientL,   scrollY: 0.06, mouseX: 0.015, mouseY: 0.012, z: -200 },
+                    { el: auroraLayer, scrollY: 0.10, mouseX: 0.022, mouseY: 0.018, z: -140 },
+                    { el: waveLayer,   scrollY: 0.16, mouseX: 0.035, mouseY: 0.028, z: -80 },
+                    { el: sweepLayer,  scrollY: 0.20, mouseX: 0.045, mouseY: 0.036, z: -40 },
+                    { el: radials,     scrollY: 0.26, mouseX: 0.060, mouseY: 0.048, z: -10 },
+                    { el: shapesLayer, scrollY: 0.34, mouseX: 0.080, mouseY: 0.064, z: 40 },
                 ];
 
                 // Smooth mouse tracking
@@ -2984,7 +2997,16 @@ a.chart-history-item {
                     for (const l of parallaxLayers) {
                         const tx = mouseX * l.mouseX * 100;
                         const ty = (-sy * l.scrollY) + (mouseY * l.mouseY * 80);
-                        l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(1.25)';
+                        const tz = l.z || 0;
+                        // Grid twists gently as you scroll
+                        if (l.twist) {
+                            const rotX = Math.sin(sy * 0.003) * 3;   // up to ±3deg
+                            const rotY = Math.cos(sy * 0.002) * 2;   // up to ±2deg
+                            const skew = Math.sin(sy * 0.0015) * 1.5; // subtle skew
+                            l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) skewY(' + skew.toFixed(2) + 'deg) scale(1.35)';
+                        } else {
+                            l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) scale(1.25)';
+                        }
                     }
                     bgTick = false;
                 }
@@ -2996,11 +3018,13 @@ a.chart-history-item {
                     }
                 }
                 window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
-                // Smooth mouse tracking loop
-                (function mouseLoop() {
+                // Mouse tracking: only schedule updates while mouse is active
+                let mouseIdleTimer = null;
+                document.addEventListener('mousemove', function() {
+                    clearTimeout(mouseIdleTimer);
                     requestParallaxUpdate();
-                    requestAnimationFrame(mouseLoop);
-                })();
+                    mouseIdleTimer = setTimeout(function() { mouseIdleTimer = null; }, 150);
+                }, { passive: true });
                 
                 // Apply accent color to header background
                 document.body.classList.add('verified-accent');

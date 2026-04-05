@@ -464,7 +464,7 @@
         left: 0;
         width: 100%;
         pointer-events: none;
-        z-index: 25;
+        z-index: 1;
         overflow: visible;
     }
 
@@ -484,9 +484,13 @@
         padding: 0.15rem 0.5rem 0.15rem 0;
         position: relative;
         z-index: 2;
-        border-top: 2px solid var(--border-color)
-        /* background-color: var(--text-primary);
-        color: var(--bg-primary); */
+        border-top: 2px solid var(--border-color);
+        background-color: #000;
+        color: #fff;
+    }
+    body.dark-mode .nastani-page .tl-month-header {
+        background-color: #fff;
+        color: #000;
     }
 
     .nastani-page .tl-month-date-col {
@@ -512,6 +516,7 @@
         text-transform: uppercase;
         letter-spacing: 0.1em;
         white-space: nowrap;
+        color: inherit;
     }
 
     /* Today marker */
@@ -539,13 +544,24 @@
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: var(--accent-blue, #4a7fa5);
-        box-shadow: 0 0 0 3px rgba(74, 127, 165, 0.25), 0 0 12px rgba(74, 127, 165, 0.4);
+        background: #000;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 0 12px rgba(0, 0, 0, 0.3);
         animation: todayPulse 2s ease-in-out infinite;
     }
+    body.dark-mode .nastani-page .tl-today-dot {
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.3);
+    }
     @keyframes todayPulse {
-        0%, 100% { box-shadow: 0 0 0 3px rgba(74, 127, 165, 0.25), 0 0 12px rgba(74, 127, 165, 0.4); }
-        50% { box-shadow: 0 0 0 5px rgba(74, 127, 165, 0.2), 0 0 20px rgba(74, 127, 165, 0.55); }
+        0%, 100% { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 0 12px rgba(0, 0, 0, 0.3); }
+        50% { box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.4); }
+    }
+    body.dark-mode .nastani-page .tl-today-dot {
+        animation-name: todayPulseDark;
+    }
+    @keyframes todayPulseDark {
+        0%, 100% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.3); }
+        50% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.15), 0 0 20px rgba(255, 255, 255, 0.4); }
     }
     .nastani-page .tl-today-content {
         display: flex;
@@ -556,7 +572,7 @@
         padding-left: 0.4rem;
     }
     .nastani-page .tl-today-label {
-        background: var(--accent-blue, #4a7fa5);
+        background: #000;
         color: #fff;
         font-family: 'Montserrat', sans-serif;
         font-size: 0.6rem;
@@ -566,13 +582,21 @@
         padding: 0.22rem 0.75rem;
         border-radius: 4px;
         white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(74, 127, 165, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    body.dark-mode .nastani-page .tl-today-label {
+        background: #fff;
+        color: #000;
+        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
     }
     .nastani-page .tl-today-line {
         flex: 1;
         height: 2px;
-        background: linear-gradient(to right, var(--accent-blue, #4a7fa5), transparent);
+        background: linear-gradient(to right, #000, transparent);
         border-radius: 1px;
+    }
+    body.dark-mode .nastani-page .tl-today-line {
+        background: linear-gradient(to right, #fff, transparent);
     }
 
     /* Direction indicator */
@@ -1649,8 +1673,8 @@
             var cx = isMobile ? 35 : 54;
 
             // Wavy line params — phase animates over time
-            var amp = 2.5;
-            var freq = 0.032;
+            var amp = 4.5;
+            var freq = 0.038;
             var timelineColor = getComputedStyle(document.body).getPropertyValue('--accent-blue').trim() || '#4a7fa5';
 
             // Helper: get x position on wavy line at a given y with animated phase
@@ -1738,6 +1762,46 @@
             filter.appendChild(merge);
             defs.appendChild(filter);
 
+            // Mask: line fades to invisible at today, scales up away from it
+            if (todayFrac !== null) {
+                var lineMask = document.createElementNS(ns, 'mask');
+                lineMask.id = 'tlLineMask';
+                lineMask.setAttribute('maskUnits', 'userSpaceOnUse');
+                lineMask.setAttribute('x', '0');
+                lineMask.setAttribute('y', '0');
+                lineMask.setAttribute('width', w);
+                lineMask.setAttribute('height', h);
+                var maskGrad = document.createElementNS(ns, 'linearGradient');
+                maskGrad.id = 'tlMaskGrad';
+                maskGrad.setAttribute('x1', '0'); maskGrad.setAttribute('y1', '0');
+                maskGrad.setAttribute('x2', '0'); maskGrad.setAttribute('y2', '1');
+                var tp2 = todayFrac * 100;
+                var fadeZone = 4 + Math.sin(phase * 2.5) * 1.5;
+                function addMaskStop(off, op) {
+                    var ms = document.createElementNS(ns, 'stop');
+                    ms.setAttribute('offset', off);
+                    ms.setAttribute('stop-color', 'white');
+                    ms.setAttribute('stop-opacity', String(op));
+                    maskGrad.appendChild(ms);
+                }
+                addMaskStop('0%', 1);
+                addMaskStop(Math.max(0, tp2 - fadeZone - 6) + '%', 1);
+                addMaskStop(Math.max(0, tp2 - fadeZone) + '%', 0.15);
+                addMaskStop(tp2 + '%', 0);
+                addMaskStop(Math.min(100, tp2 + fadeZone) + '%', 0.15);
+                addMaskStop(Math.min(100, tp2 + fadeZone + 6) + '%', 1);
+                addMaskStop('100%', 1);
+                defs.appendChild(maskGrad);
+                var maskRect = document.createElementNS(ns, 'rect');
+                maskRect.setAttribute('x', '0');
+                maskRect.setAttribute('y', '0');
+                maskRect.setAttribute('width', w);
+                maskRect.setAttribute('height', h);
+                maskRect.setAttribute('fill', 'url(#tlMaskGrad)');
+                lineMask.appendChild(maskRect);
+                defs.appendChild(lineMask);
+            }
+
             svg.appendChild(defs);
 
             // Build the wavy path
@@ -1746,14 +1810,18 @@
                 d += ' L ' + wavyX(y).toFixed(2) + ' ' + y;
             }
 
+            // Pulsing stroke width
+            var strokePulse = 2 + Math.sin(phase * 2) * 0.5;
+
             // Main line
             var path = document.createElementNS(ns, 'path');
             path.setAttribute('d', d);
             path.setAttribute('fill', 'none');
             path.setAttribute('stroke', timelineColor);
-            path.setAttribute('stroke-width', '2');
+            path.setAttribute('stroke-width', String(strokePulse));
             path.setAttribute('stroke-linecap', 'round');
             path.setAttribute('stroke-linejoin', 'round');
+            if (todayFrac !== null) path.setAttribute('mask', 'url(#tlLineMask)');
             svg.appendChild(path);
 
             // Glow accent near today
@@ -1800,6 +1868,16 @@
             }
 
             function drawArrow(ay, pointDown) {
+                // Scale from 0 at today to 1 further away, with pulse
+                var distFromToday = todayY >= 0 ? Math.abs(ay - todayY) : 9999;
+                var scaleZone = isMobile ? 55 : 75;
+                var baseScale = todayY >= 0 ? Math.min(1, Math.max(0, distFromToday / scaleZone)) : 1;
+                var pulseAmt = 0.18;
+                var pulse = 1 + Math.sin(phase * 3 + ay * 0.04) * pulseAmt;
+                var scale = baseScale * pulse;
+                if (scale < 0.03) return;
+                var sz = arrowSize * scale;
+
                 var apx = wavyX(ay);
                 var at = wavyTangent(ay);
 
@@ -1813,12 +1891,12 @@
                 var perpX = -dirY;
                 var perpY = dirX;
 
-                var tipX = apx + dirX * arrowSize;
-                var tipY = ay + dirY * arrowSize;
-                var base1X = apx - dirX * arrowSize * 0.6 + perpX * arrowSize * 0.6;
-                var base1Y = ay - dirY * arrowSize * 0.6 + perpY * arrowSize * 0.6;
-                var base2X = apx - dirX * arrowSize * 0.6 - perpX * arrowSize * 0.6;
-                var base2Y = ay - dirY * arrowSize * 0.6 - perpY * arrowSize * 0.6;
+                var tipX = apx + dirX * sz;
+                var tipY = ay + dirY * sz;
+                var base1X = apx - dirX * sz * 0.6 + perpX * sz * 0.6;
+                var base1Y = ay - dirY * sz * 0.6 + perpY * sz * 0.6;
+                var base2X = apx - dirX * sz * 0.6 - perpX * sz * 0.6;
+                var base2Y = ay - dirY * sz * 0.6 - perpY * sz * 0.6;
 
                 var triD = tipX.toFixed(2) + ',' + tipY.toFixed(2) + ' ' +
                            base1X.toFixed(2) + ',' + base1Y.toFixed(2) + ' ' +
@@ -1828,7 +1906,7 @@
                 tri.setAttribute('points', triD);
                 tri.setAttribute('fill', timelineColor);
                 tri.setAttribute('stroke', 'none');
-                tri.setAttribute('opacity', '1');
+                tri.setAttribute('opacity', String(Math.min(1, scale)));
                 svg.appendChild(tri);
             }
 
