@@ -216,12 +216,11 @@ body {
   text-shadow: 3px 3px 12px rgba(0,0,0,0.9), 0 0 30px rgba(37,99,235,0.4);
 }
 .intro-subtitle {
-  font-family: 'Dela Gothic One', sans-serif;
-  font-size: clamp(20px, 8vw, 32px); color: var(--text2);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: clamp(20px, 8vw, 24px); color: var(--text2);
   letter-spacing: 2px; text-transform: uppercase;
-  font-style: italic;
-  -webkit-text-stroke: 1.5px currentColor;
-  paint-order: stroke fill;
+  font-style: normal;
   width: 100%; line-height: 1.1; text-align: center;
   opacity: 0;
   text-shadow: 3px 3px 12px rgba(0,0,0,0.9);
@@ -981,6 +980,17 @@ body {
         <input type="text" class="search-input" placeholder="Пребарувај..." autocomplete="off">
         <select id="dcPicker"></select>
       </div>
+      <details style="margin-top: 10px;">
+        <summary style="cursor:pointer; font-size:12px; color:var(--gold); font-weight:700;">✏️ Внеси свои податоци</summary>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+          <input type="text" id="dcCustomArtist" class="search-input" placeholder="Артист" style="font-size:12px;">
+          <input type="text" id="dcCustomTitle" class="search-input" placeholder="Наслов на песна" style="font-size:12px;">
+          <input type="text" id="dcCustomThumbnail" class="search-input" placeholder="Thumbnail URL" style="font-size:12px;">
+          <input type="text" id="dcCustomVideoId" class="search-input" placeholder="YouTube Video ID" style="font-size:12px;">
+          <input type="date" id="dcCustomDate" class="search-input" placeholder="Датум" style="font-size:12px; color-scheme:dark;">
+          <button class="copy-btn" style="position:static; margin-top:2px; font-size:11px;" onclick="applyCustomDeeperCut()">▶ Примени</button>
+        </div>
+      </details>
     </div>
 
     <div class="panel-card">
@@ -1255,14 +1265,64 @@ function getDeeperCutCandidates() {
   ).sort((a, b) => (b.youtubeViews || 0) - (a.youtubeViews || 0));
 }
 
+function getAllSongs() {
+  const songs = [];
+  for (const r of DATA.releases.releases) {
+    const tracks = r.youtubeTracks || [];
+    // Group youtube tracks by name
+    const trackMap = new Map();
+    for (const t of tracks) {
+      const key = t.name || r.releaseTitle;
+      if (!trackMap.has(key) || (t.views || 0) > (trackMap.get(key).views || 0)) {
+        trackMap.set(key, t);
+      }
+    }
+    // For releases with trackNames, emit each track
+    const names = r.trackNames && r.trackNames.length > 1 ? r.trackNames : [r.releaseTitle];
+    for (const name of names) {
+      const best = trackMap.get(name);
+      songs.push({
+        _songKey: r.releaseId + ':' + name,
+        songName: name,
+        bandName: r.bandName,
+        releaseTitle: r.releaseTitle,
+        releaseId: r.releaseId,
+        thumbnail: r.thumbnail,
+        releaseDate: r.releaseDate,
+        videoId: best ? best.videoId : '',
+        views: best ? (best.views || 0) : 0
+      });
+    }
+  }
+  return songs.sort((a, b) => b.views - a.views);
+}
+
 function getDeeperCut(forceId) {
-  const candidates = getDeeperCutCandidates();
-  if (!candidates.length) return null;
+  // If forceId is an object, it's custom data — return as-is
+  if (forceId && typeof forceId === 'object') return forceId;
+  const allSongs = getAllSongs();
   if (forceId) {
-    const found = candidates.find(r => r.releaseId === forceId || r.releaseTitle === forceId);
+    // Search by song key first, then by releaseId, then by name
+    const found = allSongs.find(s => s._songKey === forceId) ||
+                  allSongs.find(s => s.releaseId === forceId || s.songName === forceId);
     if (found) return found;
   }
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  const candidates = getDeeperCutCandidates();
+  if (!candidates.length) return null;
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  // Convert release to song format with best video
+  const best = (pick.youtubeTracks || []).slice().sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+  return {
+    _songKey: pick.releaseId + ':' + pick.releaseTitle,
+    songName: pick.releaseTitle,
+    bandName: pick.bandName,
+    releaseTitle: pick.releaseTitle,
+    releaseId: pick.releaseId,
+    thumbnail: pick.thumbnail,
+    releaseDate: pick.releaseDate,
+    videoId: best ? best.videoId : '',
+    views: best ? (best.views || 0) : 0
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1442,12 +1502,18 @@ function renderIntro(container, data) {
     }).join('') + '</div>';
   }
 
+  let subtitleHtml = '';
+  if (data.introSubtitle) {
+    const subDelay = 0.12 + lines.length * 0.12 + 0.15;
+    subtitleHtml = `<div class="intro-subtitle" style="animation: fadeIn 0.5s ${subDelay}s forwards; font-size: 12px; margin-top: 8px;">${escHtml(data.introSubtitle)}</div>`;
+  }
+
   const html = logo + lines.map((line, i) => {
     const anim = anims[i % anims.length];
     const delay = 0.12 + i * 0.12;
     return `<div class="intro-title" style="animation: ${anim} 0.3s ${delay}s forwards, textSway 3s ${delay + 0.3}s ease-in-out infinite, textPulse 4s ${delay + 0.3}s ease-in-out infinite;">${escHtml(line)}</div>`;
   }).join('');
-  container.innerHTML = html + coversHtml + (data.date ? `<div class="intro-date">${data.date}</div>` : '');
+  container.innerHTML = html + subtitleHtml + coversHtml + (data.date ? `<div class="intro-date">${data.date}</div>` : '');
 
   // Auto-fit text: shrink font if words overflow
   requestAnimationFrame(() => {
@@ -1498,6 +1564,10 @@ function renderClip(container, data) {
           <div class="clip-artist">${escHtml(data.artist || '')}</div>
         </div>
       </div>
+      ${data.releaseDate || data.views ? `<div style="width:82%; display:flex; gap:10px; align-items:center; padding:6px 0 0; opacity:0; animation: slideUp 0.4s 0.7s forwards;">
+        ${data.releaseDate ? `<div style="display:inline-block; padding:3px 10px; background:var(--gold); color:#000; transform:skewX(-8deg); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.5px;">${formatDateMK(data.releaseDate)}</div>` : ''}
+        ${data.views ? `<div style="font-size:11px; color:var(--gold); font-weight:700;">${formatViews(data.views)} прегледи</div>` : ''}
+      </div>` : ''}
     </div>
   `;
 }
@@ -1727,7 +1797,8 @@ function renderEventClip(container, data) {
 function renderDeeperCut(container, data) {
   container.classList.add('song-showcase');
   container.innerHTML = `
-    <div class="showcase-badge badge-deeper" style="margin-bottom: 8px;">СКРИЕНИ БОГАТСТВА</div>
+    <div class="showcase-badge badge-deeper" style="margin-bottom: 4px;">СКРИЕНИ БОГАТСТВА</div>
+    <div style="font-family:'Montserrat',sans-serif; font-size:9px; font-weight:400; color:var(--text2); letter-spacing:1px; text-transform:uppercase; opacity:0; animation: fadeIn 0.4s 0.3s forwards; text-align:center; margin-bottom:8px;">По избор на нашите кустоси</div>
     <img class="showcase-thumb" src="${data.thumbnail || ''}" alt="">
     <div class="showcase-title">${escHtml(data.songTitle || '')}</div>
     <div class="showcase-artist">${escHtml(data.artist || '')}</div>
@@ -2076,11 +2147,8 @@ function buildSundayScenes(forcedSong) {
   if (!song) return { scenes: [], data: null, label: 'Deeper Cut (no candidates)' };
 
   const thumbs = [song.thumbnail].filter(Boolean);
-  const videoId = song.youtubeTracks?.[0]?.videoId || '';
-
-  // Get total artist views for context
-  const artistReleases = DATA.releases.releases.filter(r => r.bandName === song.bandName);
-  const totalArtistViews = artistReleases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
+  const videoId = song.videoId || song.youtubeTracks?.[0]?.videoId || '';
+  const views = song.views || song.youtubeViews || 0;
 
   const scenes = [];
 
@@ -2088,38 +2156,25 @@ function buildSundayScenes(forcedSong) {
     type: 'intro',
     title: 'Скриени',
     subtitle: 'Богатства',
+    introSubtitle: 'По избор на нашите кустоси',
     date: '',
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
     duration: 2.5
   });
 
-  // Always show the deeper-cut showcase with release name + views
+  // Clip scene with release date + views
   scenes.push({
-    type: 'deeper-cut',
-    songTitle: song.releaseTitle,
+    type: 'clip',
+    rank: 'DC',
+    songTitle: song.songName || song.releaseTitle,
     artist: song.bandName,
     thumbnail: song.thumbnail,
-    releaseDate: song.releaseDate,
-    views: song.youtubeViews,
-    totalArtistViews,
     videoId,
+    releaseDate: song.releaseDate,
+    views,
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
-    duration: 5
+    duration: 6
   });
-
-  // Also show clip if available
-  if (videoId) {
-    scenes.push({
-      type: 'clip',
-      rank: 'DC',
-      songTitle: song.releaseTitle,
-      artist: song.bandName,
-      thumbnail: song.thumbnail,
-      videoId,
-      bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
-      duration: 6
-    });
-  }
 
   scenes.push({
     type: 'outro',
@@ -2128,6 +2183,45 @@ function buildSundayScenes(forcedSong) {
   });
 
   return { scenes, data: song, label: 'Скриени Богатства' };
+}
+
+function applyCustomDeeperCut() {
+  const artist = document.getElementById('dcCustomArtist').value.trim();
+  const title = document.getElementById('dcCustomTitle').value.trim();
+  const thumbnail = document.getElementById('dcCustomThumbnail').value.trim();
+  const videoId = document.getElementById('dcCustomVideoId').value.trim();
+  const releaseDate = document.getElementById('dcCustomDate').value.trim();
+  if (!artist || !title) {
+    alert('Внеси барем артист и наслов.');
+    return;
+  }
+  const customSong = {
+    _custom: true,
+    bandName: artist,
+    releaseTitle: title,
+    thumbnail: thumbnail || '',
+    releaseDate: releaseDate || '',
+    youtubeViews: 0,
+    youtubeTracks: videoId ? [{ videoId }] : []
+  };
+  // Clear dropdown selection
+  document.getElementById('dcPicker').value = '';
+  // Rebuild with custom data
+  selectDay('sun', { song: customSong });
+}
+
+function normalizeReelDuration(scenes, target) {
+  if (!scenes || !scenes.length) return;
+  const STRETCHABLE = new Set(['clip', 'event-clip']);
+  const clips = scenes.filter(s => STRETCHABLE.has(s.type));
+  const fixed = scenes.filter(s => !STRETCHABLE.has(s.type));
+  const fixedTotal = fixed.reduce((sum, s) => sum + (s.duration || 4), 0);
+  const clipTotal = clips.reduce((sum, s) => sum + (s.duration || 4), 0);
+  const current = fixedTotal + clipTotal;
+  if (clips.length === 0 || current >= target) return;
+  const needed = target - fixedTotal;
+  const perClip = Math.max(4, needed / clips.length);
+  clips.forEach(s => { s.duration = Math.round(perClip * 10) / 10; });
 }
 
 function getAllThumbs() {
@@ -2305,9 +2399,9 @@ function generatePSCommand(dayKey) {
     }
     case 'sun': {
       if (!data) return `<span class="comment"># No deeper-cut candidate found</span>`;
-      const songId = data.releaseId || data.releaseTitle;
+      const songId = data._songKey || data.releaseId || data.releaseTitle;
       args += ` <span class="param">--song</span> <span class="string">"${sanitizePS(songId)}"</span>`;
-      info = `<span class="comment"># ${data.bandName} – ${data.releaseTitle} (${formatViews(data.youtubeViews||0)} views)</span>`;
+      info = `<span class="comment"># ${data.bandName} – ${data.songName || data.releaseTitle} (${formatViews(data.views || data.youtubeViews||0)} views)</span>`;
       break;
     }
     default: return '# Unknown day';
@@ -2638,15 +2732,15 @@ function switchDay(dayKey, opts) {
     songCard.style.display = 'none';
   }
 
-  // DC picker (only for Sunday)
+  // DC picker (only for Sunday) — lists ALL songs
   const dcCard = document.getElementById('dcPickerCard');
   const dcPicker = document.getElementById('dcPicker');
   if (dayKey === 'sun') {
     dcCard.style.display = '';
     if (!opts.song) {
-      const candidates = getDeeperCutCandidates();
+      const allSongs = getAllSongs();
       dcPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        candidates.map(r => `<option value="${escHtml(r.releaseId || r.releaseTitle)}">${escHtml(r.bandName)} \u2013 ${escHtml(r.releaseTitle)} (${formatViews(r.youtubeViews||0)})</option>`).join('');
+        allSongs.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} \u2013 ${escHtml(s.songName)} (${formatViews(s.views)})</option>`).join('');
       filterSelect('dcPickerWrap');
     }
   } else {
@@ -2672,9 +2766,12 @@ function switchDay(dayKey, opts) {
   if (dayKey === 'thu' && result.data && !opts.song) {
     songPicker.value = result.data.releaseId || result.data.releaseTitle;
   }
-  if (dayKey === 'sun' && result.data && !opts.song) {
-    dcPicker.value = result.data.releaseId || result.data.releaseTitle;
+  if (dayKey === 'sun' && result.data && !opts.song && !result.data._custom) {
+    dcPicker.value = result.data._songKey || result.data.releaseId || result.data.releaseTitle;
   }
+
+  // Normalize reel to ~30s by stretching clip durations
+  normalizeReelDuration(result.scenes, 30);
 
   currentDayResult = result;
   currentScenes = result.scenes;
@@ -2785,10 +2882,23 @@ async function init() {
     const frame = document.querySelector('.phone-frame');
     frame.style.cssText = 'width:100vw;height:100vh;border:none;border-radius:0;position:fixed;top:0;left:0;z-index:9999;';
     const st = document.createElement('style');
-    st.textContent = '.phone-frame::before{display:none!important;}.main{margin:0!important;padding:0!important;}';
+    st.textContent = [
+      '.phone-frame::before{display:none!important;}.main{margin:0!important;padding:0!important;}',
+      // Override Google Fonts with local files for pixel-perfect capture
+      "@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:block;src:url('tools/fonts/Inter-Variable.ttf') format('truetype');}",
+      "@font-face{font-family:'Dela Gothic One';font-style:normal;font-weight:400;font-display:block;src:url('tools/fonts/DelaGothicOne-Regular.ttf') format('truetype');}",
+      "@font-face{font-family:'Montserrat';font-style:normal;font-weight:100 900;font-display:block;src:url('tools/fonts/Montserrat-Variable.ttf') format('truetype');}",
+    ].join('');
     document.head.appendChild(st);
 
+    // Wait for local fonts to load before rendering scenes
+    await document.fonts.ready;
+
     switchDay(captureMode, { artist: captureArtist || undefined, song: captureSong || undefined });
+
+    // Ensure all fonts are rendered before signaling ready
+    await document.fonts.ready;
+
     // Don't start playback — capture script controls timing
     window.__captureReady = true;
     window.__totalDuration = totalDuration;

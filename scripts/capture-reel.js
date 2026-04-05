@@ -205,7 +205,8 @@ async function main() {
   const browser = await puppeteer.launch({
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage',
-           '--disable-gpu', '--font-render-hinting=none'],
+           '--disable-gpu', '--font-render-hinting=medium',
+           '--disable-lcd-text', '--enable-font-antialiasing'],
   });
   const page = await browser.newPage();
   await page.setViewport({ width: VIEWPORT_W, height: VIEWPORT_H, deviceScaleFactor: DEVICE_SCALE });
@@ -216,7 +217,11 @@ async function main() {
   const url = `http://127.0.0.1:${port}/reels.html?capture=${mode}${forcedArtist ? '&artist=' + encodeURIComponent(forcedArtist) : ''}${forcedSong ? '&song=' + encodeURIComponent(forcedSong) : ''}`;
   logStep(url);
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
+  // Wait for fonts to fully load
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => window.__captureReady, { timeout: 30000 });
+  // Double-check fonts are loaded after scene render
+  await page.evaluate(() => document.fonts.ready);
   const totalDuration = await page.evaluate(() => window.__totalDuration);
   logOk(`Ready \u2014 ${totalDuration}s, ${Math.ceil(totalDuration * FPS)} frames to capture`);
   // â”€â”€ 3b. Download YouTube video clips (chorus detection + frame extraction) â”€â”€
