@@ -526,11 +526,11 @@
         padding: 0.5rem 0.5rem 0.5rem 0;
         position: relative;
         z-index: 3;
+        background: #e53935;
     }
 
     .nastani-page .tl-today-date-col {
-        width: 44px;
-        flex-shrink: 0;
+        display: none;
     }
     .nastani-page .tl-today-node {
         width: 20px;
@@ -539,29 +539,25 @@
         justify-content: center;
         position: relative;
         z-index: 2;
+        margin-left: 0.35rem;
     }
     .nastani-page .tl-today-dot {
         width: 14px;
         height: 14px;
         border-radius: 50%;
-        background: #000;
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 0 12px rgba(0, 0, 0, 0.3);
-        animation: todayPulse 2s ease-in-out infinite;
+        background: #fff;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45);
+        animation: todayPulse 1.4s ease-in-out infinite;
     }
     body.dark-mode .nastani-page .tl-today-dot {
         background: #fff;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.3);
+        border-color: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45);
     }
     @keyframes todayPulse {
-        0%, 100% { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2), 0 0 12px rgba(0, 0, 0, 0.3); }
-        50% { box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.15), 0 0 20px rgba(0, 0, 0, 0.4); }
-    }
-    body.dark-mode .nastani-page .tl-today-dot {
-        animation-name: todayPulseDark;
-    }
-    @keyframes todayPulseDark {
-        0%, 100% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 255, 0.3); }
-        50% { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.15), 0 0 20px rgba(255, 255, 255, 0.4); }
+        0%, 100% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45); transform: scale(1); }
+        50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.18), 0 0 24px rgba(255, 255, 255, 0.55); transform: scale(1.15); }
     }
     .nastani-page .tl-today-content {
         display: flex;
@@ -572,31 +568,34 @@
         padding-left: 0.4rem;
     }
     .nastani-page .tl-today-label {
-        background: #000;
+        background: transparent;
         color: #fff;
         font-family: 'Montserrat', sans-serif;
-        font-size: 0.6rem;
+        font-size: 0.7rem;
         font-weight: 800;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        padding: 0.22rem 0.75rem;
-        border-radius: 4px;
+        padding: 0;
+        border-radius: 0;
         white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        box-shadow: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
     }
     body.dark-mode .nastani-page .tl-today-label {
-        background: #fff;
-        color: #000;
-        box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+        background: transparent;
+        color: #fff;
+        box-shadow: none;
     }
     .nastani-page .tl-today-line {
         flex: 1;
         height: 2px;
-        background: linear-gradient(to right, #000, transparent);
+        background: linear-gradient(to right, rgba(255,255,255,0.7), transparent);
         border-radius: 1px;
     }
     body.dark-mode .nastani-page .tl-today-line {
-        background: linear-gradient(to right, #fff, transparent);
+        background: linear-gradient(to right, rgba(255,255,255,0.7), transparent);
     }
 
     /* Direction indicator */
@@ -894,13 +893,48 @@
         opacity: 0.7;
     }
 
+    /* Today zone wrapper */
+    .nastani-page .tl-today-zone {
+        position: relative;
+        z-index: 2;
+        background: rgba(229, 57, 53, 0.045);
+        box-shadow: inset 3px 0 0 #e53935, inset -3px 0 0 #e53935;
+        border-top: 2px solid rgba(229, 57, 53, 0.35);
+        border-bottom: 2px solid rgba(229, 57, 53, 0.35);
+        margin: 4px 0;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    body.dark-mode .nastani-page .tl-today-zone {
+        background: rgba(229, 57, 53, 0.07);
+    }
+
     /* Today event */
     .nastani-page .tl-item.today-event {
-        background: rgba(34, 197, 94, 0.08);
-        box-shadow: inset 3px 0 0 #22c55e;
+        background: rgba(229, 57, 53, 0.06);
+    }
+    .nastani-page .tl-item.today-event:hover {
+        background: rgba(229, 57, 53, 0.12);
     }
     .nastani-page .tl-item.today-event .tl-title {
-        color: #16a34a;
+        color: #e53935;
+        font-weight: 700;
+    }
+    .nastani-page .tl-item.today-event .tl-day {
+        color: #e53935;
+    }
+    .nastani-page .tl-item.today-event .tl-time {
+        color: #e53935;
+        font-weight: 800;
+    }
+    body.dark-mode .nastani-page .tl-item.today-event .tl-title {
+        color: #ef5350;
+    }
+    body.dark-mode .nastani-page .tl-item.today-event .tl-day {
+        color: #ef5350;
+    }
+    body.dark-mode .nastani-page .tl-item.today-event .tl-time {
+        color: #ef5350;
     }
 
     /* Tomorrow event */
@@ -1428,6 +1462,7 @@
 
             var html = '';
             var todayInserted = false;
+            var todayZoneOpen = false;
             var lastMonth = '';
             var lastDateStr = '';
             var dateGroupIdx = -1;
@@ -1443,16 +1478,38 @@
                 var isPast = evtDate < today;
                 var isToday = daysUntil(evt.date) === 0;
 
-                // Today marker
-                if (!todayInserted && isPast && currentFilter !== 'past' && currentFilter !== 'upcoming') {
+                // Open today zone before first today event, with marker as header
+                if (isToday && !todayZoneOpen && currentFilter !== 'past' && currentFilter !== 'upcoming') {
+                    todayZoneOpen = true;
                     todayInserted = true;
+                    html += '<div class="tl-today-zone">';
                     html += '<div class="tl-today-marker" id="tl-today">' +
                         '<div class="tl-today-date-col"></div>' +
                         '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
                         '<div class="tl-today-content">' +
-                        '<span class="tl-today-label"><i class="fas fa-location-dot"></i> ' + t('events.today') + '</span>' +
+                        '<span class="tl-today-label"> ' + t('events.today') + '</span>' +
                         '<div class="tl-today-line"></div>' +
                         '</div></div>';
+                }
+
+                // Insert today marker at boundary when no today events exist
+                if (!todayInserted && isPast && currentFilter !== 'past' && currentFilter !== 'upcoming') {
+                    todayInserted = true;
+                    if (!todayZoneOpen) {
+                        todayZoneOpen = true;
+                        html += '<div class="tl-today-zone">';
+                        html += '<div class="tl-today-marker" id="tl-today">' +
+                            '<div class="tl-today-date-col"></div>' +
+                            '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
+                            '<div class="tl-today-content">' +
+                            '<span class="tl-today-label"> ' + t('events.today') + '</span>' +
+                            '<div class="tl-today-line"></div>' +
+                            '</div></div>';
+                    }
+                }
+                if (todayZoneOpen && !isToday) {
+                    html += '</div>';
+                    todayZoneOpen = false;
                     lastDateStr = '';
                 }
 
@@ -1540,7 +1597,7 @@
                 // Name + countdown
                 html += '<div class="tl-name-cell">';
                 html += '<span class="tl-title">' + esc(localizeText(evt.title)) + '</span>';
-                if (cd.text) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
+                if (cd.text && !isToday) html += '<span class="countdown-badge ' + cd.cls + '">' + cd.text + '</span>';
                 html += '</div>';
 
                 // Place
@@ -1611,6 +1668,8 @@
 
             // If all upcoming, insert today marker at end
             if (!todayInserted && currentFilter !== 'past' && currentFilter !== 'upcoming') {
+                // If zone not open yet (no today events), open it to wrap just the marker
+                if (!todayZoneOpen) { todayZoneOpen = true; html += '<div class="tl-today-zone">'; }
                 html += '<div class="tl-today-marker" id="tl-today">' +
                     '<div class="tl-today-date-col"></div>' +
                     '<div class="tl-today-node"><div class="tl-today-dot"></div></div>' +
@@ -1618,6 +1677,11 @@
                     '<span class="tl-today-label"><i class="fas fa-location-dot"></i> ' + t('events.today') + '</span>' +
                     '<div class="tl-today-line"></div>' +
                     '</div></div>';
+            }
+            // Close today zone if still open
+            if (todayZoneOpen) {
+                html += '</div>';
+                todayZoneOpen = false;
             }
 
             // Direction indicator at bottom
@@ -1687,11 +1751,13 @@
                 return { x: dx / len, y: dy / len };
             }
 
-            // Find today marker position
+            // Find today marker position (use getBoundingClientRect to avoid offsetParent issues)
             var todayMarker = document.getElementById('tl-today');
             var todayFrac = null;
             if (todayMarker) {
-                var todayY = todayMarker.offsetTop + todayMarker.offsetHeight / 2;
+                var cRect = container.getBoundingClientRect();
+                var tRect = todayMarker.getBoundingClientRect();
+                var todayY = (tRect.top - cRect.top) + tRect.height / 2;
                 todayFrac = todayY / h;
             }
 
@@ -1858,37 +1924,34 @@
                 svg.appendChild(glowPath);
             }
 
-            // Draw animated filled-triangle arrows streaming away from the TODAY marker
+            // Draw animated filled-triangle arrows along the wavy line
             var arrowSize = isMobile ? 8 : 10;
             var arrowSpacing = isMobile ? 35 : 40;
             var todayY = todayFrac !== null ? todayFrac * h : -1;
-            var todayExclude = isMobile ? 14 : 18; // exclusion zone around today dot
+            var todayExclude = isMobile ? 14 : 18;
 
-            // Separate phase offsets: above today streams upward, below streams downward
             var phaseOffset = (phase * 30) % arrowSpacing;
 
-            // --- Arrows ABOVE today (pointing up, moving up) ---
+            // --- Arrows above today (pointing up, streaming up) ---
             var aboveEnd = todayY >= 0 ? todayY - todayExclude : h;
-            if (todayY < 0) aboveEnd = h; // no today marker: all arrows go up
+            if (todayY < 0) aboveEnd = h;
             for (var ay = aboveEnd - phaseOffset; ay >= 0; ay -= arrowSpacing) {
-                drawArrow(ay, false);
+                drawArrow(ay, false);  // false = point up
             }
 
-            // --- Arrows BELOW today (pointing down, moving down) ---
+            // --- Arrows below today (pointing down, streaming down) ---
             if (todayY >= 0) {
                 var belowStart = todayY + todayExclude;
                 for (var ay2 = belowStart + phaseOffset; ay2 <= h; ay2 += arrowSpacing) {
-                    drawArrow(ay2, true);
+                    drawArrow(ay2, true);  // true = point down
                 }
             }
 
             function drawArrow(ay, pointDown) {
-                // Scale from 0 at today to 1 further away, with pulse
                 var distFromToday = todayY >= 0 ? Math.abs(ay - todayY) : 9999;
                 var scaleZone = isMobile ? 55 : 75;
                 var baseScale = todayY >= 0 ? Math.min(1, Math.max(0, distFromToday / scaleZone)) : 1;
-                var pulseAmt = 0.18;
-                var pulse = 1 + Math.sin(phase * 3 + ay * 0.04) * pulseAmt;
+                var pulse = 1 + Math.sin(phase * 3 + ay * 0.04) * 0.18;
                 var scale = baseScale * pulse;
                 if (scale < 0.03) return;
                 var sz = arrowSize * scale;
@@ -1896,6 +1959,7 @@
                 var apx = wavyX(ay);
                 var at = wavyTangent(ay);
 
+                // tangent points downward along path; flip for upward arrows
                 var dirX, dirY;
                 if (pointDown) {
                     dirX = at.x; dirY = at.y;
@@ -1913,17 +1977,17 @@
                 var base2X = apx - dirX * sz * 0.6 - perpX * sz * 0.6;
                 var base2Y = ay - dirY * sz * 0.6 - perpY * sz * 0.6;
 
-                var triD = tipX.toFixed(2) + ',' + tipY.toFixed(2) + ' ' +
-                           base1X.toFixed(2) + ',' + base1Y.toFixed(2) + ' ' +
-                           base2X.toFixed(2) + ',' + base2Y.toFixed(2);
+                var pts = tipX.toFixed(2) + ',' + tipY.toFixed(2) + ' ' +
+                          base1X.toFixed(2) + ',' + base1Y.toFixed(2) + ' ' +
+                          base2X.toFixed(2) + ',' + base2Y.toFixed(2);
 
                 var tri = document.createElementNS(ns, 'polygon');
-                tri.setAttribute('points', triD);
+                tri.setAttribute('points', pts);
                 tri.setAttribute('fill', timelineColor);
                 tri.setAttribute('stroke', '#fff');
-                tri.setAttribute('stroke-width', String(isMobile ? 0.9 : 1.1));
+                tri.setAttribute('stroke-width', String(isMobile ? 0.8 : 1));
                 tri.setAttribute('filter', 'url(#tlArrowGlow)');
-                tri.setAttribute('opacity', String(Math.max(0.72, Math.min(1, scale + 0.08))));
+                tri.setAttribute('opacity', String(Math.max(0.7, Math.min(1, scale + 0.08))));
                 svg.appendChild(tri);
             }
 
