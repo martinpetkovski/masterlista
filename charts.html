@@ -1292,15 +1292,27 @@
             display: none;
         }
         
+        .mobile-week-nav {
+            display: none;
+        }
+        .mobile-week-btn {
+            display: none;
+        }
+        
         .mobile-week-label {
             display: none;
         }
         
         @media (max-width: 900px) {
+            .mobile-week-nav {
+                display: flex;
+                align-items: center;
+                gap: 0;
+            }
             .mobile-week-label {
                 display: flex;
                 align-items: center;
-                padding: 0 0.4rem;
+                padding: 0 0.25rem;
                 font-size: 0.65rem;
                 font-weight: 700;
                 font-family: 'Montserrat', sans-serif;
@@ -1311,6 +1323,46 @@
             body.dark-mode .mobile-week-label {
                 color: #aaa;
             }
+        }
+
+        @media (max-width: 600px) {
+            .mobile-week-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+                border: none;
+                background: transparent;
+                color: var(--text-secondary);
+                font-size: 0.55rem;
+                cursor: pointer;
+                padding: 0;
+                border-radius: 4px;
+                transition: all 0.15s ease;
+                flex-shrink: 0;
+            }
+            .mobile-week-btn:disabled {
+                opacity: 0.3;
+                cursor: default;
+            }
+            .mobile-week-btn:hover:not(:disabled) {
+                background: var(--bg-hover);
+                color: var(--text-primary);
+            }
+            body.dark-mode .mobile-week-btn {
+                color: var(--text-secondary);
+            }
+            body.dark-mode .mobile-week-btn:hover:not(:disabled) {
+                background: var(--bg-hover);
+                color: var(--text-primary);
+            }
+            .week-navigator {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 900px) {
             .mobile-chart-tabs {
                 display: flex;
                 gap: 0;
@@ -2174,7 +2226,11 @@
             <span class="separator">•</span>
             <span id="header-week"></span>
         </span>
-        <span class="mobile-week-label" id="mobile-week-label"></span>
+        <span class="mobile-week-nav" id="mobile-week-nav">
+            <button class="mobile-week-btn" id="mobile-week-prev" disabled><i class="fas fa-chevron-left"></i></button>
+            <span class="mobile-week-label" id="mobile-week-label"></span>
+            <button class="mobile-week-btn" id="mobile-week-next" disabled><i class="fas fa-chevron-right"></i></button>
+        </span>
         <button id="header-share-btn" class="header-btn" onclick="shareActiveChart()" data-i18n-title="charts.share" title="Сподели">
             <i class="fas fa-share-alt"></i>
         </button>
@@ -3054,6 +3110,11 @@
                 const bannerText = document.getElementById('week-history-text');
                 const bannerStats = document.getElementById('week-history-stats');
                 
+                // Mobile header nav elements
+                const mobilePrev = document.getElementById('mobile-week-prev');
+                const mobileNext = document.getElementById('mobile-week-next');
+                const mobileLabel = document.getElementById('mobile-week-label');
+                
                 const activeWeek = selectedWeekId || currentWeekId;
                 if (!activeWeek || availableWeeks.length === 0) return;
                 
@@ -3068,6 +3129,11 @@
                 // Prev/next based on available weeks only
                 prevBtn.disabled = activeIdx <= 0;
                 nextBtn.disabled = isCurrent || activeIdx >= availableWeeks.length - 1;
+                
+                // Sync mobile header nav
+                if (mobileLabel) mobileLabel.textContent = `W${String(p.week).padStart(2, '0')}`;
+                if (mobilePrev) mobilePrev.disabled = activeIdx <= 0;
+                if (mobileNext) mobileNext.disabled = isCurrent || activeIdx >= availableWeeks.length - 1;
                 
                 // Show/hide history banner
                 if (!isCurrent) {
@@ -3223,6 +3289,49 @@
                         updateWeekUrl(null);
                     }
                 });
+
+                // Mobile header week nav buttons
+                const mobilePrev = document.getElementById('mobile-week-prev');
+                const mobileNext = document.getElementById('mobile-week-next');
+                const mobileLabel = document.getElementById('mobile-week-label');
+
+                if (mobilePrev) {
+                    mobilePrev.addEventListener('click', () => {
+                        const active = selectedWeekId || currentWeekId;
+                        const idx = availableWeeks.indexOf(active);
+                        if (idx > 0) {
+                            const prev = availableWeeks[idx - 1];
+                            navigateToWeek(prev);
+                            updateWeekUrl(prev);
+                        }
+                    });
+                }
+
+                if (mobileNext) {
+                    mobileNext.addEventListener('click', () => {
+                        const active = selectedWeekId || currentWeekId;
+                        const idx = availableWeeks.indexOf(active);
+                        if (idx >= 0 && idx < availableWeeks.length - 1) {
+                            const next = availableWeeks[idx + 1];
+                            if (next === currentWeekId) {
+                                navigateToWeek(currentWeekId);
+                                updateWeekUrl(null);
+                            } else {
+                                navigateToWeek(next);
+                                updateWeekUrl(next);
+                            }
+                        }
+                    });
+                }
+
+                if (mobileLabel) {
+                    mobileLabel.addEventListener('click', () => {
+                        if (selectedWeekId) {
+                            navigateToWeek(currentWeekId);
+                            updateWeekUrl(null);
+                        }
+                    });
+                }
             }
             
             function updateWeekUrl(weekId) {

@@ -449,13 +449,6 @@ body.vesti-page main { height: auto; overflow: visible; padding: 0; }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Search toggle button in header */
-.header-btn.search-toggle {
-    background: var(--bg-primary);
-    border-color: var(--border-color);
-    color: var(--accent-blue);
-}
-
 .desktop-only { display: none; }
 
 /* ===== Unified Search Component (Mobile) ===== */
