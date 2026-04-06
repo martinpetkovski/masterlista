@@ -296,15 +296,21 @@
         "youtube_music": "https://music.youtube.com/watch?v=SPgfaLsWQ3U",
         "tidal": "https://listen.tidal.com/track/165814181",
         "youtube": "https://www.youtube.com/watch?v=SPgfaLsWQ3U",
-        "itunes": "https://geo.music.apple.com/us/album/_/1544391797?i=1544391798&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/us/album/_/1544391797?i=1544391798&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "instagram": "https://www.instagram.com/aleksandrajanevaofficial/",
+        "facebook": "https://www.facebook.com/JanevaAleksandra",
+        "tiktok": "https://www.tiktok.com/@alexandrajaneva",
+        "website": "https://aleksandrajaneva.com"
       },
-      "contact": "недостигаат податоци",
+      "contact": "info@aleksandrajaneva.com",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#670c16",
+        "#253746"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb4317a84e657c13dc515bd3ff",
-      "imageSource": "spotify",
-      "spotifyName": "Aleksandra Janeva"
+      "imageSource": "spotify"
     },
     {
       "name": "Алембик",
