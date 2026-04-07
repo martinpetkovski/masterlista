@@ -3173,9 +3173,7 @@ body.dark-mode .site-nav-menu a.active:hover i {
     min-width: 160px;
     background: var(--nav-bg, var(--artist-accent-1, #fff));
     border: 2px solid var(--nav-border, var(--artist-accent-2, #dfe1e5));
-    border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    padding: 0.3rem 0;
     margin-top: 0.2rem;
 }
 
