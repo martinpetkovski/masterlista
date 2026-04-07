@@ -132,6 +132,7 @@ $chartGenresData = Get-Content $chartGenresPath -Raw -Encoding UTF8 | ConvertFro
 $rapGenres = @($chartGenresData.rap)
 $electronicGenres = @($chartGenresData.electronic)
 $popGenres = @($chartGenresData.pop)
+$altExplicitGenres = @($chartGenresData.alternative)
 $nonAltGenres = $rapGenres + $electronicGenres + $popGenres
 
 # Pre-compute lowercase genre sets for fast lookup (HashSet)
@@ -143,6 +144,8 @@ $popGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringCompa
 $popGenres | ForEach-Object { [void]$popGenresLower.Add($_.ToLower()) }
 $nonAltGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 $nonAltGenres | ForEach-Object { [void]$nonAltGenresLower.Add($_.ToLower()) }
+$altExplicitGenresLower = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+$altExplicitGenres | ForEach-Object { [void]$altExplicitGenresLower.Add($_.ToLower()) }
 
 # ============================================================================
 #  ARTIST LOOKUP CACHE (O(1) instead of O(n) per lookup)
@@ -165,7 +168,7 @@ foreach ($b in $bandsData) {
     if ($b.genre -and $b.genre.ToLower() -ne 'недостигаат податоци') {
         $genres = @(($b.genre -split ',\s*') | ForEach-Object { $_.Trim().ToLower() } | Where-Object { $_ })
     }
-    $matchesRap = $false; $matchesElectronic = $false; $matchesPop = $false; $matchesAlt = $true
+    $matchesRap = $false; $matchesElectronic = $false; $matchesPop = $false; $matchesAlt = $true; $explicitAlt = $false
     if ($genres.Count -eq 0) {
         $matchesAlt = $false
     } else {
@@ -173,8 +176,10 @@ foreach ($b in $bandsData) {
             if ($rapGenresLower.Contains($g)) { $matchesRap = $true }
             if ($electronicGenresLower.Contains($g)) { $matchesElectronic = $true }
             if ($popGenresLower.Contains($g)) { $matchesPop = $true }
+            if ($altExplicitGenresLower.Contains($g)) { $explicitAlt = $true }
             if ($nonAltGenresLower.Contains($g)) { $matchesAlt = $false }
         }
+        if ($explicitAlt) { $matchesAlt = $true }
     }
     $artistGenreCache[$key] = @{
         all = $true

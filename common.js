@@ -104,12 +104,13 @@ function deduplicateCollabs(releases) {
 var rapGenres = ['Rap', 'Trap', 'Hip Hop', 'Boom Bap', 'Pop Rap'];
 var electronicGenres = ['Electronic', 'Techno', 'House', 'Trance', 'Synthwave', 'Synth-Pop', 'EDM', 'DnB', 'Drum and Bass', 'Ambient', 'Vaporwave', 'Psychedelic Trance', 'Goa Trance', 'Glitch', 'Chillout', 'Electro-Ambient', 'Trip Hop', 'Psybass', 'Psydub'];
 var popGenres = ['Pop', 'Pop Rock', 'Dance Pop', 'Synth-Pop', 'K-Pop', 'Turbo Folk', 'R&B', 'Pop Folk', 'Schlager', 'Soul', 'Electropop', 'Dance'];
+var altGenres = ['Alternative'];
 var nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
 
 function _rebuildGenreConfig() {
     nonAltGenres = rapGenres.concat(electronicGenres, popGenres);
     genreConfig = {
-        'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres },
+        'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres, includeGenres: altGenres },
         'rap': { label: 'Rap/Trap', tKey: 'charts.genreRap', genres: rapGenres },
         'electronic': { label: 'Electronic', tKey: 'charts.genreElectronic', genres: electronicGenres },
         'pop': { label: 'Pop', tKey: 'charts.genrePop', genres: popGenres }
@@ -117,7 +118,7 @@ function _rebuildGenreConfig() {
 }
 
 var genreConfig = {
-    'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres },
+    'alt': { label: 'Alternative', tKey: 'charts.genreAlt', isExclusion: true, excludeGenres: nonAltGenres, includeGenres: altGenres },
     'rap': { label: 'Rap/Trap', tKey: 'charts.genreRap', genres: rapGenres },
     'electronic': { label: 'Electronic', tKey: 'charts.genreElectronic', genres: electronicGenres },
     'pop': { label: 'Pop', tKey: 'charts.genrePop', genres: popGenres }
@@ -134,6 +135,7 @@ function loadChartGenres() {
             if (data.rap) rapGenres = data.rap;
             if (data.electronic) electronicGenres = data.electronic;
             if (data.pop) popGenres = data.pop;
+            if (data.alternative) altGenres = data.alternative;
             _rebuildGenreConfig();
         })
         .catch(function(e) {
@@ -214,6 +216,12 @@ function artistMatchesGenre(artistName, genreFilter, bandsData) {
     if (artistGenres.length === 0) return false;
 
     if (config.isExclusion) {
+        if (config.includeGenres) {
+            var includeLower = config.includeGenres.map(function(g) { return g.toLowerCase(); });
+            if (artistGenres.some(function(ag) {
+                return includeLower.some(function(ig) { return ag === ig; });
+            })) return true;
+        }
         var excludeLower = config.excludeGenres.map(function(g) { return g.toLowerCase(); });
         return !artistGenres.some(function(ag) {
             return excludeLower.some(function(eg) { return ag === eg; });
