@@ -648,7 +648,7 @@
     {
       "name": "AudioCigla",
       "city": "Скопје",
-      "genre": "Electronic, Synth-Pop",
+      "genre": "Electronic, Synth-Pop, Alternative",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/4De4VVOBroZsnd2YYyWAvG?si=CwPgF4-pTBm7LUSheUu0-w",
@@ -660,7 +660,10 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#e0c0a0",
+        "#e0e0c0"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5eb68bb8a46715a7b02d2627473",
       "imageSource": "spotify"
