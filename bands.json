@@ -12181,8 +12181,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#000000",
+        "#ffffff"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb01f3495d8194f6d11a9c3c77",
       "imageSource": "spotify"
     },
