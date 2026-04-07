@@ -3186,7 +3186,7 @@ a.chart-history-item {
 
         // Build artistHistory from pre-computed site-master.json data
         // Returns the same format as the old loadChartHistory() for compatibility with renderers
-        function buildArtistHistoryFromSiteMaster(artistName, siteMaster) {
+        function buildArtistHistoryFromSiteMaster(artistName, siteMaster, artistSpotifyName) {
             const artistHistory = {
                 releases: new Map(),
                 weeklyPopularity: new Map(),
@@ -3211,12 +3211,29 @@ a.chart-history-item {
             // 2. Build per-release data from chartData.releases + releaseSparklines
             const releases = siteMaster.chartData?.releases || [];
             releases.forEach(r => {
-                // Only list releases where this artist is the primary (first) artist
+                // Include releases where this artist appears anywhere in the credits
                 if (!r.bandName) return;
-                const firstArtist = r.bandName.split(',')[0].trim().toLowerCase();
-                if (firstArtist !== artistNameLower) return;
+                const allArtists = r.bandName.split(',').map(a => a.trim().toLowerCase()).filter(a => a);
+                if (!allArtists.includes(artistNameLower)) return;
                 const rid = r.releaseId;
                 if (artistHistory.releases.has(rid)) return;
+                
+                // Determine if this is a guest/feature appearance using per-track artist data
+                let isCollabAppearance = false;
+                if (r.trackArtists && r.trackArtists.length > 1) {
+                    // Check if this artist appears on all tracks (case-insensitive + spotifyName)
+                    const spotifyLower = artistSpotifyName ? artistSpotifyName.toLowerCase() : '';
+                    const appearsOnCount = r.trackArtists.filter(artists =>
+                        artists && artists.some(a => {
+                            const al = a.toLowerCase();
+                            return al === artistNameLower || (spotifyLower && al === spotifyLower);
+                        })
+                    ).length;
+                    isCollabAppearance = appearsOnCount < r.trackArtists.length;
+                } else if (allArtists.length > 1) {
+                    // Fallback for single-track releases or missing trackArtists: use bandName position
+                    isCollabAppearance = allArtists[0] !== artistNameLower;
+                }
                 
                 // Get sparkline data for this release
                 const sparkline = siteMaster.releaseSparklines?.[rid] || [];
@@ -3229,7 +3246,8 @@ a.chart-history-item {
                 artistHistory.releases.set(rid, {
                     ...r,
                     chartWeeks,
-                    firstSeenWeek: chartWeeks.length > 0 ? chartWeeks[0].week : ''
+                    firstSeenWeek: chartWeeks.length > 0 ? chartWeeks[0].week : '',
+                    _isCollabAppearance: isCollabAppearance
                 });
                 
                 // Update followers
@@ -3603,7 +3621,7 @@ a.chart-history-item {
         }
 
         // Render unified timeline of releases, articles, and events
-        function renderTimeline(artistHistory, artistLinks, siteMaster, articles, matchedEvents) {
+        function renderTimeline(artistHistory, artistLinks, siteMaster, articles, matchedEvents, artistName, artistSpotifyName) {
             const container = document.getElementById('timeline-container');
             if (!container) return;
 
@@ -3684,6 +3702,35 @@ a.chart-history-item {
                     }
                 }
 
+                // For collab appearances with per-track artist data, filter to only tracks featuring this artist
+                if (release._isCollabAppearance && release.trackArtists && release.trackNames && artistName) {
+                    const artistLower = artistName.toLowerCase();
+                    const spotifyLower = (artistSpotifyName || '').toLowerCase();
+                    const collabTrackIndices = new Set();
+                    release.trackArtists.forEach((artists, idx) => {
+                        if (artists && artists.some(a => {
+                            const al = a.toLowerCase();
+                            return al === artistLower || (spotifyLower && al === spotifyLower);
+                        })) {
+                            collabTrackIndices.add(release.trackNames[idx]?.toLowerCase().trim());
+                        }
+                    });
+                    if (collabTrackIndices.size > 0) {
+                        tracks = tracks.filter(name => collabTrackIndices.has(name.toLowerCase().trim()));
+                        // Compute views only from the filtered tracks
+                        const trackKeys = new Set(tracks.map(n => n.toLowerCase().trim()));
+                        let filteredViews = 0;
+                        if (release.youtubeTracks) {
+                            release.youtubeTracks.forEach(yt => {
+                                if (yt.verified === 'verified' && trackKeys.has(yt.name.toLowerCase().trim())) {
+                                    filteredViews += yt.views || 0;
+                                }
+                            });
+                        }
+                        release._effectiveViews = filteredViews;
+                    }
+                }
+
                 const tracksHtml = tracks.map(trackName => {
                     trackNum++;
                     const ytEntries = ytMap[trackName.toLowerCase().trim()] || [];
@@ -3748,12 +3795,22 @@ a.chart-history-item {
                 }
 
                 const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
-                const collabArtists = allArtists.slice(1);
-                const collabHtml = collabArtists.length > 0
-                    ? `<div class="release-collab-artists"><span style="opacity:0.5">feat.</span> ${collabArtists.map(name =>
-                        `<a href="${getArtistPageUrl(name)}" class="release-collab-link">${name}</a>`
-                      ).join(', ')}</div>`
-                    : '';
+                let collabHtml = '';
+                if (release._isCollabAppearance) {
+                    const otherArtists = allArtists.filter(name => name.toLowerCase() !== (artistName || '').toLowerCase());
+                    collabHtml = otherArtists.length > 0
+                        ? `<div class="release-collab-artists"><span style="opacity:0.5">со</span> ${otherArtists.map(name =>
+                            `<a href="${getArtistPageUrl(name)}" class="release-collab-link">${name}</a>`
+                          ).join(', ')}</div>`
+                        : '';
+                } else {
+                    const collabArtists = allArtists.slice(1);
+                    collabHtml = collabArtists.length > 0
+                        ? `<div class="release-collab-artists"><span style="opacity:0.5">feat.</span> ${collabArtists.map(name =>
+                            `<a href="${getArtistPageUrl(name)}" class="release-collab-link">${name}</a>`
+                          ).join(', ')}</div>`
+                        : '';
+                }
 
                 return {
                     type: 'release',
@@ -3775,7 +3832,7 @@ a.chart-history-item {
                                         <i class="${typeIcon}"></i> ${typeLabel}
                                     </span>
                                     <span>${dateStr}</span>
-                                    ${release.youtubeViews ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(release.youtubeViews)}</span>` : ''}
+                                    ${(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews) ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews)}</span>` : ''}
                                 </div>
                                 ${vuMeterHtml}
                             </div>
@@ -3859,7 +3916,7 @@ a.chart-history-item {
 
             // ---- BUILD HTML ----
             // Stats for the section header
-            const totalYtViews = releases.reduce((sum, r) => sum + (r.youtubeViews || 0), 0);
+            const totalYtViews = releases.reduce((sum, r) => sum + (r._effectiveViews != null ? r._effectiveViews : (r.youtubeViews || 0)), 0);
             const releaseCountHtml = `<span><i class="fas fa-compact-disc"></i> ${releases.length}</span>`;
             const articleCountHtml = articles && articles.length > 0 ? `<span><i class="fas fa-newspaper"></i> ${articles.length}</span>` : '';
             const eventCountHtml = (upcoming.length + past.length) > 0 ? `<span><i class="fas fa-calendar-day"></i> ${upcoming.length + past.length}</span>` : '';
@@ -4280,21 +4337,34 @@ a.chart-history-item {
                 let timelineArticles = [];
                 let timelineEvents = [];
 
+                // Pre-load releases.json for trackArtists and fresh youtube data
+                let relOverlay = null;
                 try {
-                    chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster);
-                    renderPopularityGraph(chartHistory, siteMaster, artist.name);
-                    // Overlay verified youtube data from releases.json (site-master may have stale verified flags)
-                    try {
-                        const relResp = await fetch('/releases.json?_=' + Date.now());
-                        const relData = await relResp.json();
-                        const draft = (window.MMMDrafts) ? MMMDrafts.load('releases.json') : null;
-                        const relSrc = draft || relData;
-                        const ytOverlay = {};
-                        (relSrc.releases || []).forEach(r => { if (r.youtubeTracks) ytOverlay[r.releaseId] = r.youtubeTracks; });
-                        chartHistory.releases.forEach(rel => {
-                            if (ytOverlay[rel.releaseId]) rel.youtubeTracks = ytOverlay[rel.releaseId];
+                    const relResp = await fetch('/releases.json?_=' + Date.now());
+                    const relData = await relResp.json();
+                    const draft = (window.MMMDrafts) ? MMMDrafts.load('releases.json') : null;
+                    const relSrc = draft || relData;
+                    relOverlay = {};
+                    (relSrc.releases || []).forEach(r => { relOverlay[r.releaseId] = r; });
+                } catch (_) {}
+
+                try {
+                    // Inject trackArtists into site-master releases before building history
+                    if (relOverlay && siteMaster?.chartData?.releases) {
+                        siteMaster.chartData.releases.forEach(r => {
+                            const src = relOverlay[r.releaseId];
+                            if (src?.trackArtists) r.trackArtists = src.trackArtists;
                         });
-                    } catch (_) {}
+                    }
+                    chartHistory = buildArtistHistoryFromSiteMaster(artist.name, siteMaster, artist.spotifyName);
+                    renderPopularityGraph(chartHistory, siteMaster, artist.name);
+                    // Overlay fresh youtube data from releases.json
+                    if (relOverlay) {
+                        chartHistory.releases.forEach(rel => {
+                            const src = relOverlay[rel.releaseId];
+                            if (src?.youtubeTracks) rel.youtubeTracks = src.youtubeTracks;
+                        });
+                    }
                 } catch (e) {
                     console.warn('Could not build chart history:', e);
                     chartHistory = { releases: new Map() };
@@ -4329,7 +4399,7 @@ a.chart-history-item {
                 }
 
                 // Render unified timeline
-                renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineEvents);
+                renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineEvents, artist.name, artist.spotifyName);
                 
             } catch (error) {
                 console.error('Error loading artist:', error);

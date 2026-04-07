@@ -757,8 +757,11 @@ async function main() {
               const fullAlbum = fullAlbumDetails[album.id];
               const albumPopularity = fullAlbum?.popularity || 0;
 
-              // Extract track names for YouTube matching
-              const trackNames = (fullAlbum?.tracks?.items || []).map(t => t.name);
+              // Extract track names and per-track artists for YouTube matching and collab filtering
+              const trackItems = fullAlbum?.tracks?.items || [];
+              const trackNames = trackItems.map(t => t.name);
+              const trackArtists = trackItems.map(t => (t.artists || []).map(a => a.name));
+              const hasPerTrackArtists = trackArtists.some(artists => artists.length > 0);
               
               return {
                 bandName: band.name,
@@ -772,6 +775,7 @@ async function main() {
                 thumbnail: album.images?.[0]?.url || album.images?.[1]?.url,
                 totalTracks: album.total_tracks,
                 trackNames: trackNames.length > 0 ? trackNames : undefined,
+                ...(hasPerTrackArtists ? { trackArtists } : {}),
                 popularity: albumPopularity, // Spotify album/single popularity (0-100)
                 followers: artistInfo?.followers?.total || 0,
                 spotifyUrl: band.links.spotify
@@ -847,6 +851,7 @@ async function main() {
       thumbnail: r.thumbnail,
       totalTracks: r.totalTracks,
       ...(r.trackNames ? { trackNames: r.trackNames } : {}),
+      ...(r.trackArtists ? { trackArtists: r.trackArtists } : {}),
       spotifyUrl: r.spotifyUrl
     };
     // Preserve existing youtube track data (with verified flags) and view count
