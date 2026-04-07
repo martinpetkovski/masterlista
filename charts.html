@@ -791,8 +791,66 @@
                 min-width: 0;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                font-size: 0.62rem;
+                padding: 0.3rem 0.4rem;
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-color);
+                margin-left: 0;
+            }
+            .filter-presets .preset-btn:first-child {
+                border-left: 1px solid var(--border-color);
+            }
+            .filter-presets .preset-btn:last-child {
+                border-right: 1px solid var(--border-color);
+            }
+            .filter-presets .preset-btn.active {
+                border-color: #000;
+            }
+            body.dark-mode .filter-presets .preset-btn.active {
+                border-color: #fff;
             }
             
+            /* Hide icons on mobile preset buttons to maximize text space */
+            .filter-presets .preset-btn i {
+                display: none;
+            }
+
+            /* Mobile chart tabs: aligned, no separators, maximize font */
+            .mobile-chart-tabs {
+                gap: 0;
+                margin-bottom: 0.35rem;
+            }
+            .mobile-chart-tab {
+                font-size: 0.68rem;
+                padding: 0.3rem 0.4rem;
+                height: auto;
+                min-height: 30px;
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-color);
+                margin-left: 0;
+                white-space: normal;
+                line-height: 1.15;
+            }
+            .mobile-chart-tab:first-child {
+                border-left: 1px solid var(--border-color);
+            }
+            .mobile-chart-tab:last-child {
+                border-right: 1px solid var(--border-color);
+            }
+            .mobile-chart-tab.active {
+                border-color: #000;
+            }
+            body.dark-mode .mobile-chart-tab.active {
+                border-color: #fff;
+            }
+            .mobile-chart-tab i {
+                display: none;
+            }
+
             .advanced-filters {
                 width: 100%;
                 flex-wrap: wrap;
@@ -805,8 +863,6 @@
             .filter-group {
                 gap: 0.25rem;
                 flex-shrink: 0;
-                padding-right: 0.5rem;
-                border-right: 1px solid var(--border-color);
             }
 
             .filter-group:last-of-type {
@@ -1946,7 +2002,11 @@
                 flex-direction: column;
                 height: 100vh;
                 height: 100dvh;
-                overflow: hidden;
+                overflow: hidden !important;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                left: 0;
             }
             header, .chart-filter-bar {
                 flex-shrink: 0;
@@ -2220,7 +2280,7 @@
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
 </head>
 <body class="compact chart-page">
-    <header id="site-header" data-active="/charts" data-title="Македонска Музичка Топ Листа">
+    <header id="site-header" data-active="/charts" data-title="Топ Листа">
         <span class="header-info">
             <span><span data-i18n="charts.updated">Ажурирано</span> <span id="last-updated">...</span></span>
             <span class="separator">•</span>

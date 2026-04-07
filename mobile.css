@@ -1868,13 +1868,12 @@ body.vfx-dark .service-chooser,
 .service-chooser-header-text { min-width: 0; flex: 1; }
 .service-chooser-artist {
     font-size: 1rem; opacity: 0.85; color: #fff;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 0.35rem;
-    flex-wrap: wrap;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.3;
 }
 .service-chooser-artist .sc-artist-name {
-    min-width: 0; max-width: calc(100% - 1rem);
-    overflow: hidden; text-overflow: ellipsis;
+    min-width: 0;
 }
 .service-chooser-artist .sc-artist-link {
     color: inherit;
@@ -1893,7 +1892,7 @@ body.vfx-dark .service-chooser,
 }
 .service-chooser-links {
     display: flex; flex-direction: column; gap: 0.3rem; padding: 0.55rem 0.75rem 0.75rem;
-    overflow-y: auto; max-height: 55vh;
+    overflow-y: auto; max-height: none;
 }
 .service-chooser-links a {
     display: flex; align-items: center; gap: 0.85rem; padding: 0.65rem 0.85rem;

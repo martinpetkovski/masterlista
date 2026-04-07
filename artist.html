@@ -174,6 +174,34 @@
             50% { transform: translate(-2%,-2%); }
         }
 
+        /* Mobile: disable heavy VFX layers for performance */
+        @media (max-width: 600px) {
+            .vfx-bg {
+                perspective: none;
+            }
+            .vfx-bg__layer {
+                will-change: auto;
+                transform: none !important;
+            }
+            .vfx-bg__grain {
+                animation: none;
+            }
+            .vfx-bg__sweep {
+                animation: none;
+                display: none;
+            }
+            .vfx-shape {
+                animation: none;
+                display: none;
+            }
+            .vfx-bg__scanlines {
+                display: none;
+            }
+            .vfx-bg__waves {
+                display: none;
+            }
+        }
+
         /* CRT scanlines */
         .vfx-bg__scanlines {
             background: repeating-linear-gradient(
@@ -1947,7 +1975,7 @@ a.chart-history-item {
         /* Glass link cards */
         .verified-accent .artist-link {
             background: var(--va-card-bg);
-            border: 1px solid var(--va-card-border);
+            border: none;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             color: var(--va-text);
@@ -2982,50 +3010,51 @@ a.chart-history-item {
                     { el: shapesLayer, scrollY: 0.34, mouseX: 0.080, mouseY: 0.064, z: 40 },
                 ];
 
-                // Smooth mouse tracking
-                let mouseX = 0, mouseY = 0, targetMX = 0, targetMY = 0;
-                document.addEventListener('mousemove', function(e) {
-                    targetMX = (e.clientX / window.innerWidth - 0.5) * 2;  // -1 to 1
-                    targetMY = (e.clientY / window.innerHeight - 0.5) * 2;
-                }, { passive: true });
+                // Parallax: only on desktop (non-touch, wide screen)
+                const isMobileDevice = window.matchMedia('(max-width: 600px)').matches || ('ontouchstart' in window && window.innerWidth <= 900);
+                if (!isMobileDevice) {
+                    // Smooth mouse tracking
+                    let mouseX = 0, mouseY = 0, targetMX = 0, targetMY = 0;
+                    document.addEventListener('mousemove', function(e) {
+                        targetMX = (e.clientX / window.innerWidth - 0.5) * 2;
+                        targetMY = (e.clientY / window.innerHeight - 0.5) * 2;
+                    }, { passive: true });
 
-                let bgTick = false;
-                function updateParallax() {
-                    // Lerp mouse position for smoothness
-                    mouseX += (targetMX - mouseX) * 0.08;
-                    mouseY += (targetMY - mouseY) * 0.08;
-                    const sy = window.scrollY;
-                    for (const l of parallaxLayers) {
-                        const tx = mouseX * l.mouseX * 100;
-                        const ty = (-sy * l.scrollY) + (mouseY * l.mouseY * 80);
-                        const tz = l.z || 0;
-                        // Grid twists gently as you scroll
-                        if (l.twist) {
-                            const rotX = Math.sin(sy * 0.003) * 3;   // up to ±3deg
-                            const rotY = Math.cos(sy * 0.002) * 2;   // up to ±2deg
-                            const skew = Math.sin(sy * 0.0015) * 1.5; // subtle skew
-                            l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) skewY(' + skew.toFixed(2) + 'deg) scale(1.35)';
-                        } else {
-                            l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) scale(1.25)';
+                    let bgTick = false;
+                    function updateParallax() {
+                        mouseX += (targetMX - mouseX) * 0.08;
+                        mouseY += (targetMY - mouseY) * 0.08;
+                        const sy = window.scrollY;
+                        for (const l of parallaxLayers) {
+                            const tx = mouseX * l.mouseX * 100;
+                            const ty = (-sy * l.scrollY) + (mouseY * l.mouseY * 80);
+                            const tz = l.z || 0;
+                            if (l.twist) {
+                                const rotX = Math.sin(sy * 0.003) * 3;
+                                const rotY = Math.cos(sy * 0.002) * 2;
+                                const skew = Math.sin(sy * 0.0015) * 1.5;
+                                l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) skewY(' + skew.toFixed(2) + 'deg) scale(1.35)';
+                            } else {
+                                l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) scale(1.25)';
+                            }
+                        }
+                        bgTick = false;
+                    }
+
+                    function requestParallaxUpdate() {
+                        if (!bgTick) {
+                            requestAnimationFrame(updateParallax);
+                            bgTick = true;
                         }
                     }
-                    bgTick = false;
+                    window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
+                    let mouseIdleTimer = null;
+                    document.addEventListener('mousemove', function() {
+                        clearTimeout(mouseIdleTimer);
+                        requestParallaxUpdate();
+                        mouseIdleTimer = setTimeout(function() { mouseIdleTimer = null; }, 150);
+                    }, { passive: true });
                 }
-
-                function requestParallaxUpdate() {
-                    if (!bgTick) {
-                        requestAnimationFrame(updateParallax);
-                        bgTick = true;
-                    }
-                }
-                window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
-                // Mouse tracking: only schedule updates while mouse is active
-                let mouseIdleTimer = null;
-                document.addEventListener('mousemove', function() {
-                    clearTimeout(mouseIdleTimer);
-                    requestParallaxUpdate();
-                    mouseIdleTimer = setTimeout(function() { mouseIdleTimer = null; }, 150);
-                }, { passive: true });
                 
                 // Apply accent color to header background
                 document.body.classList.add('verified-accent');
@@ -3140,19 +3169,19 @@ a.chart-history-item {
                     function styleHeaderBtn(btn) {
                         btn.style.setProperty('color', tc, 'important');
                         btn.style.setProperty('background', 'transparent', 'important');
-                        btn.style.setProperty('border-color', btnBdr, 'important');
+                        btn.style.setProperty('border', 'none', 'important');
                         const icon = btn.querySelector('i');
                         if (icon) icon.style.setProperty('color', tc, 'important');
                         btn.addEventListener('mouseenter', () => {
                             btn.style.setProperty('background', hoverBg, 'important');
                             btn.style.setProperty('color', hoverTc, 'important');
-                            btn.style.setProperty('border-color', hoverBg, 'important');
+                            btn.style.setProperty('border', 'none', 'important');
                             if (icon) icon.style.setProperty('color', hoverTc, 'important');
                         });
                         btn.addEventListener('mouseleave', () => {
                             btn.style.setProperty('background', 'transparent', 'important');
                             btn.style.setProperty('color', tc, 'important');
-                            btn.style.setProperty('border-color', btnBdr, 'important');
+                            btn.style.setProperty('border', 'none', 'important');
                             if (icon) icon.style.setProperty('color', tc, 'important');
                         });
                     }

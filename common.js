@@ -1383,6 +1383,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     // Ensure clean state then show
     overlay.classList.remove('closing');
     overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
 }
 
 /**
@@ -1399,9 +1400,11 @@ function closeServiceChooserDialog(animated) {
         var onEnd = function() {
             sc.removeEventListener('animationend', onEnd);
             ov.classList.remove('visible', 'closing');
+            document.body.style.overflow = '';
         };
         sc.addEventListener('animationend', onEnd);
     } else {
         ov.classList.remove('visible');
+        document.body.style.overflow = '';
     }
 }

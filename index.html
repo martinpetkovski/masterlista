@@ -800,10 +800,9 @@
         .chart-pop-wrap {
             display: flex;
             flex-direction: column;
-            align-items: stretch;
+            align-items: flex-end;
             gap: 4px;
             flex-shrink: 0;
-            width: 5.75rem;
         }
 
         .pop-bar-track {
@@ -2347,6 +2346,29 @@
             .rising-links {
                 grid-template-columns: repeat(3, 1.65rem);
                 max-height: calc(4 * 1.65rem);
+            }
+
+            /* Mini-chart: allow title to wrap up to 2 lines, smaller views */
+            .mini-chart-title {
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                font-size: 1rem;
+                line-height: 1.2;
+            }
+            .mini-chart-artist {
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                font-size: 0.85rem;
+            }
+            .mini-chart-pop {
+                font-size: 1.1rem;
+                min-height: auto;
             }
 
             /* Stats card: larger, more readable on mobile */
