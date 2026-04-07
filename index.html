@@ -449,9 +449,24 @@
             gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             cursor: pointer;
-            transition: background 0.15s;
-            border-radius: 6px;
+            border-radius: 0;
+            position: relative;
+            transition: background 0.3s ease, transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
         }
+
+        /* Left accent bar on hover */
+        .mini-chart-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 3px;
+            height: 70%;
+            transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        #main-chart-card .mini-chart-item::before { background: linear-gradient(180deg, #b83a3a, #d45050); }
+        #alt-chart-card .mini-chart-item::before { background: linear-gradient(180deg, #b89830, #d4af40); }
 
         .mini-chart-rank {
             font-family: 'Montserrat', sans-serif;
@@ -575,12 +590,12 @@
         }
 
         #main-chart-card::before {
-            background: linear-gradient(90deg, #4a7fa5, #22c55e, #4a7fa5);
+            background: linear-gradient(90deg, #b83a3a, #d45050, #b83a3a);
             background-size: 200% 100%;
         }
 
         #alt-chart-card::before {
-            background: linear-gradient(90deg, #7b6e9e, #a86078, #7b6e9e);
+            background: linear-gradient(90deg, #b89830, #d4af40, #b89830);
             background-size: 200% 100%;
         }
 
@@ -612,8 +627,8 @@
         .chart-line-path {
             fill: none;
             stroke-width: 1.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+            stroke-linecap: miter;
+            stroke-linejoin: miter;
             opacity: 0.08;
             stroke-dasharray: 600;
             stroke-dashoffset: 600;
@@ -623,6 +638,70 @@
         .chart-line-area {
             opacity: 0.03;
             animation: chartAreaFadeIn 3s ease forwards;
+        }
+
+        /* Horizontal scan line */
+        .chart-scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            z-index: 0;
+            pointer-events: none;
+            animation: chartScanDrift 6s linear infinite;
+        }
+        #main-chart-card .chart-scan-line {
+            background: linear-gradient(90deg, transparent 0%, #b83a3a 30%, #d45050 70%, transparent 100%);
+            opacity: 0.10;
+        }
+        #alt-chart-card .chart-scan-line {
+            background: linear-gradient(90deg, transparent 0%, #b89830 30%, #d4af40 70%, transparent 100%);
+            opacity: 0.10;
+        }
+
+        @keyframes chartScanDrift {
+            0%   { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        /* Subtle grid overlay */
+        .chart-grid-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image:
+                linear-gradient(to right, currentColor 1px, transparent 1px),
+                linear-gradient(to bottom, currentColor 1px, transparent 1px);
+            background-size: 40px 30px;
+            animation: chartGridShift 20s linear infinite;
+        }
+
+        @keyframes chartGridShift {
+            0%   { background-position: 0 0; }
+            100% { background-position: 40px 30px; }
+        }
+
+        /* Vertical sweep highlight */
+        .chart-sweep {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent 0%, transparent 40%, rgba(255,255,255,0.03) 50%, transparent 60%, transparent 100%);
+            background-size: 200% 100%;
+            animation: chartSweepMove 8s ease-in-out infinite;
+        }
+        body.dark-mode .chart-sweep {
+            background: linear-gradient(90deg, transparent 0%, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%, transparent 100%);
+            background-size: 200% 100%;
+        }
+
+        @keyframes chartSweepMove {
+            0%   { background-position: -100% 0; }
+            100% { background-position: 200% 0; }
         }
 
         @keyframes chartLineDraw {
@@ -652,17 +731,54 @@
         }
 
         /* ==================== CHART ITEM HOVER ==================== */
-        .mini-chart-item {
-            transition: background 0.2s ease, box-shadow 0.2s ease;
-        }
-
         .mini-chart-item:hover {
-            background: var(--bg-hover, #eceef1);
-            box-shadow: 0 0 12px rgba(74, 127, 165, 0.08);
+            background: rgba(0, 0, 0, 0.03);
+            transform: translateX(4px);
+        }
+        .mini-chart-item:hover::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+        body.dark-mode .mini-chart-item:hover {
+            background: rgba(255, 255, 255, 0.04);
         }
 
-        body.dark-mode .mini-chart-item:hover {
-            box-shadow: 0 0 16px rgba(91, 168, 212, 0.12);
+        /* Cover lift + glow on hover */
+        .mini-chart-cover {
+            transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.3s ease;
+        }
+        .mini-chart-item:hover .mini-chart-cover {
+            transform: scale(1.06);
+        }
+        #main-chart-card .mini-chart-item:hover .mini-chart-cover {
+            box-shadow: 0 4px 20px rgba(184, 58, 58, 0.25), 0 2px 8px rgba(0,0,0,0.1);
+        }
+        #alt-chart-card .mini-chart-item:hover .mini-chart-cover {
+            box-shadow: 0 4px 20px rgba(184, 152, 48, 0.25), 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Rank number pulse on hover */
+        .mini-chart-rank {
+            transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.2s ease;
+        }
+        .mini-chart-item:hover .mini-chart-rank {
+            transform: scale(1.1);
+        }
+
+        /* Title text color shift on hover */
+        .mini-chart-title {
+            transition: color 0.25s ease, letter-spacing 0.3s ease;
+        }
+        #main-chart-card .mini-chart-item:hover .mini-chart-title {
+            color: #b83a3a;
+        }
+        #alt-chart-card .mini-chart-item:hover .mini-chart-title {
+            color: #b89830;
+        }
+        body.dark-mode #main-chart-card .mini-chart-item:hover .mini-chart-title {
+            color: #d45050;
+        }
+        body.dark-mode #alt-chart-card .mini-chart-item:hover .mini-chart-title {
+            color: #d4af40;
         }
 
         /* Ensure chart items are above SVG background */
@@ -765,14 +881,12 @@
         #main-chart-card .mini-chart-item:first-child,
         #alt-chart-card .mini-chart-item:first-child {
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%);
-            border-radius: 8px;
+            border-radius: 0;
         }
 
         #main-chart-card .mini-chart-item:first-child:hover,
         #alt-chart-card .mini-chart-item:first-child:hover {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%), rgba(0, 0, 0, 0.06);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%), rgba(0, 0, 0, 0.03);
         }
 
         body.dark-mode #main-chart-card .mini-chart-item:first-child,
@@ -782,16 +896,16 @@
 
         body.dark-mode #main-chart-card .mini-chart-item:first-child:hover,
         body.dark-mode #alt-chart-card .mini-chart-item:first-child:hover {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 70%), rgba(0, 0, 0, 0.25);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 70%), rgba(255, 255, 255, 0.04);
         }
 
         /* #1 cover glow effect */
         #main-chart-card .mini-chart-item:first-child .mini-chart-cover {
-            box-shadow: 0 0 16px rgba(74, 127, 165, 0.3), 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 0 16px rgba(184, 58, 58, 0.3), 0 2px 8px rgba(0,0,0,0.1);
         }
 
         #alt-chart-card .mini-chart-item:first-child .mini-chart-cover {
-            box-shadow: 0 0 16px rgba(123, 110, 158, 0.3), 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 0 16px rgba(184, 152, 48, 0.3), 0 2px 8px rgba(0,0,0,0.1);
         }
 
 
@@ -809,13 +923,13 @@
             width: 100%;
             height: 4px;
             background: var(--bg-hover, #eceef1);
-            border-radius: 2px;
+            border-radius: 0;
             overflow: hidden;
         }
 
         .pop-bar-fill {
             height: 100%;
-            border-radius: 2px;
+            border-radius: 0;
             transform: scaleX(0);
             transform-origin: left;
             animation: popBarGrow 0.8s ease-out forwards;
@@ -825,8 +939,8 @@
         .pop-bar-fill.pop-silver { background: linear-gradient(90deg, #C0C0C0, #A8A8A8); }
         .pop-bar-fill.pop-bronze { background: linear-gradient(90deg, #CD7F32, #B8860B); }
 
-        #main-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #4a7fa5, #22c55e); }
-        #alt-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #7b6e9e, #a86078); }
+        #main-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #b83a3a, #d45050); }
+        #alt-chart-card .pop-bar-fill.pop-default { background: linear-gradient(90deg, #b89830, #d4af40); }
 
         .mini-chart-item:nth-child(1) .pop-bar-fill { animation-delay: 0.6s; }
         .mini-chart-item:nth-child(2) .pop-bar-fill { animation-delay: 0.85s; }
@@ -2517,15 +2631,18 @@
                 <svg viewBox="0 0 300 120" preserveAspectRatio="none">
                     <defs>
                         <linearGradient id="mainLineGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stop-color="#4a7fa5"/>
-                            <stop offset="100%" stop-color="#22c55e"/>
+                            <stop offset="0%" stop-color="#b83a3a"/>
+                            <stop offset="100%" stop-color="#d45050"/>
                         </linearGradient>
                     </defs>
-                    <path class="chart-line-area" d="M0,90 Q30,60 60,65 T120,40 T180,55 T240,30 T300,45 L300,120 L0,120 Z"/>
-                    <path class="chart-line-path" d="M0,90 Q30,60 60,65 T120,40 T180,55 T240,30 T300,45"/>
-                    <path class="chart-line-path chart-line-path-2" d="M0,100 Q40,85 80,88 T160,70 T220,78 T280,60 T300,65"/>
+                    <path class="chart-line-area" d="M0,90 L30,55 L60,70 L90,35 L120,50 L150,25 L180,60 L210,20 L240,45 L270,30 L300,50 L300,120 L0,120 Z"/>
+                    <path class="chart-line-path" d="M0,90 L30,55 L60,70 L90,35 L120,50 L150,25 L180,60 L210,20 L240,45 L270,30 L300,50"/>
+                    <path class="chart-line-path chart-line-path-2" d="M0,100 L40,80 L80,92 L120,65 L160,75 L200,55 L240,68 L280,50 L300,60"/>
                 </svg>
             </div>
+            <div class="chart-grid-overlay" aria-hidden="true"></div>
+            <div class="chart-scan-line" aria-hidden="true"></div>
+            <div class="chart-sweep" aria-hidden="true"></div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-chart-line"></i> <span data-i18n="dashboard.topChart">Топ Листа</span></h2>
                 <div class="dash-card-header-actions">
@@ -2546,15 +2663,18 @@
                 <svg viewBox="0 0 300 120" preserveAspectRatio="none">
                     <defs>
                         <linearGradient id="altLineGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stop-color="#7b6e9e"/>
-                            <stop offset="100%" stop-color="#a86078"/>
+                            <stop offset="0%" stop-color="#b89830"/>
+                            <stop offset="100%" stop-color="#d4af40"/>
                         </linearGradient>
                     </defs>
-                    <path class="chart-line-area" d="M0,80 Q35,55 70,60 T140,35 T200,50 T260,25 T300,40 L300,120 L0,120 Z"/>
-                    <path class="chart-line-path" d="M0,80 Q35,55 70,60 T140,35 T200,50 T260,25 T300,40"/>
-                    <path class="chart-line-path chart-line-path-2" d="M0,95 Q45,80 90,85 T170,65 T230,72 T290,55 T300,60"/>
+                    <path class="chart-line-area" d="M0,80 L35,50 L70,65 L105,30 L140,45 L175,20 L210,55 L245,15 L280,40 L300,35 L300,120 L0,120 Z"/>
+                    <path class="chart-line-path" d="M0,80 L35,50 L70,65 L105,30 L140,45 L175,20 L210,55 L245,15 L280,40 L300,35"/>
+                    <path class="chart-line-path chart-line-path-2" d="M0,95 L45,75 L90,88 L135,60 L170,72 L210,50 L250,65 L290,48 L300,55"/>
                 </svg>
             </div>
+            <div class="chart-grid-overlay" aria-hidden="true"></div>
+            <div class="chart-scan-line" aria-hidden="true"></div>
+            <div class="chart-sweep" aria-hidden="true"></div>
             <div class="dash-card-header">
                 <h2><i class="fas fa-guitar"></i> <span data-i18n="dashboard.alternative">Алтернативна</span></h2>
                 <div class="dash-card-header-actions">
