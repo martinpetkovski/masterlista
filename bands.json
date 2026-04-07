@@ -1,4 +1,4 @@
-﻿{
+{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -4397,11 +4397,13 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#669d34",
+        "#ffab01"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb1ce980faa7f59b6ba6c5ae9e",
-      "imageSource": "spotify",
-      "spotifyName": "Mamut"
+      "imageSource": "spotify"
     },
     {
       "name": "MANAS",
