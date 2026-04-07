@@ -1786,6 +1786,8 @@
             flex-shrink: 0;
             display: flex;
             justify-content: flex-end;
+            justify-self: end;
+            text-align: right;
             font-size: 1.4rem;
             white-space: nowrap;
             padding-right: 0.3rem;
@@ -2045,7 +2047,7 @@
                 grid-template-columns: 1.8rem 24px 1fr 60px 4rem;
             }
             .artist-item .vu-meter { width: 60px; }
-            .artist-item .chart-stat.followers { font-size: 1rem; }
+            .artist-item .chart-stat.followers { font-size: 1rem; justify-self: end; text-align: right; }
             
             /* Mobile header buttons - more compact */
             .chart-section-header {
@@ -2066,14 +2068,6 @@
             }
             .share-btn span {
                 display: none;
-            }
-
-            .filter-btn[data-preset="alltime"],
-            .filter-btn[data-preset="artists"],
-            .advanced-filters .filter-btn[data-filter-type="chart"][data-filter-value="alltime"],
-            .alltime-section,
-            #artists-section {
-                display: none !important;
             }
         }
         
@@ -2275,6 +2269,123 @@
             .week-nav-btn { width: 26px; height: 26px; }
             .week-nav-badge { font-size: 0.5rem; }
         }
+
+        /* ── Mobile swipe selectors ── */
+        .mobile-swipe-row { display: none; }
+
+        @media (max-width: 600px) {
+            /* Hide original preset buttons and chart tabs – replaced by swipe row */
+            .filter-presets { display: none !important; }
+            .mobile-chart-tabs { display: none !important; }
+
+            .mobile-swipe-row {
+                display: flex;
+                width: 100%;
+                gap: 2px;
+            }
+
+            .swipe-selector {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #000;
+                color: #fff;
+                height: 36px;
+                cursor: pointer;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-tap-highlight-color: transparent;
+                position: relative;
+                overflow: hidden;
+                touch-action: pan-y;
+            }
+            .swipe-selector + .swipe-selector {
+                border-left: 1px solid rgba(255,255,255,0.15);
+            }
+            body.dark-mode .swipe-selector {
+                background: #fff;
+                color: #000;
+            }
+            body.dark-mode .swipe-selector + .swipe-selector {
+                border-left-color: rgba(0,0,0,0.15);
+            }
+
+            .swipe-arrow {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 26px;
+                flex-shrink: 0;
+                font-size: 0.45rem;
+                opacity: 0.35;
+                transition: opacity 0.15s;
+                padding: 0 2px;
+            }
+            .swipe-selector:active .swipe-arrow { opacity: 0.7; }
+
+            .swipe-label-wrap {
+                flex: 1;
+                overflow: hidden;
+                text-align: center;
+                position: relative;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .swipe-label {
+                display: block;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 0.68rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+                white-space: nowrap;
+                will-change: transform, opacity;
+                margin-top: -3px;
+            }
+
+            /* Dot indicators below label */
+            .swipe-dots {
+                display: flex;
+                justify-content: center;
+                gap: 4px;
+                position: absolute;
+                bottom: 3px;
+                left: 0;
+                right: 0;
+            }
+            .swipe-dot {
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.25);
+                transition: background 0.2s;
+            }
+            .swipe-dot.active {
+                background: rgba(255,255,255,0.8);
+            }
+            body.dark-mode .swipe-dot {
+                background: rgba(0,0,0,0.2);
+            }
+            body.dark-mode .swipe-dot.active {
+                background: rgba(0,0,0,0.7);
+            }
+
+            /* Hint animation – arrows bounce on first load */
+            @keyframes swipeHintL {
+                0%,100% { transform: translateX(0); }
+                50%     { transform: translateX(-3px); }
+            }
+            @keyframes swipeHintR {
+                0%,100% { transform: translateX(0); }
+                50%     { transform: translateX(3px); }
+            }
+            .swipe-selector.hint .swipe-arrow-left  { animation: swipeHintL 0.5s ease 3; }
+            .swipe-selector.hint .swipe-arrow-right { animation: swipeHintR 0.5s ease 3; }
+        }
         
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
@@ -2317,6 +2428,25 @@
                 <button class="filter-btn preset-btn" data-preset="advanced" data-i18n-title="charts.advancedFilters" title="Напредни филтри">
                     <i class="fas fa-sliders-h"></i> <span data-i18n="charts.advanced">Напредно</span>
                 </button>
+            </div>
+            <!-- Mobile swipe selectors (replaces preset buttons + chart tabs on small screens) -->
+            <div class="mobile-swipe-row" id="mobile-swipe-row">
+                <div class="swipe-selector" id="swipe-preset">
+                    <span class="swipe-arrow swipe-arrow-left"><i class="fas fa-chevron-left"></i></span>
+                    <div class="swipe-label-wrap">
+                        <span class="swipe-label" id="swipe-preset-label">Топ Листа</span>
+                        <span class="swipe-dots" id="swipe-preset-dots"></span>
+                    </div>
+                    <span class="swipe-arrow swipe-arrow-right"><i class="fas fa-chevron-right"></i></span>
+                </div>
+                <div class="swipe-selector" id="swipe-chart-tab">
+                    <span class="swipe-arrow swipe-arrow-left"><i class="fas fa-chevron-left"></i></span>
+                    <div class="swipe-label-wrap">
+                        <span class="swipe-label" id="swipe-chart-label">Синглови</span>
+                        <span class="swipe-dots" id="swipe-chart-dots"></span>
+                    </div>
+                    <span class="swipe-arrow swipe-arrow-right"><i class="fas fa-chevron-right"></i></span>
+                </div>
             </div>
             <!-- Week navigator -->
             <div class="week-navigator" id="week-navigator">
@@ -2616,6 +2746,7 @@
             localStorage.removeItem('mmm-global-compact');
             if (window.innerWidth <= 600) {
                 initMobileChartTabs();
+                initMobileSwipeRow();
             }
         }
         
@@ -2651,6 +2782,196 @@
                     }
                 });
             }
+        }
+        
+        // ── Mobile swipe-row logic ──
+        function initMobileSwipeRow() {
+            const swipeRow = document.getElementById('mobile-swipe-row');
+            if (!swipeRow) return;
+
+            // Preset options available on mobile
+            const presetOpts = Array.from(document.querySelectorAll('.preset-btn'))
+                .map(b => ({
+                    key: b.dataset.preset,
+                    label: () => b.querySelector('span')?.textContent || b.dataset.preset
+                }));
+
+            // Chart tab options
+            const tabOpts = Array.from(document.querySelectorAll('.mobile-chart-tab')).map(b => ({
+                key: b.dataset.chartTab,
+                label: () => b.querySelector('span')?.textContent || b.dataset.chartTab
+            }));
+
+            let presetIdx = 0;
+            let tabIdx = 0;
+
+            const presetSel  = document.getElementById('swipe-preset');
+            const tabSel     = document.getElementById('swipe-chart-tab');
+            const presetLbl  = document.getElementById('swipe-preset-label');
+            const tabLbl     = document.getElementById('swipe-chart-label');
+            const presetDots = document.getElementById('swipe-preset-dots');
+            const tabDots    = document.getElementById('swipe-chart-dots');
+
+            // Build dot indicators
+            function buildDots(container, count, activeIdx) {
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const d = document.createElement('span');
+                    d.className = 'swipe-dot' + (i === activeIdx ? ' active' : '');
+                    container.appendChild(d);
+                }
+            }
+            function updateDots(container, activeIdx) {
+                container.querySelectorAll('.swipe-dot').forEach((d, i) =>
+                    d.classList.toggle('active', i === activeIdx));
+            }
+
+            buildDots(presetDots, presetOpts.length, presetIdx);
+            buildDots(tabDots, tabOpts.length, tabIdx);
+            presetLbl.textContent = presetOpts[presetIdx].label();
+            tabLbl.textContent    = tabOpts[tabIdx].label();
+
+            // Shared animation helper
+            function animateSwitch(labelEl, opts, newIdx, direction, cb) {
+                const out = direction === 'left' ? '-30px' : '30px';
+                const inp = direction === 'left' ? '30px'  : '-30px';
+                labelEl.style.transition = 'transform 0.15s ease-out, opacity 0.15s ease-out';
+                labelEl.style.transform  = 'translateX(' + out + ')';
+                labelEl.style.opacity    = '0';
+                setTimeout(function () {
+                    labelEl.textContent = opts[newIdx].label();
+                    labelEl.style.transition = 'none';
+                    labelEl.style.transform  = 'translateX(' + inp + ')';
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            labelEl.style.transition = 'transform 0.15s ease-out, opacity 0.15s ease-out';
+                            labelEl.style.transform  = 'translateX(0)';
+                            labelEl.style.opacity    = '1';
+                            cb(newIdx);
+                        });
+                    });
+                }, 150);
+            }
+
+            // Wire swipe + arrow-click for a selector
+            function wireSelector(container, labelEl, dotsEl, opts, getIdx, apply) {
+                var startX = 0, startY = 0, dragging = false, dx = 0;
+                var THRESHOLD = 40;
+
+                container.addEventListener('touchstart', function (e) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    dragging = true; dx = 0;
+                    labelEl.style.transition = 'none';
+                }, { passive: true });
+
+                container.addEventListener('touchmove', function (e) {
+                    if (!dragging) return;
+                    dx = e.touches[0].clientX - startX;
+                    var dy = e.touches[0].clientY - startY;
+                    if (Math.abs(dy) > Math.abs(dx) + 8) {
+                        dragging = false;
+                        labelEl.style.transform = '';
+                        labelEl.style.opacity   = '';
+                        return;
+                    }
+                    var tx = dx * 0.4;
+                    labelEl.style.transform = 'translateX(' + tx + 'px)';
+                    labelEl.style.opacity   = Math.max(0.3, 1 - Math.abs(dx) / 200);
+                }, { passive: true });
+
+                container.addEventListener('touchend', function () {
+                    if (!dragging) return;
+                    dragging = false;
+                    var idx = getIdx();
+                    if (dx < -THRESHOLD && idx < opts.length - 1) {
+                        animateSwitch(labelEl, opts, idx + 1, 'left', function (ni) {
+                            apply(ni); updateDots(dotsEl, ni);
+                        });
+                    } else if (dx > THRESHOLD && idx > 0) {
+                        animateSwitch(labelEl, opts, idx - 1, 'right', function (ni) {
+                            apply(ni); updateDots(dotsEl, ni);
+                        });
+                    } else {
+                        labelEl.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+                        labelEl.style.transform  = '';
+                        labelEl.style.opacity    = '';
+                    }
+                });
+
+                // Arrow clicks
+                container.querySelector('.swipe-arrow-left').addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var idx = getIdx();
+                    if (idx <= 0) return;
+                    animateSwitch(labelEl, opts, idx - 1, 'right', function (ni) {
+                        apply(ni); updateDots(dotsEl, ni);
+                    });
+                });
+                container.querySelector('.swipe-arrow-right').addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var idx = getIdx();
+                    if (idx >= opts.length - 1) return;
+                    animateSwitch(labelEl, opts, idx + 1, 'left', function (ni) {
+                        apply(ni); updateDots(dotsEl, ni);
+                    });
+                });
+            }
+
+            // Preset swipe
+            wireSelector(presetSel, presetLbl, presetDots, presetOpts,
+                function () { return presetIdx; },
+                function (ni) {
+                    presetIdx = ni;
+                    var btn = document.querySelector('.preset-btn[data-preset="' + presetOpts[ni].key + '"]');
+                    if (btn) btn.click();
+                    updateTabVisibility();
+                });
+
+            // Chart-tab swipe
+            wireSelector(tabSel, tabLbl, tabDots, tabOpts,
+                function () { return tabIdx; },
+                function (ni) {
+                    tabIdx = ni;
+                    var btn = document.querySelector('.mobile-chart-tab[data-chart-tab="' + tabOpts[ni].key + '"]');
+                    if (btn) btn.click();
+                });
+
+            function updateTabVisibility() {
+                var preset = presetOpts[presetIdx].key;
+                var hide = preset === 'advanced' || preset === 'alltime' || preset === 'artists';
+                tabSel.style.display = hide ? 'none' : '';
+            }
+            updateTabVisibility();
+
+            // Hint animation on first load
+            setTimeout(function () {
+                presetSel.classList.add('hint');
+                tabSel.classList.add('hint');
+                setTimeout(function () {
+                    presetSel.classList.remove('hint');
+                    tabSel.classList.remove('hint');
+                }, 1800);
+            }, 800);
+
+            // Expose sync hooks so external code can update labels
+            window._syncSwipePreset = function (presetKey) {
+                var ni = presetOpts.findIndex(function (o) { return o.key === presetKey; });
+                if (ni !== -1 && ni !== presetIdx) {
+                    presetIdx = ni;
+                    presetLbl.textContent = presetOpts[ni].label();
+                    updateDots(presetDots, ni);
+                    updateTabVisibility();
+                }
+            };
+            window._syncSwipeTab = function (tabKey) {
+                var ni = tabOpts.findIndex(function (o) { return o.key === tabKey; });
+                if (ni !== -1 && ni !== tabIdx) {
+                    tabIdx = ni;
+                    tabLbl.textContent = tabOpts[ni].label();
+                    updateDots(tabDots, ni);
+                }
+            };
         }
         
         const chartIcons = {
@@ -3825,12 +4146,7 @@
                 
                 const { chart, genre, city } = currentFilters;
 
-                if (window.innerWidth <= 600 && (chart === 'alltime' || chart === 'artists')) {
-                    currentFilters = { chart: 'standard', genre: genre || 'all', city: city || 'all' };
-                    syncPresetButtons(genre === 'alt' ? 'alt' : 'toplista');
-                    syncAdvancedButtons();
-                    return applyFilters();
-                }
+
                 
                 // For city filtering, fall back to client-side computation using raw releases
                 const useCityFilter = city !== 'all';
@@ -3888,6 +4204,14 @@
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = 'none';
+                        document.getElementById('artists-cumulative-section').classList.add('mobile-active');
+                        ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(id => 
+                            document.getElementById(id)?.classList.remove('mobile-active'));
+                    }
+                    
                     const cumulativeArtists = siteMaster.artistCumulativeRanking || [];
                     
                     document.getElementById('artists-cumulative-period').textContent = t('charts.cumulativeLabel');
@@ -3912,6 +4236,7 @@
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = 'none';
                         document.getElementById('artists-section').classList.add('mobile-active');
+                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
                         ['singles-section', 'albums-section', 'latest-section'].forEach(id => 
                             document.getElementById(id)?.classList.remove('mobile-active'));
                     }
@@ -3976,6 +4301,7 @@
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = '';
                         document.getElementById('artists-section').classList.remove('mobile-active');
+                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
                         const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
                         const activeChart = activeTab?.dataset?.chartTab || 'singles';
                         ['singles', 'albums', 'latest'].forEach(key => {
@@ -4046,6 +4372,7 @@
                 document.querySelectorAll('.preset-btn').forEach(b => {
                     b.classList.toggle('active', b.dataset.preset === activePreset);
                 });
+                if (window._syncSwipePreset) window._syncSwipePreset(activePreset);
             }
 
             // Map preset names to clean URLs

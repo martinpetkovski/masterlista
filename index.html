@@ -2462,22 +2462,18 @@
                 max-height: calc(4 * 1.65rem);
             }
 
-            /* Mini-chart: allow title to wrap up to 2 lines, smaller views */
+            /* Mini-chart: single-line, auto-fit font size via JS */
             .mini-chart-title {
-                white-space: normal;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
+                white-space: nowrap;
                 overflow: hidden;
+                text-overflow: ellipsis;
                 font-size: 1rem;
                 line-height: 1.2;
             }
             .mini-chart-artist {
-                white-space: normal;
-                display: -webkit-box;
-                -webkit-line-clamp: 1;
-                -webkit-box-orient: vertical;
+                white-space: nowrap;
                 overflow: hidden;
+                text-overflow: ellipsis;
                 font-size: 0.85rem;
             }
             .mini-chart-pop {
@@ -3186,6 +3182,33 @@
 
             loading.style.display = 'none';
             container.style.display = '';
+            fitMiniChartText(container);
+        }
+
+        // Auto-fit song title & artist name to available width
+        function fitMiniChartText(container) {
+            requestAnimationFrame(function() {
+                var items = container.querySelectorAll('.mini-chart-info');
+                items.forEach(function(info) {
+                    var title = info.querySelector('.mini-chart-title');
+                    var artist = info.querySelector('.mini-chart-artist');
+                    if (title) fitTextToWidth(title, 0.6);
+                    if (artist) fitTextToWidth(artist, 0.5);
+                });
+            });
+        }
+        function fitTextToWidth(el, minRem) {
+            // Read the CSS-defined font size as our starting (max) value
+            var computed = parseFloat(getComputedStyle(el).fontSize);
+            var rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+            var maxRem = computed / rootSize;
+            var size = maxRem;
+            // Reset any previous override
+            el.style.fontSize = '';
+            while (size > minRem && el.scrollWidth > el.clientWidth + 1) {
+                size = Math.round((size - 0.05) * 100) / 100;
+                el.style.fontSize = size + 'rem';
+            }
         }
 
         function renderMainChart() {
