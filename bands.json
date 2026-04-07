@@ -1,4 +1,4 @@
-﻿{
+{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -6992,8 +6992,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#ca9bf0",
+        "#ff92ff"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb81dd2d5d0431d0af5075892b",
       "imageSource": "spotify",
       "spotifyName": "Thea Trajkovska"
