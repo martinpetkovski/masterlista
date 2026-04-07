@@ -251,14 +251,14 @@ function getSinglesChart(all, count, filter, bands) {
   return pool.slice(0,count);
 }
 
-function getWeekLabel() {
-  const n=new Date(), j4=new Date(n.getFullYear(),0,4);
+function getWeekLabel(refDate) {
+  const n=refDate?new Date(refDate):new Date(), j4=new Date(n.getFullYear(),0,4);
   const doy=Math.ceil((n-new Date(n.getFullYear(),0,1))/86400000);
   return `W${String(Math.ceil((doy+j4.getDay())/7)).padStart(2,'0')} ${n.getFullYear()}`;
 }
 
-function getDateRangeLabel() {
-  const n=new Date(), d=(n.getDay()+6)%7;
+function getDateRangeLabel(refDate) {
+  const n=refDate?new Date(refDate):new Date(), d=(n.getDay()+6)%7;
   const s=new Date(n); s.setDate(s.getDate()-d);
   const e=new Date(s); e.setDate(e.getDate()+6);
   const mo=['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
@@ -337,12 +337,12 @@ async function makeCollage(releases, outPath) {
 //  SEGMENT: INTRO  (collage bg, logo + title in the lower dark portion)
 // ============================================================================
 
-function makeIntro(collagePath, outputPath, audioSrcPath) {
+function makeIntro(collagePath, outputPath, audioSrcPath, refDate) {
   logStep('Generating intro...');
   const d = INTRO_DUR;
   const chartTitle = isAlt ? `${CYR_ALT} ${CYR_TOP}` : CYR_TOPLISTA;
   const subtitle = isAlt ? '' : CYR_TOP;
-  const dateLabel = getDateRangeLabel();
+  const dateLabel = getDateRangeLabel(refDate);
   const hasLogo = fs.existsSync(LOGO_PATH);
 
   const inp = ['-loop','1','-i',collagePath];
@@ -850,7 +850,7 @@ async function main() {
   const top3 = top20.slice(0,3);
   if (top3.length<3) { logErr(`Need 3 singles, got ${top3.length}`); process.exit(1); }
 
-  const weekLabel = specificWeek ? `${specificWeek} ${new Date().getFullYear()}` : getWeekLabel();
+  const weekLabel = specificWeek ? `${specificWeek} ${new Date().getFullYear()}` : getWeekLabel(chartData.generatedAt);
   logStep(`Chart: ${chartMode.toUpperCase()} | ${weekLabel}`);
   for (let i=0;i<top3.length;i++) {
     console.log(`  \x1b[33m#${i+1}\x1b[0m ${top3[i].bandName} \u2014 ${top3[i].releaseTitle}  \x1b[90m(pop:${top3[i].popularity})\x1b[0m`);
@@ -895,7 +895,7 @@ async function main() {
 
   // 1. Intro (audio: song #3 LPF)
   const introPath = path.join(TEMP_DIR, 'seg-intro.mp4');
-  makeIntro(collagePath, introPath, ytPaths[2]);
+  makeIntro(collagePath, introPath, ytPaths[2], chartData.generatedAt);
   segments.push(introPath);
 
   // 2. Glitch → Clip for each song (ORDER: 3rd → 2nd → 1st place)

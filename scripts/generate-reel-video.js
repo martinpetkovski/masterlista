@@ -159,6 +159,29 @@ function fmtViews(n) {
   return String(n);
 }
 
+function ytDuration(id) {
+  try {
+    const r = spawnSync(YTDLP, [
+      `https://www.youtube.com/watch?v=${id}`,
+      '--print', 'duration', '--no-warnings', '--no-playlist',
+      '--socket-timeout', '15',
+    ], { stdio: ['pipe', 'pipe', 'pipe'], timeout: 30000, windowsHide: true });
+    if (r.status === 0) return parseFloat(r.stdout.toString().trim()) || 0;
+  } catch {}
+  return 0;
+}
+
+function topVideo(tracks, maxDur = 400) {
+  if (!tracks || !tracks.length) return null;
+  const sorted = [...tracks].sort((a, b) => (b.views || 0) - (a.views || 0));
+  for (const t of sorted) {
+    const d = ytDuration(t.videoId);
+    if (d <= 0 || d <= maxDur) return t;
+    logDim(`Skipping ${t.videoId} (${Math.round(d)}s > ${maxDur}s)`);
+  }
+  return sorted[0]; // fallback if all exceed limit
+}
+
 function ease(s, d) { return `max(0\\,(1-pow(max(0\\,1-min(1\\,(t-${s})/${d}))\\,2.5)))`; }
 
 function staticBg(inputLabel) {
@@ -821,7 +844,7 @@ async function modeReleaseRadar() {
   const clips = [];
   for (let i = 0; i < Math.min(3, recent.length); i++) {
     const r = recent[i];
-    const vid = r.youtubeTracks?.[0]?.videoId || '';
+    const vid = topVideo(r.youtubeTracks)?.videoId || '';
     const ytP = path.join(TEMP_DIR, `release-${i}.mp4`);
     let ok = false;
     if (vid) ok = ytDownloadById(vid, ytP);
@@ -919,7 +942,7 @@ async function modeEvents() {
         r.bandName === name && r.youtubeTracks && r.youtubeTracks.length > 0
       );
       if (rel) {
-        const vid = rel.youtubeTracks[0].videoId;
+        const vid = topVideo(rel.youtubeTracks).videoId;
         const ytP = path.join(TEMP_DIR, `event-clip-${artistClips.length}.mp4`);
         let ok = ytDownloadById(vid, ytP);
         if (!ok) ok = ytDownload(`${name} ${rel.releaseTitle}`, ytP);
@@ -1009,7 +1032,7 @@ async function modeArtist() {
   if (videoId) {
     hasVideo = ytDownloadById(videoId, ytPath);
   } else if (topTrack) {
-    hasVideo = ytDownloadById(topTrack.youtubeTracks[0].videoId, ytPath);
+    hasVideo = ytDownloadById(topVideo(topTrack.youtubeTracks).videoId, ytPath);
   }
   if (!hasVideo && topTrack) {
     hasVideo = ytDownload(`${artistName} ${topTrack.releaseTitle} official`, ytPath);

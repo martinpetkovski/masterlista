@@ -232,25 +232,75 @@ async function main() {
     if (fs.existsSync(VIDEO_DIR)) fs.rmSync(VIDEO_DIR, { recursive: true, force: true });
     ensureDir(VIDEO_DIR);
 
-    // Extract scene metadata (videoIds + timing)
+    // Extract scene metadata (videoIds + timing + alternative videos)
     const sceneMeta = await page.evaluate(() => {
       const scenes = window.__currentScenes || [];
       let t = 0;
       return scenes.map(s => {
         const start = t;
         t += (s.duration || 4);
-        return { type: s.type, videoId: s.videoId || null, startSec: start, duration: s.duration || 4 };
+        // Collect alternative video IDs sorted by views (most popular first)
+        let altIds = [];
+        if (s.youtubeTracks && s.youtubeTracks.length > 0) {
+          altIds = s.youtubeTracks.slice().sort((a, b) => (b.views || 0) - (a.views || 0)).map(t => t.videoId).filter(Boolean);
+        } else if (s.altVideoIds) {
+          altIds = s.altVideoIds;
+        }
+        return { type: s.type, videoId: s.videoId || null, altVideoIds: altIds, startSec: start, duration: s.duration || 4 };
       });
     });
 
     const clipScenes = sceneMeta.filter(s => s.videoId);
     const sortedClips = clipScenes.slice().sort((a, b) => a.startSec - b.startSec);
+
+    // Build a map of alternative video IDs per scene videoId
+    const altMap = new Map();
+    for (const s of clipScenes) {
+      if (s.altVideoIds && s.altVideoIds.length > 0 && !altMap.has(s.videoId)) {
+        altMap.set(s.videoId, s.altVideoIds.filter(id => id !== s.videoId));
+      }
+    }
+
+    // Resolve video IDs: skip videos longer than 400s, try alternatives
+    const MAX_VIDEO_DUR = 400;
+    const resolvedVideoMap = new Map(); // original videoId -> { id, chorusStart }
     const videoIds = [...new Set(sortedClips.map(s => s.videoId))];
     logStep(`Found ${videoIds.length} video clips to download`);
 
+    for (const vid of videoIds) {
+      const candidates = [vid, ...(altMap.get(vid) || [])];
+      let picked = null;
+      for (const candidate of candidates) {
+        logStep(`Fetching info for ${candidate}...`);
+        const { start, duration } = getChorusTimestamp(candidate);
+        if (duration <= MAX_VIDEO_DUR) {
+          picked = { id: candidate, chorusStart: start };
+          break;
+        }
+        logStep(`  Skipping ${candidate} (${Math.round(duration)}s > ${MAX_VIDEO_DUR}s limit)`);
+      }
+      if (!picked) {
+        // Fallback to original if all too long
+        logStep(`  All alternatives too long, falling back to ${vid}`);
+        const { start } = getChorusTimestamp(vid);
+        picked = { id: vid, chorusStart: start };
+      }
+      resolvedVideoMap.set(vid, picked);
+    }
+
+    // Replace videoIds in sortedClips with resolved ones
+    for (const clip of sortedClips) {
+      const resolved = resolvedVideoMap.get(clip.videoId);
+      if (resolved && resolved.id !== clip.videoId) {
+        logOk(`Swapped ${clip.videoId} \u2192 ${resolved.id}`);
+        clip.videoId = resolved.id;
+      }
+    }
+    const resolvedVideoIds = [...new Set(sortedClips.map(s => s.videoId))];
+
     // Calculate how much audio each clip needs (its scene + surrounding LPF territory)
     const clipNeedSec = {};
-    for (const vid of videoIds) clipNeedSec[vid] = 0;
+    for (const vid of resolvedVideoIds) clipNeedSec[vid] = 0;
     for (let i = 0; i < sortedClips.length; i++) {
       const c = sortedClips[i];
       const territoryStart = i === 0 ? 0 : c.startSec;
@@ -269,9 +319,9 @@ async function main() {
     // Download each clip from its chorus region + extract frames
     const videoFrameMap = {};
     const downloadedIds = new Set();
-    for (const vid of videoIds) {
-      logStep(`Fetching info for ${vid}...`);
-      const { start: chorusStart } = getChorusTimestamp(vid);
+    for (const vid of resolvedVideoIds) {
+      const resolved = [...resolvedVideoMap.values()].find(r => r.id === vid);
+      const chorusStart = resolved ? resolved.chorusStart : 0;
       const clipLen = Math.ceil(Math.max(clipNeedSec[vid] || 10, 10) + 2);
       const outFile = path.join(VIDEO_DIR, `${vid}.mp4`);
       logStep(`Downloading ${vid} @ ${chorusStart}s (${clipLen}s)...`);
@@ -308,6 +358,20 @@ async function main() {
 
     // Inject the frame map into the page
     if (Object.keys(videoFrameMap).length > 0) {
+      // Also update scene videoIds in the page to match resolved ones
+      const videoSwaps = {};
+      for (const [origId, resolved] of resolvedVideoMap) {
+        if (resolved.id !== origId) videoSwaps[origId] = resolved.id;
+      }
+      if (Object.keys(videoSwaps).length > 0) {
+        await page.evaluate((swaps) => {
+          const scenes = window.__currentScenes || [];
+          for (const s of scenes) {
+            if (s.videoId && swaps[s.videoId]) s.videoId = swaps[s.videoId];
+          }
+        }, videoSwaps);
+        logOk(`Updated ${Object.keys(videoSwaps).length} scene videoIds in page`);
+      }
       await page.evaluate((map) => { window.__videoFrameMap = map; }, videoFrameMap);
       logOk(`Injected ${Object.keys(videoFrameMap).length} video frame maps`);
     }

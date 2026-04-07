@@ -545,19 +545,13 @@ foreach ($file in $historyFiles) {
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
 # Get previous week's data for viewsDelta calculation (current views - prev views)
-# Chart-history is only updated on Mondays by the YouTube script, so index 0
-# (the most recent snapshot) is the proper baseline for weekly delta calculation.
-# On Monday, chart-history index 0 was just written with the same views as chart-data.json,
-# so deltas would all be 0. Use index 1 (the week before) to get meaningful deltas.
+# Always use the most recent chart-history snapshot (index 0) as baseline.
+# viewsDelta = chart-data.json views (today) - most recent history week views
 $previousWeekReleases = @()
 $viewsDeltaPrevIndex = 0
-if ([datetime]::Now.DayOfWeek -eq [System.DayOfWeek]::Monday -and $chartHistoryWeeks.Count -gt 1) {
-    $viewsDeltaPrevIndex = 1
-    Write-Host "  > Monday detected — using previous week (index 1) for viewsDelta baseline" -ForegroundColor Cyan
-}
-if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
-    $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
-    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
+if ($chartHistoryWeeks.Count -gt 0) {
+    $previousWeekReleases = $chartHistoryWeeks[0].releases
+    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[0].weekId)" -ForegroundColor DarkGray
 }
 
 # For chevron indicators: compare the two most recent chart-history snapshots
@@ -994,6 +988,24 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
 }
 
 Write-Host "  > Pre-computed charts for $($allWeekIds.Count) historical weeks" -ForegroundColor DarkGray
+
+# Extract reel charts from the most recent historical week (for reels.html)
+$reelChartsData = $null
+if ($allWeekIds.Count -gt 0) {
+    $latestWeekId = $allWeekIds[$allWeekIds.Count - 1]
+    $latestWeekData = $weeklyChartsComputed[$latestWeekId]
+    $reelChartsOutput = [ordered]@{}
+    foreach ($key in $latestWeekData.charts.Keys | Sort-Object) {
+        $reelChartsOutput[$key] = @($latestWeekData.charts[$key])
+    }
+    $reelChartsData = [PSCustomObject]@{
+        weekId      = $latestWeekId
+        generatedAt = $latestWeekData.generatedAt
+        dateRange   = $latestWeekData.dateRange
+        charts      = $reelChartsOutput
+    }
+    Write-Host "  > Reel charts: $latestWeekId (generated $($latestWeekData.generatedAt))" -ForegroundColor DarkGray
+}
 
 # ============================================================================
 #  2. BUILD CHART HISTORY MAP (for tooltips, per-release weekly positions)
@@ -1934,6 +1946,9 @@ $siteMaster = [PSCustomObject]@{
     
     # Pre-ranked charts: keys like "all_single", "alt_album", etc.
     charts = $chartsOutput
+    
+    # Reel charts: last week's chart from most recent chart-history (for reels.html)
+    reelCharts = $reelChartsData
     
     # Per-release chart history (for tooltips), keyed by genre
     releaseHistory = $historyMapOutput

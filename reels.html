@@ -1027,7 +1027,6 @@ const DATA = {
   bands: null,
   events: null,
   chartGenres: null,
-  chartHistory: [],
   loaded: false
 };
 
@@ -1053,15 +1052,6 @@ async function loadAllData() {
     DATA.bands = bands.muzickaMasterLista || bands;
     DATA.events = events.events || events;
     DATA.chartGenres = chartGenres;
-
-    // Load latest chart history
-    const historyFiles = ['chart-2026-W14.json', 'chart-2026-W13.json', 'chart-2026-W12.json', 'chart-2026-W11.json'];
-    for (const f of historyFiles) {
-      try {
-        const h = await loadJSON(`chart-history/${f}`);
-        DATA.chartHistory.push({ weekId: f.replace('chart-','').replace('.json',''), data: h });
-      } catch {}
-    }
 
     try { DATA.igDesc = await loadJSON('instagram-desc.json'); } catch { DATA.igDesc = null; }
     DATA.loaded = true;
@@ -1092,6 +1082,11 @@ function getBandByName(name) {
   return DATA.bands.find(b => b.name === name || b.spotifyName === name);
 }
 
+function topVideoId(tracks) {
+  if (!tracks || !tracks.length) return '';
+  return tracks.slice().sort((a, b) => (b.views || 0) - (a.views || 0))[0].videoId || '';
+}
+
 function mergeCollabs(rels) {
   const m = new Map();
   for (const r of rels) {
@@ -1106,8 +1101,9 @@ function mergeCollabs(rels) {
 }
 
 function getChartForMode(mode) {
-  const sm = DATA.siteMaster;
-  if (!sm || !sm.charts) return [];
+  // Use reelCharts (last week's chart from chart-history) for reel content
+  const rc = DATA.siteMaster?.reelCharts;
+  if (!rc || !rc.charts) return [];
 
   // Determine key
   let key;
@@ -1115,10 +1111,10 @@ function getChartForMode(mode) {
   else if (mode === 'alt') key = 'alt_single';
   else key = 'all_single';
 
-  const chart = sm.charts[key];
+  const chart = rc.charts[key];
   if (!chart || !chart.length) return [];
 
-  // Merge with releases data for full info
+  // Merge with releases data for full info (thumbnails, youtubeTracks)
   const relMap = new Map();
   for (const r of DATA.releases.releases) {
     relMap.set(r.releaseId, r);
@@ -1130,15 +1126,15 @@ function getChartForMode(mode) {
       position: entry.position || (i + 1),
       positionChange: entry.positionChange || 0,
       isNewEntry: entry.isNewEntry || false,
-      releaseTitle: rel.releaseTitle || entry.releaseTitle || '?',
-      bandName: rel.bandName || entry.bandName || '?',
-      thumbnail: rel.thumbnail || '',
+      releaseTitle: entry.releaseTitle || rel.releaseTitle || '?',
+      bandName: entry.bandName || rel.bandName || '?',
+      thumbnail: entry.thumbnail || rel.thumbnail || '',
       releaseId: entry.releaseId,
-      youtubeViews: rel.youtubeViews || entry.youtubeViews || 0,
+      youtubeViews: entry.youtubeViews || 0,
       viewsDelta: entry.viewsDelta || 0,
       youtubeTracks: rel.youtubeTracks || [],
-      artistId: rel.artistId || '',
-      releaseDate: rel.releaseDate || '',
+      artistId: entry.artistId || rel.artistId || '',
+      releaseDate: entry.releaseDate || rel.releaseDate || '',
     };
   });
 }
@@ -1329,16 +1325,16 @@ function getDeeperCut(forceId) {
 //  DATE HELPERS
 // ═══════════════════════════════════════════════════════════════════════
 
-function getWeekLabel() {
-  const n = new Date(); n.setDate(n.getDate() - 7);
+function getWeekLabel(refDate) {
+  const n = refDate ? new Date(refDate) : new Date(); n.setDate(n.getDate() - 7);
   const j4 = new Date(n.getFullYear(), 0, 4);
   const doy = Math.ceil((n - new Date(n.getFullYear(), 0, 1)) / 86400000);
   const wk = Math.ceil((doy + j4.getDay()) / 7);
   return `W${String(wk).padStart(2, '0')} ${n.getFullYear()}`;
 }
 
-function getDateRange() {
-  const n = new Date(); n.setDate(n.getDate() - 7); const d = (n.getDay() + 6) % 7;
+function getDateRange(refDate) {
+  const n = refDate ? new Date(refDate) : new Date(); n.setDate(n.getDate() - 7); const d = (n.getDay() + 6) % 7;
   const s = new Date(n); s.setDate(s.getDate() - d);
   const e = new Date(s); e.setDate(e.getDate() + 6);
   const mo = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
@@ -1820,6 +1816,7 @@ function buildMondayScenes() {
   const chart = getChartForMode('standard');
   const thumbs = getChartThumbs(chart);
   const top3 = chart.slice(0, 3);
+  const chartDate = DATA.siteMaster?.reelCharts?.generatedAt;
 
   const scenes = [];
 
@@ -1827,7 +1824,7 @@ function buildMondayScenes() {
   scenes.push({
     type: 'intro',
     lines: ['Топ Листа'],
-    date: getDateRange(),
+    date: getDateRange(chartDate),
     covers: thumbs.slice(0, 3),
     bg: createCollageBG(thumbs),
     duration: 2.5
@@ -1836,7 +1833,7 @@ function buildMondayScenes() {
   // Top 3 clips in reverse order
   for (let i = 2; i >= 0; i--) {
     const entry = top3[i];
-    const videoId = entry.youtubeTracks?.[0]?.videoId || '';
+    const videoId = topVideoId(entry.youtubeTracks);
     scenes.push({
       type: 'clip',
       rank: i + 1,
@@ -1844,6 +1841,7 @@ function buildMondayScenes() {
       artist: entry.bandName,
       thumbnail: entry.thumbnail,
       videoId,
+      youtubeTracks: entry.youtubeTracks || [],
       bg: createCollageBG(thumbs),
       duration: 6
     });
@@ -1872,13 +1870,14 @@ function buildTuesdayScenes() {
   const chart = getChartForMode('alt');
   const thumbs = getChartThumbs(chart);
   const top3 = chart.slice(0, 3);
+  const chartDate = DATA.siteMaster?.reelCharts?.generatedAt;
 
   const scenes = [];
 
   scenes.push({
     type: 'intro',
     lines: ['Алт', 'Топ', 'Листа'],
-    date: getDateRange(),
+    date: getDateRange(chartDate),
     covers: thumbs.slice(0, 3),
     bg: createCollageBG(thumbs),
     duration: 2.5
@@ -1886,7 +1885,7 @@ function buildTuesdayScenes() {
 
   for (let i = 2; i >= 0; i--) {
     const entry = top3[i];
-    const videoId = entry.youtubeTracks?.[0]?.videoId || '';
+    const videoId = topVideoId(entry.youtubeTracks);
     scenes.push({
       type: 'clip',
       rank: i + 1,
@@ -1894,6 +1893,7 @@ function buildTuesdayScenes() {
       artist: entry.bandName,
       thumbnail: entry.thumbnail,
       videoId,
+      youtubeTracks: entry.youtubeTracks || [],
       bg: createCollageBG(thumbs),
       duration: 6
     });
@@ -1950,7 +1950,8 @@ function buildWednesdayScenes() {
       songTitle: r.releaseTitle,
       artist: r.bandName,
       thumbnail: r.thumbnail,
-      videoId: r.youtubeTracks[0].videoId,
+      videoId: topVideoId(r.youtubeTracks),
+      youtubeTracks: r.youtubeTracks || [],
       bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
       duration: 6
     });
@@ -1970,7 +1971,7 @@ function buildThursdayScenes(forcedSong) {
   if (!song) return { scenes: [], data: null, label: 'Throwback Thursday (no candidates)' };
 
   const thumbs = [song.thumbnail].filter(Boolean);
-  const videoId = song.youtubeTracks?.[0]?.videoId || '';
+  const videoId = topVideoId(song.youtubeTracks);
   const band = getBandByName(song.bandName);
 
   const scenes = [];
@@ -1992,6 +1993,7 @@ function buildThursdayScenes(forcedSong) {
     releaseDate: song.releaseDate,
     views: song.youtubeViews,
     videoId,
+    youtubeTracks: song.youtubeTracks || [],
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
     duration: 5
   });
@@ -2005,6 +2007,7 @@ function buildThursdayScenes(forcedSong) {
       artist: song.bandName,
       thumbnail: song.thumbnail,
       videoId,
+      youtubeTracks: song.youtubeTracks || [],
       bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
       duration: 6
     });
@@ -2056,13 +2059,14 @@ function buildFridayScenes() {
   }
 
   artistClips.forEach((clip, i) => {
-    const videoId = clip.youtubeTracks?.[0]?.videoId || '';
+    const videoId = topVideoId(clip.youtubeTracks);
     scenes.push({
       type: 'event-clip',
       songTitle: clip.releaseTitle,
       artist: clip.bandName,
       thumbnail: clip.thumbnail,
       videoId,
+      youtubeTracks: clip.youtubeTracks || [],
       eventName: clip.eventName,
       eventPlace: clip.eventPlace,
       eventDate: clip.eventDate,
@@ -2119,6 +2123,7 @@ function buildSaturdayScenes(forcedArtist) {
       artist: aotw.name,
       thumbnail: topSong.thumbnail,
       videoId: topSong.videoId,
+      altVideoIds: aotw.songs.map(s => s.videoId).filter(Boolean),
       bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
       duration: 6
     });
@@ -2147,7 +2152,7 @@ function buildSundayScenes(forcedSong) {
   if (!song) return { scenes: [], data: null, label: 'Deeper Cut (no candidates)' };
 
   const thumbs = [song.thumbnail].filter(Boolean);
-  const videoId = song.videoId || song.youtubeTracks?.[0]?.videoId || '';
+  const videoId = song.videoId || topVideoId(song.youtubeTracks);
   const views = song.views || song.youtubeViews || 0;
 
   const scenes = [];
@@ -2170,6 +2175,7 @@ function buildSundayScenes(forcedSong) {
     artist: song.bandName,
     thumbnail: song.thumbnail,
     videoId,
+    youtubeTracks: song.youtubeTracks || [],
     releaseDate: song.releaseDate,
     views,
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
@@ -2778,12 +2784,13 @@ function switchDay(dayKey, opts) {
   totalDuration = currentScenes.reduce((sum, s) => sum + (s.duration || 4), 0);
 
   // Day info
+  const chartRef = (dayKey === 'mon' || dayKey === 'tue') ? DATA.siteMaster?.reelCharts?.generatedAt : undefined;
   const infoEl = document.getElementById('dayInfo');
   infoEl.innerHTML = `
     <div class="info-item"><div class="label">Тип</div><div class="value">${day.mk}</div></div>
     <div class="info-item"><div class="label">Сегменти</div><div class="value">${currentScenes.length} сцени</div></div>
     <div class="info-item"><div class="label">Траење</div><div class="value">~${totalDuration}s</div></div>
-    <div class="info-item"><div class="label">Недела</div><div class="value">${getWeekLabel()}</div></div>
+    <div class="info-item"><div class="label">Недела</div><div class="value">${getWeekLabel(chartRef)}</div></div>
   `;
 
   // Render preview
