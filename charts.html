@@ -2752,11 +2752,12 @@
             const container = document.getElementById('share-card-container');
             const now = new Date();
             
-            // Calculate chart week date range (Monday-Sunday)
+            // Calculate chart week date range (Monday-Sunday of previous week)
             const mkMonths = t('months.full');
             const d = new Date(now);
+            d.setDate(d.getDate() - 7);
             d.setHours(0, 0, 0, 0);
-            // Find Monday of the current ISO week
+            // Find Monday of the previous ISO week
             const dayOfWeek = d.getDay() || 7; // 1=Mon..7=Sun
             const monday = new Date(d);
             monday.setDate(d.getDate() - dayOfWeek + 1);
@@ -3231,7 +3232,8 @@
             }
             
             async function initWeekNavigator() {
-                const w = getISOWeek(new Date());
+                const prevWeekDate = new Date(); prevWeekDate.setDate(prevWeekDate.getDate() - 7);
+                const w = getISOWeek(prevWeekDate);
                 currentWeekId = formatWeekId(w.year, w.week);
                 
                 // Load pre-computed chart history data
@@ -3483,16 +3485,18 @@
                 const age = formatDataAge(generatedAt);
                 if (lastUpdated) lastUpdated.textContent = age || '...';
                 
-                // Populate week number in header
+                // Populate week number in header (previous week, since chart compares to prior week)
                 const headerWeek = document.getElementById('header-week');
                 if (headerWeek) {
-                    const w = getISOWeek(new Date());
+                    const prevWeekDate = new Date(); prevWeekDate.setDate(prevWeekDate.getDate() - 7);
+                    const w = getISOWeek(prevWeekDate);
                     headerWeek.textContent = `W${String(w.week).padStart(2, '0')} ${w.year}`;
                 }
                 // Populate week label in mobile chart tabs
                 const mobileWeek = document.getElementById('mobile-week-label');
                 if (mobileWeek) {
-                    const w2 = getISOWeek(new Date());
+                    const prevWeekDate2 = new Date(); prevWeekDate2.setDate(prevWeekDate2.getDate() - 7);
+                    const w2 = getISOWeek(prevWeekDate2);
                     mobileWeek.textContent = `W${String(w2.week).padStart(2, '0')}`;
                 }
             }
