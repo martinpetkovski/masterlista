@@ -2,6 +2,13 @@ name = "toplista-api"
 main = "src/api-worker.js"
 compatibility_date = "2024-01-01"
 
+# Custom domain: api.toplista.mk
+# Requires a CNAME or AAAA record in Cloudflare DNS pointing api.toplista.mk
+# to the worker (e.g. AAAA api -> 100:: proxied, or use Workers > Custom Domains).
+routes = [
+  { pattern = "api.toplista.mk/*", zone_id = "a1cd032f9d3b8024f397804a309a1f78" }
+]
+
 [vars]
 ORIGIN = "https://toplista.mk"
 CORS_ORIGINS = "https://toplista.mk,https://www.toplista.mk,https://www.najjak.com,https://martinpetkovski.github.io,http://localhost,http://127.0.0.1:5500"
