@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API | ТопЛиста.мк</title>
+
+    <!-- Primary SEO Meta Tags -->
+    <meta name="title" content="API | ТопЛиста.мк">
+    <meta name="description" content="Јавен API за пристап до податоците на ТопЛиста.мк — артисти, настани, изданија, листа и вести.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://toplista.mk/api">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/api">
+    <meta property="og:title" content="API | ТопЛиста.мк">
+    <meta property="og:description" content="Јавен API за пристап до податоците на ТопЛиста.мк.">
+    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/common.js?v=1"></script>
+    <script src="/i18n.js?v=1"></script>
+    <script src="mmm-drafts.js?v=1"></script>
+    <script src="/tour.js?v=1" defer></script>
+    <style>
+        .help-container {
+            max-width: 780px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .help-container h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 2rem 0 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .help-container h2:first-child {
+            margin-top: 0.5rem;
+        }
+
+        .help-container h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .help-container p {
+            font-size: 0.82rem;
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .help-container ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0;
+        }
+
+        .help-container li {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin: 0.35rem 0;
+        }
+
+        .help-container a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .help-container a:hover {
+            text-decoration: underline;
+        }
+
+        .help-container .logo-hero {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .help-container .logo-hero img {
+            width: 48px;
+            height: 48px;
+        }
+
+        .help-container .logo-hero .hero-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .help-container .version-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            background: var(--accent-blue);
+            color: #fff;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .help-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.82rem;
+        }
+
+        .help-container thead {
+            display: table-header-group;
+        }
+
+        .help-container tbody {
+            display: table-row-group;
+        }
+
+        .help-container tbody tr {
+            display: table-row;
+            background: transparent;
+            animation: none;
+            opacity: 1;
+            gap: 0;
+            transform: none;
+            content-visibility: visible;
+            contain: none;
+            contain-intrinsic-size: auto;
+        }
+
+        .help-container tbody tr:nth-child(even) {
+            background: transparent;
+        }
+
+        .help-container table th,
+        .help-container table td {
+            display: table-cell;
+            text-align: left;
+            vertical-align: top;
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            hyphens: auto;
+        }
+
+        .help-container table th {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .help-container table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .api-endpoint {
+            background: var(--bg-secondary, #f3f4f6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin: 0.75rem 0;
+        }
+
+        .dark-mode .api-endpoint {
+            background: var(--bg-secondary, #1e2028);
+        }
+
+        .api-method {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: #22c55e;
+            color: #fff;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            font-family: 'Inter', monospace;
+        }
+
+        .api-path {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .api-desc {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 0.4rem;
+        }
+
+        .api-params {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .api-params code {
+            background: var(--bg-tertiary, #e5e7eb);
+            padding: 0.1rem 0.35rem;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.73rem;
+        }
+
+        .dark-mode .api-params code {
+            background: var(--bg-tertiary, #2a2d38);
+        }
+
+        .api-example {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            margin: 0.5rem 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .api-example .comment { color: #6c7086; }
+        .api-example .string { color: #a6e3a1; }
+        .api-example .key { color: #89b4fa; }
+        .api-example .number { color: #fab387; }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #cdd6f4;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .endpoint-group {
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .help-container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+
+            .help-container h2 {
+                font-size: 0.95rem;
+            }
+
+            .help-container p,
+            .help-container li {
+                font-size: 0.78rem;
+            }
+
+            .api-path {
+                font-size: 0.78rem;
+            }
+
+            .api-example {
+                font-size: 0.68rem;
+            }
+        }
+    </style>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
+</head>
+<body class="compact guide-page">
+    <header id="site-header" data-active="/za" data-title="API"></header>
+    <script src="/load-header.js"></script>
+    <main>
+        <div class="help-container">
+            <div class="logo-hero">
+                <img src="/logo.png" alt="MMM">
+                <span class="hero-text">ТопЛиста.мк API <span class="version-badge">v1</span></span>
+            </div>
+
+            <h2><i class="fas fa-info-circle"></i> Преглед</h2>
+            <p>
+                Јавен REST API за пристап до податоците на ТопЛиста.мк.
+                Сите одговори се во JSON формат. Не е потребна автентикација.
+            </p>
+            <p>
+                Базен URL: <code>https://toplista-api.deeeeelay.workers.dev/api/v1</code>
+            </p>
+            <ul>
+                <li><strong>Формат:</strong> JSON</li>
+                <li><strong>Метод:</strong> Само GET</li>
+                <li><strong>Лимит:</strong> 60 барања/минута по IP</li>
+                <li><strong>Кеширање:</strong> Одговорите се кешираат 5 минути</li>
+                <li><strong>CORS:</strong> Вклучен за сите домени</li>
+            </ul>
+
+            <h2><i class="fas fa-arrows-left-right"></i> Пагинација</h2>
+            <p>
+                Ендпоинтите кои враќаат листи поддржуваат пагинација:
+            </p>
+            <table>
+                <thead>
+                    <tr><th>Параметар</th><th>Опис</th><th>Стандардно</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>limit</code></td><td>Максимален број резултати (1–200)</td><td>50</td></tr>
+                    <tr><td><code>offset</code></td><td>Почетна позиција</td><td>0</td></tr>
+                </tbody>
+            </table>
+            <p>Одговорот содржи <code>total</code>, <code>limit</code>, <code>offset</code> и <code>data</code> (низата со резултати).</p>
+
+            <!-- ==================== ARTISTS ==================== -->
+            <h2><i class="fas fa-users"></i> Артисти</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/artists</span>
+                    <div class="api-desc">Листа на артисти од базата, со филтрирање и пребарување.</div>
+                    <div class="api-params">
+                        <table>
+                            <thead><tr><th>Параметар</th><th>Опис</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>q</code></td><td>Пребарување (по име, град, жанр)</td></tr>
+                                <tr><td><code>city</code></td><td>Филтер по град (пр. <code>Скопје</code>)</td></tr>
+                                <tr><td><code>genre</code></td><td>Филтер по жанр (пр. <code>Rock</code>)</td></tr>
+                                <tr><td><code>confirmed</code></td><td><code>true</code> или <code>false</code> — верифицирани артисти</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: сите артисти од Битола со жанр Rock</span>
+GET /api/v1/artists?city=Битола&genre=Rock
+
+<span class="comment">// Одговор:</span>
+{
+  <span class="key">"total"</span>: <span class="number">3</span>,
+  <span class="key">"limit"</span>: <span class="number">50</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"name"</span>: <span class="string">"100REN"</span>,
+      <span class="key">"city"</span>: <span class="string">"Битола"</span>,
+      <span class="key">"genre"</span>: <span class="string">"Alternative Rock, Hardcore"</span>,
+      <span class="key">"links"</span>: { ... },
+      <span class="key">"confirmed"</span>: <span class="number">true</span>,
+      <span class="key">"image"</span>: <span class="string">"https://..."</span>
+    }
+  ]
+}</div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/artists/:slug</span>
+                    <div class="api-desc">Поединечен артист по slug (транслитерирано име).</div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: артист „Мизар" → slug „mizar"</span>
+GET /api/v1/artists/mizar
+
+<span class="comment">// Одговор:</span>
+{
+  <span class="key">"name"</span>: <span class="string">"Мизар"</span>,
+  <span class="key">"city"</span>: <span class="string">"Скопје"</span>,
+  <span class="key">"genre"</span>: <span class="string">"Progressive Rock"</span>,
+  <span class="key">"links"</span>: { <span class="key">"spotify"</span>: <span class="string">"..."</span>, <span class="key">"youtube"</span>: <span class="string">"..."</span> },
+  <span class="key">"confirmed"</span>: <span class="number">true</span>,
+  <span class="key">"image"</span>: <span class="string">"https://..."</span>
+}</div>
+            </div>
+
+            <!-- ==================== EVENTS ==================== -->
+            <h2><i class="fas fa-calendar-days"></i> Настани</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/events</span>
+                    <div class="api-desc">Листа на настани, со филтрирање по датум и артист.</div>
+                    <div class="api-params">
+                        <table>
+                            <thead><tr><th>Параметар</th><th>Опис</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>from</code></td><td>Почетен датум (пр. <code>2026-01-01</code>)</td></tr>
+                                <tr><td><code>to</code></td><td>Краен датум</td></tr>
+                                <tr><td><code>artist</code></td><td>Филтер по артист</td></tr>
+                                <tr><td><code>upcoming</code></td><td><code>true</code> — само идни настани</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: идни настани</span>
+GET /api/v1/events?upcoming=true
+
+<span class="comment">// Одговор:</span>
+{
+  <span class="key">"total"</span>: <span class="number">12</span>,
+  <span class="key">"limit"</span>: <span class="number">50</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"evt-20260801-..."</span>,
+      <span class="key">"title"</span>: <span class="string">"Расплет Фест Ден 1"</span>,
+      <span class="key">"date"</span>: <span class="string">"2025-08-01"</span>,
+      <span class="key">"time"</span>: <span class="string">"19:00"</span>,
+      <span class="key">"place"</span>: <span class="string">"Споменик на слободата, Кочани"</span>,
+      <span class="key">"artists"</span>: [<span class="string">"Корка"</span>, <span class="string">"Алембик"</span>]
+    }
+  ]
+}</div>
+            </div>
+
+            <!-- ==================== RELEASES ==================== -->
+            <h2><i class="fas fa-compact-disc"></i> Изданија</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/releases</span>
+                    <div class="api-desc">Изданија (синглови и албуми) од Spotify, со YouTube прегледи.</div>
+                    <div class="api-params">
+                        <table>
+                            <thead><tr><th>Параметар</th><th>Опис</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>artist</code></td><td>Филтер по артист (име на кирилица или латиница)</td></tr>
+                                <tr><td><code>type</code></td><td><code>single</code> или <code>album</code></td></tr>
+                                <tr><td><code>from</code></td><td>Почетен датум на издавање</td></tr>
+                                <tr><td><code>to</code></td><td>Краен датум на издавање</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: нови синглови од април 2026</span>
+GET /api/v1/releases?type=single&from=2026-04-01
+
+<span class="comment">// Одговор:</span>
+{
+  <span class="key">"total"</span>: <span class="number">15</span>,
+  <span class="key">"limit"</span>: <span class="number">50</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"bandName"</span>: <span class="string">"Мизар"</span>,
+      <span class="key">"releaseTitle"</span>: <span class="string">"Vardar e Stiks"</span>,
+      <span class="key">"releaseType"</span>: <span class="string">"single"</span>,
+      <span class="key">"releaseDate"</span>: <span class="string">"2026-04-07"</span>,
+      <span class="key">"thumbnail"</span>: <span class="string">"https://..."</span>,
+      <span class="key">"trackNames"</span>: [<span class="string">"Vardar e Stiks"</span>]
+    }
+  ]
+}</div>
+            </div>
+
+            <!-- ==================== GENRES ==================== -->
+            <h2><i class="fas fa-tags"></i> Жанрови</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/genres</span>
+                    <div class="api-desc">Листа на сите жанрови во базата.</div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button>GET /api/v1/genres
+
+<span class="comment">// Одговор: низа од жанрови</span>
+[<span class="string">"Acoustic"</span>, <span class="string">"Alternative"</span>, <span class="string">"Alternative Rock"</span>, <span class="string">"Blues"</span>, ...]</div>
+            </div>
+
+            <!-- ==================== CHART ==================== -->
+            <h2><i class="fas fa-chart-line"></i> Топ Листа</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/chart</span>
+                    <div class="api-desc">Тековна топ листа — податоци за рангирање (популарност, прегледи, следбеници).</div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button>GET /api/v1/chart
+
+<span class="comment">// Одговор: release-level chart data</span>
+{
+  <span class="key">"generatedAt"</span>: <span class="string">"2026-04-08T16:30:17Z"</span>,
+  <span class="key">"totalReleases"</span>: <span class="number">2603</span>,
+  <span class="key">"releases"</span>: [
+    {
+      <span class="key">"releaseId"</span>: <span class="string">"..."</span>,
+      <span class="key">"popularity"</span>: <span class="number">100</span>,
+      <span class="key">"followers"</span>: <span class="number">4598</span>,
+      <span class="key">"youtubeViews"</span>: <span class="number">121879</span>
+    }
+  ]
+}</div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/chart/genres</span>
+                    <div class="api-desc">Жанровски групи за листите (рап, електроника, рок, итн.).</div>
+                </div>
+            </div>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/chart/history/:week</span>
+                    <div class="api-desc">Историја на листата за одредена недела. Формат: <code>2026-W14</code>.</div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: листата за недела 14 од 2026</span>
+GET /api/v1/chart/history/2026-W14</div>
+            </div>
+
+            <!-- ==================== ARTICLES ==================== -->
+            <h2><i class="fas fa-newspaper"></i> Вести</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/articles</span>
+                    <div class="api-desc">Статии од македонски медиуми поврзани со артисти од базата.</div>
+                    <div class="api-params">
+                        <table>
+                            <thead><tr><th>Параметар</th><th>Опис</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>q</code></td><td>Пребарување (по наслов или опис)</td></tr>
+                                <tr><td><code>source</code></td><td>Филтер по извор (пр. <code>mono-ton</code>)</td></tr>
+                                <tr><td><code>from</code></td><td>Почетен датум</td></tr>
+                                <tr><td><code>to</code></td><td>Краен датум</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Пример: вести од mono-ton за април 2026</span>
+GET /api/v1/articles?source=mono-ton&from=2026-04-01
+
+<span class="comment">// Одговор:</span>
+{
+  <span class="key">"total"</span>: <span class="number">5</span>,
+  <span class="key">"limit"</span>: <span class="number">50</span>,
+  <span class="key">"offset"</span>: <span class="number">0</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"title"</span>: <span class="string">"SCOTT MCCLOUD"</span>,
+      <span class="key">"link"</span>: <span class="string">"https://..."</span>,
+      <span class="key">"date"</span>: <span class="string">"2026-04-20"</span>,
+      <span class="key">"source"</span>: <span class="string">"mono-ton"</span>
+    }
+  ]
+}</div>
+            </div>
+
+            <!-- ==================== CURATORS ==================== -->
+            <h2><i class="fas fa-headphones"></i> Кустоси</h2>
+
+            <div class="endpoint-group">
+                <div class="api-endpoint">
+                    <span class="api-method">GET</span>
+                    <span class="api-path">/api/v1/curators</span>
+                    <div class="api-desc">Листа на кустоси со нивните плејлисти и линкови.</div>
+                </div>
+                <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button>GET /api/v1/curators
+
+<span class="comment">// Одговор:</span>
+[
+  {
+    <span class="key">"name"</span>: <span class="string">"Теа Трајковска"</span>,
+    <span class="key">"image"</span>: <span class="string">"https://..."</span>,
+    <span class="key">"links"</span>: [<span class="string">"https://instagram.com/..."</span>],
+    <span class="key">"playlists"</span>: [<span class="string">"https://open.spotify.com/..."</span>]
+  }
+]</div>
+            </div>
+
+            <!-- ==================== STATIC JSON ==================== -->
+            <h2><i class="fas fa-database"></i> Директен пристап до JSON</h2>
+            <p>
+                Ако не ви треба филтрирање — податоците може директно да ги преземете:
+            </p>
+            <table>
+                <thead>
+                    <tr><th>Датотека</th><th>Опис</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="/bands.json" target="_blank">bands.json</a></td>
+                        <td>Целосна база на артисти</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/events.json" target="_blank">events.json</a></td>
+                        <td>Сите настани</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/releases.json" target="_blank">releases.json</a></td>
+                        <td>Сите изданија со YouTube видеа</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/genres.json" target="_blank">genres.json</a></td>
+                        <td>Листа на жанрови</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/chart-data.json" target="_blank">chart-data.json</a></td>
+                        <td>Тековни податоци за листата</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/chart-genres.json" target="_blank">chart-genres.json</a></td>
+                        <td>Жанровски групи за листите</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/articles.json" target="_blank">articles.json</a></td>
+                        <td>Вести (~21,000+ статии)</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/curators.json" target="_blank">curators.json</a></td>
+                        <td>Кустоси</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- ==================== EXAMPLES ==================== -->
+            <h2><i class="fas fa-code"></i> Примери</h2>
+
+            <h3>JavaScript (fetch)</h3>
+            <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="comment">// Земи ги сите артисти од Скопје со жанр Rap</span>
+<span class="key">const</span> resp = <span class="key">await</span> fetch(<span class="string">'https://toplista-api.deeeeelay.workers.dev/api/v1/artists?city=Скопје&genre=Rap'</span>);
+<span class="key">const</span> { data, total } = <span class="key">await</span> resp.json();
+console.log(<span class="string">`Најдени: ${total} артисти`</span>);</div>
+
+            <h3>Python</h3>
+            <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button><span class="key">import</span> requests
+
+resp = requests.get(<span class="string">'https://toplista-api.deeeeelay.workers.dev/api/v1/events'</span>, params={<span class="string">'upcoming'</span>: <span class="string">'true'</span>})
+events = resp.json()[<span class="string">'data'</span>]
+
+<span class="key">for</span> e <span class="key">in</span> events:
+    print(f<span class="string">"{e['date']} — {e['title']}"</span>)</div>
+
+            <h3>curl</h3>
+            <div class="api-example"><button class="copy-btn" onclick="copyExample(this)"><i class="fas fa-copy"></i></button>curl <span class="string">"https://toplista-api.deeeeelay.workers.dev/api/v1/releases?type=single&limit=5"</span></div>
+
+            <!-- ==================== ERRORS ==================== -->
+            <h2><i class="fas fa-triangle-exclamation"></i> Грешки</h2>
+            <table>
+                <thead>
+                    <tr><th>Код</th><th>Опис</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>400</code></td><td>Погрешно барање</td></tr>
+                    <tr><td><code>404</code></td><td>Не е најдено (артист, недела, итн.)</td></tr>
+                    <tr><td><code>405</code></td><td>Метод не е дозволен (само GET)</td></tr>
+                    <tr><td><code>429</code></td><td>Премногу барања (макс. 60/мин)</td></tr>
+                    <tr><td><code>502</code></td><td>Податоците не се достапни</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ==================== LICENSE ==================== -->
+            <h2><i class="fas fa-scale-balanced"></i> Лиценца</h2>
+            <p>
+                Податоците се лиценцирани со
+                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>.
+                Слободно користете со наведување на изворот (ТопЛиста.мк).
+            </p>
+            <p>
+                <a href="/za"><i class="fas fa-arrow-left"></i> Назад кон „За проектот"</a>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        function copyExample(btn) {
+            var block = btn.parentElement;
+            var text = block.textContent.replace(btn.textContent, '').trim();
+            navigator.clipboard.writeText(text).then(function() {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i>'; }, 1500);
+            });
+        }
+
+        // Settings menu + nav menu from common.js
+        initSettingsMenu();
+        initNavMenu();
+    </script>
+</body>
+</html>
