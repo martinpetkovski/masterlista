@@ -4247,8 +4247,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#ff0000",
+        "#990000"
+      ],
+      "confirmed": true,
       "image": "https://yt3.googleusercontent.com/YccKLbmueLlZ6ILTIwxn71OHcau43voMfElGmlUDL2vBcbT6dAjc-jIHffHCIeMaVVtk8kPqwtg=s900-c-k-c0x00ffffff-no-rj",
       "imageSource": "release"
     },
