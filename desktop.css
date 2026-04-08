@@ -2363,20 +2363,38 @@ th.edit-hidden, td.edit-hidden, .action-buttons { display: table-cell; }
 /* Settings language select — same style as streaming service select */
 .settings-lang-select {
     width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 2px solid var(--border-color, #dfe1e5);
+    padding: 0.55rem 0.75rem;
+    border: 2px solid var(--border-color, rgba(0,0,0,0.1));
     border-radius: 0;
     background: transparent;
     color: var(--text-primary, #333);
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
 }
-
 .settings-lang-select:focus {
     border-color: var(--accent-blue, #4a7fa5);
+}
+body.dark-mode .settings-lang-select {
+    color: var(--text-primary, #e8e8f0);
+    border-color: var(--border-color, rgba(255,255,255,0.1));
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+}
+.settings-lang-select option {
+    background: var(--bg-primary, #fff);
+    color: var(--text-primary, #333);
+}
+body.dark-mode .settings-lang-select option {
+    background: var(--bg-secondary, #1a1d24);
+    color: var(--text-primary, #e8e8f0);
 }
 
 /* ==================== SHARE POPUP ==================== */
@@ -3276,8 +3294,7 @@ body.dark-mode .settings-service-btn:hover {
 body.dark-mode .settings-service-select {
     color: var(--text-primary, #e8e8f0);
     border-color: var(--border-color, rgba(255,255,255,0.1));
-    background-color: transparent;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
 }
 .settings-service-select option {
     background: var(--bg-primary, #fff);
