@@ -280,13 +280,13 @@
         .dash-card-header .more-link {
             font-size: 0.75rem;
             font-weight: 600;
-            color: #FFF;
+            color: #000;
             text-decoration: none;
             white-space: nowrap;
             padding: 0.25rem 0.65rem;
             border-radius: 0;
-            border: thin solid #333 !important;
-            background: #000;
+            border: none !important;
+            background: transparent;
             transition: 0.12s ease;
             letter-spacing: 0.2px;
             cursor: pointer;
@@ -307,8 +307,8 @@
             height: 28px;
             min-height: 28px;
             padding: 0;
-            background: #000;
-            color: #fff;
+            background: transparent;
+            color: #000;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -317,7 +317,7 @@
             z-index: 1;
             overflow: visible;
             cursor: pointer;
-            border: thin solid #333 !important;
+            border: none !important;
             border-radius: 0;
             font-family: inherit;
             font-size: 0.75rem;
@@ -334,6 +334,7 @@
         }
 
         .dash-card-header .more-link:hover {
+            background: rgba(0, 0, 0, 0.06);
             filter: brightness(1.2);
             box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
             text-decoration: none;
@@ -350,6 +351,7 @@
         }
 
         .shuffle-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
             filter: brightness(1.2);
             box-shadow: 0 0 10px rgba(255,255,255,0.12);
         }
@@ -359,16 +361,25 @@
         }
 
         body.dark-mode .dash-card-header .more-link {
-            border-color: #fff;
-            color: #000;
-            background: #fff;
+            color: #fff;
+            background: transparent;
         }
 
         body.dark-mode .dash-card-header .more-link::before {
             background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
         }
         body.dark-mode .dash-card-header .more-link:hover {
+            background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 12px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .shuffle-btn {
+            background: transparent;
+            color: #fff;
+        }
+
+        body.dark-mode .shuffle-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .dash-card-header-actions .card-action-btn {
@@ -377,10 +388,10 @@
             justify-content: center;
             min-height: 28px;
             padding: 0.25rem 0.65rem;
-            border: 1px solid #000;
+            border: none;
             border-radius: 0;
-            background: #000;
-            color: #fff;
+            background: transparent;
+            color: #000;
             text-decoration: none;
             white-space: nowrap;
             position: relative;
@@ -389,7 +400,7 @@
         }
 
         .dash-card-header-actions .card-action-btn + .card-action-btn {
-            margin-left: -1px;
+            margin-left: 0;
         }
 
         .dash-card-header-actions .card-action-btn::before {
@@ -403,6 +414,7 @@
         }
 
         .dash-card-header-actions .card-action-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
             filter: brightness(1.2);
             box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
             text-decoration: none;
@@ -424,9 +436,13 @@
         }
 
         body.dark-mode .dash-card-header-actions .card-action-btn {
-            background: #000;
-            border-color: #000;
+            background: transparent;
+            border: none;
             color: #fff;
+        }
+
+        body.dark-mode .dash-card-header-actions .card-action-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         body.dark-mode .dash-card-header-actions .card-action-btn::before {
@@ -1790,9 +1806,9 @@
             font-family: 'Inter', sans-serif;
             font-size: 0.7rem;
             font-weight: 600;
-            border: 2px solid #000;
-            background: #000;
-            color: #fff;
+            border: none;
+            background: transparent;
+            color: #000;
             cursor: pointer;
             transition: filter 0.12s ease, box-shadow 0.12s ease;
             white-space: nowrap;
@@ -1813,6 +1829,7 @@
         }
 
         .verify-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
             filter: brightness(1.2);
             box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
         }
@@ -2214,8 +2231,8 @@
             font-size: 0.72rem;
             font-weight: 700;
             color: #FFF;
-            background: #000;
-            border: 2px solid #000;
+            background: transparent;
+            border: none;
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
@@ -2239,6 +2256,7 @@
         }
 
         .title-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
             filter: brightness(1.2);
             box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
         }
@@ -2256,9 +2274,9 @@
         }
 
         body.dark-mode .title-nav-btn {
-            background: #fff;
-            border-color: #fff;
-            color: #000;
+            background: transparent;
+            border: none;
+            color: #fff;
         }
         body.dark-mode .title-nav-btn::before {
             background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
@@ -2274,8 +2292,6 @@
             justify-content: center;
             line-height: 1.2;
             min-height: calc(1.2em + 0.6rem + 4px);
-        }
-        body.dark-mode .title-nav-lang-btn {
         }
 
         /* On desktop the lang button sits right after .title-nav (last flex item) */
@@ -2517,14 +2533,15 @@
         }
 
         body.dark-mode .verify-btn {
-            border-color: #fff;
-            background: #fff;
-            color: #000;
+            border: none;
+            background: transparent;
+            color: #fff;
         }
         body.dark-mode .verify-btn::before {
             background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
         }
         body.dark-mode .verify-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 12px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.1);
         }
 
@@ -2567,7 +2584,7 @@
         .spotify-playlist-link { display: inline-flex; align-items: center; gap: 0.25rem; color: #1DB954; font-size: 0.7rem; font-weight: 500; text-decoration: none; opacity: 0.85; transition: opacity 0.15s; margin-right: 0.5rem; }
         .spotify-playlist-link:hover { opacity: 1; }
         .spotify-playlist-link i { font-size: 1.4rem; }
-        .dash-card-header-actions .spotify-playlist-link.card-action-btn { color: #fff; opacity: 1; padding-inline: 0.5rem; margin-right: 0; gap: 0; }
+        .dash-card-header-actions .spotify-playlist-link.card-action-btn { color: inherit; opacity: 1; padding-inline: 0.5rem; margin-right: 0; gap: 0; }
         .dash-card-header-actions .spotify-playlist-link.card-action-btn i { font-size: 1rem; color: #1DB954; }
     </style>
     <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?');location.href=(q>0?h.substring(0,q):h)+'.html'+(q>0?h.substring(q):'');}});</script>
