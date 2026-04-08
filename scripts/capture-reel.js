@@ -43,12 +43,14 @@ const argv = process.argv.slice(2);
 let mode = null;
 let forcedArtist = null;
 let forcedSong = null;
+let forcedReleases = null;
 let uploadOnly = false;
 let uploadFile = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === '--mode' && argv[i + 1]) mode = argv[++i];
   if (argv[i] === '--artist' && argv[i + 1]) forcedArtist = argv[++i];
   if (argv[i] === '--song' && argv[i + 1]) forcedSong = argv[++i];
+  if (argv[i] === '--releases' && argv[i + 1]) forcedReleases = argv[++i];
   if (argv[i] === '--upload') {
     uploadOnly = true;
     // Next arg is file path only if it doesn't start with --
@@ -214,7 +216,7 @@ async function main() {
 
   // â”€â”€ 3. Load page (real time â€” data fetches, init, switchDay) â”€â”€
   logS('LOADING PAGE');
-  const url = `http://127.0.0.1:${port}/reels.html?capture=${mode}${forcedArtist ? '&artist=' + encodeURIComponent(forcedArtist) : ''}${forcedSong ? '&song=' + encodeURIComponent(forcedSong) : ''}`;
+  const url = `http://127.0.0.1:${port}/reels.html?capture=${mode}${forcedArtist ? '&artist=' + encodeURIComponent(forcedArtist) : ''}${forcedSong ? '&song=' + encodeURIComponent(forcedSong) : ''}${forcedReleases ? '&releases=' + encodeURIComponent(forcedReleases) : ''}`;
   logStep(url);
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
   // Wait for fonts to fully load

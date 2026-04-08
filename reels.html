@@ -810,12 +810,12 @@ body {
   background: rgba(0,0,0,0.7);
   padding: 3px 6px;
   opacity: 0; transform: translateX(-20px); filter: blur(8px);
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--gold);
   position: relative;
 }
 .release-card-item::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(37,99,235,0.1) 0%, transparent 40%);
+  background: linear-gradient(90deg, rgba(255,215,0,0.1) 0%, transparent 40%);
   pointer-events: none;
 }
 .release-card-item.show { animation: rowSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
@@ -838,10 +838,12 @@ body {
   overflow-wrap: break-word; word-wrap: break-word;
 }
 .release-card-item .rel-type {
-  font-size: 8px; padding: 2px 6px; background: var(--accent);
+  font-size: 8px; padding: 2px 6px;
   color: white; font-weight: 700; text-transform: uppercase; flex-shrink: 0;
   letter-spacing: 1px;
 }
+  .release-card-item .rel-type.type-single { background: var(--gold); color: #000; }
+  .release-card-item .rel-type.type-album { background: var(--red); color: #fff; }
 
 /* throwback / deeper cut large display */
 .song-showcase {
@@ -892,7 +894,8 @@ body {
 .badge-throwback { background: linear-gradient(135deg, var(--purple), #5b21b6); color: white; box-shadow: 0 0 16px rgba(124,58,237,0.6); }
 .badge-deeper { background: linear-gradient(135deg, var(--pink), #be185d); color: white; box-shadow: 0 0 16px rgba(236,72,153,0.6); }
 .badge-artist { background: linear-gradient(135deg, var(--accent), #1d4ed8); color: white; box-shadow: 0 0 16px rgba(37,99,235,0.6); }
-.badge-release { background: linear-gradient(135deg, var(--green), #15803d); color: white; box-shadow: 0 0 16px rgba(22,163,74,0.6); }
+.badge-release { background: var(--gold); color: #000; box-shadow: 0 0 16px rgba(255,215,0,0.6); position: relative; overflow: hidden; }
+.badge-release::after { content: ''; position: absolute; top: 0; bottom: 0; width: 60%; left: -60%; background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.45) 35%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.45) 65%, transparent 100%); animation: badgeShine 3s 0.5s linear infinite; }
 .badge-events { background: linear-gradient(135deg, var(--red), #b91c1c); color: white; box-shadow: 0 0 16px rgba(239,68,68,0.6); }
 
 /* Searchable select */
@@ -908,6 +911,45 @@ body {
   background: #1e1e2e; color: #e0e0e0; border: 1px solid #333;
   border-radius: 4px; font-size: 12px;
 }
+
+/* Wednesday release picker */
+.wed-selected-list {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 10px; padding: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  min-height: 36px;
+}
+.wed-selected-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 6px; background: rgba(37,99,235,0.15);
+  border: 1px solid var(--accent); font-size: 12px;
+}
+.wed-selected-item img { width: 28px; height: 28px; object-fit: cover; flex-shrink: 0; }
+.wed-selected-item .wsi-meta { flex: 1; min-width: 0; }
+.wed-selected-item .wsi-title { font-weight: 700; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wed-selected-item .wsi-sub { font-size: 9px; color: var(--text2); }
+.wed-selected-item button {
+  background: none; border: none; color: var(--text2); cursor: pointer;
+  font-size: 14px; padding: 0 3px; line-height: 1;
+}
+.wed-selected-item button:hover { color: var(--text); }
+.wed-selected-empty { font-size: 11px; color: var(--muted); text-align: center; padding: 4px; }
+.release-pick-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.release-pick-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.release-pick-item:hover { background: var(--surface2); }
+.release-pick-item.picked { opacity: 0.4; pointer-events: none; }
+.release-pick-item img { width: 28px; height: 28px; object-fit: cover; flex-shrink: 0; }
+.release-pick-item .rpi-meta { flex: 1; min-width: 0; }
+.release-pick-item .rpi-title { font-size: 11px; font-weight: 700; }
+.release-pick-item .rpi-sub { font-size: 9px; color: var(--text2); }
 
 /* Responsive */
 @media (max-width: 900px) {
@@ -991,6 +1033,15 @@ body {
           <button class="copy-btn" style="position:static; margin-top:2px; font-size:11px;" onclick="applyCustomDeeperCut()">▶ Примени</button>
         </div>
       </details>
+    </div>
+
+    <div class="panel-card" id="wedReleasePickerCard" style="display:none;">
+      <h3>Избери 3 Нови Изданија</h3>
+      <div class="wed-selected-list" id="wedSelectedList"><div class="wed-selected-empty">Избери изданија од листата подолу</div></div>
+      <div class="searchable-select">
+        <input type="text" class="search-input" id="wedReleaseSearch" placeholder="Пребарувај..." autocomplete="off">
+      </div>
+      <div class="release-pick-list" id="wedReleaseList"></div>
     </div>
 
     <div class="panel-card">
@@ -1146,8 +1197,7 @@ function getRecentReleases(daysBack = 7) {
 
   return mergeCollabs(DATA.releases.releases)
     .filter(r => r.releaseDate >= cutStr)
-    .sort((a, b) => (b.youtubeViews || 0) - (a.youtubeViews || 0))
-    .slice(0, 10);
+    .sort((a, b) => (b.youtubeViews || 0) - (a.youtubeViews || 0));
 }
 
 function getThrowbackCandidates() {
@@ -1346,6 +1396,30 @@ function formatDateMK(dateStr) {
   const d = new Date(dateStr);
   const mo = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
   return `${d.getDate()} ${mo[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function daysAgoMK(dateStr) {
+  const rd = new Date(dateStr);
+  const now = new Date();
+  rd.setHours(0,0,0,0); now.setHours(0,0,0,0);
+  const diffDays = Math.round((now - rd) / 86400000);
+  if (diffDays <= 0) return 'денес';
+  if (diffDays === 1) return 'пред 1 ден';
+  return `пред ${diffDays} дена`;
+}
+
+function getWedDateRange() {
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const dow = now.getDay();
+  const daysUntilWed = (3 - dow + 7) % 7;
+  const thisWed = new Date(now);
+  thisWed.setDate(now.getDate() + (daysUntilWed === 0 ? 0 : daysUntilWed));
+  const lastWed = new Date(thisWed);
+  lastWed.setDate(thisWed.getDate() - 7);
+  const mo = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+  const f = x => `${String(x.getDate()).padStart(2,'0')} ${mo[x.getMonth()]}`;
+  return `${f(lastWed)} – ${f(thisWed)} ${thisWed.getFullYear()}`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1547,6 +1621,23 @@ function renderClip(container, data) {
   const rkTop = !isNaN(rkNum) && rkNum >= 1 && rkNum <= 3;
   const rkCls = rkTop ? 'r' + rkNum : '';
   const rkStyle = rkTop ? '' : (String(data.rank) === 'ТБТ' ? 'background:var(--purple);font-size:14px;' : String(data.rank) === 'DC' ? 'background:var(--pink);font-size:16px;' : String(data.rank) === '★' ? 'background:var(--accent);' : 'background:#000;');
+
+  // Days-ago badge for Wednesday clips (replaces rank number)
+  const daysAgoLabel = data.showDaysAgo && data.releaseDate ? daysAgoMK(data.releaseDate) : '';
+  let badgeHtml = '';
+  if (daysAgoLabel) {
+    const rd = new Date(data.releaseDate); const nw = new Date(); rd.setHours(0,0,0,0); nw.setHours(0,0,0,0);
+    const diff = Math.round((nw - rd) / 86400000);
+    if (diff <= 0) {
+      badgeHtml = `<div class="clip-rank" style="background:var(--gold);font-size:9px;line-height:1.1;text-align:center;padding:2px;">денес</div>`;
+    } else {
+      const unit = diff === 1 ? 'ден' : 'дена';
+      badgeHtml = `<div class="clip-rank" style="background:var(--gold);font-size:7px;line-height:1;text-align:center;padding:1px;flex-direction:column;"><span>пред</span><span style="font-size:18px;line-height:1;">${diff}</span><span>${unit}</span></div>`;
+    }
+  } else if (data.rank) {
+    badgeHtml = `<div class="clip-rank ${rkCls}" style="${rkStyle}">${data.rank}</div>`;
+  }
+
   container.innerHTML = `
     <div class="clip-wrapper">
       <div class="video-window ${hasFrames || hasVideo ? 'has-video' : ''}">
@@ -1554,14 +1645,14 @@ function renderClip(container, data) {
         <div class="play-icon"></div>
       </div>
       <div class="clip-info">
-        <div class="clip-rank ${rkCls}" style="${rkStyle}">${data.rank}</div>
+        ${badgeHtml}
         <div class="clip-meta">
           <div class="clip-title">${escHtml(data.songTitle || '')}</div>
           <div class="clip-artist">${escHtml(data.artist || '')}</div>
         </div>
       </div>
-      ${data.releaseDate || data.views ? `<div style="width:82%; display:flex; gap:10px; align-items:center; padding:6px 0 0; opacity:0; animation: slideUp 0.4s 0.7s forwards;">
-        ${data.releaseDate ? `<div style="display:inline-block; padding:3px 10px; background:var(--gold); color:#000; transform:skewX(-8deg); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.5px;">${formatDateMK(data.releaseDate)}</div>` : ''}
+      ${(data.releaseDate && !data.showDaysAgo) || data.views ? `<div style="width:82%; display:flex; gap:10px; align-items:center; padding:6px 0 0; opacity:0; animation: slideUp 0.4s 0.7s forwards;">
+        ${data.releaseDate && !data.showDaysAgo ? `<div style="display:inline-block; padding:3px 10px; background:var(--gold); color:#000; transform:skewX(-8deg); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.5px;">${formatDateMK(data.releaseDate)}</div>` : ''}
         ${data.views ? `<div style="font-size:11px; color:var(--gold); font-weight:700;">${formatViews(data.views)} прегледи</div>` : ''}
       </div>` : ''}
     </div>
@@ -1610,31 +1701,18 @@ function renderOutro(container, data) {
 }
 
 function renderReleaseRadar(container, data) {
-  const dayNames = ['Недела','Понеделник','Вторник','Среда','Четврток','Петок','Сабота'];
   container.innerHTML = `
     <div class="chart-header" style="margin-bottom: 4px; display:flex; align-items:center; justify-content:center; gap:0;">
-      <span class="showcase-badge badge-release" style="opacity:1; animation:none; font-size:12px;">НОВИ ИЗДАНИЈА<br><span style="font-weight:400; letter-spacing:1px; opacity:0.7; font-size:9px;">${data.dateRange || ''}</span></span>
+      <span class="showcase-badge badge-release" style="opacity:1; animation:none; font-size:12px;">НОВИ ИЗДАНИЈА<br><span style="font-weight:400; letter-spacing:1px; opacity:0.8; font-size:9px;">${data.dateRange || ''}</span></span>
     </div>
   `;
   const cards = document.createElement('div');
   cards.className = 'release-cards';
 
-  (data.releases || []).slice(0, 10).forEach((r, i) => {
+  (data.releases || []).forEach((r, i) => {
     const card = document.createElement('div');
     card.className = 'release-card-item';
-    const rd = r.releaseDate ? new Date(r.releaseDate) : null;
-    const now = new Date();
-    const dayName = rd ? dayNames[rd.getDay()] : '';
-    const dateStr = rd ? `${rd.getDate()}.${rd.getMonth()+1}` : '';
-    let agoStr = '';
-    if (rd) {
-      const diffDays = Math.round((now - rd) / 86400000);
-      if (diffDays === 0) agoStr = 'денес';
-      else if (diffDays === 1) agoStr = 'пред 1 ден';
-      else if (diffDays > 1) agoStr = `пред ${diffDays} дена`;
-    }
-    const dateParts = [dayName, dateStr].filter(Boolean).join(' ');
-    const dateLabel = [dateParts, agoStr].filter(Boolean).join(' · ');
+    const dateLabel = r.releaseDate ? daysAgoMK(r.releaseDate) : '';
     const typeLabel = (r.releaseType || 'single') === 'album' ? 'Албум' : 'Сингл';
     card.innerHTML = `
       <img src="${r.thumbnail || ''}" alt="">
@@ -1643,7 +1721,7 @@ function renderReleaseRadar(container, data) {
         <div class="rel-artist">${escHtml(r.bandName || '')}</div>
         ${dateLabel ? `<div style="font-size:8px; margin-top:1px;"><span style="display:inline-block; background:rgba(255,255,255,0.15); padding:1px 6px; border-radius:2px; font-weight:700; font-stretch:expanded; letter-spacing:0.5px; color:var(--text);">${dateLabel}</span></div>` : ''}
       </div>
-      <div class="rel-type">${typeLabel}</div>
+      <div class="rel-type type-${(r.releaseType || 'single')}">${typeLabel}</div>
     `;
     setTimeout(() => card.classList.add('show'), (data._startMs || 0) + 200 + i * 150);
     cards.appendChild(card);
@@ -1916,9 +1994,14 @@ function buildTuesdayScenes() {
   return { scenes, data: chart, label: 'Алтернативен Топ' };
 }
 
-function buildWednesdayScenes() {
-  const releases = getRecentReleases(7).slice(0, 10);
+function buildWednesdayScenes(selectedReleases) {
+  const releases = getRecentReleases(7);
   const thumbs = releases.map(r => r.thumbnail).filter(Boolean);
+
+  // Determine clip releases for intro covers
+  const clipReleases = selectedReleases && selectedReleases.length ? selectedReleases
+    : releases.filter(r => r.youtubeTracks && r.youtubeTracks.length > 0).slice(0, 3);
+  const coverThumbs = clipReleases.map(r => r.thumbnail).filter(Boolean);
 
   const scenes = [];
 
@@ -1926,35 +2009,44 @@ function buildWednesdayScenes() {
     type: 'intro',
     title: 'Нови',
     subtitle: 'Изданија',
-    date: getDateRange(),
-    covers: thumbs.slice(0, 3),
+    date: getWedDateRange(),
+    covers: coverThumbs,
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
     duration: 2.5
   });
 
-  // Full release radar list
-  scenes.push({
-    type: 'release-radar',
-    dateRange: getDateRange(),
-    releases,
-    bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
-    duration: 5
-  });
-
-  // Video preview clips for releases with YouTube tracks (top 3)
-  const releasesWithVideo = releases.filter(r => r.youtubeTracks && r.youtubeTracks.length > 0);
-  releasesWithVideo.slice(0, 3).forEach((r, i) => {
+  // Video preview clips for selected releases (or top 3 with video)
+  clipReleases.forEach((r, i) => {
     scenes.push({
       type: 'clip',
-      rank: String(i + 1),
       songTitle: r.releaseTitle,
       artist: r.bandName,
       thumbnail: r.thumbnail,
       videoId: topVideoId(r.youtubeTracks),
       youtubeTracks: r.youtubeTracks || [],
+      releaseDate: r.releaseDate,
+      showDaysAgo: true,
       bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
       duration: 6
     });
+  });
+
+  // Full release radar list — max 2 per artist, cap at 12
+  const radarReleases = [];
+  const artistCount = new Map();
+  for (const r of releases) {
+    const cnt = artistCount.get(r.bandName) || 0;
+    if (cnt >= 2) continue;
+    artistCount.set(r.bandName, cnt + 1);
+    radarReleases.push(r);
+    if (radarReleases.length >= 12) break;
+  }
+  scenes.push({
+    type: 'release-radar',
+    dateRange: getWedDateRange(),
+    releases: radarReleases,
+    bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
+    duration: 5
   });
 
   scenes.push({
@@ -1963,7 +2055,7 @@ function buildWednesdayScenes() {
     duration: 2.5
   });
 
-  return { scenes, data: releases, label: 'Нови Изданија' };
+  return { scenes, data: releases, clipReleases, label: 'Нови Изданија' };
 }
 
 function buildThursdayScenes(forcedSong) {
@@ -2380,8 +2472,11 @@ function generatePSCommand(dayKey) {
       break;
     }
     case 'wed': {
-      if (!data || !data.length) return `<span class="comment"># No new releases this week</span>`;
-      const lines = data.slice(0, 3).map((r, i) => `#   ${i+1}. ${r.bandName} – ${r.releaseTitle}`);
+      const clips = dayResult.clipReleases || [];
+      if (!clips.length) return `<span class="comment"># No new releases selected</span>`;
+      const ids = clips.map(r => r.releaseId).filter(Boolean);
+      args += ` <span class="param">--releases</span> <span class="string">"${sanitizePS(ids.join(','))}"</span>`;
+      const lines = clips.map((r, i) => `#   ${i+1}. ${r.bandName} – ${r.releaseTitle}`);
       info = lines.map(l => '<span class="comment">' + l + '</span>').join('\n');
       break;
     }
@@ -2689,6 +2784,117 @@ function filterSelect(wrapId) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+//  WEDNESDAY RELEASE PICKER
+// ═══════════════════════════════════════════════════════════════════════
+
+let wedAllReleases = [];
+let wedSelectedIndices = [];
+
+function populateWedReleasePicker(preserveSelection) {
+  const releases = getRecentReleases(7);
+  wedAllReleases = releases;
+  const list = document.getElementById('wedReleaseList');
+  const search = document.getElementById('wedReleaseSearch');
+
+  if (!preserveSelection) {
+    // Default: pick first 3 with video
+    const withVideo = releases.map((r, i) => ({ r, i })).filter(x => x.r.youtubeTracks && x.r.youtubeTracks.length > 0);
+    wedSelectedIndices = withVideo.slice(0, 3).map(x => x.i);
+  }
+
+  renderWedPickerList();
+  renderWedSelectedList();
+
+  search.value = '';
+  search.oninput = () => {
+    const q = search.value.toLowerCase().trim();
+    list.querySelectorAll('.release-pick-item').forEach(item => {
+      const text = item.querySelector('.rpi-meta').textContent.toLowerCase();
+      item.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  };
+}
+
+function renderWedPickerList() {
+  const list = document.getElementById('wedReleaseList');
+  list.innerHTML = '';
+  wedAllReleases.forEach((r, i) => {
+    const isPicked = wedSelectedIndices.includes(i);
+    const item = document.createElement('div');
+    item.className = 'release-pick-item' + (isPicked ? ' picked' : '');
+    const ago = r.releaseDate ? daysAgoMK(r.releaseDate) : '';
+    item.innerHTML = `
+      <img src="${r.thumbnail || ''}" alt="">
+      <div class="rpi-meta">
+        <div class="rpi-title">${escHtml(r.bandName)} \u2013 ${escHtml(r.releaseTitle)}</div>
+        <div class="rpi-sub">${ago}</div>
+      </div>
+    `;
+    if (!isPicked && wedSelectedIndices.length < 3) {
+      item.onclick = () => wedAddRelease(i);
+    } else if (!isPicked) {
+      item.style.cursor = 'not-allowed';
+    }
+    list.appendChild(item);
+  });
+}
+
+function renderWedSelectedList() {
+  const sel = document.getElementById('wedSelectedList');
+  sel.innerHTML = '';
+  if (!wedSelectedIndices.length) {
+    sel.innerHTML = '<div class="wed-selected-empty">Избери изданија од листата подолу</div>';
+    return;
+  }
+  wedSelectedIndices.forEach((ri, pos) => {
+    const r = wedAllReleases[ri];
+    const ago = r.releaseDate ? daysAgoMK(r.releaseDate) : '';
+    const item = document.createElement('div');
+    item.className = 'wed-selected-item';
+    item.innerHTML = `
+      <img src="${r.thumbnail || ''}" alt="">
+      <div class="wsi-meta">
+        <div class="wsi-title">${escHtml(r.bandName)} \u2013 ${escHtml(r.releaseTitle)}</div>
+        <div class="wsi-sub">${ago}</div>
+      </div>
+      <button title="Нагоре" data-action="up" ${pos === 0 ? 'disabled style="opacity:0.3"' : ''}>▲</button>
+      <button title="Надолу" data-action="down" ${pos === wedSelectedIndices.length - 1 ? 'disabled style="opacity:0.3"' : ''}>▼</button>
+      <button title="Отстрани" data-action="remove" style="color:var(--red);">✕</button>
+    `;
+    item.querySelectorAll('button').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const action = btn.dataset.action;
+        if (action === 'up' && pos > 0) {
+          [wedSelectedIndices[pos], wedSelectedIndices[pos - 1]] = [wedSelectedIndices[pos - 1], wedSelectedIndices[pos]];
+        } else if (action === 'down' && pos < wedSelectedIndices.length - 1) {
+          [wedSelectedIndices[pos], wedSelectedIndices[pos + 1]] = [wedSelectedIndices[pos + 1], wedSelectedIndices[pos]];
+        } else if (action === 'remove') {
+          wedSelectedIndices.splice(pos, 1);
+        }
+        renderWedSelectedList();
+        renderWedPickerList();
+        wedFireChange();
+      };
+    });
+    sel.appendChild(item);
+  });
+}
+
+function wedAddRelease(idx) {
+  if (wedSelectedIndices.length >= 3 || wedSelectedIndices.includes(idx)) return;
+  wedSelectedIndices.push(idx);
+  renderWedSelectedList();
+  renderWedPickerList();
+  wedFireChange();
+}
+
+function wedFireChange() {
+  const selectedReleases = wedSelectedIndices.map(i => wedAllReleases[i]);
+  switchDay('wed', { selectedReleases });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 //  MAIN SWITCH
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -2753,12 +2959,23 @@ function switchDay(dayKey, opts) {
     dcCard.style.display = 'none';
   }
 
+  // Wednesday release picker
+  const wedCard = document.getElementById('wedReleasePickerCard');
+  if (dayKey === 'wed') {
+    wedCard.style.display = '';
+    if (!opts.selectedReleases) {
+      populateWedReleasePicker();
+    }
+  } else {
+    wedCard.style.display = 'none';
+  }
+
   // Build scenes
   let result;
   switch (dayKey) {
     case 'mon': result = buildMondayScenes(); break;
     case 'tue': result = buildTuesdayScenes(); break;
-    case 'wed': result = buildWednesdayScenes(); break;
+    case 'wed': result = buildWednesdayScenes(opts.selectedReleases); break;
     case 'thu': result = buildThursdayScenes(opts.song || songPicker.value || undefined); break;
     case 'fri': result = buildFridayScenes(); break;
     case 'sat': result = buildSaturdayScenes(opts.artist || artistPicker.value || undefined); break;
@@ -2881,6 +3098,7 @@ async function init() {
   const captureMode = new URLSearchParams(location.search).get('capture');
   const captureArtist = new URLSearchParams(location.search).get('artist');
   const captureSong = new URLSearchParams(location.search).get('song');
+  const captureReleases = new URLSearchParams(location.search).get('releases');
   if (captureMode && DATA.loaded) {
     // Hide all UI, make canvas fill viewport
     document.querySelector('.topbar').style.display = 'none';
@@ -2901,7 +3119,14 @@ async function init() {
     // Wait for local fonts to load before rendering scenes
     await document.fonts.ready;
 
-    switchDay(captureMode, { artist: captureArtist || undefined, song: captureSong || undefined });
+    // Resolve release IDs to release objects for Wednesday
+    let captureSelectedReleases;
+    if (captureReleases && captureMode === 'wed') {
+      const ids = captureReleases.split(',');
+      captureSelectedReleases = ids.map(id => DATA.releases.releases.find(r => r.releaseId === id)).filter(Boolean);
+    }
+
+    switchDay(captureMode, { artist: captureArtist || undefined, song: captureSong || undefined, selectedReleases: captureSelectedReleases });
 
     // Ensure all fonts are rendered before signaling ready
     await document.fonts.ready;

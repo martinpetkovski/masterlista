@@ -1771,14 +1771,19 @@
         }
         .artist-item {
             display: grid;
-            grid-template-columns: 2.6rem 40px 1fr 88px 5.5rem;
             align-items: center;
             gap: 0.3rem;
+        }
+        .artist-item.artist-item--alltime {
+            grid-template-columns: 2.6rem 40px 1fr 5.5rem;
+        }
+        .artist-item.artist-item--cumulative {
+            grid-template-columns: 2.6rem 40px 1fr 88px 5.5rem;
         }
         .artist-item .chart-rank {
             width: auto;
         }
-        .artist-item .vu-meter {
+        .artist-item.artist-item--cumulative .vu-meter {
             width: 88px;
             justify-self: start;
         }
@@ -2043,10 +2048,13 @@
             .chart-header h1 { font-size: 0.8rem; }
             .chart-item { padding: 0.2rem 0.35rem; }
             .chart-cover { width: 24px; height: 24px; }
-            .artist-item {
+            .artist-item.artist-item--alltime {
+                grid-template-columns: 1.8rem 24px 1fr 4rem;
+            }
+            .artist-item.artist-item--cumulative {
                 grid-template-columns: 1.8rem 24px 1fr 60px 4rem;
             }
-            .artist-item .vu-meter { width: 60px; }
+            .artist-item.artist-item--cumulative .vu-meter { width: 60px; }
             .artist-item .chart-stat.followers { font-size: 1rem; justify-self: end; text-align: right; }
             
             /* Mobile header buttons - more compact */
@@ -5110,7 +5118,7 @@
                     const artistImg = artistInfo?.image || artist.thumbnail;
                     
                     return `
-                        <li class="chart-item artist-item ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
+                        <li class="chart-item artist-item artist-item--alltime ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artistImg 
@@ -5200,7 +5208,7 @@
                     const artistImg = artistInfo?.image || artist.thumbnail;
                     
                     return `
-                        <li class="chart-item artist-item ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
+                        <li class="chart-item artist-item artist-item--cumulative ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artistImg 
