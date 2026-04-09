@@ -1201,23 +1201,22 @@ function getRecentReleases(daysBack = 7) {
 }
 
 function getThrowbackCandidates() {
-  // Songs with 500K+ YT views, older than 5 years, with a video
+  // Individual songs older than 10 years with a YouTube video
   const cutoff = new Date();
-  cutoff.setFullYear(cutoff.getFullYear() - 5);
+  cutoff.setFullYear(cutoff.getFullYear() - 10);
   const cutStr = cutoff.toISOString().slice(0, 10);
 
-  return DATA.releases.releases.filter(r =>
-    (r.youtubeViews || 0) >= 500000 &&
-    r.releaseDate < cutStr &&
-    r.youtubeTracks && r.youtubeTracks.length > 0
-  ).sort((a, b) => (b.youtubeViews || 0) - (a.youtubeViews || 0));
+  return getAllSongs().filter(s =>
+    s.videoId &&
+    s.releaseDate < cutStr
+  ).sort((a, b) => (b.views || 0) - (a.views || 0));
 }
 
 function getThrowbackSong(forceId) {
   const candidates = getThrowbackCandidates();
   if (!candidates.length) return null;
   if (forceId) {
-    const found = candidates.find(r => r.releaseId === forceId || r.releaseTitle === forceId);
+    const found = candidates.find(s => s._songKey === forceId || s.releaseId === forceId || s.songName === forceId);
     if (found) return found;
   }
   return candidates[Math.floor(Math.random() * candidates.length)];
@@ -2063,7 +2062,8 @@ function buildThursdayScenes(forcedSong) {
   if (!song) return { scenes: [], data: null, label: 'Throwback Thursday (no candidates)' };
 
   const thumbs = [song.thumbnail].filter(Boolean);
-  const videoId = topVideoId(song.youtubeTracks);
+  const videoId = song.videoId;
+  const ytTracks = videoId ? [{ videoId, name: song.songName, views: song.views }] : [];
   const band = getBandByName(song.bandName);
 
   const scenes = [];
@@ -2076,30 +2076,18 @@ function buildThursdayScenes(forcedSong) {
     duration: 2.5
   });
 
-  // Always show throwback showcase with date + views
-  scenes.push({
-    type: 'throwback',
-    songTitle: song.releaseTitle,
-    artist: song.bandName,
-    thumbnail: song.thumbnail,
-    releaseDate: song.releaseDate,
-    views: song.youtubeViews,
-    videoId,
-    youtubeTracks: song.youtubeTracks || [],
-    bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
-    duration: 5
-  });
-
-  // Also show clip if video available
+  // Clip with date + views
   if (videoId) {
     scenes.push({
       type: 'clip',
       rank: 'ТБТ',
-      songTitle: song.releaseTitle,
+      songTitle: song.songName,
       artist: song.bandName,
       thumbnail: song.thumbnail,
+      releaseDate: song.releaseDate,
+      views: song.views,
       videoId,
-      youtubeTracks: song.youtubeTracks || [],
+      youtubeTracks: ytTracks,
       bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
       duration: 6
     });
@@ -2937,7 +2925,7 @@ function switchDay(dayKey, opts) {
     if (!opts.song) {
       const candidates = getThrowbackCandidates();
       songPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        candidates.map(r => `<option value="${escHtml(r.releaseId || r.releaseTitle)}">${escHtml(r.bandName)} \u2013 ${escHtml(r.releaseTitle)} (${formatViews(r.youtubeViews||0)})</option>`).join('');
+        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} \u2013 ${escHtml(s.songName)} (${formatViews(s.views||0)})</option>`).join('');
       filterSelect('songPickerWrap');
     }
   } else {
@@ -2987,7 +2975,7 @@ function switchDay(dayKey, opts) {
     artistPicker.value = result.data.name;
   }
   if (dayKey === 'thu' && result.data && !opts.song) {
-    songPicker.value = result.data.releaseId || result.data.releaseTitle;
+    songPicker.value = result.data._songKey || result.data.releaseId || result.data.songName;
   }
   if (dayKey === 'sun' && result.data && !opts.song && !result.data._custom) {
     dcPicker.value = result.data._songKey || result.data.releaseId || result.data.releaseTitle;
