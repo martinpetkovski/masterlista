@@ -238,6 +238,9 @@
         .dash-card:nth-child(12) { animation-delay: 0.6s; }
         .dash-card:nth-child(13) { animation-delay: 0.65s; }
         .dash-card:nth-child(14) { animation-delay: 0.7s; }
+        .dash-card:nth-child(15) { animation-delay: 0.75s; }
+        .dash-card:nth-child(16) { animation-delay: 0.8s; }
+        .dash-card:nth-child(17) { animation-delay: 0.85s; }
 
         @keyframes dashCardReveal {
             from {
@@ -1039,84 +1042,153 @@
             background-clip: text;
         }
 
-        /* ==================== RELEASE RADAR (horizontal grid) ==================== */
+        /* ==================== RELEASE RADAR ==================== */
         .release-radar-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.65rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+            gap: 0.5rem 0.75rem;
             list-style: none;
             margin: 0;
             padding: 0;
             flex: 1;
+            min-height: 0;
+            align-content: start;
+            overflow: hidden;
         }
 
-        .release-radar-grid .radar-item {
-            flex: 0 0 calc((100% - 4 * 0.65rem) / 5);
-            min-width: 0;
+        .release-radar-grid .no-data-msg {
+            grid-column: 1 / -1;
         }
 
         .radar-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            text-align: center;
-            padding: 0.5rem 0.3rem;
-            border-radius: 8px;
+            gap: 0.7rem;
+            padding: 0.45rem 0.35rem;
+            border-radius: 0;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.2s cubic-bezier(.4,2,.6,1), box-shadow 0.2s ease;
             min-width: 0;
+            text-align: left;
         }
 
         .radar-cover {
-            width: 100%;
-            aspect-ratio: 1;
+            width: 68px;
+            height: 68px;
             border-radius: 6px;
             object-fit: cover;
             background: var(--bg-hover, #eceef1);
-            margin-bottom: 0.4rem;
+            flex-shrink: 0;
         }
 
         .radar-info {
-            width: 100%;
+            flex: 1;
             min-width: 0;
         }
 
         .radar-info-title {
-            font-size: 0.88rem;
-            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
             color: var(--text-primary, #1a1d21);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.01em;
         }
 
         .radar-info-artist {
-            font-size: 0.8rem;
+            font-size: 0.88rem;
             color: var(--text-secondary, #555b64);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.12rem;
+        }
+
+        .radar-age {
+            font-size: 0.72rem;
+            color: var(--text-muted, #8b929a);
+            margin-top: 0.2rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .radar-meta {
-            margin-top: 0.2rem;
+        .event-today-marker {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.5rem 0.5rem 0;
+            position: relative;
+            z-index: 1;
+            background: #e53935;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 0.2rem 0 0.45rem;
         }
 
-        .radar-date {
-            font-size: 0.6rem;
-            color: var(--text-muted, #8b929a);
+        .event-today-node {
+            width: 20px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            margin-left: 0.35rem;
         }
 
-        .radar-type {
-            display: inline-block;
-            font-size: 0.55rem;
-            font-weight: 600;
+        .event-today-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45);
+            animation: todayPulse 1.4s ease-in-out infinite;
+        }
+
+        .event-today-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+            padding-left: 0.4rem;
+        }
+
+        .event-today-label {
+            background: transparent;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 0.1rem 0.4rem;
-            border-radius: 3px;
-            background: var(--bg-hover, #eceef1);
-            color: var(--text-muted, #8b929a);
+            padding: 0;
+            border-radius: 0;
+            white-space: nowrap;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .event-today-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255,255,255,0.7), transparent);
+            border-radius: 1px;
+        }
+
+        @keyframes todayPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.18), 0 0 24px rgba(255, 255, 255, 0.55);
+                transform: scale(1.15);
+            }
         }
 
         /* ==================== EVENTS ==================== */
@@ -1182,23 +1254,51 @@
 
         /* Today event special styling */
         .event-item.event-today {
-            background: linear-gradient(90deg, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+            background: rgba(229, 57, 53, 0.06);
             padding-left: 0.5rem;
-            border-left: 3px solid var(--accent-green, #22c55e);
+            border-left: 3px solid #e53935;
+        }
+
+        .event-item.event-today:hover {
+            background: rgba(229, 57, 53, 0.12);
         }
 
         .event-item.event-today .event-date-badge {
-            background: var(--accent-green, #22c55e);
+            background: #e53935;
         }
 
         .event-item.event-today .event-day-indicator {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--accent-green, #22c55e);
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red, #ef4444);
             font-weight: 700;
         }
 
+        .event-item.event-today .event-title a,
+        .event-item.event-today .event-meta {
+            color: #e53935;
+        }
+
         body.dark-mode .event-item.event-today {
-            background: linear-gradient(90deg, rgba(34, 197, 94, 0.12) 0%, transparent 70%);
+            background: rgba(229, 57, 53, 0.1);
+        }
+
+        body.dark-mode .event-today-dot {
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.45);
+        }
+
+        body.dark-mode .event-today-label {
+            color: #fff;
+        }
+
+        body.dark-mode .event-today-line {
+            background: linear-gradient(to right, rgba(255,255,255,0.7), transparent);
+        }
+
+        body.dark-mode .event-item.event-today .event-title a,
+        body.dark-mode .event-item.event-today .event-meta {
+            color: #ef5350;
         }
 
         .event-date-day {
@@ -1612,72 +1712,164 @@
             opacity: 0.5;
         }
 
-        /* ==================== QUICK ACTIONS ==================== */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.55rem;
-            flex: 1;
-        }
+        /* ==================== QUICK ACTION BUTTONS ==================== */
 
         .quick-action-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 0.85rem;
+            gap: 0.8rem;
+            padding: 0.95rem 1rem;
             border-radius: 0;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: 2px solid #000;
-            background: #000;
-            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            border: 1px solid rgba(0,0,0,0.14);
+            background:
+                linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.01) 24%, rgba(0,0,0,0) 100%),
+                linear-gradient(180deg, #ffffff 0%, #f2f2f2 100%);
+            background-size: auto, auto;
+            background-position: 0 0, 0 0;
+            color: #000;
             cursor: pointer;
             text-decoration: none;
-            transition: filter 0.12s ease, box-shadow 0.12s ease;
+            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.22s ease, filter 0.18s ease, border-color 0.18s ease, background-position 0.32s ease;
             white-space: nowrap;
             position: relative;
             overflow: hidden;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.9),
+                inset 0 -1px 0 rgba(0,0,0,0.04),
+                0 10px 22px rgba(0,0,0,0.1);
         }
 
         .quick-action-btn i {
-            font-size: 1.1rem;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.22s cubic-bezier(.22,.68,.36,1), opacity 0.22s ease;
+        }
+
+        .quick-action-btn span {
+            position: relative;
+            z-index: 2;
+            flex: 0 1 auto;
+            text-align: center;
         }
 
         .quick-action-btn::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.72) 50%, transparent 100%);
             transform: translateX(-100%);
             pointer-events: none;
             z-index: 2;
         }
 
+        .quick-action-btn::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            bottom: 7px;
+            width: 2px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.28) 50%, rgba(0,0,0,0.05) 100%);
+            opacity: 0.42;
+            transform: scaleY(0.5);
+            transform-origin: center;
+            transition: transform 0.22s ease, opacity 0.22s ease;
+            pointer-events: none;
+        }
+
         .quick-action-btn:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+            border-color: rgba(0,0,0,0.24);
+            background-position: 0 0, 0 0;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,1),
+                inset 0 -1px 0 rgba(0,0,0,0.05),
+                0 14px 26px rgba(0,0,0,0.14);
         }
         .quick-action-btn:hover::before {
             animation: btnSweep 0.4s ease-out forwards;
         }
 
+        .quick-action-btn:hover::after {
+            transform: scaleY(1);
+            opacity: 0.82;
+        }
+
+        .quick-action-btn:hover i {
+            transform: translateX(2px);
+            opacity: 1;
+        }
+
         .quick-action-btn:active {
-            filter: brightness(1.5);
+            transform: translateY(0) scale(0.99);
+            filter: brightness(1.1);
             transition-duration: 0.06s;
         }
 
         body.dark-mode .quick-action-btn {
-            background: #fff;
-            border-color: #fff;
-            color: #000;
+            color: #fff;
+            border-color: rgba(255,255,255,0.16);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 24%, rgba(255,255,255,0) 100%),
+                linear-gradient(180deg, #161616 0%, #050505 100%);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(255,255,255,0.03),
+                0 12px 28px rgba(0,0,0,0.32);
         }
         body.dark-mode .quick-action-btn::before {
-            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
+        }
+        body.dark-mode .quick-action-btn::after {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.38) 50%, rgba(255,255,255,0.05) 100%);
         }
         body.dark-mode .quick-action-btn:hover {
-            box-shadow: 0 0 12px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.1);
+            border-color: rgba(255,255,255,0.24);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                inset 0 -1px 0 rgba(255,255,255,0.04),
+                0 16px 30px rgba(0,0,0,0.42);
+        }
+
+        /* ==================== CTA CARDS ==================== */
+        .dash-cta-card {
+            grid-column: 1 / -1;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.55rem;
+        }
+
+        .dash-cta-card .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            width: 100%;
+        }
+
+        .dash-cta-card .quick-action-btn {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 56px;
+        }
+
+        #social-cta .cta-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        #social-cta .quick-action-btn {
+            min-width: 0;
+            white-space: normal;
+            line-height: 1.15;
         }
 
 
@@ -1752,7 +1944,9 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 0.45rem;
+            min-height: 0;
         }
 
         .verify-item {
@@ -1761,6 +1955,8 @@
             gap: 0.6rem;
             padding: 0.4rem 0.35rem;
             border-radius: 6px;
+            flex: 1 1 0;
+            min-height: 0;
         }
 
         .verify-img {
@@ -1841,7 +2037,8 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 0.45rem;
         }
 
         .trending-item {
@@ -1852,6 +2049,52 @@
             cursor: pointer;
             transition: background 0.2s ease, box-shadow 0.2s ease;
             border-radius: 6px;
+            min-height: 0;
+        }
+
+        #hot-songs-list .trending-item {
+            flex: 1 1 0;
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+
+        #hot-songs-list .trending-cover {
+            width: 88px;
+            height: 88px;
+        }
+
+        #hot-songs-list .trending-title {
+            font-size: 1rem;
+        }
+
+        #hot-songs-list .trending-sub {
+            font-size: 0.9rem;
+        }
+
+        #verify-card {
+            gap: 0.25rem;
+        }
+
+        #verify-card .verify-card-intro {
+            margin-bottom: 0.55rem;
+        }
+
+        #verify-card .verify-item {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        #verify-card .verify-img {
+            width: 62px;
+            height: 62px;
+        }
+
+        #verify-card .verify-name {
+            font-size: 1rem;
+        }
+
+        #verify-card .verify-btn {
+            padding: 0.45rem 0.85rem;
         }
 
         .trending-rank {
@@ -2303,26 +2546,60 @@
             }
 
             .release-radar-grid {
-                display: flex;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                overflow-y: hidden;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                gap: 0.5rem;
-                padding-bottom: 0.25rem;
+                overflow: hidden;
+                padding-bottom: 0;
             }
 
             .release-radar-grid::-webkit-scrollbar {
                 display: none;
             }
 
-            .release-radar-grid .radar-item {
-                flex: 0 0 calc((100% - 0.75rem) / 2.5);
-                min-width: 0;
-                scroll-snap-align: start;
+            .radar-item {
+                gap: 0.55rem;
+                padding: 0.4rem 0.15rem;
             }
+
+            .radar-cover {
+                width: 58px;
+                height: 58px;
+            }
+
+            .radar-info-title {
+                font-size: 0.92rem;
+            }
+
+            .radar-info-artist {
+                font-size: 0.8rem;
+            }
+
+            .radar-age {
+                font-size: 0.68rem;
+            }
+
+            #hot-songs-list .trending-item,
+            #verify-card .verify-item {
+                flex: 0 0 auto;
+            }
+
+            #hot-songs-list .trending-cover {
+                width: 72px;
+                height: 72px;
+            }
+
+            #verify-card .verify-img {
+                width: 56px;
+                height: 56px;
+            }
+
+            .event-today-marker {
+                padding-right: 0.35rem;
+            }
+
+            .event-today-label {
+                font-size: 0.64rem;
+                letter-spacing: 0.08em;
+            }
+
 
             /* News list as horizontal scroll on mobile */
             .news-list {
@@ -2348,10 +2625,6 @@
 
             .discover-img { width: 56px; height: 56px; }
             .discover-name { font-size: 0.9rem; }
-
-            .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
-            }
 
             .yt-grid {
                 grid-template-columns: 1fr;
@@ -2510,11 +2783,6 @@
             background: #1a1a1a;
         }
 
-        body.dark-mode .radar-type {
-            background: var(--bg-hover);
-            color: var(--text-muted);
-        }
-
         body.dark-mode .verify-btn {
             border: none;
             background: transparent;
@@ -2648,6 +2916,13 @@
             <ol class="mini-chart-list" id="alt-chart-list" style="display:none;"></ol>
         </div>
 
+        <!-- ==================== ADD ARTIST CTA ==================== -->
+        <div class="dash-cta-card" id="add-artist-cta">
+            <a href="/lista#dodaj-artist" class="quick-action-btn">
+                <i class="fas fa-plus"></i> <span>Додај нов артист</span>
+            </a>
+        </div>
+
         <!-- ==================== RELEASE RADAR (last 10) ==================== -->
         <div class="dash-card full-width" id="radar-card">
             <div class="dash-card-header">
@@ -2662,11 +2937,24 @@
             <ul class="release-radar-grid" id="radar-list" style="display:none;"></ul>
         </div>
 
+        <!-- ==================== SOCIAL CTA ==================== -->
+        <div class="dash-cta-card" id="social-cta">
+            <div class="cta-buttons">
+                <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener" class="quick-action-btn">
+                    <i class="fab fa-instagram"></i> Следи нѐ на Instagram
+                </a>
+                <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener" class="quick-action-btn">
+                    <i class="fab fa-discord"></i> Приклучи се на Discord
+                </a>
+            </div>
+        </div>
+
         <!-- ==================== UPCOMING EVENTS ==================== -->
         <div class="dash-card" id="events-card">
             <div class="dash-card-header">
                 <h2><i class="fas fa-calendar-days"></i> <span data-i18n="dashboard.upcomingEvents">Претстојни настани</span></h2>
                 <div class="dash-card-header-actions">
+                    <a href="/nastani#dodaj-nastan" class="more-link card-action-btn" title="Додај настан" data-i18n-title="dashboard.addEvent"><i class="fas fa-calendar-plus"></i></a>
                     <a href="/nastani" class="more-link" title="Сите настани" data-i18n-title="common.allEvents"><i class="fas fa-calendar-days"></i></a>
                 </div>
             </div>
@@ -2687,32 +2975,11 @@
             <ul class="trending-list" id="hot-songs-list" style="display:none;"></ul>
         </div>
 
-        <!-- ==================== QUICK ACTIONS ==================== -->
-        <div class="dash-card full-width" id="actions-card">
-            <div class="dash-card-header">
-                <h2><i class="fas fa-rocket"></i> <span data-i18n="dashboard.quickAccess">Брз пристап</span></h2>
-            </div>
-            <div class="quick-actions">
-                <a href="/lista#dodaj-artist" class="quick-action-btn">
-                    <i class="fas fa-plus"></i> <span data-i18n="dashboard.addArtist">Додај артист</span>
-                </a>
-                <a href="/nastani#dodaj-nastan" class="quick-action-btn">
-                    <i class="fas fa-calendar-plus"></i> <span data-i18n="dashboard.addEvent">Додај настан</span>
-                </a>
-                <a href="/iznenadi-me" class="quick-action-btn">
-                    <i class="fas fa-shuffle"></i> <span data-i18n="dashboard.surpriseMe">Изненади ме!</span>
-                </a>
-                <a href="/charts" class="quick-action-btn">
-                    <i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span>
-                </a>
-                <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener" class="quick-action-btn">
-                    <i class="fab fa-instagram"></i> Instagram
-                </a>
-                <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener" class="quick-action-btn">
-                    <i class="fab fa-discord"></i> Discord
-                </a>
-
-            </div>
+        <!-- ==================== SURPRISE ME CTA ==================== -->
+        <div class="dash-cta-card" id="surprise-cta">
+            <a href="/iznenadi-me" class="quick-action-btn">
+                <i class="fas fa-shuffle"></i> <span data-i18n="dashboard.surpriseMe">Изненади ме!</span>
+            </a>
         </div>
 
         <!-- ==================== DISCOVER ARTISTS (5 random) ==================== -->
@@ -3186,9 +3453,33 @@
             renderMiniChart('alt-chart-list', 'alt-chart-loading', 'alt');
         }
 
-        // ==================== RENDER: RELEASE RADAR (last 10, pre-computed) ====================
+        function formatReleaseAge(dateStr) {
+            if (!dateStr) return '';
+            var parts = String(dateStr).split('T')[0].split('-');
+            if (parts.length < 3) return '';
+            var releaseDate = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+            if (isNaN(releaseDate.getTime())) return '';
+            releaseDate.setHours(0, 0, 0, 0);
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var daysAgo = Math.max(0, Math.floor((today - releaseDate) / 86400000));
+            if (daysAgo === 0) return t('dashboard.today');
+            return t('charts.ago.days').replace('{0}', daysAgo);
+        }
+
+        function buildTodayEventsMarker() {
+            return '<li class="event-today-marker" aria-hidden="true">' +
+                '<div class="event-today-node"><div class="event-today-dot"></div></div>' +
+                '<div class="event-today-content">' +
+                    '<span class="event-today-label"><i class="fas fa-location-dot"></i> ' + escHtml(t('events.today')) + '</span>' +
+                    '<div class="event-today-line"></div>' +
+                '</div>' +
+            '</li>';
+        }
+
+        // ==================== RENDER: RELEASE RADAR (latest 8, pre-computed) ====================
         function renderReleaseRadar() {
-            var radarCount = 10;
+            var radarCount = 8;
             var releases;
 
             if (siteMaster && siteMaster.releaseRadar && siteMaster.releaseRadar.length > 0) {
@@ -3209,16 +3500,13 @@
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noNewReleases') + '</li>';
             } else {
                 list.innerHTML = last5.map(function(r) {
-                    var typeLabel = r.releaseType === 'album' ? t('dashboard.album') : r.releaseType === 'compilation' ? t('dashboard.compilation') : t('dashboard.single');
+                    var releaseDate = r.effectiveReleaseDate || r.releaseDate;
                     return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
                             '<div class="radar-info-artist">' + buildArtistLinks(r.bandName) + '</div>' +
-                        '</div>' +
-                        '<div class="radar-meta">' +
-                            '<div class="radar-date">' + formatDate(r.releaseDate) + '</div>' +
-                            '<span class="radar-type">' + typeLabel + '</span>' +
+                            '<div class="radar-age">' + escHtml(formatReleaseAge(releaseDate)) + '</div>' +
                         '</div>' +
                     '</li>';
                 }).join('');
@@ -3518,6 +3806,7 @@
             if (upcoming.length === 0) {
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noUpcomingEvents') + '</li>';
             } else {
+                var todayMarkerInserted = false;
                 list.innerHTML = upcoming.map(function(e) {
                     var d = new Date(e.date + 'T00:00:00');
                     var day = d.getDate();
@@ -3527,7 +3816,12 @@
                     var eventPageUrl = e.id ? '/nastan/' + encodeURIComponent(e.id) : (e.link || (e.links && e.links[0] ? e.links[0].url : '#'));
                     var dayInfo = getDayIndicator(e.date);
                     var itemClass = 'event-item' + (dayInfo.cls ? ' ' + dayInfo.cls : '');
-                    var dayIndicatorHtml = dayInfo.text ? ' <span class="event-day-indicator">' + dayInfo.text + '</span>' : '';
+                    var prefixHtml = '';
+                    if (dayInfo.cls === 'event-today' && !todayMarkerInserted) {
+                        prefixHtml = buildTodayEventsMarker();
+                        todayMarkerInserted = true;
+                    }
+                    var dayIndicatorHtml = (dayInfo.text && !dayInfo.cls) ? ' <span class="event-day-indicator">' + dayInfo.text + '</span>' : '';
                     var artistsHtml = '';
                     if (e.artists && e.artists.length) {
                         var artistLinks = e.artists.map(function(name) {
@@ -3543,7 +3837,7 @@
                         });
                         artistsHtml = '<div class="event-artists"><i class="fas fa-music"></i> ' + artistLinks.join(', ') + '</div>';
                     }
-                    return '<li class="' + itemClass + '">' +
+                    return prefixHtml + '<li class="' + itemClass + '">' +
                         '<div class="event-date-badge"><span class="event-date-day">' + day + '</span><span class="event-date-month">' + month + '</span></div>' +
                         '<div class="event-info">' +
                             '<div class="event-title"><a href="' + eventPageUrl + '">' + escHtml(localizeText(e.title)) + '</a></div>' +
