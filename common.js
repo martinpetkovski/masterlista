@@ -1179,6 +1179,32 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var overlay = document.getElementById('service-chooser-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
+
+        function getHexLuminance(hex) {
+            var normalized = normalizeHexColor(hex);
+            if (!normalized) return null;
+
+            var raw = normalized.slice(1);
+            var red = parseInt(raw.slice(0, 2), 16);
+            var green = parseInt(raw.slice(2, 4), 16);
+            var blue = parseInt(raw.slice(4, 6), 16);
+
+            return (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+        }
+
+        function getAverageHexLuminance(colors) {
+            var total = 0;
+            var count = 0;
+
+            for (var i = 0; i < colors.length; i++) {
+                var luminance = getHexLuminance(colors[i]);
+                if (luminance === null) continue;
+                total += luminance;
+                count += 1;
+            }
+
+            return count ? (total / count) : null;
+        }
         overlay.id = 'service-chooser-overlay';
         overlay.className = 'service-chooser-overlay';
         overlay.innerHTML =
@@ -1270,9 +1296,8 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var c2 = secondaryAccent || primaryAccent;
     var isDark;
     if (primaryAccent) {
-        var _r1 = parseInt(c1.slice(1,3),16), _g1 = parseInt(c1.slice(3,5),16), _b1 = parseInt(c1.slice(5,7),16);
-        var _r2 = parseInt(c2.slice(1,3),16), _g2 = parseInt(c2.slice(3,5),16), _b2 = parseInt(c2.slice(5,7),16);
-        isDark = ((0.299*(_r1+_r2)/2 + 0.587*(_g1+_g2)/2 + 0.114*(_b1+_b2)/2) / 255) <= 0.45;
+        var accentLuminance = getAverageHexLuminance([c1, c2]);
+        isDark = accentLuminance !== null ? accentLuminance <= 0.45 : false;
     } else {
         isDark = document.body.classList.contains('dark-mode') ||
                  document.documentElement.classList.contains('dark-mode') ||
@@ -1287,22 +1312,41 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         overlay.classList.toggle('sc-accent-light', !isDark);
 
         // Header background = c1, text color based on c1 luminance (matching artist page exactly)
-        var hR = parseInt(c1.slice(1,3),16), hG = parseInt(c1.slice(3,5),16), hB = parseInt(c1.slice(5,7),16);
-        var headerLum = (0.299 * hR + 0.587 * hG + 0.114 * hB) / 255;
+        var headerLum = getHexLuminance(c1);
         var headerIsLight = headerLum > 0.55;
         var headerTc = headerIsLight ? '#000' : '#fff';
         var headerTcSub = headerIsLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.85)';
+        var headerSep = headerIsLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.5)';
 
         // Full-dialog gradient (matching artist page darkenHex/lightenHex approach)
+        var chooserStops;
         if (isDark) {
             var g1 = shadeHexColor(c1, -82) || c1, g2 = shadeHexColor(c2, -86) || c2, g3 = shadeHexColor(c1, -92) || c1;
+            chooserStops = [g1, g2, g3];
             chooserEl.style.background = 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 50%, ' + g3 + ' 100%)';
         } else {
             var l1 = shadeHexColor(c1, 84) || c1, l2 = shadeHexColor(c2, 87) || c2, l3 = shadeHexColor(c1, 92) || c1;
+            chooserStops = [l1, l2, l3];
             chooserEl.style.background = 'linear-gradient(135deg, ' + l1 + ' 0%, ' + l2 + ' 50%, ' + l3 + ' 100%)';
         }
+        var chooserLum = getAverageHexLuminance(chooserStops);
+        var chooserIsLight = chooserLum !== null ? chooserLum > 0.55 : !isDark;
+        var chooserText = chooserIsLight ? '#1a1a2e' : '#ffffff';
+        var chooserTextMuted = chooserIsLight ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.72)';
+        var chooserCardBg = chooserIsLight ? 'rgba(255,255,255,0.40)' : 'rgba(0,0,0,0.40)';
+        var chooserCardBorder = chooserIsLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.10)';
+        var chooserCardHoverBg = chooserIsLight ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.55)';
         var hDark = shadeHexColor(c1, -15) || c1;
         headerEl.style.background = 'linear-gradient(135deg, ' + c1 + ' 0%, ' + hDark + ' 50%, ' + c1 + ' 100%)';
+        chooserEl.style.color = chooserText;
+        overlay.style.setProperty('--sc-chooser-text', chooserText);
+        overlay.style.setProperty('--sc-chooser-text-muted', chooserTextMuted);
+        overlay.style.setProperty('--sc-card-bg', chooserCardBg);
+        overlay.style.setProperty('--sc-card-border', chooserCardBorder);
+        overlay.style.setProperty('--sc-card-hover-bg', chooserCardHoverBg);
+        overlay.style.setProperty('--sc-pref-color', c2);
+        overlay.style.setProperty('--sc-link-sweep', chooserIsLight ? c1 + '22' : c1 + '30');
+        overlay.style.setProperty('--sc-header-separator', headerSep);
 
         // Header text color
         songEl.style.color = headerTc;
@@ -1341,8 +1385,17 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         chooserEl.style.border = '';
         vfxBgEl.innerHTML = '';
         vfxBgEl.style.display = 'none';
+        chooserEl.style.color = '';
         songEl.style.color = '';
         artistEl.style.color = '';
+        overlay.style.removeProperty('--sc-chooser-text');
+        overlay.style.removeProperty('--sc-chooser-text-muted');
+        overlay.style.removeProperty('--sc-card-bg');
+        overlay.style.removeProperty('--sc-card-border');
+        overlay.style.removeProperty('--sc-card-hover-bg');
+        overlay.style.removeProperty('--sc-pref-color');
+        overlay.style.removeProperty('--sc-link-sweep');
+        overlay.style.removeProperty('--sc-header-separator');
         var closeBtnReset = overlay.querySelector('.service-chooser-close');
         if (closeBtnReset) closeBtnReset.style.color = '';
     }

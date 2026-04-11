@@ -1122,9 +1122,12 @@
             position: relative;
             z-index: 1;
             background: #e53935;
-            border-radius: 6px;
+            border-top: 2px solid rgba(229, 57, 53, 0.35);
+            border-left: 3px solid #e53935;
+            border-right: 3px solid #e53935;
+            border-radius: 6px 6px 0 0;
             overflow: hidden;
-            margin: 0.2rem 0 0.45rem;
+            margin: 0.2rem 0 0;
         }
 
         .event-today-node {
@@ -1257,10 +1260,26 @@
             background: rgba(229, 57, 53, 0.06);
             padding-left: 0.5rem;
             border-left: 3px solid #e53935;
+            border-right: 3px solid #e53935;
+            padding-right: 0.5rem;
+            margin-bottom: 0;
+            border-radius: 0;
         }
 
         .event-item.event-today:hover {
             background: rgba(229, 57, 53, 0.12);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .event-item.event-today:not(.event-today-group-start) {
+            box-shadow: inset 0 1px 0 rgba(229, 57, 53, 0.16);
+        }
+
+        .event-item.event-today.event-today-group-end {
+            border-bottom: 2px solid rgba(229, 57, 53, 0.35);
+            border-radius: 0 0 6px 6px;
+            margin-bottom: 0.45rem;
         }
 
         .event-item.event-today .event-date-badge {
@@ -1280,6 +1299,16 @@
 
         body.dark-mode .event-item.event-today {
             background: rgba(229, 57, 53, 0.1);
+        }
+
+        body.dark-mode .event-item.event-today:not(.event-today-group-start) {
+            box-shadow: inset 0 1px 0 rgba(239, 83, 80, 0.18);
+        }
+
+        body.dark-mode .event-today-marker {
+            border-top-color: rgba(239, 83, 80, 0.38);
+            border-left-color: #ef5350;
+            border-right-color: #ef5350;
         }
 
         body.dark-mode .event-today-dot {
@@ -1873,61 +1902,211 @@
         }
 
 
-        /* ==================== RELEASE STATS (mirrors releases page) ==================== */
-        #release-stats-card .yt-progress-card {
-            display: flex; flex-direction: column; gap: 0.5rem;
-            padding: 0.65rem 0;
+        /* ==================== RELEASE STATS ==================== */
+        #release-stats-card #release-stats-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
         }
-        #release-stats-card .yt-progress-head {
-            display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+
+        #release-stats-card .release-stats-summary,
+        #release-stats-card .release-stats-metric,
+        #release-stats-card .release-stats-status {
+            border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+            background: var(--bg-secondary, rgba(255,255,255,0.03));
         }
-        #release-stats-card .yt-progress-label {
-            font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e0e0e0);
+
+        #release-stats-card .release-stats-summary {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+            gap: 0.85rem;
+            padding: 0.9rem;
+            background:
+                linear-gradient(135deg, rgba(22,163,74,0.1) 0%, rgba(22,163,74,0.03) 38%, transparent 100%),
+                var(--bg-secondary, rgba(255,255,255,0.03));
+        }
+
+        #release-stats-card .release-stats-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            min-width: 0;
+        }
+
+        #release-stats-card .release-stats-copy-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary, #555b64);
             letter-spacing: normal;
         }
-        #release-stats-card .yt-progress-label .frac { font-variant-numeric: tabular-nums; }
-        #release-stats-card .yt-progress-pct {
-            font-size: 1.1rem; font-weight: 800; color: #16a34a; font-variant-numeric: tabular-nums;
-            font-family: 'Montserrat', sans-serif;
+
+        #release-stats-card .release-stats-copy-label i {
+            color: #16a34a;
+            font-size: 0.9rem;
         }
-        #release-stats-card .yt-progress-bar {
-            display: flex; width: 100%; height: 10px; border-radius: 0; overflow: hidden;
+
+        #release-stats-card .release-stats-copy-main {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.45rem 0.7rem;
+        }
+
+        #release-stats-card .release-stats-pct {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.4rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary, #1a1d21);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.04em;
+        }
+
+        #release-stats-card .release-stats-ratio {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary, #555b64);
+            font-variant-numeric: tabular-nums;
+        }
+
+        #release-stats-card .release-stats-progress-wrap {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        #release-stats-card .release-stats-progress-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-size: 0.76rem;
+            color: var(--text-secondary, #555b64);
+            letter-spacing: normal;
+        }
+
+        #release-stats-card .release-stats-progress-meta strong {
+            color: var(--text-primary, #1a1d21);
+            font-weight: 700;
+        }
+
+        #release-stats-card .release-stats-progress-bar {
+            display: flex;
+            width: 100%;
+            height: 12px;
+            overflow: hidden;
             background: var(--bg-tertiary, rgba(255,255,255,0.06));
             border: 1px solid var(--border-color, #dfe1e5);
         }
-        #release-stats-card .yt-progress-seg { height: 100%; min-width: 0; transition: width 0.4s ease; }
-        #release-stats-card .yt-progress-seg.s-verified { background: #16a34a; }
-        #release-stats-card .yt-progress-seg.s-unverified { background: #f59e0b; }
-        #release-stats-card .yt-progress-seg.s-willnot { background: #ef4444; }
-        #release-stats-card .yt-progress-seg.s-noyt { background: var(--border-color, rgba(255,255,255,0.1)); }
-        #release-stats-card .yt-progress-legend {
-            display: flex; flex-wrap: wrap; gap: 0.25rem 0.85rem;
-            font-size: 0.78rem; color: var(--text-muted, #888);
+
+        #release-stats-card .release-stats-progress-seg {
+            height: 100%;
+            min-width: 0;
+            transition: width 0.4s ease;
+        }
+
+        #release-stats-card .release-stats-progress-seg.s-verified,
+        #release-stats-card .release-stats-status.s-verified {
+            --stats-color: #16a34a;
+        }
+
+        #release-stats-card .release-stats-progress-seg.s-unverified,
+        #release-stats-card .release-stats-status.s-unverified {
+            --stats-color: #f59e0b;
+        }
+
+        #release-stats-card .release-stats-progress-seg.s-willnot,
+        #release-stats-card .release-stats-status.s-willnot {
+            --stats-color: #ef4444;
+        }
+
+        #release-stats-card .release-stats-progress-seg.s-noyt,
+        #release-stats-card .release-stats-status.s-noyt {
+            --stats-color: #94a3b8;
+        }
+
+        #release-stats-card .release-stats-progress-seg {
+            background: var(--stats-color, var(--border-color, rgba(255,255,255,0.1)));
+        }
+
+        #release-stats-card .release-stats-metrics,
+        #release-stats-card .release-stats-status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        #release-stats-card .release-stats-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+            padding: 0.8rem 0.85rem;
+        }
+
+        #release-stats-card .release-stats-metric i {
+            font-size: 0.92rem;
+            color: var(--text-muted, #888);
+        }
+
+        #release-stats-card .release-stats-metric-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.45rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary, #1a1d21);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.03em;
+        }
+
+        #release-stats-card .release-stats-metric-label {
+            font-size: 0.77rem;
+            color: var(--text-secondary, #555b64);
             letter-spacing: normal;
         }
-        #release-stats-card .yt-progress-legend span {
-            display: inline-flex; align-items: center; gap: 0.3rem;
+
+        #release-stats-card .release-stats-status {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            min-width: 0;
+            padding: 0.78rem 0.85rem;
+            border-left: 3px solid var(--stats-color, var(--border-color, #dfe1e5));
         }
-        #release-stats-card .yt-legend-dot {
-            width: 8px; height: 8px; border-radius: 0; flex-shrink: 0;
+
+        #release-stats-card .release-stats-status-dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            flex-shrink: 0;
+            background: var(--stats-color, var(--border-color, #dfe1e5));
         }
-        #release-stats-card .yt-legend-dot.s-verified { background: #16a34a; }
-        #release-stats-card .yt-legend-dot.s-unverified { background: #f59e0b; }
-        #release-stats-card .yt-legend-dot.s-willnot { background: #ef4444; }
-        #release-stats-card .yt-legend-dot.s-noyt { background: var(--border-color, rgba(255,255,255,0.1)); }
-        #release-stats-card .yt-stat-row {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 0.55rem;
+
+        #release-stats-card .release-stats-status-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.18rem;
+            min-width: 0;
         }
-        #release-stats-card .yt-chip {
-            display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-            padding: 0.55rem 0.4rem; border-radius: 0;
-            background: var(--bg-secondary, rgba(255,255,255,0.03)); border: 1px solid var(--border-color, rgba(255,255,255,0.08));
-            font-size: 0.82rem; white-space: nowrap;
-            letter-spacing: normal; text-align: center;
+
+        #release-stats-card .release-stats-status-count {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary, #1a1d21);
+            font-variant-numeric: tabular-nums;
         }
-        #release-stats-card .yt-chip i { font-size: 0.85rem; flex-shrink: 0; color: var(--text-muted); }
-        #release-stats-card .yt-chip .cv { font-weight: 800; font-size: 1.15rem; color: var(--text-primary, #1a1d21); font-variant-numeric: tabular-nums; font-family: 'Montserrat', sans-serif; }
-        #release-stats-card .yt-chip .cl { color: var(--text-secondary, #555b64); font-size: 0.75rem; }
+
+        #release-stats-card .release-stats-status-label {
+            font-size: 0.76rem;
+            color: var(--text-secondary, #555b64);
+            letter-spacing: normal;
+        }
 
         /* ==================== VERIFY ARTISTS ==================== */
         .verify-card-intro {
@@ -2752,15 +2931,14 @@
                 min-height: auto;
             }
 
-            /* Stats card: larger, more readable on mobile */
-            #release-stats-card .yt-progress-label { font-size: 0.9rem; }
-            #release-stats-card .yt-progress-pct { font-size: 1.2rem; }
-            #release-stats-card .yt-progress-legend { font-size: 0.82rem; }
-            #release-stats-card .yt-stat-row { grid-template-columns: repeat(2, 1fr); }
-            #release-stats-card .yt-chip { padding: 0.6rem 0.5rem; }
-            #release-stats-card .yt-chip .cv { font-size: 1.25rem; }
-            #release-stats-card .yt-chip .cl { font-size: 0.8rem; }
-            #release-stats-card .yt-chip i { font-size: 0.9rem; }
+            /* Stats card: stack summary and keep compact grids on mobile */
+            #release-stats-card .release-stats-summary { grid-template-columns: 1fr; }
+            #release-stats-card .release-stats-pct { font-size: 2rem; }
+            #release-stats-card .release-stats-ratio { font-size: 0.9rem; }
+            #release-stats-card .release-stats-metrics,
+            #release-stats-card .release-stats-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            #release-stats-card .release-stats-metric,
+            #release-stats-card .release-stats-status { padding: 0.75rem; }
         }
 
         @media (min-width: 801px) and (max-width: 1100px) {
@@ -3302,24 +3480,67 @@
             var label = document.getElementById('site-last-update');
             if (!label) return;
 
-            // Use chart-data generatedAt timestamp
             var timestamp = chartData && chartData.generatedAt ? new Date(chartData.generatedAt) : null;
             if (!timestamp || isNaN(timestamp.getTime())) {
                 label.textContent = '';
                 return;
             }
-            var datePart = timestamp.toLocaleDateString('mk-MK', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            var timePart = timestamp.toLocaleTimeString('mk-MK', {
+
+            var lang = typeof getLanguage === 'function' ? getLanguage() : 'mk';
+            var updatedPrefix = typeof t === 'function' ? t('home.lastUpdated.prefix') : 'освежено';
+            var yesterdayAtTemplate = typeof t === 'function' ? t('home.lastUpdated.yesterdayAt') : 'освежено вчера во {0}';
+            var onDateAtTemplate = typeof t === 'function' ? t('home.lastUpdated.onDateAt') : 'освежено на {0} во {1}';
+            var justNowText = typeof t === 'function' ? t('home.lastUpdated.justNow') : 'освежено токму сега';
+            var now = new Date();
+            var diffMs = now.getTime() - timestamp.getTime();
+            var timePart = timestamp.toLocaleTimeString(lang, {
                 hour: '2-digit',
                 minute: '2-digit'
             });
 
-            label.textContent = datePart.replace(/\s*г\.?$/i, '') + ', ' + timePart;
+            function fillTemplate(template, values) {
+                return String(template || '').replace(/\{(\d+)\}/g, function(match, index) {
+                    return values[index] !== undefined ? values[index] : match;
+                });
+            }
+
+            function startOfDay(date) {
+                return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            }
+
+            if (diffMs < 60000) {
+                label.textContent = justNowText;
+                return;
+            }
+
+            if (typeof Intl !== 'undefined' && typeof Intl.RelativeTimeFormat === 'function') {
+                var rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'always' });
+                if (diffMs < 3600000) {
+                    label.textContent = updatedPrefix + ' ' + rtf.format(-Math.max(1, Math.floor(diffMs / 60000)), 'minute');
+                    return;
+                }
+                if (diffMs < 86400000) {
+                    label.textContent = updatedPrefix + ' ' + rtf.format(-Math.max(1, Math.floor(diffMs / 3600000)), 'hour');
+                    return;
+                }
+            }
+
+            var dayDiff = Math.round((startOfDay(now).getTime() - startOfDay(timestamp).getTime()) / 86400000);
+            if (dayDiff === 1) {
+                label.textContent = fillTemplate(yesterdayAtTemplate, [timePart]);
+                return;
+            }
+
+            var datePart = timestamp.toLocaleDateString(lang, {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+
+            label.textContent = fillTemplate(onDateAtTemplate, [datePart.replace(/\s*г\.?$/i, ''), timePart]);
         }
+
+        if (typeof onLanguageChange === 'function') onLanguageChange(updateLastUpdateLabel);
 
         // ==================== RENDER: TITLE COLLAGE (scattered album arts) ====================
         function renderTitleCollage() {
@@ -3807,7 +4028,7 @@
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noUpcomingEvents') + '</li>';
             } else {
                 var todayMarkerInserted = false;
-                list.innerHTML = upcoming.map(function(e) {
+                list.innerHTML = upcoming.map(function(e, index) {
                     var d = new Date(e.date + 'T00:00:00');
                     var day = d.getDate();
                     var months = t('months.short');
@@ -3816,6 +4037,12 @@
                     var eventPageUrl = e.id ? '/nastan/' + encodeURIComponent(e.id) : (e.link || (e.links && e.links[0] ? e.links[0].url : '#'));
                     var dayInfo = getDayIndicator(e.date);
                     var itemClass = 'event-item' + (dayInfo.cls ? ' ' + dayInfo.cls : '');
+                    if (dayInfo.cls === 'event-today') {
+                        var prevIsToday = index > 0 && getDayIndicator(upcoming[index - 1].date).cls === 'event-today';
+                        var nextIsToday = index < upcoming.length - 1 && getDayIndicator(upcoming[index + 1].date).cls === 'event-today';
+                        if (!prevIsToday) itemClass += ' event-today-group-start';
+                        if (!nextIsToday) itemClass += ' event-today-group-end';
+                    }
                     var prefixHtml = '';
                     if (dayInfo.cls === 'event-today' && !todayMarkerInserted) {
                         prefixHtml = buildTodayEventsMarker();
@@ -3929,42 +4156,55 @@
             var wnvSongs = stats.wnvSongs || 0;
             var noYtSongs = stats.noYtSongs || 0;
             var totalViews = stats.totalViews || 0;
+            var formatCount = function(value) {
+                return Number(value || 0).toLocaleString();
+            };
 
-                var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
-                var segW = function(n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
-                var viewsStr = totalViews >= 1000000000 ? (totalViews / 1000000000).toFixed(1) + 'B'
-                    : totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M'
-                    : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K'
-                    : String(totalViews);
-                var pctStr = (Math.round(pct * 10) / 10);
-                pctStr = (pctStr % 1 === 0 ? pctStr.toFixed(0) : pctStr.toFixed(1)) + '%';
+            var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
+            var segW = function(n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
+            var viewsStr = totalViews >= 1000000000 ? (totalViews / 1000000000).toFixed(1) + 'B'
+                : totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M'
+                : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K'
+                : formatCount(totalViews);
+            var pctStr = (Math.round(pct * 10) / 10);
+            pctStr = (pctStr % 1 === 0 ? pctStr.toFixed(0) : pctStr.toFixed(1)) + '%';
+            var ratioStr = formatCount(verifiedSongs) + ' / ' + formatCount(totalSongs);
 
-                container.innerHTML =
-                    '<div class="yt-progress-card">' +
-                        '<div class="yt-progress-head">' +
-                            '<span class="yt-progress-label"><i class="fas fa-check-circle" style="color:#16a34a"></i> <span class="frac">' + verifiedSongs + ' / ' + totalSongs + '</span> <span data-i18n="stats.songsVerified">' + t('stats.songsVerified', 'песни со потврден линк') + '</span></span>' +
-                            '<span class="yt-progress-pct">' + pctStr + '</span>' +
-                        '</div>' +
-                        '<div class="yt-progress-bar">' +
-                            '<span class="yt-progress-seg s-verified" style="width:' + segW(verifiedSongs) + '%"></span>' +
-                            '<span class="yt-progress-seg s-unverified" style="width:' + segW(unverifiedSongs) + '%"></span>' +
-                            '<span class="yt-progress-seg s-willnot" style="width:' + segW(wnvSongs) + '%"></span>' +
-                            '<span class="yt-progress-seg s-noyt" style="width:' + segW(noYtSongs) + '%"></span>' +
-                        '</div>' +
-                        '<div class="yt-progress-legend">' +
-                            '<span><i class="yt-legend-dot s-verified"></i>' + verifiedSongs + ' <span data-i18n="stats.verified">' + t('stats.verified', 'верификувани') + '</span></span>' +
-                            '<span><i class="yt-legend-dot s-unverified"></i>' + unverifiedSongs + ' <span data-i18n="stats.pending">' + t('stats.pending', 'чекаат') + '</span></span>' +
-                            '<span><i class="yt-legend-dot s-willnot"></i>' + wnvSongs + ' <span data-i18n="stats.willNotVerify">' + t('stats.willNotVerify', 'нема да се верификуваат') + '</span></span>' +
-                            '<span><i class="yt-legend-dot s-noyt"></i>' + noYtSongs + ' <span data-i18n="stats.noYoutube">' + t('stats.noYoutube', 'без YouTube') + '</span></span>' +
+            container.innerHTML =
+                '<div class="release-stats-summary">' +
+                    '<div class="release-stats-copy">' +
+                        '<span class="release-stats-copy-label"><i class="fas fa-check-circle"></i> <span data-i18n="stats.songsVerified">' + t('stats.songsVerified', 'песни со потврден линк') + '</span></span>' +
+                        '<div class="release-stats-copy-main">' +
+                            '<span class="release-stats-pct">' + pctStr + '</span>' +
+                            '<span class="release-stats-ratio">' + ratioStr + '</span>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="yt-stat-row">' +
-                        '<div class="yt-chip"><i class="fas fa-compact-disc"></i> <span class="cv">' + totalReleases + '</span> <span class="cl" data-i18n="stats.releases">' + t('stats.releases', 'изданија') + '</span></div>' +
-                        '<div class="yt-chip"><i class="fas fa-users"></i> <span class="cv">' + totalArtists + '</span> <span class="cl" data-i18n="stats.artists">' + t('stats.artists', 'артисти') + '</span></div>' +
-                        '<div class="yt-chip"><i class="fas fa-music"></i> <span class="cv">' + totalSongs + '</span> <span class="cl" data-i18n="stats.songs">' + t('stats.songs', 'песни') + '</span></div>' +
-                        (totalViews > 0 ? '<div class="yt-chip"><i class="fas fa-eye"></i> <span class="cv">' + viewsStr + '</span> <span class="cl" data-i18n="stats.views">' + t('stats.views', 'прегледи') + '</span></div>' : '') +
-                    '</div>';
-                container.style.display = '';
+                    '<div class="release-stats-progress-wrap">' +
+                        '<div class="release-stats-progress-meta">' +
+                            '<span><strong>' + formatCount(totalSongs) + '</strong> <span data-i18n="stats.songs">' + t('stats.songs', 'песни') + '</span></span>' +
+                            '<span><strong>' + formatCount(verifiedSongs) + '</strong> <span data-i18n="stats.verified">' + t('stats.verified', 'верификувани') + '</span></span>' +
+                        '</div>' +
+                        '<div class="release-stats-progress-bar">' +
+                            '<span class="release-stats-progress-seg s-verified" style="width:' + segW(verifiedSongs) + '%"></span>' +
+                            '<span class="release-stats-progress-seg s-unverified" style="width:' + segW(unverifiedSongs) + '%"></span>' +
+                            '<span class="release-stats-progress-seg s-willnot" style="width:' + segW(wnvSongs) + '%"></span>' +
+                            '<span class="release-stats-progress-seg s-noyt" style="width:' + segW(noYtSongs) + '%"></span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="release-stats-metrics">' +
+                    '<div class="release-stats-metric"><i class="fas fa-compact-disc"></i><span class="release-stats-metric-value">' + formatCount(totalReleases) + '</span><span class="release-stats-metric-label" data-i18n="stats.releases">' + t('stats.releases', 'изданија') + '</span></div>' +
+                    '<div class="release-stats-metric"><i class="fas fa-users"></i><span class="release-stats-metric-value">' + formatCount(totalArtists) + '</span><span class="release-stats-metric-label" data-i18n="stats.artists">' + t('stats.artists', 'артисти') + '</span></div>' +
+                    '<div class="release-stats-metric"><i class="fas fa-music"></i><span class="release-stats-metric-value">' + formatCount(totalSongs) + '</span><span class="release-stats-metric-label" data-i18n="stats.songs">' + t('stats.songs', 'песни') + '</span></div>' +
+                    (totalViews > 0 ? '<div class="release-stats-metric"><i class="fas fa-eye"></i><span class="release-stats-metric-value">' + viewsStr + '</span><span class="release-stats-metric-label" data-i18n="stats.views">' + t('stats.views', 'прегледи') + '</span></div>' : '') +
+                '</div>' +
+                '<div class="release-stats-status-grid">' +
+                    '<div class="release-stats-status s-verified"><span class="release-stats-status-dot"></span><span class="release-stats-status-copy"><span class="release-stats-status-count">' + formatCount(verifiedSongs) + '</span><span class="release-stats-status-label" data-i18n="stats.verified">' + t('stats.verified', 'верификувани') + '</span></span></div>' +
+                    '<div class="release-stats-status s-unverified"><span class="release-stats-status-dot"></span><span class="release-stats-status-copy"><span class="release-stats-status-count">' + formatCount(unverifiedSongs) + '</span><span class="release-stats-status-label" data-i18n="stats.pending">' + t('stats.pending', 'чекаат') + '</span></span></div>' +
+                    '<div class="release-stats-status s-willnot"><span class="release-stats-status-dot"></span><span class="release-stats-status-copy"><span class="release-stats-status-count">' + formatCount(wnvSongs) + '</span><span class="release-stats-status-label" data-i18n="stats.willNotVerify">' + t('stats.willNotVerify', 'нема да се верификуваат') + '</span></span></div>' +
+                    '<div class="release-stats-status s-noyt"><span class="release-stats-status-dot"></span><span class="release-stats-status-copy"><span class="release-stats-status-count">' + formatCount(noYtSongs) + '</span><span class="release-stats-status-label" data-i18n="stats.noYoutube">' + t('stats.noYoutube', 'без YouTube') + '</span></span></div>' +
+                '</div>';
+            container.style.display = '';
         }
 
         // ==================== RENDER: VERIFY ARTISTS ====================
