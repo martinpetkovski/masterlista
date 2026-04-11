@@ -810,10 +810,12 @@
 
         function formatCompactViews(value) {
             if (value == null) return '';
-            if (value >= 1000000000) return (value / 1000000000).toFixed(1) + 'B';
-            if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-            if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
-            return String(value);
+            return formatCompactCountHtml(value);
+        }
+
+        function formatCompactViewsPlain(value) {
+            if (value == null) return '';
+            return formatCompactCountPlain(value);
         }
 
         // ── Load data ────────────────────────────────────────────────
@@ -1085,7 +1087,7 @@
                         html += '<i class="fas ' + iconClass + '"></i> ';
                         html += '<i class="fab fa-youtube" style="color:#f00;font-size:0.6rem"></i> ' + esc(t.videoId);
                         if (t.views) {
-                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + formatCompactViews(t.views) + ')</span>';
+                            html += ' <span style="opacity:.6;font-size:0.65rem">(' + formatCompactViewsPlain(t.views) + ')</span>';
                         }
                         html += '</a>';
                         if (t.verified !== 'verified') {
@@ -1215,7 +1217,10 @@
                     var r = releasesData.releases[ri];
                     if (r && r.releaseUrl && typeof showServiceChooserDialog === 'function') {
                         var ytUrl = r.youtubeTracks && r.youtubeTracks.length > 0 ? (r.youtubeTracks[0].url || 'https://www.youtube.com/watch?v=' + r.youtubeTracks[0].videoId) : undefined;
-                        showServiceChooserDialog(r.releaseUrl, r.releaseTitle, r.bandName, r.thumbnail, null, r.spotifyName, false, ytUrl);
+                        showServiceChooserDialog(r.releaseUrl, r.releaseTitle, r.bandName, r.thumbnail, null, r.spotifyName, false, ytUrl, undefined, {
+                            totalViews: r.youtubeViews || 0,
+                            viewsDelta: typeof r.viewsDelta === 'number' ? r.viewsDelta : null
+                        });
                     } else if (r && r.releaseUrl) {
                         window.open(r.releaseUrl, '_blank');
                     }

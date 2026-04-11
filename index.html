@@ -2827,17 +2827,29 @@
             }
 
             .release-radar-grid {
-                overflow: hidden;
-                padding-bottom: 0;
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 0.75rem;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 0 0 0.35rem;
+                scroll-snap-type: x proximity;
+                -webkit-overflow-scrolling: touch;
             }
 
             .release-radar-grid::-webkit-scrollbar {
                 display: none;
             }
 
+            .release-radar-grid .no-data-msg {
+                min-width: 100%;
+            }
+
             .radar-item {
                 gap: 0.55rem;
                 padding: 0.4rem 0.15rem;
+                flex: 0 0 min(78vw, 290px);
+                scroll-snap-align: start;
             }
 
             .radar-cover {
@@ -3540,13 +3552,25 @@
             return band ? band.accentColors || null : null;
         }
 
+        function readServiceChooserStat(el, attrName) {
+            var raw = el.getAttribute(attrName);
+            if (raw == null || raw === '') return null;
+            var value = Number(raw);
+            return isFinite(value) ? value : null;
+        }
+
         window.openServiceChooser = function(el) {
             var url = el.getAttribute('data-url');
             var title = el.getAttribute('data-title');
             var artist = el.getAttribute('data-artist');
             var thumb = el.getAttribute('data-thumb');
             var band = getArtistBandInfo(artist);
-            showServiceChooserDialog(url, title, artist, thumb, band ? band.accentColors : null, band ? band.spotifyName : null, band ? band.confirmed : false);
+            var totalViews = readServiceChooserStat(el, 'data-total-views');
+            var viewsDelta = readServiceChooserStat(el, 'data-views-delta');
+            var stats = (totalViews !== null || viewsDelta !== null)
+                ? { totalViews: totalViews, viewsDelta: viewsDelta }
+                : undefined;
+            showServiceChooserDialog(url, title, artist, thumb, band ? band.accentColors : null, band ? band.spotifyName : null, band ? band.confirmed : false, undefined, undefined, stats);
         };
 
         // ==================== LOAD ALL DATA ====================
@@ -3722,27 +3746,15 @@
 
         // ==================== RENDER: MINI CHART (uses pre-computed data from site-master.json) ====================
         function formatViewsCompact(n) {
-            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>';
-            if (n >= 1000000) return (n / 1000000).toFixed(1) + '<span style="color:var(--accent-red)">M</span>';
-            if (n >= 1000) return (n / 1000).toFixed(1) + '<span style="color:var(--accent-blue)">K</span>';
-            return String(n);
+            return formatCompactCountHtml(n);
         }
         function formatViewsCompactPlain(n) {
-            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
-            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-            return String(n);
+            return formatCompactCountPlain(n);
         }
         function formatViewsDeltaCompact(n) {
             if (n === null || n === undefined) return '·';
             if (n === 0) return '·';
-            var abs = Math.abs(n);
-            var formatted;
-            if (abs >= 1000000000) formatted = (abs / 1000000000).toFixed(1) + '<span style="color:var(--accent-gold, #fbbf24)">B</span>';
-            else if (abs >= 1000000) formatted = (abs / 1000000).toFixed(1) + '<span style="color:var(--accent-red, #ef4444)">M</span>';
-            else if (abs >= 1000) formatted = (abs / 1000).toFixed(1) + '<span style="color:var(--accent-blue, #5a8ab5)">K</span>';
-            else formatted = abs;
-            return formatted;
+            return formatCompactCountHtml(Math.abs(n));
         }
         function renderMiniChart(containerId, loadingId, genreKey) {
             var chartKey = genreKey + '_single';
@@ -3771,7 +3783,7 @@
                         sparkleSvg +
                     '</div>' :
                     '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
-                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     coverHtml +
                     '<div class="mini-chart-info">' +
@@ -3874,7 +3886,7 @@
             } else {
                 list.innerHTML = last5.map(function(r) {
                     var releaseDate = r.effectiveReleaseDate || r.releaseDate;
-                    return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                    return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
@@ -3923,7 +3935,7 @@
             return '<div class="discover-releases">' + releases.map(function(r) {
                 var typeIcon = r.releaseType === 'album' ? 'fas fa-record-vinyl' : 'fas fa-compact-disc';
                 var url = r.releaseUrl || '#';
-                return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + '">' +
+                return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + '">' +
                     '<i class="' + typeIcon + '"></i> ' + escHtml(localizeText(r.releaseTitle)) +
                 '</a>';
             }).join('') + '</div>';
@@ -4016,7 +4028,7 @@
             var loading = document.getElementById('sotd-loading');
 
             list.innerHTML = picked.map(function(track) {
-                var onclick = track.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(track.url) + '" data-title="' + escHtml(track.title) + '" data-artist="' + escHtml(track.artist) + '" data-thumb="' + escHtml(track.image || '') + '"' : '';
+                var onclick = track.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(track.url) + '" data-title="' + escHtml(track.title) + '" data-artist="' + escHtml(track.artist) + '" data-thumb="' + escHtml(track.image || '') + '" data-total-views="' + escHtml(String(track.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(track.viewsDelta || 0)) + '"' : '';
                 var imgHtml = track.image ? '<img class="sotd-cover" src="' + track.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sotd-cover"></div>';
                 var relHtml = '';
                 if (track.relevance && track.relevance.length > 0) {
@@ -4080,7 +4092,7 @@
                     }).join('');
                     chevHtml = '<span class="trending-chevrons" title="+' + formatViewsCompactPlain(viewsDeltaVal) + ' ' + t('dashboard.views') + '">' + chevItems + '</span>';
                 }
-                return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
@@ -4315,10 +4327,7 @@
 
             var pct = totalSongs > 0 ? (verifiedSongs / totalSongs) * 100 : 0;
             var segW = function(n) { return totalSongs ? (n / totalSongs) * 100 : 0; };
-            var viewsStr = totalViews >= 1000000000 ? (totalViews / 1000000000).toFixed(1) + 'B'
-                : totalViews >= 1000000 ? (totalViews / 1000000).toFixed(1) + 'M'
-                : totalViews >= 1000 ? (totalViews / 1000).toFixed(1) + 'K'
-                : formatCount(totalViews);
+            var viewsStr = formatViewsCompact(totalViews);
             var pctStr = (Math.round(pct * 10) / 10);
             pctStr = (pctStr % 1 === 0 ? pctStr.toFixed(0) : pctStr.toFixed(1)) + '%';
             var ratioStr = formatCount(verifiedSongs) + ' / ' + formatCount(totalSongs);

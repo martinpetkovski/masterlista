@@ -3206,10 +3206,11 @@ a.chart-history-item {
         }
         
         function formatViewsAbsolute(n) {
-            if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'B';
-            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-            return String(n);
+            return formatCompactCountPlain(n);
+        }
+
+        function formatViewsAbsoluteHtml(n) {
+            return formatCompactCountHtml(n);
         }
 
         // Build artistHistory from pre-computed site-master.json data
@@ -3541,7 +3542,7 @@ a.chart-history-item {
                     segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
                 }
                 let positionHtml = cumulativeRankIndex >= 0 ? `<span class="vu-pop-value">#${cumulativeRankIndex + 1}</span>` : '';
-                cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(cumulativePop)}</span>${positionHtml}</div>`;
+                cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsoluteHtml(cumulativePop)}</span>${positionHtml}</div>`;
             }
 
             container.innerHTML = `
@@ -3771,8 +3772,12 @@ a.chart-history-item {
                         ? '<span class="release-track-verified" title="Верификуван"><i class="fas fa-check-circle"></i></span>'
                         : '';
                     const totalViews = ytEntries.reduce((sum, yt) => sum + (yt.views || 0), 0);
+                    const deltaEntries = ytEntries.filter(yt => typeof yt.viewsDelta === 'number');
+                    const songViewsDelta = deltaEntries.length > 0
+                        ? deltaEntries.reduce((sum, yt) => sum + (yt.viewsDelta || 0), 0)
+                        : (tracks.length === 1 && typeof release.viewsDelta === 'number' ? release.viewsDelta : null);
                     const viewsHtml = totalViews > 0
-                        ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalViews)}</span>`
+                        ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(totalViews)}</span>`
                         : '';
                     // Build all YT URLs JSON for the service chooser video picker
                     const allYtData = ytEntriesSorted.map(yt => ({
@@ -3788,7 +3793,7 @@ a.chart-history-item {
                         let pills = visibleEntries.map(yt => {
                             const url = yt.url || 'https://www.youtube.com/watch?v=' + yt.videoId;
                             const v = yt.views || 0;
-                            const viewStr = v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? (v / 1000).toFixed(1) + 'K' : v;
+                            const viewStr = formatCompactCountPlain(v);
                             return `<a class="release-track-yt-pill" href="${url.replace(/"/g, '&quot;')}" target="_blank" rel="noopener" title="${viewStr}"><i class="fab fa-youtube"></i></a>`;
                         }).join('');
                         if (hiddenEntries.length > 0) {
@@ -3796,7 +3801,9 @@ a.chart-history-item {
                         }
                         linksHtml = '<span class="release-track-links">' + pills + '</span>';
                     }
-                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${bestYtUrl.replace(/"/g, '&quot;')}"${ytDataAttr}><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
+                    const totalViewsAttr = ` data-total-views="${String(totalViews)}"`;
+                    const viewsDeltaAttr = songViewsDelta == null ? '' : ` data-views-delta="${String(songViewsDelta)}"`;
+                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${bestYtUrl.replace(/"/g, '&quot;')}"${ytDataAttr}${totalViewsAttr}${viewsDeltaAttr}><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
                 }).join('');
 
                 const releaseDate = new Date(release.releaseDate);
@@ -3819,7 +3826,7 @@ a.chart-history-item {
                         else color = '#ef4444';
                         segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
                     }
-                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsolute(currentDelta)}</span></div>`;
+                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsoluteHtml(currentDelta)}</span></div>`;
                 }
 
                 const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
@@ -3860,7 +3867,7 @@ a.chart-history-item {
                                         <i class="${typeIcon}"></i> ${typeLabel}
                                     </span>
                                     <span>${dateStr}</span>
-                                    ${(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews) ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews)}</span>` : ''}
+                                    ${(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews) ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews)}</span>` : ''}
                                 </div>
                                 ${vuMeterHtml}
                             </div>
@@ -3949,7 +3956,7 @@ a.chart-history-item {
             const articleCountHtml = articles && articles.length > 0 ? `<span><i class="fas fa-newspaper"></i> ${articles.length}</span>` : '';
             const eventCountHtml = (upcoming.length + past.length) > 0 ? `<span><i class="fas fa-calendar-day"></i> ${upcoming.length + past.length}</span>` : '';
             const ytViewsHtml = totalYtViews > 0
-                ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsolute(totalYtViews)}</span>`
+                ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(totalYtViews)}</span>`
                 : '';
 
             // Group timeline items by month/year
@@ -4068,6 +4075,8 @@ a.chart-history-item {
             const rIdx = parseInt(item.dataset.releaseIdx);
             const trackName = item.dataset.trackName;
             const ytUrl = item.dataset.ytUrl || '';
+            const totalViews = item.dataset.totalViews === undefined ? null : Number(item.dataset.totalViews);
+            const viewsDelta = item.dataset.viewsDelta === undefined ? null : Number(item.dataset.viewsDelta);
             // Parse all YouTube video URLs for the video picker
             let allYtVideos = null;
             if (item.dataset.ytAll) {
@@ -4087,7 +4096,11 @@ a.chart-history-item {
                 release.spotifyName || band?.spotifyName,
                 band?.confirmed,
                 ytUrl || undefined,
-                allYtVideos || undefined
+                allYtVideos || undefined,
+                {
+                    totalViews: Number.isFinite(totalViews) ? totalViews : null,
+                    viewsDelta: Number.isFinite(viewsDelta) ? viewsDelta : null
+                }
             );
         }
         
