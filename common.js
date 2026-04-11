@@ -1126,6 +1126,29 @@ function loadMasterArtistNameSet() {
     return _masterArtistNameSetPromise;
 }
 
+function clearServiceChooserCloseState(overlay) {
+    if (!overlay) return;
+
+    if (overlay._serviceChooserCloseTimer) {
+        clearTimeout(overlay._serviceChooserCloseTimer);
+        overlay._serviceChooserCloseTimer = null;
+    }
+
+    if (overlay._serviceChooserCloseHandler && overlay._serviceChooserClosePanel) {
+        overlay._serviceChooserClosePanel.removeEventListener('animationend', overlay._serviceChooserCloseHandler);
+    }
+
+    overlay._serviceChooserCloseHandler = null;
+    overlay._serviceChooserClosePanel = null;
+}
+
+function finalizeServiceChooserClose(overlay) {
+    if (!overlay) return;
+    clearServiceChooserCloseState(overlay);
+    overlay.classList.remove('visible', 'closing');
+    document.body.style.overflow = '';
+}
+
 /**
  * Show the unified service-chooser dialog.
  *
@@ -1176,35 +1199,35 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         }).join('');
     }
 
+    function getHexLuminance(hex) {
+        var normalized = normalizeHexColor(hex);
+        if (!normalized) return null;
+
+        var raw = normalized.slice(1);
+        var red = parseInt(raw.slice(0, 2), 16);
+        var green = parseInt(raw.slice(2, 4), 16);
+        var blue = parseInt(raw.slice(4, 6), 16);
+
+        return (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+    }
+
+    function getAverageHexLuminance(colors) {
+        var total = 0;
+        var count = 0;
+
+        for (var i = 0; i < colors.length; i++) {
+            var luminance = getHexLuminance(colors[i]);
+            if (luminance === null) continue;
+            total += luminance;
+            count += 1;
+        }
+
+        return count ? (total / count) : null;
+    }
+
     var overlay = document.getElementById('service-chooser-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
-
-        function getHexLuminance(hex) {
-            var normalized = normalizeHexColor(hex);
-            if (!normalized) return null;
-
-            var raw = normalized.slice(1);
-            var red = parseInt(raw.slice(0, 2), 16);
-            var green = parseInt(raw.slice(2, 4), 16);
-            var blue = parseInt(raw.slice(4, 6), 16);
-
-            return (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-        }
-
-        function getAverageHexLuminance(colors) {
-            var total = 0;
-            var count = 0;
-
-            for (var i = 0; i < colors.length; i++) {
-                var luminance = getHexLuminance(colors[i]);
-                if (luminance === null) continue;
-                total += luminance;
-                count += 1;
-            }
-
-            return count ? (total / count) : null;
-        }
         overlay.id = 'service-chooser-overlay';
         overlay.className = 'service-chooser-overlay';
         overlay.innerHTML =
@@ -1237,6 +1260,10 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             });
         }
     }
+
+    clearServiceChooserCloseState(overlay);
+    overlay.classList.remove('visible', 'closing');
+    void overlay.offsetWidth;
 
     var headerEl  = document.getElementById('service-chooser-header');
     var chooserEl = overlay.querySelector('.service-chooser');
@@ -1434,7 +1461,6 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     }
 
     // Ensure clean state then show
-    overlay.classList.remove('closing');
     overlay.classList.add('visible');
     document.body.style.overflow = 'hidden';
 }
@@ -1445,19 +1471,30 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
  */
 function closeServiceChooserDialog(animated) {
     var ov = document.getElementById('service-chooser-overlay');
-    if (!ov || !ov.classList.contains('visible')) return;
+    if (!ov || (!ov.classList.contains('visible') && !ov.classList.contains('closing'))) return;
+
+    clearServiceChooserCloseState(ov);
 
     if (animated) {
         ov.classList.add('closing');
         var sc = ov.querySelector('.service-chooser');
+        if (!sc) {
+            finalizeServiceChooserClose(ov);
+            return;
+        }
+
         var onEnd = function() {
-            sc.removeEventListener('animationend', onEnd);
-            ov.classList.remove('visible', 'closing');
-            document.body.style.overflow = '';
+            finalizeServiceChooserClose(ov);
         };
-        sc.addEventListener('animationend', onEnd);
+
+        ov._serviceChooserClosePanel = sc;
+        ov._serviceChooserCloseHandler = onEnd;
+        ov._serviceChooserCloseTimer = setTimeout(function() {
+            finalizeServiceChooserClose(ov);
+        }, 350);
+
+        sc.addEventListener('animationend', onEnd, { once: true });
     } else {
-        ov.classList.remove('visible');
-        document.body.style.overflow = '';
+        finalizeServiceChooserClose(ov);
     }
 }
