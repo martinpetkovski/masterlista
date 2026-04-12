@@ -71,16 +71,16 @@ function getCompactCountBadgeTheme(unitLower) {
         },
         m: {
             letter: 'M',
-            field: '#9C1F1F',
-            clothTop: '#5F0E0E',
-            clothMid: '#9C1F1F',
+            field: '#B62525',
+            clothTop: '#7A1414',
+            clothMid: '#B62525',
             clothBottom: '#390707',
-            accentDark: '#7A1515',
-            accentMid: '#C83A3A',
-            accentLight: '#FFB0A8',
-            metalLight: '#FFE3DE',
-            metalMid: '#D98A85',
-            metalDark: '#8C4242',
+            accentDark: '#982020',
+            accentMid: '#E44F4F',
+            accentLight: '#FFC7BF',
+            metalLight: '#FFE8E2',
+            metalMid: '#E79B96',
+            metalDark: '#9E4C4C',
             ribbonTop: '#FFF3F0',
             ribbonBottom: '#F3CAC2',
             letterX: '300',
@@ -184,169 +184,96 @@ function buildCompactUnitBadgeSvg(unit, exactValueText) {
 
     var unitLower = unit.toLowerCase();
     var theme = getCompactCountBadgeTheme(unitLower);
-    var badgeId = 'compact-crest-' + unitLower + '-' + (++compactCountBadgeInstanceCounter);
-    var goldMainId = badgeId + '-gold-main';
-    var goldDiagId = badgeId + '-gold-diag';
-    var goldRadialId = badgeId + '-gold-radial';
-    var silverMainId = badgeId + '-silver-main';
-    var silverGlowId = badgeId + '-silver-glow';
-    var ribbonShadeId = badgeId + '-ribbon-shade';
-    var blueClothId = badgeId + '-cloth-blue';
-    var crestSweepId = badgeId + '-crest-sweep';
-    var goldMain = 'url(#' + goldMainId + ')';
-    var goldDiag = 'url(#' + goldDiagId + ')';
-    var goldRadial = 'url(#' + goldRadialId + ')';
-    var silverMain = 'url(#' + silverMainId + ')';
-    var silverGlow = 'url(#' + silverGlowId + ')';
-    var ribbonShade = 'url(#' + ribbonShadeId + ')';
-    var blueCloth = 'url(#' + blueClothId + ')';
-    var crestSweep = 'url(#' + crestSweepId + ')';
-    var letterFill = '#FFFFFF';
-    var badgeFontFamily = 'Arial, Helvetica, sans-serif';
-    var letterDepthX = String(Number(theme.letterX) + 2);
-    var letterDepthY = String(Number(theme.letterY) + 4);
-    var letterHighlightX = String(Number(theme.letterX) - 5);
-    var letterHighlightY = String(Number(theme.letterY) - 9);
-    var letterHighlightSize = String(Number(theme.letterSize) - 8);
+    var badgeId = 'compact-letter-' + unitLower + '-' + (++compactCountBadgeInstanceCounter);
+    var letterBodyId = badgeId + '-letter-body';
+    var letterFaceId = badgeId + '-letter-face';
+    var letterGlowId = badgeId + '-letter-glow';
+    var letterSweepId = badgeId + '-letter-sweep';
+    var letterRimId = badgeId + '-letter-rim';
+    var letterEdgeSweepId = badgeId + '-letter-edge-sweep';
+    var letterBody = 'url(#' + letterBodyId + ')';
+    var letterFace = 'url(#' + letterFaceId + ')';
+    var letterGlow = 'url(#' + letterGlowId + ')';
+    var letterSweep = 'url(#' + letterSweepId + ')';
+    var letterRim = 'url(#' + letterRimId + ')';
+    var letterEdgeSweep = 'url(#' + letterEdgeSweepId + ')';
+    var badgeFontFamily = "'Arial Black', 'Arial Narrow Bold', Montserrat, Arial, Helvetica, sans-serif";
+    var letterStroke = '#0F0F0F';
+    var letterTextAttrs = ' text-anchor="middle" font-family="' + badgeFontFamily + '" font-weight="900" letter-spacing="0"';
+    var badgeLetterX = String(180 + (unitLower === 'k' ? -8 : unitLower === 'm' ? -2 : -1));
+    var badgeLetterY = unitLower === 'm' ? '302' : '306';
+    var badgeLetterSize = unitLower === 'm' ? '296' : '308';
+    var letterShadowX = String(Number(badgeLetterX) + 10);
+    var letterShadowY = String(Number(badgeLetterY) + 14);
+    var letterDepthX = String(Number(badgeLetterX) + 5);
+    var letterDepthY = String(Number(badgeLetterY) + 8);
+    var letterFaceY = String(Number(badgeLetterY) - 6);
+    var letterFaceSize = String(Number(badgeLetterSize) - 44);
+    var letterHighlightX = String(Number(badgeLetterX) - 6);
+    var letterHighlightY = String(Number(badgeLetterY) - 12);
+    var letterHighlightSize = String(Number(badgeLetterSize) - 60);
     var badgeTitle = exactValueText ? escHtml(exactValueText) : '';
     var badgeTitleAttr = badgeTitle ? ' title="' + badgeTitle + '"' : '';
 
     return [
-        '<svg class="compact-count-badge-svg compact-count-badge-svg--' + unitLower + '" viewBox="0 0 600 700" aria-hidden="true" focusable="false"' + badgeTitleAttr + '>',
+        '<svg class="compact-count-badge-svg compact-count-badge-svg--' + unitLower + '" viewBox="0 0 360 420" aria-hidden="true" focusable="false"' + badgeTitleAttr + ' text-rendering="geometricPrecision" style="min-width:0.84rem;min-height:0.96rem;">',
             (badgeTitle ? '<title>' + badgeTitle + '</title>' : ''),
             '<defs>',
-                '<linearGradient id="' + goldMainId + '" x1="0" y1="0" x2="0" y2="1">',
-                    '<stop offset="0" stop-color="' + theme.accentDark + '"/>',
-                    '<stop offset="0.24" stop-color="' + theme.accentLight + '"/>',
-                    '<stop offset="0.5" stop-color="' + theme.accentMid + '"/>',
-                    '<stop offset="0.76" stop-color="' + theme.accentLight + '"/>',
-                    '<stop offset="1" stop-color="' + theme.accentDark + '"/>',
+                '<linearGradient id="' + letterBodyId + '" x1="0" y1="0" x2="0" y2="1">',
+                    '<stop offset="0" stop-color="' + theme.clothTop + '"/>',
+                    '<stop offset="0.28" stop-color="' + theme.accentMid + '"/>',
+                    '<stop offset="0.58" stop-color="' + theme.field + '"/>',
+                    '<stop offset="0.8" stop-color="' + theme.accentDark + '"/>',
+                    '<stop offset="1" stop-color="' + theme.clothBottom + '"/>',
                 '</linearGradient>',
-                '<linearGradient id="' + goldDiagId + '" x1="0" y1="0" x2="1" y2="1">',
+                '<linearGradient id="' + letterFaceId + '" x1="0" y1="0" x2="1" y2="1">',
                     '<stop offset="0" stop-color="' + theme.accentLight + '"/>',
-                    '<stop offset="0.36" stop-color="' + theme.accentMid + '"/>',
+                    '<stop offset="0.35" stop-color="' + theme.field + '"/>',
                     '<stop offset="0.72" stop-color="' + theme.accentDark + '"/>',
                     '<stop offset="1" stop-color="' + theme.accentLight + '"/>',
                 '</linearGradient>',
-                '<radialGradient id="' + goldRadialId + '" cx="0.34" cy="0.18" r="0.95">',
-                    '<stop offset="0" stop-color="' + theme.accentLight + '"/>',
-                    '<stop offset="0.44" stop-color="' + theme.accentMid + '"/>',
-                    '<stop offset="0.82" stop-color="' + theme.accentDark + '"/>',
-                    '<stop offset="1" stop-color="' + theme.accentMid + '"/>',
+                '<radialGradient id="' + letterGlowId + '" cx="0.32" cy="0.16" r="0.9">',
+                    '<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.88"/>',
+                    '<stop offset="0.38" stop-color="' + theme.accentLight + '" stop-opacity="0.45"/>',
+                    '<stop offset="1" stop-color="' + theme.accentLight + '" stop-opacity="0"/>',
                 '</radialGradient>',
-                '<linearGradient id="' + silverMainId + '" x1="0" y1="0" x2="0" y2="1">',
+                '<linearGradient id="' + letterRimId + '" x1="0" y1="0" x2="0" y2="1">',
                     '<stop offset="0" stop-color="' + theme.metalLight + '"/>',
-                    '<stop offset="0.32" stop-color="' + theme.metalMid + '"/>',
-                    '<stop offset="0.68" stop-color="' + theme.metalDark + '"/>',
-                    '<stop offset="1" stop-color="' + theme.metalLight + '"/>',
-                '</linearGradient>',
-                '<radialGradient id="' + silverGlowId + '" cx="0.28" cy="0.18" r="0.92">',
-                    '<stop offset="0" stop-color="' + theme.ribbonTop + '" stop-opacity="0.92"/>',
-                    '<stop offset="0.42" stop-color="' + theme.metalLight + '" stop-opacity="0.62"/>',
-                    '<stop offset="1" stop-color="' + theme.metalDark + '" stop-opacity="0"/>',
-                '</radialGradient>',
-                '<linearGradient id="' + ribbonShadeId + '" x1="0" y1="0" x2="0" y2="1">',
-                    '<stop offset="0" stop-color="' + theme.ribbonTop + '"/>',
-                    '<stop offset="0.55" stop-color="' + theme.ribbonBottom + '"/>',
-                    '<stop offset="1" stop-color="' + theme.ribbonBottom + '"/>',
-                '</linearGradient>',
-                '<linearGradient id="' + blueClothId + '" x1="0" y1="0" x2="0" y2="1">',
-                    '<stop offset="0" stop-color="' + theme.clothTop + '"/>',
-                    '<stop offset="0.5" stop-color="' + theme.clothMid + '"/>',
+                    '<stop offset="0.24" stop-color="' + theme.accentLight + '"/>',
+                    '<stop offset="0.56" stop-color="' + theme.field + '"/>',
+                    '<stop offset="0.82" stop-color="' + theme.accentDark + '"/>',
                     '<stop offset="1" stop-color="' + theme.clothBottom + '"/>',
                 '</linearGradient>',
-                '<linearGradient id="' + crestSweepId + '" gradientUnits="userSpaceOnUse" x1="-280" y1="120" x2="-40" y2="320">',
+                '<linearGradient id="' + letterSweepId + '" gradientUnits="userSpaceOnUse" x1="-160" y1="40" x2="-10" y2="330">',
                     '<stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>',
                     '<stop offset="0.42" stop-color="#FFFFFF" stop-opacity="0"/>',
-                    '<stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.78"/>',
+                    '<stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0.92"/>',
                     '<stop offset="0.58" stop-color="#FFFFFF" stop-opacity="0"/>',
                     '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>',
-                    '<animate attributeName="x1" values="-280;760" dur="2.4s" repeatCount="indefinite"/>',
-                    '<animate attributeName="x2" values="-40;1000" dur="2.4s" repeatCount="indefinite"/>',
+                    '<animate attributeName="x1" values="-160;520" dur="2.4s" repeatCount="indefinite"/>',
+                    '<animate attributeName="x2" values="-10;670" dur="2.4s" repeatCount="indefinite"/>',
+                '</linearGradient>',
+                '<linearGradient id="' + letterEdgeSweepId + '" gradientUnits="userSpaceOnUse" x1="-120" y1="-20" x2="80" y2="150">',
+                    '<stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>',
+                    '<stop offset="0.46" stop-color="#FFFFFF" stop-opacity="0"/>',
+                    '<stop offset="0.52" stop-color="#FFFFFF" stop-opacity="0.86"/>',
+                    '<stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/>',
+                    '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>',
+                    '<animate attributeName="x1" values="-120;420" dur="2.8s" begin="-0.75s" repeatCount="indefinite"/>',
+                    '<animate attributeName="x2" values="80;620" dur="2.8s" begin="-0.75s" repeatCount="indefinite"/>',
                 '</linearGradient>',
             '</defs>',
-            '<path d="M192 182C149 208 120 258 116 324C113 371 126 410 143 449C117 487 113 536 127 584C150 559 182 548 221 549C190 507 192 460 211 425C195 371 198 319 206 271C212 234 212 204 192 182Z" fill="#0F0F0F" opacity="0.2"/>',
-            '<path d="M408 182C451 208 480 258 484 324C487 371 474 410 457 449C483 487 487 536 473 584C450 559 418 548 379 549C410 507 408 460 389 425C405 371 402 319 394 271C388 234 388 204 408 182Z" fill="#0F0F0F" opacity="0.2"/>',
             '<g>',
-                '<path d="M185 184C146 211 122 258 122 317C122 363 136 403 156 439C132 469 127 510 137 551C155 535 178 526 205 524C187 487 191 454 209 429C196 382 197 339 202 297C207 256 208 217 185 184Z" fill="' + blueCloth + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M201 210C171 233 153 270 152 316C151 355 162 389 177 421C160 443 157 473 163 503C177 489 195 481 216 480C205 451 208 427 221 408C212 368 213 333 218 298C222 266 221 237 201 210Z" fill="' + goldDiag + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M175 233C159 254 150 281 149 312C148 343 156 372 168 395" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.16"/>',
-                '<path d="M415 184C454 211 478 258 478 317C478 363 464 403 444 439C468 469 473 510 463 551C445 535 422 526 395 524C413 487 409 454 391 429C404 382 403 339 398 297C393 256 392 217 415 184Z" fill="' + blueCloth + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M399 210C429 233 447 270 448 316C449 355 438 389 423 421C440 443 443 473 437 503C423 489 405 481 384 480C395 451 392 427 379 408C388 368 387 333 382 298C378 266 379 237 399 210Z" fill="' + goldDiag + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M425 233C441 254 450 281 451 312C452 343 444 372 432 395" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.16"/>',
-            '</g>',
-            '<g>',
-                '<path d="M300 80C282 53 251 43 214 48C236 60 251 75 259 94C230 92 208 103 191 122C216 118 239 122 258 137C237 140 226 154 222 171C243 162 266 161 286 166L300 187L314 166C334 161 357 162 378 171C374 154 363 140 342 137C361 122 384 118 409 122C392 103 370 92 341 94C349 75 364 60 386 48C349 43 318 53 300 80Z" fill="' + goldRadial + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M272 144C280 140 320 140 328 144L322 163C314 159 286 159 278 163Z" fill="' + ribbonShade + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M286 105C287 84 293 65 300 55C307 65 313 84 314 105L331 128C336 135 338 146 336 155C333 168 321 178 308 183L310 213L290 213L292 183C279 178 267 168 264 155C262 146 264 135 269 128Z" fill="' + goldMain + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M246 152C246 117 268 96 300 96C332 96 354 117 354 152V186C354 206 346 224 331 239L339 280C339 296 332 309 316 319L300 325L284 319C268 309 261 296 261 280L269 239C254 224 246 206 246 186Z" fill="' + silverMain + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M246 152C246 117 268 96 300 96C332 96 354 117 354 152V186C354 206 346 224 331 239L339 280C339 296 332 309 316 319L300 325L284 319C268 309 261 296 261 280L269 239C254 224 246 206 246 186Z" fill="' + silverGlow + '" opacity="0.72"/>',
-                '<path d="M270 155C270 136 282 124 300 124C318 124 330 136 330 155V183C330 196 324 208 314 216L316 251C316 261 310 269 300 273C290 269 284 261 284 251L286 216C276 208 270 196 270 183Z" fill="#20262D" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<polygon points="284,145 316,145 311,155 279,155" fill="#0F0F0F"/>',
-                '<polygon points="284,164 316,164 312,174 280,174" fill="#0F0F0F"/>',
-                '<polygon points="295,182 305,182 302,247 293,247" fill="#0F0F0F"/>',
-                '<path d="M257 143C275 133 325 133 343 143L336 160C321 152 279 152 264 160Z" fill="' + goldMain + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M266 281C277 292 289 298 300 300C311 298 323 292 334 281L331 296C324 309 313 317 300 321C287 317 276 309 269 296Z" fill="' + goldMain + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M258 117C271 105 284 100 300 100C314 100 327 105 341 117" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.34"/>',
-                '<path d="M258 117C271 105 284 100 300 100C314 100 327 105 341 117" fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round" stroke-dasharray="58 180" stroke-dashoffset="160" opacity="0.05">',
-                    '<animate attributeName="stroke-dashoffset" values="160;-120" dur="2.15s" repeatCount="indefinite"/>',
-                    '<animate attributeName="opacity" values="0.05;0.8;0.16;0.05" dur="2.15s" repeatCount="indefinite"/>',
-                '</path>',
-            '</g>',
-            '<g>',
-                '<path d="M300 160L456 214V376C456 500 381 574 300 621C219 574 144 500 144 376V214Z" fill="#0F0F0F" opacity="0.18"/>',
-                '<path d="M300 152L464 208V376C464 508 384 587 300 636C216 587 136 508 136 376V208Z" fill="' + goldRadial + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M300 183L429 227V370C429 469 369 529 300 567C231 529 171 469 171 370V227Z" fill="none" stroke="' + goldMain + '" stroke-width="18" stroke-linejoin="round" opacity="0.92"/>',
-                '<path d="M300 204L404 240V366C404 447 355 498 300 531C245 498 196 447 196 366V240Z" fill="' + theme.field + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M204 219L300 186L396 219" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.28"/>',
-                '<path d="M204 219L300 186L396 219" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-dasharray="120 300" stroke-dashoffset="240" opacity="0.05">',
-                    '<animate attributeName="stroke-dashoffset" values="240;-180" dur="2.3s" repeatCount="indefinite"/>',
-                    '<animate attributeName="opacity" values="0.05;0.95;0.18;0.05" dur="2.3s" repeatCount="indefinite"/>',
-                '</path>',
-                '<path d="M204 241V364C204 414 231 458 267 482" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.14"/>',
-                '<path d="M204 241V364C204 414 231 458 267 482" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-dasharray="120 340" stroke-dashoffset="250" opacity="0.04">',
-                    '<animate attributeName="stroke-dashoffset" values="250;-170" dur="2.3s" begin="0.45s" repeatCount="indefinite"/>',
-                    '<animate attributeName="opacity" values="0.04;0.84;0.14;0.04" dur="2.3s" begin="0.45s" repeatCount="indefinite"/>',
-                '</path>',
-                '<path d="M396 241V364C396 414 369 458 333 482" fill="none" stroke="#0F0F0F" stroke-width="7" stroke-linecap="round" opacity="0.24"/>',
-                '<path d="M225 252C241 234 262 234 278 250C292 264 308 264 322 250C338 234 359 234 375 252C388 268 388 289 375 305C359 323 338 323 322 307C308 293 292 293 278 307C262 323 241 323 225 305C212 289 212 268 225 252Z" fill="none" stroke="' + goldDiag + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>',
-                '<path d="M245 252C257 262 269 262 281 252C293 242 307 242 319 252C331 262 343 262 355 252" fill="none" stroke="#0F0F0F" stroke-width="2.2" opacity="0.38"/>',
-                '<path d="M233 307C214 320 206 345 214 365C223 385 245 392 263 383C277 376 286 361 282 345C279 332 267 323 255 324C244 325 236 333 236 343C236 352 242 359 251 360C259 361 266 356 268 348" fill="none" stroke="' + goldMain + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>',
-                '<path d="M367 307C386 320 394 345 386 365C377 385 355 392 337 383C323 376 314 361 318 345C321 332 333 323 345 324C356 325 364 333 364 343C364 352 358 359 349 360C341 361 334 356 332 348" fill="none" stroke="' + goldMain + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>',
-                '<path d="M252 487C265 474 279 474 292 487C298 494 302 494 308 487C321 474 335 474 348 487" fill="none" stroke="' + goldDiag + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.84"/>',
-                buildCompactCountBadgeCharge(unitLower, {
-                    goldMain: goldMain,
-                    goldDiag: goldDiag,
-                    goldRadial: goldRadial
-                }),
-            '</g>',
-            '<g opacity="0.5">',
-                '<path d="M185 184C146 211 122 258 122 317C122 363 136 403 156 439C132 469 127 510 137 551C155 535 178 526 205 524C187 487 191 454 209 429C196 382 197 339 202 297C207 256 208 217 185 184Z" fill="' + crestSweep + '"/>',
-                '<path d="M415 184C454 211 478 258 478 317C478 363 464 403 444 439C468 469 473 510 463 551C445 535 422 526 395 524C413 487 409 454 391 429C404 382 403 339 398 297C393 256 392 217 415 184Z" fill="' + crestSweep + '"/>',
-                '<path d="M300 80C282 53 251 43 214 48C236 60 251 75 259 94C230 92 208 103 191 122C216 118 239 122 258 137C237 140 226 154 222 171C243 162 266 161 286 166L300 187L314 166C334 161 357 162 378 171C374 154 363 140 342 137C361 122 384 118 409 122C392 103 370 92 341 94C349 75 364 60 386 48C349 43 318 53 300 80Z" fill="' + crestSweep + '"/>',
-                '<path d="M246 152C246 117 268 96 300 96C332 96 354 117 354 152V186C354 206 346 224 331 239L339 280C339 296 332 309 316 319L300 325L284 319C268 309 261 296 261 280L269 239C254 224 246 206 246 186Z" fill="' + crestSweep + '"/>',
-                '<path d="M300 152L464 208V376C464 508 384 587 300 636C216 587 136 508 136 376V208Z" fill="' + crestSweep + '"/>',
-                '<path d="M300 204L404 240V366C404 447 355 498 300 531C245 498 196 447 196 366V240Z" fill="' + crestSweep + '"/>',
-                '<text x="' + theme.letterX + '" y="' + theme.letterY + '" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="' + theme.letterSize + '" font-weight="800" fill="' + crestSweep + '" opacity="0.84">' + escHtml(theme.letter) + '</text>',
-            '</g>',
-            '<g>',
-                '<path d="M159 592C192 568 235 561 270 572C288 578 312 578 330 572C365 561 408 568 441 592L432 613C409 626 387 628 364 622C350 618 339 620 330 626C311 637 289 637 270 626C261 620 250 618 236 622C213 628 191 626 168 613Z" fill="' + ribbonShade + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M159 592L126 582L110 604L129 621L107 638L142 636L168 613Z" fill="' + ribbonShade + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<path d="M441 592L474 582L490 604L471 621L493 638L458 636L432 613Z" fill="' + ribbonShade + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round"/>',
-                '<g opacity="0.34">',
-                    '<path d="M159 592C192 568 235 561 270 572C288 578 312 578 330 572C365 561 408 568 441 592L432 613C409 626 387 628 364 622C350 618 339 620 330 626C311 637 289 637 270 626C261 620 250 618 236 622C213 628 191 626 168 613Z" fill="' + crestSweep + '"/>',
-                    '<path d="M159 592L126 582L110 604L129 621L107 638L142 636L168 613Z" fill="' + crestSweep + '"/>',
-                    '<path d="M441 592L474 582L490 604L471 621L493 638L458 636L432 613Z" fill="' + crestSweep + '"/>',
-                '</g>',
-                '<path d="M210 617C223 614 236 614 249 618" fill="none" stroke="#0F0F0F" stroke-width="2.2" stroke-linecap="round" opacity="0.28"/>',
-                '<path d="M390 617C377 614 364 614 351 618" fill="none" stroke="#0F0F0F" stroke-width="2.2" stroke-linecap="round" opacity="0.28"/>',
-                '<text x="300" y="608" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="34" font-weight="800" fill="#0F0F0F">K · M · B</text>',
-            '</g>',
-            '<g>',
-                '<text x="' + theme.shadowX + '" y="' + theme.shadowY + '" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="' + theme.letterSize + '" font-weight="800" fill="#0F0F0F" opacity="0.26">' + escHtml(theme.letter) + '</text>',
-                '<text x="' + letterDepthX + '" y="' + letterDepthY + '" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="' + theme.letterSize + '" font-weight="800" fill="' + theme.accentDark + '" opacity="0.16">' + escHtml(theme.letter) + '</text>',
-                '<text x="' + theme.letterX + '" y="' + theme.letterY + '" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="' + theme.letterSize + '" font-weight="800" fill="' + letterFill + '" stroke="#0F0F0F" stroke-width="4" stroke-linejoin="round" paint-order="stroke fill">' + escHtml(theme.letter) + '</text>',
-                '<text x="' + letterHighlightX + '" y="' + letterHighlightY + '" text-anchor="middle" font-family="' + badgeFontFamily + '" font-size="' + letterHighlightSize + '" font-weight="800" fill="#FFFFFF" opacity="0.4">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + letterShadowX + '" y="' + letterShadowY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="#0F0F0F" opacity="0.22">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + letterDepthX + '" y="' + letterDepthY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="' + theme.clothBottom + '" opacity="0.88">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + badgeLetterY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="' + letterBody + '" stroke="' + letterStroke + '" stroke-width="14" stroke-linejoin="round" paint-order="stroke fill">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + letterFaceY + '"' + letterTextAttrs + ' font-size="' + letterFaceSize + '" fill="' + letterFace + '" opacity="0.8">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + letterFaceY + '"' + letterTextAttrs + ' font-size="' + letterFaceSize + '" fill="' + letterGlow + '" opacity="0.28">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + badgeLetterY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="none" stroke="' + letterRim + '" stroke-width="9" stroke-linejoin="round" opacity="0.84">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + letterHighlightX + '" y="' + letterHighlightY + '"' + letterTextAttrs + ' font-size="' + letterHighlightSize + '" fill="#FFFFFF" opacity="0.12">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + badgeLetterY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="' + letterSweep + '" opacity="0.78">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + badgeLetterY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="none" stroke="' + letterEdgeSweep + '" stroke-width="14" stroke-linejoin="round" opacity="0.58">' + escHtml(theme.letter) + '</text>',
+                '<text x="' + badgeLetterX + '" y="' + badgeLetterY + '"' + letterTextAttrs + ' font-size="' + badgeLetterSize + '" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="96 240" stroke-dashoffset="180" opacity="0.08">' + escHtml(theme.letter) + '<animate attributeName="stroke-dashoffset" values="180;-150" dur="2.55s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.08;0.8;0.18;0.08" dur="2.55s" repeatCount="indefinite"/></text>',
             '</g>',
         '</svg>'
     ].join('');

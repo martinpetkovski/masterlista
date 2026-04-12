@@ -3139,9 +3139,11 @@ body.vfx-dark .service-chooser-overlay,
     --badge-field-shadow: rgba(17, 42, 61, 0.14);
     --badge-letter-fill: #fbfdff;
     --badge-letter-outline: #102a3d;
-    width: 1.26em;
-    height: 1.54em;
+    width: 0.96em;
+    height: 1.1em;
     flex-shrink: 0;
+    position: relative;
+    top: 0.05em;
     overflow: visible;
     filter: drop-shadow(0 3px 6px rgba(0,0,0,0.24));
 }
