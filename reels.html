@@ -1619,7 +1619,8 @@ function renderClip(container, data) {
   const rkNum = parseInt(data.rank, 10);
   const rkTop = !isNaN(rkNum) && rkNum >= 1 && rkNum <= 3;
   const rkCls = rkTop ? 'r' + rkNum : '';
-  const rkStyle = rkTop ? '' : (String(data.rank) === 'ТБТ' ? 'background:var(--purple);font-size:14px;' : String(data.rank) === 'DC' ? 'background:var(--pink);font-size:16px;' : String(data.rank) === '★' ? 'background:var(--accent);' : 'background:#000;');
+  const isHiddenGemBadge = ['DC', 'СБ'].includes(String(data.rank));
+  const rkStyle = rkTop ? '' : (String(data.rank) === 'ТБТ' ? 'background:var(--purple);font-size:14px;' : isHiddenGemBadge ? 'background:var(--pink);font-size:16px;' : String(data.rank) === '★' ? 'background:var(--accent);' : 'background:#000;');
 
   // Days-ago badge for Wednesday clips (replaces rank number)
   const daysAgoLabel = data.showDaysAgo && data.releaseDate ? daysAgoMK(data.releaseDate) : '';
@@ -1652,7 +1653,7 @@ function renderClip(container, data) {
       </div>
       ${(data.releaseDate && !data.showDaysAgo) || data.views ? `<div style="width:82%; display:flex; gap:10px; align-items:center; padding:6px 0 0; opacity:0; animation: slideUp 0.4s 0.7s forwards;">
         ${data.releaseDate && !data.showDaysAgo ? `<div style="display:inline-block; padding:3px 10px; background:var(--gold); color:#000; transform:skewX(-8deg); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:800; letter-spacing:0.5px;">${formatDateMK(data.releaseDate)}</div>` : ''}
-        ${data.views ? `<div style="font-size:11px; color:var(--gold); font-weight:700;">${formatViews(data.views)} прегледи</div>` : ''}
+        ${data.views ? `<div style="font-size:11px; color:var(--gold); font-weight:700;">${data.exactViews ? formatViewsExact(data.views) : formatViews(data.views)} прегледи</div>` : ''}
       </div>` : ''}
     </div>
   `;
@@ -2229,7 +2230,7 @@ function buildSaturdayScenes(forcedArtist) {
 
 function buildSundayScenes(forcedSong) {
   const song = getDeeperCut(forcedSong);
-  if (!song) return { scenes: [], data: null, label: 'Deeper Cut (no candidates)' };
+  if (!song) return { scenes: [], data: null, label: 'Скриено Богатство (no candidates)' };
 
   const thumbs = [song.thumbnail].filter(Boolean);
   const videoId = song.videoId || topVideoId(song.youtubeTracks);
@@ -2250,13 +2251,14 @@ function buildSundayScenes(forcedSong) {
   // Clip scene with release date + views
   scenes.push({
     type: 'clip',
-    rank: 'DC',
+    rank: 'СБ',
     songTitle: song.songName || song.releaseTitle,
     artist: song.bandName,
     thumbnail: song.thumbnail,
     videoId,
     youtubeTracks: song.youtubeTracks || [],
     releaseDate: song.releaseDate,
+    exactViews: true,
     views,
     bg: createCollageBG(thumbs.length >= 5 ? thumbs : getAllThumbs()),
     duration: 6
@@ -2490,7 +2492,7 @@ function generatePSCommand(dayKey) {
       if (!data) return `<span class="comment"># No deeper-cut candidate found</span>`;
       const songId = data._songKey || data.releaseId || data.releaseTitle;
       args += ` <span class="param">--song</span> <span class="string">"${sanitizePS(songId)}"</span>`;
-      info = `<span class="comment"># ${data.bandName} – ${data.songName || data.releaseTitle} (${formatViews(data.views || data.youtubeViews||0)} views)</span>`;
+      info = `<span class="comment"># ${data.bandName} – ${data.songName || data.releaseTitle} (${formatViewsExact(data.views || data.youtubeViews||0)} views)</span>`;
       break;
     }
     default: return '# Unknown day';
@@ -2828,6 +2830,10 @@ function formatViews(n) {
   '</span>';
 }
 
+function formatViewsExact(n) {
+  return (Number(n) || 0).toLocaleString();
+}
+
 function formatViewsPlain(n) {
   const parts = getCompactViewsParts(n);
   if (!parts) return String(Number(n) || 0);
@@ -3104,7 +3110,7 @@ function switchDay(dayKey, opts) {
     if (!opts.artist) {
       const candidates = getArtistCandidates();
       artistPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0435\u043d \u0430\u0440\u0442\u0438\u0441\u0442</option>' +
-        candidates.map(([name]) => `<option value="${escHtml(name)}">${escHtml(name)}</option>`).join('');
+        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
       filterSelect('artistPickerWrap');
     }
   } else {
@@ -3119,7 +3125,7 @@ function switchDay(dayKey, opts) {
     if (!opts.song) {
       const candidates = getThrowbackCandidates();
       songPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} \u2013 ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
+        candidates.map(([name]) => `<option value="${escHtml(name)}">${escHtml(name)}</option>`).join('');
       filterSelect('songPickerWrap');
     }
   } else {
@@ -3134,7 +3140,7 @@ function switchDay(dayKey, opts) {
     if (!opts.song) {
       const allSongs = getAllSongs();
       dcPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        allSongs.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} \u2013 ${escHtml(s.songName)} (${formatViewsPlain(s.views)})</option>`).join('');
+        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
       filterSelect('dcPickerWrap');
     }
   } else {
@@ -3148,7 +3154,7 @@ function switchDay(dayKey, opts) {
     if (!opts.selectedReleases) {
       populateWedReleasePicker();
     }
-  } else {
+        allSongs.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsExact(s.views)})</option>`).join('');
     wedCard.style.display = 'none';
   }
 
