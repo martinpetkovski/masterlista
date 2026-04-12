@@ -1778,7 +1778,7 @@
             grid-template-columns: 2.6rem 40px 1fr 5.5rem;
         }
         .artist-item.artist-item--cumulative {
-            grid-template-columns: 2.6rem 40px 1fr 88px 5.5rem;
+            grid-template-columns: 2.6rem 40px minmax(0, 1fr) 88px minmax(5.5rem, max-content);
         }
         .artist-item .chart-rank {
             width: auto;
@@ -2052,7 +2052,7 @@
                 grid-template-columns: 1.8rem 24px 1fr 4rem;
             }
             .artist-item.artist-item--cumulative {
-                grid-template-columns: 1.8rem 24px 1fr 60px 4rem;
+                grid-template-columns: 1.8rem 24px minmax(0, 1fr) 60px minmax(4rem, max-content);
             }
             .artist-item.artist-item--cumulative .vu-meter { width: 60px; }
             .artist-item .chart-stat.followers { font-size: 1rem; justify-self: end; text-align: right; }

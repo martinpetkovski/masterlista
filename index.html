@@ -111,17 +111,14 @@
         .event-item::after {
             content: '';
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            inset: 0;
             background: linear-gradient(90deg,
                 transparent 0%,
-                rgba(74, 127, 165, 0.06) 25%,
                 rgba(74, 127, 165, 0.18) 50%,
-                rgba(74, 127, 165, 0.06) 75%,
                 transparent 100%);
             transform: translateX(-110%);
             pointer-events: none;
-            z-index: 0;
+            border-radius: 0;
         }
 
         .mini-chart-item:hover::after,
@@ -2003,6 +2000,10 @@
             line-height: 1.15;
         }
 
+        #social-cta .quick-action-label-mobile {
+            display: none;
+        }
+
 
         /* ==================== RELEASE STATS ==================== */
         #release-stats-card #release-stats-content {
@@ -2682,19 +2683,25 @@
 
         .site-title-beta {
             position: absolute;
-            top: -0.1rem;
-            right: -2.2rem;
-            padding: 0.12rem 0.5rem;
+            top: 0.18rem;
+            right: -1.45rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 1.05rem;
+            padding: 0.12rem 0.44rem 0.1rem;
             font-family: 'Inter', sans-serif;
-            font-size: 0.5rem;
+            font-size: 0.48rem;
             font-weight: 800;
-            letter-spacing: 0.14em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             color: #000;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-radius: 3px;
+            border-radius: 0;
             line-height: 1;
-            transform: rotate(12deg);
+            white-space: nowrap;
+            transform: rotate(8deg);
+            transform-origin: left center;
             box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
             pointer-events: none;
             z-index: 5;
@@ -2830,11 +2837,12 @@
             .release-radar-grid {
                 display: flex;
                 flex-wrap: nowrap;
-                gap: 0.75rem;
+                gap: 0.65rem;
                 overflow-x: auto;
                 overflow-y: hidden;
-                padding: 0 0 0.35rem;
+                padding: 0 0.35rem 0.35rem;
                 scroll-snap-type: x proximity;
+                scroll-padding-inline: 0.35rem;
                 -webkit-overflow-scrolling: touch;
             }
 
@@ -2849,8 +2857,16 @@
             .radar-item {
                 gap: 0.55rem;
                 padding: 0.4rem 0.15rem;
-                flex: 0 0 min(78vw, 290px);
+                flex: 0 0 auto;
+                width: fit-content;
+                min-width: 180px;
+                max-width: min(67vw, 250px);
                 scroll-snap-align: start;
+            }
+
+            .radar-info {
+                flex: 0 1 auto;
+                max-width: calc(min(67vw, 250px) - 72px);
             }
 
             .radar-cover {
@@ -2981,6 +2997,22 @@
                 color: #1a1d21;
                 text-decoration: none;
                 border: 2px solid transparent;
+            }
+
+            .site-title-beta {
+                top: 0.14rem;
+                right: -1.1rem;
+                min-height: 0.95rem;
+                padding: 0.1rem 0.34rem 0.08rem;
+                font-size: 0.45rem;
+            }
+
+            #social-cta .quick-action-label-desktop {
+                display: none;
+            }
+
+            #social-cta .quick-action-label-mobile {
+                display: inline;
             }
 
             .site-title-menu a:hover {
@@ -3234,10 +3266,14 @@
         <div class="dash-cta-card" id="social-cta">
             <div class="cta-buttons">
                 <a href="https://www.instagram.com/toplista.mk/" target="_blank" rel="noopener" class="quick-action-btn">
-                    <i class="fab fa-instagram"></i> Следи нѐ на Instagram
+                    <i class="fab fa-instagram"></i>
+                    <span class="quick-action-label-desktop">Следи нѐ на Instagram</span>
+                    <span class="quick-action-label-mobile">Instagram</span>
                 </a>
                 <a href="https://discord.gg/DzBQASu7mU" target="_blank" rel="noopener" class="quick-action-btn">
-                    <i class="fab fa-discord"></i> Приклучи се на Discord
+                    <i class="fab fa-discord"></i>
+                    <span class="quick-action-label-desktop">Приклучи се на Discord</span>
+                    <span class="quick-action-label-mobile">Discord</span>
                 </a>
             </div>
         </div>
