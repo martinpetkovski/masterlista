@@ -3155,8 +3155,8 @@ body.vfx-dark .service-chooser-overlay,
     gap: 0.15em;
 }
 .service-chooser-stat-value .compact-count-badge-svg {
-    width: 1.02em;
-    height: 1.16em;
+    width: 1.18em;
+    height: 1.34em;
     top: 0;
 }
 .service-chooser-stat-value .compact-count-badge-svg text {
