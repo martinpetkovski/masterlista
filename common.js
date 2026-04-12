@@ -295,17 +295,26 @@ function formatCompactCountHtml(value, options) {
     if (!parts) return '';
     var numericValue = Number(value) || 0;
 
-    var prefix = '';
-    if (parts.isNegative) prefix = '-';
-    else if (options && options.showPlus && parts.value > 0) prefix = '+';
-    var exactValueText = prefix + Math.abs(numericValue).toLocaleString();
+    var prefixText = '';
+    if (parts.isNegative) prefixText = '-';
+    else if (options && options.showPlus && parts.value > 0) prefixText = '+';
+    var exactValueText = prefixText + Math.abs(numericValue).toLocaleString();
+    var displayPrefixHtml = '';
+
+    if (prefixText) {
+        if (prefixText === '+' && options && options.positivePrefixHtml) {
+            displayPrefixHtml = options.positivePrefixHtml;
+        } else {
+            displayPrefixHtml = '<span class="compact-count-sign">' + escHtml(prefixText) + '</span>';
+        }
+    }
 
     if (!parts.unit) {
-        return (prefix ? '<span class="compact-count-sign">' + escHtml(prefix) + '</span>' : '') + escHtml(parts.numberText);
+        return displayPrefixHtml + '<span class="compact-count-plain">' + escHtml(parts.numberText) + '</span>';
     }
 
     return '' +
-        (prefix ? '<span class="compact-count-sign">' + escHtml(prefix) + '</span>' : '') +
+        displayPrefixHtml +
         '<span class="compact-count compact-count--' + parts.unit.toLowerCase() + '" title="' + escHtml(exactValueText) + '">' +
             '<span class="compact-count-value">' + escHtml(parts.numberText) + '</span>' +
             buildCompactUnitBadgeSvg(parts.unit, exactValueText) +
@@ -1538,11 +1547,13 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
 
         return '' +
             '<div class="' + classes + '">' +
-                '<span class="service-chooser-stat-icon"><i class="' + iconClass + '"></i></span>' +
-                '<span class="service-chooser-stat-copy">' +
-                    '<span class="service-chooser-stat-label">' + escHtml(label || '') + '</span>' +
-                    '<span class="service-chooser-stat-value">' + formatCompactCountHtml(parsed, formatterOptions) + '</span>' +
-                '</span>' +
+                '<div class="service-chooser-stat-layout">' +
+                    '<span class="service-chooser-stat-icon"><i class="' + iconClass + '"></i></span>' +
+                    '<div class="service-chooser-stat-copy">' +
+                        '<span class="service-chooser-stat-label">' + escHtml(label || '') + '</span>' +
+                        '<span class="service-chooser-stat-value">' + formatCompactCountHtml(parsed, formatterOptions) + '</span>' +
+                    '</div>' +
+                '</div>' +
             '</div>';
     }
 
@@ -1640,8 +1651,11 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         viewsDelta >= 0 ? 'fas fa-arrow-trend-up' : 'fas fa-arrow-trend-down',
         viewsDelta,
         'service-chooser-stat--delta' + (viewsDelta > 0 ? ' positive' : viewsDelta < 0 ? ' negative' : ' neutral'),
-        { showPlus: true },
-        'Δ'
+        {
+            showPlus: true,
+            positivePrefixHtml: '<span class="service-chooser-stat-prefix-icon service-chooser-stat-prefix-icon--positive" aria-hidden="true">+</span>'
+        },
+        typeof t === 'function' ? t('service.thisWeek') : 'This week'
     );
     if (statsEl) {
         statsEl.innerHTML = statsHtml;
