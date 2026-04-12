@@ -131,8 +131,10 @@ header {
     z-index: 200;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    overflow: hidden;
+    overflow: visible;
 }
+
+.header-collage { display: none; }
 
 body.dark-mode header .title-group h1,
 body.dark-mode header .header-subtitle,
