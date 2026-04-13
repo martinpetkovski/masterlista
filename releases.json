@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-13T16:25:05.968Z",
+  "generatedAt": "2026-04-13T16:10:38.244Z",
   "totalReleases": 2607,
   "totalArtists": 383,
   "releases": [
@@ -28,7 +28,7 @@
           "name": "Ne Mi E Denot",
           "videoId": "lJbwYMrMzcI",
           "url": "https://www.youtube.com/watch?v=lJbwYMrMzcI",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -57,7 +57,13 @@
           "name": "Marama",
           "videoId": "5EuyJ65bmYk",
           "url": "https://www.youtube.com/watch?v=5EuyJ65bmYk",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Marama",
+          "videoId": "AKsOPZpRsF0",
+          "url": "https://www.youtube.com/watch?v=AKsOPZpRsF0",
+          "verified": "verified"
         }
       ]
     },
@@ -86,7 +92,7 @@
           "name": "Drowsy 40",
           "videoId": "xoiA_ElYx0w",
           "url": "https://www.youtube.com/watch?v=xoiA_ElYx0w",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -191,7 +197,21 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2pAGo5XOlCUMJGBSPZpWF0?si=ZRp6rO6oRniX_XtJJIUHlg",
-      "effectiveReleaseDate": "2026-04-07"
+      "effectiveReleaseDate": "2026-04-07",
+      "youtubeTracks": [
+        {
+          "name": "Sećanje Na April",
+          "videoId": "6_bK4JoNC6s",
+          "url": "https://www.youtube.com/watch?v=6_bK4JoNC6s",
+          "verified": "verified"
+        },
+        {
+          "name": "Sećanje Na April",
+          "videoId": "gpoRukiGfFc",
+          "url": "https://www.youtube.com/watch?v=gpoRukiGfFc",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Коки Јанков",
