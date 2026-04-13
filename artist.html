@@ -43,9 +43,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="desktop.css?v=8" media="screen and (min-width: 601px)">
-    <link rel="stylesheet" href="mobile.css?v=8" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=1"></script>
+    <link rel="stylesheet" href="desktop.css?v=10" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=10" media="screen and (max-width: 600px)">
+    <script src="/common.js?v=2"></script>
     <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
@@ -346,6 +346,64 @@
             color: #1d9bf0;
             font-size: 1.1rem;
             line-height: 1;
+        }
+
+        .artist-certifications-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            min-height: 2.2rem;
+            overflow: visible;
+            padding-bottom: 0.28rem;
+            margin: -0.15rem 0 0.7rem;
+        }
+
+        .artist-certifications {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: center;
+            row-gap: 0.35rem;
+            max-width: min(100%, 24rem);
+            padding-left: 0.7rem;
+            padding-bottom: 0.1rem;
+            overflow: visible;
+        }
+
+        .artist-certification-medal {
+            --cert-border: rgba(100, 116, 139, 0.32);
+            --cert-seal-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(148, 163, 184, 0.92));
+            position: relative;
+            display: block;
+            flex: 0 0 auto;
+            margin-left: -0.7rem;
+            cursor: default;
+            line-height: 1;
+            overflow: visible;
+            transition: transform 0.15s ease;
+        }
+
+        .artist-certification-medal .release-certification-seal {
+            display: flex;
+        }
+
+        .artist-certification-medal:first-child {
+            margin-left: 0;
+        }
+
+        .artist-certification-medal:hover {
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 600px) {
+            .artist-certifications {
+                max-width: min(100%, 18rem);
+                padding-left: 0.55rem;
+            }
+
+            .artist-certification-medal {
+                margin-left: -0.55rem;
+            }
         }
         
         .artist-meta {
@@ -1278,6 +1336,17 @@
             height: 100%;
             object-fit: cover;
         }
+
+        .release-card-main {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .release-card-main--with-cert {
+            padding-right: clamp(8rem, 34vw, 10.75rem);
+        }
         
         .chart-history-info {
             flex: 1;
@@ -1289,17 +1358,20 @@
             font-size: 0.85rem;
             color: var(--text-primary);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
             gap: 0.3rem;
             margin-bottom: 0.15rem;
             min-width: 0;
         }
         .chart-history-title-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            overflow-wrap: anywhere;
+            line-height: 1.3;
             min-width: 0;
-            flex: 1;
+            flex: 1 1 12rem;
         }
         .release-collab-artists {
             font-size: 0.75rem;
@@ -1333,6 +1405,7 @@ a.chart-history-item {
         .chart-history-meta {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 0.5rem;
             font-size: 0.7rem;
             color: var(--text-muted);
@@ -1367,13 +1440,167 @@ a.chart-history-item {
         }
         .release-yt-views .fa-eye { font-size: 0.6rem; color: var(--text-muted); }
 
+        .release-insights-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.38rem 0.6rem;
+            min-width: 0;
+            margin-top: 0.32rem;
+        }
+
+        .release-popularity-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.24rem;
+            color: var(--accent-orange);
+            font-size: 0.65rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            opacity: 0.85;
+        }
+
+        .release-popularity-stat i {
+            color: currentColor;
+            font-size: 0.62rem;
+        }
+
+        .release-certification-row {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            max-width: clamp(8rem, 34vw, 10.75rem);
+            min-width: 0;
+        }
+
+        .release-certification-badge {
+            --cert-bg: linear-gradient(135deg, rgba(226, 232, 240, 0.95), rgba(148, 163, 184, 0.92));
+            --cert-text: #0f172a;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.38rem;
+            padding: 0.16rem 0.48rem 0.16rem 0.16rem;
+            border-radius: 999px;
+            border: 1px solid var(--cert-border);
+            background: var(--cert-bg);
+            color: var(--cert-text);
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            max-width: 100%;
+        }
+
+        .release-certification--bronze {
+            --cert-border: rgba(146, 64, 14, 0.35);
+            --cert-seal-bg: linear-gradient(145deg, rgba(255, 247, 237, 0.96), rgba(217, 119, 6, 0.9));
+            --cert-bg: linear-gradient(135deg, rgba(251, 191, 116, 0.95), rgba(180, 83, 9, 0.9));
+            --cert-text: #431407;
+            --cert-monogram: #b45309;
+        }
+
+        .release-certification--silver {
+            --cert-border: rgba(100, 116, 139, 0.35);
+            --cert-seal-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(148, 163, 184, 0.92));
+            --cert-bg: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(148, 163, 184, 0.92));
+            --cert-text: #1e293b;
+            --cert-monogram: #64748b;
+        }
+
+        .release-certification--gold {
+            --cert-border: rgba(161, 98, 7, 0.35);
+            --cert-seal-bg: linear-gradient(145deg, rgba(255, 251, 235, 0.98), rgba(234, 179, 8, 0.92));
+            --cert-bg: linear-gradient(135deg, rgba(254, 240, 138, 0.96), rgba(202, 138, 4, 0.9));
+            --cert-text: #422006;
+            --cert-monogram: #ca8a04;
+        }
+
+        .release-certification--platinum {
+            --cert-border: rgba(79, 70, 229, 0.28);
+            --cert-seal-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(165, 180, 252, 0.92));
+            --cert-bg: linear-gradient(135deg, rgba(224, 231, 255, 0.98), rgba(129, 140, 248, 0.9));
+            --cert-text: #1e1b4b;
+            --cert-monogram: #6366f1;
+        }
+
+        .release-certification-seal {
+            position: relative;
+            width: 1.9rem;
+            height: 1.9rem;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.5) 18%, rgba(255, 255, 255, 0) 44%),
+                radial-gradient(circle at 72% 74%, rgba(15, 23, 42, 0.18) 0%, rgba(15, 23, 42, 0.08) 24%, rgba(15, 23, 42, 0) 54%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 46%),
+                var(--cert-seal-bg);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 6px rgba(15, 23, 42, 0.12);
+            flex-shrink: 0;
+        }
+
+        .release-certification-monogram {
+            position: relative;
+            z-index: 1;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: var(--cert-monogram, var(--cert-text));
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
+        }
+
+        .release-certification-copy {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.08rem;
+            line-height: 1;
+            min-width: 0;
+        }
+
+        .release-certification-kicker {
+            font-size: 0.38rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            opacity: 0.72;
+        }
+
+        .release-certification-label {
+            font-size: 0.54rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .release-certification-floor {
+            display: inline-flex;
+            align-items: center;
+            align-self: stretch;
+            font-size: 0.46rem;
+            font-weight: 800;
+            padding-left: 0.38rem;
+            border-left: 1px solid rgba(15, 23, 42, 0.12);
+            opacity: 0.75;
+            font-variant-numeric: tabular-nums;
+        }
+
+        body.dark-mode .release-certification-badge {
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
         /* YouTube link pills on artist releases */
         .release-track-list {
             list-style: none; margin: 0.35rem 0 0; padding: 0;
             display: flex; flex-direction: column;
         }
         .release-track-item {
-            display: flex; align-items: center; gap: 0.5rem;
+            display: grid;
+            grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+            align-items: start;
+            column-gap: 0.5rem;
+            row-gap: 0.25rem;
             padding: 0.45rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.82rem;
@@ -1387,25 +1614,54 @@ a.chart-history-item {
             width: 1.5rem; text-align: right; flex-shrink: 0;
             font-size: 0.7rem; color: var(--text-muted); font-weight: 600;
             font-variant-numeric: tabular-nums;
+            line-height: 1.35;
         }
         .release-track-name {
-            flex: 1; min-width: 0;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            min-width: 0;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            overflow-wrap: anywhere;
+            line-height: 1.35;
             color: var(--text-primary); font-weight: 500;
         }
         .release-track-item:hover .release-track-name { color: inherit; }
+        .release-track-side {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            align-self: center;
+            gap: 0.4rem;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+        .release-track-stats {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.4rem;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
         .release-track-verified {
             flex-shrink: 0; color: var(--text-muted); font-size: 0.7rem; opacity: 0.9;
         }
+        .release-track-popularity,
         .release-track-views {
-            flex-shrink: 0; font-size: 0.65rem; color: var(--text-muted); opacity: 0.75; margin-left: auto;
+            flex-shrink: 0; font-size: 0.65rem; color: var(--text-muted); opacity: 0.75;
             font-variant-numeric: tabular-nums;
             display: inline-flex; align-items: center; gap: 0.2rem;
         }
+        .release-track-popularity {
+            color: var(--accent-orange);
+            opacity: 0.85;
+        }
+        .release-track-popularity i,
         .release-track-views i { color: var(--text-muted); font-size: 0.55rem; }
+        .release-track-popularity i { color: currentColor; }
 
         .release-track-links {
-            display: inline-flex; align-items: center; gap: 0.15rem; margin-left: auto; flex-shrink: 0;
+            display: inline-flex; align-items: center; gap: 0.15rem; flex-shrink: 0;
         }
         .release-track-yt-pill {
             display: inline-flex; align-items: center; justify-content: center;
@@ -2727,6 +2983,7 @@ a.chart-history-item {
                         ${artist.confirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
                         <span class="status-dot ${statusClass}" title="${statusText}"></span>
                     </h1>
+                    <div class="artist-certifications-row" id="artist-certifications-row" hidden></div>
                     ${!artist.confirmed ? `<button class="verify-artist-btn" id="verify-artist-btn" title="${t('artist.verifyArtistBtn')}"><i class="fas fa-check-circle"></i> ${t('artist.verifyArtist')}</button>` : ''}
                     ${metaHtml ? `<div class="artist-meta">${metaHtml}</div>` : ''}
                     ${labelsHtml}
@@ -3213,6 +3470,182 @@ a.chart-history-item {
             return formatCompactCountHtml(n);
         }
 
+        const RELEASE_CERTIFICATION_LEVELS = [
+            { tier: 'bronze', label: 'Bronze', minViews: 100000, seal: 'B' },
+            { tier: 'silver', label: 'Silver', minViews: 500000, seal: 'S' },
+            { tier: 'gold', label: 'Gold', minViews: 1000000, seal: 'G' }
+        ];
+        const PLATINUM_CERTIFICATION_VIEWS = 5000000;
+        const releaseCertificationNumberFormatter = new Intl.NumberFormat(undefined);
+
+        function getReleaseCertification(viewCount) {
+            const views = Number(viewCount) || 0;
+            if (!views) return null;
+
+            if (views >= PLATINUM_CERTIFICATION_VIEWS) {
+                const multiplier = Math.floor(views / PLATINUM_CERTIFICATION_VIEWS);
+                const minViews = PLATINUM_CERTIFICATION_VIEWS * multiplier;
+                return {
+                    tier: 'platinum',
+                    label: 'Platinum',
+                    seal: multiplier > 1 ? 'P' + multiplier : 'P',
+                    multiplier: multiplier,
+                    minViews: minViews,
+                    floorLabel: formatViewsAbsolute(minViews) + '+'
+                };
+            }
+
+            for (let i = RELEASE_CERTIFICATION_LEVELS.length - 1; i >= 0; i--) {
+                const level = RELEASE_CERTIFICATION_LEVELS[i];
+                if (views >= level.minViews) {
+                    return {
+                        tier: level.tier,
+                        label: level.label,
+                        seal: level.seal,
+                        multiplier: 1,
+                        minViews: level.minViews,
+                        floorLabel: formatViewsAbsolute(level.minViews) + '+'
+                    };
+                }
+            }
+
+            return null;
+        }
+
+        function escapeHtmlAttribute(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;');
+        }
+
+        function getLocalizedCertificationLabel(certification) {
+            if (!certification) return '';
+            const baseLabel = t('certification.' + certification.tier, certification.label);
+            if (certification.tier === 'platinum' && certification.multiplier > 1) {
+                return baseLabel + ' x' + certification.multiplier;
+            }
+            return baseLabel;
+        }
+
+        function buildReleaseCertificationTitle(releaseTitle, certification, viewCount) {
+            const template = t('certification.tooltip', '{0} • {1} certification • {2} views');
+            return template
+                .replace('{0}', releaseTitle || '')
+                .replace('{1}', getLocalizedCertificationLabel(certification))
+                .replace('{2}', releaseCertificationNumberFormatter.format(Number(viewCount) || 0));
+        }
+
+        function buildReleaseCertificationBadge(certification, viewCount, releaseTitle) {
+            if (!certification) return '';
+            const title = escapeHtmlAttribute(buildReleaseCertificationTitle(releaseTitle, certification, viewCount));
+            const localizedLabel = escapeHtmlAttribute(getLocalizedCertificationLabel(certification));
+            const kicker = escapeHtmlAttribute(t('certification.certified', 'Certified'));
+            const floorLabel = escapeHtmlAttribute(certification.floorLabel);
+            return `<span class="release-certification-badge release-certification--${certification.tier}" title="${title}" aria-label="${title}"><span class="release-certification-seal" aria-hidden="true"><span class="release-certification-monogram">${certification.seal}</span></span><span class="release-certification-copy"><span class="release-certification-kicker">${kicker}</span><span class="release-certification-label">${localizedLabel}</span></span><span class="release-certification-floor">${floorLabel}</span></span>`;
+        }
+
+        function buildReleaseDisplayContext(release, artistName, artistSpotifyName) {
+            const seenTrackKeys = {};
+            let tracks = release.trackNames && release.trackNames.length > 0
+                ? release.trackNames.slice()
+                : (release.youtubeTracks && release.youtubeTracks.length > 0
+                    ? release.youtubeTracks.map(yt => yt.name)
+                    : [release.releaseTitle]);
+
+            tracks = tracks.filter(name => {
+                const key = (name || '').toLowerCase().trim();
+                if (!key || seenTrackKeys[key]) return false;
+                seenTrackKeys[key] = true;
+                return true;
+            });
+
+            if (release.youtubeTracks) {
+                release.youtubeTracks.forEach(yt => {
+                    const key = (yt.name || '').toLowerCase().trim();
+                    if (key && !seenTrackKeys[key]) {
+                        seenTrackKeys[key] = true;
+                        tracks.push(yt.name);
+                    }
+                });
+            }
+
+            let effectiveViews = null;
+            if (release._isCollabAppearance && release.trackArtists && release.trackNames && artistName) {
+                const artistLower = artistName.toLowerCase();
+                const spotifyLower = (artistSpotifyName || '').toLowerCase();
+                const collabTrackKeys = new Set();
+
+                release.trackArtists.forEach((artists, idx) => {
+                    const trackName = release.trackNames[idx];
+                    if (!trackName || !artists) return;
+                    if (artists.some(a => {
+                        const al = a.toLowerCase();
+                        return al === artistLower || (spotifyLower && al === spotifyLower);
+                    })) {
+                        collabTrackKeys.add(trackName.toLowerCase().trim());
+                    }
+                });
+
+                if (collabTrackKeys.size > 0) {
+                    const filteredTracks = tracks.filter(name => collabTrackKeys.has(name.toLowerCase().trim()));
+                    if (filteredTracks.length > 0) {
+                        tracks = filteredTracks;
+                        const trackKeys = new Set(tracks.map(name => name.toLowerCase().trim()));
+                        effectiveViews = 0;
+                        if (release.youtubeTracks) {
+                            release.youtubeTracks.forEach(yt => {
+                                if (yt.verified === 'verified' && trackKeys.has((yt.name || '').toLowerCase().trim())) {
+                                    effectiveViews += yt.views || 0;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            return {
+                tracks: tracks,
+                effectiveViews: effectiveViews,
+                viewCount: effectiveViews != null ? effectiveViews : (release.youtubeViews || 0)
+            };
+        }
+
+        function buildArtistCertificationStack(releases, artistName, artistSpotifyName) {
+            const certifiedReleases = (releases || []).map(release => {
+                const display = buildReleaseDisplayContext(release, artistName, artistSpotifyName);
+                const certification = getReleaseCertification(display.viewCount);
+                if (!certification) return null;
+                return {
+                    release: release,
+                    certification: certification,
+                    viewCount: display.viewCount
+                };
+            }).filter(Boolean).sort((a, b) => {
+                if (b.certification.minViews !== a.certification.minViews) return b.certification.minViews - a.certification.minViews;
+                if (b.viewCount !== a.viewCount) return b.viewCount - a.viewCount;
+                return new Date(b.release.releaseDate) - new Date(a.release.releaseDate);
+            });
+
+            if (certifiedReleases.length === 0) return '';
+
+            return `<div class="artist-certifications">${certifiedReleases.map((entry, index) => {
+                const safeTitle = escapeHtmlAttribute(buildReleaseCertificationTitle(entry.release.releaseTitle, entry.certification, entry.viewCount));
+                return `<span class="artist-certification-medal release-certification--${entry.certification.tier}" style="z-index:${certifiedReleases.length - index}" title="${safeTitle}" aria-label="${safeTitle}"><span class="release-certification-seal" aria-hidden="true"><span class="release-certification-monogram">${entry.certification.seal}</span></span></span>`;
+            }).join('')}</div>`;
+        }
+
+        function renderArtistCertificationStack(artistHistory, artistName, artistSpotifyName) {
+            const rowEl = document.getElementById('artist-certifications-row');
+            if (!rowEl) return;
+            const releases = artistHistory && artistHistory.releases
+                ? Array.from(artistHistory.releases.values())
+                : [];
+            const certificationsHtml = buildArtistCertificationStack(releases, artistName, artistSpotifyName);
+            rowEl.innerHTML = certificationsHtml;
+            rowEl.hidden = !certificationsHtml;
+        }
+
         // Build artistHistory from pre-computed site-master.json data
         // Returns the same format as the old loadChartHistory() for compatibility with renderers
         function buildArtistHistoryFromSiteMaster(artistName, siteMaster, artistSpotifyName) {
@@ -3678,87 +4111,19 @@ a.chart-history-item {
                 return map;
             }
 
-            let vuPeakSingle = 1, vuPeakAlbum = 1;
-            const allChartReleases = siteMaster && siteMaster.chartData && siteMaster.chartData.releases || [];
-            allChartReleases.forEach(r => {
-                const vd = r.viewsDelta || 0;
-                if (vd > 0) {
-                    if (r.releaseType === 'single') { if (vd > vuPeakSingle) vuPeakSingle = vd; }
-                    else { if (vd > vuPeakAlbum) vuPeakAlbum = vd; }
-                }
-            });
-            releases.forEach(r => {
-                const cw = r.chartWeeks || [];
-                const len = cw.length;
-                const start = Math.max(0, len - 4);
-                for (let i = Math.max(start, 1); i < len; i++) {
-                    const d = (cw[i].youtubeViews || 0) - (cw[i-1].youtubeViews || 0);
-                    if (d > 0) {
-                        if (r.releaseType === 'single') { if (d > vuPeakSingle) vuPeakSingle = d; }
-                        else { if (d > vuPeakAlbum) vuPeakAlbum = d; }
-                    }
-                }
-            });
-
             const releaseItems = releases.map((release, rIdx) => {
                 const typeLabel = release.releaseType === 'album' ? t('artist.album') : t('artist.single');
                 const typeClass = release.releaseType === 'album' ? 'album' : 'single';
                 const typeIcon = release.releaseType === 'album' ? 'fas fa-compact-disc' : 'fas fa-music';
                 const isNew = new Date(release.releaseDate) >= oneWeekAgo;
                 const newBadge = isNew ? '<span class="release-new-badge">НОВО</span>' : '';
+                const releaseDisplay = buildReleaseDisplayContext(release, artistName, artistSpotifyName);
+                const tracks = releaseDisplay.tracks;
+                const releaseViews = releaseDisplay.viewCount;
+                release._effectiveViews = releaseDisplay.effectiveViews;
 
                 const ytMap = getYtMap(release);
                 let trackNum = 0;
-                let tracks = release.trackNames && release.trackNames.length > 0
-                    ? release.trackNames
-                    : (release.youtubeTracks && release.youtubeTracks.length > 0
-                        ? release.youtubeTracks.map(yt => yt.name)
-                        : [release.releaseTitle]);
-                const seenTrackKeys = {};
-                tracks = tracks.filter(name => {
-                    const key = name.toLowerCase().trim();
-                    if (seenTrackKeys[key]) return false;
-                    seenTrackKeys[key] = true;
-                    return true;
-                });
-                if (release.youtubeTracks) {
-                    for (const yt of release.youtubeTracks) {
-                        const key = yt.name.toLowerCase().trim();
-                        if (!seenTrackKeys[key]) {
-                            seenTrackKeys[key] = true;
-                            tracks.push(yt.name);
-                        }
-                    }
-                }
-
-                // For collab appearances with per-track artist data, filter to only tracks featuring this artist
-                if (release._isCollabAppearance && release.trackArtists && release.trackNames && artistName) {
-                    const artistLower = artistName.toLowerCase();
-                    const spotifyLower = (artistSpotifyName || '').toLowerCase();
-                    const collabTrackIndices = new Set();
-                    release.trackArtists.forEach((artists, idx) => {
-                        if (artists && artists.some(a => {
-                            const al = a.toLowerCase();
-                            return al === artistLower || (spotifyLower && al === spotifyLower);
-                        })) {
-                            collabTrackIndices.add(release.trackNames[idx]?.toLowerCase().trim());
-                        }
-                    });
-                    if (collabTrackIndices.size > 0) {
-                        tracks = tracks.filter(name => collabTrackIndices.has(name.toLowerCase().trim()));
-                        // Compute views only from the filtered tracks
-                        const trackKeys = new Set(tracks.map(n => n.toLowerCase().trim()));
-                        let filteredViews = 0;
-                        if (release.youtubeTracks) {
-                            release.youtubeTracks.forEach(yt => {
-                                if (yt.verified === 'verified' && trackKeys.has(yt.name.toLowerCase().trim())) {
-                                    filteredViews += yt.views || 0;
-                                }
-                            });
-                        }
-                        release._effectiveViews = filteredViews;
-                    }
-                }
 
                 const tracksHtml = tracks.map(trackName => {
                     trackNum++;
@@ -3778,6 +4143,12 @@ a.chart-history-item {
                         : (tracks.length === 1 && typeof release.viewsDelta === 'number' ? release.viewsDelta : null);
                     const viewsHtml = totalViews > 0
                         ? `<span class="release-track-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(totalViews)}</span>`
+                        : '';
+                    const popularityHtml = songViewsDelta > 0
+                        ? `<span class="release-track-popularity"><i class="fas fa-chart-line"></i> ${formatViewsAbsoluteHtml(songViewsDelta)}</span>`
+                        : '';
+                    const statsHtml = viewsHtml || popularityHtml
+                        ? `<span class="release-track-stats">${viewsHtml}${popularityHtml}</span>`
                         : '';
                     // Build all YT URLs JSON for the service chooser video picker
                     const allYtData = ytEntriesSorted.map(yt => ({
@@ -3801,33 +4172,38 @@ a.chart-history-item {
                         }
                         linksHtml = '<span class="release-track-links">' + pills + '</span>';
                     }
+                    const sideHtml = linksHtml || statsHtml || tick
+                        ? `<span class="release-track-side">${linksHtml}${statsHtml}${tick}</span>`
+                        : '';
                     const totalViewsAttr = ` data-total-views="${String(totalViews)}"`;
                     const viewsDeltaAttr = songViewsDelta == null ? '' : ` data-views-delta="${String(songViewsDelta)}"`;
-                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${bestYtUrl.replace(/"/g, '&quot;')}"${ytDataAttr}${totalViewsAttr}${viewsDeltaAttr}><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${linksHtml}${viewsHtml}${tick}</li>`;
+                    return `<li class="release-track-item" data-release-idx="${rIdx}" data-track-name="${trackName.replace(/"/g, '&quot;')}" data-yt-url="${bestYtUrl.replace(/"/g, '&quot;')}"${ytDataAttr}${totalViewsAttr}${viewsDeltaAttr}><span class="release-track-num">${trackNum}</span><span class="release-track-name">${trackName}</span>${sideHtml}</li>`;
                 }).join('');
 
                 const releaseDate = new Date(release.releaseDate);
                 const dateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
+                const releaseCertification = getReleaseCertification(releaseViews);
+                const certificationHtml = buildReleaseCertificationBadge(releaseCertification, releaseViews, release.releaseTitle);
 
-                let vuMeterHtml = '';
+                let releasePopularityHtml = '';
                 const currentDelta = release.viewsDelta || (release.chartWeeks && release.chartWeeks.length >= 2
                     ? release.chartWeeks[release.chartWeeks.length - 1].youtubeViews - release.chartWeeks[release.chartWeeks.length - 2].youtubeViews
                     : 0);
-                const vuMaxDelta = release.releaseType === 'single' ? vuPeakSingle : vuPeakAlbum;
                 if (currentDelta > 0) {
-                    const totalSegs = 16;
-                    const litSegs = Math.max(1, Math.round((currentDelta / vuMaxDelta) * totalSegs));
-                    let segs = '';
-                    for (let s = 0; s < totalSegs; s++) {
-                        const isOn = s < litSegs;
-                        let color;
-                        if (s < 10) color = '#4ade80';
-                        else if (s < 13) color = '#facc15';
-                        else color = '#ef4444';
-                        segs += `<span class="vu-seg ${isOn ? 'vu-seg--on' : 'vu-seg--off'}" style="height:10px;background:${color};color:${color}"></span>`;
-                    }
-                    vuMeterHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsoluteHtml(currentDelta)}</span></div>`;
+                    releasePopularityHtml = `<span class="release-popularity-stat"><i class="fas fa-arrow-trend-up"></i> ${formatViewsAbsoluteHtml(currentDelta)}</span>`;
                 }
+                const releaseCertificationRowHtml = certificationHtml
+                    ? `<div class="release-certification-row">${certificationHtml}</div>`
+                    : '';
+                const releaseViewsHtml = releaseViews
+                    ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(releaseViews)}</span>`
+                    : '';
+                const releaseInsightsHtml = releaseViewsHtml || releasePopularityHtml
+                    ? `<div class="release-insights-row">${releaseViewsHtml}${releasePopularityHtml}</div>`
+                    : '';
+                const releaseCardMainClass = certificationHtml
+                    ? 'release-card-main release-card-main--with-cert'
+                    : 'release-card-main';
 
                 const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
                 let collabHtml = '';
@@ -3852,7 +4228,8 @@ a.chart-history-item {
                     date: releaseDate,
                     html: `
                     <div class="chart-history-item" style="flex-direction:column;align-items:stretch;cursor:default;">
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div class="${releaseCardMainClass}">
+                            ${releaseCertificationRowHtml}
                             <div class="chart-history-cover">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
@@ -3867,9 +4244,8 @@ a.chart-history-item {
                                         <i class="${typeIcon}"></i> ${typeLabel}
                                     </span>
                                     <span>${dateStr}</span>
-                                    ${(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews) ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(release._effectiveViews != null ? release._effectiveViews : release.youtubeViews)}</span>` : ''}
                                 </div>
-                                ${vuMeterHtml}
+                                ${releaseInsightsHtml}
                             </div>
                         </div>
                         <ol class="release-track-list">${tracksHtml}</ol>
@@ -4406,9 +4782,11 @@ a.chart-history-item {
                             if (src?.youtubeTracks) rel.youtubeTracks = src.youtubeTracks;
                         });
                     }
+                    renderArtistCertificationStack(chartHistory, artist.name, artist.spotifyName);
                 } catch (e) {
                     console.warn('Could not build chart history:', e);
                     chartHistory = { releases: new Map() };
+                    renderArtistCertificationStack(chartHistory, artist.name, artist.spotifyName);
                 }
 
                 // Load articles

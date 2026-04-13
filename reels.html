@@ -3110,7 +3110,7 @@ function switchDay(dayKey, opts) {
     if (!opts.artist) {
       const candidates = getArtistCandidates();
       artistPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0435\u043d \u0430\u0440\u0442\u0438\u0441\u0442</option>' +
-        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
+        candidates.map(([name]) => `<option value="${escHtml(name)}">${escHtml(name)}</option>`).join('');
       filterSelect('artistPickerWrap');
     }
   } else {
@@ -3125,7 +3125,7 @@ function switchDay(dayKey, opts) {
     if (!opts.song) {
       const candidates = getThrowbackCandidates();
       songPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        candidates.map(([name]) => `<option value="${escHtml(name)}">${escHtml(name)}</option>`).join('');
+        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
       filterSelect('songPickerWrap');
     }
   } else {
@@ -3140,7 +3140,7 @@ function switchDay(dayKey, opts) {
     if (!opts.song) {
       const allSongs = getAllSongs();
       dcPicker.innerHTML = '<option value="">\ud83c\udfb2 \u0421\u043b\u0443\u0447\u0430\u0458\u043d\u0430 \u043f\u0435\u0441\u043d\u0430</option>' +
-        candidates.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsPlain(s.views||0)})</option>`).join('');
+        allSongs.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsExact(s.views)})</option>`).join('');
       filterSelect('dcPickerWrap');
     }
   } else {
@@ -3154,7 +3154,7 @@ function switchDay(dayKey, opts) {
     if (!opts.selectedReleases) {
       populateWedReleasePicker();
     }
-        allSongs.map(s => `<option value="${escHtml(s._songKey)}">${escHtml(s.bandName)} – ${escHtml(s.songName)} (${formatViewsExact(s.views)})</option>`).join('');
+  } else {
     wedCard.style.display = 'none';
   }
 

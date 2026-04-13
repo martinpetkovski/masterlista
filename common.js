@@ -1557,6 +1557,90 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
             '</div>';
     }
 
+    var SERVICE_CHOOSER_CERTIFICATION_LEVELS = [
+        { tier: 'gold', minViews: 1000000, label: 'Gold', seal: 'G' },
+        { tier: 'silver', minViews: 500000, label: 'Silver', seal: 'S' },
+        { tier: 'bronze', minViews: 100000, label: 'Bronze', seal: 'B' }
+    ];
+
+    function getChooserCertification(viewCount) {
+        var count = parseStatNumber(viewCount);
+        if (count === null || count < 100000) return null;
+
+        if (count >= 5000000) {
+            return {
+                tier: 'platinum',
+                label: 'Platinum',
+                seal: Math.max(1, Math.floor(count / 5000000)) > 1
+                    ? 'P' + Math.max(1, Math.floor(count / 5000000))
+                    : 'P',
+                multiplier: Math.max(1, Math.floor(count / 5000000))
+            };
+        }
+
+        for (var i = 0; i < SERVICE_CHOOSER_CERTIFICATION_LEVELS.length; i++) {
+            var level = SERVICE_CHOOSER_CERTIFICATION_LEVELS[i];
+            if (count >= level.minViews) {
+                return {
+                    tier: level.tier,
+                    label: level.label,
+                    seal: level.seal,
+                    multiplier: 1
+                };
+            }
+        }
+
+        return null;
+    }
+
+    function getChooserCertificationLabel(certification) {
+        if (!certification) return '';
+
+        var localizedLabel = typeof t === 'function'
+            ? t('certification.' + certification.tier, certification.label)
+            : certification.label;
+
+        if (certification.tier === 'platinum' && certification.multiplier > 1) {
+            return localizedLabel + ' x' + certification.multiplier;
+        }
+
+        return localizedLabel;
+    }
+
+    function buildChooserCertificationTitle(itemTitle, certification, viewCount) {
+        var displayTitle = itemTitle && typeof localizeText === 'function'
+            ? localizeText(itemTitle)
+            : (itemTitle || '');
+        var template = typeof t === 'function'
+            ? t('certification.tooltip', '{0} • {1} certification • {2} views')
+            : '{0} • {1} certification • {2} views';
+
+        return template
+            .replace('{0}', displayTitle)
+            .replace('{1}', getChooserCertificationLabel(certification))
+            .replace('{2}', Number(viewCount || 0).toLocaleString());
+    }
+
+    function buildChooserCertificationHtml(viewCount, itemTitle) {
+        var certification = getChooserCertification(viewCount);
+        if (!certification) return '';
+
+        var titleText = buildChooserCertificationTitle(itemTitle, certification, viewCount);
+        var kicker = typeof t === 'function' ? t('certification.certified', 'Certified') : 'Certified';
+        var localizedLabel = getChooserCertificationLabel(certification);
+
+        return '' +
+            '<span class="service-chooser-certification-badge service-chooser-certification--' + certification.tier + '" title="' + escHtml(titleText) + '" aria-label="' + escHtml(titleText) + '">' +
+                '<span class="service-chooser-certification-seal" aria-hidden="true">' +
+                    '<span class="service-chooser-certification-monogram">' + escHtml(certification.seal) + '</span>' +
+                '</span>' +
+                '<span class="service-chooser-certification-copy">' +
+                    '<span class="service-chooser-certification-kicker">' + escHtml(kicker) + '</span>' +
+                    '<span class="service-chooser-certification-label">' + escHtml(localizedLabel) + '</span>' +
+                '</span>' +
+            '</span>';
+    }
+
     var overlay = document.getElementById('service-chooser-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -1572,6 +1656,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
                         '<div class="service-chooser-artist" id="service-chooser-artist"></div>' +
                         '<div class="service-chooser-song" id="service-chooser-song"></div>' +
                     '</div>' +
+                    '<div class="service-chooser-certification-slot" id="service-chooser-certification"></div>' +
                 '</div>' +
                 '<div class="service-chooser-stats" id="service-chooser-stats"></div>' +
                 '<div class="service-chooser-links" id="service-chooser-links"></div>' +
@@ -1603,6 +1688,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
     var imgEl     = document.getElementById('service-chooser-img');
     var artistEl  = document.getElementById('service-chooser-artist');
     var songEl    = document.getElementById('service-chooser-song');
+    var certEl    = document.getElementById('service-chooser-certification');
     var statsEl   = document.getElementById('service-chooser-stats');
     var linksEl   = document.getElementById('service-chooser-links');
     var vfxBgEl   = document.getElementById('sc-vfx-bg');
@@ -1639,6 +1725,16 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
 
     var totalViews = stats && stats.totalViews != null ? stats.totalViews : null;
     var viewsDelta = stats && stats.viewsDelta != null ? stats.viewsDelta : null;
+    var chooserCertificationHtml = buildChooserCertificationHtml(totalViews, title);
+
+    if (certEl) {
+        certEl.innerHTML = chooserCertificationHtml;
+        certEl.style.display = chooserCertificationHtml ? 'block' : 'none';
+    }
+    if (headerEl) {
+        headerEl.classList.toggle('service-chooser-header--with-cert', !!chooserCertificationHtml);
+    }
+
     var statsHtml = '';
     statsHtml += buildChooserStatHtml(
         'fas fa-eye',
