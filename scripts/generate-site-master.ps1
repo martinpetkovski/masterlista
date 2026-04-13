@@ -545,13 +545,14 @@ foreach ($file in $historyFiles) {
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
 # Get previous week's data for viewsDelta calculation (current views - prev views)
-# Always use the most recent chart-history snapshot (index 0) as baseline.
-# viewsDelta = chart-data.json views (today) - most recent history week views
+# On Monday the current week's chart-history was just created/updated with the same
+# YouTube views as chart-data.json, so the delta would be zero. Skip to previous week.
+# viewsDelta = chart-data.json views (today) - previous history week views
 $previousWeekReleases = @()
-$viewsDeltaPrevIndex = 0
-if ($chartHistoryWeeks.Count -gt 0) {
-    $previousWeekReleases = $chartHistoryWeeks[0].releases
-    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[0].weekId)" -ForegroundColor DarkGray
+$viewsDeltaPrevIndex = if ((Get-Date).DayOfWeek -eq 'Monday' -and $chartHistoryWeeks.Count -ge 2) { 1 } else { 0 }
+if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
+    $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
+    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
 }
 
 # For chevron indicators: compare the two most recent chart-history snapshots
