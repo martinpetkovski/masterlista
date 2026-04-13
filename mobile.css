@@ -886,8 +886,8 @@ td[data-label="Настани"] {
     display: none !important;
 }
 
-/* Hide VU meter column on mobile */
-td[data-label="VU"] {
+/* Hide certifications column on mobile */
+td[data-label="Серт"] {
     display: none !important;
 }
 

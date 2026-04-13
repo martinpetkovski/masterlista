@@ -16,9 +16,7 @@
     let artistThumbnailCache = {}; // Cache artist name -> thumbnail URL
     let latestReleaseDateByArtist = {}; // Cache artist name -> latest release date string
     let cachedRssArticles = null; // Cache RSS feed articles for media column
-    let cumPopLookup = null; // Cache bandName -> { cumulativePopularity, rank }
-    let cumPopMax = 0; // Max cumulative popularity for VU scaling
-    let chartDataSet = null; // Set of artist names (lowercased) that have any chart data
+    let certLookup = null; // Cache bandName (lowercased) -> certification HTML string
     // Optional: set window.MMM_PR_ENDPOINT globally to override the button data-endpoint/localStorage
     
     /**
@@ -902,7 +900,9 @@
 
         document.addEventListener('mousedown', (e) => {
             const scrollEl = e.target.closest('.cell-scroll');
-            if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
+            if (!scrollEl) return;
+            e.preventDefault();
+            if (scrollEl.scrollWidth <= scrollEl.clientWidth) return;
             scrollEl.style.cursor = 'grabbing';
             const startX = e.pageX;
             const startScrollLeft = scrollEl.scrollLeft;
@@ -3368,35 +3368,56 @@
             // Greeting slug for confirmed artists
             const greetingSlug = band.confirmed ? generateArtistSlug(band.name) : '';
             
-            // Build VU meter for cumulative popularity
-            let vuMeterHtml = '';
-            if (!cumPopLookup) {
+            // Build certification medals for artist
+            let certHtml = '';
+            if (!certLookup) {
+                certLookup = {};
                 const sm = typeof getSiteMaster === 'function' ? getSiteMaster() : null;
-                if (sm && sm.artistCumulativeRanking) {
-                    cumPopLookup = {};
-                    cumPopMax = sm.maxCumulativePopularity || 0;
-                    sm.artistCumulativeRanking.forEach(function(a, i) {
-                        cumPopLookup[a.bandName.toLowerCase().trim()] = { pop: a.cumulativePopularity || 0, rank: i + 1 };
+                if (sm && sm.chartData && sm.chartData.releases) {
+                    const CERT_LEVELS = [
+                        { tier: 'bronze', seal: 'B', min: 100000 },
+                        { tier: 'silver', seal: 'S', min: 500000 },
+                        { tier: 'gold', seal: 'G', min: 1000000 }
+                    ];
+                    const PLAT = 5000000;
+                    function getCert(views) {
+                        var v = Number(views) || 0;
+                        if (!v) return null;
+                        if (v >= PLAT) {
+                            var m = Math.floor(v / PLAT);
+                            return { tier: 'platinum', seal: m > 1 ? 'P' + m : 'P', min: PLAT * m };
+                        }
+                        for (var i = CERT_LEVELS.length - 1; i >= 0; i--) {
+                            if (v >= CERT_LEVELS[i].min) return CERT_LEVELS[i];
+                        }
+                        return null;
+                    }
+                    // Group releases by artist, compute certifications
+                    var byArtist = {};
+                    sm.chartData.releases.forEach(function(r) {
+                        var aKey = (r.bandName || '').toLowerCase().trim();
+                        if (!aKey) return;
+                        var views = r.youtubeViews || 0;
+                        var cert = getCert(views);
+                        if (!cert) return;
+                        if (!byArtist[aKey]) byArtist[aKey] = [];
+                        byArtist[aKey].push({ cert: cert, views: views, title: r.releaseTitle || '' });
                     });
-                    chartDataSet = new Set(sm.artistsWithChartData || []);
+                    // Build HTML per artist
+                    var certTierOrder = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
+                    for (var aKey in byArtist) {
+                        var entries = byArtist[aKey].sort(function(a, b) {
+                            return (certTierOrder[b.cert.tier] || 0) - (certTierOrder[a.cert.tier] || 0) || b.views - a.views;
+                        });
+                        var medals = entries.map(function(e, idx) {
+                            var safeTitle = (e.title + ' \u2022 ' + e.cert.tier.charAt(0).toUpperCase() + e.cert.tier.slice(1)).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                            return '<span class="lista-cert-medal release-certification--' + e.cert.tier + '" style="z-index:' + (entries.length - idx) + '" title="' + safeTitle + '"><span class="release-certification-seal" aria-hidden="true"><span class="release-certification-monogram">' + e.cert.seal + '</span></span></span>';
+                        }).join('');
+                        certLookup[aKey] = '<div class="lista-cert-stack">' + medals + '</div>';
+                    }
                 }
             }
-            {
-                const entry = cumPopLookup ? cumPopLookup[band.name.toLowerCase().trim()] : null;
-                const hasData = (entry !== null && entry !== undefined) || (chartDataSet && chartDataSet.has(band.name.toLowerCase().trim()));
-                const pop = entry ? entry.pop : 0;
-                const totalSegs = 12;
-                const litSegs = (pop > 0 && cumPopMax > 0) ? Math.max(1, Math.round((pop / cumPopMax) * totalSegs)) : 0;
-                const useAccentColor = band.confirmed && band.accentColors && (band.accentColors[0] || band.accentColors[1]);
-                let segs = '';
-                for (let s = 0; s < totalSegs; s++) {
-                    const isOn = s < litSegs;
-                    const color = !hasData ? '#888' : useAccentColor ? 'var(--accent-text)' : (s < 7 ? '#4ade80' : s < 10 ? '#facc15' : '#ef4444');
-                    const stateClass = isOn ? 'lista-vu-seg--on' : (!hasData ? 'lista-vu-seg--unavail' : 'lista-vu-seg--off');
-                    segs += '<span class="lista-vu-seg ' + stateClass + '" style="background:' + color + ';color:' + color + '"></span>';
-                }
-                vuMeterHtml = '<div class="lista-vu-meter">' + segs + '</div>';
-            }
+            certHtml = certLookup[band.name.toLowerCase().trim()] || '';
             
             bandRow.innerHTML = `
                 <td data-label="Име" class="name">${nameHtml}</td>
@@ -3406,7 +3427,7 @@
                 <td data-label="Линкови" class="links"><div class="cell-scroll">${combinedLinksHtml}</div></td>
                 <td data-label="Медиуми" class="links reviews"><div class="cell-scroll">${reviewsHtml}</div></td>
                 <td data-label="Настани" class="links events"><div class="cell-scroll">${eventsHtml}</div></td>
-                <td data-label="VU" class="vu-cell">${vuMeterHtml}</td>
+                <td data-label="Серт" class="cert-cell"><div class="cell-scroll">${certHtml}</div></td>
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>
                 </td>
