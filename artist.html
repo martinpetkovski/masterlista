@@ -324,17 +324,31 @@
             font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+                position: relative;
+                display: inline-block;
+                line-height: 1.15;
         }
+
+            .artist-name-text {
+                display: block;
+            }
+
+            .artist-name-trailing {
+                position: absolute;
+                left: 100%;
+                top: 50%;
+                transform: translate(0.5rem, -50%);
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
         
         .artist-name .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             flex-shrink: 0;
+                display: block;
         }
         
         .artist-name .status-dot.active { background: var(--accent-green); }
@@ -346,6 +360,8 @@
             color: #1d9bf0;
             font-size: 1.1rem;
             line-height: 1;
+            display: inline-flex;
+            align-items: center;
         }
 
         .artist-certifications-row {
@@ -3128,9 +3144,11 @@ a.chart-history-item {
                 <div class="artist-header">
                     <div class="artist-avatar">${avatarHtml}</div>
                     <h1 class="artist-name">
-                        ${localizeText(artist.name)}
-                        ${artist.confirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
-                        <span class="status-dot ${statusClass}" title="${statusText}"></span>
+                        <span class="artist-name-text">${localizeText(artist.name)}</span>
+                        <span class="artist-name-trailing">
+                            ${artist.confirmed ? '<span class="verified-badge" title="' + t('common.verifiedByArtist') + '"><i class="fas fa-check-circle"></i></span>' : ''}
+                            <span class="status-dot ${statusClass}" title="${statusText}"></span>
+                        </span>
                     </h1>
                     <div class="artist-certifications-row" id="artist-certifications-row" hidden></div>
                     ${!artist.confirmed ? `<button class="verify-artist-btn" id="verify-artist-btn" title="${t('artist.verifyArtistBtn')}"><i class="fas fa-check-circle"></i> ${t('artist.verifyArtist')}</button>` : ''}

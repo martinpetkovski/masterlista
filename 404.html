@@ -39,7 +39,7 @@
                 '/charts': '/charts.html'
             };
 
-            // Chart preset routes → redirect to index with preset param
+            // Chart preset routes → redirect to charts page with preset stored in session
             const chartRoutes = {
                 '/alternativna': 'alt',
                 '/artisti': 'artists',
@@ -68,7 +68,7 @@
             // Handle chart preset routes (/alternativna, /site-vreminja, /napredno)
             if (chartRoutes[path]) {
                 sessionStorage.setItem('chartPreset', chartRoutes[path]);
-                window.location.replace('/index.html');
+                window.location.replace('/charts.html' + search);
                 return;
             }
 
