@@ -1775,6 +1775,13 @@
             overflow: hidden;
         }
 
+        #sotd-card .sotd-list {
+            display: grid;
+            grid-template-rows: repeat(5, minmax(0, 1fr));
+            gap: 0.2rem;
+            align-content: stretch;
+        }
+
         .sotd-item {
             display: flex;
             align-items: center;
@@ -1783,6 +1790,12 @@
             border-radius: 6px;
             transition: background 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
+        }
+
+        #sotd-card .sotd-item {
+            height: 100%;
+            min-height: 0;
+            box-sizing: border-box;
         }
 
         .sotd-cover {
@@ -1795,6 +1808,13 @@
         }
 
         .sotd-info { flex: 1; min-width: 0; }
+
+        #sotd-card .sotd-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.14rem;
+        }
 
         .sotd-track {
             font-family: 'Montserrat', sans-serif;
@@ -2274,8 +2294,8 @@
             font-size: 0.7rem;
             font-weight: 600;
             border: none;
-            background: transparent;
-            color: #000;
+            background: #000;
+            color: #fff;
             cursor: pointer;
             transition: filter 0.12s ease, box-shadow 0.12s ease;
             white-space: nowrap;
@@ -2296,9 +2316,9 @@
         }
 
         .verify-btn:hover {
-            background: rgba(0, 0, 0, 0.06);
+            background: #000;
             filter: brightness(1.2);
-            box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
+            box-shadow: 0 0 12px rgba(0,0,0,0.16), 0 0 4px rgba(0,0,0,0.1);
         }
         .verify-btn:hover::before {
             animation: btnSweep 0.4s ease-out forwards;
@@ -2659,7 +2679,10 @@
 
         .site-title-main-wrap {
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.42rem;
+            flex-wrap: nowrap;
         }
 
         .site-title-main {
@@ -2682,9 +2705,9 @@
         }
 
         .site-title-beta {
-            position: absolute;
-            top: 0.18rem;
-            right: -1.45rem;
+            position: relative;
+            top: 0.16rem;
+            right: auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -2701,10 +2724,11 @@
             line-height: 1;
             white-space: nowrap;
             transform: rotate(8deg);
-            transform-origin: left center;
+            transform-origin: center;
             box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
             pointer-events: none;
             z-index: 5;
+            flex-shrink: 0;
         }
 
         .site-title-logo-wrap {
@@ -2957,6 +2981,10 @@
                 flex-shrink: 1;
             }
 
+            .site-title-main-wrap {
+                gap: 0.3rem;
+            }
+
             .site-title {
                 overflow: visible;
                 margin-left: -0.5rem;
@@ -3000,8 +3028,7 @@
             }
 
             .site-title-beta {
-                top: 0.14rem;
-                right: -1.1rem;
+                top: 0.12rem;
                 min-height: 0.95rem;
                 padding: 0.1rem 0.34rem 0.08rem;
                 font-size: 0.45rem;
@@ -3113,14 +3140,14 @@
 
         body.dark-mode .verify-btn {
             border: none;
-            background: transparent;
+            background: #000;
             color: #fff;
         }
         body.dark-mode .verify-btn::before {
-            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
         }
         body.dark-mode .verify-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: #000;
             box-shadow: 0 0 12px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.1);
         }
 
@@ -4220,17 +4247,26 @@
 
         // ==================== RENDER: EVENTS (loaded from events.json) ====================
         function renderEvents() {
-            // Filter upcoming events from events.json (date >= today)
             var today = new Date();
             today.setHours(0, 0, 0, 0);
             var sevenDaysLater = new Date(today.getTime() + 7 * 86400000);
-            var upcoming = eventsData.filter(function(e) {
-                var p = e.date.split('-');
-                var eventDate = new Date(+p[0], +p[1] - 1, +p[2]);
-                return eventDate >= today && eventDate <= sevenDaysLater;
+            function parseEventDate(dateStr) {
+                var p = dateStr.split('-');
+                return new Date(+p[0], +p[1] - 1, +p[2]);
+            }
+
+            var futureEvents = eventsData.filter(function(e) {
+                return parseEventDate(e.date) >= today;
             }).sort(function(a, b) {
-                return new Date(a.date) - new Date(b.date);
-            }).slice(0, 7);
+                return parseEventDate(a.date) - parseEventDate(b.date);
+            });
+
+            var upcomingThisWeek = futureEvents.filter(function(e) {
+                return parseEventDate(e.date) <= sevenDaysLater;
+            });
+
+            var visibleCount = Math.min(futureEvents.length, Math.max(5, Math.min(7, upcomingThisWeek.length)));
+            var upcoming = futureEvents.slice(0, visibleCount);
 
             var list = document.getElementById('events-list');
             var loading = document.getElementById('events-loading');
@@ -4238,14 +4274,12 @@
             // Day indicator helpers (matching nastani.html logic)
             var dayNames = t('days.long');
             function getDayName(dateStr) {
-                var p = dateStr.split('-');
-                var d = new Date(+p[0], +p[1]-1, +p[2]);
+                var d = parseEventDate(dateStr);
                 return dayNames[d.getDay()];
             }
             function daysUntil(dateStr) {
                 var today = new Date(); today.setHours(0,0,0,0);
-                var p = dateStr.split('-');
-                var target = new Date(+p[0], +p[1]-1, +p[2]);
+                var target = parseEventDate(dateStr);
                 return Math.ceil((target - today) / 86400000);
             }
             function getDayIndicator(dateStr) {
