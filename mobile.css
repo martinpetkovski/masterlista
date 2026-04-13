@@ -1852,7 +1852,8 @@ body.vfx-dark .service-chooser-overlay,
     display: none;
     flex-shrink: 0;
     align-self: center;
-    max-width: min(100%, 7.75rem);
+    max-width: 1.45rem;
+    min-width: 0;
 }
 .service-chooser-certification-badge {
     --sc-cert-bg: linear-gradient(135deg, rgba(226, 232, 240, 0.96), rgba(148, 163, 184, 0.92));
@@ -1862,14 +1863,14 @@ body.vfx-dark .service-chooser-overlay,
     --sc-cert-monogram: #64748b;
     display: inline-flex;
     align-items: center;
-    gap: 0.26rem;
-    padding: 0.11rem 0.34rem 0.11rem 0.11rem;
-    border-radius: 999px;
-    border: 1px solid var(--sc-cert-border);
-    background: var(--sc-cert-bg);
+    gap: 0;
+    padding: 0;
+    border-radius: 50%;
+    border: none;
+    background: none;
     color: var(--sc-cert-text);
-    box-shadow: 0 7px 18px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-    backdrop-filter: blur(8px);
+    box-shadow: none;
+    backdrop-filter: none;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     max-width: 100%;
@@ -1900,7 +1901,7 @@ body.vfx-dark .service-chooser-overlay,
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 .service-chooser-certification-copy {
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     gap: 0.06rem;

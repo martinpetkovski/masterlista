@@ -3074,8 +3074,11 @@
                 font-size: 0.85rem;
             }
             .mini-chart-pop {
-                font-size: 1.1rem;
+                font-size: 1.45rem;
                 min-height: auto;
+            }
+            .chart-pop-wrap {
+                min-width: 4.5rem;
             }
 
             /* Stats card: stack summary and keep compact grids on mobile */
@@ -3491,11 +3494,23 @@
         // ==================== DATA STORES ====================
         var bandsData = [];
         var chartData = null;
+        var chartReleaseLookup = {};
         var eventsData = [];
         var curatorsData = null;
         var curatorTracksData = null;
         var siteMaster = null;  // Pre-calculated data from site-master.json
         var xotelLinks = [];
+
+        function getBestYoutubeUrl(releaseId) {
+            if (!releaseId) return '';
+            var r = chartReleaseLookup[releaseId];
+            if (!r || !r.youtubeTracks || r.youtubeTracks.length === 0) return '';
+            var best = r.youtubeTracks[0];
+            for (var i = 1; i < r.youtubeTracks.length; i++) {
+                if ((r.youtubeTracks[i].views || 0) > (best.views || 0)) best = r.youtubeTracks[i];
+            }
+            return best.url || (best.videoId ? 'https://www.youtube.com/watch?v=' + best.videoId : '');
+        }
 
         // Helper: returns verified badge HTML if artist is confirmed
         function verifiedBadge(artistName) {
@@ -3607,7 +3622,8 @@
             var stats = (totalViews !== null || viewsDelta !== null)
                 ? { totalViews: totalViews, viewsDelta: viewsDelta }
                 : undefined;
-            showServiceChooserDialog(url, title, artist, thumb, band ? band.accentColors : null, band ? band.spotifyName : null, band ? band.confirmed : false, undefined, undefined, stats);
+            var youtubeUrl = el.getAttribute('data-youtube-url') || undefined;
+            showServiceChooserDialog(url, title, artist, thumb, band ? band.accentColors : null, band ? band.spotifyName : null, band ? band.confirmed : false, youtubeUrl, undefined, stats);
         };
 
         // ==================== LOAD ALL DATA ====================
@@ -3634,6 +3650,15 @@
                 // Populate legacy variables from site-master for backward compat
                 if (siteMaster) {
                     chartData = siteMaster.chartData || null;
+                }
+
+                // Build release lookup for YouTube data & enrichment
+                chartReleaseLookup = {};
+                if (chartData && chartData.releases) {
+                    for (var ri = 0; ri < chartData.releases.length; ri++) {
+                        var cr = chartData.releases[ri];
+                        if (cr.releaseId) chartReleaseLookup[cr.releaseId] = cr;
+                    }
                 }
             } catch (err) {
                 console.error('Data load error:', err);
@@ -3820,7 +3845,7 @@
                         sparkleSvg +
                     '</div>' :
                     '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
-                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     coverHtml +
                     '<div class="mini-chart-info">' +
@@ -3921,9 +3946,17 @@
             if (last5.length === 0) {
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noNewReleases') + '</li>';
             } else {
+                // Enrich release radar items with YouTube data from chart releases
+                last5.forEach(function(r) {
+                    if (r.releaseId && chartReleaseLookup[r.releaseId]) {
+                        var cr = chartReleaseLookup[r.releaseId];
+                        if (cr.youtubeViews != null && !r.youtubeViews) r.youtubeViews = cr.youtubeViews;
+                        if (cr.viewsDelta != null && !r.viewsDelta) r.viewsDelta = cr.viewsDelta;
+                    }
+                });
                 list.innerHTML = last5.map(function(r) {
                     var releaseDate = r.effectiveReleaseDate || r.releaseDate;
-                    return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                    return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
                             '<div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
@@ -3972,7 +4005,7 @@
             return '<div class="discover-releases">' + releases.map(function(r) {
                 var typeIcon = r.releaseType === 'album' ? 'fas fa-record-vinyl' : 'fas fa-compact-disc';
                 var url = r.releaseUrl || '#';
-                return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + '">' +
+                return '<a href="#" class="discover-release-link" onclick="event.stopPropagation(); openServiceChooser(this)" data-url="' + escHtml(url) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + '">' +
                     '<i class="' + typeIcon + '"></i> ' + escHtml(localizeText(r.releaseTitle)) +
                 '</a>';
             }).join('') + '</div>';
@@ -4065,7 +4098,7 @@
             var loading = document.getElementById('sotd-loading');
 
             list.innerHTML = picked.map(function(track) {
-                var onclick = track.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(track.url) + '" data-title="' + escHtml(track.title) + '" data-artist="' + escHtml(track.artist) + '" data-thumb="' + escHtml(track.image || '') + '" data-total-views="' + escHtml(String(track.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(track.viewsDelta || 0)) + '"' : '';
+                var onclick = track.url ? 'onclick="openServiceChooser(this)" data-url="' + escHtml(track.url) + '" data-title="' + escHtml(track.title) + '" data-artist="' + escHtml(track.artist) + '" data-thumb="' + escHtml(track.image || '') + '" data-total-views="' + escHtml(String(track.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(track.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(track.releaseId || '')) + '"' : '';
                 var imgHtml = track.image ? '<img class="sotd-cover" src="' + track.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="sotd-cover"></div>';
                 var relHtml = '';
                 if (track.relevance && track.relevance.length > 0) {
@@ -4129,7 +4162,7 @@
                     }).join('');
                     chevHtml = '<span class="trending-chevrons" title="+' + formatViewsCompactPlain(viewsDeltaVal) + ' ' + t('dashboard.views') + '">' + chevItems + '</span>';
                 }
-                return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
