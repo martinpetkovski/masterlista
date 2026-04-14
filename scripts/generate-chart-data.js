@@ -39,41 +39,69 @@ function extractArtistId(spotifyUrl) {
   return match ? match[1] : null;
 }
 
-async function fetchWithRetry(url, options, retries = 3, timeout = 10000) {
-  for (let i = 0; i < retries; i++) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getRetryDelayMs(retryAfterHeader, attempt) {
+  const retryAfterSeconds = Number.parseFloat(retryAfterHeader || '');
+  if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
+    return Math.max(1000, Math.ceil(retryAfterSeconds * 1000));
+  }
+
+  return Math.min(60000, 5000 * Math.pow(2, attempt));
+}
+
+async function fetchWithRetry(url, options = {}, retries = 5, timeout = 10000) {
+  const totalAttempts = retries + 1;
+
+  for (let attempt = 0; attempt < totalAttempts; attempt++) {
+    const isLastAttempt = attempt === totalAttempts - 1;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-      
       const response = await fetch(url, { 
         ...options, 
         signal: controller.signal 
       });
-      
-      clearTimeout(timeoutId);
-      
+
       if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '3', 10);
-        console.log(`Rate limited, waiting ${retryAfter}s...`);
-        await new Promise(r => setTimeout(r, retryAfter * 1000));
+        if (isLastAttempt) {
+          const retryAfter = response.headers.get('Retry-After');
+          const details = await response.text().catch(() => 'Too many requests');
+          const retryHint = retryAfter !== null ? ` (Retry-After: ${retryAfter})` : '';
+          throw new Error(`Request stayed rate limited after ${retries} retries${retryHint}: ${details}`);
+        }
+
+        const retryDelayMs = getRetryDelayMs(response.headers.get('Retry-After'), attempt);
+        console.log(`Rate limited, waiting ${(retryDelayMs / 1000).toFixed(1)}s...`);
+        await sleep(retryDelayMs);
         continue;
       }
-      
-      if (!response.ok && i < retries - 1) {
-        console.log(`Request failed (${response.status}), retrying...`);
-        await new Promise(r => setTimeout(r, 500));
+
+      if (!response.ok && !isLastAttempt) {
+        const retryDelayMs = Math.min(5000, 500 * (attempt + 1));
+        console.log(`Request failed (${response.status}), retrying in ${(retryDelayMs / 1000).toFixed(1)}s...`);
+        await sleep(retryDelayMs);
         continue;
       }
-      
+
       return response;
     } catch (err) {
       if (err.name === 'AbortError') {
-        console.log(`Request timed out, retrying (${i + 1}/${retries})...`);
-        if (i < retries - 1) continue;
+        if (!isLastAttempt) {
+          console.log(`Request timed out, retrying (${attempt + 1}/${retries})...`);
+          continue;
+        }
       }
+
       throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
+
   throw new Error(`Failed after ${retries} retries`);
 }
 
