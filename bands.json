@@ -6908,11 +6908,13 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#402020"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5eb6eb3c3962a2c2c8286ce8b90",
-      "imageSource": "spotify",
-      "spotifyName": "Tamara Volcheska"
+      "imageSource": "spotify"
     },
     {
       "name": "Тања Царовска",
@@ -12405,6 +12407,22 @@
       "label": null,
       "accentColors": null,
       "confirmed": true
+    },
+    {
+      "name": "Пеце Огненов",
+      "city": "Битола",
+      "genre": "Pop, Contemporary Music, Schlager,",
+      "soundsLike": "недостигаат податоци",
+      "links": {
+        "instagram": "https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Fpece_ognenov%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExcDE2TFdQTUU0TDJaRzRKM3NydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR54G2R316iDggMTpg34U0wQ2RgP0VgEUGBfDW5WU3F3CzRkngxTwc2nNaIW_w_aem_r5D8FXy8iveD06OlYcjtEg&h=AT55P3YksMJ_MYmxw28ru8ghyXvTAlanRIfiQO9SO6HoeiFNsdG_TogR3Q8AYMP5CvBFY2da8ru6UrZ7UXX2QJ06KyC8dohesRGyzfqy-Hc0vZpXpPMhZdOGCLi7ltnqbbkk",
+        "youtube": "https://www.youtube.com/user/btmuzika",
+        "soundcloud": "https://soundcloud.com/pece-ognenov-karaoke",
+        "facebook": "https://www.facebook.com/PECE.OGNENOV"
+      },
+      "contact": "недостигаат податоци",
+      "label": null,
+      "accentColors": null,
+      "confirmed": false
     }
   ]
 }
