@@ -1,4 +1,4 @@
-﻿{
+{
   "muzickaMasterLista": [
     {
       "name": "100REN",
@@ -12154,8 +12154,11 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#1d9bf0",
+        "#ff922b"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5ebe76592cdec48bad8f2ab229a",
       "imageSource": "spotify",
       "spotifyName": "Aleksandar Tarabunov"
