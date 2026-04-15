@@ -5393,24 +5393,6 @@
       "spotifyName": "Peco Istok"
     },
     {
-      "name": "Пеце Огненов",
-      "city": "Битола",
-      "genre": "Pop, Contemporary Music, Schlager",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "instagram": "https://www.instagram.com/pece_ognenov",
-        "youtube": "https://www.youtube.com/user/btmuzika",
-        "soundcloud": "https://soundcloud.com/pece-ognenov-karaoke",
-        "facebook": "https://www.facebook.com/PECE.OGNENOV"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false,
-      "image": "https://yt3.googleusercontent.com/3erZ9jIZALu0pq51WGbmwhFMiwpKTqwxMGzgOk2jPG_Mwnl-nZnvgXt_Eb0NK48sz4MWRFrlZw=s900-c-k-c0x00ffffff-no-rj",
-      "imageSource": "youtube"
-    },
-    {
       "name": "Педро Хоризонте",
       "city": "Скопје",
       "genre": "Rock, Alternative Rock",
@@ -6926,11 +6908,13 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#202020",
+        "#402020"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5eb6eb3c3962a2c2c8286ce8b90",
-      "imageSource": "spotify",
-      "spotifyName": "Tamara Volcheska"
+      "imageSource": "spotify"
     },
     {
       "name": "Тања Царовска",
@@ -6944,11 +6928,15 @@
         "youtube": "https://www.youtube.com/watch?v=77fiHCfJaG0",
         "facebook": "https://www.facebook.com/TanjaTzarovska/",
         "instagram": "https://www.instagram.com/tzartichka/?hl=en",
-        "soundcloud": "https://soundcloud.com/tanja-tzar"
+        "soundcloud": "https://soundcloud.com/tanja-tzar",
+        "spotify": "https://open.spotify.com/artist/5pQWy1kXvHQjcyVp2h3Sq7"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#a08060",
+        "#c08060"
+      ],
       "confirmed": false,
       "image": "https://i.ytimg.com/vi/77fiHCfJaG0/hqdefault.jpg",
       "imageSource": "youtube"
