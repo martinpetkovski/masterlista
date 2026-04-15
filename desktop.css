@@ -919,12 +919,13 @@ td:nth-child(8) .cell-scroll {
     overflow-x: auto;
     max-width: 100%;
     gap: 0.05rem;
+    --cell-scroll-fade-size: 18px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     cursor: grab;
     position: relative;
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 18px), transparent 100%);
-    mask-image: linear-gradient(to right, black calc(100% - 18px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black var(--cell-scroll-fade-size), black calc(100% - var(--cell-scroll-fade-size)), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black var(--cell-scroll-fade-size), black calc(100% - var(--cell-scroll-fade-size)), transparent 100%);
     user-select: none;
     -webkit-user-select: none;
 }

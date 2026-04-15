@@ -866,11 +866,12 @@ td[data-label="Линкови"] .cell-scroll {
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 0.3rem;
+    --cell-scroll-fade-size: 12px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
-    mask-image: linear-gradient(to right, black calc(100% - 12px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black var(--cell-scroll-fade-size), black calc(100% - var(--cell-scroll-fade-size)), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black var(--cell-scroll-fade-size), black calc(100% - var(--cell-scroll-fade-size)), transparent 100%);
 }
 td[data-label="Линкови"] .cell-scroll::-webkit-scrollbar {
     display: none;

@@ -866,36 +866,70 @@
         }
     }
 
+    const defaultCellScrollFadeSize = '18px';
+
+    function getCellScrollFadeSize(el) {
+        const fadeSize = getComputedStyle(el).getPropertyValue('--cell-scroll-fade-size').trim();
+        return fadeSize || defaultCellScrollFadeSize;
+    }
+
+    function getCellScrollMask(direction, fadeSize) {
+        if (direction === 'none') return 'none';
+        if (direction === 'left') return `linear-gradient(to left, black calc(100% - ${fadeSize}), transparent 100%)`;
+        if (direction === 'right') return `linear-gradient(to right, black calc(100% - ${fadeSize}), transparent 100%)`;
+        return `linear-gradient(to right, transparent 0%, black ${fadeSize}, black calc(100% - ${fadeSize}), transparent 100%)`;
+    }
+
+    function setCellScrollMask(el, direction) {
+        const mask = getCellScrollMask(direction, getCellScrollFadeSize(el));
+        el.style.webkitMaskImage = mask;
+        el.style.maskImage = mask;
+    }
+
+    function updateCellScrollMask(el, options = {}) {
+        if (!el) return;
+
+        if (el.scrollWidth <= el.clientWidth + 1) {
+            setCellScrollMask(el, 'none');
+            return;
+        }
+
+        const shouldPreferBothSides = options.preferBothSides === true || el.dataset.userScrolled !== 'true';
+        if (shouldPreferBothSides) {
+            setCellScrollMask(el, 'both');
+            return;
+        }
+
+        const atStart = el.scrollLeft < 2;
+        const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2;
+
+        if (atStart && !atEnd) {
+            setCellScrollMask(el, 'right');
+        } else if (!atStart && atEnd) {
+            setCellScrollMask(el, 'left');
+        } else if (!atStart && !atEnd) {
+            setCellScrollMask(el, 'both');
+        } else {
+            setCellScrollMask(el, 'none');
+        }
+    }
+
+    function refreshCellScrollMasks() {
+        document.querySelectorAll('.cell-scroll').forEach((el) => {
+            updateCellScrollMask(el);
+        });
+    }
+
     // Enable horizontal drag-to-scroll and wheel-to-scroll on .cell-scroll elements
     function initCellScrollDrag() {
-        // Update fade mask based on scroll position
-        function updateFadeMask(el) {
-            if (el.scrollWidth <= el.clientWidth) {
-                el.style.webkitMaskImage = 'none';
-                el.style.maskImage = 'none';
-                return;
-            }
-            const atStart = el.scrollLeft < 2;
-            const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2;
-            if (atStart && !atEnd) {
-                el.style.webkitMaskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
-                el.style.maskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
-            } else if (!atStart && atEnd) {
-                el.style.webkitMaskImage = 'linear-gradient(to left, black calc(100% - 18px), transparent 100%)';
-                el.style.maskImage = 'linear-gradient(to left, black calc(100% - 18px), transparent 100%)';
-            } else if (!atStart && !atEnd) {
-                el.style.webkitMaskImage = 'linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%)';
-                el.style.maskImage = 'linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%)';
-            } else {
-                el.style.webkitMaskImage = 'none';
-                el.style.maskImage = 'none';
-            }
-        }
 
         // Attach scroll listener to dynamically update masks
         document.addEventListener('scroll', (e) => {
             const scrollEl = e.target.closest ? e.target.closest('.cell-scroll') : null;
-            if (scrollEl) updateFadeMask(scrollEl);
+            if (scrollEl) {
+                scrollEl.dataset.userScrolled = 'true';
+                updateCellScrollMask(scrollEl);
+            }
         }, true);
 
         document.addEventListener('mousedown', (e) => {
@@ -909,7 +943,8 @@
             const onMove = (ev) => {
                 ev.preventDefault();
                 scrollEl.scrollLeft = startScrollLeft - (ev.pageX - startX);
-                updateFadeMask(scrollEl);
+                scrollEl.dataset.userScrolled = 'true';
+                updateCellScrollMask(scrollEl);
             };
             const onUp = () => {
                 scrollEl.style.cursor = 'grab';
@@ -925,8 +960,12 @@
             if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth) return;
             e.preventDefault();
             scrollEl.scrollLeft += e.deltaY;
-            updateFadeMask(scrollEl);
+            scrollEl.dataset.userScrolled = 'true';
+            updateCellScrollMask(scrollEl);
         }, { passive: false });
+
+        window.addEventListener('resize', refreshCellScrollMasks);
+        window.addEventListener('load', refreshCellScrollMasks, { once: true });
     }
     initCellScrollDrag();
 
@@ -3509,13 +3548,7 @@
 
             // Initialize fade masks for scrollable cells
             bandRow.querySelectorAll('.cell-scroll').forEach(el => {
-                if (el.scrollWidth > el.clientWidth) {
-                    el.style.webkitMaskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
-                    el.style.maskImage = 'linear-gradient(to right, black calc(100% - 18px), transparent 100%)';
-                } else {
-                    el.style.webkitMaskImage = 'none';
-                    el.style.maskImage = 'none';
-                }
+                updateCellScrollMask(el, { preferBothSides: true });
             });
     }
     
