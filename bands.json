@@ -664,7 +664,7 @@
         "#e0c0a0",
         "#e0e0c0"
       ],
-      "confirmed": true,
+      "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5eb68bb8a46715a7b02d2627473",
       "imageSource": "spotify"
     },
@@ -5393,24 +5393,6 @@
       "spotifyName": "Peco Istok"
     },
     {
-      "name": "Пеце Огненов",
-      "city": "Битола",
-      "genre": "Pop, Contemporary Music, Schlager",
-      "soundsLike": "недостигаат податоци",
-      "links": {
-        "instagram": "https://www.instagram.com/pece_ognenov",
-        "youtube": "https://www.youtube.com/user/btmuzika",
-        "soundcloud": "https://soundcloud.com/pece-ognenov-karaoke",
-        "facebook": "https://www.facebook.com/PECE.OGNENOV"
-      },
-      "contact": "недостигаат податоци",
-      "label": null,
-      "accentColors": null,
-      "confirmed": false,
-      "image": "https://yt3.googleusercontent.com/3erZ9jIZALu0pq51WGbmwhFMiwpKTqwxMGzgOk2jPG_Mwnl-nZnvgXt_Eb0NK48sz4MWRFrlZw=s900-c-k-c0x00ffffff-no-rj",
-      "imageSource": "youtube"
-    },
-    {
       "name": "Педро Хоризонте",
       "city": "Скопје",
       "genre": "Rock, Alternative Rock",
@@ -6944,8 +6926,7 @@
         "youtube": "https://www.youtube.com/watch?v=77fiHCfJaG0",
         "facebook": "https://www.facebook.com/TanjaTzarovska/",
         "instagram": "https://www.instagram.com/tzartichka/?hl=en",
-        "soundcloud": "https://soundcloud.com/tanja-tzar",
-        "spotify": "https://open.spotify.com/artist/5pQWy1kXvHQjcyVp2h3Sq7"
+        "soundcloud": "https://soundcloud.com/tanja-tzar"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -12154,14 +12135,10 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": [
-        "#1d9bf0",
-        "#ff922b"
-      ],
-      "confirmed": true,
+      "accentColors": null,
+      "confirmed": false,
       "image": "https://i.scdn.co/image/ab6761610000e5ebe76592cdec48bad8f2ab229a",
-      "imageSource": "spotify",
-      "spotifyName": "Aleksandar Tarabunov"
+      "imageSource": "spotify"
     },
     {
       "name": "Kiminn",
@@ -12425,7 +12402,7 @@
       "links": {
         "bandcamp": "https://umbrarium.bandcamp.com/"
       },
-      "contact": "недостигаат податоци",
+      "contact": "temeligor@yahoo.com",
       "label": null,
       "accentColors": null,
       "confirmed": true,
