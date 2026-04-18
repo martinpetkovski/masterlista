@@ -1535,82 +1535,7 @@ $releaseStats = [PSCustomObject]@{
 
 Write-Host "  > Release stats: $totalSongs songs, $verifiedSongs verified, $totalViews views" -ForegroundColor DarkGray
 
-# ============================================================================
-#  7. RISING ARTISTS
-# ============================================================================
-
-Write-Host "  > Calculating rising artists..." -ForegroundColor Yellow
-
 $now = Get-Date
-$twoYearCutoff = ($now.AddYears(-2)).ToString("yyyy-MM-dd")
-
-# Group releases by artist
-$artistReleaseGroups = @{}
-foreach ($r in $releases) {
-    $name = $r.bandName
-    if (-not $artistReleaseGroups.ContainsKey($name)) {
-        $artistReleaseGroups[$name] = [System.Collections.ArrayList]::new()
-    }
-    [void]$artistReleaseGroups[$name].Add($r)
-}
-
-$risingArtists = @()
-foreach ($name in $artistReleaseGroups.Keys) {
-    $rels = @($artistReleaseGroups[$name] | Sort-Object { ($_.effectiveReleaseDate, $_.releaseDate -ne $null)[0] })
-    
-    # Skip if ANY release is older than 2 years
-    $earliestEffDate = ($rels[0].effectiveReleaseDate, $rels[0].releaseDate -ne $null)[0]
-    if ($earliestEffDate -lt $twoYearCutoff) { continue }
-    
-    # Skip if 10+ releases (Spotify API cap — can't verify truly new)
-    if ($rels.Count -ge 10) { continue }
-    
-    $latestRelease = $rels[-1]
-    $latestViews = [int]($latestRelease.youtubeViews -as [int])
-    $earliestViews = [int]($rels[0].youtubeViews -as [int])
-    $maxViews = ($rels | ForEach-Object { [int]($_.youtubeViews -as [int]) } | Measure-Object -Maximum).Maximum
-    
-    # Minimum views threshold
-    if ($maxViews -lt 100) { continue }
-    
-    $viewsTrend = if ($rels.Count -gt 1) { $latestViews - $earliestViews } else { 0 }
-    $latestEffDate = if ($latestRelease.effectiveReleaseDate) { $latestRelease.effectiveReleaseDate } else { $latestRelease.releaseDate }
-    $daysSinceLatest = [Math]::Floor(($now - [DateTime]::ParseExact($latestEffDate, 'yyyy-MM-dd', $null)).TotalDays)
-    $recencyBonus = [Math]::Max(0, 180 - $daysSinceLatest)
-    $activityBonus = if ($rels.Count -ge 2) { 25 } else { 0 }
-    $score = [Math]::Round($latestViews / 100) + [Math]::Max(0, [Math]::Round($viewsTrend / 100)) * 2 + $recencyBonus + $activityBonus
-    
-    $bandInfo = Get-ArtistInfo $name
-    
-    # Determine badge
-    $badge = if ($viewsTrend -gt 500) { "hot" }
-             elseif ($rels.Count -ge 3) { "rising" }
-             else { "fresh" }
-    $badgeLabel = switch ($badge) {
-        "hot" { "📈 ВО ПОДЕМ" }
-        "rising" { "🔥 АКТИВЕН" }
-        "fresh" { "✨ НОВ" }
-    }
-    
-    $risingArtists += [PSCustomObject]@{
-        name       = if ($bandInfo) { $bandInfo.name } else { $name }
-        image      = if ($bandInfo -and $bandInfo.image) { $bandInfo.image } else { $latestRelease.thumbnail }
-        genre      = if ($bandInfo) { $bandInfo.genre } else { '' }
-        score      = $score
-        count      = $rels.Count
-        maxViews   = $maxViews
-        latestViews = $latestViews
-        viewsTrend = $viewsTrend
-        badge      = $badge
-        badgeLabel = $badgeLabel
-        confirmed  = if ($bandInfo) { [bool]$bandInfo.confirmed } else { $false }
-    }
-}
-
-# Sort by score descending
-$risingArtists = @($risingArtists | Sort-Object { -$_.score })
-
-Write-Host "  > Found $($risingArtists.Count) rising artist candidates" -ForegroundColor DarkGray
 
 # ============================================================================
 #  8. ACTIVITY STATUS PER ARTIST
@@ -2023,9 +1948,6 @@ $siteMaster = [PSCustomObject]@{
     
     # Hot songs (top 100 with positive popularity change vs last week)
     hotSongs = $hotSongs
-    
-    # Rising artist candidates (sorted by score desc)
-    risingArtists = $risingArtists
     
     # Release radar (latest 10)
     releaseRadar = $releaseRadar

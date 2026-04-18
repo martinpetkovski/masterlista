@@ -3560,17 +3560,17 @@
             </a>
         </div>
 
-        <!-- ==================== DISCOVER ARTISTS (5 random) ==================== -->
-        <div class="dash-card" id="discover-card">
+        <!-- ==================== VERIFY ARTISTS ==================== -->
+        <div class="dash-card" id="verify-card">
             <div class="dash-card-header">
-                <h2><i class="fas fa-star"></i> <span data-i18n="dashboard.discoverArtists">Откриј артисти</span></h2>
+                <h2><i class="fas fa-circle-check"></i> <span data-i18n="dashboard.helpVerify">Помогни со верификација</span></h2>
                 <div class="dash-card-header-actions">
-                    <button type="button" class="more-link shuffle-btn" id="shuffle-discover-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link" title="Артисти" data-i18n-title="common.masterList"><i class="fas fa-users"></i></a>
+                    <button type="button" class="more-link shuffle-btn" id="shuffle-verify-btn"><i class="fas fa-shuffle"></i></button>
                 </div>
             </div>
-            <div class="dash-loading" id="discover-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
-            <ul class="trending-list" id="discover-grid" style="display:none;"></ul>
+            <p class="verify-card-intro" data-i18n="dashboard.verifyIntro">Ги познаваш овие артисти или нивните претставници?</p>
+            <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
+            <ul class="verify-list" id="verify-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== SONGS (random on refresh) ==================== -->
@@ -3594,32 +3594,6 @@
             </div>
             <div class="dash-loading" id="news-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="news-list" id="news-list" style="display:none;"></ul>
-        </div>
-
-        <!-- ==================== TRENDING: RISING ARTISTS ==================== -->
-        <div class="dash-card" id="rising-card">
-            <div class="dash-card-header">
-                <h2><i class="fas fa-arrow-trend-up"></i> <span data-i18n="dashboard.risingArtists">Артисти во подем</span></h2>
-                <div class="dash-card-header-actions">
-                    <button type="button" class="more-link shuffle-btn" id="shuffle-rising-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="/lista" class="more-link" title="Артисти" data-i18n-title="common.masterList"><i class="fas fa-users"></i></a>
-                </div>
-            </div>
-            <div class="dash-loading" id="rising-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
-            <ul class="trending-list" id="rising-list" style="display:none;"></ul>
-        </div>
-
-        <!-- ==================== VERIFY ARTISTS ==================== -->
-        <div class="dash-card" id="verify-card">
-            <div class="dash-card-header">
-                <h2><i class="fas fa-circle-check"></i> <span data-i18n="dashboard.helpVerify">Помогни со верификација</span></h2>
-                <div class="dash-card-header-actions">
-                    <button type="button" class="more-link shuffle-btn" id="shuffle-verify-btn"><i class="fas fa-shuffle"></i></button>
-                </div>
-            </div>
-            <p class="verify-card-intro" data-i18n="dashboard.verifyIntro">Ги познаваш овие артисти или нивните претставници?</p>
-            <div class="dash-loading" id="verify-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
-            <ul class="verify-list" id="verify-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== RELEASE STATS ==================== -->
@@ -3915,10 +3889,8 @@
             renderMainChart();
             renderAltChart();
             renderReleaseRadar();
-            renderDiscoverArtists();
             renderSongsOfTheDay();
             renderHotSongs();
-            renderRisingArtists();
             renderEvents();
             renderNews();
             renderVerifyArtists();
@@ -4425,47 +4397,6 @@
             }).join('') + '</div>';
         }
 
-        // ==================== RENDER: DISCOVER ARTISTS (5 random on refresh) ====================
-        function renderDiscoverArtists() {
-            if (bandsData.length === 0) {
-                document.getElementById('discover-loading').innerHTML = '<span>' + t('dashboard.noArtists') + '</span>';
-                return;
-            }
-
-            var withImages = bandsData.filter(function(b) { return b.image; });
-            var pool = withImages.length >= 5 ? withImages : bandsData;
-            var picked = shuffle(pool).slice(0, 5);
-
-            var grid = document.getElementById('discover-grid');
-            var loading = document.getElementById('discover-loading');
-
-            grid.innerHTML = picked.map(function(artist) {
-                var artistPageUrl = '/artist.html?name=' + encodeURIComponent(artist.name);
-                var linksHtml = '';
-                if (artist.links) {
-                    for (var key in artist.links) {
-                        if (artist.links[key] && linkIcons[key]) {
-                            linksHtml += '<a href="' + artist.links[key] + '" target="_blank" rel="noopener" title="' + key + '"><i class="' + linkIcons[key] + '"></i></a>';
-                        }
-                    }
-                }
-                var releases = getLatestReleases(artist.name, 3);
-                var releaseHtml = buildReleasesHtml(releases);
-                return '<li class="trending-item" onclick="location.href=\'' + artistPageUrl + '\'">' +
-                    '<img class="trending-cover" src="' + (artist.image || '/logo.png') + '" alt="' + escHtml(localizeText(artist.name)) + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
-                    '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(localizeText(artist.name)) + verifiedBadge(artist.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(localizeGenreString(artist.genre || '')) + '</div>' +
-                        releaseHtml +
-                    '</div>' +
-                    (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
-                '</li>';
-            }).join('');
-
-            loading.style.display = 'none';
-            grid.style.display = '';
-        }
-
         // ==================== RENDER: SONGS (random on refresh) ====================
         function renderSongsOfTheDay() {
             if (!curatorTracksData || !curatorTracksData.curators) {
@@ -4583,48 +4514,6 @@
                         '<div class="trending-sub">' + buildArtistLinks(r.bandName) + '</div>' +
                     '</div>' +
                     chevHtml +
-                '</li>';
-            }).join('');
-
-            loading.style.display = 'none';
-            list.style.display = '';
-        }
-
-        // ==================== RENDER: RISING ARTISTS (Во подем) ====================
-        function renderRisingArtists() {
-            var candidates = siteMaster && siteMaster.risingArtists ? siteMaster.risingArtists : [];
-
-            // Shuffle and pick 5 random candidates
-            var picked = shuffle(candidates).slice(0, 5);
-
-            var list = document.getElementById('rising-list');
-            var loading = document.getElementById('rising-loading');
-
-            list.innerHTML = picked.map(function(a, i) {
-                var artistUrl = '/artist.html?name=' + encodeURIComponent(a.name);
-                var releases = getLatestReleases(a.name, 3);
-                var relHtml = buildReleasesHtml(releases);
-                // Build streaming/social links from bandsData
-                var linksHtml = '';
-                var bandMatch = null;
-                for (var b = 0; b < bandsData.length; b++) {
-                    if (bandsData[b].name.toLowerCase() === a.name.toLowerCase()) { bandMatch = bandsData[b]; break; }
-                }
-                if (bandMatch && bandMatch.links) {
-                    for (var key in bandMatch.links) {
-                        if (bandMatch.links[key] && linkIcons[key]) {
-                            linksHtml += '<a href="' + bandMatch.links[key] + '" target="_blank" rel="noopener" title="' + key + '"><i class="' + linkIcons[key] + '"></i></a>';
-                        }
-                    }
-                }
-                return '<li class="trending-item" onclick="location.href=\'' + artistUrl + '\'">' +
-                    '<img class="trending-cover" src="' + (a.image || '/logo.png') + '" alt="" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG" style="border-radius:50%">' +
-                    '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(localizeText(a.name)) + verifiedBadge(a.name) + '</div>' +
-                        '<div class="trending-sub">' + escHtml(localizeGenreString(a.genre || '')) + '</div>' +
-                        relHtml +
-                    '</div>' +
-                    (linksHtml ? '<div class="rising-links" onclick="event.stopPropagation()">' + linksHtml + '</div>' : '') +
                 '</li>';
             }).join('');
 
@@ -4922,9 +4811,7 @@
         function bindShuffleButtons() {
             var buttonBindings = [
                 { id: 'shuffle-hot-songs-btn', render: renderHotSongs },
-                { id: 'shuffle-discover-btn', render: renderDiscoverArtists },
                 { id: 'shuffle-sotd-btn', render: renderSongsOfTheDay },
-                { id: 'shuffle-rising-btn', render: renderRisingArtists },
                 { id: 'shuffle-verify-btn', render: renderVerifyArtists },
                 { id: 'shuffle-yt-btn', render: renderYouTube }
             ];
