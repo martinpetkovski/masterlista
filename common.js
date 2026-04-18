@@ -475,6 +475,60 @@ function shuffle(arr) {
     return a;
 }
 
+function hashStringSeed(value) {
+    var text = String(value == null ? '' : value);
+    var hash = 2166136261;
+    for (var i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+}
+
+function getSeededOrder(arr, seedKey) {
+    var seed = hashStringSeed(seedKey);
+    return arr.slice().map(function(item, index) {
+        var value = (seed ^ Math.imul(index + 1, 2654435761)) >>> 0;
+        value ^= value << 13;
+        value >>>= 0;
+        value ^= value >>> 17;
+        value >>>= 0;
+        value ^= value << 5;
+        value >>>= 0;
+        return {
+            item: item,
+            index: index,
+            weight: value
+        };
+    }).sort(function(a, b) {
+        if (a.weight !== b.weight) return a.weight - b.weight;
+        return a.index - b.index;
+    }).map(function(entry) {
+        return entry.item;
+    });
+}
+
+function getDateKeyInTimeZone(timeZone) {
+    try {
+        var parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: timeZone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).formatToParts(new Date());
+        var values = {};
+        parts.forEach(function(part) {
+            values[part.type] = part.value;
+        });
+        if (values.year && values.month && values.day) {
+            return values.year + '-' + values.month + '-' + values.day;
+        }
+    } catch (e) {
+        // Fall back to local date if timezone formatting is unavailable.
+    }
+    return new Date().toISOString().slice(0, 10);
+}
+
 // ==================== COLLAB DEDUPLICATION ====================
 function deduplicateCollabs(releases) {
     var map = new Map();

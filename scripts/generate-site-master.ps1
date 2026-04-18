@@ -187,6 +187,7 @@ foreach ($b in $bandsData) {
         rap = $matchesRap
         electronic = $matchesElectronic
         pop = $matchesPop
+        genres = @($genres)
     }
 }
 
@@ -295,6 +296,272 @@ function Test-ArtistCity {
     $info = Get-ArtistInfo $artistName
     if (-not $info -or -not $info.city) { return $false }
     return $info.city.ToLower().Contains($target)
+}
+
+function Get-ReleaseEffectiveDateString {
+    param([object]$release)
+    if ($release.effectiveReleaseDate) { return [string]$release.effectiveReleaseDate }
+    if ($release.releaseDate) { return [string]$release.releaseDate }
+    return $null
+}
+
+function Get-ReleaseDateValue {
+    param([object]$release)
+    $dateStr = Get-ReleaseEffectiveDateString $release
+    if (-not $dateStr) { return $null }
+    try {
+        return [datetime]::Parse($dateStr)
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-ReleaseAgeDays {
+    param([object]$release, [datetime]$referenceDate)
+    $releaseDate = Get-ReleaseDateValue $release
+    if (-not $releaseDate) { return 9999 }
+    $ageDays = [int][Math]::Floor(($referenceDate.Date - $releaseDate.Date).TotalDays)
+    if ($ageDays -lt 0) { return 0 }
+    return $ageDays
+}
+
+function Get-HotSongGenreBuckets {
+    param([string]$artistName)
+
+    $bucketSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    $artistNames = @($artistName -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    if ($artistNames.Count -eq 0 -and $artistName) { $artistNames = @($artistName.Trim()) }
+
+    foreach ($name in $artistNames) {
+        $artistKey = $name.ToLower().Trim()
+        $cached = $artistGenreCache[$artistKey]
+        if (-not $cached) {
+            $info = Get-ArtistInfo $name
+            if ($info) { $cached = $artistGenreCache[$info.name.ToLower().Trim()] }
+        }
+        if (-not $cached) { continue }
+
+        foreach ($genre in @($cached.genres)) {
+            if ($genre) {
+                [void]$bucketSet.Add([string]$genre)
+            }
+        }
+    }
+
+    if ($bucketSet.Count -eq 0) {
+        [void]$bucketSet.Add('other')
+    } else {
+        $specificBuckets = @($bucketSet | Where-Object { $_ -notin @('pop', 'alternative') } | Sort-Object -Unique)
+        if ($specificBuckets.Count -gt 0) {
+            return @($specificBuckets)
+        }
+    }
+
+    return @($bucketSet | Sort-Object -Unique)
+}
+
+function Get-HotSongRecencyMultiplier {
+    param([int]$ageDays)
+    $freshWindowDays = 183.0
+    $maxBonus = 0.36
+
+    if ($ageDays -le 0) {
+        return [math]::Round(1.0 + $maxBonus, 3)
+    }
+    if ($ageDays -ge $freshWindowDays) {
+        return 1.00
+    }
+
+    $progress = [double]$ageDays / $freshWindowDays
+    $bonus = $maxBonus * [Math]::Pow((1.0 - $progress), 1.25)
+    return [math]::Round(1.0 + $bonus, 3)
+}
+
+function Get-HotSongScore {
+    param([int]$viewsDelta, [int]$ageDays)
+    if ($viewsDelta -le 0) { return 0.0 }
+    $multiplier = Get-HotSongRecencyMultiplier $ageDays
+    return [math]::Log10([double]$viewsDelta + 1.0) * $multiplier
+}
+
+function Get-HotSongNormalizedBuckets {
+    param([object]$genreBuckets)
+
+    $songBuckets = @($genreBuckets | Where-Object { $_ } | Sort-Object -Unique)
+    if ($songBuckets.Count -eq 0) {
+        return @('other')
+    }
+
+    return @($songBuckets)
+}
+
+function Get-HotSongBalanceBuckets {
+    param([object]$genreBuckets)
+
+    return @(Get-HotSongNormalizedBuckets $genreBuckets)
+}
+
+function Get-HotSongGenreRepresentationMultiplier {
+    param(
+        [double]$count,
+        [double]$minCount,
+        [double]$maxCount,
+        [double]$minMultiplier = 0.55,
+        [double]$maxMultiplier = 1.18,
+        [double]$curvePower = 0.9
+    )
+
+    if ($maxCount -le $minCount) {
+        return 1.0
+    }
+
+    $progress = ($count - $minCount) / ($maxCount - $minCount)
+    $progress = [Math]::Min(1.0, [Math]::Max(0.0, $progress))
+    $multiplier = $maxMultiplier - (($maxMultiplier - $minMultiplier) * [Math]::Pow($progress, $curvePower))
+    return [math]::Round($multiplier, 4)
+}
+
+function Get-HotSongSelectionMeta {
+    param([object]$candidate, [hashtable]$genreCounts)
+
+    $candidateBuckets = @(Get-HotSongBalanceBuckets $candidate.genreBuckets)
+    if ($candidateBuckets.Count -eq 0) {
+        $candidateBuckets = @('other')
+    }
+
+    $relevantBuckets = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($bucket in $candidateBuckets) {
+        [void]$relevantBuckets.Add($bucket)
+    }
+    foreach ($bucket in $genreCounts.Keys) {
+        [void]$relevantBuckets.Add([string]$bucket)
+    }
+
+    $minCount = [double]::PositiveInfinity
+    $maxCount = [double]::NegativeInfinity
+    foreach ($bucket in $relevantBuckets) {
+        $count = if ($genreCounts.ContainsKey($bucket)) { [double]$genreCounts[$bucket] } else { 0.0 }
+        if ($count -lt $minCount) { $minCount = $count }
+        if ($count -gt $maxCount) { $maxCount = $count }
+    }
+    if ([double]::IsNaN($minCount) -or [double]::IsInfinity($minCount)) { $minCount = 0.0 }
+    if ([double]::IsNaN($maxCount) -or [double]::IsInfinity($maxCount)) { $maxCount = 0.0 }
+
+    $primaryBucket = $candidateBuckets[0]
+    $bucketFactors = @{}
+    $factorTotal = 0.0
+    foreach ($bucket in $candidateBuckets) {
+        $count = if ($genreCounts.ContainsKey($bucket)) { [double]$genreCounts[$bucket] } else { 0.0 }
+        $bucketFactor = Get-HotSongGenreRepresentationMultiplier $count $minCount $maxCount 0.74 1.12 0.9
+        $bucketFactors[$bucket] = $bucketFactor
+        $factorTotal += $bucketFactor
+    }
+
+    $selectionFactor = if ($candidateBuckets.Count -gt 0) {
+        [math]::Round(($factorTotal / [double]$candidateBuckets.Count), 4)
+    } else {
+        1.0
+    }
+
+    foreach ($bucket in $candidateBuckets) {
+        $bucketFactor = [double]$bucketFactors[$bucket]
+        $primaryFactor = [double]$bucketFactors[$primaryBucket]
+        if ($selectionFactor -ge 1.0) {
+            if ($bucketFactor -gt $primaryFactor -or ($bucketFactor -eq $primaryFactor -and $bucket -lt $primaryBucket)) {
+                $primaryBucket = $bucket
+            }
+        } elseif ($bucketFactor -lt $primaryFactor -or ($bucketFactor -eq $primaryFactor -and $bucket -lt $primaryBucket)) {
+            $primaryBucket = $bucket
+        }
+    }
+
+    $adjustedScore = [double]$candidate.hotScore * $selectionFactor
+
+    return [PSCustomObject]@{
+        primaryBucket = $primaryBucket
+        penaltyFactor = $selectionFactor
+        adjustedScore = [math]::Round($adjustedScore, 6)
+    }
+}
+
+function Get-HotSongGenreMultiplierMap {
+    param([array]$hotSongs)
+
+    $genreCounts = @{}
+
+    foreach ($song in @($hotSongs)) {
+        $songBuckets = @(Get-HotSongBalanceBuckets $song.genreBuckets)
+        if ($songBuckets.Count -eq 0) {
+            $songBuckets = @('other')
+        }
+
+        foreach ($bucket in $songBuckets) {
+            if (-not $genreCounts.ContainsKey($bucket)) {
+                $genreCounts[$bucket] = 0
+            }
+            $genreCounts[$bucket] = [int]$genreCounts[$bucket] + 1
+        }
+    }
+
+    $activeBuckets = @($genreCounts.GetEnumerator() | Where-Object { [int]$_.Value -gt 0 })
+    if ($activeBuckets.Count -eq 0) {
+        return @{}
+    }
+
+    $minCount = [double](($activeBuckets | Measure-Object -Property Value -Minimum).Minimum)
+    $maxCount = [double](($activeBuckets | Measure-Object -Property Value -Maximum).Maximum)
+    $multiplierMap = @{}
+
+    foreach ($entry in $activeBuckets) {
+        $count = [double]$entry.Value
+        $multiplierMap[$entry.Key] = Get-HotSongGenreRepresentationMultiplier $count $minCount $maxCount
+    }
+
+    return $multiplierMap
+}
+
+function Get-HotSongBalanceMeta {
+    param([object]$song, [hashtable]$genreMultiplierMap)
+
+    $songBuckets = @(Get-HotSongBalanceBuckets $song.genreBuckets)
+    if ($songBuckets.Count -eq 0) {
+        $songBuckets = @('other')
+    }
+
+    $balanceBucket = $songBuckets[0]
+    $balanceTotal = 0.0
+    $bucketMultipliers = @{}
+
+    foreach ($bucket in $songBuckets) {
+        $multiplier = if ($genreMultiplierMap.ContainsKey($bucket)) { [double]$genreMultiplierMap[$bucket] } else { 1.0 }
+        $bucketMultipliers[$bucket] = $multiplier
+        $balanceTotal += $multiplier
+    }
+
+    $balanceMultiplier = if ($songBuckets.Count -gt 0) {
+        [math]::Round(($balanceTotal / [double]$songBuckets.Count), 4)
+    } else {
+        1.0
+    }
+
+    foreach ($bucket in $songBuckets) {
+        $multiplier = [double]$bucketMultipliers[$bucket]
+        $primaryMultiplier = [double]$bucketMultipliers[$balanceBucket]
+        if ($balanceMultiplier -ge 1.0) {
+            if ($multiplier -gt $primaryMultiplier -or ($multiplier -eq $primaryMultiplier -and $bucket -lt $balanceBucket)) {
+                $balanceBucket = $bucket
+            }
+        } elseif ($multiplier -lt $primaryMultiplier -or ($multiplier -eq $primaryMultiplier -and $bucket -lt $balanceBucket)) {
+            $balanceBucket = $bucket
+        }
+    }
+
+    return [PSCustomObject]@{
+        genreBucket       = $balanceBucket
+        penaltyFactor     = $balanceMultiplier
+        adjustedHotScore  = [math]::Round(([double]$song.hotScore * $balanceMultiplier), 4)
+    }
 }
 
 # Deduplicate collaborative releases (matching common.js deduplicateCollabs)
@@ -1432,36 +1699,164 @@ Write-Host "  > Trimmed release history: $totalHistoryBefore -> $totalHistoryAft
 Write-Host "  > Calculating hot songs..." -ForegroundColor Yellow
 
 $currentRanked = Build-ChartRanking -releasesArr $releases -type 'single' -genre 'all' -count 0 -preDeduped $mainByGenre['all']
-# Reuse the pre-computed previous-week map from section 1
-$prevMapHot = $prevMapsUnlimited['all_single']
-
-$hotSongs = [System.Collections.ArrayList]::new()
-for ($i = 0; $i -lt $currentRanked.Count; $i++) {
-    $r = $currentRanked[$i]
-    if ($prevMapHot.ContainsKey($r.releaseId)) {
-        $prev = $prevMapHot[$r.releaseId]
-        $viewsDelta = ([int]($r.youtubeViews -as [int])) - [int]($prev.youtubeViews -as [int])
-        if ($viewsDelta -gt 0) {
-            $artistInfo = Get-ArtistInfo $r.bandName
-            [void]$hotSongs.Add([PSCustomObject]@{
-                releaseId    = $r.releaseId
-                bandName     = $r.bandName
-                releaseTitle = $r.releaseTitle
-                releaseUrl   = $r.releaseUrl
-                thumbnail    = $r.thumbnail
-                youtubeViews = [int]($r.youtubeViews -as [int])
-                viewsDelta   = $viewsDelta
-                popularityChange = $viewsDelta
-                confirmed    = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
-            })
+$hotSongReferenceDate = (Get-Date).Date
+$hotSongChartCutoff = $hotSongReferenceDate.AddDays(-(4 * 7)).ToString('yyyy-MM-dd')
+$chartHotExclusionIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+if ($charts.ContainsKey('all_single')) {
+    foreach ($entry in $charts['all_single']) {
+        if ($entry.releaseId) {
+            [void]$chartHotExclusionIds.Add([string]$entry.releaseId)
         }
     }
 }
+$hotSongCandidates = [System.Collections.ArrayList]::new()
 
-# Sort hot songs by viewsDelta descending and keep top 100 for index page
-$hotSongsAll = $hotSongs
+for ($i = 0; $i -lt $currentRanked.Count; $i++) {
+    $r = $currentRanked[$i]
+    $viewsDelta = [int]($r.viewsDelta -as [int])
+    if ($viewsDelta -le 0) { continue }
+
+    $releaseDateStr = Get-ReleaseEffectiveDateString $r
+    $isChartWindowSingle = $false
+    if ($releaseDateStr -and $releaseDateStr -ge $hotSongChartCutoff) {
+        $isChartWindowSingle = $true
+    }
+    if ($chartHotExclusionIds.Contains([string]$r.releaseId) -or $isChartWindowSingle) {
+        continue
+    }
+
+    $artistInfo = Get-ArtistInfo $r.bandName
+    $ageDays = Get-ReleaseAgeDays $r $hotSongReferenceDate
+    $recencyMultiplier = Get-HotSongRecencyMultiplier $ageDays
+    $hotScore = Get-HotSongScore $viewsDelta $ageDays
+    $genreBuckets = Get-HotSongGenreBuckets $r.bandName
+
+    [void]$hotSongCandidates.Add([PSCustomObject]@{
+        releaseId          = $r.releaseId
+        bandName           = $r.bandName
+        releaseTitle       = $r.releaseTitle
+        releaseUrl         = $r.releaseUrl
+        thumbnail          = $r.thumbnail
+        youtubeViews       = [int]($r.youtubeViews -as [int])
+        viewsDelta         = $viewsDelta
+        popularityChange   = $viewsDelta
+        confirmed          = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
+        releaseDate        = $r.releaseDate
+        effectiveReleaseDate = $releaseDateStr
+        ageDays            = $ageDays
+        recencyMultiplier  = [math]::Round($recencyMultiplier, 2)
+        hotScore           = [math]::Round($hotScore, 4)
+        genreBuckets       = @($genreBuckets)
+    })
+}
+
+$hotSongsAll = @($hotSongCandidates | Sort-Object @(
+    @{ Expression = { [double]$_.hotScore }; Descending = $true },
+    @{ Expression = { [int]($_.viewsDelta -as [int]) }; Descending = $true },
+    @{ Expression = { [int]($_.youtubeViews -as [int]) }; Descending = $true },
+    @{ Expression = { Get-ReleaseEffectiveDateString $_ }; Descending = $true },
+    @{ Expression = { $_.bandName } }
+))
+
+$hotSongArtistCounts = @{}
+$hotSongGenreCounts = @{}
+
+$remainingHotSongs = [System.Collections.ArrayList]::new()
+foreach ($candidate in $hotSongsAll) {
+    [void]$remainingHotSongs.Add($candidate)
+}
+
 $hotSongs = [System.Collections.ArrayList]::new()
-$hotSongsAll | Sort-Object -Property viewsDelta -Descending | Select-Object -First 100 | ForEach-Object { [void]$hotSongs.Add($_) }
+while ($hotSongs.Count -lt 100 -and $remainingHotSongs.Count -gt 0) {
+    $bestIndex = -1
+    $bestAdjustedScore = [double]::NegativeInfinity
+    $bestHotScore = [double]::NegativeInfinity
+    $bestViewsDelta = -1
+    $bestYoutubeViews = -1
+    $bestDateKey = ''
+    $bestBandName = ''
+
+    for ($i = 0; $i -lt $remainingHotSongs.Count; $i++) {
+        $candidate = $remainingHotSongs[$i]
+        $artistKey = $candidate.bandName.ToLower().Trim()
+        $artistCount = if ($hotSongArtistCounts.ContainsKey($artistKey)) { [int]$hotSongArtistCounts[$artistKey] } else { 0 }
+        if ($artistCount -ge 2) { continue }
+
+        $selectionMeta = Get-HotSongSelectionMeta $candidate $hotSongGenreCounts
+        $adjustedScore = [double]$selectionMeta.adjustedScore
+        $candidateHotScore = [double]$candidate.hotScore
+        $candidateViewsDelta = [int]($candidate.viewsDelta -as [int])
+        $candidateYoutubeViews = [int]($candidate.youtubeViews -as [int])
+        $candidateDateKey = [string](Get-ReleaseEffectiveDateString $candidate)
+        $candidateBandName = [string]$candidate.bandName
+
+        $isBetter = $false
+        if ($adjustedScore -gt $bestAdjustedScore) {
+            $isBetter = $true
+        } elseif ($adjustedScore -eq $bestAdjustedScore) {
+            if ($candidateHotScore -gt $bestHotScore) {
+                $isBetter = $true
+            } elseif ($candidateHotScore -eq $bestHotScore) {
+                if ($candidateViewsDelta -gt $bestViewsDelta) {
+                    $isBetter = $true
+                } elseif ($candidateViewsDelta -eq $bestViewsDelta) {
+                    if ($candidateYoutubeViews -gt $bestYoutubeViews) {
+                        $isBetter = $true
+                    } elseif ($candidateYoutubeViews -eq $bestYoutubeViews) {
+                        if ($candidateDateKey -gt $bestDateKey) {
+                            $isBetter = $true
+                        } elseif ($candidateDateKey -eq $bestDateKey -and $candidateBandName -lt $bestBandName) {
+                            $isBetter = $true
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($isBetter) {
+            $bestIndex = $i
+            $bestAdjustedScore = $adjustedScore
+            $bestHotScore = $candidateHotScore
+            $bestViewsDelta = $candidateViewsDelta
+            $bestYoutubeViews = $candidateYoutubeViews
+            $bestDateKey = $candidateDateKey
+            $bestBandName = $candidateBandName
+        }
+    }
+
+    if ($bestIndex -lt 0) { break }
+
+    $picked = $remainingHotSongs[$bestIndex]
+    [void]$hotSongs.Add($picked)
+
+    $artistKey = $picked.bandName.ToLower().Trim()
+    if (-not $hotSongArtistCounts.ContainsKey($artistKey)) {
+        $hotSongArtistCounts[$artistKey] = 0
+    }
+    $hotSongArtistCounts[$artistKey] = [int]$hotSongArtistCounts[$artistKey] + 1
+
+    $pickedBuckets = @(Get-HotSongBalanceBuckets $picked.genreBuckets)
+    if ($pickedBuckets.Count -eq 0) {
+        $pickedBuckets = @('other')
+    }
+    foreach ($bucket in $pickedBuckets) {
+        if (-not $hotSongGenreCounts.ContainsKey($bucket)) {
+            $hotSongGenreCounts[$bucket] = 0
+        }
+        $hotSongGenreCounts[$bucket] = [int]$hotSongGenreCounts[$bucket] + 1
+    }
+
+    $remainingHotSongs.RemoveAt($bestIndex)
+}
+
+$hotSongGenreMultiplierMap = Get-HotSongGenreMultiplierMap @($hotSongs)
+foreach ($picked in @($hotSongs)) {
+    $balanceMeta = Get-HotSongBalanceMeta $picked $hotSongGenreMultiplierMap
+    $picked | Add-Member -NotePropertyName genreBucket -NotePropertyValue $balanceMeta.genreBucket -Force
+    $picked | Add-Member -NotePropertyName diversityPenaltyFactor -NotePropertyValue $balanceMeta.penaltyFactor -Force
+    $picked | Add-Member -NotePropertyName adjustedHotScore -NotePropertyValue $balanceMeta.adjustedHotScore -Force
+}
+
 Write-Host "  > Found $($hotSongs.Count) hot songs (capped at 100 from $($hotSongsAll.Count))" -ForegroundColor DarkGray
 
 # ============================================================================

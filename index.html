@@ -477,6 +477,45 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.15);
         }
 
+        #hot-songs-card .hot-songs-page-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            min-width: 3.35rem;
+            height: 26px;
+            padding: 0 1rem 0 0.42rem;
+            border: none;
+            background:
+                linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 0.58rem) 10px / 0.28rem 0.28rem no-repeat,
+                linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.38rem) 10px / 0.28rem 0.28rem no-repeat,
+                #000;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            text-align: center;
+            text-align-last: center;
+            cursor: pointer;
+        }
+
+        #hot-songs-card .hot-songs-page-select:hover {
+            filter: brightness(1.18);
+        }
+
+        #hot-songs-card .hot-songs-page-select:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        body.dark-mode #hot-songs-card .hot-songs-page-select {
+            background:
+                linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 0.58rem) 10px / 0.28rem 0.28rem no-repeat,
+                linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.38rem) 10px / 0.28rem 0.28rem no-repeat,
+                #fff;
+            color: #000;
+        }
+
         /* ==================== CHART MINI LIST ==================== */
         .mini-chart-list {
             list-style: none;
@@ -1010,19 +1049,18 @@
         .sotd-item,
         .news-item,
         .verify-item,
-        .yt-embed,
         .quick-action-btn {
             animation: chartItemSlideIn 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
         }
         .radar-item:nth-child(1), .event-item:nth-child(1), .trending-item:nth-child(1),
         .discover-artist:nth-child(1), .sotd-item:nth-child(1), .news-item:nth-child(1),
-        .verify-item:nth-child(1), .yt-embed:nth-child(1), .quick-action-btn:nth-child(1) { animation-delay: 0.08s; }
+        .verify-item:nth-child(1), .quick-action-btn:nth-child(1) { animation-delay: 0.08s; }
         .radar-item:nth-child(2), .event-item:nth-child(2), .trending-item:nth-child(2),
         .discover-artist:nth-child(2), .sotd-item:nth-child(2), .news-item:nth-child(2),
-        .verify-item:nth-child(2), .yt-embed:nth-child(2), .quick-action-btn:nth-child(2) { animation-delay: 0.14s; }
+        .verify-item:nth-child(2), .quick-action-btn:nth-child(2) { animation-delay: 0.14s; }
         .radar-item:nth-child(3), .event-item:nth-child(3), .trending-item:nth-child(3),
         .discover-artist:nth-child(3), .sotd-item:nth-child(3), .news-item:nth-child(3),
-        .verify-item:nth-child(3), .yt-embed:nth-child(3), .quick-action-btn:nth-child(3) { animation-delay: 0.2s; }
+        .verify-item:nth-child(3), .quick-action-btn:nth-child(3) { animation-delay: 0.2s; }
         .radar-item:nth-child(4), .event-item:nth-child(4), .trending-item:nth-child(4),
         .discover-artist:nth-child(4), .sotd-item:nth-child(4), .news-item:nth-child(4),
         .verify-item:nth-child(4), .quick-action-btn:nth-child(4) { animation-delay: 0.26s; }
@@ -2508,21 +2546,228 @@
 
         #hot-songs-list .trending-item {
             flex: 1 1 0;
-            padding-top: 0.55rem;
-            padding-bottom: 0.55rem;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-radius: 0;
+            border-top: 1px solid rgba(17,24,39,0.08);
+            background: transparent;
+            box-shadow: none;
+        }
+
+        #hot-songs-list .trending-item:first-child {
+            border-top: none;
+        }
+
+        #hot-songs-list .trending-item:hover {
+            background: var(--bg-hover, #f3f5f7);
+            box-shadow: none;
+        }
+
+        body.dark-mode #hot-songs-list .trending-item {
+            border-color: rgba(255,255,255,0.08);
+            background: transparent;
+        }
+
+        body.dark-mode #hot-songs-list .trending-item:hover {
+            background: rgba(255,255,255,0.05);
         }
 
         #hot-songs-list .trending-cover {
-            width: 88px;
-            height: 88px;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            box-shadow: none;
+        }
+
+        #hot-songs-list .trending-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.22rem;
+            min-width: 0;
         }
 
         #hot-songs-list .trending-title {
-            font-size: 1rem;
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 0.96rem;
+            line-height: 1.16;
+            white-space: normal;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #hot-songs-list .trending-title-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.42rem;
+            min-width: 0;
+        }
+
+        #hot-songs-list .trending-score-inline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.15rem;
+            padding: 0.14rem 0.44rem 0.16rem;
+            border: 1px solid rgba(17,24,39,0.08);
+            background: linear-gradient(180deg, rgba(17,24,39,0.03), rgba(17,24,39,0.08));
+            color: var(--text-primary, #1a1d21);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
         }
 
         #hot-songs-list .trending-sub {
-            font-size: 0.9rem;
+            font-size: 0.84rem;
+            line-height: 1.2;
+            color: var(--text-secondary, #555b64);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #hot-songs-list .trending-reason-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.24rem;
+            min-width: 0;
+            margin-top: 0.08rem;
+        }
+
+        #hot-songs-list .trending-score-bar {
+            position: relative;
+            height: 0.48rem;
+            background: rgba(17,24,39,0.08);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        #hot-songs-list .trending-score-segment {
+            position: absolute;
+            inset: 0 auto 0 0;
+            min-width: 0.16rem;
+        }
+
+        #hot-songs-list .trending-score-segment.is-views {
+            background: linear-gradient(90deg, rgba(17,24,39,0.9), rgba(17,24,39,0.78));
+        }
+
+        #hot-songs-list .trending-score-segment.is-recency {
+            background: linear-gradient(90deg, rgba(200, 150, 24, 0.98), rgba(226, 186, 78, 0.9));
+        }
+
+        #hot-songs-list .trending-score-segment.is-balance-bonus {
+            background: linear-gradient(90deg, rgba(74,127,165,0.9), rgba(120,166,198,0.96));
+        }
+
+        #hot-songs-list .trending-score-segment.is-balance-loss {
+            background: repeating-linear-gradient(135deg, rgba(74,127,165,0.16) 0 4px, rgba(74,127,165,0.42) 4px 8px);
+        }
+
+        #hot-songs-list .trending-score-endcap {
+            position: absolute;
+            top: 50%;
+            width: 0.34rem;
+            height: 0.96rem;
+            transform: translate(-50%, -50%);
+            border: 2px solid #fff;
+            background: var(--accent-blue, #4a7fa5);
+            box-shadow: 0 0 0 1px rgba(17,24,39,0.08);
+        }
+
+        #hot-songs-list .trending-score-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem 0.7rem;
+            min-width: 0;
+        }
+
+        #hot-songs-list .trending-score-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28rem;
+            color: var(--text-secondary, #4b5563);
+            font-size: 0.64rem;
+            font-weight: 600;
+            line-height: 1.2;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #hot-songs-list .trending-score-chip i {
+            font-size: 0.62rem;
+            color: var(--text-muted, #8b929a);
+        }
+
+        #hot-songs-list .trending-score-chip.is-recency i {
+            color: #c89618;
+        }
+
+        #hot-songs-list .trending-score-chip.is-balance i {
+            color: var(--accent-blue, #4a7fa5);
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-inline {
+            border-color: rgba(255,255,255,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.09));
+            color: #f4f6f8;
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-bar {
+            background: rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-segment.is-views {
+            background: linear-gradient(90deg, rgba(255,255,255,0.92), rgba(255,255,255,0.8));
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-segment.is-recency {
+            background: linear-gradient(90deg, rgba(255, 211, 122, 0.98), rgba(244, 197, 66, 0.9));
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-segment.is-balance-bonus {
+            background: linear-gradient(90deg, rgba(181,204,223,0.88), rgba(135,182,216,0.98));
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-segment.is-balance-loss {
+            background: repeating-linear-gradient(135deg, rgba(181,204,223,0.16) 0 4px, rgba(181,204,223,0.42) 4px 8px);
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-endcap {
+            border-color: #111318;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-chip {
+            color: #cbd3db;
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-chip i {
+            color: #8c929a;
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-chip.is-recency i {
+            color: #ffd37a;
+        }
+
+        body.dark-mode #hot-songs-list .trending-score-chip.is-balance i {
+            color: #b5ccdf;
+        }
+
+        #hot-songs-list .trending-chevrons {
+            align-self: center;
+            padding-left: 0.28rem;
         }
 
         #verify-card {
@@ -2668,27 +2913,6 @@
             font-size: 0.7rem;
             margin-left: 0.25rem;
             vertical-align: middle;
-        }
-
-        /* ==================== YOUTUBE SECTION ==================== */
-        .yt-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            flex: 1;
-        }
-
-        .yt-embed {
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 16 / 9;
-            background: #000;
-        }
-
-        .yt-embed iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
         }
 
         /* ==================== LOADING ==================== */
@@ -3068,8 +3292,28 @@
             }
 
             #hot-songs-list .trending-cover {
-                width: 72px;
-                height: 72px;
+                width: 68px;
+                height: 68px;
+                border-radius: 10px;
+            }
+
+            #hot-songs-list .trending-item {
+                padding: 0.46rem 0;
+                border-radius: 0;
+            }
+
+            #hot-songs-list .trending-score-inline {
+                min-width: 1.78rem;
+                font-size: 0.7rem;
+            }
+
+            #hot-songs-card .hot-songs-page-select {
+                min-width: 3rem;
+                font-size: 0.62rem;
+            }
+
+            #hot-songs-list .trending-score-chip {
+                font-size: 0.61rem;
             }
 
             #verify-card .verify-img {
@@ -3111,10 +3355,6 @@
 
             .discover-img { width: 56px; height: 56px; }
             .discover-name { font-size: 0.9rem; }
-
-            .yt-grid {
-                grid-template-columns: 1fr;
-            }
 
             /* Hide inline nav buttons on mobile — use hamburger menu instead */
             .title-nav {
@@ -3314,10 +3554,6 @@
         }
 
         @media (min-width: 801px) and (max-width: 1100px) {
-            .yt-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .news-list {
                 grid-template-columns: repeat(3, 1fr);
             }
@@ -3545,7 +3781,7 @@
             <div class="dash-card-header">
                 <h2><i class="fas fa-fire"></i> <span data-i18n="dashboard.popular">Популарно</span></h2>
                 <div class="dash-card-header-actions">
-                    <button type="button" class="more-link shuffle-btn" id="shuffle-hot-songs-btn"><i class="fas fa-shuffle"></i></button>
+                    <select id="hot-songs-page-select" class="hot-songs-page-select"></select>
                     <a href="/charts" class="more-link" title="Топ Листа" data-i18n-title="common.topChart"><i class="fas fa-chart-line"></i></a>
                 </div>
             </div>
@@ -3603,20 +3839,6 @@
                 <a href="/releases" class="more-link" title="Изданија" data-i18n-title="common.releases"><i class="fas fa-compact-disc"></i></a>
             </div>
             <div id="release-stats-content" style="display:none"></div>
-        </div>
-
-        <!-- ==================== XOTEL YOUTUBE ==================== -->
-        <div class="dash-card full-width" id="yt-card">
-            <div class="dash-card-header">
-                <h2><i class="fab fa-youtube"></i> <span data-i18n="dashboard.xotelVideos">Xotel видеа</span></h2>
-                <div class="dash-card-header-actions">
-                    <button type="button" class="more-link shuffle-btn" id="shuffle-yt-btn"><i class="fas fa-shuffle"></i></button>
-                    <a href="https://www.youtube.com/@xotelmusic" target="_blank" rel="noopener" class="more-link" title="YouTube канал" data-i18n-title="common.youtubeChannel"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-            <div class="yt-grid" id="yt-grid">
-                <div class="dash-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
-            </div>
         </div>
     </div>
 
@@ -3719,7 +3941,6 @@
         var curatorsData = null;
         var curatorTracksData = null;
         var siteMaster = null;  // Pre-calculated data from site-master.json
-        var xotelLinks = [];
 
         function getBestYoutubeUrl(releaseId) {
             if (!releaseId) return '';
@@ -3856,7 +4077,6 @@
                     fetch('curators.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('curators-tracklists.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     fetch('events.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
-                    fetch('xotel-links.json?t=' + t).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
                     loadChartGenres()
                 ]);
 
@@ -3865,7 +4085,6 @@
                 if (results[2]) curatorsData = results[2];
                 if (results[3]) curatorTracksData = results[3];
                 if (results[4]) eventsData = results[4].events || [];
-                if (Array.isArray(results[5])) xotelLinks = results[5];
 
                 // Populate legacy variables from site-master for backward compat
                 if (siteMaster) {
@@ -3895,7 +4114,6 @@
             renderNews();
             renderVerifyArtists();
             renderReleaseStats();
-            renderYouTube();
             renderTitleCollage();
             loadSpotifyPlaylistLinks();
         }
@@ -4480,12 +4698,224 @@
 
         // ==================== RENDER: HOT SONGS (pre-computed from site-master.json) ====================
         var previousChartData = null;
+        var HOT_SONGS_PAGE_SIZE = 5;
+        var hotSongsPagerState = {
+            listKey: '',
+            pageIndex: 0,
+            totalPages: 1,
+            sorted: []
+        };
+
+        function getHotSongsListKey(candidates) {
+            return candidates.map(function(r) {
+                return [
+                    r.releaseId || '',
+                    r.adjustedHotScore || '',
+                    r.hotScore || '',
+                    r.viewsDelta || ''
+                ].join(':');
+            }).join('|');
+        }
+
+        function sortHotSongsForDisplay(candidates) {
+            return (candidates || []).slice().sort(function(a, b) {
+                var aAdjusted = Number(a.adjustedHotScore != null ? a.adjustedHotScore : (Number(a.hotScore || 0) * Number(a.diversityPenaltyFactor || 1)));
+                var bAdjusted = Number(b.adjustedHotScore != null ? b.adjustedHotScore : (Number(b.hotScore || 0) * Number(b.diversityPenaltyFactor || 1)));
+                if (bAdjusted !== aAdjusted) return bAdjusted - aAdjusted;
+
+                var hotDiff = Number(b.hotScore || 0) - Number(a.hotScore || 0);
+                if (hotDiff !== 0) return hotDiff;
+
+                var deltaDiff = Number(b.viewsDelta || 0) - Number(a.viewsDelta || 0);
+                if (deltaDiff !== 0) return deltaDiff;
+
+                var viewsDiff = Number(b.youtubeViews || 0) - Number(a.youtubeViews || 0);
+                if (viewsDiff !== 0) return viewsDiff;
+
+                var bDate = String(b.effectiveReleaseDate || b.releaseDate || '');
+                var aDate = String(a.effectiveReleaseDate || a.releaseDate || '');
+                if (bDate !== aDate) return bDate > aDate ? 1 : -1;
+
+                return String(a.bandName || '').localeCompare(String(b.bandName || ''), 'mk');
+            });
+        }
+
+        function initHotSongsPageSelector() {
+            var select = document.getElementById('hot-songs-page-select');
+            if (!select || select.dataset.bound === 'true') return;
+
+            select.dataset.bound = 'true';
+            select.addEventListener('change', function() {
+                hotSongsPagerState.pageIndex = Math.max(0, Number(select.value || 0));
+                renderHotSongs();
+            });
+        }
+
+        function syncHotSongsPageSelector() {
+            initHotSongsPageSelector();
+
+            var select = document.getElementById('hot-songs-page-select');
+            if (!select) return;
+
+            var totalPages = hotSongsPagerState.totalPages;
+            var needsRebuild = select.options.length !== totalPages;
+            if (needsRebuild) {
+                select.innerHTML = '';
+                for (var pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+                    var option = document.createElement('option');
+                    option.value = String(pageIndex);
+                    option.textContent = (pageIndex + 1) + '/' + totalPages;
+                    select.appendChild(option);
+                }
+            }
+
+            select.value = String(Math.max(0, Math.min(hotSongsPagerState.pageIndex, totalPages - 1)));
+            select.disabled = totalPages <= 1;
+            select.title = t('dashboard.page');
+            select.setAttribute('aria-label', t('dashboard.page'));
+        }
+
+        function getHotSongsPage(candidates) {
+            var sorted = sortHotSongsForDisplay(candidates);
+            var listKey = getHotSongsListKey(sorted);
+            var totalPages = Math.max(1, Math.ceil(sorted.length / HOT_SONGS_PAGE_SIZE));
+
+            if (hotSongsPagerState.listKey !== listKey) {
+                hotSongsPagerState.listKey = listKey;
+                hotSongsPagerState.sorted = sorted;
+                hotSongsPagerState.pageIndex = 0;
+                hotSongsPagerState.totalPages = totalPages;
+            } else {
+                hotSongsPagerState.sorted = sorted;
+                hotSongsPagerState.totalPages = totalPages;
+                if (hotSongsPagerState.pageIndex > totalPages - 1) {
+                    hotSongsPagerState.pageIndex = totalPages - 1;
+                }
+            }
+
+            syncHotSongsPageSelector();
+
+            if (!hotSongsPagerState.sorted.length) {
+                return [];
+            }
+
+            var start = hotSongsPagerState.pageIndex * HOT_SONGS_PAGE_SIZE;
+            return hotSongsPagerState.sorted.slice(start, start + HOT_SONGS_PAGE_SIZE);
+        }
+
+        function getHotSongChevronCountMap(candidates) {
+            var positive = (candidates || []).filter(function(item) {
+                return !!item && (item.viewsDelta || 0) > 0 && item.releaseId;
+            }).slice().sort(function(a, b) {
+                return (a.viewsDelta || 0) - (b.viewsDelta || 0);
+            });
+
+            var counts = {};
+            if (!positive.length) {
+                return counts;
+            }
+
+            positive.forEach(function(item, index) {
+                var count;
+                if (positive.length <= 5) {
+                    count = index + 1;
+                } else {
+                    count = Math.ceil(((index + 1) / positive.length) * 5);
+                }
+                counts[item.releaseId] = Math.min(5, Math.max(1, count));
+            });
+
+            return counts;
+        }
+
+        function clampHotSongScorePercent(value) {
+            return Math.max(0, Math.min(100, Math.round(value)));
+        }
+
+        function getHotSongScoreStats(candidates) {
+            var stats = {
+                maxBaseScore: 1,
+                maxHotScore: 1,
+                maxAdjustedScore: 1
+            };
+
+            (candidates || []).forEach(function(item) {
+                if (!item) return;
+                var recencyMultiplier = Math.max(1, Number(item.recencyMultiplier || 1));
+                var hotScore = Math.max(0, Number(item.hotScore || 0));
+                var diversityPenaltyFactor = Math.max(0, Number(item.diversityPenaltyFactor || 1));
+                var baseScore = recencyMultiplier ? hotScore / recencyMultiplier : hotScore;
+                var adjustedScore = Math.max(0, Number(item.adjustedHotScore != null ? item.adjustedHotScore : (hotScore * diversityPenaltyFactor)));
+
+                if (baseScore > stats.maxBaseScore) stats.maxBaseScore = baseScore;
+                if (hotScore > stats.maxHotScore) stats.maxHotScore = hotScore;
+                if (adjustedScore > stats.maxAdjustedScore) stats.maxAdjustedScore = adjustedScore;
+            });
+
+            return stats;
+        }
+
+        function buildHotSongReasonHtml(release, scoreStats) {
+            if (!release) return '';
+
+            var stats = scoreStats || getHotSongScoreStats([]);
+            var viewsDeltaVal = Math.max(0, Number(release.viewsDelta || 0));
+            var recencyMultiplier = Math.max(1, Number(release.recencyMultiplier || 1));
+            var balanceMultiplier = Math.max(0, Number(release.diversityPenaltyFactor || 1));
+            var hotScore = Math.max(0, Number(release.hotScore || 0));
+            var baseScore = recencyMultiplier ? hotScore / recencyMultiplier : hotScore;
+            var adjustedScore = Math.max(0, Number(release.adjustedHotScore != null ? release.adjustedHotScore : (hotScore * balanceMultiplier)));
+            var scaleMax = Math.max(stats.maxHotScore || 1, stats.maxAdjustedScore || 1);
+            var viewsPercent = clampHotSongScorePercent((baseScore / scaleMax) * 100);
+            var recencyPercent = clampHotSongScorePercent((hotScore / scaleMax) * 100);
+            var finalPercent = clampHotSongScorePercent((adjustedScore / scaleMax) * 100);
+            var recencyBonusPercent = Math.max(0, recencyPercent - viewsPercent);
+            var balanceBonusPercent = Math.max(0, finalPercent - recencyPercent);
+            var balanceLossPercent = Math.max(0, recencyPercent - finalPercent);
+
+            var legendItems = [
+                {
+                    className: 'is-views',
+                    icon: 'fas fa-chart-line',
+                    label: t('charts.colViews'),
+                    value: '+' + formatViewsCompactPlain(viewsDeltaVal)
+                },
+                {
+                    className: 'is-recency',
+                    icon: 'fas fa-bolt',
+                    label: t('dashboard.scoreRecency'),
+                    value: recencyMultiplier.toFixed(2) + 'x'
+                },
+                {
+                    className: 'is-balance',
+                    icon: 'fas fa-shuffle',
+                    label: t('dashboard.scoreBalance'),
+                    value: balanceMultiplier.toFixed(2) + 'x'
+                }
+            ];
+
+            return {
+                scoreValue: String(finalPercent),
+                html: '<div class="trending-reason-block">' +
+                    '<div class="trending-score-bar" title="' + escHtml(t('charts.colViews') + ': +' + formatViewsCompactPlain(viewsDeltaVal) + ' | ' + t('dashboard.scoreRecency') + ': ' + recencyMultiplier.toFixed(2) + 'x | ' + t('dashboard.scoreBalance') + ': ' + balanceMultiplier.toFixed(2) + 'x') + '">' +
+                        '<span class="trending-score-segment is-views" style="width:' + viewsPercent + '%"></span>' +
+                        (recencyBonusPercent > 0 ? '<span class="trending-score-segment is-recency" style="left:' + viewsPercent + '%;width:' + recencyBonusPercent + '%"></span>' : '') +
+                        (balanceBonusPercent > 0 ? '<span class="trending-score-segment is-balance-bonus" style="left:' + recencyPercent + '%;width:' + balanceBonusPercent + '%"></span>' : '') +
+                        (balanceLossPercent > 0 ? '<span class="trending-score-segment is-balance-loss" style="left:' + finalPercent + '%;width:' + balanceLossPercent + '%"></span>' : '') +
+                        '<span class="trending-score-endcap" style="left:' + finalPercent + '%"></span>' +
+                    '</div>' +
+                    '<div class="trending-score-legend">' + legendItems.map(function(item) {
+                        return '<span class="trending-score-chip ' + item.className + '"><i class="' + item.icon + '" aria-hidden="true"></i><span>' + escHtml(item.label + ' ' + item.value) + '</span></span>';
+                    }).join('') + '</div>' +
+                '</div>'
+            };
+        }
 
         function renderHotSongs() {
             var candidates = siteMaster && siteMaster.hotSongs ? siteMaster.hotSongs : [];
-
-            // Pick 5 random from candidates
-            var picked = shuffle(candidates).slice(0, 5);
+            var picked = getHotSongsPage(candidates);
+            var chevronCountMap = getHotSongChevronCountMap(candidates);
+            var hotSongScoreStats = getHotSongScoreStats(candidates);
 
             var list = document.getElementById('hot-songs-list');
             var loading = document.getElementById('hot-songs-loading');
@@ -4499,7 +4929,7 @@
 
             list.innerHTML = picked.map(function(r) {
                 var viewsDeltaVal = r.viewsDelta || 0;
-                var chevCount = viewsDeltaVal > 0 ? Math.min(5, Math.max(1, Math.ceil(Math.log10(viewsDeltaVal + 1)))) : 0;
+                var chevCount = viewsDeltaVal > 0 ? (chevronCountMap[r.releaseId] || 1) : 0;
                 var chevHtml = '';
                 if (chevCount > 0) {
                     var chevItems = Array.from({ length: chevCount }, function(_, idx) {
@@ -4507,11 +4937,18 @@
                     }).join('');
                     chevHtml = '<span class="trending-chevrons" title="+' + formatViewsCompactPlain(viewsDeltaVal) + ' ' + t('dashboard.views') + '">' + chevItems + '</span>';
                 }
+                var scoreBreakdown = buildHotSongReasonHtml(r, hotSongScoreStats);
+                var reasonHtml = scoreBreakdown && scoreBreakdown.html ? scoreBreakdown.html : '';
+                var scoreValue = scoreBreakdown && scoreBreakdown.scoreValue ? scoreBreakdown.scoreValue : '0';
                 return '<li class="trending-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
-                        '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
+                        '<div class="trending-title-row">' +
+                            '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
+                            '<span class="trending-score-inline">' + escHtml(scoreValue) + '</span>' +
+                        '</div>' +
                         '<div class="trending-sub">' + buildArtistLinks(r.bandName) + '</div>' +
+                        reasonHtml +
                     '</div>' +
                     chevHtml +
                 '</li>';
@@ -4775,45 +5212,12 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: YOUTUBE (loaded from xotel-links.json) ====================
-        function renderYouTube() {
-            var grid = document.getElementById('yt-grid');
-
-            var videoIds = (xotelLinks || []).map(function(link) {
-                if (typeof link !== 'string') return null;
-                var idMatch = link.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || link.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
-                return idMatch ? idMatch[1] : null;
-            }).filter(Boolean);
-
-            if (videoIds.length === 0) {
-                grid.innerHTML = '<div class="no-data-msg">' + t('dashboard.noVideos') + '</div>';
-                return;
-            }
-
-            // Determine how many fit: 2 rows based on responsive columns
-            var w = window.innerWidth;
-            var cols = w <= 800 ? 1 : (w <= 1100 ? 2 : 3);
-            var maxVideos = cols * 2;
-            var picked = shuffle(videoIds).slice(0, maxVideos);
-
-            grid.innerHTML = picked.map(function(v) {
-                var videoId = typeof v === 'string' ? v : v.id;
-                return '<div class="yt-embed">' +
-                    '<iframe src="https://www.youtube.com/embed/' + videoId + '" ' +
-                    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ' +
-                    'allowfullscreen loading="lazy" title="' + t('dashboard.xotelVideo') + '"></iframe>' +
-                '</div>';
-            }).join('');
-        }
-
         // escHtml, formatDate, mkMonths — provided by common.js
 
         function bindShuffleButtons() {
             var buttonBindings = [
-                { id: 'shuffle-hot-songs-btn', render: renderHotSongs },
                 { id: 'shuffle-sotd-btn', render: renderSongsOfTheDay },
-                { id: 'shuffle-verify-btn', render: renderVerifyArtists },
-                { id: 'shuffle-yt-btn', render: renderYouTube }
+                { id: 'shuffle-verify-btn', render: renderVerifyArtists }
             ];
 
             buttonBindings.forEach(function(binding) {
@@ -4827,6 +5231,7 @@
         }
 
         // ==================== INIT ====================
+        initHotSongsPageSelector();
         bindShuffleButtons();
         loadAllData().then(function () {
             if (window.mmmFinishLoader) window.mmmFinishLoader();
