@@ -218,10 +218,36 @@ const electronicGenres = chartGenresData.electronic;
 const popGenres = chartGenresData.pop;
 const nonAlt = [...rapGenres,...electronicGenres,...popGenres].map(g=>g.toLowerCase());
 
+function getArtistInfo(name, bands) {
+  if (!Array.isArray(bands) || !name) return null;
+  const normalized = String(name).trim().toLowerCase();
+  return bands.find(x => x && x.name && x.name.trim().toLowerCase() === normalized) || null;
+}
+
+function splitLabels(labelStr) {
+  if (!labelStr || labelStr === 'недостигаат податоци') return [];
+  return String(labelStr).split(',').map(label => label.trim().toLowerCase()).filter(Boolean);
+}
+
 function isArtistAlt(name, bands) {
-  const b = bands.find(x=>x.name===name);
+  const b = getArtistInfo(name, bands);
   if (!b||!b.genre||b.genre==='недостигаат податоци') return false;
   return !b.genre.split(',').map(g=>g.trim().toLowerCase()).some(g=>nonAlt.includes(g));
+}
+
+function artistHasLabel(name, label, bands) {
+  const artist = getArtistInfo(name, bands);
+  if (!artist) return false;
+  return splitLabels(artist.label).includes(String(label).trim().toLowerCase());
+}
+
+function releaseIsChartEligible(release, bands) {
+  if (!release || !Array.isArray(bands)) return true;
+  return !String(release.bandName || '')
+    .split(',')
+    .map(name => name.trim())
+    .filter(Boolean)
+    .some(name => artistHasLabel(name, 'AI', bands));
 }
 
 function mergeCollabs(rels) {
@@ -239,7 +265,9 @@ function mergeCollabs(rels) {
 }
 
 function getSinglesChart(all, count, filter, bands) {
-  let s = mergeCollabs(all).filter(r=>r.releaseType==='single');
+  let s = mergeCollabs(all)
+    .filter(r=>r.releaseType==='single')
+    .filter(r=>releaseIsChartEligible(r, bands));
   if (filter==='alt'&&bands) s = s.filter(r=>r.bandName.split(', ').some(a=>isArtistAlt(a,bands)));
   s.sort((a,b)=>(b.releaseDate||'').localeCompare(a.releaseDate||''));
   const cut = new Date(); cut.setDate(cut.getDate()-28);

@@ -502,6 +502,27 @@ function splitGenres(genreStr) {
     return genreStr.split(/,\s*/).map(function(g) { return g.trim().toLowerCase(); }).filter(Boolean);
 }
 
+function splitLabels(labelStr) {
+    if (!labelStr || labelStr.toLowerCase() === 'недостигаат податоци') return [];
+    return labelStr.split(/,\s*/).map(function(label) { return label.trim().toLowerCase(); }).filter(Boolean);
+}
+
+function artistHasLabel(artistName, labelName, bandsData) {
+    if (!artistName || !labelName || !bandsData) return false;
+
+    var targetLabel = String(labelName).trim().toLowerCase();
+    var artistNames = artistName.split(',').map(function(name) { return name.trim(); }).filter(Boolean);
+    if (artistNames.length === 0) artistNames = [artistName];
+
+    for (var i = 0; i < artistNames.length; i++) {
+        var info = getArtistInfoByName(artistNames[i], bandsData);
+        if (!info) continue;
+        if (splitLabels(info.label).indexOf(targetLabel) !== -1) return true;
+    }
+
+    return false;
+}
+
 /**
  * Check if an artist matches a genre filter.
  * Works with both index.html (bandsData param) and toplista.html (uses getArtistInfo).
@@ -571,6 +592,10 @@ function buildChartRanking(releases, opts) {
         : function(r) { return r.releaseType === 'single'; };
 
     var filtered = deduped.filter(typeFilter);
+
+    filtered = filtered.filter(function(r) {
+        return !artistHasLabel(r.bandName, 'AI', bands);
+    });
 
     // Apply genre filter
     filtered = filtered.filter(function(r) {

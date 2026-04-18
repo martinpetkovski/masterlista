@@ -611,6 +611,151 @@
             color: var(--text-primary, #d5d8de);
         }
 
+        .mini-chart-item.is-hidden-extra {
+            display: none;
+        }
+
+        .dash-card.is-expanded .mini-chart-item.is-hidden-extra {
+            display: flex;
+        }
+
+        .mini-chart-item.is-compact {
+            gap: 0.5rem;
+            padding: 0.32rem 0.35rem;
+        }
+
+        .mini-chart-item.is-compact .mini-chart-rank {
+            width: 1.45rem;
+            font-size: 1.25rem;
+            padding-left: 0;
+        }
+
+        .mini-chart-item.is-compact .mini-chart-cover {
+            width: 46px;
+            height: 46px;
+            border-radius: 4px;
+        }
+
+        .mini-chart-item.is-compact .mini-chart-title {
+            font-size: 0.92rem;
+        }
+
+        .mini-chart-item.is-compact .mini-chart-artist {
+            font-size: 0.8rem;
+        }
+
+        .mini-chart-item.is-compact .mini-chart-pop {
+            font-size: 1rem;
+            min-height: auto;
+        }
+
+        .mini-chart-item.is-compact .chart-pop-wrap {
+            min-width: 3.5rem;
+            gap: 3px;
+        }
+
+        .mini-chart-expand-wrap,
+        .mini-chart-footer {
+            position: relative;
+            z-index: 1;
+            display: none;
+            margin-top: 0.75rem;
+        }
+
+        .dash-card.has-extra-items:not(.is-expanded) .mini-chart-expand-wrap {
+            display: block;
+        }
+
+        .dash-card.has-extra-items.is-expanded .mini-chart-footer {
+            display: block;
+        }
+
+        .mini-chart-expand-btn,
+        .mini-chart-full-link {
+            width: 100%;
+            min-height: 2.65rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid var(--border-color, #dfe1e5);
+            background: rgba(255,255,255,0.88);
+            color: var(--text-primary, #1a1d21);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+
+        .mini-chart-expand-btn {
+            appearance: none;
+        }
+
+        .mini-chart-expand-btn:hover,
+        .mini-chart-full-link:hover {
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        .mini-chart-expand-btn:active,
+        .mini-chart-full-link:active {
+            transform: translateY(0);
+        }
+
+        .mini-chart-expand-btn i,
+        .mini-chart-full-link i {
+            font-size: 0.82rem;
+        }
+
+        #main-chart-card .mini-chart-expand-btn,
+        #main-chart-card .mini-chart-full-link {
+            border-color: rgba(184, 58, 58, 0.22);
+            box-shadow: 0 10px 24px rgba(184, 58, 58, 0.08);
+        }
+
+        #alt-chart-card .mini-chart-expand-btn,
+        #alt-chart-card .mini-chart-full-link {
+            border-color: rgba(184, 152, 48, 0.24);
+            box-shadow: 0 10px 24px rgba(184, 152, 48, 0.08);
+        }
+
+        #main-chart-card .mini-chart-expand-btn:hover,
+        #main-chart-card .mini-chart-full-link:hover {
+            border-color: rgba(184, 58, 58, 0.4);
+            box-shadow: 0 14px 28px rgba(184, 58, 58, 0.14);
+        }
+
+        #alt-chart-card .mini-chart-expand-btn:hover,
+        #alt-chart-card .mini-chart-full-link:hover {
+            border-color: rgba(184, 152, 48, 0.42);
+            box-shadow: 0 14px 28px rgba(184, 152, 48, 0.14);
+        }
+
+        body.dark-mode .mini-chart-expand-btn,
+        body.dark-mode .mini-chart-full-link {
+            background: rgba(24, 29, 35, 0.92);
+            color: var(--text-primary, #d5d8de);
+            border-color: var(--border-color, #2a2e36);
+        }
+
+        body.dark-mode #main-chart-card .mini-chart-expand-btn,
+        body.dark-mode #main-chart-card .mini-chart-full-link {
+            border-color: rgba(212, 80, 80, 0.35);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        }
+
+        body.dark-mode #alt-chart-card .mini-chart-expand-btn,
+        body.dark-mode #alt-chart-card .mini-chart-full-link {
+            border-color: rgba(212, 175, 64, 0.35);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        }
+
         /* ==================== CHART CARD SPECIAL EFFECTS ==================== */
 
         /* Base chart card setup */
@@ -1042,8 +1187,8 @@
         /* ==================== RELEASE RADAR ==================== */
         .release-radar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-            gap: 0.5rem 0.75rem;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.65rem 0.85rem;
             list-style: none;
             margin: 0;
             padding: 0;
@@ -1060,7 +1205,7 @@
         .radar-item {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
+            gap: 0.65rem;
             padding: 0.45rem 0.35rem;
             border-radius: 0;
             cursor: pointer;
@@ -1070,8 +1215,8 @@
         }
 
         .radar-cover {
-            width: 68px;
-            height: 68px;
+            width: 80px;
+            height: 80px;
             border-radius: 6px;
             object-fit: cover;
             background: var(--bg-hover, #eceef1);
@@ -1081,11 +1226,14 @@
         .radar-info {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .radar-info-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--text-primary, #1a1d21);
             white-space: nowrap;
@@ -1095,7 +1243,7 @@
         }
 
         .radar-info-artist {
-            font-size: 0.88rem;
+            font-size: 1rem;
             color: var(--text-secondary, #555b64);
             white-space: nowrap;
             overflow: hidden;
@@ -1104,9 +1252,9 @@
         }
 
         .radar-age {
-            font-size: 0.72rem;
+            font-size: 0.82rem;
             color: var(--text-muted, #8b929a);
-            margin-top: 0.2rem;
+            margin-top: 0.24rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -3108,6 +3256,49 @@
                 min-width: 4.5rem;
             }
 
+            .mini-chart-item.is-compact {
+                gap: 0.4rem;
+                padding: 0.25rem 0.2rem;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-rank {
+                width: 1.1rem;
+                font-size: 1rem;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-cover {
+                width: 38px;
+                height: 38px;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-title {
+                font-size: 0.86rem;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-artist {
+                font-size: 0.74rem;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-pop {
+                font-size: 0.92rem;
+            }
+
+            .mini-chart-item.is-compact .chart-pop-wrap {
+                min-width: 3rem;
+            }
+
+            .mini-chart-expand-wrap,
+            .mini-chart-footer {
+                margin-top: 0.55rem;
+            }
+
+            .mini-chart-expand-btn,
+            .mini-chart-full-link {
+                min-height: 2.4rem;
+                padding: 0.55rem 0.7rem;
+                font-size: 0.82rem;
+            }
+
             /* Stats card: stack summary and keep compact grids on mobile */
             #release-stats-card .release-stats-summary { grid-template-columns: 1fr; }
             #release-stats-card .release-stats-pct { font-size: 2rem; }
@@ -3237,6 +3428,18 @@
             </div>
             <div class="dash-loading" id="main-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="main-chart-list" style="display:none;"></ol>
+            <div class="mini-chart-expand-wrap">
+                <button type="button" class="mini-chart-expand-btn" onclick="expandMiniChart('main-chart-card')" aria-controls="main-chart-list" aria-expanded="false">
+                    <span data-i18n="dashboard.showTop10">Прикажи топ 10</span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="mini-chart-footer">
+                <a href="/charts" class="mini-chart-full-link">
+                    <span data-i18n="common.fullList">Целосна листа</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
 
         <!-- ==================== TOP 3 ALTERNATIVE CHART ==================== -->
@@ -3269,6 +3472,18 @@
             </div>
             <div class="dash-loading" id="alt-chart-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ol class="mini-chart-list" id="alt-chart-list" style="display:none;"></ol>
+            <div class="mini-chart-expand-wrap">
+                <button type="button" class="mini-chart-expand-btn" onclick="expandMiniChart('alt-chart-card')" aria-controls="alt-chart-list" aria-expanded="false">
+                    <span data-i18n="dashboard.showTop10">Прикажи топ 10</span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="mini-chart-footer">
+                <a href="/charts" class="mini-chart-full-link" onclick="sessionStorage.setItem('chartPreset','alt')">
+                    <span data-i18n="common.fullList">Целосна листа</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
 
         <!-- ==================== ADD ARTIST CTA ==================== -->
@@ -3845,19 +4060,74 @@
             if (n === 0) return '·';
             return formatCompactCountHtml(Math.abs(n));
         }
+
+        function setMiniChartExpanded(card) {
+            if (!card || !card.classList.contains('has-extra-items')) return;
+            card.classList.add('is-expanded');
+
+            var expandBtn = card.querySelector('.mini-chart-expand-btn');
+            if (expandBtn) {
+                expandBtn.setAttribute('aria-expanded', 'true');
+            }
+
+            var container = card.querySelector('.mini-chart-list');
+            if (container) {
+                fitMiniChartText(container);
+            }
+        }
+
+        function expandMiniChart(cardId) {
+            var card = document.getElementById(cardId);
+            if (!card || !card.classList.contains('has-extra-items')) return;
+
+            setMiniChartExpanded(card);
+
+            var mainCard = document.getElementById('main-chart-card');
+            var altCard = document.getElementById('alt-chart-card');
+            if (!mainCard || !altCard) return;
+
+            var sameRow = Math.abs(mainCard.getBoundingClientRect().top - altCard.getBoundingClientRect().top) < 8;
+            if (!sameRow) return;
+
+            var companionCard = cardId === 'main-chart-card'
+                ? altCard
+                : cardId === 'alt-chart-card'
+                    ? mainCard
+                    : null;
+
+            if (companionCard) {
+                setMiniChartExpanded(companionCard);
+            }
+        }
+        window.expandMiniChart = expandMiniChart;
+
         function renderMiniChart(containerId, loadingId, genreKey) {
             var chartKey = genreKey + '_single';
-            var top3 = siteMaster && siteMaster.charts && siteMaster.charts[chartKey]
-                ? siteMaster.charts[chartKey].slice(0, 3) : [];
+            var chartItems = siteMaster && siteMaster.charts && siteMaster.charts[chartKey]
+                ? siteMaster.charts[chartKey].slice(0, 10) : [];
 
-            if (top3.length === 0) return;
+            if (chartItems.length === 0) return;
 
             var container = document.getElementById(containerId);
             var loading = document.getElementById(loadingId);
-            var maxPop = Math.max.apply(null, top3.map(function(r) { return r.viewsDelta || 0; })) || 1;
-            container.innerHTML = top3.map(function(r, i) {
+            var card = container && container.closest('.dash-card');
+            var maxPop = Math.max.apply(null, chartItems.map(function(r) { return Math.max(0, r.viewsDelta || 0); })) || 1;
+
+            if (card) {
+                card.classList.remove('is-expanded');
+                card.classList.toggle('has-extra-items', chartItems.length > 3);
+
+                var expandBtn = card.querySelector('.mini-chart-expand-btn');
+                if (expandBtn) {
+                    expandBtn.setAttribute('aria-expanded', 'false');
+                }
+            }
+
+            container.innerHTML = chartItems.map(function(r, i) {
                 var popPct = Math.min(100, Math.round(((r.viewsDelta || 0) / maxPop) * 100));
-                var barClass = i === 0 ? 'pop-gold' : i === 1 ? 'pop-silver' : 'pop-bronze';
+                var barClass = i === 0 ? 'pop-gold' : i === 1 ? 'pop-silver' : i === 2 ? 'pop-bronze' : 'pop-default';
+                var itemClass = 'mini-chart-item';
+                if (i >= 3) itemClass += ' is-compact is-hidden-extra';
 
                 // Sparkle SVG overlay for #1 cover
                 var sparkleSvg = i === 0 ? '<svg class="chart-sparkle-svg" viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">' +
@@ -3872,7 +4142,7 @@
                         sparkleSvg +
                     '</div>' :
                     '<img class="mini-chart-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
-                return '<li class="mini-chart-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
+                return '<li class="' + itemClass + '" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     coverHtml +
                     '<div class="mini-chart-info">' +
@@ -3951,37 +4221,150 @@
             '</li>';
         }
 
-        // ==================== RENDER: RELEASE RADAR (latest 8, pre-computed) ====================
-        function renderReleaseRadar() {
-            var radarCount = 8;
-            var releases;
+        function getReleaseRadarArtists(release) {
+            return String((release && release.bandName) || '')
+                .split(',')
+                .map(function(name) { return name.trim(); })
+                .filter(Boolean);
+        }
+
+        function getReleaseRadarDateValue(release) {
+            var releaseDate = release && (release.effectiveReleaseDate || release.releaseDate);
+            var parsed = releaseDate ? new Date(releaseDate).getTime() : 0;
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        function getReleaseRadarViews(release) {
+            if (!release) return 0;
+            var views = release.youtubeViews;
+            if ((views == null || views === '') && release.releaseId && chartReleaseLookup[release.releaseId]) {
+                views = chartReleaseLookup[release.releaseId].youtubeViews;
+            }
+            views = Number(views);
+            return isFinite(views) ? views : 0;
+        }
+
+        function getReleaseRadarKey(release) {
+            return release && release.releaseId
+                ? release.releaseId
+                : [
+                    (release && release.releaseTitle) || '',
+                    (release && release.bandName) || '',
+                    (release && (release.effectiveReleaseDate || release.releaseDate)) || ''
+                ].join('|');
+        }
+
+        function buildReleaseRadarSelection(radarCount, perArtistLimit) {
+            var candidatePool = [];
+            var seenKeys = {};
+            var chartReleases = chartData && Array.isArray(chartData.releases) ? chartData.releases : [];
+
+            function addCandidates(items) {
+                if (!items || items.length === 0) return;
+                items.forEach(function(release) {
+                    var key = getReleaseRadarKey(release);
+                    if (seenKeys[key]) return;
+                    seenKeys[key] = true;
+                    candidatePool.push(release);
+                });
+            }
 
             if (siteMaster && siteMaster.releaseRadar && siteMaster.releaseRadar.length > 0) {
-                releases = siteMaster.releaseRadar.slice(0, radarCount);
-            } else if (chartData && chartData.releases) {
-                var deduped = deduplicateCollabs(chartData.releases);
-                var sorted = deduped.slice().sort(function(a, b) { return new Date(b.releaseDate) - new Date(a.releaseDate); });
-                releases = sorted.slice(0, radarCount);
-            } else {
-                releases = [];
+                addCandidates(siteMaster.releaseRadar);
             }
-            var last5 = releases;
+
+            if (chartReleases.length > 0) {
+                addCandidates(deduplicateCollabs(chartReleases));
+            }
+
+            candidatePool.sort(function(a, b) {
+                var dateDiff = getReleaseRadarDateValue(b) - getReleaseRadarDateValue(a);
+                if (dateDiff !== 0) return dateDiff;
+                return getReleaseRadarViews(b) - getReleaseRadarViews(a);
+            });
+
+            candidatePool = candidatePool.slice(0, Math.max(radarCount * 4, 24));
+
+            if (candidatePool.length === 0) return [];
+
+            var candidatesByViews = candidatePool.slice().sort(function(a, b) {
+                var viewsDiff = getReleaseRadarViews(b) - getReleaseRadarViews(a);
+                if (viewsDiff !== 0) return viewsDiff;
+                return getReleaseRadarDateValue(b) - getReleaseRadarDateValue(a);
+            });
+            var preferredIdsByArtist = {};
+
+            candidatesByViews.forEach(function(release) {
+                var key = getReleaseRadarKey(release);
+                getReleaseRadarArtists(release).forEach(function(artist) {
+                    if (!preferredIdsByArtist[artist]) preferredIdsByArtist[artist] = [];
+                    if (preferredIdsByArtist[artist].length < perArtistLimit && preferredIdsByArtist[artist].indexOf(key) === -1) {
+                        preferredIdsByArtist[artist].push(key);
+                    }
+                });
+            });
+
+            function isPreferredRelease(release) {
+                var key = getReleaseRadarKey(release);
+                var artists = getReleaseRadarArtists(release);
+                if (artists.length === 0) return true;
+                return artists.every(function(artist) {
+                    var preferredIds = preferredIdsByArtist[artist] || [];
+                    return preferredIds.indexOf(key) !== -1;
+                });
+            }
+
+            var selected = [];
+            var selectedKeys = {};
+            var artistCounts = {};
+
+            function canAddRelease(release) {
+                return getReleaseRadarArtists(release).every(function(artist) {
+                    return (artistCounts[artist] || 0) < perArtistLimit;
+                });
+            }
+
+            function addRelease(release) {
+                var key = getReleaseRadarKey(release);
+                if (selectedKeys[key] || !canAddRelease(release)) return;
+                selectedKeys[key] = true;
+                selected.push(release);
+                getReleaseRadarArtists(release).forEach(function(artist) {
+                    artistCounts[artist] = (artistCounts[artist] || 0) + 1;
+                });
+            }
+
+            candidatePool.filter(isPreferredRelease).forEach(function(release) {
+                if (selected.length < radarCount) addRelease(release);
+            });
+
+            candidatePool.forEach(function(release) {
+                if (selected.length < radarCount) addRelease(release);
+            });
+
+            return selected.slice(0, radarCount);
+        }
+
+        // ==================== RENDER: RELEASE RADAR (latest 9, pre-computed) ====================
+        function renderReleaseRadar() {
+            var radarCount = 9;
+            var displayedReleases = buildReleaseRadarSelection(radarCount, 2);
 
             var list = document.getElementById('radar-list');
             var loading = document.getElementById('radar-loading');
 
-            if (last5.length === 0) {
+            if (displayedReleases.length === 0) {
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noNewReleases') + '</li>';
             } else {
                 // Enrich release radar items with YouTube data from chart releases
-                last5.forEach(function(r) {
+                displayedReleases.forEach(function(r) {
                     if (r.releaseId && chartReleaseLookup[r.releaseId]) {
                         var cr = chartReleaseLookup[r.releaseId];
                         if (cr.youtubeViews != null && !r.youtubeViews) r.youtubeViews = cr.youtubeViews;
                         if (cr.viewsDelta != null && !r.viewsDelta) r.viewsDelta = cr.viewsDelta;
                     }
                 });
-                list.innerHTML = last5.map(function(r) {
+                list.innerHTML = displayedReleases.map(function(r) {
                     var releaseDate = r.effectiveReleaseDate || r.releaseDate;
                     return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +

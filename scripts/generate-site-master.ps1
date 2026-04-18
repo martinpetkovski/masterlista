@@ -223,6 +223,53 @@ function Get-ArtistInfo {
     return $null
 }
 
+$chartEligibilityCache = @{}
+
+function Get-ArtistLabels {
+    param([object]$artistInfo)
+    if (-not $artistInfo -or -not $artistInfo.label) { return @() }
+    $labelText = [string]$artistInfo.label
+    if ([string]::IsNullOrWhiteSpace($labelText)) { return @() }
+    if ($labelText.ToLower() -eq 'недостигаат податоци') { return @() }
+    return @($labelText -split ',' | ForEach-Object { $_.Trim().ToLower() } | Where-Object { $_ })
+}
+
+function Test-ArtistHasLabel {
+    param([string]$artistName, [string]$label)
+    if (-not $artistName -or -not $label) { return $false }
+
+    $target = $label.Trim().ToLower()
+    $artistNames = @($artistName -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    if ($artistNames.Count -eq 0) { $artistNames = @($artistName) }
+
+    foreach ($name in $artistNames) {
+        $info = Get-ArtistInfo $name
+        if (-not $info) { continue }
+        if ((Get-ArtistLabels $info) -contains $target) { return $true }
+    }
+
+    return $false
+}
+
+function Test-ReleaseChartEligibility {
+    param([object]$release)
+    if (-not $release) { return $false }
+
+    $cacheKey = if ($release.releaseId) {
+        [string]$release.releaseId
+    } else {
+        "$($release.bandName)|$($release.releaseTitle)|$($release.releaseDate)"
+    }
+
+    if ($chartEligibilityCache.ContainsKey($cacheKey)) {
+        return [bool]$chartEligibilityCache[$cacheKey]
+    }
+
+    $eligible = -not (Test-ArtistHasLabel $release.bandName 'AI')
+    $chartEligibilityCache[$cacheKey] = $eligible
+    return $eligible
+}
+
 # Check if artist matches genre filter — O(1) cache lookup
 function Test-ArtistGenre {
     param([string]$artistName, [string]$genreFilter)
@@ -440,6 +487,7 @@ function Build-ChartRanking {
     )
     
     $deduped = if ($preDeduped) { $preDeduped } else { Invoke-DeduplicateCollabs $releasesArr }
+    $deduped = @($deduped | Where-Object { Test-ReleaseChartEligibility $_ })
     
     # Filter by release type
     $filtered = if ($type -eq 'album') {
@@ -577,8 +625,8 @@ $genreFilters = @('all', 'alt', 'rap', 'electronic', 'pop')
 $typeFilters = @('single', 'album')
 
 # Pre-deduplicate releases once for reuse across all chart computations
-$mainReleasesDeduped = Invoke-DeduplicateCollabs $releases
-$prevReleasesDeduped = Invoke-DeduplicateCollabs $previousWeekReleases
+$mainReleasesDeduped = @(Invoke-DeduplicateCollabs $releases | Where-Object { Test-ReleaseChartEligibility $_ })
+$prevReleasesDeduped = @(Invoke-DeduplicateCollabs $previousWeekReleases | Where-Object { Test-ReleaseChartEligibility $_ })
 
 # Pre-compute viewsDelta (current - previous week youtubeViews) and attach to each release
 $prevViewsMap = @{}
@@ -654,8 +702,8 @@ foreach ($genre in $genreFilters) {
 # Pre-compute previous-week ranked maps for unlimited charts (only 'all' genre needed;
 # genre subsets are reconstructed client-side from the all-chart data)
 # Chevron maps: compare the two most recent chart-history snapshots for stable week-over-week indicators
-$chevronPrevDeduped = Invoke-DeduplicateCollabs $chevronPreviousReleases
-$chevronCurDeduped = Invoke-DeduplicateCollabs $chevronCurrentReleases
+$chevronPrevDeduped = @(Invoke-DeduplicateCollabs $chevronPreviousReleases | Where-Object { Test-ReleaseChartEligibility $_ })
+$chevronCurDeduped = @(Invoke-DeduplicateCollabs $chevronCurrentReleases | Where-Object { Test-ReleaseChartEligibility $_ })
 $chevronPrevByGenre = @{}
 $chevronCurByGenre = @{}
 foreach ($genre in $genreFilters) {
@@ -907,7 +955,7 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
     }
 
     # Deduplicate and attach viewsDelta for this week
-    $thisDedup = Invoke-DeduplicateCollabs $thisWeek.releases
+    $thisDedup = @(Invoke-DeduplicateCollabs $thisWeek.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     foreach ($r in $thisDedup) {
         $delta = Get-ViewsDelta $r $pvm $pcm
         $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
@@ -1021,7 +1069,7 @@ $releaseHistoryByGenre = @{}  # genre -> { releaseId -> array of { weekId, popul
 # Pre-deduplicate each history week once (avoids re-deduplicating 5 genres × N weeks)
 $historyWeekDeduped = @{}
 for ($w = 0; $w -lt $tooltipWeekCount; $w++) {
-    $historyWeekDeduped[$w] = Invoke-DeduplicateCollabs $chartHistoryWeeks[$w].releases
+    $historyWeekDeduped[$w] = @(Invoke-DeduplicateCollabs $chartHistoryWeeks[$w].releases | Where-Object { Test-ReleaseChartEligibility $_ })
 }
 
 foreach ($genre in $genreFilters) {
@@ -1105,7 +1153,7 @@ for ($w = $artistGraphWeekCount - 1; $w -ge 0; $w--) {
 for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
     $weekData = $chartHistoryWeeks[$w]
     $weekId = $weekData.weekId
-    $weekReleases = $weekData.releases
+    $weekReleases = @(Invoke-DeduplicateCollabs $weekData.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     
     # Parse week boundaries for new release detection
     $yearWeek = $weekId -split '-W'
@@ -1751,7 +1799,8 @@ $sparkWeekCount = [Math]::Min(20, $chartHistoryWeeks.Count)
 for ($w = 0; $w -lt $sparkWeekCount; $w++) {
     $weekData = $chartHistoryWeeks[$w]
     $weekId = $weekData.weekId
-    foreach ($r in $weekData.releases) {
+    $weekReleases = @(Invoke-DeduplicateCollabs $weekData.releases | Where-Object { Test-ReleaseChartEligibility $_ })
+    foreach ($r in $weekReleases) {
         $rid = $r.releaseId
         if (-not $releaseSparklines.ContainsKey($rid)) {
             $releaseSparklines[$rid] = [System.Collections.ArrayList]::new()

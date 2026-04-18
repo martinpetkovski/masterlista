@@ -878,17 +878,41 @@ async function main() {
             }
         }
 
-        // Compute effectiveReleaseDate for singles/songs:
-        // Use the earliest YouTube video publishedAt date, falling back to Spotify releaseDate.
-        // For albums, always use the Spotify releaseDate.
+        // Compute effectiveReleaseDate for singles/songs.
+        // Prefer a verified upload tied to the current Spotify release cycle when one exists,
+        // otherwise fall back to the earliest verified YouTube upload to keep archival-only
+        // reissues anchored to their original run. Albums always use the Spotify releaseDate.
         if (r.releaseType !== 'album') {
             const ytDates = ytTracks
                 .filter(t => t.publishedAt && t.verified !== 'will-not-verify')
-                .map(t => t.publishedAt);
+                .map(t => t.publishedAt)
+                .sort();
             if (ytDates.length > 0) {
-                const earliestYt = ytDates.sort()[0]; // YYYY-MM-DD string sort
-                r.effectiveReleaseDate = (r.releaseDate && r.releaseDate < earliestYt)
-                    ? r.releaseDate : earliestYt;
+                const earliestYt = ytDates[0];
+                if (r.releaseDate) {
+                    const releaseTs = Date.parse(r.releaseDate);
+                    const releaseWindowMs = 30 * 24 * 60 * 60 * 1000;
+                    if (!Number.isNaN(releaseTs)) {
+                        const cycleDates = ytDates.filter(date => {
+                            const ytTs = Date.parse(date);
+                            if (Number.isNaN(ytTs) || ytTs > releaseTs) return false;
+                            return (releaseTs - ytTs) <= releaseWindowMs;
+                        });
+                        if (cycleDates.length > 0) {
+                            r.effectiveReleaseDate = cycleDates[cycleDates.length - 1];
+                        } else {
+                            r.effectiveReleaseDate = r.releaseDate < earliestYt
+                                ? r.releaseDate
+                                : earliestYt;
+                        }
+                    } else {
+                        r.effectiveReleaseDate = r.releaseDate < earliestYt
+                            ? r.releaseDate
+                            : earliestYt;
+                    }
+                } else {
+                    r.effectiveReleaseDate = earliestYt;
+                }
             } else {
                 r.effectiveReleaseDate = r.releaseDate;
             }
