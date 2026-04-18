@@ -15,6 +15,96 @@ function escHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// ==================== THEME STATE (shared) ====================
+var THEME_STORAGE_KEY = 'mmm-dark-mode';
+var THEME_CHANGE_EVENT = 'mmm-theme-change';
+var THEME_DARK_BACKGROUND = '#111318';
+
+function isStoredDarkModeEnabled() {
+    try {
+        return localStorage.getItem(THEME_STORAGE_KEY) === 'true';
+    } catch (e) {
+        return false;
+    }
+}
+
+function isDarkThemeActive() {
+    return document.documentElement.classList.contains('dark-mode') ||
+        !!(document.body && document.body.classList.contains('dark-mode'));
+}
+
+function syncThemeButtons(isDark) {
+    var overlay = document.getElementById('settings-overlay');
+    if (!overlay) return;
+    overlay.querySelectorAll('.settings-theme-btn').forEach(function(btn) {
+        btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDark);
+    });
+}
+
+function applyThemeMode(isDark, options) {
+    var opts = options || {};
+    var root = document.documentElement;
+    var body = document.body;
+    var previousRootDark = root.classList.contains('dark-mode');
+    var previousBodyDark = !!(body && body.classList.contains('dark-mode'));
+
+    root.classList.toggle('dark-mode', isDark);
+    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    root.style.backgroundColor = isDark ? THEME_DARK_BACKGROUND : '';
+    if (isDark) {
+        root.style.colorScheme = 'dark';
+    } else {
+        root.style.removeProperty('color-scheme');
+    }
+
+    if (body) {
+        body.classList.toggle('dark-mode', isDark);
+        body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+
+    if (opts.persist !== false) {
+        try {
+            localStorage.setItem(THEME_STORAGE_KEY, String(isDark));
+        } catch (e) {
+            // Ignore storage failures and still apply the visible theme state.
+        }
+    }
+
+    syncThemeButtons(isDark);
+
+    if (opts.dispatchEvent !== false && (previousRootDark !== isDark || previousBodyDark !== isDark)) {
+        window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, {
+            detail: {
+                dark: isDark,
+                source: opts.source || 'programmatic'
+            }
+        }));
+    }
+
+    return isDark;
+}
+
+function syncStoredThemeMode() {
+    return applyThemeMode(isStoredDarkModeEnabled(), {
+        persist: false,
+        source: 'boot'
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncStoredThemeMode);
+} else {
+    syncStoredThemeMode();
+}
+
+window.addEventListener('storage', function(e) {
+    if (e.key !== THEME_STORAGE_KEY) return;
+    applyThemeMode(e.newValue === 'true', {
+        persist: false,
+        source: 'storage'
+    });
+});
+
 // ==================== COMPACT COUNT FORMATTERS ====================
 function getCompactCountParts(value) {
     if (value == null || value === '') return null;
@@ -745,7 +835,7 @@ function initSettingsMenu(extraServiceDefs) {
         overlay.className = 'settings-overlay';
 
         var currentService = localStorage.getItem('mmm-preferred-service');
-        var isDark = document.documentElement.classList.contains('dark-mode');
+        var isDark = isDarkThemeActive();
 
         var optionsHtml = '<option value=""' + (!currentService ? ' selected' : '') + '>' + (typeof t === 'function' ? t('settings.alwaysAsk') : 'Секогаш прашувај') + '</option>';
         for (var id in svcDefs) {
@@ -814,12 +904,9 @@ function initSettingsMenu(extraServiceDefs) {
         overlay.querySelectorAll('.settings-theme-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var dark = btn.dataset.theme === 'dark';
-                document.body.classList.toggle('dark-mode', dark);
-                document.documentElement.classList.toggle('dark-mode', dark);
-                document.documentElement.style.backgroundColor = dark ? '#111318' : '';
-                localStorage.setItem('mmm-dark-mode', dark);
-                overlay.querySelectorAll('.settings-theme-btn').forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
+                applyThemeMode(dark, {
+                    source: 'settings'
+                });
             });
         });
 
@@ -858,10 +945,7 @@ function initSettingsMenu(extraServiceDefs) {
         settingsBtn.addEventListener('click', function() {
             var ov = document.getElementById('settings-overlay');
             if (!ov) return;
-            var isDarkNow = document.documentElement.classList.contains('dark-mode');
-            ov.querySelectorAll('.settings-theme-btn').forEach(function(btn) {
-                btn.classList.toggle('active', (btn.dataset.theme === 'dark') === isDarkNow);
-            });
+            syncThemeButtons(isDarkThemeActive());
             var svcSel = ov.querySelector('.settings-service-select');
             if (svcSel) svcSel.value = localStorage.getItem('mmm-preferred-service') || '';
             ov.classList.add('visible');

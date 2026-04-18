@@ -851,5 +851,8 @@
     "about.chartGen4": "Les vues YouTube peuvent être gonflées artificiellement (publicités, vues achetées). Ce n’est <strong>pas contraire aux règles</strong>, mais c’est assez évident quand ça arrive.",
     "about.headingAltTag": "Le tag « Alternative »",
     "about.altTag1": "Les artistes avec le genre <strong>« Alternative »</strong> apparaissent toujours dans le classement alternatif, même si leurs autres genres les excluraient normalement.",
-    "about.altTag2": "Dans les autres classements, cela n’a aucun effet."
+    "about.altTag2": "Dans les autres classements, cela n’a aucun effet.",
+    "about.headingAiTag": "La politique du tag « AI »",
+    "about.aiTag1": "Les artistes ayant le tag <strong>« AI »</strong> ne sont pas éligibles aux classements.",
+    "about.aiTag2": "Les artistes qui créent de la musique avec l’aide de l’AI, mais dont au moins une partie de la musique est enregistrée plutôt que générée, ne sont pas éligibles au tag <strong>« AI »</strong>. Les artistes qui ont sorti une sortie AI au cours de l’année écoulée sont éligibles au tag AI."
 }

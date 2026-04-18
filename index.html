@@ -64,7 +64,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=1"></script>
+    <script src="/common.js?v=3"></script>
     <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
@@ -464,18 +464,17 @@
         }
 
         body.dark-mode .dash-card-header-actions .card-action-btn {
-            background: #fff;
-            border: none;
-            color: #000;
-        }
-
-        body.dark-mode .dash-card-header-actions .card-action-btn:hover {
-            filter: brightness(0.85);
-            box-shadow: 0 0 10px rgba(255,255,255,0.12);
+            background: #000;
+            color: #fff;
         }
 
         body.dark-mode .dash-card-header-actions .card-action-btn::before {
-            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.15) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+        }
+
+        body.dark-mode .dash-card-header-actions .card-action-btn:hover {
+            filter: brightness(1.4);
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
         }
 
         /* ==================== CHART MINI LIST ==================== */
@@ -2110,28 +2109,33 @@
         }
 
         body.dark-mode .quick-action-btn {
-            color: #fff;
-            border-color: rgba(255,255,255,0.16);
+            color: #f4f8ff;
+            border-color: rgba(90,138,181,0.28);
             background:
-                linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 24%, rgba(255,255,255,0) 100%),
-                linear-gradient(180deg, #161616 0%, #050505 100%);
+                linear-gradient(180deg, rgba(90,138,181,0.11) 0%, rgba(90,138,181,0.04) 28%, rgba(90,138,181,0) 100%),
+                linear-gradient(180deg, #1a232e 0%, #111720 100%);
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                inset 0 -1px 0 rgba(255,255,255,0.03),
-                0 12px 28px rgba(0,0,0,0.32);
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -1px 0 rgba(0,0,0,0.14),
+                0 10px 22px rgba(0,0,0,0.28);
         }
         body.dark-mode .quick-action-btn::before {
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.14) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(165,203,235,0.08) 50%, transparent 100%);
         }
         body.dark-mode .quick-action-btn::after {
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.38) 50%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(180deg, rgba(132,174,213,0.05) 0%, rgba(132,174,213,0.24) 50%, rgba(132,174,213,0.05) 100%);
+            opacity: 0.26;
         }
         body.dark-mode .quick-action-btn:hover {
-            border-color: rgba(255,255,255,0.24);
+            filter: brightness(1.03);
+            border-color: rgba(132,174,213,0.34);
             box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.1),
-                inset 0 -1px 0 rgba(255,255,255,0.04),
-                0 16px 30px rgba(0,0,0,0.42);
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.18),
+                0 14px 28px rgba(0,0,0,0.36);
+        }
+        body.dark-mode .quick-action-btn:hover::after {
+            opacity: 0.46;
         }
 
         /* ==================== CTA CARDS ==================== */

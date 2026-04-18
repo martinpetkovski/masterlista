@@ -874,5 +874,8 @@
     "genre.World Music": "World Music",
     "about.headingAltTag": "The \"Alternative\" tag",
     "about.altTag1": "Artists tagged <strong>\"Alternative\"</strong> always appear on the alternative chart, even if their other genres would normally exclude them.",
-    "about.altTag2": "No effect on other charts."
+    "about.altTag2": "No effect on other charts.",
+    "about.headingAiTag": "The \"AI\" tag policy",
+    "about.aiTag1": "Artists tagged <strong>\"AI\"</strong> do not qualify for the charts.",
+    "about.aiTag2": "Artists who make music with the help of AI, but have at least one part of the music recorded rather than generated, do not qualify for the <strong>\"AI\"</strong> tag. Artists who have released an AI release in the past year qualify for the AI tag."
 }
