@@ -1311,6 +1311,25 @@
             margin: 0;
             max-height: calc(100vh - 180px);
             overflow-y: auto;
+            position: relative;
+            isolation: isolate;
+        }
+
+        .chart-list::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(108deg,
+                rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 18%,
+                rgba(var(--chart-accent-rgb, 74, 127, 165), 0.08) 34%,
+                rgba(255,255,255,0.82) 49%,
+                rgba(var(--chart-accent-rgb, 74, 127, 165), 0.24) 54%,
+                rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 76%);
+            transform: translate3d(-120%, 0, 0);
+            opacity: 0;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            z-index: 3;
         }
         
         .chart-list::-webkit-scrollbar { width: 4px; }
@@ -1328,6 +1347,78 @@
             position: relative;
             overflow: hidden;
             clip-path: inset(0);
+        }
+
+        .chart-reveal-fx,
+        .chart-reveal-flare {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .chart-reveal-fx {
+            z-index: 0;
+            background:
+                linear-gradient(var(--chart-reveal-angle, 104deg),
+                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 18%,
+                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.08) 36%,
+                    rgba(255,255,255,0.78) 49%,
+                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.24) 54%,
+                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 76%);
+            transform: translate3d(var(--chart-reveal-fx-shift, -84px), 0, 0);
+            mix-blend-mode: screen;
+        }
+
+        .chart-reveal-flare {
+            z-index: 0;
+            inset: 1px 0;
+            border: 1px solid rgba(var(--chart-accent-rgb, 74, 127, 165), 0.22);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.12),
+                inset 0 0 28px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.12),
+                0 0 22px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.16);
+            clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+            transform: scale(0.96);
+        }
+
+        .chart-list.is-revealing::before {
+            animation: miniChartListSweep 0.475s cubic-bezier(0.18, 0.78, 0.24, 1) both;
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target {
+            animation: miniChartEntryWarp 0.39s cubic-bezier(0.15, 0.84, 0.24, 1.02) both;
+            animation-delay: var(--chart-reveal-delay, 0s);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-rank {
+            animation: miniChartDigitBoot 0.29s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+            animation-delay: calc(var(--chart-reveal-delay, 0s) + 35ms);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-cover {
+            animation: miniChartPortraitBoot 0.35s cubic-bezier(0.2, 0.88, 0.24, 1) both;
+            animation-delay: calc(var(--chart-reveal-delay, 0s) + 55ms);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-info {
+            animation: miniChartTextLock 0.31s cubic-bezier(0.18, 0.9, 0.24, 1) both;
+            animation-delay: calc(var(--chart-reveal-delay, 0s) + 70ms);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-meta {
+            animation: miniChartStatBoot 0.29s cubic-bezier(0.18, 0.88, 0.24, 1) both;
+            animation-delay: calc(var(--chart-reveal-delay, 0s) + 90ms);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-reveal-fx {
+            animation: miniChartFxBurst 0.41s cubic-bezier(0.16, 0.82, 0.24, 1) both;
+            animation-delay: var(--chart-reveal-delay, 0s);
+        }
+
+        .chart-list.is-revealing .chart-item.is-reveal-target .chart-reveal-flare {
+            animation: miniChartFrameLock 0.36s cubic-bezier(0.16, 0.82, 0.24, 1) both;
+            animation-delay: calc(var(--chart-reveal-delay, 0s) + 10ms);
         }
 
         .chart-item:nth-child(even) {
@@ -1586,6 +1677,148 @@
             50%  { opacity: 0.7; }
             80%  { opacity: 0; }
             100% { opacity: 0; top: 18px; }
+        }
+
+        @keyframes miniChartListSweep {
+            0% {
+                opacity: 0;
+                transform: translate3d(-120%, 0, 0);
+            }
+            12% {
+                opacity: 0.92;
+            }
+            65% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0;
+                transform: translate3d(140%, 0, 0);
+            }
+        }
+
+        @keyframes miniChartEntryWarp {
+            0% {
+                opacity: 0;
+                transform: perspective(900px) translate3d(var(--chart-reveal-shift, 0px), var(--chart-reveal-lift, 12px), 0) scale(0.82) rotateX(78deg) rotateZ(var(--chart-reveal-tilt, 0deg));
+                filter: blur(14px) saturate(1.8);
+                clip-path: polygon(0 0, 18% 0, 0 100%, 0 100%);
+            }
+            40% {
+                opacity: 1;
+                transform: perspective(900px) translate3d(0, -2px, 0) scale(1.02) rotateX(0deg) rotateZ(0deg);
+                filter: blur(1.4px) saturate(1.15);
+            }
+            100% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(1);
+                filter: none;
+                clip-path: inset(0 0 0 0);
+            }
+        }
+
+        @keyframes miniChartDigitBoot {
+            0% {
+                opacity: 0;
+                transform: translate3d(14px, 0, 0) scale(1.7);
+                filter: blur(10px);
+                letter-spacing: 0.18em;
+                text-shadow: 0 0 18px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.35);
+            }
+            65% {
+                opacity: 1;
+                transform: translate3d(0, 0, 0) scale(0.92);
+                filter: blur(0);
+                letter-spacing: 0;
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: none;
+                letter-spacing: -0.03em;
+                text-shadow: none;
+            }
+        }
+
+        @keyframes miniChartPortraitBoot {
+            0% {
+                opacity: 0;
+                transform: translate3d(18px, 0, 0) scale(0.72);
+                filter: saturate(1.7) contrast(1.08) brightness(1.2);
+                clip-path: inset(18% 44% 18% 0);
+            }
+            55% {
+                opacity: 1;
+                transform: translate3d(-2px, 0, 0) scale(1.06);
+                filter: saturate(1.1) contrast(1.02);
+                clip-path: inset(0 0 0 0);
+            }
+            100% {
+                opacity: 1;
+                transform: none;
+                filter: none;
+                clip-path: inset(0 0 0 0);
+            }
+        }
+
+        @keyframes miniChartTextLock {
+            0% {
+                opacity: 0;
+                transform: translate3d(24px, 0, 0);
+                filter: blur(10px);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: none;
+                filter: none;
+            }
+        }
+
+        @keyframes miniChartStatBoot {
+            0% {
+                opacity: 0;
+                transform: translate3d(26px, 0, 0) scale(0.9);
+                filter: blur(8px);
+            }
+            60% {
+                opacity: 1;
+                transform: translate3d(-3px, 0, 0) scale(1.03);
+            }
+            100% {
+                opacity: 1;
+                transform: none;
+                filter: none;
+            }
+        }
+
+        @keyframes miniChartFxBurst {
+            0% {
+                opacity: 0;
+                transform: translate3d(var(--chart-reveal-fx-shift, -84px), 0, 0) skewX(-16deg);
+            }
+            20% {
+                opacity: 0.82;
+            }
+            100% {
+                opacity: 0;
+                transform: translate3d(96px, 0, 0) skewX(-16deg);
+            }
+        }
+
+        @keyframes miniChartFrameLock {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            22% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.02);
+            }
         }
         
         .chart-rank.gold,
@@ -4851,11 +5084,70 @@
                     };
                 }
             }
+
+            const CHART_REVEAL_STAGGER_MS = 39;
+            const CHART_REVEAL_CLEANUP_MS = 800;
+
+            function getChartRevealAccent(containerId) {
+                if (containerId === 'singles-chart') return '184, 58, 58';
+                if (containerId === 'albums-chart') return '184, 152, 48';
+                if (containerId === 'latest-chart') return '74, 127, 165';
+                if (containerId === 'artists-chart') return '52, 148, 91';
+                if (containerId === 'artists-cumulative-chart') return '52, 148, 91';
+                return '74, 127, 165';
+            }
+
+            function getChartRevealStyle(index, accentRgb) {
+                const revealIndex = index;
+                const direction = revealIndex % 2 === 0 ? -1 : 1;
+                const angleMap = [100, 112, 96, 118];
+                const tiltMap = [-8, 7, -5, 8, -4, 6, -3];
+                const liftMap = [18, 10, 14, 9, 16, 8, 12];
+                const shift = direction * (32 + (revealIndex % 3) * 6);
+
+                return [
+                    `--chart-accent-rgb:${accentRgb}`,
+                    `--chart-reveal-delay:${revealIndex * CHART_REVEAL_STAGGER_MS}ms`,
+                    `--chart-reveal-shift:${shift}px`,
+                    `--chart-reveal-lift:${liftMap[revealIndex % liftMap.length]}px`,
+                    `--chart-reveal-tilt:${tiltMap[revealIndex % tiltMap.length]}deg`,
+                    `--chart-reveal-angle:${angleMap[revealIndex % angleMap.length]}deg`,
+                    `--chart-reveal-fx-shift:${direction < 0 ? -92 : 92}px`
+                ].join(';');
+            }
+
+            function clearChartLoadReveal(container) {
+                if (!container) return;
+                container.classList.remove('is-revealing');
+                if (container._chartRevealTimer) {
+                    window.clearTimeout(container._chartRevealTimer);
+                    container._chartRevealTimer = null;
+                }
+            }
+
+            function playChartLoadReveal(container, containerId) {
+                if (!container) return;
+
+                clearChartLoadReveal(container);
+
+                const revealItems = container.querySelectorAll('.chart-item.is-reveal-target');
+                if (!revealItems.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    return;
+                }
+
+                container.style.setProperty('--chart-accent-rgb', getChartRevealAccent(containerId));
+                void container.offsetWidth;
+                container.classList.add('is-revealing');
+                container._chartRevealTimer = window.setTimeout(() => {
+                    clearChartLoadReveal(container);
+                }, CHART_REVEAL_CLEANUP_MS + Math.max(0, revealItems.length - 1) * CHART_REVEAL_STAGGER_MS);
+            }
             
             function renderChart(containerId, releases, previousMap = {}, isDateSorted = false) {
                 const container = document.getElementById(containerId);
                 const loading = document.getElementById(`${containerId}-loading`);
                 const empty = document.getElementById(`${containerId}-empty`);
+                clearChartLoadReveal(container);
                 
                 loading.style.display = 'none';
                 
@@ -4881,6 +5173,7 @@
                 
                 empty.style.display = 'none';
                 container.style.display = 'block';
+                const revealAccent = getChartRevealAccent(containerId);
                 container.innerHTML = releases.map((release, index) => {
                     const rank = index + 1;
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
@@ -4970,7 +5263,23 @@
                     const hasAccent = accentColors && (accentColors[0] || accentColors[1]);
                     const accent1 = hasAccent ? (accentColors[0] || accentColors[1]) : '';
                     const accent2 = hasAccent ? (accentColors[1] || accentColors[0]) : '';
-                    const accentStyle = hasAccent ? `style="--accent-1:${accent1};--accent-2:${accent2}"` : '';
+                    const shouldReveal = true;
+                    const itemClasses = ['chart-item'];
+                    const trimmedItemClass = itemClass.trim();
+                    if (trimmedItemClass) itemClasses.push(...trimmedItemClass.split(/\s+/));
+                    if (hasAccent) itemClasses.push('has-accent');
+                    if (shouldReveal) itemClasses.push('is-reveal-target');
+                    const itemStyles = [];
+                    if (hasAccent) {
+                        itemStyles.push(`--accent-1:${accent1}`, `--accent-2:${accent2}`);
+                    }
+                    if (shouldReveal) {
+                        itemStyles.push(getChartRevealStyle(index, revealAccent));
+                    }
+                    const itemStyleAttr = itemStyles.length ? `style="${itemStyles.join(';')}"` : '';
+                    const revealMarkup = shouldReveal
+                        ? '<span class="chart-reveal-fx" aria-hidden="true"></span><span class="chart-reveal-flare" aria-hidden="true"></span>'
+                        : '';
                     
                     // Build history tooltips for this release
                     const posTooltipHtml = showPosition ? buildHistoryTooltipHTML(release.releaseId, 'position', release.releaseType, rank) : '';
@@ -4988,7 +5297,8 @@
                     const rankArrowsHtml = changeIndicator === 'rank-up' ? '<span class="rank-arrows up"><i></i><i></i><i></i></span>' : changeIndicator === 'rank-down' ? '<span class="rank-arrows down"><i></i><i></i><i></i></span>' : '';
 
                     return `
-                        <li class="chart-item ${itemClass}${hasAccent ? ' has-accent' : ''}" ${accentStyle}>
+                        <li class="${itemClasses.join(' ')}" ${itemStyleAttr}>
+                            ${revealMarkup}
                             ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}${rankArrowsHtml}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
@@ -5094,6 +5404,8 @@
                         tooltipPortal.classList.remove('visible');
                     }
                 });
+
+                playChartLoadReveal(container, containerId);
             }
             
             // Render all-time artists chart
@@ -5101,6 +5413,7 @@
                 const container = document.getElementById(containerId);
                 const loading = document.getElementById(`${containerId}-loading`);
                 const empty = document.getElementById(`${containerId}-empty`);
+                clearChartLoadReveal(container);
                 
                 loading.style.display = 'none';
                 
@@ -5112,6 +5425,7 @@
                 
                 empty.style.display = 'none';
                 container.style.display = 'block';
+                const revealAccent = getChartRevealAccent(containerId);
                 container.innerHTML = artists.map((artist, index) => {
                     const rank = index + 1;
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
@@ -5129,14 +5443,30 @@
                     const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
                     const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
                     const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
-                    const artAccentStyle = artHasAccent ? `style="--accent-1:${artAccent1};--accent-2:${artAccent2}"` : '';
+                    const shouldReveal = true;
+                    const itemClasses = ['chart-item', 'artist-item', 'artist-item--alltime'];
+                    if (itemClass) itemClasses.push(itemClass);
+                    if (artHasAccent) itemClasses.push('has-accent');
+                    if (shouldReveal) itemClasses.push('is-reveal-target');
+                    const itemStyles = [];
+                    if (artHasAccent) {
+                        itemStyles.push(`--accent-1:${artAccent1}`, `--accent-2:${artAccent2}`);
+                    }
+                    if (shouldReveal) {
+                        itemStyles.push(getChartRevealStyle(index, revealAccent));
+                    }
+                    const itemStyleAttr = itemStyles.length ? `style="${itemStyles.join(';')}"` : '';
+                    const revealMarkup = shouldReveal
+                        ? '<span class="chart-reveal-fx" aria-hidden="true"></span><span class="chart-reveal-flare" aria-hidden="true"></span>'
+                        : '';
                     
                     // Artist page URL
                     const artistPageUrl = getArtistPageUrl(artist.bandName);
                     const artistImg = artistInfo?.image || artist.thumbnail;
                     
                     return `
-                        <li class="chart-item artist-item artist-item--alltime ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
+                        <li class="${itemClasses.join(' ')}" ${itemStyleAttr}>
+                            ${revealMarkup}
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artistImg 
@@ -5158,6 +5488,8 @@
                         </li>
                     `;
                 }).join('');
+
+                playChartLoadReveal(container, containerId);
             }
             
             // ==================== OPEN ON PREFERRED SERVICE ======================================
@@ -5172,6 +5504,7 @@
                 const container = document.getElementById(containerId);
                 const loading = document.getElementById(`${containerId}-loading`);
                 const empty = document.getElementById(`${containerId}-empty`);
+                clearChartLoadReveal(container);
                 
                 loading.style.display = 'none';
                 
@@ -5185,6 +5518,7 @@
                 
                 empty.style.display = 'none';
                 container.style.display = 'block';
+                const revealAccent = getChartRevealAccent(containerId);
                 container.innerHTML = artists.map((artist, index) => {
                     const rank = index + 1;
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
@@ -5215,14 +5549,30 @@
                     const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
                     const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
                     const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
-                    const artAccentStyle = artHasAccent ? `style="--accent-1:${artAccent1};--accent-2:${artAccent2}"` : '';
+                    const shouldReveal = true;
+                    const itemClasses = ['chart-item', 'artist-item', 'artist-item--cumulative'];
+                    if (itemClass) itemClasses.push(itemClass);
+                    if (artHasAccent) itemClasses.push('has-accent');
+                    if (shouldReveal) itemClasses.push('is-reveal-target');
+                    const itemStyles = [];
+                    if (artHasAccent) {
+                        itemStyles.push(`--accent-1:${artAccent1}`, `--accent-2:${artAccent2}`);
+                    }
+                    if (shouldReveal) {
+                        itemStyles.push(getChartRevealStyle(index, revealAccent));
+                    }
+                    const itemStyleAttr = itemStyles.length ? `style="${itemStyles.join(';')}"` : '';
+                    const revealMarkup = shouldReveal
+                        ? '<span class="chart-reveal-fx" aria-hidden="true"></span><span class="chart-reveal-flare" aria-hidden="true"></span>'
+                        : '';
                     
                     // Artist page URL
                     const artistPageUrl = getArtistPageUrl(artist.bandName);
                     const artistImg = artistInfo?.image || artist.thumbnail;
                     
                     return `
-                        <li class="chart-item artist-item artist-item--cumulative ${itemClass}${artHasAccent ? ' has-accent' : ''}" ${artAccentStyle}>
+                        <li class="${itemClasses.join(' ')}" ${itemStyleAttr}>
+                            ${revealMarkup}
                             <span class="chart-rank ${rankClass}">${rank}</span>
                             <div class="chart-cover artist-cover">
                                 ${artistImg 
@@ -5245,6 +5595,8 @@
                         </li>
                     `;
                 }).join('');
+
+                playChartLoadReveal(container, containerId);
             }
 
             loadChartData().then(async () => {
