@@ -847,10 +847,6 @@ td[data-label="Акции"] button:active {
     transform: scale(0.95);
 }
 
-td[data-label="Акции"] button.edit-btn {
-    color: var(--accent-blue);
-}
-
 td[data-label="Име"] {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.8rem;

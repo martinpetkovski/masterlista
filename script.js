@@ -920,6 +920,19 @@
         });
     }
 
+    let cellScrollMaskRefreshFrame = null;
+
+    function scheduleCellScrollMaskRefresh() {
+        if (cellScrollMaskRefreshFrame !== null) {
+            cancelAnimationFrame(cellScrollMaskRefreshFrame);
+        }
+
+        cellScrollMaskRefreshFrame = requestAnimationFrame(() => {
+            cellScrollMaskRefreshFrame = null;
+            refreshCellScrollMasks();
+        });
+    }
+
     // Enable horizontal drag-to-scroll and wheel-to-scroll on .cell-scroll elements
     function initCellScrollDrag() {
 
@@ -3181,6 +3194,7 @@
                 renderSingleBandRow(renderBands_[i], fragment);
             }
             bandTableBody.appendChild(fragment);
+            scheduleCellScrollMaskRefresh();
             
             // If capped, show indicator and schedule full render
             if (wasCapped) {
@@ -3210,6 +3224,7 @@
                 renderSingleBandRow(renderBands_[i], fragment);
             }
             bandTableBody.appendChild(fragment);
+            scheduleCellScrollMaskRefresh();
             offset = end;
             if (offset < renderBands_.length) {
                 requestAnimationFrame(renderChunk);
