@@ -2344,10 +2344,14 @@
 
         .sotd-curator {
             font-size: 0.85rem;
-            color: var(--accent-blue, #225ce4);
+            color: var(--text-secondary, #555b64);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .sotd-curator a {
+            color: var(--accent-blue, #225ce4);
         }
 
         .sotd-relevance {
@@ -5113,7 +5117,7 @@
                     imgHtml +
                     '<div class="sotd-info">' +
                         '<div class="sotd-track">' + escHtml(localizeText(track.artist)) + ' - ' + escHtml(localizeText(track.title)) + '</div>' +
-                        '<div class="sotd-curator">' + t('dashboard.recommendedBy') + ' <a href="/kustos/' + encodeURIComponent(track.curator) + '" style="color:inherit;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation()">' + escHtml(localizeText(track.curator)) + '</a></div>' +
+                        '<div class="sotd-curator">' + t('dashboard.recommendedBy') + ' <a href="/kustos/' + encodeURIComponent(track.curator) + '" style="text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation()">' + escHtml(localizeText(track.curator)) + '</a></div>' +
                         relHtml +
                     '</div>' +
                 '</li>';
