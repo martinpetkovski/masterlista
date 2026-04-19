@@ -3715,9 +3715,16 @@
 
             .site-title {
                 overflow: visible;
-                margin-left: -0.5rem;
-                margin-right: -0.5rem;
-                width: calc(100% + 1rem);
+                margin-left: 0;
+                margin-right: 0;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+            }
+
+            .site-title-main {
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .site-title-logo {
