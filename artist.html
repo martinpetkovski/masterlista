@@ -1142,19 +1142,121 @@
             font-size: 0.85rem;
         }
         
-        /* Per-section fade-in transitions */
+        /* Async artist section loading */
         #popularity-graph-container,
         #timeline-container {
-            opacity: 0;
+            position: relative;
             max-height: 0;
             overflow: hidden;
-            transition: opacity 0.5s ease, max-height 0.5s ease;
+            transition: max-height 0.55s ease;
+        }
+        #popularity-graph-container.section-loading,
+        #timeline-container.section-loading {
+            min-height: 7rem;
+            max-height: 7rem;
         }
         #popularity-graph-container.section-loaded,
         #timeline-container.section-loaded {
-            opacity: 1;
             max-height: 5000px;
             overflow: visible;
+        }
+        #popularity-graph-container.section-empty,
+        #timeline-container.section-empty {
+            min-height: 0;
+            max-height: 0;
+        }
+        #popularity-graph-container .artist-section-loader,
+        #timeline-container .artist-section-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            width: fit-content;
+            max-height: 1rem;
+            overflow: hidden;
+            line-height: 0;
+            pointer-events: none;
+            opacity: 1;
+            filter: blur(0);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1), filter 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), max-height 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        #popularity-graph-container .artist-section-loader span,
+        #timeline-container .artist-section-loader span {
+            width: 0.42rem;
+            height: 0.42rem;
+            border-radius: 50%;
+            background: var(--text-muted);
+            opacity: 0.5;
+            animation: artist-section-loading-dot 1s ease-in-out infinite;
+        }
+        #popularity-graph-container .artist-section-loader span:nth-child(2),
+        #timeline-container .artist-section-loader span:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+        #popularity-graph-container .artist-section-loader span:nth-child(3),
+        #timeline-container .artist-section-loader span:nth-child(3) {
+            animation-delay: 0.32s;
+        }
+        #popularity-graph-container .artist-section-content,
+        #timeline-container .artist-section-content {
+            width: 100%;
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(4px);
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), filter 0.32s cubic-bezier(0.16, 1, 0.3, 1), transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #popularity-graph-container .artist-section-content.artist-section-content--ready,
+        #timeline-container .artist-section-content.artist-section-content--ready {
+            visibility: visible;
+        }
+        #popularity-graph-container .artist-section-content.artist-section-content--visible,
+        #timeline-container .artist-section-content.artist-section-content--visible {
+            visibility: visible;
+            opacity: 1;
+            filter: blur(0);
+            transform: none;
+            pointer-events: auto;
+        }
+        #popularity-graph-container.section-content-visible .artist-section-loader,
+        #timeline-container.section-content-visible .artist-section-loader,
+        #popularity-graph-container.section-empty .artist-section-loader,
+        #timeline-container.section-empty .artist-section-loader {
+            max-height: 0;
+            opacity: 0;
+            filter: blur(6px);
+            transform: translate(-50%, calc(-50% - 4px));
+        }
+
+        @keyframes artist-section-loading-dot {
+            0%, 100% {
+                opacity: 0.32;
+                transform: translateY(0) scale(0.92);
+            }
+            50% {
+                opacity: 0.88;
+                transform: translateY(-2px) scale(1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #popularity-graph-container,
+            #timeline-container,
+            #popularity-graph-container .artist-section-loader,
+            #timeline-container .artist-section-loader,
+            #popularity-graph-container .artist-section-content,
+            #timeline-container .artist-section-content {
+                transition: none;
+            }
+            #popularity-graph-container .artist-section-loader span,
+            #timeline-container .artist-section-loader span {
+                animation: none;
+            }
         }
         
         /* Play button on releases */
@@ -3174,9 +3276,19 @@ a.chart-history-item {
                     ${linksHtml}
                 </div>
                 
-                <div id="popularity-graph-container"></div>
+                <div id="popularity-graph-container" class="section-loading" aria-busy="true" aria-live="polite">
+                    <div class="artist-section-loader" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="artist-section-content"></div>
+                </div>
                 
-                <div id="timeline-container"></div>
+                <div id="timeline-container" class="section-loading" aria-busy="true" aria-live="polite">
+                    <div class="artist-section-loader" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="artist-section-content"></div>
+                </div>
             `;
 
             // Populate and show the footer (lives outside #artist-content for flex positioning)
@@ -3932,10 +4044,119 @@ a.chart-history-item {
             return artistHistory;
         }
         
+        function startArtistSectionRender(container) {
+            if (!container) return null;
+            const content = container.querySelector('.artist-section-content');
+            if (!content) return null;
+
+            if (container._sectionVisibilityObserver) {
+                container._sectionVisibilityObserver.disconnect();
+                container._sectionVisibilityObserver = null;
+            }
+
+            container.style.maxHeight = '';
+            container.classList.remove('section-loaded', 'section-empty', 'section-content-visible');
+            container.classList.add('section-loading');
+            container.setAttribute('aria-busy', 'true');
+            content.classList.remove('artist-section-content--ready', 'artist-section-content--visible');
+            content.innerHTML = '';
+            return content;
+        }
+
+        function revealArtistSectionContentWhenVisible(container, content) {
+            if (!container || !content) return;
+
+            if (container._sectionVisibilityObserver) {
+                container._sectionVisibilityObserver.disconnect();
+                container._sectionVisibilityObserver = null;
+            }
+
+            function revealContent() {
+                if (content.classList.contains('artist-section-content--visible')) return;
+                requestAnimationFrame(function() {
+                    container.classList.add('section-content-visible');
+                    content.classList.add('artist-section-content--visible');
+                });
+            }
+
+            const rect = container.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            const preloadMargin = Math.max(72, Math.min(120, Math.round(viewportHeight * 0.1)));
+            const isNearViewport = rect.bottom > -preloadMargin && rect.top < viewportHeight + preloadMargin;
+            if (isNearViewport) {
+                revealContent();
+                return;
+            }
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) return;
+                    observer.unobserve(container);
+                    observer.disconnect();
+                    container._sectionVisibilityObserver = null;
+                    revealContent();
+                });
+            }, { threshold: 0.01, rootMargin: preloadMargin + 'px 0px ' + preloadMargin + 'px 0px' });
+            observer.observe(container);
+            container._sectionVisibilityObserver = observer;
+        }
+
+        function finishArtistSectionRender(container, hasContent) {
+            if (!container) return;
+            const content = container.querySelector('.artist-section-content');
+
+            if (container._sectionRevealFrame) {
+                cancelAnimationFrame(container._sectionRevealFrame);
+                container._sectionRevealFrame = null;
+            }
+            if (container._sectionRevealFrame2) {
+                cancelAnimationFrame(container._sectionRevealFrame2);
+                container._sectionRevealFrame2 = null;
+            }
+            if (container._sectionVisibilityObserver) {
+                container._sectionVisibilityObserver.disconnect();
+                container._sectionVisibilityObserver = null;
+            }
+
+            if (!hasContent) {
+                container.classList.remove('section-loading', 'section-loaded', 'section-content-visible');
+                container.classList.add('section-empty');
+                container.setAttribute('aria-busy', 'false');
+                if (content) content.classList.remove('artist-section-content--ready', 'artist-section-content--visible');
+                container.style.maxHeight = '0px';
+                return;
+            }
+
+            if (content) {
+                content.classList.add('artist-section-content--ready');
+                void content.offsetWidth;
+            }
+            container._sectionRevealFrame = requestAnimationFrame(function() {
+                container._sectionRevealFrame = null;
+                container.classList.remove('section-empty');
+                container.setAttribute('aria-busy', 'false');
+                void container.offsetWidth;
+                container.classList.add('section-loaded');
+                container.addEventListener('transitionend', function handler(e) {
+                    if (e.target === container && e.propertyName === 'max-height') {
+                        container.style.maxHeight = 'none';
+                        container.removeEventListener('transitionend', handler);
+                    }
+                });
+                container._sectionRevealFrame2 = requestAnimationFrame(function() {
+                    container._sectionRevealFrame2 = null;
+                    container.classList.remove('section-loading');
+                    revealArtistSectionContentWhenVisible(container, content);
+                });
+            });
+        }
+
         // Render popularity graph
         function renderPopularityGraph(artistHistory, siteMaster, artistName) {
             const container = document.getElementById('popularity-graph-container');
             if (!container) return;
+            const content = startArtistSectionRender(container);
+            if (!content) return;
             
             // Convert weekly popularity to sorted array
             const weeklyDataRaw = Array.from(artistHistory.weeklyPopularity.values())
@@ -3943,7 +4164,7 @@ a.chart-history-item {
             
             if (weeklyDataRaw.length === 0) {
                 console.warn('[popularity] No weekly data for artist, skipping chart');
-                container.innerHTML = '';
+                finishArtistSectionRender(container, false);
                 return;
             }
 
@@ -3995,9 +4216,6 @@ a.chart-history-item {
             const allPopValues = weeklyData.map(d => d.popularity);
             if (estimatedPoint) allPopValues.push(estimatedPoint.popularity);
 
-            // Will fade in after rendering
-            container.classList.remove('section-loaded');
-            
             const maxPopularity = Math.max(...allPopValues);
             const minPopularity = Math.min(...allPopValues);
             const avgPopularity = Math.round(weeklyData.reduce((sum, d) => sum + d.popularity, 0) / weeklyData.length);
@@ -4156,7 +4374,7 @@ a.chart-history-item {
                 cumulativeVuHtml = `<div class="vu-meter-row"><div class="vu-meter">${segs}</div><span class="vu-pop-value">${formatViewsAbsoluteHtml(cumulativePop)}</span>${positionHtml}</div>`;
             }
 
-            container.innerHTML = `
+            content.innerHTML = `
                 <div class="popularity-graph-section">
                     <h3 class="section-title">
                         <i class="fas fa-chart-area"></i>
@@ -4191,18 +4409,10 @@ a.chart-history-item {
                     </div>
                 </div>
             `;
-            // Fade in the section
-            void container.offsetWidth;
-            container.classList.add('section-loaded');
-            container.addEventListener('transitionend', function handler(e) {
-                if (e.propertyName === 'max-height') {
-                    container.style.maxHeight = 'none';
-                    container.removeEventListener('transitionend', handler);
-                }
-            });
+            finishArtistSectionRender(container, true);
 
             // Hover interaction: show value under cursor
-            const svg = container.querySelector('.popularity-graph');
+            const svg = content.querySelector('.popularity-graph');
             const hoverArea = svg && svg.querySelector('.hover-area');
             if (svg && hoverArea && points.length >= 2) {
                 const hLine = svg.querySelector('.hover-line');
@@ -4264,6 +4474,8 @@ a.chart-history-item {
         function renderTimeline(artistHistory, artistLinks, siteMaster, articles, matchedEvents, artistName, artistSpotifyName) {
             const container = document.getElementById('timeline-container');
             if (!container) return;
+            const content = startArtistSectionRender(container);
+            if (!content) return;
 
             const today = new Date(); today.setHours(0,0,0,0);
             const oneWeekAgo = new Date();
@@ -4541,11 +4753,11 @@ a.chart-history-item {
             }
 
             if (timelineItems.length === 0) {
-                container.innerHTML = '';
+                finishArtistSectionRender(container, false);
                 return;
             }
 
-            container.innerHTML = `
+            content.innerHTML = `
                 <div class="chart-history-section">
                     <h3 class="section-title">
                         <i class="fas fa-timeline"></i>
@@ -4568,11 +4780,11 @@ a.chart-history-item {
             `;
 
             // Wire up timeline search filter
-            var tlSearch = document.getElementById('tl-search');
+            var tlSearch = content.querySelector('#tl-search');
             if (tlSearch) {
                 tlSearch.addEventListener('input', function() {
                     var q = this.value.toLowerCase().trim();
-                    var list = container.querySelector('.chart-history-list');
+                    var list = content.querySelector('.chart-history-list');
                     if (!list) return;
                     var items = list.children;
                     var lastMonthVisible = false;
@@ -4596,18 +4808,10 @@ a.chart-history-item {
                 });
             }
 
-            // Fade in
-            void container.offsetWidth;
-            container.classList.add('section-loaded');
-            container.addEventListener('transitionend', function handler(e) {
-                if (e.propertyName === 'max-height') {
-                    container.style.maxHeight = 'none';
-                    container.removeEventListener('transitionend', handler);
-                }
-            });
+            finishArtistSectionRender(container, true);
 
             // Add click handlers for release track items
-            container.querySelectorAll('.release-track-item').forEach(item => {
+            content.querySelectorAll('.release-track-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -4615,7 +4819,7 @@ a.chart-history-item {
                 });
             });
             // +N expand buttons also open the service chooser
-            container.querySelectorAll('.release-track-yt-expand').forEach(btn => {
+            content.querySelectorAll('.release-track-yt-expand').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -4893,7 +5097,7 @@ a.chart-history-item {
 
                     // Intersection Observer for parallax reveal of content sections
                     var revealEls = document.querySelectorAll(
-                        '.artist-header, .artist-links, #popularity-graph-container, #timeline-container, .artist-footer'
+                        '.artist-header, .artist-links, .artist-footer'
                     );
                     revealEls.forEach(function(el) { el.classList.add('vfx-reveal'); });
                     var revealObserver = new IntersectionObserver(function(entries) {
