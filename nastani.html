@@ -37,7 +37,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=3"></script>
@@ -359,9 +359,14 @@
         border-color: var(--border-color);
     }
 
-    .nastani-page .artist-entries-list { display: flex; flex-direction: column; gap: 0.3rem; }
-    .nastani-page .artist-entry-row { display: flex; gap: 0.3rem; align-items: center; }
-    .nastani-page .artist-entry-row input { flex: 1; }
+    .nastani-page .event-artists-shell { position: relative; }
+    .nastani-page .event-artists-shell .token-entry-input { min-width: 88px; }
+    .nastani-page .artist-entries-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .nastani-page .artist-token-chip {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+        color: #fff;
+        border: none;
+    }
     .nastani-page .entry-remove { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.78rem; padding: 0.2rem; }
     .nastani-page .ticket-entries-list { display: flex; flex-direction: column; gap: 0.3rem; }
     .nastani-page .ticket-entry-row { display: flex; gap: 0.3rem; align-items: center; }
@@ -371,33 +376,90 @@
     .nastani-page .link-entry-row input { flex: 1; }
 
     .nastani-page .add-entry-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
         font-family: 'Inter', sans-serif;
         font-size: 0.68rem;
         font-weight: 600;
-        color: var(--accent-blue);
-        background: none;
-        border: 1px dashed var(--accent-blue);
-        border-radius: 4px;
+        color: var(--site-button-fg, #fff);
+        background: var(--site-button-bg, #000);
+        border: 2px solid var(--site-button-border, #000);
+        border-radius: 0;
         padding: 0.25rem 0.6rem;
         cursor: pointer;
         margin-top: 0.25rem;
-        transition: background 0.15s;
+        line-height: 1;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: filter 0.12s ease, box-shadow 0.12s ease, background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .nastani-page .add-entry-btn:hover { background: rgba(74, 127, 165, 0.06); }
+    .nastani-page .add-entry-btn::before,
+    .nastani-page #save-event-btn::before,
+    .nastani-page .delete-event-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+        transform: translateX(-100%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    body.dark-mode .nastani-page .add-entry-btn::before,
+    body.dark-mode .nastani-page #save-event-btn::before,
+    body.dark-mode .nastani-page .delete-event-btn::before {
+        background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+    }
+    .nastani-page .add-entry-btn > *,
+    .nastani-page #save-event-btn > *,
+    .nastani-page .delete-event-btn > * {
+        position: relative;
+        z-index: 1;
+    }
+    .nastani-page .add-entry-btn:hover {
+        filter: brightness(1.15);
+    }
+
+    .nastani-page .add-entry-btn.button-positive,
+    .nastani-page #save-event-btn.button-positive {
+        background: var(--site-button-positive-bg, #16a34a);
+        border-color: var(--site-button-positive-border, #16a34a);
+        color: var(--site-button-positive-fg, #fff);
+    }
+
+    .nastani-page .delete-event-btn.button-danger {
+        background: var(--site-button-danger-bg, #dc2626);
+        border-color: var(--site-button-danger-border, #dc2626);
+        color: var(--site-button-danger-fg, #fff);
+    }
+    .nastani-page .add-entry-btn:hover::before,
+    .nastani-page #save-event-btn:hover::before,
+    .nastani-page .delete-event-btn:hover::before {
+        animation: btnSweep 0.4s ease-out forwards;
+    }
 
     .nastani-page .delete-event-btn {
         display: none;
         width: 100%;
         margin-top: 0.5rem;
         padding: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
         font-family: 'Inter', sans-serif;
         font-size: 0.78rem;
         font-weight: 600;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        border-radius: 4px;
+        border: 2px solid rgba(239, 68, 68, 0.75);
+        border-radius: 0;
         background: rgba(239, 68, 68, 0.06);
         color: #ef4444;
         cursor: pointer;
+        line-height: 1;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
         transition: background 0.15s;
     }
     .nastani-page .delete-event-btn:hover { background: rgba(239, 68, 68, 0.12); }
@@ -439,17 +501,25 @@
         width: 100%;
         margin-top: 0.75rem;
         padding: 0.5rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
         font-family: 'Inter', sans-serif;
         font-size: 0.75rem;
         font-weight: 600;
-        color: #fff;
-        background: var(--accent-green, #22c55e);
-        border: none;
-        border-radius: 4px;
+        color: var(--site-button-fg, #fff);
+        background: var(--site-button-bg, #000);
+        border: 2px solid var(--site-button-border, #000);
+        border-radius: 0;
         cursor: pointer;
-        transition: all var(--transition);
+        line-height: 1;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: filter 0.12s ease, box-shadow 0.12s ease, background var(--transition), color var(--transition), border-color var(--transition);
     }
-    .nastani-page #save-event-btn:hover { opacity: 0.9; }
+    .nastani-page #save-event-btn:hover { filter: brightness(1.15); }
     .nastani-page #save-event-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* ===== TIMELINE LAYOUT ===== */
@@ -1180,7 +1250,7 @@
     <div id="event-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close" id="modal-close-btn">&times;</span>
-            <h2 id="modal-title" data-i18n="events.addEvent">Додај настан</h2>
+            <h2 id="modal-title" class="modal-title" data-i18n="events.addEvent">Додај настан</h2>
             <form id="event-form">
                 <div class="form-group">
                     <label for="evt-title" data-i18n="events.title">Наслов *</label>
@@ -1207,24 +1277,27 @@
                     <input type="text" id="evt-place" data-i18n-placeholder="events.placePlaceholder" placeholder="пр. МКЦ, Скопје" required>
                 </div>
                 <div class="form-group">
-                    <label data-i18n="events.artists">Артисти</label>
-                    <div class="artist-entries-list" id="artist-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-artist-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addArtist">Додај артист</span></button>
+                    <label for="evt-artists-entry" data-i18n="events.artists">Артисти</label>
+                    <div class="token-input-shell event-artists-shell">
+                        <div class="artist-entries-list tag-container token-chip-list" id="artist-entries"></div>
+                        <input type="text" id="evt-artists-entry" class="token-entry-input" data-i18n-placeholder="events.searchArtist" placeholder="Пребарај артист" autocomplete="off">
+                        <div class="artist-ac-list" id="artist-entries-autocomplete"></div>
+                    </div>
                     <small class="form-help" data-i18n="events.artistsMustBe">Артистите мора да бидат од Мастер Листата</small>
                 </div>
                 <div class="form-group">
                     <label data-i18n="events.tickets">Карти / Влезници</label>
                     <div class="ticket-entries-list" id="ticket-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-ticket-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addTicket">Додај карта</span></button>
+                    <button type="button" class="add-entry-btn button-positive" id="add-ticket-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addTicket">Додај карта</span></button>
                 </div>
                 <div class="form-group">
                     <label data-i18n="events.links">Линкови</label>
                     <div class="link-entries-list" id="link-entries"></div>
-                    <button type="button" class="add-entry-btn" id="add-link-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addLink">Додај линк</span></button>
+                    <button type="button" class="add-entry-btn button-positive" id="add-link-btn"><i class="fas fa-plus"></i> <span data-i18n="events.addLink">Додај линк</span></button>
                     <small class="form-help" data-i18n="events.linksHelp">Линкови за карти, Инстаграм, или повеќе информации</small>
                 </div>
-                <button type="submit" id="save-event-btn" data-i18n="events.save">Зачувај</button>
-                <button type="button" class="delete-event-btn" id="delete-event-btn"><i class="fas fa-trash"></i> <span data-i18n="events.deleteEvent">Избриши настан</span></button>
+                <button type="submit" id="save-event-btn" class="button-positive"><i class="fas fa-floppy-disk"></i> <span data-i18n="events.save">Зачувај</span></button>
+                <button type="button" class="delete-event-btn button-danger" id="delete-event-btn"><i class="fas fa-trash"></i> <span data-i18n="events.deleteEvent">Избриши настан</span></button>
             </form>
         </div>
     </div>
@@ -2065,62 +2138,150 @@
         });
 
         // ==================== ARTIST AUTOCOMPLETE ====================
-        function createArtistEntry(value) {
-            var row = document.createElement('div');
-            row.className = 'artist-entry-row artist-ac-wrapper';
-            var input = document.createElement('input');
-            input.type = 'text';
-            input.placeholder = t('events.searchArtist');
-            input.className = 'artist-input';
-            input.value = value || '';
-            input.readOnly = !!value;
-            if (value) input.style.fontWeight = '600';
-            var acList = document.createElement('div');
-            acList.className = 'artist-ac-list';
-            var removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'entry-remove';
-            removeBtn.title = t('events.remove');
-            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        var artistTokens = document.getElementById('artist-entries');
+        var artistInput = document.getElementById('evt-artists-entry');
+        var artistAcList = document.getElementById('artist-entries-autocomplete');
+        var artistHlIdx = -1;
 
-            row.appendChild(input);
-            row.appendChild(acList);
-            row.appendChild(removeBtn);
-            removeBtn.addEventListener('click', function() { row.remove(); });
+        function getSelectedArtists() {
+            try {
+                var parsed = JSON.parse(artistTokens.dataset.values || '[]');
+                return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+            } catch (err) {
+                return [];
+            }
+        }
 
-            var hlIdx = -1;
-            input.addEventListener('input', function() {
-                var q = input.value.trim().toLowerCase();
-                input.readOnly = false;
-                input.style.fontWeight = '';
-                hlIdx = -1;
-                if (q.length < 1) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
-                var matches = masterArtists.filter(function(a) { return a.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 20);
-                if (!matches.length) { acList.classList.remove('open'); acList.innerHTML = ''; return; }
-                acList.innerHTML = matches.map(function(a) {
-                    return '<div class=\"artist-ac-item\" data-name=\"' + escA(a.name) + '\">' +
-                        esc(localizeText(a.name)) + (a.city ? '<span class=\"ac-city\">' + esc(localizeText(a.city)) + '</span>' : '') + '</div>';
-                }).join('');
-                acList.classList.add('open');
-                acList.querySelectorAll('.artist-ac-item').forEach(function(item) {
-                    item.addEventListener('mousedown', function(e) {
-                        e.preventDefault();
-                        pickArtist(input, acList, item.dataset.name);
-                    });
+        function renderArtistTokens() {
+            artistTokens.innerHTML = '';
+            getSelectedArtists().forEach(function(name) {
+                var tag = document.createElement('span');
+                tag.className = 'tag-item artist-token-chip';
+                var label = document.createElement('span');
+                label.textContent = localizeText(name);
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'tag-remove';
+                removeBtn.setAttribute('aria-label', t('events.remove') + ': ' + name);
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+                removeBtn.addEventListener('click', function() {
+                    setSelectedArtists(getSelectedArtists().filter(function(current) {
+                        return current.toLowerCase() !== name.toLowerCase();
+                    }));
+                    artistInput.focus();
+                });
+                tag.appendChild(label);
+                tag.appendChild(removeBtn);
+                artistTokens.appendChild(tag);
+            });
+        }
+
+        function setSelectedArtists(values) {
+            var seen = {};
+            var nextValues = [];
+            values.forEach(function(value) {
+                var trimmed = String(value || '').trim();
+                if (!trimmed) return;
+                var key = trimmed.toLowerCase();
+                if (seen[key]) return;
+                seen[key] = true;
+                nextValues.push(trimmed);
+            });
+            artistTokens.dataset.values = JSON.stringify(nextValues);
+            renderArtistTokens();
+        }
+
+        function closeArtistSuggestions() {
+            artistAcList.classList.remove('open');
+            artistAcList.innerHTML = '';
+            artistHlIdx = -1;
+        }
+
+        function addArtists(values) {
+            setSelectedArtists(getSelectedArtists().concat(values));
+        }
+
+        function pickArtist(name) {
+            addArtists([name]);
+            artistInput.value = '';
+            closeArtistSuggestions();
+            artistInput.focus();
+        }
+
+        function showArtistSuggestions() {
+            var q = artistInput.value.trim().toLowerCase();
+            var selected = new Set(getSelectedArtists().map(function(name) { return name.toLowerCase(); }));
+            if (q.length < 1) { closeArtistSuggestions(); return; }
+            var matches = masterArtists.filter(function(a) {
+                return !selected.has(a.name.toLowerCase()) && a.name.toLowerCase().indexOf(q) !== -1;
+            }).slice(0, 20);
+            if (!matches.length) { closeArtistSuggestions(); return; }
+            artistAcList.innerHTML = matches.map(function(a) {
+                return '<div class="artist-ac-item" data-name="' + escA(a.name) + '">' +
+                    esc(localizeText(a.name)) + (a.city ? '<span class="ac-city">' + esc(localizeText(a.city)) + '</span>' : '') + '</div>';
+            }).join('');
+            artistAcList.classList.add('open');
+            artistHlIdx = -1;
+            artistAcList.querySelectorAll('.artist-ac-item').forEach(function(item) {
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    pickArtist(item.dataset.name);
                 });
             });
-            input.addEventListener('keydown', function(e) {
-                var items = acList.querySelectorAll('.artist-ac-item');
-                if (!items.length) return;
-                if (e.key === 'ArrowDown') { e.preventDefault(); hlIdx = Math.min(hlIdx + 1, items.length - 1); hlItems(items, hlIdx); }
-                else if (e.key === 'ArrowUp') { e.preventDefault(); hlIdx = Math.max(hlIdx - 1, 0); hlItems(items, hlIdx); }
-                else if (e.key === 'Enter' && hlIdx >= 0) { e.preventDefault(); pickArtist(input, acList, items[hlIdx].dataset.name); }
-            });
-            input.addEventListener('blur', function() { setTimeout(function() { acList.classList.remove('open'); }, 150); });
-            return row;
         }
+
         function hlItems(items, idx) { items.forEach(function(it, i) { it.classList.toggle('hl', i === idx); if (i === idx) it.scrollIntoView({ block: 'nearest' }); }); }
-        function pickArtist(input, acList, name) { input.value = name; input.readOnly = true; input.style.fontWeight = '600'; acList.classList.remove('open'); acList.innerHTML = ''; }
+
+        function commitArtistEntry() {
+            var value = artistInput.value.trim();
+            if (!value) return true;
+            var match = masterArtists.find(function(a) { return a.name.toLowerCase() === value.toLowerCase(); });
+            if (!match) {
+                notify(t('events.artistNotInList').replace('{0}', value), 'error');
+                return false;
+            }
+            pickArtist(match.name);
+            return true;
+        }
+
+        artistInput.addEventListener('input', function() {
+            showArtistSuggestions();
+        });
+        artistInput.addEventListener('focus', function() {
+            showArtistSuggestions();
+        });
+        artistInput.addEventListener('blur', function() {
+            setTimeout(closeArtistSuggestions, 150);
+        });
+        artistInput.addEventListener('keydown', function(e) {
+            var items = artistAcList.querySelectorAll('.artist-ac-item');
+            if (e.key === 'ArrowDown') {
+                if (!items.length) return;
+                e.preventDefault();
+                artistHlIdx = Math.min(artistHlIdx + 1, items.length - 1);
+                hlItems(items, artistHlIdx);
+            } else if (e.key === 'ArrowUp') {
+                if (!items.length) return;
+                e.preventDefault();
+                artistHlIdx = Math.max(artistHlIdx - 1, 0);
+                hlItems(items, artistHlIdx);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (artistHlIdx >= 0 && items[artistHlIdx]) {
+                    pickArtist(items[artistHlIdx].dataset.name);
+                    return;
+                }
+                commitArtistEntry();
+            } else if (e.key === 'Backspace' && !artistInput.value) {
+                var selectedArtists = getSelectedArtists();
+                if (!selectedArtists.length) return;
+                selectedArtists.pop();
+                setSelectedArtists(selectedArtists);
+            } else if (e.key === 'Escape') {
+                closeArtistSuggestions();
+            }
+        });
 
         // ==================== MODAL ====================
         var modal = document.getElementById('event-modal');
@@ -2133,7 +2294,7 @@
             modalTitle.textContent = t('events.addEventTitle');
             deleteBtn.style.display = 'none';
             form.reset();
-            resetArtists(['']);
+            resetArtists([]);
             resetTickets([{ label: '', price: '' }]);
             resetLinks([{ label: '', url: '' }]);
             document.getElementById('evt-date').dispatchEvent(new Event('input'));
@@ -2167,7 +2328,7 @@
             resetLinks(evtLinks.length ? evtLinks : [{ label: '', url: '' }]);
 
             var artists = evt.artists || evt.bands || [];
-            resetArtists(artists.length ? artists : ['']);
+            resetArtists(artists.length ? artists : []);
             var tickets = evt.tickets || [];
             resetTickets(tickets.length ? tickets : [{ label: '', price: '' }]);
 
@@ -2175,9 +2336,9 @@
         }
 
         function resetArtists(values) {
-            var c = document.getElementById('artist-entries');
-            c.innerHTML = '';
-            values.forEach(function(v) { c.appendChild(createArtistEntry(v)); });
+            setSelectedArtists(values || []);
+            artistInput.value = '';
+            closeArtistSuggestions();
         }
 
         function resetTickets(tickets) {
@@ -2248,12 +2409,6 @@
             history.replaceState(null, '', location.pathname + location.search);
         }
 
-        document.getElementById('add-artist-btn').addEventListener('click', function() {
-            var c = document.getElementById('artist-entries');
-            var entry = createArtistEntry('');
-            c.appendChild(entry);
-            entry.querySelector('input').focus();
-        });
         document.getElementById('add-ticket-btn').addEventListener('click', function() {
             addTicketEntry('', '');
             var entries = document.querySelectorAll('#ticket-entries .ticket-entry-row');
@@ -2381,22 +2536,16 @@
                 return;
             }
 
-            var artists = [];
-            var valid = true;
-            document.querySelectorAll('#artist-entries .artist-input').forEach(function(input) {
-                var v = input.value.trim();
-                if (!v) return;
-                var found = masterArtists.some(function(a) { return a.name === v; });
-                if (!found) {
-                    input.style.borderColor = '#ef4444';
-                    notify(t('events.artistNotInList').replace('{0}', v), 'error');
-                    valid = false;
-                    return;
-                }
-                input.style.borderColor = '';
-                artists.push(v);
+            if (!commitArtistEntry()) return;
+
+            var artists = getSelectedArtists();
+            var invalidArtist = artists.find(function(name) {
+                return !masterArtists.some(function(a) { return a.name === name; });
             });
-            if (!valid) return;
+            if (invalidArtist) {
+                notify(t('events.artistNotInList').replace('{0}', invalidArtist), 'error');
+                return;
+            }
 
             var tickets = [];
             document.querySelectorAll('#ticket-entries .ticket-entry-row').forEach(function(row) {

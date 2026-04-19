@@ -1813,57 +1813,86 @@
         autocompleteData.labels = sortByCountThenAlpha(labelCounts);
     }
 
+    function splitBandTokenValues(value) {
+        return String(value || '')
+            .split(',')
+            .map(item => item.trim())
+            .filter(Boolean);
+    }
+
+    function syncBandTokenInput(input, values) {
+        if (!input) return;
+        input.value = values.join(', ');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
     // Initialize autocomplete for form fields
     function initializeAutocomplete() {
         buildAutocompleteData();
 
         const fields = [
-            { inputId: 'band-city', dropdownId: 'band-city-autocomplete', data: () => autocompleteData.cities },
-            { inputId: 'band-genre', dropdownId: 'band-genre-autocomplete', data: () => autocompleteData.genres },
-            { inputId: 'band-sounds-like', dropdownId: 'band-sounds-like-autocomplete', data: () => autocompleteData.soundsLike },
-            { inputId: 'band-label', dropdownId: 'band-label-autocomplete', data: () => autocompleteData.labels }
+            { inputId: 'band-city', entryInputId: 'band-city-entry', dropdownId: 'band-city-autocomplete', data: () => autocompleteData.cities },
+            { inputId: 'band-genre', entryInputId: 'band-genre-entry', dropdownId: 'band-genre-autocomplete', data: () => autocompleteData.genres },
+            { inputId: 'band-sounds-like', entryInputId: 'band-sounds-like-entry', dropdownId: 'band-sounds-like-autocomplete', data: () => autocompleteData.soundsLike },
+            { inputId: 'band-label', entryInputId: 'band-label-entry', dropdownId: 'band-label-autocomplete', data: () => autocompleteData.labels }
         ];
 
-        fields.forEach(({ inputId, dropdownId, data }) => {
+        fields.forEach(({ inputId, entryInputId, dropdownId, data }) => {
             const input = document.getElementById(inputId);
+            const entryInput = document.getElementById(entryInputId);
             const dropdown = document.getElementById(dropdownId);
-            if (!input || !dropdown) return;
+            if (!input || !entryInput || !dropdown) return;
 
             let selectedIndex = -1;
 
-            // Get the current partial term being typed (after last comma)
-            const getCurrentTerm = () => {
-                const value = input.value;
-                const lastCommaIndex = value.lastIndexOf(',');
-                return lastCommaIndex >= 0 ? value.substring(lastCommaIndex + 1).trim() : value.trim();
+            const closeSuggestions = () => {
+                dropdown.classList.remove('active');
+                dropdown.innerHTML = '';
+                selectedIndex = -1;
             };
 
-            // Get already selected items
-            const getSelectedItems = () => {
-                const value = input.value;
-                const lastCommaIndex = value.lastIndexOf(',');
-                if (lastCommaIndex < 0) return [];
-                return value.substring(0, lastCommaIndex).split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+            const getSelectedItems = () => splitBandTokenValues(input.value);
+
+            const addItems = (values) => {
+                const currentItems = getSelectedItems();
+                const seen = new Set(currentItems.map(item => item.toLowerCase()));
+                const nextItems = currentItems.slice();
+
+                values.forEach(value => {
+                    const trimmedValue = value.trim();
+                    if (!trimmedValue) return;
+                    const key = trimmedValue.toLowerCase();
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    nextItems.push(trimmedValue);
+                });
+
+                syncBandTokenInput(input, nextItems);
             };
 
-            // Filter and render suggestions
+            const commitCurrentTerm = () => {
+                const term = entryInput.value.trim();
+                if (!term) return false;
+                addItems([term]);
+                entryInput.value = '';
+                return true;
+            };
+
             const showSuggestions = () => {
-                const term = getCurrentTerm().toLowerCase();
-                const selectedItems = getSelectedItems();
+                const term = entryInput.value.trim().toLowerCase();
+                const selectedItems = new Set(getSelectedItems().map(item => item.toLowerCase()));
                 const allData = data();
 
-                // Filter: match term and exclude already selected
                 const isGenreField = inputId === 'band-genre';
                 const filtered = allData.filter(item => {
                     const nameLower = item.name.toLowerCase();
                     const matchesTerm = term === '' || nameLower.includes(term);
-                    const notAlreadySelected = !selectedItems.includes(nameLower);
+                    const notAlreadySelected = !selectedItems.has(nameLower);
                     return matchesTerm && notAlreadySelected;
-                }).slice(0, isGenreField ? 200 : 15); // Show all genres, limit others
+                }).slice(0, isGenreField ? 200 : 15);
 
                 if (filtered.length === 0) {
-                    dropdown.classList.remove('active');
-                    dropdown.innerHTML = '';
+                    closeSuggestions();
                     return;
                 }
 
@@ -1875,48 +1904,50 @@
                 selectedIndex = -1;
             };
 
-            // Select an item
             const selectItem = (value) => {
-                const currentValue = input.value;
-                const lastCommaIndex = currentValue.lastIndexOf(',');
-                const prefix = lastCommaIndex >= 0 ? currentValue.substring(0, lastCommaIndex + 1) + ' ' : '';
-                input.value = prefix + value;
-                dropdown.classList.remove('active');
-                dropdown.innerHTML = '';
-                input.focus();
-                // Trigger tag update
-                const event = new Event('input', { bubbles: true });
-                input.dispatchEvent(event);
+                addItems([value]);
+                entryInput.value = '';
+                closeSuggestions();
+                entryInput.focus();
             };
 
-            // Input event
-            input.addEventListener('input', () => {
+            entryInput.addEventListener('input', () => {
+                if (entryInput.value.includes(',')) {
+                    const parts = entryInput.value.split(',');
+                    const pending = parts.pop() || '';
+                    const committed = parts.map(item => item.trim()).filter(Boolean);
+                    if (committed.length) {
+                        addItems(committed);
+                    }
+                    entryInput.value = pending.trimStart();
+                }
                 showSuggestions();
             });
 
-            // Focus event
-            input.addEventListener('focus', () => {
+            entryInput.addEventListener('focus', () => {
                 showSuggestions();
             });
 
-            // Blur event (delayed to allow click)
-            input.addEventListener('blur', () => {
+            entryInput.addEventListener('blur', () => {
                 setTimeout(() => {
-                    dropdown.classList.remove('active');
+                    if (entryInput.value.trim()) {
+                        commitCurrentTerm();
+                    }
+                    closeSuggestions();
                 }, 200);
             });
 
-            // Keyboard navigation
-            input.addEventListener('keydown', (e) => {
+            entryInput.addEventListener('keydown', (e) => {
                 const items = dropdown.querySelectorAll('.autocomplete-item');
-                if (!items.length) return;
 
                 if (e.key === 'ArrowDown') {
+                    if (!items.length) return;
                     e.preventDefault();
                     selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
                     items.forEach((item, idx) => item.classList.toggle('selected', idx === selectedIndex));
                     items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
                 } else if (e.key === 'ArrowUp') {
+                    if (!items.length) return;
                     e.preventDefault();
                     selectedIndex = Math.max(selectedIndex - 1, 0);
                     items.forEach((item, idx) => item.classList.toggle('selected', idx === selectedIndex));
@@ -1927,12 +1958,19 @@
                     if (selectedItem) {
                         selectItem(selectedItem.dataset.value);
                     }
+                } else if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    commitCurrentTerm();
+                } else if (e.key === 'Backspace' && !entryInput.value) {
+                    const currentItems = getSelectedItems();
+                    if (!currentItems.length) return;
+                    currentItems.pop();
+                    syncBandTokenInput(input, currentItems);
                 } else if (e.key === 'Escape') {
-                    dropdown.classList.remove('active');
+                    closeSuggestions();
                 }
             });
 
-            // Click on suggestion
             dropdown.addEventListener('click', (e) => {
                 const item = e.target.closest('.autocomplete-item');
                 if (item) {
@@ -2124,7 +2162,7 @@
             const value = input.value.trim();
             tagContainer.innerHTML = '';
             if (value && value !== 'недостигаат податоци') {
-                const items = value.split(',').map(item => item.trim()).filter(item => item);
+                const items = splitBandTokenValues(value);
                 const tagClass = inputId === 'band-city' ? 'city-tag' :
                                  inputId === 'band-genre' ? 'genre-tag' : 
                                  inputId === 'band-label' ? 'label-tag' : 'sounds-like-tag';
@@ -2133,8 +2171,22 @@
                     const tag = document.createElement('span');
                     const isInvalid = predefinedLower && !predefinedLower.includes(item.toLowerCase());
                     tag.className = `tag-item ${tagClass}${isInvalid ? ' tag-invalid' : ''}`;
-                    tag.textContent = localizeText(item);
+                    const tagLabel = document.createElement('span');
+                    tagLabel.textContent = localizeText(item);
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'tag-remove';
+                    removeBtn.setAttribute('aria-label', `${t('lista.remove')}: ${item}`);
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.addEventListener('mousedown', (e) => e.preventDefault());
+                    removeBtn.addEventListener('click', () => {
+                        const nextItems = items.filter(currentItem => currentItem.toLowerCase() !== item.toLowerCase());
+                        syncBandTokenInput(input, nextItems);
+                        document.getElementById(`${inputId}-entry`)?.focus();
+                    });
                     if (isInvalid) tag.title = 'Непознат жанр';
+                    tag.appendChild(tagLabel);
+                    tag.appendChild(removeBtn);
                     tagContainer.appendChild(tag);
                 });
             }

@@ -54,7 +54,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
@@ -137,22 +137,45 @@
             align-items: center;
             gap: 0.35rem;
             padding: 0.4rem 0.9rem;
-            border-radius: 18px;
-            border: 1px solid var(--border-color, #ddd);
-            background: var(--bg-primary, #fff);
-            color: var(--text-primary, #333);
+            border-radius: 0;
+            border: 2px solid var(--site-button-border, #000);
+            background: var(--site-button-bg, #000);
+            color: var(--site-button-fg, #fff);
             font-size: 0.78rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: filter 0.12s ease, box-shadow 0.12s ease, background 0.2s, color 0.2s, border-color 0.2s;
         }
         html.dark-mode .greeting-edit-btn {
-            background: var(--bg-secondary, #22252d);
-            border-color: rgba(255,255,255,0.1);
+            background: var(--site-button-bg, #fff);
+            border-color: var(--site-button-border, #fff);
+            color: var(--site-button-fg, #000);
         }
         .greeting-edit-btn:hover {
-            border-color: #1d9bf0;
-            color: #1d9bf0;
+            filter: brightness(1.15);
+        }
+        .greeting-edit-btn::before,
+        .greeting-edit-remove::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        html.dark-mode .greeting-edit-btn::before,
+        html.dark-mode .greeting-edit-remove::before {
+            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
+        }
+        .greeting-edit-btn > *,
+        .greeting-edit-remove > * {
+            position: relative;
+            z-index: 1;
+        }
+        .greeting-edit-btn:hover::before,
+        .greeting-edit-remove:hover::before {
+            animation: btnSweep 0.4s ease-out forwards;
         }
         .greeting-edit-btn.recording {
             border-color: #ef4444;
@@ -191,15 +214,25 @@
             max-width: 100%;
         }
         .greeting-edit-remove {
-            background: none;
-            border: none;
+            background: transparent;
+            border: 2px solid #ef4444;
+            border-radius: 0;
             color: #ef4444;
             cursor: pointer;
             font-size: 0.85rem;
-            padding: 0.2rem;
+            padding: 0.2rem 0.35rem;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
-        .greeting-edit-remove:hover { opacity: 0.7; }
+        .greeting-edit-remove.button-danger {
+            background-color: var(--site-button-danger-bg, #dc2626) !important;
+            background-image: none !important;
+            border-color: var(--site-button-danger-border, #dc2626) !important;
+            color: var(--site-button-danger-fg, #fff) !important;
+        }
+        .greeting-edit-remove:hover { filter: brightness(1.1); }
         .greeting-edit-existing-area {
             display: flex;
             align-items: center;
@@ -282,7 +315,7 @@
     <div id="band-modal" class="modal">
         <div class="modal-content">
             <span class="modal-close">×</span>
-            <h2 id="modal-title" data-i18n="lista.addArtist">Додај артист</h2>
+            <h2 id="modal-title" class="modal-title" data-i18n="lista.addArtist">Додај артист</h2>
             <form id="band-form">
                 <div class="form-section">
                     <div class="form-section-title" data-i18n="lista.generalInfo">Општи информации</div>
@@ -291,36 +324,40 @@
                         <input type="text" id="band-name" required>
                     </div>
                     <div class="form-group">
-                        <label for="band-city" data-i18n="lista.cityLabel">Град (одделени со запирки)</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="band-city" autocomplete="off">
+                        <label for="band-city-entry" data-i18n="lista.cityLabel">Град (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper token-input-shell">
+                            <div id="band-city-tags" class="tag-container token-chip-list"></div>
+                            <input type="text" id="band-city-entry" class="token-entry-input" autocomplete="off">
+                            <input type="hidden" id="band-city">
                             <div id="band-city-autocomplete" class="autocomplete-dropdown"></div>
                         </div>
-                        <div id="band-city-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-genre" data-i18n="lista.genreLabel">Жанр (одделени со запирки)</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="band-genre" autocomplete="off">
+                        <label for="band-genre-entry" data-i18n="lista.genreLabel">Жанр (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper token-input-shell">
+                            <div id="band-genre-tags" class="tag-container token-chip-list"></div>
+                            <input type="text" id="band-genre-entry" class="token-entry-input" autocomplete="off">
+                            <input type="hidden" id="band-genre">
                             <div id="band-genre-autocomplete" class="autocomplete-dropdown"></div>
                         </div>
-                        <div id="band-genre-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-sounds-like" data-i18n="lista.soundsLikeLabel">Звучи како (одделени со запирки)</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="band-sounds-like" autocomplete="off">
+                        <label for="band-sounds-like-entry" data-i18n="lista.soundsLikeLabel">Звучи како (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper token-input-shell">
+                            <div id="band-sounds-like-tags" class="tag-container token-chip-list"></div>
+                            <input type="text" id="band-sounds-like-entry" class="token-entry-input" autocomplete="off">
+                            <input type="hidden" id="band-sounds-like">
                             <div id="band-sounds-like-autocomplete" class="autocomplete-dropdown"></div>
                         </div>
-                        <div id="band-sounds-like-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
-                        <label for="band-label" data-i18n="lista.label">Ознака (одделени со запирки)</label>
-                        <div class="autocomplete-wrapper">
-                            <input type="text" id="band-label" autocomplete="off">
+                        <label for="band-label-entry" data-i18n="lista.label">Ознака (одделени со запирки)</label>
+                        <div class="autocomplete-wrapper token-input-shell">
+                            <div id="band-label-tags" class="tag-container token-chip-list"></div>
+                            <input type="text" id="band-label-entry" class="token-entry-input" autocomplete="off">
+                            <input type="hidden" id="band-label">
                             <div id="band-label-autocomplete" class="autocomplete-dropdown"></div>
                         </div>
-                        <div id="band-label-tags" class="tag-container"></div>
                     </div>
                     <div class="form-group">
                         <label for="band-contact" data-i18n="lista.contact">Контакт (е-пошта)</label>
@@ -329,7 +366,7 @@
                     <div class="form-group">
                         <label data-i18n="lista.links">Линкови</label>
                         <div id="links-container"></div>
-                        <button type="button" id="add-link-btn" class="add-link-btn" data-i18n="lista.addLink">Додај линк</button>
+                        <button type="button" id="add-link-btn" class="add-link-btn button-positive"><i class="fas fa-plus"></i> <span data-i18n="lista.addLink">Додај линк</span></button>
                     </div>
                 </div>
                 <div class="form-section">
@@ -363,7 +400,7 @@
                             <div id="greeting-edit-timer" class="greeting-edit-timer" style="display:none"></div>
                             <div id="greeting-edit-preview" class="greeting-edit-preview-area" style="display:none">
                                 <audio id="greeting-edit-audio" controls></audio>
-                                <button type="button" class="greeting-edit-remove" id="greeting-edit-remove" data-i18n-title="lista.remove" title="Отстрани">
+                                <button type="button" class="greeting-edit-remove button-danger" id="greeting-edit-remove" data-i18n-title="lista.remove" title="Отстрани">
                                     <i class="fas fa-times-circle"></i>
                                 </button>
                             </div>
@@ -389,12 +426,12 @@
                     </div>
                 </div>
                 <div style="display:flex;gap:0.5rem;align-items:center">
-                    <button type="submit" id="save-band-btn" data-i18n="lista.save">Зачувај</button>
-                    <button type="button" id="cancel-band-btn" class="cancel-band-btn" data-i18n="lista.cancel">Откажи</button>
+                    <button type="submit" id="save-band-btn" class="button-positive"><i class="fas fa-floppy-disk"></i> <span data-i18n="lista.save">Зачувај</span></button>
+                    <button type="button" id="cancel-band-btn" class="cancel-band-btn button-danger"><i class="fas fa-xmark"></i> <span data-i18n="lista.cancel">Откажи</span></button>
                 </div>
                 <div class="delete-band-zone" id="delete-band-zone" style="display:none">
                     <div class="delete-band-zone-divider"></div>
-                    <button type="button" id="delete-band-btn" class="delete-band-btn"><i class="fas fa-trash"></i> <span data-i18n="lista.deleteArtist">Избриши артист</span></button>
+                    <button type="button" id="delete-band-btn" class="delete-band-btn button-danger"><i class="fas fa-trash"></i> <span data-i18n="lista.deleteArtist">Избриши артист</span></button>
                 </div>
             </form>
         </div>
@@ -423,9 +460,9 @@
                 </form>
             </div>
             <div class="dialog-buttons">
-                <button id="dialog-cancel-btn" class="dialog-btn cancel-btn" data-i18n="lista.cancel">Откажи</button>
-                <button id="dialog-confirm-btn" class="dialog-btn confirm-btn" data-i18n="lista.confirm">Потврди</button>
-                <button id="dialog-submit-btn" class="dialog-btn confirm-btn" style="display: none;" data-i18n="lista.submit">Испрати</button>
+                <button id="dialog-cancel-btn" class="dialog-btn cancel-btn button-danger"><i class="fas fa-xmark"></i> <span data-i18n="lista.cancel">Откажи</span></button>
+                <button id="dialog-confirm-btn" class="dialog-btn confirm-btn button-positive"><i class="fas fa-circle-check"></i> <span data-i18n="lista.confirm">Потврди</span></button>
+                <button id="dialog-submit-btn" class="dialog-btn confirm-btn button-positive" style="display: none;"><i class="fas fa-paper-plane"></i> <span data-i18n="lista.submit">Испрати</span></button>
             </div>
         </div>
     </div>
