@@ -1383,6 +1383,11 @@
         function esc(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
         function escA(str) { return (str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+        function buildLocalEventEditorUrl(eventId) {
+            if (eventId) return 'nastan.html?id=' + encodeURIComponent(eventId) + '&editor=1';
+            return 'nastan.html?editor=1&new=1';
+        }
+
         /** Normalize event links: supports legacy .link (string) and new .links (array of {label,url}) */
         function getEventLinks(evt) {
             if (evt.links && Array.isArray(evt.links) && evt.links.length) return evt.links;
@@ -1777,7 +1782,7 @@
             container.querySelectorAll('.edit-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    openEditModal(btn.dataset.id);
+                    window.location.href = buildLocalEventEditorUrl(btn.dataset.id);
                 });
             });
 
@@ -2398,15 +2403,16 @@
             if (entries.length) entries[entries.length - 1].querySelector('.link-url-input').focus();
         });
 
-        document.getElementById('add-event-btn').addEventListener('click', openAddModal);
+        document.getElementById('add-event-btn').addEventListener('click', function() {
+            window.location.href = buildLocalEventEditorUrl();
+        });
         document.getElementById('modal-close-btn').addEventListener('click', closeModal);
         window.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 
         // Auto-open add modal if navigated with #dodaj-nastan hash
         if (location.hash === '#dodaj-nastan') {
-            openAddModal();
-            history.replaceState(null, '', location.pathname + location.search);
+            window.location.replace(buildLocalEventEditorUrl());
         }
 
         document.getElementById('add-ticket-btn').addEventListener('click', function() {

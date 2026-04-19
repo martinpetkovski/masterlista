@@ -35,7 +35,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
     <script src="/common.js?v=3"></script>
@@ -100,6 +100,11 @@
             padding: 1.5rem 1rem 3rem;
             flex: 1;
             width: 100%;
+        }
+
+        #event-content {
+            width: 100%;
+            min-width: 0;
         }
 
         .event-loading, .event-error {
@@ -575,6 +580,11 @@
             return [];
         }
 
+        function generateId(title, date) {
+            var slug = (title || '').toLowerCase().replace(/[^a-z0-9\u0400-\u04FF]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
+            return 'evt-' + String(date || '').replace(/-/g, '') + '-' + (slug || 'event') + '-' + Math.random().toString(36).slice(2, 6);
+        }
+
         function parseDate(str) {
             var p = str.split('-');
             return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
@@ -788,6 +798,655 @@
             el.innerHTML = '<i class="fas ' + (ic[type]||ic.info) + '"></i> ' + msg;
             c.appendChild(el);
             setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.remove(); }, 300); }, 4000);
+        }
+
+        function buildLocalEventPageUrl(eventId, editorMode) {
+            var url = 'nastan.html';
+            if (eventId) {
+                url += '?id=' + encodeURIComponent(eventId);
+            } else {
+                url += '?new=1';
+            }
+            if (editorMode) {
+                url += (url.indexOf('?') === -1 ? '?' : '&') + 'editor=1';
+            }
+            return url;
+        }
+
+        function buildLocalEventsListUrl() {
+            return 'nastani.html';
+        }
+
+        function hasEventEditorMode() {
+            var params = new URLSearchParams(window.location.search);
+            var editor = params.get('editor');
+            return editor === '1' || editor === 'true';
+        }
+
+        function hasNewEventRequest() {
+            var params = new URLSearchParams(window.location.search);
+            var create = params.get('new');
+            return create === '1' || create === 'true';
+        }
+
+        function buildEmptyEventDraft() {
+            return {
+                id: 'preview-event',
+                title: '',
+                date: new Date().toISOString().slice(0, 10),
+                time: '',
+                place: '',
+                artists: [],
+                tickets: [],
+                links: []
+            };
+        }
+
+        var eventEditorSession = null;
+
+        function ensureEventEditorStyles() {
+            if (document.getElementById('event-wysiwyg-editor-styles')) return;
+            var style = document.createElement('style');
+            style.id = 'event-wysiwyg-editor-styles';
+            style.textContent =
+                'body.wysiwyg-editor-active .event-container{' +
+                    'margin-left:auto;' +
+                    'margin-right:auto;' +
+                    'transform:translateX(calc(min(28rem,36vw) / -2));' +
+                    'transition:transform .2s ease;' +
+                '}' +
+                '.event-editor-panel{' +
+                    'position:fixed;top:5.25rem;right:1rem;bottom:1rem;width:min(26rem,calc(100vw - 2rem));' +
+                    'background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border:1px solid rgba(15,23,42,.12);' +
+                    'border-radius:0;box-shadow:0 28px 60px rgba(15,23,42,.18);z-index:1200;display:flex;flex-direction:column;overflow:hidden;' +
+                '}' +
+                'body.dark-mode .event-editor-panel{' +
+                    'background:rgba(15,23,42,.94);border-color:rgba(148,163,184,.18);box-shadow:0 28px 60px rgba(2,6,23,.42);' +
+                '}' +
+                '.event-editor-panel *{box-sizing:border-box;}' +
+                '.event-editor-toolbar{' +
+                    'display:flex;flex-direction:column;align-items:stretch;gap:.8rem;padding:1rem;border-bottom:1px solid rgba(15,23,42,.08);' +
+                '}' +
+                'body.dark-mode .event-editor-toolbar{border-bottom-color:rgba(148,163,184,.14);}' +
+                '.event-editor-title{' +
+                    'font-family:\'Dela Gothic One\',\'Montserrat\',sans-serif;font-size:1.2rem;line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--text-color);margin:0;' +
+                '}' +
+                '.event-editor-toolbar-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;}' +
+                '.event-editor-primary-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-left:auto;}' +
+                '.event-editor-link,.event-editor-btn{' +
+                    'appearance:none;border:none;text-decoration:none;border-radius:999px;padding:.62rem .88rem;font-size:.78rem;font-weight:700;' +
+                    'display:inline-flex;align-items:center;gap:.42rem;cursor:pointer;box-shadow:none;transition:transform .15s ease,background .15s ease,border-color .15s ease,color .15s ease;' +
+                '}' +
+                '.event-editor-link,.event-editor-btn.secondary{' +
+                    'background:rgba(15,23,42,.05);color:var(--text-color);border:1px solid rgba(15,23,42,.08);' +
+                '}' +
+                '.event-editor-btn.primary{' +
+                    'background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;' +
+                '}' +
+                '.event-editor-btn.danger{' +
+                    'background:rgba(239,68,68,.12);color:#b91c1c;border:1px solid rgba(239,68,68,.24);' +
+                '}' +
+                'body.dark-mode .event-editor-link,body.dark-mode .event-editor-btn.secondary{' +
+                    'background:rgba(148,163,184,.12);border-color:rgba(148,163,184,.22);color:#e5e7eb;' +
+                '}' +
+                'body.dark-mode .event-editor-btn.danger{' +
+                    'background:rgba(239,68,68,.16);border-color:rgba(248,113,113,.28);color:#fecaca;' +
+                '}' +
+                '.event-editor-link:hover,.event-editor-btn:hover{transform:translateY(-1px);}' +
+                '.event-editor-status{' +
+                    'padding:0 1rem .75rem;font-size:.74rem;line-height:1.45;color:var(--text-muted);min-height:1.2rem;' +
+                '}' +
+                '.event-editor-status[data-tone="error"]{color:#b91c1c;}' +
+                '.event-editor-status[data-tone="success"]{color:#15803d;}' +
+                '.event-editor-scroll{' +
+                    'padding:0 1rem 1rem;overflow:auto;display:flex;flex-direction:column;gap:1rem;' +
+                '}' +
+                '.event-editor-section{' +
+                    'display:flex;flex-direction:column;gap:.7rem;padding:.9rem;border-radius:0;background:rgba(15,23,42,.03);border:1px solid rgba(15,23,42,.05);' +
+                '}' +
+                'body.dark-mode .event-editor-section{' +
+                    'background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.12);' +
+                '}' +
+                '.event-editor-section h3{' +
+                    'margin:0;font-size:.82rem;font-weight:800;color:var(--text-color);display:flex;align-items:center;justify-content:space-between;gap:.75rem;' +
+                '}' +
+                '.event-editor-section h3 span{' +
+                    'font-family:\'Dela Gothic One\',\'Montserrat\',sans-serif;font-size:.96rem;line-height:1.1;letter-spacing:.04em;' +
+                '}' +
+                '.event-editor-section h3 button{' +
+                    'flex-shrink:0;' +
+                '}' +
+                '.event-editor-grid{' +
+                    'display:grid;grid-template-columns:1fr 1fr;gap:.7rem;' +
+                '}' +
+                '.event-editor-field{display:flex;flex-direction:column;gap:.38rem;}' +
+                '.event-editor-field label{' +
+                    'font-size:.72rem;font-weight:700;color:var(--text-muted);' +
+                '}' +
+                '.event-editor-input{' +
+                    'width:100%;border-radius:0;border:1px solid rgba(15,23,42,.12);background:rgba(255,255,255,.88);' +
+                    'padding:.72rem .82rem;color:var(--text-color);font:inherit;' +
+                '}' +
+                '.event-editor-input:focus{' +
+                    'outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.16);' +
+                '}' +
+                '.event-editor-input.is-invalid{' +
+                    'border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.14);' +
+                '}' +
+                'body.dark-mode .event-editor-input{' +
+                    'background:rgba(2,6,23,.52);border-color:rgba(148,163,184,.16);color:#e5e7eb;' +
+                '}' +
+                '.event-editor-panel .autocomplete-wrapper{width:100%;}' +
+                '.event-editor-panel .token-input-shell{width:100%;min-width:0;border-radius:0;background:rgba(255,255,255,.88);border-color:rgba(15,23,42,.12);}' +
+                '.event-editor-panel .token-entry-input{color:var(--text-color);}' +
+                'body.dark-mode .event-editor-panel .token-input-shell{background:rgba(2,6,23,.52);border-color:rgba(148,163,184,.16);}' +
+                'body.dark-mode .event-editor-panel .token-entry-input{color:#e5e7eb;}' +
+                '.event-editor-panel .autocomplete-dropdown{border-radius:0;z-index:20;}' +
+                '.event-editor-panel .event-artist-tag{background:var(--accent-blue);}' +
+                '.event-editor-rows{' +
+                    'display:flex;flex-direction:column;gap:.55rem;' +
+                '}' +
+                '.event-editor-row{' +
+                    'display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;align-items:start;' +
+                '}' +
+                '.event-editor-row.columns-2{' +
+                    'grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr) auto;' +
+                '}' +
+                '.event-editor-row.columns-artist{' +
+                    'grid-template-columns:minmax(0,1fr) auto;' +
+                '}' +
+                '.event-editor-remove{' +
+                    'width:2.5rem;height:2.5rem;display:inline-flex;align-items:center;justify-content:center;' +
+                '}' +
+                '.event-editor-help{' +
+                    'font-size:.71rem;line-height:1.4;color:var(--text-muted);margin:0;' +
+                '}' +
+                '@media (max-width: 980px){' +
+                    'body.wysiwyg-editor-active .event-container{transform:none;padding-bottom:min(40rem,72vh);}' +
+                    '.event-editor-panel{top:4.5rem;left:.75rem;right:.75rem;bottom:.75rem;width:auto;border-radius:0;}' +
+                '}' +
+                '@media (max-width: 640px){' +
+                    'body.wysiwyg-editor-active .event-container{padding-bottom:calc(50vh + 1rem);}' +
+                    '.event-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
+                    'body.dark-mode .event-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
+                    '.event-editor-toolbar{position:sticky;top:0;z-index:4;padding:calc(.9rem + env(safe-area-inset-top,0px)) 1rem .9rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
+                    'body.dark-mode .event-editor-toolbar{background:rgba(15,23,42,.98);}' +
+                    '.event-editor-status{padding:0 1rem .65rem;}' +
+                    '.event-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
+                    '.event-editor-toolbar-actions{flex-direction:column;align-items:stretch;gap:.7rem;}' +
+                    '.event-editor-link{width:100%;justify-content:center;}' +
+                    '.event-editor-primary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-left:0;justify-content:stretch;width:100%;}' +
+                    '.event-editor-primary-actions .event-editor-btn{width:100%;justify-content:center;}' +
+                    '.event-editor-grid{grid-template-columns:1fr;}' +
+                    '.event-editor-row.columns-2{grid-template-columns:1fr;}' +
+                    '.event-editor-row.columns-artist{grid-template-columns:1fr;}' +
+                    '.event-editor-remove{width:100%;height:2.75rem;}' +
+                    '.event-editor-scroll > .event-editor-toolbar-actions:last-child{position:sticky;bottom:0;z-index:3;margin-top:.2rem;padding:.9rem 0 calc(.15rem + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.96) 24%);}' +
+                    'body.dark-mode .event-editor-scroll > .event-editor-toolbar-actions:last-child{background:linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,.98) 24%);}' +
+                    '.event-editor-scroll > .event-editor-toolbar-actions:last-child .event-editor-btn{width:100%;justify-content:center;}' +
+                '}';
+            document.head.appendChild(style);
+        }
+
+        function setEventEditorStatus(message, tone) {
+            if (!eventEditorSession || !eventEditorSession.statusEl) return;
+            eventEditorSession.statusEl.textContent = message || '';
+            eventEditorSession.statusEl.dataset.tone = tone || 'idle';
+        }
+
+        function splitEventEditorTokenValues(value) {
+            return String(value || '')
+                .split(',')
+                .map(function(item) { return item.trim(); })
+                .filter(Boolean);
+        }
+
+        function getSelectedEventEditorArtists() {
+            if (!eventEditorSession || !eventEditorSession.artistsInputEl) return [];
+            return splitEventEditorTokenValues(eventEditorSession.artistsInputEl.value);
+        }
+
+        function renderEventEditorArtistTokens() {
+            if (!eventEditorSession || !eventEditorSession.artistTagsEl) return;
+            eventEditorSession.artistTagsEl.innerHTML = '';
+            getSelectedEventEditorArtists().forEach(function(name) {
+                var tag = document.createElement('span');
+                tag.className = 'tag-item event-artist-tag';
+                var label = document.createElement('span');
+                label.textContent = localizeText(name);
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'tag-remove';
+                removeBtn.setAttribute('aria-label', t('events.remove') + ': ' + name);
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('mousedown', function(event) {
+                    event.preventDefault();
+                });
+                removeBtn.addEventListener('click', function() {
+                    setSelectedEventEditorArtists(getSelectedEventEditorArtists().filter(function(current) {
+                        return current.toLowerCase() !== name.toLowerCase();
+                    }));
+                    eventEditorSession.artistEntryEl.focus();
+                });
+                tag.appendChild(label);
+                tag.appendChild(removeBtn);
+                eventEditorSession.artistTagsEl.appendChild(tag);
+            });
+        }
+
+        function setSelectedEventEditorArtists(values, options) {
+            if (!eventEditorSession || !eventEditorSession.artistsInputEl) return;
+            var seen = {};
+            var nextValues = [];
+            values.forEach(function(value) {
+                var trimmed = String(value || '').trim();
+                if (!trimmed) return;
+                var key = trimmed.toLowerCase();
+                if (seen[key]) return;
+                seen[key] = true;
+                nextValues.push(trimmed);
+            });
+            eventEditorSession.artistsInputEl.value = nextValues.join(', ');
+            renderEventEditorArtistTokens();
+            if (!options || !options.silent) {
+                scheduleEventEditorPreview();
+            }
+        }
+
+        function closeEventEditorArtistSuggestions() {
+            if (!eventEditorSession || !eventEditorSession.artistAutocompleteEl) return;
+            eventEditorSession.artistAutocompleteEl.classList.remove('active');
+            eventEditorSession.artistAutocompleteEl.innerHTML = '';
+            eventEditorSession.artistSuggestionIndex = -1;
+        }
+
+        function pickEventEditorArtist(name) {
+            setSelectedEventEditorArtists(getSelectedEventEditorArtists().concat([name]));
+            eventEditorSession.artistEntryEl.value = '';
+            closeEventEditorArtistSuggestions();
+            eventEditorSession.artistEntryEl.focus();
+            setEventEditorStatus('', 'idle');
+        }
+
+        function showEventEditorArtistSuggestions() {
+            if (!eventEditorSession) return;
+            var query = eventEditorSession.artistEntryEl.value.trim().toLowerCase();
+            if (query.length < 1) {
+                closeEventEditorArtistSuggestions();
+                return;
+            }
+            var selected = new Set(getSelectedEventEditorArtists().map(function(name) { return name.toLowerCase(); }));
+            var matches = masterArtists.filter(function(artist) {
+                return !selected.has(artist.name.toLowerCase()) && artist.name.toLowerCase().indexOf(query) !== -1;
+            }).slice(0, 20);
+            if (!matches.length) {
+                closeEventEditorArtistSuggestions();
+                return;
+            }
+            eventEditorSession.artistAutocompleteEl.innerHTML = matches.map(function(artist, idx) {
+                return '<div class="autocomplete-item' + (idx === eventEditorSession.artistSuggestionIndex ? ' selected' : '') + '" data-name="' + escA(artist.name) + '">' +
+                    esc(localizeText(artist.name)) + (artist.city ? '<span class="count">' + esc(localizeText(artist.city)) + '</span>' : '') +
+                '</div>';
+            }).join('');
+            eventEditorSession.artistAutocompleteEl.classList.add('active');
+            eventEditorSession.artistSuggestionIndex = -1;
+        }
+
+        function commitEventEditorArtistEntry() {
+            if (!eventEditorSession) return true;
+            var value = eventEditorSession.artistEntryEl.value.trim();
+            if (!value) return true;
+            var match = masterArtists.find(function(artist) {
+                return artist.name.toLowerCase() === value.toLowerCase();
+            });
+            if (!match) {
+                setEventEditorStatus(t('events.artistNotInList').replace('{0}', value), 'error');
+                return false;
+            }
+            pickEventEditorArtist(match.name);
+            return true;
+        }
+
+        function initializeEventEditorArtistPicker() {
+            if (!eventEditorSession) return;
+            eventEditorSession.artistSuggestionIndex = -1;
+            eventEditorSession.artistPickerEl.addEventListener('click', function(event) {
+                if (event.target.closest('.tag-remove')) return;
+                eventEditorSession.artistEntryEl.focus();
+            });
+            eventEditorSession.artistEntryEl.addEventListener('input', function() {
+                showEventEditorArtistSuggestions();
+            });
+            eventEditorSession.artistEntryEl.addEventListener('focus', function() {
+                showEventEditorArtistSuggestions();
+            });
+            eventEditorSession.artistEntryEl.addEventListener('blur', function() {
+                setTimeout(closeEventEditorArtistSuggestions, 150);
+            });
+            eventEditorSession.artistEntryEl.addEventListener('keydown', function(event) {
+                var items = eventEditorSession.artistAutocompleteEl.querySelectorAll('.autocomplete-item');
+                if (event.key === 'ArrowDown') {
+                    if (!items.length) return;
+                    event.preventDefault();
+                    eventEditorSession.artistSuggestionIndex = Math.min(eventEditorSession.artistSuggestionIndex + 1, items.length - 1);
+                    items.forEach(function(item, idx) { item.classList.toggle('selected', idx === eventEditorSession.artistSuggestionIndex); });
+                    if (items[eventEditorSession.artistSuggestionIndex]) items[eventEditorSession.artistSuggestionIndex].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'ArrowUp') {
+                    if (!items.length) return;
+                    event.preventDefault();
+                    eventEditorSession.artistSuggestionIndex = Math.max(eventEditorSession.artistSuggestionIndex - 1, 0);
+                    items.forEach(function(item, idx) { item.classList.toggle('selected', idx === eventEditorSession.artistSuggestionIndex); });
+                    if (items[eventEditorSession.artistSuggestionIndex]) items[eventEditorSession.artistSuggestionIndex].scrollIntoView({ block: 'nearest' });
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    if (eventEditorSession.artistSuggestionIndex >= 0 && items[eventEditorSession.artistSuggestionIndex]) {
+                        pickEventEditorArtist(items[eventEditorSession.artistSuggestionIndex].dataset.name);
+                        return;
+                    }
+                    commitEventEditorArtistEntry();
+                } else if (event.key === 'Backspace' && !eventEditorSession.artistEntryEl.value) {
+                    var selectedArtists = getSelectedEventEditorArtists();
+                    if (!selectedArtists.length) return;
+                    selectedArtists.pop();
+                    setSelectedEventEditorArtists(selectedArtists);
+                } else if (event.key === 'Escape') {
+                    closeEventEditorArtistSuggestions();
+                }
+            });
+            eventEditorSession.artistAutocompleteEl.addEventListener('click', function(event) {
+                var item = event.target.closest('.autocomplete-item');
+                if (item) pickEventEditorArtist(item.dataset.name);
+            });
+            renderEventEditorArtistTokens();
+        }
+
+        function scheduleEventEditorPreview() {
+            if (!eventEditorSession) return;
+            if (eventEditorSession.previewTimer) {
+                clearTimeout(eventEditorSession.previewTimer);
+            }
+            eventEditorSession.previewTimer = setTimeout(function() {
+                var previewEvent = readEventEditorForm(true);
+                eventEditorSession.previewEvent = previewEvent;
+                renderEvent(previewEvent);
+            }, 110);
+        }
+
+        function createEventEditorTicketRow(label, price) {
+            var row = document.createElement('div');
+            row.className = 'event-editor-row columns-2';
+            row.innerHTML =
+                '<input type="text" class="event-editor-input event-editor-ticket-label" placeholder="' + escA(t('events.ticketTypePlaceholder')) + '" value="' + escA(label || '') + '">' +
+                '<input type="text" class="event-editor-input event-editor-ticket-price" placeholder="' + escA(t('events.ticketPricePlaceholder')) + '" value="' + escA(price || '') + '">' +
+                '<button type="button" class="event-editor-btn secondary event-editor-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
+            row.querySelectorAll('input').forEach(function(input) {
+                input.addEventListener('input', scheduleEventEditorPreview);
+            });
+            row.querySelector('.event-editor-remove').addEventListener('click', function() {
+                row.remove();
+                scheduleEventEditorPreview();
+            });
+            return row;
+        }
+
+        function createEventEditorLinkRow(label, url) {
+            var row = document.createElement('div');
+            row.className = 'event-editor-row columns-2';
+            row.innerHTML =
+                '<input type="text" class="event-editor-input event-editor-link-label" placeholder="' + escA(t('events.linkLabelPlaceholder')) + '" value="' + escA(label || '') + '">' +
+                '<input type="url" class="event-editor-input event-editor-link-url" placeholder="' + escA(t('events.linkUrlPlaceholder')) + '" value="' + escA(url || '') + '">' +
+                '<button type="button" class="event-editor-btn secondary event-editor-remove" title="' + escA(t('events.remove')) + '"><i class="fas fa-times"></i></button>';
+            row.querySelectorAll('input').forEach(function(input) {
+                input.addEventListener('input', scheduleEventEditorPreview);
+            });
+            row.querySelector('.event-editor-remove').addEventListener('click', function() {
+                row.remove();
+                scheduleEventEditorPreview();
+            });
+            return row;
+        }
+
+        function resetEventEditorRows(container, values, factory) {
+            container.innerHTML = '';
+            values.forEach(function(value) {
+                var args = Array.isArray(value) ? value : [value];
+                container.appendChild(factory.apply(null, args));
+            });
+            if (!container.children.length) {
+                container.appendChild(factory(''));
+            }
+        }
+
+        function fillEventEditorForm(evt) {
+            if (!eventEditorSession) return;
+            eventEditorSession.titleEl.value = evt.title || '';
+            eventEditorSession.dateEl.value = evt.date || '';
+            eventEditorSession.timeEl.value = evt.time || '';
+            eventEditorSession.placeEl.value = evt.place || '';
+            setSelectedEventEditorArtists(evt.artists || evt.bands || [], { silent: true });
+            resetEventEditorRows(eventEditorSession.ticketsEl, (evt.tickets || []).map(function(ticket) { return [ticket.label || '', ticket.price || '']; }), createEventEditorTicketRow);
+            resetEventEditorRows(eventEditorSession.linksEl, getEventLinks(evt).map(function(link) { return [link.label || '', link.url || '']; }), createEventEditorLinkRow);
+            eventEditorSession.deleteBtn.style.display = eventEditorSession.isNew ? 'none' : '';
+            setEventEditorStatus('', 'idle');
+        }
+
+        function readEventEditorForm(previewMode) {
+            var today = new Date().toISOString().slice(0, 10);
+            var title = eventEditorSession.titleEl.value.trim();
+            var dateValue = eventEditorSession.dateEl.value || (previewMode ? today : '');
+            var timeValue = eventEditorSession.timeEl.value || '';
+            var placeValue = eventEditorSession.placeEl.value.trim();
+            var artists = getSelectedEventEditorArtists();
+            var tickets = [];
+            eventEditorSession.ticketsEl.querySelectorAll('.event-editor-row').forEach(function(row) {
+                var label = ((row.querySelector('.event-editor-ticket-label') || {}).value || '').trim();
+                var price = ((row.querySelector('.event-editor-ticket-price') || {}).value || '').trim();
+                if (label || price) {
+                    tickets.push({ label: label || t('events.defaultTicketLabel'), price: price });
+                }
+            });
+            var links = [];
+            eventEditorSession.linksEl.querySelectorAll('.event-editor-row').forEach(function(row) {
+                var label = ((row.querySelector('.event-editor-link-label') || {}).value || '').trim();
+                var url = ((row.querySelector('.event-editor-link-url') || {}).value || '').trim();
+                if (url) {
+                    links.push({ label: label, url: url });
+                }
+            });
+            return {
+                id: eventEditorSession.isNew ? 'preview-event' : eventEditorSession.eventId,
+                title: title || (previewMode ? t('events.addEvent') : ''),
+                date: dateValue,
+                time: timeValue,
+                place: placeValue,
+                artists: artists,
+                tickets: tickets,
+                links: links
+            };
+        }
+
+        function validateEventEditorEvent(eventObj) {
+            if (!eventEditorSession.dateEl.value || !eventObj.title || !eventObj.time || !eventObj.place) {
+                setEventEditorStatus(t('events.fillRequired'), 'error');
+                return false;
+            }
+            if (!/^\d{2}:\d{2}$/.test(eventObj.time)) {
+                setEventEditorStatus(t('events.timeFormatError'), 'error');
+                return false;
+            }
+            var invalidArtist = eventObj.artists.find(function(name) {
+                return !masterArtists.some(function(artist) { return artist.name === name; });
+            });
+            if (invalidArtist) {
+                setEventEditorStatus(t('events.artistNotInList').replace('{0}', invalidArtist), 'error');
+                return false;
+            }
+            var invalidLink = eventObj.links.find(function(link) {
+                try {
+                    var parsed = new URL(link.url);
+                    return !/^https?:$/i.test(parsed.protocol);
+                } catch (_) {
+                    return true;
+                }
+            });
+            if (invalidLink) {
+                setEventEditorStatus('Невалиден линк.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function saveEventEditorChanges() {
+            if (!eventEditorSession) return;
+            var nextEvent = readEventEditorForm(false);
+            if (!validateEventEditorEvent(nextEvent)) return;
+            var updatedEvents;
+            if (eventEditorSession.isNew) {
+                nextEvent.id = generateId(nextEvent.title, nextEvent.date);
+                updatedEvents = allEvents.slice();
+                updatedEvents.push(nextEvent);
+            } else {
+                nextEvent.id = eventEditorSession.eventId;
+                updatedEvents = allEvents.map(function(evt) {
+                    return evt.id === eventEditorSession.eventId ? nextEvent : evt;
+                });
+            }
+            submitEventUpdate(updatedEvents);
+            currentEvent = nextEvent;
+            eventEditorSession.isNew = false;
+            eventEditorSession.eventId = nextEvent.id;
+            eventEditorSession.previewEvent = nextEvent;
+            renderEvent(nextEvent);
+            eventEditorSession.deleteBtn.style.display = '';
+            setEventEditorStatus(t('events.savedLocally'), 'success');
+            history.replaceState(null, '', buildLocalEventPageUrl(nextEvent.id, true));
+        }
+
+        function deleteEventFromEditor() {
+            if (!eventEditorSession || eventEditorSession.isNew) {
+                window.location.href = buildLocalEventsListUrl();
+                return;
+            }
+            if (!confirm(t('events.deleteConfirm'))) return;
+            var updated = allEvents.filter(function(evt) { return evt.id !== eventEditorSession.eventId; });
+            submitEventUpdate(updated);
+            window.location.href = buildLocalEventsListUrl();
+        }
+
+        function initializeEventEditor(evt, options) {
+            ensureEventEditorStyles();
+            document.body.classList.add('wysiwyg-editor-active');
+            var panel = document.getElementById('event-editor-panel');
+            if (!panel) {
+                panel = document.createElement('aside');
+                panel.id = 'event-editor-panel';
+                panel.className = 'event-editor-panel';
+                panel.innerHTML =
+                    '<div class="event-editor-toolbar">' +
+                        '<p class="event-editor-title" id="event-editor-title"></p>' +
+                        '<div class="event-editor-toolbar-actions">' +
+                            '<a class="event-editor-link" id="event-editor-list-link" href="' + buildLocalEventsListUrl() + '"><i class="fas fa-arrow-left"></i> ' + esc(t('events.allEvents')) + '</a>' +
+                            '<div class="event-editor-primary-actions">' +
+                                '<button type="button" class="event-editor-btn secondary" id="event-editor-cancel-btn" style="display:none"><i class="fas fa-times"></i> ' + esc(t('lista.cancel')) + '</button>' +
+                                '<button type="button" class="event-editor-btn primary" id="event-editor-save-btn"><i class="fas fa-floppy-disk"></i> ' + esc(t('events.save')) + '</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="event-editor-status" id="event-editor-status"></div>' +
+                    '<div class="event-editor-scroll">' +
+                        '<div class="event-editor-section">' +
+                            '<h3><span>' + esc(t('events.details')) + '</span></h3>' +
+                            '<div class="event-editor-field">' +
+                                '<label for="event-editor-title-input">' + esc(t('events.title')) + '</label>' +
+                                '<input id="event-editor-title-input" class="event-editor-input" type="text" placeholder="' + escA(t('events.titlePlaceholder')) + '">' +
+                            '</div>' +
+                            '<div class="event-editor-grid">' +
+                                '<div class="event-editor-field">' +
+                                    '<label for="event-editor-date-input">' + esc(t('events.date')) + '</label>' +
+                                    '<input id="event-editor-date-input" class="event-editor-input" type="date">' +
+                                '</div>' +
+                                '<div class="event-editor-field">' +
+                                    '<label for="event-editor-time-input">' + esc(t('events.time')) + '</label>' +
+                                    '<input id="event-editor-time-input" class="event-editor-input" type="time">' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="event-editor-field">' +
+                                '<label for="event-editor-place-input">' + esc(t('events.place')) + '</label>' +
+                                '<input id="event-editor-place-input" class="event-editor-input" type="text" placeholder="' + escA(t('events.placePlaceholder')) + '">' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="event-editor-section">' +
+                            '<h3><span>' + esc(t('events.artists')) + '</span></h3>' +
+                            '<p class="event-editor-help">' + esc(t('events.artistsMustBe')) + '</p>' +
+                            '<div id="event-editor-artist-picker" class="autocomplete-wrapper token-input-shell">' +
+                                '<div id="event-editor-artist-tags" class="tag-container token-chip-list"></div>' +
+                                '<input id="event-editor-artist-entry" class="token-entry-input" type="text" autocomplete="off" placeholder="' + escA(t('events.searchArtist')) + '">' +
+                                '<input id="event-editor-artists-input" type="hidden">' +
+                                '<div id="event-editor-artist-autocomplete" class="autocomplete-dropdown"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="event-editor-section">' +
+                            '<h3><span>' + esc(t('events.tickets')) + '</span><button type="button" class="event-editor-btn secondary" id="event-editor-add-ticket-btn"><i class="fas fa-plus"></i> ' + esc(t('events.addTicket')) + '</button></h3>' +
+                            '<div class="event-editor-rows" id="event-editor-tickets"></div>' +
+                        '</div>' +
+                        '<div class="event-editor-section">' +
+                            '<h3><span>' + esc(t('events.links')) + '</span><button type="button" class="event-editor-btn secondary" id="event-editor-add-link-btn"><i class="fas fa-plus"></i> ' + esc(t('events.addLink')) + '</button></h3>' +
+                            '<p class="event-editor-help">' + esc(t('events.linksHelp')) + '</p>' +
+                            '<div class="event-editor-rows" id="event-editor-links"></div>' +
+                        '</div>' +
+                        '<div class="event-editor-toolbar-actions" style="justify-content:flex-end;padding-bottom:.2rem">' +
+                            '<button type="button" class="event-editor-btn danger" id="event-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('events.deleteEvent')) + '</button>' +
+                        '</div>' +
+                    '</div>';
+                document.body.appendChild(panel);
+            }
+
+            eventEditorSession = {
+                panel: panel,
+                isNew: !!options.isNew,
+                eventId: evt.id,
+                titleEl: panel.querySelector('#event-editor-title-input'),
+                dateEl: panel.querySelector('#event-editor-date-input'),
+                timeEl: panel.querySelector('#event-editor-time-input'),
+                placeEl: panel.querySelector('#event-editor-place-input'),
+                artistPickerEl: panel.querySelector('#event-editor-artist-picker'),
+                artistTagsEl: panel.querySelector('#event-editor-artist-tags'),
+                artistEntryEl: panel.querySelector('#event-editor-artist-entry'),
+                artistsInputEl: panel.querySelector('#event-editor-artists-input'),
+                artistAutocompleteEl: panel.querySelector('#event-editor-artist-autocomplete'),
+                ticketsEl: panel.querySelector('#event-editor-tickets'),
+                linksEl: panel.querySelector('#event-editor-links'),
+                statusEl: panel.querySelector('#event-editor-status'),
+                saveBtn: panel.querySelector('#event-editor-save-btn'),
+                cancelBtn: panel.querySelector('#event-editor-cancel-btn'),
+                deleteBtn: panel.querySelector('#event-editor-delete-btn'),
+                titleLabelEl: panel.querySelector('#event-editor-title'),
+                previewEvent: evt,
+                previewTimer: null
+            };
+
+            eventEditorSession.titleLabelEl.textContent = options.isNew ? t('events.addEvent') : t('events.editEvent');
+            initializeEventEditorArtistPicker();
+            fillEventEditorForm(evt);
+            eventEditorSession.cancelBtn.style.display = options.isNew ? 'none' : 'inline-flex';
+
+            [eventEditorSession.titleEl, eventEditorSession.dateEl, eventEditorSession.timeEl, eventEditorSession.placeEl].forEach(function(input) {
+                input.addEventListener('input', scheduleEventEditorPreview);
+            });
+
+            panel.querySelector('#event-editor-add-ticket-btn').onclick = function() {
+                eventEditorSession.ticketsEl.appendChild(createEventEditorTicketRow('', ''));
+                scheduleEventEditorPreview();
+            };
+            panel.querySelector('#event-editor-add-link-btn').onclick = function() {
+                eventEditorSession.linksEl.appendChild(createEventEditorLinkRow('', ''));
+                scheduleEventEditorPreview();
+            };
+            eventEditorSession.cancelBtn.onclick = function() {
+                window.location.href = buildLocalEventPageUrl(eventEditorSession.eventId, false);
+            };
+            eventEditorSession.saveBtn.onclick = saveEventEditorChanges;
+            eventEditorSession.deleteBtn.onclick = deleteEventFromEditor;
         }
 
         // ==================== EDIT MODAL LOGIC ====================
@@ -1158,7 +1817,9 @@
         (function() {
             var params = new URLSearchParams(window.location.search);
             var eventId = params.get('id');
-            if (!eventId) {
+            var editorMode = hasEventEditorMode();
+            var newEventMode = hasNewEventRequest();
+            if (!eventId && !newEventMode) {
                 renderError();
                 return;
             }
@@ -1174,6 +1835,14 @@
                 loadArtistImageData()
             ])
                 .then(function() {
+                    if (newEventMode) {
+                        currentEvent = buildEmptyEventDraft();
+                        renderEvent(currentEvent);
+                        if (editorMode) {
+                            initializeEventEditor(currentEvent, { isNew: true });
+                        }
+                        return;
+                    }
                     var found = null;
                     for (var i = 0; i < allEvents.length; i++) {
                         if (allEvents[i].id === eventId) { found = allEvents[i]; break; }
@@ -1181,12 +1850,15 @@
                     if (found) {
                         currentEvent = found;
                         renderEvent(found);
-                        // Show edit button
-                        var editBtn = document.getElementById('edit-event-btn');
-                        editBtn.style.display = '';
-                        editBtn.addEventListener('click', function() {
-                            openEditModal(currentEvent);
-                        });
+                        if (editorMode) {
+                            initializeEventEditor(found, { isNew: false });
+                        } else {
+                            var editBtn = document.getElementById('edit-event-btn');
+                            editBtn.style.display = '';
+                            editBtn.addEventListener('click', function() {
+                                window.location.href = buildLocalEventPageUrl(currentEvent.id, true);
+                            });
+                        }
                     }
                     else renderError();
                 })

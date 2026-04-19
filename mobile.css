@@ -3729,7 +3729,7 @@ body.dark-mode .site-nav-menu a.active:hover i {
     position: absolute;
     top: 100%;
     left: 0;
-    z-index: 1000;
+    z-index: 1300;
     min-width: 160px;
     background: var(--nav-bg, var(--artist-accent-1, #fff));
     border: 2px solid var(--nav-border, var(--artist-accent-2, #dfe1e5));

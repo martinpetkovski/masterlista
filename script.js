@@ -1996,7 +1996,7 @@
 
         document.getElementById('add-band-btn').addEventListener('click', () => {
             console.log('Add band button clicked');
-            openModal('add');
+            window.location.href = 'artist.html?editor=1&new=1';
         });
 
         function closeModalWithAutoSave() {
@@ -2749,8 +2749,7 @@
 
         // Auto-open add modal if navigated with #dodaj-artist hash
         if (location.hash === '#dodaj-artist') {
-            openModal('add');
-            history.replaceState(null, '', location.pathname + location.search);
+            window.location.replace('artist.html?editor=1&new=1');
         }
     }
 
@@ -3603,12 +3602,14 @@
             editBtn.addEventListener('click', () => {
                 const idx = parseInt(editBtn.dataset.index);
                 console.log(`Edit button clicked for band at original index ${idx}`);
-                if (typeof window.openModal === 'function') {
-                    window.openModal('edit', bandsData[idx], idx);
-                } else {
-                    console.error('window.openModal is not defined');
+                const band = bandsData[idx];
+                if (!band || !band.name) {
+                    console.error('No band found for edit route');
                     showNotification(t('lista.editFnNotAvailable'), 'error');
+                    return;
                 }
+                const slug = generateArtistSlug(band.name);
+                window.location.href = `artist.html?a=${encodeURIComponent(slug)}&editor=1`;
             });
             
             bandTableBody.appendChild(bandRow);
@@ -4162,7 +4163,7 @@
 
     // Tour initialization moved to tour.js
     
-    // Handle ?edit= URL parameter to open edit modal for specific artist
+    // Handle ?edit= URL parameter by redirecting into the page-based artist editor
     function handleEditUrlParam() {
         const urlParams = new URLSearchParams(window.location.search);
         const editSlug = urlParams.get('edit');
@@ -4196,17 +4197,9 @@
         });
         
         if (index !== -1) {
-            // Small delay to ensure modal is initialized
-            setTimeout(() => {
-                if (typeof window.openModal === 'function') {
-                    window.openModal('edit', bandsData[index], index);
-                    // Clear the URL parameter without reloading
-                    const newUrl = window.location.pathname + window.location.hash;
-                    window.history.replaceState({}, '', newUrl);
-                } else {
-                    console.error('openModal not available');
-                }
-            }, 100);
+            const artist = bandsData[index];
+            const slug = generateArtistSlug(artist.name);
+            window.location.replace(`artist.html?a=${encodeURIComponent(slug)}&editor=1`);
         } else {
             console.warn('Artist not found for slug:', editSlug);
         }

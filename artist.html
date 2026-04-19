@@ -42,7 +42,7 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=10" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=10" media="screen and (max-width: 600px)">
     <script src="/common.js?v=3"></script>
@@ -93,6 +93,8 @@
         #artist-content {
             display: flex;
             flex-direction: column;
+            width: 100%;
+            min-width: 0;
         }
         .artist-footer {
             flex-shrink: 0;
@@ -3070,7 +3072,8 @@ a.chart-history-item {
         }
         
         // Render artist page
-        function renderArtist(artist, thumbnail, bandsData) {
+        function renderArtist(artist, thumbnail, bandsData, options = {}) {
+            options = options || {};
             const contentEl = document.getElementById('artist-content');
             
             // Update page metadata
@@ -3242,17 +3245,22 @@ a.chart-history-item {
             }
             
             // Build edit URL and add to header nav
-            const artistSlug = generateSlug(artist.name);
-            const editUrl = `/lista?edit=${encodeURIComponent(artistSlug)}`;
             const headerButtons = document.querySelector('.header-buttons');
-            if (headerButtons && !headerButtons.querySelector('.header-edit-btn')) {
-                const editLink = document.createElement('a');
-                editLink.href = editUrl;
-                editLink.className = 'header-btn header-edit-btn';
-                editLink.title = t('artist.editData');
-                editLink.innerHTML = '<i class="fas fa-edit"></i>';
-                editLink.setAttribute('aria-label', t('artist.editData'));
-                headerButtons.insertBefore(editLink, headerButtons.firstChild);
+            if (headerButtons) {
+                const existingEditLink = headerButtons.querySelector('.header-edit-btn');
+                if (options.hideHeaderEditButton) {
+                    if (existingEditLink) existingEditLink.remove();
+                } else {
+                    const editLink = existingEditLink || document.createElement('a');
+                    editLink.href = buildLocalArtistEditorUrl(artist.name);
+                    editLink.className = 'header-btn header-edit-btn';
+                    editLink.title = t('artist.editData');
+                    editLink.innerHTML = '<i class="fas fa-edit"></i>';
+                    editLink.setAttribute('aria-label', t('artist.editData'));
+                    if (!existingEditLink) {
+                        headerButtons.insertBefore(editLink, headerButtons.firstChild);
+                    }
+                }
             }
             
             // Render content (chart history will be added after loading)
@@ -3318,7 +3326,7 @@ a.chart-history-item {
             }
             
             // Load greeting audio for confirmed artists
-            if (artist.confirmed) {
+            if (!options.skipGreetingLookup && artist.confirmed) {
                 const greetingSlug = generateSlug(artist.name);
                 const greetingContainer = document.getElementById('greeting-container');
                 // Try common audio formats
@@ -3383,7 +3391,7 @@ a.chart-history-item {
             
             // Inject cinematic verified background with parallax (only for confirmed artists)
             const accentColors = artist.accentColors;
-            if (artist.confirmed && accentColors && (accentColors[0] || accentColors[1])) {
+            if (!options.skipVerifiedChrome && artist.confirmed && accentColors && (accentColors[0] || accentColors[1])) {
                 const c1 = accentColors[0] || accentColors[1];
                 const c2 = accentColors[1] || accentColors[0];
                 const existingBg = document.querySelector('.vfx-bg');
@@ -3642,7 +3650,10 @@ a.chart-history-item {
                     // Nuclear header override: inject a <style> at end of <head> to beat
                     // all external CSS specificity (including dark-mode header background
                     // and the header::before white gradient overlay).
+                    const previousHeaderStyle = document.getElementById('artist-header-accent-style');
+                    if (previousHeaderStyle) previousHeaderStyle.remove();
                     const headerOverrideStyle = document.createElement('style');
+                    headerOverrideStyle.id = 'artist-header-accent-style';
                     headerOverrideStyle.textContent =
                         'body.verified-accent header,' +
                         'body.verified-accent header[id],' +
@@ -4902,6 +4913,1330 @@ a.chart-history-item {
                 </div>
             `;
         }
+
+        function esc(value) {
+            const div = document.createElement('div');
+            div.textContent = value || '';
+            return div.innerHTML;
+        }
+
+        function escA(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function buildLocalArtistEditorUrl(artistName, focusSection) {
+            const slug = generateSlug(artistName || '');
+            const params = new URLSearchParams();
+            params.set('editor', '1');
+            if (focusSection) params.set('focus', focusSection);
+            if (!slug) {
+                params.set('new', '1');
+                return 'artist.html?' + params.toString();
+            }
+            params.set('a', slug);
+            return 'artist.html?' + params.toString();
+        }
+
+        function buildLocalArtistPageUrl(artistName) {
+            const slug = generateSlug(artistName || '');
+            if (!slug) return 'lista.html';
+            return `artist.html?a=${encodeURIComponent(slug)}`;
+        }
+
+        function hasArtistEditorMode() {
+            const params = new URLSearchParams(window.location.search);
+            const value = params.get('editor');
+            return value === '1' || value === 'true';
+        }
+
+        function hasNewArtistEditorRequest() {
+            const params = new URLSearchParams(window.location.search);
+            const value = params.get('new');
+            return value === '1' || value === 'true';
+        }
+
+        function buildEmptyArtistDraft() {
+            return {
+                name: '',
+                city: 'недостигаат податоци',
+                genre: 'недостигаат податоци',
+                soundsLike: 'недостигаат податоци',
+                label: null,
+                contact: 'недостигаат податоци',
+                accentColors: ['#e94560', '#ffa502'],
+                confirmed: false,
+                links: { none: 'недостигаат податоци' }
+            };
+        }
+
+        const artistEditorPlatforms = [
+            { id: 'none', name: t('lista.platform') },
+            { id: 'facebook', name: 'Facebook' },
+            { id: 'instagram', name: 'Instagram' },
+            { id: 'twitter', name: 'Twitter' },
+            { id: 'youtube', name: 'YouTube' },
+            { id: 'youtube_music', name: 'YouTube Music' },
+            { id: 'spotify', name: 'Spotify' },
+            { id: 'bandcamp', name: 'Bandcamp' },
+            { id: 'soundcloud', name: 'SoundCloud' },
+            { id: 'itunes', name: 'Apple Music' },
+            { id: 'apple_music', name: 'Apple Music' },
+            { id: 'deezer', name: 'Deezer' },
+            { id: 'tidal', name: 'Tidal' },
+            { id: 'amazon_music', name: 'Amazon Music' },
+            { id: 'napster', name: 'Napster' },
+            { id: 'audiomack', name: 'Audiomack' },
+            { id: 'tiktok', name: 'TikTok' },
+            { id: 'linkedin', name: 'LinkedIn' },
+            { id: 'pinterest', name: 'Pinterest' },
+            { id: 'twitch', name: 'Twitch' },
+            { id: 'vimeo', name: 'Vimeo' },
+            { id: 'patreon', name: 'Patreon' },
+            { id: 'discord', name: 'Discord' },
+            { id: 'wikipedia', name: 'Wikipedia' },
+            { id: 'website', name: 'Website' },
+            { id: 'linktree', name: 'Linktree' },
+            { id: 'interview', name: t('lista.interview') },
+            { id: 'review', name: t('lista.review') },
+            { id: 'article', name: t('lista.article') },
+            { id: 'generic', name: t('lista.otherLink') }
+        ];
+
+        const artistEditorPlatformPatterns = [
+            { id: 'spotify', pattern: /open\.spotify\.com|spotify\.com/i },
+            { id: 'youtube_music', pattern: /music\.youtube\.com/i },
+            { id: 'youtube', pattern: /youtube\.com|youtu\.be/i },
+            { id: 'instagram', pattern: /instagram\.com/i },
+            { id: 'facebook', pattern: /facebook\.com|fb\.com|fb\.me/i },
+            { id: 'twitter', pattern: /twitter\.com|x\.com/i },
+            { id: 'bandcamp', pattern: /bandcamp\.com/i },
+            { id: 'soundcloud', pattern: /soundcloud\.com/i },
+            { id: 'apple_music', pattern: /music\.apple\.com/i },
+            { id: 'itunes', pattern: /itunes\.apple\.com/i },
+            { id: 'deezer', pattern: /deezer\.com/i },
+            { id: 'tidal', pattern: /tidal\.com/i },
+            { id: 'amazon_music', pattern: /music\.amazon/i },
+            { id: 'napster', pattern: /napster\.com/i },
+            { id: 'audiomack', pattern: /audiomack\.com/i },
+            { id: 'tiktok', pattern: /tiktok\.com/i },
+            { id: 'linkedin', pattern: /linkedin\.com/i },
+            { id: 'pinterest', pattern: /pinterest\.com/i },
+            { id: 'twitch', pattern: /twitch\.tv/i },
+            { id: 'vimeo', pattern: /vimeo\.com/i },
+            { id: 'patreon', pattern: /patreon\.com/i },
+            { id: 'discord', pattern: /discord\.gg|discord\.com/i },
+            { id: 'wikipedia', pattern: /wikipedia\.org/i },
+            { id: 'linktree', pattern: /linktr\.ee|linktree\.com/i }
+        ];
+
+        const artistEditorMultiPlatformSet = new Set(['review', 'interview', 'article', 'wikipedia', 'generic']);
+        let artistEditorSession = null;
+        let artistEditorGenres = [];
+        let artistEditorGenresPromise = null;
+
+        function detectArtistEditorPlatform(url) {
+            if (!url) return null;
+            for (const entry of artistEditorPlatformPatterns) {
+                if (entry.pattern.test(url)) return entry.id;
+            }
+            return null;
+        }
+
+        async function loadArtistEditorGenres() {
+            if (artistEditorGenresPromise) return artistEditorGenresPromise;
+            artistEditorGenresPromise = fetch('genres.json')
+                .then(function(resp) { return resp.ok ? resp.json() : []; })
+                .catch(function() { return []; })
+                .then(function(genres) {
+                    artistEditorGenres = Array.isArray(genres) ? genres : [];
+                    return artistEditorGenres;
+                });
+            return artistEditorGenresPromise;
+        }
+
+        function splitArtistEditorTokenValues(value) {
+            return String(value || '')
+                .split(',')
+                .map(function(item) { return item.trim(); })
+                .filter(Boolean);
+        }
+
+        function buildArtistEditorAutocompleteData(bands) {
+            const cityCounts = {};
+            const genreCounts = {};
+            const soundsLikeCounts = {};
+            const labelCounts = {};
+
+            (bands || []).forEach(function(band) {
+                if (band.city && band.city !== 'недостигаат податоци') {
+                    band.city.split(',').map(function(item) { return item.trim(); }).filter(Boolean).forEach(function(city) {
+                        cityCounts[city] = (cityCounts[city] || 0) + 1;
+                    });
+                }
+                if (band.genre && band.genre !== 'недостигаат податоци') {
+                    band.genre.split(',').map(function(item) { return item.trim(); }).filter(Boolean).forEach(function(genre) {
+                        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+                    });
+                }
+                if (band.soundsLike && band.soundsLike !== 'недостигаат податоци') {
+                    band.soundsLike.split(',').map(function(item) { return item.trim(); }).filter(Boolean).forEach(function(sound) {
+                        soundsLikeCounts[sound] = (soundsLikeCounts[sound] || 0) + 1;
+                    });
+                }
+                if (band.label && band.label !== 'недостигаат податоци') {
+                    band.label.split(',').map(function(item) { return item.trim(); }).filter(Boolean).forEach(function(label) {
+                        labelCounts[label] = (labelCounts[label] || 0) + 1;
+                    });
+                }
+            });
+
+            function sortByCountThenAlpha(counts) {
+                return Object.entries(counts)
+                    .sort(function(a, b) {
+                        return b[1] - a[1] || transliterate(a[0] || '').localeCompare(transliterate(b[0] || ''), 'en');
+                    })
+                    .map(function(entry) {
+                        return { name: entry[0], count: entry[1] };
+                    });
+            }
+
+            return {
+                cities: sortByCountThenAlpha(cityCounts),
+                genres: artistEditorGenres.length
+                    ? artistEditorGenres.map(function(genre) {
+                        return { name: genre, count: genreCounts[genre] || 0 };
+                    })
+                    : sortByCountThenAlpha(genreCounts),
+                soundsLike: sortByCountThenAlpha(soundsLikeCounts),
+                labels: sortByCountThenAlpha(labelCounts)
+            };
+        }
+
+        function syncArtistEditorTokenInput(input, values) {
+            if (!input) return;
+            input.value = values.join(', ');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function updateArtistEditorTokenTags(fieldKey) {
+            if (!artistEditorSession || !artistEditorSession.tokenFields) return;
+            const field = artistEditorSession.tokenFields[fieldKey];
+            if (!field) return;
+            const items = splitArtistEditorTokenValues(field.inputEl.value);
+            const predefinedLower = fieldKey === 'genre' && artistEditorGenres.length
+                ? artistEditorGenres.map(function(genre) { return genre.toLowerCase(); })
+                : null;
+            field.tagsEl.innerHTML = '';
+            items.forEach(function(item) {
+                const tag = document.createElement('span');
+                const isInvalid = predefinedLower && !predefinedLower.includes(item.toLowerCase());
+                tag.className = 'tag-item ' + field.tagClass + (isInvalid ? ' tag-invalid' : '');
+                if (isInvalid) tag.title = 'Непознат жанр';
+                const label = document.createElement('span');
+                label.textContent = fieldKey === 'genre' ? item : localizeText(item);
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'tag-remove';
+                removeBtn.setAttribute('aria-label', t('lista.remove') + ': ' + item);
+                removeBtn.innerHTML = '&times;';
+                removeBtn.addEventListener('mousedown', function(event) {
+                    event.preventDefault();
+                });
+                removeBtn.addEventListener('click', function() {
+                    const nextItems = items.filter(function(currentItem) {
+                        return currentItem.toLowerCase() !== item.toLowerCase();
+                    });
+                    syncArtistEditorTokenInput(field.inputEl, nextItems);
+                    field.entryEl.focus();
+                });
+                tag.appendChild(label);
+                tag.appendChild(removeBtn);
+                field.tagsEl.appendChild(tag);
+            });
+        }
+
+        function initializeArtistEditorAutocomplete() {
+            if (!artistEditorSession) return;
+            artistEditorSession.autocompleteData = buildArtistEditorAutocompleteData(artistEditorSession.workingBands);
+            artistEditorSession.tokenFields = {
+                city: {
+                    tagClass: 'city-tag',
+                    wrapperEl: artistEditorSession.cityWrapperEl,
+                    inputEl: artistEditorSession.cityEl,
+                    entryEl: artistEditorSession.cityEntryEl,
+                    tagsEl: artistEditorSession.cityTagsEl,
+                    dropdownEl: artistEditorSession.cityAutocompleteEl,
+                    data: function() { return artistEditorSession.autocompleteData.cities; },
+                    renderSuggestion: function(item) { return esc(localizeText(item.name)) + '<span class="count">(' + item.count + ')</span>'; }
+                },
+                genre: {
+                    tagClass: 'genre-tag',
+                    wrapperEl: artistEditorSession.genreWrapperEl,
+                    inputEl: artistEditorSession.genreEl,
+                    entryEl: artistEditorSession.genreEntryEl,
+                    tagsEl: artistEditorSession.genreTagsEl,
+                    dropdownEl: artistEditorSession.genreAutocompleteEl,
+                    data: function() { return artistEditorSession.autocompleteData.genres; },
+                    renderSuggestion: function(item) { return esc(item.name) + '<span class="count">(' + item.count + ')</span>'; },
+                    limit: 200
+                },
+                soundsLike: {
+                    tagClass: 'sounds-like-tag',
+                    wrapperEl: artistEditorSession.soundsLikeWrapperEl,
+                    inputEl: artistEditorSession.soundsLikeEl,
+                    entryEl: artistEditorSession.soundsLikeEntryEl,
+                    tagsEl: artistEditorSession.soundsLikeTagsEl,
+                    dropdownEl: artistEditorSession.soundsLikeAutocompleteEl,
+                    data: function() { return artistEditorSession.autocompleteData.soundsLike; },
+                    renderSuggestion: function(item) { return esc(localizeText(item.name)) + '<span class="count">(' + item.count + ')</span>'; }
+                },
+                label: {
+                    tagClass: 'label-tag',
+                    wrapperEl: artistEditorSession.labelWrapperEl,
+                    inputEl: artistEditorSession.labelEl,
+                    entryEl: artistEditorSession.labelEntryEl,
+                    tagsEl: artistEditorSession.labelTagsEl,
+                    dropdownEl: artistEditorSession.labelAutocompleteEl,
+                    data: function() { return artistEditorSession.autocompleteData.labels; },
+                    renderSuggestion: function(item) { return esc(localizeText(item.name)) + '<span class="count">(' + item.count + ')</span>'; }
+                }
+            };
+
+            Object.entries(artistEditorSession.tokenFields).forEach(function(entry) {
+                const fieldKey = entry[0];
+                const field = entry[1];
+                let selectedIndex = -1;
+
+                function closeSuggestions() {
+                    field.dropdownEl.classList.remove('active');
+                    field.dropdownEl.innerHTML = '';
+                    selectedIndex = -1;
+                }
+
+                function getSelectedItems() {
+                    return splitArtistEditorTokenValues(field.inputEl.value);
+                }
+
+                function addItems(values) {
+                    const currentItems = getSelectedItems();
+                    const seen = new Set(currentItems.map(function(item) { return item.toLowerCase(); }));
+                    const nextItems = currentItems.slice();
+                    values.forEach(function(value) {
+                        const trimmedValue = String(value || '').trim();
+                        if (!trimmedValue) return;
+                        const key = trimmedValue.toLowerCase();
+                        if (seen.has(key)) return;
+                        seen.add(key);
+                        nextItems.push(trimmedValue);
+                    });
+                    syncArtistEditorTokenInput(field.inputEl, nextItems);
+                }
+
+                function commitCurrentTerm() {
+                    const term = field.entryEl.value.trim();
+                    if (!term) return false;
+                    addItems([term]);
+                    field.entryEl.value = '';
+                    closeSuggestions();
+                    return true;
+                }
+
+                function showSuggestions() {
+                    const term = field.entryEl.value.trim().toLowerCase();
+                    const selectedItems = new Set(getSelectedItems().map(function(item) { return item.toLowerCase(); }));
+                    const filtered = field.data().filter(function(item) {
+                        const nameLower = String(item.name || '').toLowerCase();
+                        return (term === '' || nameLower.includes(term)) && !selectedItems.has(nameLower);
+                    }).slice(0, field.limit || 15);
+                    if (!filtered.length) {
+                        closeSuggestions();
+                        return;
+                    }
+                    field.dropdownEl.innerHTML = filtered.map(function(item, idx) {
+                        return '<div class="autocomplete-item' + (idx === selectedIndex ? ' selected' : '') + '" data-value="' + escA(item.name) + '">' + field.renderSuggestion(item) + '</div>';
+                    }).join('');
+                    field.dropdownEl.classList.add('active');
+                    selectedIndex = -1;
+                }
+
+                function selectItem(value) {
+                    addItems([value]);
+                    field.entryEl.value = '';
+                    closeSuggestions();
+                    field.entryEl.focus();
+                }
+
+                field.wrapperEl.addEventListener('click', function(event) {
+                    if (event.target.closest('.tag-remove')) return;
+                    field.entryEl.focus();
+                });
+                field.inputEl.addEventListener('input', function() {
+                    updateArtistEditorTokenTags(fieldKey);
+                });
+                field.entryEl.addEventListener('input', function() {
+                    if (field.entryEl.value.includes(',')) {
+                        const parts = field.entryEl.value.split(',');
+                        const pending = parts.pop() || '';
+                        const committed = parts.map(function(item) { return item.trim(); }).filter(Boolean);
+                        if (committed.length) addItems(committed);
+                        field.entryEl.value = pending.trimStart();
+                    }
+                    showSuggestions();
+                });
+                field.entryEl.addEventListener('focus', function() {
+                    showSuggestions();
+                });
+                field.entryEl.addEventListener('blur', function() {
+                    setTimeout(function() {
+                        if (field.entryEl.value.trim()) commitCurrentTerm();
+                        closeSuggestions();
+                    }, 200);
+                });
+                field.entryEl.addEventListener('keydown', function(event) {
+                    const items = field.dropdownEl.querySelectorAll('.autocomplete-item');
+                    if (event.key === 'ArrowDown') {
+                        if (!items.length) return;
+                        event.preventDefault();
+                        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                        items.forEach(function(item, idx) { item.classList.toggle('selected', idx === selectedIndex); });
+                        if (items[selectedIndex]) items[selectedIndex].scrollIntoView({ block: 'nearest' });
+                    } else if (event.key === 'ArrowUp') {
+                        if (!items.length) return;
+                        event.preventDefault();
+                        selectedIndex = Math.max(selectedIndex - 1, 0);
+                        items.forEach(function(item, idx) { item.classList.toggle('selected', idx === selectedIndex); });
+                        if (items[selectedIndex]) items[selectedIndex].scrollIntoView({ block: 'nearest' });
+                    } else if (event.key === 'Enter' && selectedIndex >= 0) {
+                        event.preventDefault();
+                        if (items[selectedIndex]) selectItem(items[selectedIndex].dataset.value);
+                    } else if (event.key === 'Enter' || event.key === ',') {
+                        event.preventDefault();
+                        commitCurrentTerm();
+                    } else if (event.key === 'Backspace' && !field.entryEl.value) {
+                        const currentItems = getSelectedItems();
+                        if (!currentItems.length) return;
+                        currentItems.pop();
+                        syncArtistEditorTokenInput(field.inputEl, currentItems);
+                    } else if (event.key === 'Escape') {
+                        closeSuggestions();
+                    }
+                });
+                field.dropdownEl.addEventListener('click', function(event) {
+                    const item = event.target.closest('.autocomplete-item');
+                    if (item) selectItem(item.dataset.value);
+                });
+                updateArtistEditorTokenTags(fieldKey);
+            });
+        }
+
+        function ensureArtistEditorStyles() {
+            if (document.getElementById('artist-editor-panel-styles')) return;
+            const style = document.createElement('style');
+            style.id = 'artist-editor-panel-styles';
+            style.textContent =
+                'body.artist-editor-active .artist-container{' +
+                    'width:min(100%,480px);margin-left:auto;margin-right:auto;transform:translateX(calc(min(28rem,36vw) / -2));transition:transform .2s ease;' +
+                '}' +
+                '.artist-editor-panel{' +
+                    'position:fixed;top:5.25rem;right:1rem;bottom:1rem;width:min(26rem,calc(100vw - 2rem));z-index:1200;' +
+                    'background:rgba(255,255,255,.95);backdrop-filter:blur(18px);border:1px solid rgba(15,23,42,.12);' +
+                    'border-radius:0;box-shadow:0 28px 60px rgba(15,23,42,.18);display:flex;flex-direction:column;overflow:hidden;' +
+                '}' +
+                'body.dark-mode .artist-editor-panel{' +
+                    'background:rgba(15,23,42,.94);border-color:rgba(148,163,184,.18);box-shadow:0 28px 60px rgba(2,6,23,.42);' +
+                '}' +
+                '.artist-editor-panel *{box-sizing:border-box;}' +
+                '.artist-editor-toolbar{' +
+                    'display:flex;flex-direction:column;align-items:stretch;gap:.8rem;padding:1rem;border-bottom:1px solid rgba(15,23,42,.08);' +
+                '}' +
+                'body.dark-mode .artist-editor-toolbar{border-bottom-color:rgba(148,163,184,.14);}' +
+                '.artist-editor-title{margin:0;font-family:\'Dela Gothic One\',\'Montserrat\',sans-serif;font-size:1.2rem;line-height:1.1;letter-spacing:.08em;text-transform:uppercase;color:var(--text-color);}' +
+                '.artist-editor-toolbar-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;}' +
+                '.artist-editor-primary-actions{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-left:auto;}' +
+                '.artist-editor-link,.artist-editor-btn{' +
+                    'appearance:none;border:none;text-decoration:none;border-radius:999px;padding:.62rem .88rem;font-size:.78rem;font-weight:700;' +
+                    'display:inline-flex;align-items:center;gap:.42rem;cursor:pointer;box-shadow:none;transition:transform .15s ease,background .15s ease,border-color .15s ease,color .15s ease;' +
+                '}' +
+                '.artist-editor-link,.artist-editor-btn.secondary{' +
+                    'background:rgba(15,23,42,.05);color:var(--text-color);border:1px solid rgba(15,23,42,.08);' +
+                '}' +
+                '.artist-editor-btn.primary{' +
+                    'background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;' +
+                '}' +
+                '.artist-editor-btn.danger{' +
+                    'background:rgba(239,68,68,.12);color:#b91c1c;border:1px solid rgba(239,68,68,.24);' +
+                '}' +
+                'body.dark-mode .artist-editor-link,body.dark-mode .artist-editor-btn.secondary{' +
+                    'background:rgba(148,163,184,.12);border-color:rgba(148,163,184,.22);color:#e5e7eb;' +
+                '}' +
+                'body.dark-mode .artist-editor-btn.danger{' +
+                    'background:rgba(239,68,68,.16);border-color:rgba(248,113,113,.28);color:#fecaca;' +
+                '}' +
+                '.artist-editor-link:hover,.artist-editor-btn:hover{transform:translateY(-1px);}' +
+                '.artist-editor-status{padding:0 1rem .75rem;min-height:1.2rem;font-size:.74rem;line-height:1.45;color:var(--text-muted);}' +
+                '.artist-editor-status[data-tone="error"]{color:#b91c1c;}' +
+                '.artist-editor-status[data-tone="success"]{color:#15803d;}' +
+                '.artist-editor-scroll{padding:0 1rem 1rem;overflow:auto;display:flex;flex-direction:column;gap:1rem;}' +
+                '.artist-editor-section{' +
+                    'display:flex;flex-direction:column;gap:.7rem;padding:.9rem;border-radius:0;background:rgba(15,23,42,.03);border:1px solid rgba(15,23,42,.05);' +
+                '}' +
+                'body.dark-mode .artist-editor-section{background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.12);}' +
+                '.artist-editor-section.is-highlighted{border-color:#f59e0b;background:rgba(245,158,11,.08);box-shadow:0 0 0 1px rgba(245,158,11,.18);}' +
+                'body.dark-mode .artist-editor-section.is-highlighted{background:rgba(245,158,11,.14);border-color:rgba(251,191,36,.54);box-shadow:0 0 0 1px rgba(251,191,36,.24);}' +
+                '.artist-editor-section h3{margin:0;font-size:.82rem;font-weight:800;color:var(--text-color);display:flex;align-items:center;justify-content:space-between;gap:.75rem;}' +
+                '.artist-editor-section h3 span{font-family:\'Dela Gothic One\',\'Montserrat\',sans-serif;font-size:.96rem;line-height:1.1;letter-spacing:.04em;}' +
+                '.artist-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}' +
+                '.artist-editor-field{display:flex;flex-direction:column;gap:.38rem;}' +
+                '.artist-editor-field label{font-size:.72rem;font-weight:700;color:var(--text-muted);}' +
+                '.artist-editor-input,.artist-editor-select{' +
+                    'width:100%;border-radius:0;border:1px solid rgba(15,23,42,.12);background:rgba(255,255,255,.88);padding:.72rem .82rem;color:var(--text-color);font:inherit;' +
+                '}' +
+                '.artist-editor-input:focus,.artist-editor-select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.16);}' +
+                '.artist-editor-input.is-invalid,.artist-editor-select.is-invalid{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.14);}' +
+                'body.dark-mode .artist-editor-input,body.dark-mode .artist-editor-select{background:rgba(2,6,23,.52);border-color:rgba(148,163,184,.16);color:#e5e7eb;}' +
+                '.artist-editor-help{margin:0;font-size:.71rem;line-height:1.4;color:var(--text-muted);}' +
+                '.artist-editor-panel .autocomplete-wrapper{width:100%;}' +
+                '.artist-editor-panel .token-input-shell{width:100%;min-width:0;border-radius:0;background:rgba(255,255,255,.88);border-color:rgba(15,23,42,.12);}' +
+                '.artist-editor-panel .token-entry-input{color:var(--text-color);}' +
+                'body.dark-mode .artist-editor-panel .token-input-shell{background:rgba(2,6,23,.52);border-color:rgba(148,163,184,.16);}' +
+                'body.dark-mode .artist-editor-panel .token-entry-input{color:#e5e7eb;}' +
+                '.artist-editor-panel .autocomplete-dropdown{border-radius:0;z-index:20;}' +
+                '.artist-editor-links{display:flex;flex-direction:column;gap:.55rem;}' +
+                '.artist-editor-links-actions{display:flex;justify-content:flex-start;}' +
+                '.artist-editor-link-row{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr) auto;gap:.5rem;align-items:start;}' +
+                '.artist-editor-remove{width:2.5rem;height:2.5rem;display:inline-flex;align-items:center;justify-content:center;}' +
+                '.artist-editor-inline{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;}' +
+                '.artist-editor-toggle{display:flex;align-items:center;justify-content:space-between;gap:.9rem;padding:.15rem 0;font-size:.8rem;font-weight:700;color:var(--text-color);cursor:pointer;}' +
+                '.artist-editor-toggle-copy{flex:1;min-width:0;}' +
+                '.artist-editor-switch{position:relative;display:inline-flex;flex:0 0 auto;width:3.2rem;height:1.8rem;}' +
+                '.artist-editor-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;}' +
+                '.artist-editor-switch-slider{position:relative;display:block;width:100%;height:100%;border-radius:999px;background:rgba(148,163,184,.5);box-shadow:inset 0 0 0 1px rgba(15,23,42,.08);transition:background .2s ease,box-shadow .2s ease;}' +
+                '.artist-editor-switch-slider::before{content:"";position:absolute;top:.2rem;left:.2rem;width:1.4rem;height:1.4rem;border-radius:999px;background:#fff;box-shadow:0 2px 6px rgba(15,23,42,.22);transition:transform .2s ease;}' +
+                '.artist-editor-switch input:checked + .artist-editor-switch-slider{background:#22c55e;}' +
+                '.artist-editor-switch input:checked + .artist-editor-switch-slider::before{transform:translateX(1.4rem);}' +
+                '.artist-editor-switch input:focus-visible + .artist-editor-switch-slider{box-shadow:0 0 0 3px rgba(37,99,235,.18);}' +
+                'body.dark-mode .artist-editor-switch-slider{background:rgba(71,85,105,.92);box-shadow:inset 0 0 0 1px rgba(148,163,184,.18);}' +
+                'body.dark-mode .artist-editor-switch input:checked + .artist-editor-switch-slider{background:#22c55e;}' +
+                '.artist-editor-color-input{padding:.18rem;height:2.7rem;cursor:pointer;}' +
+                '@media (max-width: 980px){' +
+                    'body.artist-editor-active .artist-container{transform:none;padding-bottom:min(40rem,72vh);}' +
+                    '.artist-editor-panel{top:4.5rem;left:.75rem;right:.75rem;bottom:.75rem;width:auto;}' +
+                '}' +
+                '@media (max-width: 640px){' +
+                    'body.artist-editor-active .artist-container{padding-bottom:calc(50vh + 1rem);}' +
+                    '.artist-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
+                    'body.dark-mode .artist-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
+                    '.artist-editor-toolbar{position:sticky;top:0;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.45rem .55rem;padding:calc(.75rem + env(safe-area-inset-top,0px)) .8rem .7rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
+                    'body.dark-mode .artist-editor-toolbar{background:rgba(15,23,42,.98);}' +
+                    '.artist-editor-title{display:flex;align-items:center;min-height:2.15rem;font-size:clamp(.76rem,3.8vw,.92rem);line-height:1;letter-spacing:.05em;min-width:0;}' +
+                    '.artist-editor-status{padding:0 1rem .65rem;}' +
+                    '.artist-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
+                    '.artist-editor-toolbar-actions{flex-direction:row;align-items:center;justify-content:flex-end;gap:.35rem;flex-wrap:wrap;min-width:0;}' +
+                    '.artist-editor-link,.artist-editor-btn{padding:.42rem .58rem;font-size:.68rem;gap:.3rem;white-space:nowrap;}' +
+                    '.artist-editor-link{width:auto;justify-content:center;}' +
+                    '.artist-editor-toolbar > .artist-editor-toolbar-actions .artist-editor-link,' +
+                    '.artist-editor-toolbar > .artist-editor-toolbar-actions .artist-editor-primary-actions .artist-editor-btn{padding:.45rem;min-width:2.15rem;height:2.15rem;font-size:0;gap:0;}' +
+                    '.artist-editor-toolbar > .artist-editor-toolbar-actions .artist-editor-link i,' +
+                    '.artist-editor-toolbar > .artist-editor-toolbar-actions .artist-editor-primary-actions .artist-editor-btn i{font-size:.82rem;margin:0;}' +
+                    '.artist-editor-primary-actions{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin-left:0;justify-content:flex-end;width:auto;}' +
+                    '.artist-editor-primary-actions .artist-editor-btn{width:auto;justify-content:center;}' +
+                    '.artist-editor-inline .artist-editor-btn{flex:1 1 calc(50% - .35rem);justify-content:center;}' +
+                    '#artist-editor-greeting-preview{flex-direction:column;align-items:stretch !important;}' +
+                    '#artist-editor-greeting-preview .artist-editor-btn{width:100%;justify-content:center;}' +
+                    '.artist-editor-grid{grid-template-columns:1fr;}' +
+                    '.artist-editor-link-row{grid-template-columns:1fr;}' +
+                    '.artist-editor-links-actions .artist-editor-btn{width:100%;justify-content:center;}' +
+                    '.artist-editor-remove{width:100%;height:2.75rem;}' +
+                    '.artist-editor-scroll > .artist-editor-toolbar-actions:last-child{position:static;margin-top:.2rem;padding:0;background:none;}' +
+                    'body.dark-mode .artist-editor-scroll > .artist-editor-toolbar-actions:last-child{background:none;}' +
+                    '.artist-editor-scroll > .artist-editor-toolbar-actions:last-child .artist-editor-btn{width:100%;justify-content:center;}' +
+                '}';
+            document.head.appendChild(style);
+        }
+
+        function focusArtistEditorSection(sectionKey) {
+            if (!artistEditorSession || !sectionKey) return;
+            const map = {
+                confirmation: artistEditorSession.confirmationSectionEl
+            };
+            const target = map[sectionKey];
+            if (!target) return;
+            target.classList.add('is-highlighted');
+            window.setTimeout(function() {
+                target.classList.remove('is-highlighted');
+            }, 2600);
+            function scrollTarget(behavior) {
+                if (artistEditorSession.scrollEl) {
+                    const nextTop = target.offsetTop - artistEditorSession.scrollEl.offsetTop - 8;
+                    const maxScroll = artistEditorSession.scrollEl.scrollHeight - artistEditorSession.scrollEl.clientHeight;
+                    const extraPadding = Math.max(0, nextTop - maxScroll);
+                    const currentPaddingBottom = parseFloat(artistEditorSession.scrollEl.style.paddingBottom) || artistEditorSession.scrollBasePaddingBottom;
+                    const requiredPaddingBottom = artistEditorSession.scrollBasePaddingBottom + extraPadding;
+                    artistEditorSession.scrollEl.style.paddingBottom = Math.round(Math.max(currentPaddingBottom, requiredPaddingBottom)) + 'px';
+                    void artistEditorSession.scrollEl.offsetHeight;
+                    artistEditorSession.scrollEl.scrollTo({
+                        top: Math.max(0, Math.round(nextTop)),
+                        behavior: behavior || 'auto'
+                    });
+                    return;
+                }
+                target.scrollIntoView({ behavior: behavior || 'auto', block: 'start', inline: 'nearest' });
+            }
+            window.requestAnimationFrame(function() {
+                scrollTarget('auto');
+                window.requestAnimationFrame(function() {
+                    scrollTarget('smooth');
+                });
+            });
+            window.setTimeout(function() {
+                scrollTarget('auto');
+                window.requestAnimationFrame(function() {
+                    scrollTarget('smooth');
+                });
+            }, 240);
+        }
+
+        function setArtistEditorStatus(message, tone) {
+            if (!artistEditorSession || !artistEditorSession.statusEl) return;
+            artistEditorSession.statusEl.textContent = message || '';
+            artistEditorSession.statusEl.dataset.tone = tone || 'idle';
+        }
+
+        function formatArtistEditorRecordingTime(totalSeconds) {
+            return String(Math.floor(totalSeconds / 60)).padStart(2, '0') + ':' + String(totalSeconds % 60).padStart(2, '0');
+        }
+
+        function resetArtistEditorGreetingPreview() {
+            if (!artistEditorSession) return;
+            if (artistEditorSession.greetingPreviewUrl) {
+                URL.revokeObjectURL(artistEditorSession.greetingPreviewUrl);
+                artistEditorSession.greetingPreviewUrl = null;
+            }
+            artistEditorSession.greetingBlob = null;
+            artistEditorSession.greetingExt = null;
+            artistEditorSession.greetingPreviewWrap.style.display = 'none';
+            artistEditorSession.greetingAudioEl.removeAttribute('src');
+            artistEditorSession.greetingAudioEl.load();
+            artistEditorSession.greetingTimerEl.style.display = 'none';
+            artistEditorSession.greetingTimerEl.textContent = '00:00';
+            artistEditorSession.greetingFileEl.value = '';
+        }
+
+        function setArtistEditorGreetingBlob(blob, ext) {
+            if (!artistEditorSession) return;
+            resetArtistEditorGreetingPreview();
+            artistEditorSession.greetingBlob = blob;
+            artistEditorSession.greetingExt = ext;
+            artistEditorSession.greetingPreviewUrl = URL.createObjectURL(blob);
+            artistEditorSession.greetingAudioEl.src = artistEditorSession.greetingPreviewUrl;
+            artistEditorSession.greetingPreviewWrap.style.display = 'flex';
+        }
+
+        function stopArtistEditorRecording() {
+            if (!artistEditorSession) return;
+            if (artistEditorSession.greetingRecorder && artistEditorSession.greetingRecorder.state !== 'inactive') {
+                artistEditorSession.greetingRecorder.stop();
+            }
+            if (artistEditorSession.greetingRecordingTimer) {
+                clearInterval(artistEditorSession.greetingRecordingTimer);
+                artistEditorSession.greetingRecordingTimer = null;
+            }
+            artistEditorSession.greetingRecordingSeconds = 0;
+            artistEditorSession.greetingTimerEl.style.display = 'none';
+            artistEditorSession.greetingRecordBtn.innerHTML = '<i class="fas fa-microphone"></i> ' + t('artist.record');
+            artistEditorSession.greetingRecordBtn.classList.remove('recording');
+        }
+
+        function clearArtistEditorAccentPreview() {
+            const previewBg = document.querySelector('.vfx-preview-temp');
+            if (previewBg) previewBg.remove();
+            const previewStyle = document.querySelector('.artist-editor-preview-style');
+            if (previewStyle) previewStyle.remove();
+            document.body.classList.remove('verified-accent', 'vfx-dark', 'vfx-light');
+            document.body.style.removeProperty('--va-bg');
+            document.body.style.removeProperty('--va-accent2');
+            document.body.style.removeProperty('--va-accent2-text');
+            const root = document.documentElement;
+            ['--artist-accent-1', '--artist-accent-2', '--vfx-c1', '--vfx-c2', '--vfx-c1-glow', '--vfx-c2-glow'].forEach(function(prop) {
+                root.style.removeProperty(prop);
+            });
+        }
+
+        function ensureArtistEditorPreviewBg(c1) {
+            let bg = document.querySelector('.vfx-preview-temp');
+            if (!bg) {
+                bg = document.createElement('div');
+                bg.className = 'vfx-bg vfx-preview-temp';
+                bg.innerHTML =
+                    '<div class="vfx-bg__layer vfx-bg__gradient"></div>' +
+                    '<div class="vfx-bg__layer vfx-bg__radials"></div>' +
+                    '<div class="vfx-bg__layer vfx-bg__grid"></div>';
+                document.body.insertBefore(bg, document.body.firstChild);
+            }
+            const r = parseInt(c1.slice(1, 3), 16);
+            const g = parseInt(c1.slice(3, 5), 16);
+            const b = parseInt(c1.slice(5, 7), 16);
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            document.body.classList.add('verified-accent');
+            document.body.classList.toggle('vfx-dark', luminance <= 0.55);
+            document.body.classList.toggle('vfx-light', luminance > 0.55);
+            return bg;
+        }
+
+        function applyArtistEditorAccentPreview(artist) {
+            if (!artist || !artist.confirmed || !artist.accentColors || (!artist.accentColors[0] && !artist.accentColors[1])) {
+                clearArtistEditorAccentPreview();
+                return;
+            }
+            const c1 = artist.accentColors[0] || artist.accentColors[1];
+            const c2 = artist.accentColors[1] || artist.accentColors[0];
+            ensureArtistEditorPreviewBg(c1);
+
+            const root = document.documentElement;
+            root.style.setProperty('--artist-accent-1', c1);
+            root.style.setProperty('--artist-accent-2', c2);
+            root.style.setProperty('--vfx-c1', c1);
+            root.style.setProperty('--vfx-c2', c2);
+            root.style.setProperty('--vfx-c1-glow', c1 + '40');
+            root.style.setProperty('--vfx-c2-glow', c2 + '30');
+
+            const dark = document.body.classList.contains('vfx-dark');
+            function darkenHex(hex, factor) {
+                return 'rgb(' +
+                    Math.max(0, Math.round(parseInt(hex.slice(1, 3), 16) * factor)) + ',' +
+                    Math.max(0, Math.round(parseInt(hex.slice(3, 5), 16) * factor)) + ',' +
+                    Math.max(0, Math.round(parseInt(hex.slice(5, 7), 16) * factor)) + ')';
+            }
+            function lightenHex(hex, factor) {
+                return 'rgb(' +
+                    Math.round(255 - (255 - parseInt(hex.slice(1, 3), 16)) * factor) + ',' +
+                    Math.round(255 - (255 - parseInt(hex.slice(3, 5), 16)) * factor) + ',' +
+                    Math.round(255 - (255 - parseInt(hex.slice(5, 7), 16)) * factor) + ')';
+            }
+
+            const gradientLayer = document.querySelector('.vfx-bg__gradient');
+            const radialLayer = document.querySelector('.vfx-bg__radials');
+            const gridLayer = document.querySelector('.vfx-bg__grid');
+            if (gradientLayer && radialLayer) {
+                if (dark) {
+                    gradientLayer.style.background = 'linear-gradient(135deg, ' + darkenHex(c1, 0.65) + ' 0%, ' + darkenHex(c1, 0.55) + ' 50%, ' + darkenHex(c1, 0.45) + ' 100%)';
+                    radialLayer.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '30 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '22 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '1a 0%, transparent 50%)';
+                    document.body.style.setProperty('--va-bg', darkenHex(c1, 0.55));
+                } else {
+                    gradientLayer.style.background = 'linear-gradient(135deg, ' + lightenHex(c1, 0.65) + ' 0%, ' + lightenHex(c1, 0.55) + ' 50%, ' + lightenHex(c1, 0.45) + ' 100%)';
+                    radialLayer.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '28 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '1a 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '14 0%, transparent 50%)';
+                    document.body.style.setProperty('--va-bg', lightenHex(c1, 0.55));
+                }
+            }
+            if (gridLayer) {
+                gridLayer.style.backgroundImage = 'linear-gradient(' + c1 + '14 0.3px, transparent 0.3px), linear-gradient(90deg, ' + c1 + '14 0.3px, transparent 0.3px)';
+            }
+
+            const tc = dark ? '#fff' : '#1a1a2e';
+            const tcRgb = dark ? '255,255,255' : '0,0,0';
+            const headerLum = (0.299 * parseInt(c1.slice(1, 3), 16) + 0.587 * parseInt(c1.slice(3, 5), 16) + 0.114 * parseInt(c1.slice(5, 7), 16)) / 255;
+            const headerText = headerLum > 0.55 ? '#000' : '#fff';
+            const headerHoverBg = headerLum > 0.55 ? '#000' : '#fff';
+            const headerHoverText = headerLum > 0.55 ? '#fff' : '#000';
+            const c2Lum = (0.299 * parseInt(c2.slice(1, 3), 16) + 0.587 * parseInt(c2.slice(3, 5), 16) + 0.114 * parseInt(c2.slice(5, 7), 16)) / 255;
+            const accentText = c2Lum > 0.55 ? '#000' : '#fff';
+            document.body.style.setProperty('--va-accent2', c2);
+            document.body.style.setProperty('--va-accent2-text', accentText);
+            const avatar = document.querySelector('.artist-avatar');
+            if (avatar) avatar.style.borderColor = c2;
+
+            const nameEl = document.querySelector('.artist-name');
+            if (nameEl) {
+                nameEl.style.color = tc;
+                nameEl.style.textShadow = dark
+                    ? '0 0 30px ' + c2 + '50, 0 0 60px ' + c2 + '30, 0 2px 10px rgba(0,0,0,0.5)'
+                    : '0 0 20px ' + c2 + '28, 0 0 40px ' + c2 + '18, 0 1px 4px rgba(0,0,0,0.06)';
+                const dot = nameEl.querySelector('.status-dot');
+                if (dot) dot.style.boxShadow = '0 0 0 2px rgba(' + tcRgb + ',0.2)';
+            }
+
+            const badgeAlpha = dark ? '30' : '20';
+            const badgeBorder = dark ? '50' : '38';
+            document.querySelectorAll('.artist-city').forEach(function(el) {
+                el.style.background = c2 + badgeAlpha;
+                el.style.color = tc;
+                el.style.border = '1px solid ' + c2 + badgeBorder;
+            });
+            document.querySelectorAll('.artist-genre').forEach(function(el) {
+                el.style.background = c2 + badgeAlpha;
+                el.style.color = tc;
+                el.style.border = '1px solid ' + c2 + badgeBorder;
+            });
+            document.querySelectorAll('.artist-label').forEach(function(el) {
+                el.style.background = c2 + (dark ? '40' : '28');
+                el.style.color = tc;
+            });
+            document.querySelectorAll('.section-title').forEach(function(el) {
+                el.style.borderLeft = '3px solid ' + c2;
+                el.style.paddingLeft = '0.65rem';
+                const icon = el.querySelector('i');
+                if (icon) icon.style.color = c2;
+            });
+            document.querySelectorAll('.artist-link').forEach(function(link) {
+                link.style.setProperty('--link-accent', c1);
+            });
+
+            const previewStyle = document.querySelector('.artist-editor-preview-style');
+            if (previewStyle) previewStyle.remove();
+            const style = document.createElement('style');
+            style.className = 'artist-editor-preview-style';
+            style.textContent =
+                'body.verified-accent header,' +
+                'body.dark-mode.verified-accent header,' +
+                'html.dark-mode body.verified-accent header{' +
+                    'background:' + c1 + ' !important;border-bottom:1px solid ' + c1 + '40 !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;' +
+                '}' +
+                'body.verified-accent header::before,' +
+                'body.verified-accent header::after,' +
+                'body.dark-mode.verified-accent header::before,' +
+                'body.dark-mode.verified-accent header::after,' +
+                'html.dark-mode body.verified-accent header::before,' +
+                'html.dark-mode body.verified-accent header::after{' +
+                    'content:none !important;display:none !important;background:none !important;opacity:0 !important;width:0 !important;height:0 !important;' +
+                '}' +
+                'body.verified-accent header #artist-page-title,' +
+                'body.verified-accent header .header-btn,' +
+                'body.verified-accent header .header-edit-btn,' +
+                'body.verified-accent header .header-btn i,' +
+                'body.verified-accent header .header-edit-btn i,' +
+                'body.verified-accent header .site-nav-trigger,' +
+                'body.verified-accent header .site-nav-trigger i,' +
+                'body.verified-accent header .site-nav-menu a,' +
+                'body.verified-accent header .site-nav-menu a i{' +
+                    'color:' + headerText + ' !important;' +
+                '}' +
+                'body.verified-accent header .nav-separator{background:' + headerText + ' !important;}' +
+                'body.verified-accent header .header-btn:hover,' +
+                'body.verified-accent header .header-edit-btn:hover{' +
+                    'background:' + headerHoverBg + ' !important;color:' + headerHoverText + ' !important;border:none !important;' +
+                '}' +
+                'body.verified-accent header .header-btn:hover i,' +
+                'body.verified-accent header .header-edit-btn:hover i{' +
+                    'color:' + headerHoverText + ' !important;' +
+                '}' +
+                'body.verified-accent header .site-nav-menu{' +
+                    '--nav-bg:' + c1 + ';--nav-border:' + c1 + '40;--nav-text:' + headerText + ';--nav-hover-bg:' + headerHoverBg + ';' +
+                '}' +
+                'body.verified-accent header .site-nav-menu a:hover{' +
+                    'background:' + c2 + ' !important;color:' + accentText + ' !important;border-color:' + c2 + ' !important;' +
+                '}' +
+                'body.verified-accent header .site-nav-menu a:hover i{' +
+                    'color:' + accentText + ' !important;' +
+                '}' +
+                '.verified-accent .timeline-month-header{color:' + accentText + ' !important;background:' + c2 + ' !important;border-color:' + c2 + ' !important;}' +
+                '.verified-accent .timeline-month-header::before{background:' + c2 + ' !important;border-color:' + accentText + ' !important;}' +
+                '.popularity-graph-container svg [id="areaGradient"] stop:first-child { stop-color: ' + c2 + ' !important; }' +
+                '.popularity-graph-container svg [id="areaGradient"] stop:last-child { stop-color: ' + c2 + ' !important; }' +
+                '.popularity-graph-container svg path[stroke] { stroke: ' + c2 + ' !important; }' +
+                '.popularity-graph-container svg circle.graph-dot { fill: ' + c2 + ' !important; }' +
+                '.popularity-graph-container .graph-value-label span { color: ' + c2 + ' !important; }' +
+                '.release-play-btn { background: ' + c2 + ' !important; }' +
+                '.verified-accent .artist-link:hover { border-color: ' + c1 + '60 !important; }' +
+                '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +
+                '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }';
+            document.head.appendChild(style);
+        }
+
+        function normalizeArtistEditorLinks(links) {
+            if (!links || links.none === 'недостигаат податоци') {
+                return [{ platform: 'none', url: '' }];
+            }
+            const rows = [];
+            Object.entries(links).forEach(function(entry) {
+                const platform = entry[0];
+                const value = entry[1];
+                if (Array.isArray(value)) {
+                    value.forEach(function(url) {
+                        if (url && url !== 'недостигаат податоци') rows.push({ platform: platform, url: url });
+                    });
+                } else if (value && value !== 'недостигаат податоци') {
+                    rows.push({ platform: platform, url: value });
+                }
+            });
+            return rows.length ? rows : [{ platform: 'none', url: '' }];
+        }
+
+        function createArtistEditorLinkRow(platform, url) {
+            const row = document.createElement('div');
+            row.className = 'artist-editor-link-row';
+            row.innerHTML =
+                '<select class="artist-editor-select artist-editor-link-platform">' +
+                    artistEditorPlatforms.map(function(item) {
+                        return '<option value="' + escA(item.id) + '"' + (item.id === (platform || 'none') ? ' selected' : '') + '>' + esc(item.name) + '</option>';
+                    }).join('') +
+                '</select>' +
+                '<input type="url" class="artist-editor-input artist-editor-link-url" placeholder="' + escA(t('lista.enterUrl')) + '" value="' + escA(url || '') + '">' +
+                '<button type="button" class="artist-editor-btn secondary artist-editor-remove" title="' + escA(t('lista.remove')) + '"><i class="fas fa-times"></i></button>';
+            const select = row.querySelector('.artist-editor-link-platform');
+            const input = row.querySelector('.artist-editor-link-url');
+            input.addEventListener('input', function() {
+                const detected = detectArtistEditorPlatform(input.value.trim());
+                if (detected && select.value === 'none') {
+                    select.value = detected;
+                }
+                scheduleArtistEditorPreview();
+            });
+            select.addEventListener('change', scheduleArtistEditorPreview);
+            row.querySelector('.artist-editor-remove').addEventListener('click', function() {
+                row.remove();
+                scheduleArtistEditorPreview();
+            });
+            return row;
+        }
+
+        function buildArtistEditorLinkObject() {
+            const links = {};
+            artistEditorSession.linksEl.querySelectorAll('.artist-editor-link-row').forEach(function(row) {
+                const platform = (row.querySelector('.artist-editor-link-platform') || {}).value || 'none';
+                const url = ((row.querySelector('.artist-editor-link-url') || {}).value || '').trim();
+                if (!url) return;
+                const effectivePlatform = platform === 'none' ? (detectArtistEditorPlatform(url) || 'generic') : platform;
+                if (artistEditorMultiPlatformSet.has(effectivePlatform)) {
+                    if (!links[effectivePlatform]) links[effectivePlatform] = [];
+                    links[effectivePlatform].push(url);
+                } else if (!links[effectivePlatform]) {
+                    links[effectivePlatform] = url;
+                }
+            });
+            return Object.keys(links).length ? links : { none: 'недостигаат податоци' };
+        }
+
+        function buildArtistEditorPreviewBands(previewArtist) {
+            const previewBands = artistEditorSession.workingBands.slice();
+            if (artistEditorSession.bandIndex >= 0) {
+                previewBands[artistEditorSession.bandIndex] = previewArtist;
+            } else {
+                previewBands.push(previewArtist);
+            }
+            return previewBands;
+        }
+
+        function readArtistEditorArtist(previewMode) {
+            const displayName = artistEditorSession.nameEl.value.trim();
+            const previewName = displayName || (previewMode ? t('lista.addArtist') : '');
+            const accentOne = artistEditorSession.colorOneEl.value.trim();
+            const accentTwo = artistEditorSession.colorTwoEl.value.trim();
+            const nextArtist = {
+                name: previewName,
+                city: artistEditorSession.cityEl.value.trim() || 'недостигаат податоци',
+                genre: artistEditorSession.genreEl.value.trim() || 'недостигаат податоци',
+                soundsLike: artistEditorSession.soundsLikeEl.value.trim() || 'недостигаат податоци',
+                label: artistEditorSession.labelEl.value.trim() || null,
+                contact: artistEditorSession.contactEl.value.trim() || 'недостигаат податоци',
+                accentColors: (accentOne || accentTwo) ? [accentOne || null, accentTwo || null] : null,
+                confirmed: !!artistEditorSession.confirmedEl.checked,
+                links: buildArtistEditorLinkObject()
+            };
+            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist.image) nextArtist.image = artistEditorSession.baseArtist.image;
+            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist.spotifyName) nextArtist.spotifyName = artistEditorSession.baseArtist.spotifyName;
+            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist._activityStatus) nextArtist._activityStatus = artistEditorSession.baseArtist._activityStatus;
+            return nextArtist;
+        }
+
+        function validateArtistEditorArtist(artist) {
+            const rawName = artistEditorSession.nameEl.value.trim();
+            if (!rawName || rawName.length < 2) {
+                setArtistEditorStatus(t('lista.nameMinLength'), 'error');
+                return false;
+            }
+            const normalizedName = transliterate(rawName).toLowerCase();
+            const duplicate = artistEditorSession.workingBands.some(function(entry, index) {
+                if (index === artistEditorSession.bandIndex) return false;
+                return transliterate(entry.name || '').toLowerCase() === normalizedName;
+            });
+            if (duplicate) {
+                setArtistEditorStatus(t('lista.duplicateName'), 'error');
+                return false;
+            }
+            const contact = artistEditorSession.contactEl.value.trim();
+            if (contact && contact !== 'недостигаат податоци') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(contact)) {
+                    setArtistEditorStatus(t('lista.invalidEmail'), 'error');
+                    return false;
+                }
+            }
+            if (artistEditorGenres.length) {
+                const invalidGenres = artistEditorSession.genreEl.value.trim().split(',').map(function(value) {
+                    return value.trim();
+                }).filter(Boolean).filter(function(value) {
+                    return !artistEditorGenres.some(function(genre) { return genre.toLowerCase() === value.toLowerCase(); });
+                });
+                if (invalidGenres.length) {
+                    setArtistEditorStatus('Непознати жанрови: ' + invalidGenres.join(', '), 'error');
+                    return false;
+                }
+            }
+            const seenPlatforms = new Set();
+            const linkRows = Array.from(artistEditorSession.linksEl.querySelectorAll('.artist-editor-link-row'));
+            for (const row of linkRows) {
+                const platform = (row.querySelector('.artist-editor-link-platform') || {}).value || 'none';
+                const url = ((row.querySelector('.artist-editor-link-url') || {}).value || '').trim();
+                if (!url) continue;
+                try {
+                    const parsed = new URL(url);
+                    if (!/^https?:$/i.test(parsed.protocol)) throw new Error('protocol');
+                } catch (_) {
+                    setArtistEditorStatus('Невалиден линк.', 'error');
+                    return false;
+                }
+                const effectivePlatform = platform === 'none' ? (detectArtistEditorPlatform(url) || 'generic') : platform;
+                if (!artistEditorMultiPlatformSet.has(effectivePlatform) && seenPlatforms.has(effectivePlatform)) {
+                    setArtistEditorStatus('Дупликат платформа: ' + effectivePlatform, 'error');
+                    return false;
+                }
+                seenPlatforms.add(effectivePlatform);
+            }
+            return true;
+        }
+
+        function captureArtistPreviewNodes() {
+            return {
+                greeting: document.getElementById('greeting-container'),
+                graph: document.getElementById('popularity-graph-container'),
+                timeline: document.getElementById('timeline-container')
+            };
+        }
+
+        function restoreArtistPreviewNode(slotId, preservedNode) {
+            if (!preservedNode) return;
+            const slot = document.getElementById(slotId);
+            if (slot && slot !== preservedNode) {
+                slot.replaceWith(preservedNode);
+            }
+        }
+
+        function scheduleArtistEditorPreview() {
+            if (!artistEditorSession) return;
+            if (artistEditorSession.previewTimer) {
+                clearTimeout(artistEditorSession.previewTimer);
+            }
+            artistEditorSession.previewTimer = setTimeout(refreshArtistEditorPreview, 120);
+        }
+
+        function refreshArtistEditorPreview() {
+            if (!artistEditorSession) return;
+            const scrollX = window.scrollX;
+            const scrollY = window.scrollY;
+            const previewArtist = readArtistEditorArtist(true);
+            const preserved = captureArtistPreviewNodes();
+            const previewBands = buildArtistEditorPreviewBands(previewArtist);
+            renderArtist(previewArtist, artistEditorSession.thumbnail, previewBands, {
+                hideHeaderEditButton: true,
+                skipGreetingLookup: true,
+                skipVerifiedChrome: true
+            });
+            restoreArtistPreviewNode('greeting-container', previewArtist.confirmed ? preserved.greeting : null);
+            restoreArtistPreviewNode('popularity-graph-container', preserved.graph);
+            restoreArtistPreviewNode('timeline-container', preserved.timeline);
+            window.artistLinks = previewArtist.links || {};
+            applyArtistEditorAccentPreview(previewArtist);
+            window.scrollTo(scrollX, scrollY);
+        }
+
+        function fillArtistEditorForm(artist) {
+            artistEditorSession.nameEl.value = artist.name && artist.name !== t('lista.addArtist') ? artist.name : '';
+            artistEditorSession.cityEl.value = artist.city && artist.city !== 'недостигаат податоци' ? artist.city : '';
+            artistEditorSession.genreEl.value = artist.genre && artist.genre !== 'недостигаат податоци' ? artist.genre : '';
+            artistEditorSession.soundsLikeEl.value = artist.soundsLike && artist.soundsLike !== 'недостигаат податоци' ? artist.soundsLike : '';
+            artistEditorSession.labelEl.value = artist.label && artist.label !== 'недостигаат податоци' ? artist.label : '';
+            artistEditorSession.contactEl.value = artist.contact && artist.contact !== 'недостигаат податоци' ? artist.contact : '';
+            artistEditorSession.confirmedEl.checked = !!artist.confirmed;
+            artistEditorSession.colorOneEl.value = (artist.accentColors && artist.accentColors[0]) || '#e94560';
+            artistEditorSession.colorTwoEl.value = (artist.accentColors && artist.accentColors[1]) || '#ffa502';
+            updateArtistEditorTokenTags('city');
+            updateArtistEditorTokenTags('genre');
+            updateArtistEditorTokenTags('soundsLike');
+            updateArtistEditorTokenTags('label');
+            artistEditorSession.linksEl.innerHTML = '';
+            normalizeArtistEditorLinks(artist.links).forEach(function(entry) {
+                artistEditorSession.linksEl.appendChild(createArtistEditorLinkRow(entry.platform, entry.url));
+            });
+            setArtistEditorStatus('', 'idle');
+        }
+
+        function sortArtistEditorBands(list) {
+            return list.sort(function(a, b) {
+                return transliterate(a.name || '').localeCompare(transliterate(b.name || ''), 'en');
+            });
+        }
+
+        async function saveArtistEditorChanges() {
+            if (!artistEditorSession) return;
+            const nextArtist = readArtistEditorArtist(false);
+            if (!validateArtistEditorArtist(nextArtist)) return;
+
+            const updatedBands = artistEditorSession.workingBands.slice();
+            if (artistEditorSession.bandIndex >= 0) {
+                updatedBands[artistEditorSession.bandIndex] = nextArtist;
+            } else {
+                updatedBands.push(nextArtist);
+            }
+            sortArtistEditorBands(updatedBands);
+            if (window.MMMDrafts) {
+                window.MMMDrafts.save('bands.json', { muzickaMasterLista: updatedBands }, { muzickaMasterLista: artistEditorSession.originalBands });
+                if (artistEditorSession.greetingBlob && artistEditorSession.greetingExt && typeof window.MMMDrafts.saveAdditionalFile === 'function') {
+                    const arrayBuffer = await artistEditorSession.greetingBlob.arrayBuffer();
+                    const bytes = new Uint8Array(arrayBuffer);
+                    let binary = '';
+                    for (let index = 0; index < bytes.length; index++) {
+                        binary += String.fromCharCode(bytes[index]);
+                    }
+                    window.MMMDrafts.saveAdditionalFile(
+                        'bands.json',
+                        'greetings/' + generateSlug(nextArtist.name) + '.' + artistEditorSession.greetingExt,
+                        btoa(binary)
+                    );
+                }
+            }
+            window.bandsData = updatedBands;
+            artistEditorSession.workingBands = updatedBands;
+            artistEditorSession.autocompleteData = buildArtistEditorAutocompleteData(updatedBands);
+            artistEditorSession.baseArtist = Object.assign({}, nextArtist);
+            artistEditorSession.bandIndex = updatedBands.findIndex(function(entry) { return entry.name === nextArtist.name; });
+            artistEditorSession.isNew = false;
+            history.replaceState(null, '', buildLocalArtistEditorUrl(nextArtist.name));
+            setArtistEditorStatus(t('events.savedLocally'), 'success');
+            refreshArtistEditorPreview();
+        }
+
+        function deleteArtistEditorCurrent() {
+            if (!artistEditorSession) return;
+            if (artistEditorSession.isNew || artistEditorSession.bandIndex < 0) {
+                window.location.href = 'lista.html';
+                return;
+            }
+            if (!confirm(t('lista.deleteArtist') + '?')) return;
+            const updatedBands = artistEditorSession.workingBands.filter(function(_, index) {
+                return index !== artistEditorSession.bandIndex;
+            });
+            if (window.MMMDrafts) {
+                window.MMMDrafts.save('bands.json', { muzickaMasterLista: updatedBands }, { muzickaMasterLista: artistEditorSession.originalBands });
+            }
+            window.location.href = 'lista.html';
+        }
+
+        async function initializeArtistEditor(artist, options) {
+            await loadArtistEditorGenres();
+            ensureArtistEditorStyles();
+            document.body.classList.add('artist-editor-active');
+
+            let panel = document.getElementById('artist-editor-panel');
+            if (!panel) {
+                panel = document.createElement('aside');
+                panel.id = 'artist-editor-panel';
+                panel.className = 'artist-editor-panel';
+                panel.innerHTML =
+                    '<div class="artist-editor-toolbar">' +
+                        '<p class="artist-editor-title" id="artist-editor-title"></p>' +
+                        '<div class="artist-editor-toolbar-actions">' +
+                            '<a class="artist-editor-link" href="lista.html" title="' + escA(t('artist.browseList')) + '" aria-label="' + escA(t('artist.browseList')) + '"><i class="fas fa-arrow-left"></i> ' + esc(t('artist.browseList')) + '</a>' +
+                            '<div class="artist-editor-primary-actions">' +
+                                '<button type="button" class="artist-editor-btn secondary" id="artist-editor-cancel-btn" style="display:none" title="' + escA(t('lista.cancel')) + '" aria-label="' + escA(t('lista.cancel')) + '"><i class="fas fa-times"></i> ' + esc(t('lista.cancel')) + '</button>' +
+                                '<button type="button" class="artist-editor-btn primary" id="artist-editor-save-btn" title="' + escA(t('lista.save')) + '" aria-label="' + escA(t('lista.save')) + '"><i class="fas fa-floppy-disk"></i> ' + esc(t('lista.save')) + '</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="artist-editor-status" id="artist-editor-status"></div>' +
+                    '<div class="artist-editor-scroll">' +
+                        '<div class="artist-editor-section">' +
+                            '<div class="artist-editor-field"><label for="artist-editor-name">' + esc(t('lista.name')) + '</label><input id="artist-editor-name" class="artist-editor-input" type="text"></div>' +
+                            '<div class="artist-editor-field"><label for="artist-editor-city-entry">' + esc(t('lista.cityLabel')) + '</label><div id="artist-editor-city-shell" class="autocomplete-wrapper token-input-shell"><div id="artist-editor-city-tags" class="tag-container token-chip-list"></div><input id="artist-editor-city-entry" class="token-entry-input" type="text" autocomplete="off"><input id="artist-editor-city" type="hidden"><div id="artist-editor-city-autocomplete" class="autocomplete-dropdown"></div></div></div>' +
+                            '<div class="artist-editor-field"><label for="artist-editor-genre-entry">' + esc(t('lista.genreLabel')) + '</label><div id="artist-editor-genre-shell" class="autocomplete-wrapper token-input-shell"><div id="artist-editor-genre-tags" class="tag-container token-chip-list"></div><input id="artist-editor-genre-entry" class="token-entry-input" type="text" autocomplete="off"><input id="artist-editor-genre" type="hidden"><div id="artist-editor-genre-autocomplete" class="autocomplete-dropdown"></div></div></div>' +
+                            '<div class="artist-editor-field"><label for="artist-editor-sounds-like-entry">' + esc(t('lista.soundsLikeLabel')) + '</label><div id="artist-editor-sounds-like-shell" class="autocomplete-wrapper token-input-shell"><div id="artist-editor-sounds-like-tags" class="tag-container token-chip-list"></div><input id="artist-editor-sounds-like-entry" class="token-entry-input" type="text" autocomplete="off"><input id="artist-editor-sounds-like" type="hidden"><div id="artist-editor-sounds-like-autocomplete" class="autocomplete-dropdown"></div></div></div>' +
+                            '<div class="artist-editor-field"><label for="artist-editor-label-entry">' + esc(t('lista.label')) + '</label><div id="artist-editor-label-shell" class="autocomplete-wrapper token-input-shell"><div id="artist-editor-label-tags" class="tag-container token-chip-list"></div><input id="artist-editor-label-entry" class="token-entry-input" type="text" autocomplete="off"><input id="artist-editor-label" type="hidden"><div id="artist-editor-label-autocomplete" class="autocomplete-dropdown"></div></div></div>' +
+                            '<div class="artist-editor-field"><label for="artist-editor-contact">' + esc(t('lista.contact')) + '</label><input id="artist-editor-contact" class="artist-editor-input" type="email"></div>' +
+                        '</div>' +
+                        '<div class="artist-editor-section" id="artist-editor-confirmation-section">' +
+                            '<h3><span>' + esc(t('artist.confirmation')) + '</span></h3>' +
+                            '<label class="artist-editor-toggle" for="artist-editor-confirmed"><span class="artist-editor-toggle-copy">' + esc(t('common.verifiedByArtist')) + '</span><span class="artist-editor-switch"><input id="artist-editor-confirmed" type="checkbox"><span class="artist-editor-switch-slider" aria-hidden="true"></span></span></label>' +
+                            '<div class="artist-editor-grid">' +
+                                '<div class="artist-editor-field"><label for="artist-editor-color-one">' + esc(t('artist.primary')) + '</label><input id="artist-editor-color-one" class="artist-editor-input artist-editor-color-input" type="color"></div>' +
+                                '<div class="artist-editor-field"><label for="artist-editor-color-two">' + esc(t('artist.secondary')) + '</label><input id="artist-editor-color-two" class="artist-editor-input artist-editor-color-input" type="color"></div>' +
+                            '</div>' +
+                            '<div class="artist-editor-field"><label>' + esc(t('artist.fromArtist')) + '</label>' +
+                                '<div class="artist-editor-inline">' +
+                                    '<button type="button" class="artist-editor-btn secondary" id="artist-editor-record-btn"><i class="fas fa-microphone"></i> ' + esc(t('artist.record')) + '</button>' +
+                                    '<button type="button" class="artist-editor-btn secondary" id="artist-editor-upload-btn"><i class="fas fa-upload"></i> ' + esc(t('artist.upload')) + '</button>' +
+                                    '<span class="artist-editor-help" id="artist-editor-recording-timer" style="display:none;min-width:3rem">00:00</span>' +
+                                '</div>' +
+                                '<input id="artist-editor-greeting-file" type="file" accept="audio/*" style="display:none">' +
+                                '<div class="artist-editor-inline" id="artist-editor-greeting-preview" style="display:none;align-items:center">' +
+                                    '<audio controls id="artist-editor-greeting-audio" style="width:100%"></audio>' +
+                                    '<button type="button" class="artist-editor-btn secondary" id="artist-editor-greeting-remove"><i class="fas fa-trash"></i> ' + esc(t('lista.remove')) + '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="artist-editor-section">' +
+                            '<h3><span>' + esc(t('lista.links')) + '</span></h3>' +
+                            '<p class="artist-editor-help">' + esc(t('lista.enterUrl')) + '</p>' +
+                            '<div class="artist-editor-links" id="artist-editor-links"></div>' +
+                            '<div class="artist-editor-links-actions"><button type="button" class="artist-editor-btn secondary" id="artist-editor-add-link-btn"><i class="fas fa-plus"></i> ' + esc(t('lista.links')) + '</button></div>' +
+                        '</div>' +
+                        '<div class="artist-editor-toolbar-actions" style="justify-content:flex-end;padding-bottom:.2rem">' +
+                            '<button type="button" class="artist-editor-btn danger" id="artist-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('lista.deleteArtist')) + '</button>' +
+                        '</div>' +
+                    '</div>';
+                document.body.appendChild(panel);
+            }
+
+            artistEditorSession = {
+                panel: panel,
+                isNew: !!options.isNew,
+                bandIndex: options.bandIndex,
+                originalBands: options.originalBands.slice(),
+                workingBands: options.workingBands.slice(),
+                baseArtist: Object.assign({}, artist),
+                thumbnail: options.thumbnail || null,
+                titleEl: panel.querySelector('#artist-editor-title'),
+                statusEl: panel.querySelector('#artist-editor-status'),
+                scrollEl: panel.querySelector('.artist-editor-scroll'),
+                scrollBasePaddingBottom: parseFloat(window.getComputedStyle(panel.querySelector('.artist-editor-scroll')).paddingBottom) || 0,
+                nameEl: panel.querySelector('#artist-editor-name'),
+                cityWrapperEl: panel.querySelector('#artist-editor-city-shell'),
+                cityEl: panel.querySelector('#artist-editor-city'),
+                cityEntryEl: panel.querySelector('#artist-editor-city-entry'),
+                cityTagsEl: panel.querySelector('#artist-editor-city-tags'),
+                cityAutocompleteEl: panel.querySelector('#artist-editor-city-autocomplete'),
+                genreWrapperEl: panel.querySelector('#artist-editor-genre-shell'),
+                genreEl: panel.querySelector('#artist-editor-genre'),
+                genreEntryEl: panel.querySelector('#artist-editor-genre-entry'),
+                genreTagsEl: panel.querySelector('#artist-editor-genre-tags'),
+                genreAutocompleteEl: panel.querySelector('#artist-editor-genre-autocomplete'),
+                soundsLikeWrapperEl: panel.querySelector('#artist-editor-sounds-like-shell'),
+                soundsLikeEl: panel.querySelector('#artist-editor-sounds-like'),
+                soundsLikeEntryEl: panel.querySelector('#artist-editor-sounds-like-entry'),
+                soundsLikeTagsEl: panel.querySelector('#artist-editor-sounds-like-tags'),
+                soundsLikeAutocompleteEl: panel.querySelector('#artist-editor-sounds-like-autocomplete'),
+                labelWrapperEl: panel.querySelector('#artist-editor-label-shell'),
+                labelEl: panel.querySelector('#artist-editor-label'),
+                labelEntryEl: panel.querySelector('#artist-editor-label-entry'),
+                labelTagsEl: panel.querySelector('#artist-editor-label-tags'),
+                labelAutocompleteEl: panel.querySelector('#artist-editor-label-autocomplete'),
+                contactEl: panel.querySelector('#artist-editor-contact'),
+                confirmedEl: panel.querySelector('#artist-editor-confirmed'),
+                colorOneEl: panel.querySelector('#artist-editor-color-one'),
+                colorTwoEl: panel.querySelector('#artist-editor-color-two'),
+                confirmationSectionEl: panel.querySelector('#artist-editor-confirmation-section'),
+                greetingRecordBtn: panel.querySelector('#artist-editor-record-btn'),
+                greetingUploadBtn: panel.querySelector('#artist-editor-upload-btn'),
+                greetingTimerEl: panel.querySelector('#artist-editor-recording-timer'),
+                greetingFileEl: panel.querySelector('#artist-editor-greeting-file'),
+                greetingPreviewWrap: panel.querySelector('#artist-editor-greeting-preview'),
+                greetingAudioEl: panel.querySelector('#artist-editor-greeting-audio'),
+                greetingRemoveBtn: panel.querySelector('#artist-editor-greeting-remove'),
+                greetingBlob: null,
+                greetingExt: null,
+                greetingPreviewUrl: null,
+                greetingRecorder: null,
+                greetingRecordingChunks: [],
+                greetingRecordingTimer: null,
+                greetingRecordingSeconds: 0,
+                linksEl: panel.querySelector('#artist-editor-links'),
+                cancelBtn: panel.querySelector('#artist-editor-cancel-btn'),
+                previewTimer: null
+            };
+
+            artistEditorSession.titleEl.textContent = options.isNew ? t('lista.addArtist') : t('lista.editArtist');
+            initializeArtistEditorAutocomplete();
+            fillArtistEditorForm(artist);
+            resetArtistEditorGreetingPreview();
+            artistEditorSession.cancelBtn.style.display = options.isNew ? 'none' : 'inline-flex';
+
+            [
+                artistEditorSession.nameEl,
+                artistEditorSession.cityEl,
+                artistEditorSession.genreEl,
+                artistEditorSession.soundsLikeEl,
+                artistEditorSession.labelEl,
+                artistEditorSession.contactEl,
+                artistEditorSession.confirmedEl,
+                artistEditorSession.colorOneEl,
+                artistEditorSession.colorTwoEl
+            ].forEach(function(input) {
+                input.addEventListener('input', scheduleArtistEditorPreview);
+                input.addEventListener('change', scheduleArtistEditorPreview);
+            });
+
+            panel.querySelector('#artist-editor-add-link-btn').onclick = function() {
+                artistEditorSession.linksEl.appendChild(createArtistEditorLinkRow('none', ''));
+            };
+            panel.querySelector('#artist-editor-save-btn').onclick = function() { saveArtistEditorChanges(); };
+            artistEditorSession.cancelBtn.onclick = function() {
+                window.location.href = buildLocalArtistPageUrl(artistEditorSession.baseArtist && artistEditorSession.baseArtist.name);
+            };
+            panel.querySelector('#artist-editor-delete-btn').onclick = deleteArtistEditorCurrent;
+            artistEditorSession.greetingUploadBtn.onclick = function() {
+                artistEditorSession.greetingFileEl.click();
+            };
+            artistEditorSession.greetingFileEl.onchange = function(event) {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('audio/') && !file.name.match(/\.(mp3|m4a|wav|ogg|webm|aac|flac|opus)$/i)) {
+                    setArtistEditorStatus(t('lista.errorSelectAudioFile'), 'error');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    setArtistEditorStatus(t('lista.errorFileTooLarge'), 'error');
+                    return;
+                }
+                const extension = (file.name.split('.').pop() || 'webm').toLowerCase();
+                setArtistEditorGreetingBlob(file, extension);
+                setArtistEditorStatus('', 'idle');
+            };
+            artistEditorSession.greetingRemoveBtn.onclick = resetArtistEditorGreetingPreview;
+            artistEditorSession.greetingRecordBtn.onclick = async function() {
+                if (artistEditorSession.greetingRecorder && artistEditorSession.greetingRecorder.state === 'recording') {
+                    stopArtistEditorRecording();
+                    return;
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    artistEditorSession.greetingRecordingChunks = [];
+                    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+                        : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+                        : MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '';
+                    artistEditorSession.greetingRecorder = new MediaRecorder(stream, mimeType ? { mimeType: mimeType } : {});
+                    artistEditorSession.greetingRecorder.ondataavailable = function(evt) {
+                        if (evt.data.size > 0) artistEditorSession.greetingRecordingChunks.push(evt.data);
+                    };
+                    artistEditorSession.greetingRecorder.onstop = function() {
+                        stream.getTracks().forEach(function(track) { track.stop(); });
+                        if (artistEditorSession.greetingRecordingChunks.length) {
+                            const blob = new Blob(artistEditorSession.greetingRecordingChunks, { type: artistEditorSession.greetingRecorder.mimeType || 'audio/webm' });
+                            const extension = (artistEditorSession.greetingRecorder.mimeType || '').includes('mp4') ? 'm4a' : 'webm';
+                            setArtistEditorGreetingBlob(blob, extension);
+                        }
+                    };
+                    artistEditorSession.greetingRecorder.start(100);
+                    artistEditorSession.greetingRecordingSeconds = 0;
+                    artistEditorSession.greetingTimerEl.style.display = 'inline-flex';
+                    artistEditorSession.greetingTimerEl.textContent = '00:00';
+                    artistEditorSession.greetingRecordBtn.innerHTML = '<i class="fas fa-stop"></i> ' + t('artist.stop');
+                    artistEditorSession.greetingRecordBtn.classList.add('recording');
+                    artistEditorSession.greetingRecordingTimer = setInterval(function() {
+                        artistEditorSession.greetingRecordingSeconds += 1;
+                        artistEditorSession.greetingTimerEl.textContent = formatArtistEditorRecordingTime(artistEditorSession.greetingRecordingSeconds);
+                        if (artistEditorSession.greetingRecordingSeconds >= 60) {
+                            stopArtistEditorRecording();
+                        }
+                    }, 1000);
+                } catch (_) {
+                    setArtistEditorStatus(t('lista.errorMicAccess'), 'error');
+                }
+            };
+
+            applyArtistEditorAccentPreview(artist);
+        }
         
         // Main initialization
         // ==================== ARTICLE MATCHING (from pre-computed site-master.json) ====================
@@ -4943,6 +6278,8 @@ a.chart-history-item {
             
             const urlParams = new URLSearchParams(window.location.search);
             let artistParam = urlParams.get('a') || urlParams.get('artist') || urlParams.get('name');
+            const editorMode = hasArtistEditorMode();
+            const newArtistMode = hasNewArtistEditorRequest();
             
             // Check if we came from a clean URL (via 404.html redirect)
             const cleanUrl = sessionStorage.getItem('cleanUrl');
@@ -4951,7 +6288,7 @@ a.chart-history-item {
                 sessionStorage.removeItem('artistSlug');
             }
             
-            if (!artistParam) {
+            if (!artistParam && !newArtistMode) {
                 renderError();
                 return;
             }
@@ -4960,13 +6297,17 @@ a.chart-history-item {
                 // Load bands data
                 const response = await fetch('bands.json');
                 const data = await response.json();
-                const bandsData = data.muzickaMasterLista;
+                const serverBandsData = data.muzickaMasterLista || [];
+                const draftBands = (window.MMMDrafts && window.MMMDrafts.load('bands.json') && window.MMMDrafts.load('bands.json').muzickaMasterLista) || null;
+                const bandsData = Array.isArray(draftBands) ? draftBands : serverBandsData;
                 window.bandsData = bandsData;
                 primeMasterArtistNameSet(bandsData);
                 registerArtistNames(bandsData);
                 
                 // Find artist
-                const artist = findArtist(bandsData, decodeURIComponent(artistParam));
+                const artist = newArtistMode
+                    ? buildEmptyArtistDraft()
+                    : (findArtist(bandsData, decodeURIComponent(artistParam)) || findArtist(serverBandsData, decodeURIComponent(artistParam)));
                 
                 if (!artist) {
                     renderError();
@@ -4979,7 +6320,7 @@ a.chart-history-item {
                 let latestReleaseThumbnail = null;
                 
                 const releases = siteMaster?.chartData?.releases || [];
-                const artistNameLower = artist.name.toLowerCase();
+                const artistNameLower = (artist.name || '').toLowerCase();
                 releases.forEach(r => {
                     if (r.bandName && r.bandName.toLowerCase().split(', ').some(n => n === artistNameLower)) {
                         if (!thumbnail && r.thumbnail) thumbnail = r.thumbnail;
@@ -4992,42 +6333,62 @@ a.chart-history-item {
                 if (!thumbnail && latestReleaseThumbnail) thumbnail = latestReleaseThumbnail;
                 
                 // Get pre-computed activity status from site-master
-                const artistSlug = generateSlug(artist.name);
-                const precomputedActivity = siteMaster?.artistActivity?.[artistSlug];
-                if (precomputedActivity) {
-                    // Map Macedonian labels to internal codes
-                    const statusMap = { 'Активен': 'active', 'Неактивен': 'inactive', 'Можеби': 'maybe', 'Непознато': 'unknown' };
-                    artist._activityStatus = statusMap[precomputedActivity] || precomputedActivity;
-                } else {
-                    // Fallback: compute from events
-                    let hasRecentEvent = false;
-                    try {
-                        const evResp = await fetch('events.json');
-                        const evJson = await evResp.json();
-                        const allEvents = evJson.events || [];
-                        const now = new Date();
-                        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-                        const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
-                        hasRecentEvent = allEvents.some(e =>
-                            e.date >= oneYearAgoStr &&
-                            (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
-                        );
-                    } catch (evErr) {
-                        console.warn('Could not load events for activity fallback:', evErr);
+                if (!newArtistMode) {
+                    const artistSlug = generateSlug(artist.name);
+                    const precomputedActivity = siteMaster?.artistActivity?.[artistSlug];
+                    if (precomputedActivity) {
+                        // Map Macedonian labels to internal codes
+                        const statusMap = { 'Активен': 'active', 'Неактивен': 'inactive', 'Можеби': 'maybe', 'Непознато': 'unknown' };
+                        artist._activityStatus = statusMap[precomputedActivity] || precomputedActivity;
+                    } else {
+                        // Fallback: compute from events
+                        let hasRecentEvent = false;
+                        try {
+                            const evResp = await fetch('events.json');
+                            const evJson = await evResp.json();
+                            const allEvents = evJson.events || [];
+                            const now = new Date();
+                            const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                            const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+                            hasRecentEvent = allEvents.some(e =>
+                                e.date >= oneYearAgoStr &&
+                                (e.artists || e.bands || []).some(a => a.toLowerCase() === artistNameLower)
+                            );
+                        } catch (evErr) {
+                            console.warn('Could not load events for activity fallback:', evErr);
+                        }
+                        artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
                     }
-                    artist._activityStatus = computeActivityStatus(latestReleaseDate, hasRecentEvent);
+                } else {
+                    artist._activityStatus = 'unknown';
                 }
                 
                 // Render artist page
-                renderArtist(artist, thumbnail, bandsData);
+                renderArtist(artist, thumbnail, bandsData, editorMode ? {
+                    hideHeaderEditButton: true,
+                    skipGreetingLookup: true,
+                    skipVerifiedChrome: true
+                } : {});
                 
                 // (per-section fade-in handled by each render function)
                 
                 // Store artist links globally for the music player
                 window.artistLinks = artist.links || {};
+
+                if (editorMode) {
+                    applyArtistEditorAccentPreview(artist);
+                    await initializeArtistEditor(artist, {
+                        isNew: newArtistMode,
+                        bandIndex: newArtistMode ? -1 : bandsData.findIndex(b => b.name === artist.name),
+                        originalBands: serverBandsData,
+                        workingBands: bandsData,
+                        thumbnail: thumbnail,
+                        focusSection: urlParams.get('focus') || ''
+                    });
+                }
                 
                 // Apply cinematic accent styling for confirmed artists
-                if (artist.confirmed && artist.accentColors && (artist.accentColors[0] || artist.accentColors[1])) {
+                if (!editorMode && artist.confirmed && artist.accentColors && (artist.accentColors[0] || artist.accentColors[1])) {
                     const c1 = artist.accentColors[0] || artist.accentColors[1];
                     const c2 = artist.accentColors[1] || artist.accentColors[0];
                     const root = document.documentElement;
@@ -5100,7 +6461,10 @@ a.chart-history-item {
                     });
 
                     // c2-themed graph & element overrides
+                    const prevAccentStyle = document.getElementById('artist-accent-preview-style');
+                    if (prevAccentStyle) prevAccentStyle.remove();
                     const c2Style = document.createElement('style');
+                    c2Style.id = 'artist-accent-preview-style';
                     c2Style.textContent =
                         '.popularity-graph-container svg [id="areaGradient"] stop:first-child { stop-color: ' + c2 + ' !important; }' +
                         '.popularity-graph-container svg [id="areaGradient"] stop:last-child { stop-color: ' + c2 + ' !important; }' +
@@ -5219,6 +6583,9 @@ a.chart-history-item {
 
                 // Render unified timeline
                 renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineEvents, artist.name, artist.spotifyName);
+                if (editorMode) {
+                    focusArtistEditorSection(urlParams.get('focus') || '');
+                }
                 
             } catch (error) {
                 console.error('Error loading artist:', error);
@@ -5331,7 +6698,7 @@ a.chart-history-item {
             const previewArea = document.getElementById('verify-greeting-preview-area');
             const audioEl = document.getElementById('verify-greeting-audio');
             const removeBtn = document.getElementById('verify-greeting-remove');
-            const fullEditLink = document.getElementById('verify-full-edit-link');
+                const fullEditLink = document.getElementById('verify-full-edit-link');
 
             // Store original colors for restore on cancel
             let originalC1 = null;
@@ -5516,7 +6883,7 @@ a.chart-history-item {
                 currentBandsData = bandsData;
                 const artistSlug = generateSlug(artist.name || '');
                 if (fullEditLink) {
-                    fullEditLink.href = `/lista?edit=${encodeURIComponent(artistSlug)}`;
+                    fullEditLink.href = buildLocalArtistEditorUrl(artist.name);
                 }
                 // Save original colors for restore on cancel
                 originalC1 = artist.accentColors?.[0] || null;
@@ -5821,9 +7188,9 @@ a.chart-history-item {
                         if (!artistParam) return;
                         const artist = findArtist(bandsData, decodeURIComponent(artistParam));
                         if (!artist) return;
-                        openModal(artist, bandsData);
+                        window.location.href = buildLocalArtistEditorUrl(artist.name, 'confirmation');
                     } catch (err) {
-                        console.error('Failed to load data for verify modal:', err);
+                        console.error('Failed to open artist editor for verification:', err);
                     }
                 })();
             });
