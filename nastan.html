@@ -925,6 +925,9 @@
                 '.event-editor-field label{' +
                     'font-size:.72rem;font-weight:700;color:var(--text-muted);' +
                 '}' +
+                '.event-editor-date-shell{' +
+                    'display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.5rem;align-items:stretch;' +
+                '}' +
                 '.event-editor-input{' +
                     'width:100%;border-radius:0;border:1px solid rgba(15,23,42,.12);background:rgba(255,255,255,.88);' +
                     'padding:.72rem .82rem;color:var(--text-color);font:inherit;' +
@@ -934,6 +937,19 @@
                 '}' +
                 '.event-editor-input.is-invalid{' +
                     'border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.14);' +
+                '}' +
+                '.event-editor-masked-wrap .event-editor-input{' +
+                    'font-family:\'Montserrat\',\'Courier New\',monospace;letter-spacing:.12em;font-weight:600;background:transparent;position:relative;z-index:1;caret-color:var(--text-color);' +
+                '}' +
+                '.event-editor-masked-wrap .mask-overlay{' +
+                    'padding:.72rem .82rem;font-size:inherit;' +
+                '}' +
+                '.event-editor-picker-trigger{' +
+                    'position:relative;justify-content:center;width:2.85rem;padding:0;overflow:hidden;border-radius:0;' +
+                '}' +
+                '.event-editor-picker-trigger i{pointer-events:none;}' +
+                '.event-editor-native-picker{' +
+                    'position:absolute;inset:0;opacity:0;cursor:pointer;border:0;width:100%;height:100%;' +
                 '}' +
                 'body.dark-mode .event-editor-input{' +
                     'background:rgba(2,6,23,.52);border-color:rgba(148,163,184,.16);color:#e5e7eb;' +
@@ -1249,12 +1265,121 @@
             }
         }
 
+        function formatEventEditorDateInput(isoDate) {
+            if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return '';
+            var parts = isoDate.split('-');
+            return parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+
+        function parseEventEditorDateInput(value) {
+            var trimmed = String(value || '').trim();
+            if (!trimmed) return '';
+            var match = trimmed.match(/^(\d{2})[\/.-](\d{2})[\/.-](\d{4})$/);
+            if (!match) return '';
+            var day = parseInt(match[1], 10);
+            var month = parseInt(match[2], 10);
+            var year = parseInt(match[3], 10);
+            if (day < 1 || day > 31 || month < 1 || month > 12) return '';
+            var parsed = new Date(Date.UTC(year, month - 1, day));
+            if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() !== month - 1 || parsed.getUTCDate() !== day) return '';
+            return match[3] + '-' + match[2] + '-' + match[1];
+        }
+
+        function isValidEventEditorTimeValue(value) {
+            return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(value || '').trim());
+        }
+
+        function clampEventEditorDateDigits(digits) {
+            var d = digits.split('');
+            if (d[0] && parseInt(d[0], 10) > 3) d[0] = '3';
+            if (d[0] === '3' && d[1] && parseInt(d[1], 10) > 1) d[1] = '1';
+            if (d[0] === '0' && d[1] === '0') d[1] = '1';
+            if (d[2] && parseInt(d[2], 10) > 1) d[2] = '1';
+            if (d[2] === '1' && d[3] && parseInt(d[3], 10) > 2) d[3] = '2';
+            if (d[2] === '0' && d[3] === '0') d[3] = '1';
+            return d.join('');
+        }
+
+        function clampEventEditorTimeDigits(digits) {
+            var d = digits.split('');
+            if (d[0] && parseInt(d[0], 10) > 2) d[0] = '2';
+            if (d[0] === '2' && d[1] && parseInt(d[1], 10) > 3) d[1] = '3';
+            if (d[2] && parseInt(d[2], 10) > 5) d[2] = '5';
+            return d.join('');
+        }
+
+        function renderEventEditorMaskOverlay(overlayEl, value, template, sepChar) {
+            if (!overlayEl) return;
+            var digits = value.replace(/\D/g, '');
+            var datePlaceholders = t('events.datePlaceholders');
+            var timePlaceholders = t('events.timePlaceholders');
+            var placeholders = template === '__/__/____' ? datePlaceholders : timePlaceholders;
+            var html = '';
+            var digitIndex = 0;
+            for (var i = 0; i < template.length; i++) {
+                if (template[i] === '_') {
+                    if (digitIndex < digits.length) {
+                        html += '<span class="filled">' + digits[digitIndex] + '</span>';
+                    } else {
+                        html += '<span class="placeholder">' + placeholders[digitIndex] + '</span>';
+                    }
+                    digitIndex++;
+                } else {
+                    html += '<span class="separator">' + sepChar + '</span>';
+                }
+            }
+            overlayEl.innerHTML = html;
+        }
+
+        function setupEventEditorMaskedInput(inputEl, overlayEl, template, sepChar, maxDigits, clampFn, validatorFn) {
+            function update() {
+                var raw = inputEl.value.replace(/\D/g, '').slice(0, maxDigits);
+                raw = clampFn(raw);
+                var formatted = '';
+                for (var i = 0; i < raw.length; i++) {
+                    if (template[formatted.length] !== '_') formatted += sepChar;
+                    formatted += raw[i];
+                }
+                inputEl.value = formatted;
+                renderEventEditorMaskOverlay(overlayEl, formatted, template, sepChar);
+                if (raw.length === maxDigits) {
+                    inputEl.classList.toggle('mask-invalid', !validatorFn(formatted, raw));
+                } else {
+                    inputEl.classList.remove('mask-invalid');
+                }
+            }
+            inputEl.addEventListener('input', update);
+            update();
+            return update;
+        }
+
+        function syncEventEditorDatePickerFromTextInput() {
+            if (!eventEditorSession || !eventEditorSession.datePickerEl) return;
+            var isoValue = parseEventEditorDateInput(eventEditorSession.dateEl.value);
+            if (isoValue) {
+                eventEditorSession.datePickerEl.value = isoValue;
+            } else if (!String(eventEditorSession.dateEl.value || '').trim()) {
+                eventEditorSession.datePickerEl.value = '';
+            }
+        }
+
+        function syncEventEditorDateTextFromPicker() {
+            if (!eventEditorSession) return;
+            eventEditorSession.dateEl.value = formatEventEditorDateInput(eventEditorSession.datePickerEl.value || '');
+            if (eventEditorSession.dateMaskUpdate) {
+                eventEditorSession.dateMaskUpdate();
+            }
+        }
+
         function fillEventEditorForm(evt) {
             if (!eventEditorSession) return;
             eventEditorSession.titleEl.value = evt.title || '';
-            eventEditorSession.dateEl.value = evt.date || '';
+            eventEditorSession.dateEl.value = formatEventEditorDateInput(evt.date || '');
+            eventEditorSession.datePickerEl.value = evt.date || '';
             eventEditorSession.timeEl.value = evt.time || '';
             eventEditorSession.placeEl.value = evt.place || '';
+            if (eventEditorSession.dateMaskUpdate) eventEditorSession.dateMaskUpdate();
+            if (eventEditorSession.timeMaskUpdate) eventEditorSession.timeMaskUpdate();
             setSelectedEventEditorArtists(evt.artists || evt.bands || [], { silent: true });
             resetEventEditorRows(eventEditorSession.ticketsEl, (evt.tickets || []).map(function(ticket) { return [ticket.label || '', ticket.price || '']; }), createEventEditorTicketRow);
             resetEventEditorRows(eventEditorSession.linksEl, getEventLinks(evt).map(function(link) { return [link.label || '', link.url || '']; }), createEventEditorLinkRow);
@@ -1265,8 +1390,9 @@
         function readEventEditorForm(previewMode) {
             var today = new Date().toISOString().slice(0, 10);
             var title = eventEditorSession.titleEl.value.trim();
-            var dateValue = eventEditorSession.dateEl.value || (previewMode ? today : '');
-            var timeValue = eventEditorSession.timeEl.value || '';
+            var parsedDateValue = parseEventEditorDateInput(eventEditorSession.dateEl.value);
+            var dateValue = parsedDateValue || eventEditorSession.datePickerEl.value || (previewMode ? today : '');
+            var timeValue = eventEditorSession.timeEl.value.trim();
             var placeValue = eventEditorSession.placeEl.value.trim();
             var artists = getSelectedEventEditorArtists();
             var tickets = [];
@@ -1298,11 +1424,18 @@
         }
 
         function validateEventEditorEvent(eventObj) {
-            if (!eventEditorSession.dateEl.value || !eventObj.title || !eventObj.time || !eventObj.place) {
+            var parsedDateValue = parseEventEditorDateInput(eventEditorSession.dateEl.value);
+            if (!eventEditorSession.dateEl.value.trim() || !eventObj.title || !eventObj.time || !eventObj.place) {
                 setEventEditorStatus(t('events.fillRequired'), 'error');
                 return false;
             }
-            if (!/^\d{2}:\d{2}$/.test(eventObj.time)) {
+            if (!parsedDateValue) {
+                eventEditorSession.dateEl.classList.add('mask-invalid');
+                setEventEditorStatus(t('events.dateFormatError'), 'error');
+                return false;
+            }
+            eventObj.date = parsedDateValue;
+            if (!isValidEventEditorTimeValue(eventObj.time)) {
                 setEventEditorStatus(t('events.timeFormatError'), 'error');
                 return false;
             }
@@ -1395,11 +1528,23 @@
                             '<div class="event-editor-grid">' +
                                 '<div class="event-editor-field">' +
                                     '<label for="event-editor-date-input">' + esc(t('events.date')) + '</label>' +
-                                    '<input id="event-editor-date-input" class="event-editor-input" type="date">' +
+                                    '<div class="event-editor-date-shell">' +
+                                        '<div class="masked-input-wrap event-editor-masked-wrap">' +
+                                            '<input id="event-editor-date-input" class="event-editor-input" type="text" inputmode="numeric" autocomplete="off" maxlength="10">' +
+                                            '<div class="mask-overlay" id="event-editor-date-overlay"></div>' +
+                                        '</div>' +
+                                        '<label class="event-editor-btn secondary event-editor-picker-trigger" title="' + escA(t('events.date')) + '" aria-label="' + escA(t('events.date')) + '">' +
+                                            '<i class="fas fa-calendar-day" aria-hidden="true"></i>' +
+                                            '<input id="event-editor-date-picker" class="event-editor-native-picker" type="date">' +
+                                        '</label>' +
+                                    '</div>' +
                                 '</div>' +
                                 '<div class="event-editor-field">' +
                                     '<label for="event-editor-time-input">' + esc(t('events.time')) + '</label>' +
-                                    '<input id="event-editor-time-input" class="event-editor-input" type="time">' +
+                                    '<div class="masked-input-wrap event-editor-masked-wrap">' +
+                                        '<input id="event-editor-time-input" class="event-editor-input" type="text" inputmode="numeric" autocomplete="off" maxlength="5">' +
+                                        '<div class="mask-overlay" id="event-editor-time-overlay"></div>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div class="event-editor-field">' +
@@ -1439,7 +1584,10 @@
                 eventId: evt.id,
                 titleEl: panel.querySelector('#event-editor-title-input'),
                 dateEl: panel.querySelector('#event-editor-date-input'),
+                dateOverlayEl: panel.querySelector('#event-editor-date-overlay'),
+                datePickerEl: panel.querySelector('#event-editor-date-picker'),
                 timeEl: panel.querySelector('#event-editor-time-input'),
+                timeOverlayEl: panel.querySelector('#event-editor-time-overlay'),
                 placeEl: panel.querySelector('#event-editor-place-input'),
                 artistPickerEl: panel.querySelector('#event-editor-artist-picker'),
                 artistTagsEl: panel.querySelector('#event-editor-artist-tags'),
@@ -1454,8 +1602,29 @@
                 deleteBtn: panel.querySelector('#event-editor-delete-btn'),
                 titleLabelEl: panel.querySelector('#event-editor-title'),
                 previewEvent: evt,
-                previewTimer: null
+                previewTimer: null,
+                dateMaskUpdate: null,
+                timeMaskUpdate: null
             };
+
+            eventEditorSession.dateMaskUpdate = setupEventEditorMaskedInput(
+                eventEditorSession.dateEl,
+                eventEditorSession.dateOverlayEl,
+                '__/__/____',
+                '/',
+                8,
+                clampEventEditorDateDigits,
+                function(formatted) { return !!parseEventEditorDateInput(formatted); }
+            );
+            eventEditorSession.timeMaskUpdate = setupEventEditorMaskedInput(
+                eventEditorSession.timeEl,
+                eventEditorSession.timeOverlayEl,
+                '__:__',
+                ':',
+                4,
+                clampEventEditorTimeDigits,
+                function(formatted) { return isValidEventEditorTimeValue(formatted); }
+            );
 
             eventEditorSession.titleLabelEl.textContent = options.isNew ? t('events.addEvent') : t('events.editEvent');
             initializeEventEditorArtistPicker();
@@ -1464,8 +1633,20 @@
             ensureEventEditorLayoutListener();
             scheduleEventEditorLayoutMode();
 
-            [eventEditorSession.titleEl, eventEditorSession.dateEl, eventEditorSession.timeEl, eventEditorSession.placeEl].forEach(function(input) {
-                input.addEventListener('input', scheduleEventEditorPreview);
+            eventEditorSession.titleEl.addEventListener('input', scheduleEventEditorPreview);
+            eventEditorSession.dateEl.addEventListener('input', function() {
+                syncEventEditorDatePickerFromTextInput();
+                scheduleEventEditorPreview();
+            });
+            eventEditorSession.timeEl.addEventListener('input', scheduleEventEditorPreview);
+            eventEditorSession.placeEl.addEventListener('input', scheduleEventEditorPreview);
+            eventEditorSession.datePickerEl.addEventListener('input', function() {
+                syncEventEditorDateTextFromPicker();
+                scheduleEventEditorPreview();
+            });
+            eventEditorSession.datePickerEl.addEventListener('change', function() {
+                syncEventEditorDateTextFromPicker();
+                scheduleEventEditorPreview();
             });
 
             panel.querySelector('#event-editor-add-ticket-btn').onclick = function() {
@@ -1598,11 +1779,11 @@
             var deleteBtn = document.getElementById('edit-delete-btn');
 
             document.getElementById('edit-evt-title').value = evt.title || '';
-            // Convert ISO date (YYYY-MM-DD) to European (dd.mm.yyyy)
+            // Convert ISO date (YYYY-MM-DD) to European (dd/mm/yyyy)
             var isoDate = evt.date || '';
             if (isoDate && isoDate.indexOf('-') !== -1) {
                 var dp = isoDate.split('-');
-                document.getElementById('edit-evt-date').value = dp[2] + '.' + dp[1] + '.' + dp[0];
+                document.getElementById('edit-evt-date').value = dp[2] + '/' + dp[1] + '/' + dp[0];
             } else {
                 document.getElementById('edit-evt-date').value = isoDate;
             }
@@ -1670,7 +1851,7 @@
                 var digits = value.replace(/\D/g, '');
                 var datePlaceholders = t('events.datePlaceholders');
                 var timePlaceholders = t('events.timePlaceholders');
-                var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
+                var phs = (template === '__/__/____') ? datePlaceholders : timePlaceholders;
                 var html = '';
                 var di = 0;
                 for (var i = 0; i < template.length; i++) {
@@ -1722,7 +1903,7 @@
             var dateOverlay = document.getElementById('edit-evt-date-overlay');
             var timeOverlay = document.getElementById('edit-evt-time-overlay');
 
-            setupMaskedInput(dateInput, dateOverlay, '__.__.____', '.', 8, clampDateDigits);
+            setupMaskedInput(dateInput, dateOverlay, '__/__/____', '/', 8, clampDateDigits);
             setupMaskedInput(timeInput, timeOverlay, '__:__', ':', 4, clampTimeDigits);
 
             document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
@@ -1763,10 +1944,10 @@
                 var time = document.getElementById('edit-evt-time').value.trim();
                 var place = document.getElementById('edit-evt-place').value.trim();
 
-                // Convert European date (dd.mm.yyyy) to ISO (YYYY-MM-DD)
+                // Convert European date (dd/mm/yyyy) to ISO (YYYY-MM-DD)
                 var date = '';
                 if (dateRaw) {
-                    var dp = dateRaw.split('.');
+                    var dp = dateRaw.split(/[./]/);
                     if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
                         date = dp[2] + '-' + dp[1] + '-' + dp[0];
                     } else {

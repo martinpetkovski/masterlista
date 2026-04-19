@@ -222,15 +222,28 @@ export default {
 
     try {
       const body = await request.json();
-      const bandsJson = body?.bandsJson;
-      const originalJson = body?.originalJson || null;
       const description = body?.description || 'Automated PR from MMM form';
       const contributor = body?.contributor || '';
-      const targetPath = body?.path || 'bands.json';
-      const additionalFiles = body?.additionalFiles || [];
+      const files = normalizeRequestedFiles(body);
 
-      if (!bandsJson || typeof bandsJson !== 'string') {
-        return json({ error: 'Invalid payload: bandsJson string required' }, 400, corsHeaders);
+      if (!files.length) {
+        return json({ error: 'Invalid payload: at least one file is required' }, 400, corsHeaders);
+      }
+
+      const invalidFile = files.find(file => !file.bandsJson || typeof file.bandsJson !== 'string');
+      if (invalidFile) {
+        return json({ error: `Invalid payload: bandsJson string required for ${invalidFile.path || 'bands.json'}` }, 400, corsHeaders);
+      }
+
+      const seenPaths = new Set();
+      const duplicateFile = files.find(file => {
+        const key = `${file.baseBranch || ''}:${file.path || 'bands.json'}`;
+        if (seenPaths.has(key)) return true;
+        seenPaths.add(key);
+        return false;
+      });
+      if (duplicateFile) {
+        return json({ error: 'Duplicate file in request', path: duplicateFile.path || 'bands.json' }, 400, corsHeaders);
       }
 
       // Prefer GitHub App installation token if app variables are present; fallback to PAT
@@ -252,7 +265,16 @@ export default {
       const owner = env.GITHUB_OWNER || 'martinpetkovski';
       const repo = env.GITHUB_REPO || 'masterlista';
       const defaultBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
-      const requestedBase = body?.baseBranch || null;
+      const requestedBases = Array.from(new Set(files.map(file => file.baseBranch || null).filter(Boolean)));
+
+      if (requestedBases.length > 1) {
+        return json({
+          error: 'Cannot submit files targeting multiple base branches in one PR',
+          detail: requestedBases.join(', ')
+        }, 400, corsHeaders);
+      }
+
+      const requestedBase = requestedBases[0] || null;
 
       if (!token) {
         return json({ error: 'Missing GitHub credentials', hint: 'Set GitHub App vars (GITHUB_APP_ID, GITHUB_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY) or a PAT in GITHUB_TOKEN.' }, 500, corsHeaders);
@@ -285,6 +307,34 @@ export default {
       const refData = await refRes.json();
       const baseSha = refData.object.sha;
 
+      const preparedFiles = [];
+      const skippedFiles = [];
+      let mergeNotes = [];
+
+      for (const file of files) {
+        const prepared = await prepareFileUpdate({
+          gh,
+          owner,
+          repo,
+          baseBranch,
+          file,
+        });
+        if (!prepared.hasChanges && !prepared.additionalFiles.length) {
+          skippedFiles.push({ path: prepared.targetPath, code: 'NO_EFFECTIVE_CHANGES' });
+          continue;
+        }
+        preparedFiles.push(prepared);
+        mergeNotes = mergeNotes.concat(prepared.mergeNotes);
+      }
+
+      if (!preparedFiles.length) {
+        return json({
+          error: 'No effective changes to submit',
+          code: 'NO_EFFECTIVE_CHANGES',
+          skippedFiles,
+        }, 409, corsHeaders);
+      }
+
       // 2) Create a new branch
       const safeContributor = contributor ? slug(contributor) : 'anon';
       const ts = new Date();
@@ -301,144 +351,24 @@ export default {
         return json({ error: 'Failed to create branch', detail: text }, 500, corsHeaders);
       }
 
-      // 3) Get current file SHA and content (for update + merge)
-      const contentsRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}?ref=${encodeURIComponent(baseBranch)}`);
-      let currentSha = undefined;
-      let currentContent = null;
-      if (contentsRes.ok) {
-        const contents = await contentsRes.json();
-        currentSha = contents.sha;
-        if (contents.content) {
-          currentContent = b64decode(contents.content).replace(/^\uFEFF/, '');
-        }
-      } // If not ok, file might not exist; treat as create
-
-      // 3b) Three-way merge if the user's baseline differs from current repo content
-      let finalJson = bandsJson;
-      let mergeNotes = [];
-      if (originalJson && currentContent) {
-        const normalizeJson = (s) => { try { return JSON.stringify(JSON.parse(s)); } catch { return s; } };
-        if (normalizeJson(currentContent) !== normalizeJson(originalJson)) {
-          // Repo changed since user's baseline — attempt auto-merge
-          const mergeResult = threeWayMerge(targetPath, originalJson, currentContent, bandsJson);
-          finalJson = mergeResult.merged;
-          mergeNotes = mergeResult.notes;
-        }
-      }
-
-      // 3c) Always preserve server-managed youtube fields from repo HEAD for releases.json.
-      if (targetPath === 'releases.json' && currentContent) {
-        try {
-          const repoData = JSON.parse(currentContent);
-          const userData = JSON.parse(finalJson);
-          if (repoData.releases && userData.releases) {
-            const repoYtMap = new Map();
-            repoData.releases.forEach(r => {
-              if (r.releaseId && (r.youtubeTracks || r.youtubeViews)) {
-                repoYtMap.set(r.releaseId, { youtubeTracks: r.youtubeTracks, youtubeViews: r.youtubeViews });
-              }
-            });
-            let patched = false;
-            userData.releases.forEach(r => {
-              if (!r.releaseId) return;
-              const repo = repoYtMap.get(r.releaseId);
-              if (repo) {
-                if (JSON.stringify(r.youtubeTracks) !== JSON.stringify(repo.youtubeTracks)) patched = true;
-                if (r.youtubeViews !== repo.youtubeViews) patched = true;
-                r.youtubeTracks = repo.youtubeTracks;
-                r.youtubeViews = repo.youtubeViews;
-              }
-            });
-            if (patched) {
-              finalJson = JSON.stringify(userData, null, 2);
-            }
-          }
-        } catch (_) { /* if parsing fails, leave finalJson as-is */ }
-      }
-
-      // 3d) Always preserve server-managed image fields from repo HEAD for bands.json.
-      // The three-way merge handles this when it runs, but when the merge is skipped
-      // (baseline == current), we still need to overlay images from repo HEAD.
-      if (targetPath === 'bands.json' && currentContent) {
-        try {
-          const repoData = JSON.parse(currentContent);
-          const userData = JSON.parse(finalJson);
-          if (repoData.muzickaMasterLista && userData.muzickaMasterLista) {
-            const repoImageMap = new Map();
-            repoData.muzickaMasterLista.forEach(b => {
-              if (b.image || b.imageSource) repoImageMap.set(b.name, { image: b.image, imageSource: b.imageSource });
-            });
-            let patched = false;
-            userData.muzickaMasterLista.forEach(b => {
-              const repo = repoImageMap.get(b.name);
-              if (repo) {
-                if (b.image !== repo.image || b.imageSource !== repo.imageSource) patched = true;
-                b.image = repo.image;
-                b.imageSource = repo.imageSource;
-              } else {
-                // New artist or not in repo — strip any client-sent image fields
-                if (b.image || b.imageSource) patched = true;
-                delete b.image;
-                delete b.imageSource;
-              }
-            });
-            if (patched) {
-              finalJson = JSON.stringify(userData, null, 2);
-            }
-          }
-        } catch (_) { /* if parsing fails, leave finalJson as-is */ }
-      }
-
-      if (currentContent && !additionalFiles.length && normalizeComparableContent(finalJson) === normalizeComparableContent(currentContent)) {
-        return json({
-          error: 'No effective changes to submit',
-          code: 'NO_EFFECTIVE_CHANGES',
-          path: targetPath
-        }, 409, corsHeaders);
-      }
-
-      // 4) Create or update file on new branch
-      const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          message: `MMM: update ${targetPath} via form${contributor ? ` by ${contributor}` : ''}`,
-          content: b64encode(finalJson),
-          branch: branchName,
-          sha: currentSha,
-        }),
-      });
-      if (!putRes.ok) {
-        const text = await putRes.text();
-        return json({ error: 'Failed to commit file', detail: text }, 500, corsHeaders);
-      }
-
-      // 4b) Commit additional binary/text files (e.g. greeting audio)
       const failedFiles = [];
-      for (const af of additionalFiles) {
-        if (!af.path || !af.contentBase64) continue;
-        // Encode each path segment individually to preserve slashes
-        const safePath = af.path.split('/').map(encodeURIComponent).join('/');
-        // Check if file already exists to get its SHA
-        const afContentsRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}?ref=${encodeURIComponent(branchName)}`);
-        let afSha = undefined;
-        if (afContentsRes.ok) {
-          const afContents = await afContentsRes.json();
-          afSha = afContents.sha;
-        }
-        const afPutRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            message: `MMM: add ${af.path}${contributor ? ` by ${contributor}` : ''}`,
-            content: af.contentBase64,
-            branch: branchName,
-            sha: afSha,
-          }),
+      const submittedFiles = [];
+      for (const prepared of preparedFiles) {
+        const commitResult = await commitPreparedFile({
+          gh,
+          owner,
+          repo,
+          branchName,
+          contributor,
+          prepared,
         });
-        if (!afPutRes.ok) {
-          const text = await afPutRes.text();
-          console.warn(`Failed to commit additional file ${af.path}: ${text}`);
-          failedFiles.push({ path: af.path, error: text });
+        if (!commitResult.ok) {
+          return json({ error: 'Failed to commit file', detail: commitResult.error, path: commitResult.path }, 500, corsHeaders);
         }
+        if (prepared.hasChanges) {
+          submittedFiles.push(prepared.targetPath);
+        }
+        failedFiles.push(...commitResult.failedFiles);
       }
 
       // 5) Create PR
@@ -446,7 +376,13 @@ export default {
       const mergeNotice = mergeNotes.length
         ? `\n\n---\n🔀 **Авто-спојување:** Основата беше застарена, промените се споени автоматски.\n${mergeNotes.map(n => '• ' + n).join('\n')}\n`
         : '';
-      const bodyText = `${description}\n\nАвтоматски генерирано од MMM формуларот.${mergeNotice}${contributor ? `\nПоднесено од: ${contributor}` : ''}`;
+      const skippedNotice = skippedFiles.length
+        ? `\n\n---\nℹ️ **Без нови промени за:**\n${skippedFiles.map(file => '• ' + file.path).join('\n')}\n`
+        : '';
+      const submittedNotice = submittedFiles.length
+        ? `\n\nФајлови:\n${submittedFiles.map(file => '• ' + file).join('\n')}`
+        : '';
+      const bodyText = `${description}${submittedNotice}\n\nАвтоматски генерирано од MMM формуларот.${mergeNotice}${skippedNotice}${contributor ? `\nПоднесено од: ${contributor}` : ''}`;
       const prRes = await gh(`/repos/${owner}/${repo}/pulls`, {
         method: 'POST',
         body: JSON.stringify({
@@ -462,7 +398,7 @@ export default {
       }
       const pr = await prRes.json();
 
-      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, failedFiles }, 200, corsHeaders);
+      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, files: submittedFiles, skippedFiles, failedFiles }, 200, corsHeaders);
     } catch (err) {
       return json({ error: 'Unhandled error', detail: err?.message || String(err) }, 500, corsHeaders);
     }
@@ -489,6 +425,174 @@ function normalizeComparableContent(content) {
   } catch (_) {
     return content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
   }
+}
+
+function encodeRepoPath(filePath) {
+  return String(filePath || '').split('/').map(encodeURIComponent).join('/');
+}
+
+function normalizeRequestedFiles(body) {
+  if (Array.isArray(body?.files) && body.files.length) {
+    return body.files.map(file => ({
+      path: file?.path || 'bands.json',
+      bandsJson: file?.bandsJson,
+      originalJson: file?.originalJson || null,
+      additionalFiles: Array.isArray(file?.additionalFiles) ? file.additionalFiles : [],
+      baseBranch: file?.baseBranch || null,
+    }));
+  }
+  return [{
+    path: body?.path || 'bands.json',
+    bandsJson: body?.bandsJson,
+    originalJson: body?.originalJson || null,
+    additionalFiles: Array.isArray(body?.additionalFiles) ? body.additionalFiles : [],
+    baseBranch: body?.baseBranch || null,
+  }];
+}
+
+async function prepareFileUpdate({ gh, owner, repo, baseBranch, file }) {
+  const targetPath = file.path || 'bands.json';
+  const originalJson = file.originalJson || null;
+  const additionalFiles = Array.isArray(file.additionalFiles) ? file.additionalFiles : [];
+
+  const contentsRes = await gh(`/repos/${owner}/${repo}/contents/${encodeRepoPath(targetPath)}?ref=${encodeURIComponent(baseBranch)}`);
+  let currentSha = undefined;
+  let currentContent = null;
+  if (contentsRes.ok) {
+    const contents = await contentsRes.json();
+    currentSha = contents.sha;
+    if (contents.content) {
+      currentContent = b64decode(contents.content).replace(/^\uFEFF/, '');
+    }
+  }
+
+  let finalJson = file.bandsJson;
+  let mergeNotes = [];
+  if (originalJson && currentContent) {
+    if (normalizeComparableContent(currentContent) !== normalizeComparableContent(originalJson)) {
+      const mergeResult = threeWayMerge(targetPath, originalJson, currentContent, file.bandsJson);
+      finalJson = mergeResult.merged;
+      mergeNotes = mergeResult.notes;
+    }
+  }
+
+  if (targetPath === 'releases.json' && currentContent) {
+    try {
+      const repoData = JSON.parse(currentContent);
+      const userData = JSON.parse(finalJson);
+      if (repoData.releases && userData.releases) {
+        const repoYtMap = new Map();
+        repoData.releases.forEach(r => {
+          if (r.releaseId && (r.youtubeTracks || r.youtubeViews)) {
+            repoYtMap.set(r.releaseId, { youtubeTracks: r.youtubeTracks, youtubeViews: r.youtubeViews });
+          }
+        });
+        let patched = false;
+        userData.releases.forEach(r => {
+          if (!r.releaseId) return;
+          const repo = repoYtMap.get(r.releaseId);
+          if (repo) {
+            if (JSON.stringify(r.youtubeTracks) !== JSON.stringify(repo.youtubeTracks)) patched = true;
+            if (r.youtubeViews !== repo.youtubeViews) patched = true;
+            r.youtubeTracks = repo.youtubeTracks;
+            r.youtubeViews = repo.youtubeViews;
+          }
+        });
+        if (patched) {
+          finalJson = JSON.stringify(userData, null, 2);
+        }
+      }
+    } catch (_) { /* if parsing fails, leave finalJson as-is */ }
+  }
+
+  if (targetPath === 'bands.json' && currentContent) {
+    try {
+      const repoData = JSON.parse(currentContent);
+      const userData = JSON.parse(finalJson);
+      if (repoData.muzickaMasterLista && userData.muzickaMasterLista) {
+        const repoImageMap = new Map();
+        repoData.muzickaMasterLista.forEach(b => {
+          if (b.image || b.imageSource) repoImageMap.set(b.name, { image: b.image, imageSource: b.imageSource });
+        });
+        let patched = false;
+        userData.muzickaMasterLista.forEach(b => {
+          const repo = repoImageMap.get(b.name);
+          if (repo) {
+            if (b.image !== repo.image || b.imageSource !== repo.imageSource) patched = true;
+            b.image = repo.image;
+            b.imageSource = repo.imageSource;
+          } else {
+            if (b.image || b.imageSource) patched = true;
+            delete b.image;
+            delete b.imageSource;
+          }
+        });
+        if (patched) {
+          finalJson = JSON.stringify(userData, null, 2);
+        }
+      }
+    } catch (_) { /* if parsing fails, leave finalJson as-is */ }
+  }
+
+  const hasChanges = !currentContent || normalizeComparableContent(finalJson) !== normalizeComparableContent(currentContent);
+
+  return {
+    targetPath,
+    currentSha,
+    finalJson,
+    mergeNotes,
+    additionalFiles,
+    hasChanges,
+  };
+}
+
+async function commitPreparedFile({ gh, owner, repo, branchName, contributor, prepared }) {
+  if (prepared.hasChanges) {
+    const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeRepoPath(prepared.targetPath)}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: `MMM: update ${prepared.targetPath} via form${contributor ? ` by ${contributor}` : ''}`,
+        content: b64encode(prepared.finalJson),
+        branch: branchName,
+        sha: prepared.currentSha,
+      }),
+    });
+    if (!putRes.ok) {
+      return {
+        ok: false,
+        error: await putRes.text(),
+        path: prepared.targetPath,
+      };
+    }
+  }
+
+  const failedFiles = [];
+  for (const af of prepared.additionalFiles) {
+    if (!af.path || !af.contentBase64) continue;
+    const safePath = encodeRepoPath(af.path);
+    const afContentsRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}?ref=${encodeURIComponent(branchName)}`);
+    let afSha = undefined;
+    if (afContentsRes.ok) {
+      const afContents = await afContentsRes.json();
+      afSha = afContents.sha;
+    }
+    const afPutRes = await gh(`/repos/${owner}/${repo}/contents/${safePath}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message: `MMM: add ${af.path}${contributor ? ` by ${contributor}` : ''}`,
+        content: af.contentBase64,
+        branch: branchName,
+        sha: afSha,
+      }),
+    });
+    if (!afPutRes.ok) {
+      const text = await afPutRes.text();
+      console.warn(`Failed to commit additional file ${af.path}: ${text}`);
+      failedFiles.push({ path: af.path, error: text });
+    }
+  }
+
+  return { ok: true, failedFiles };
 }
 
 // ---------------- Three-way Merge Helpers ----------------

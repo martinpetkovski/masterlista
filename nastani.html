@@ -2316,11 +2316,11 @@
             deleteBtn.style.display = '';
 
             document.getElementById('evt-title').value = evt.title || '';
-            // Convert ISO date (YYYY-MM-DD) to European (dd.mm.yyyy)
+            // Convert ISO date (YYYY-MM-DD) to European (dd/mm/yyyy)
             var isoDate = evt.date || '';
             if (isoDate && isoDate.indexOf('-') !== -1) {
                 var dp = isoDate.split('-');
-                document.getElementById('evt-date').value = dp[2] + '.' + dp[1] + '.' + dp[0];
+                document.getElementById('evt-date').value = dp[2] + '/' + dp[1] + '/' + dp[0];
             } else {
                 document.getElementById('evt-date').value = isoDate;
             }
@@ -2448,7 +2448,7 @@
                 var digits = value.replace(/\D/g, '');
                 var datePlaceholders = t('events.datePlaceholders');
                 var timePlaceholders = t('events.timePlaceholders');
-                var phs = (template === '__.__.____') ? datePlaceholders : timePlaceholders;
+                var phs = (template === '__/__/____') ? datePlaceholders : timePlaceholders;
                 var html = '';
                 var di = 0;
                 for (var i = 0; i < template.length; i++) {
@@ -2503,7 +2503,7 @@
             var dateOverlay = document.getElementById('evt-date-overlay');
             var timeOverlay = document.getElementById('evt-time-overlay');
 
-            window._evtDateUpdate = setupMaskedInput(dateInput, dateOverlay, '__.__.____', '.', 8, clampDateDigits);
+            window._evtDateUpdate = setupMaskedInput(dateInput, dateOverlay, '__/__/____', '/', 8, clampDateDigits);
             window._evtTimeUpdate = setupMaskedInput(timeInput, timeOverlay, '__:__', ':', 4, clampTimeDigits);
         })();
 
@@ -2524,10 +2524,10 @@
             var time = document.getElementById('evt-time').value.trim();
             var place = document.getElementById('evt-place').value.trim();
 
-            // Convert European date (dd.mm.yyyy) to ISO (YYYY-MM-DD)
+            // Convert European date (dd/mm/yyyy) to ISO (YYYY-MM-DD)
             var date = '';
             if (dateRaw) {
-                var dp = dateRaw.split('.');
+                var dp = dateRaw.split(/[./]/);
                 if (dp.length === 3 && dp[0].length === 2 && dp[1].length === 2 && dp[2].length === 4) {
                     date = dp[2] + '-' + dp[1] + '-' + dp[0];
                 } else {

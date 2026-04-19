@@ -441,7 +441,7 @@
     "events.fillRequired": "Bitte füllen Sie alle Pflichtfelder aus.",
     "events.draftNotice": "Nicht gespeicherte Änderungen wurden geladen.",
     "events.deleteConfirm": "Sind Sie sicher, dass Sie diese Veranstaltung löschen möchten?",
-    "events.dateFormatError": "Datumsformat muss TT.MM.JJJJ sein",
+    "events.dateFormatError": "Datumsformat muss TT/MM/JJJJ sein",
     "events.timeFormatError": "Zeitformat muss HH:MM sein",
     "events.artistNotInList": "«{0}» ist nicht in der Hauptliste. Wählen Sie einen Künstler aus der Liste.",
     "events.savedLocally": "Änderungen lokal gespeichert. Klicken Sie auf «Änderungen einreichen», um sie abzusenden.",

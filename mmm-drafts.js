@@ -395,8 +395,8 @@ window.MMMDrafts = (function () {
 
     /**
      * Submit all pending drafts to the worker endpoint.
-     * Each file becomes a separate POST.
-     * Returns a promise that resolves with results array.
+     * All pending files are submitted in a single POST when they share a base branch.
+     * Returns a promise that resolves with the worker response.
      */
     async function submitAll(contributor, description) {
         var endpoint = _resolveEndpoint();
@@ -404,7 +404,7 @@ window.MMMDrafts = (function () {
         var files = Object.keys(all);
         if (!files.length) throw new Error(t('drafts.noChangesNotif'));
 
-        var results = [];
+        var submissionFiles = [];
         for (var i = 0; i < files.length; i++) {
             var filePath = files[i];
             var draft = all[filePath];
@@ -436,40 +436,49 @@ window.MMMDrafts = (function () {
 
             // Include any additional files (e.g. greeting audio)
             var extras = getAdditionalFiles(filePath);
-            var bodyObj = {
+            var fileRequest = {
                 bandsJson: json,
                 originalJson: originalJson,
-                contributor: contributor || '',
-                description: description || '',
                 path: filePath
             };
             if (FILE_BRANCH_MAP[filePath]) {
-                bodyObj.baseBranch = FILE_BRANCH_MAP[filePath];
+                fileRequest.baseBranch = FILE_BRANCH_MAP[filePath];
             }
             if (extras.length) {
-                bodyObj.additionalFiles = extras.map(function (f) {
+                fileRequest.additionalFiles = extras.map(function (f) {
                     return { path: f.path, contentBase64: f.content };
                 });
             }
-
-            var resp = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(bodyObj)
-            });
-
-            if (!resp.ok) {
-                var text = await resp.text();
-                throw new Error('Worker error (' + resp.status + ') for ' + filePath + ': ' + text);
-            }
-
-            var result = await resp.json();
-            results.push({ file: filePath, result: result });
+            submissionFiles.push(fileRequest);
         }
+
+        var requestedBases = Array.from(new Set(submissionFiles.map(function (file) {
+            return file.baseBranch || null;
+        }).filter(Boolean)));
+        if (requestedBases.length > 1) {
+            throw new Error('Pending changes target multiple base branches and cannot be submitted in one PR.');
+        }
+
+        var resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contributor: contributor || '',
+                description: description || '',
+                files: submissionFiles
+            })
+        });
+
+        if (!resp.ok) {
+            var text = await resp.text();
+            throw new Error('Worker error (' + resp.status + '): ' + text);
+        }
+
+        var result = await resp.json();
 
         // Clear all drafts and additional files on success
         clearAll();
-        return results;
+        return result;
     }
 
     // ── Floating Submit Bar UI ──────────────────────────────────

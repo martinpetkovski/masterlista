@@ -441,7 +441,7 @@
     "events.fillRequired": "Veuillez remplir tous les champs obligatoires.",
     "events.draftNotice": "Des modifications non enregistrées ont été chargées.",
     "events.deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet événement ?",
-    "events.dateFormatError": "Le format de date doit être jj.mm.aaaa",
+    "events.dateFormatError": "Le format de date doit être jj/mm/aaaa",
     "events.timeFormatError": "Le format de l'heure doit être hh:mm",
     "events.artistNotInList": "« {0} » n'est pas dans la Liste principale. Choisissez un artiste de la liste.",
     "events.savedLocally": "Modifications enregistrées localement. Cliquez sur « Soumettre les modifications » pour les soumettre.",
