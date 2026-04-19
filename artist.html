@@ -148,10 +148,13 @@
         }
 
         /* Frequency wave SVG layer */
+        .vfx-bg__waves {
+            opacity: 1;
+        }
         .vfx-bg__waves svg {
             position: absolute;
             bottom: 0; left: 0;
-            width: 100%; height: 80%;
+            width: 100%; height: 82%;
         }
 
         /* Aurora layer (full-page soft glow) */
@@ -3419,6 +3422,9 @@ a.chart-history-item {
                 radials.className = 'vfx-bg__layer vfx-bg__radials';
                 bg.appendChild(radials);
 
+                let waveLayer = null;
+                let wavePaths = [];
+
                 // Theme-aware function to update gradient + radial colors
                 function applyVfxBgTheme() {
                     var dark = document.body.classList.contains('vfx-dark');
@@ -3433,10 +3439,12 @@ a.chart-history-item {
                         radials.style.background = 'radial-gradient(ellipse at 20% 25%, ' + c1 + '28 0%, transparent 60%), radial-gradient(ellipse at 80% 55%, ' + c1 + '1a 0%, transparent 55%), radial-gradient(ellipse at 50% 85%, ' + c1 + '14 0%, transparent 50%)';
                         document.body.style.setProperty('--va-bg', lightenHex(c1, 0.55));
                     }
+
+                    if (waveLayer) {
+                        waveLayer.style.color = dark ? lightenHex(c1, 0.24) : darkenHex(c1, 0.38);
+                        waveLayer.style.mixBlendMode = dark ? 'screen' : 'multiply';
+                    }
                 }
-                applyVfxBgTheme();
-                // Store for theme-change listener
-                window._applyVfxBgTheme = applyVfxBgTheme;
 
                 // Layer: geometric wireframe grid
                 const grid = document.createElement('div');
@@ -3445,30 +3453,34 @@ a.chart-history-item {
                 bg.appendChild(grid);
 
                 // Layer: frequency waves + vinyl rings SVG
-                const waveLayer = document.createElement('div');
+                waveLayer = document.createElement('div');
                 waveLayer.className = 'vfx-bg__layer vfx-bg__waves';
                 var waveSvg = '<svg viewBox="0 0 1200 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">';
-                for (var w = 0; w < 4; w++) {
-                    var y0 = 160 + w * 55;
-                    var amp = 18 + seededRand(w*7) * 35;
+                for (var w = 0; w < 7; w++) {
+                    var y0 = 118 + w * 34;
+                    var amp = 10 + seededRand(w*7) * 20;
                     var d = 'M0 ' + y0;
-                    for (var x = 0; x <= 1200; x += 50) {
+                    for (var x = 0; x <= 1200; x += 40) {
                         var y = y0 + Math.sin((x/180) + w*2.3 + seededRand(w*3+x)*0.5) * amp;
                         d += ' L' + x + ' ' + y.toFixed(1);
                     }
-                    var wCol = c1;
-                    var wOp = (0.18 + seededRand(w*11) * 0.12).toFixed(3);
-                    waveSvg += '<path d="' + d + '" fill="none" stroke="' + wCol + '" stroke-width="' + (1.2 - w*0.15).toFixed(2) + '" stroke-opacity="' + wOp + '" stroke-linecap="round"/>';
+                    var strokeWidth = Math.max(0.95, 1.45 - w*0.09);
+                    var wOp = (0.13 + seededRand(w*11) * 0.08).toFixed(3);
+                    waveSvg += '<path d="' + d + '" fill="none" stroke="currentColor" stroke-width="' + strokeWidth.toFixed(2) + '" stroke-opacity="' + wOp + '" stroke-linecap="round" vector-effect="non-scaling-stroke" data-wave-index="' + w + '"/>';
                 }
                 var ringCx = (150 + seededRand(99) * 900).toFixed(0);
                 var ringCy = (80 + seededRand(77) * 240).toFixed(0);
                 for (var r = 25; r < 280; r += 22) {
-                    var rCol = c1;
-                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="' + rCol + '" stroke-width="0.4" stroke-opacity="0.05"/>';
+                    waveSvg += '<circle cx="' + ringCx + '" cy="' + ringCy + '" r="' + r + '" fill="none" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.03" vector-effect="non-scaling-stroke"/>';
                 }
                 waveSvg += '</svg>';
                 waveLayer.innerHTML = waveSvg;
+                wavePaths = Array.from(waveLayer.querySelectorAll('path[data-wave-index]'));
                 bg.appendChild(waveLayer);
+
+                applyVfxBgTheme();
+                // Store for theme-change listener
+                window._applyVfxBgTheme = applyVfxBgTheme;
 
                 // Layer: aurora (full-page soft glows)
                 const auroraLayer = document.createElement('div');
@@ -3583,6 +3595,12 @@ a.chart-history-item {
                             } else {
                                 l.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,' + tz + 'px) scale(1.25)';
                             }
+                        }
+                        for (var waveIndex = 0; waveIndex < wavePaths.length; waveIndex++) {
+                            var depth = waveIndex - ((wavePaths.length - 1) / 2);
+                            var waveTx = (mouseX * depth * 3.2);
+                            var waveTy = (mouseY * depth * 2.1) - (sy * depth * 0.0007);
+                            wavePaths[waveIndex].setAttribute('transform', 'translate(' + waveTx.toFixed(2) + ' ' + waveTy.toFixed(2) + ')');
                         }
                         bgTick = false;
                     }
