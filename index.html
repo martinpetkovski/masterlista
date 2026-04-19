@@ -3592,15 +3592,16 @@
                 gap: 0.65rem;
                 padding: 0.45rem 0.35rem;
                 flex: 0 0 auto;
-                width: fit-content;
-                min-width: min(82vw, 300px);
-                max-width: min(82vw, 300px);
+                width: calc(100% + 0.7rem);
+                min-width: calc(100% + 0.7rem);
+                max-width: calc(100% + 0.7rem);
+                box-sizing: border-box;
                 scroll-snap-align: start;
             }
 
             .radar-info {
                 flex: 0 1 auto;
-                max-width: calc(min(82vw, 300px) - 112px);
+                max-width: calc(100% - 112px);
             }
 
             .radar-cover {
