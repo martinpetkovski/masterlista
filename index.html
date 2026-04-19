@@ -114,7 +114,7 @@
             inset: 0;
             background: linear-gradient(90deg,
                 transparent 0%,
-                rgba(74, 127, 165, 0.18) 50%,
+                rgba(34, 92, 228, 0.18) 50%,
                 transparent 100%);
             transform: translateX(-110%);
             pointer-events: none;
@@ -145,11 +145,11 @@
         .sotd-item:hover,
         .trending-item:hover,
         .event-item:hover {
-            background: rgba(74, 127, 165, 0.06);
+            background: rgba(34, 92, 228, 0.06);
             transform: translateY(-2px);
             box-shadow:
-                0 4px 16px rgba(74, 127, 165, 0.12),
-                inset 0 0 0 1px rgba(74, 127, 165, 0.10);
+                0 4px 16px rgba(34, 92, 228, 0.12),
+                inset 0 0 0 1px rgba(34, 92, 228, 0.10);
         }
 
         /* ── Dark-mode: cyan neon variant ── */
@@ -253,7 +253,7 @@
         }
 
         .dash-card:hover {
-            box-shadow: 0 2px 16px rgba(74, 127, 165, 0.1), 0 1px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 16px rgba(34, 92, 228, 0.1), 0 1px 6px rgba(0,0,0,0.04);
         }
 
         body.dark-mode .dash-card:hover {
@@ -539,9 +539,9 @@
                     rgba(255,255,255,0) 0%,
                     rgba(255,255,255,0) 36%,
                     rgba(255,255,255,0.94) 48%,
-                    rgba(var(--chart-card-accent-rgb, 74, 127, 165), 0.38) 51%,
-                    rgba(var(--chart-card-accent-rgb, 74, 127, 165), 0.08) 56%,
-                    rgba(var(--chart-card-accent-rgb, 74, 127, 165), 0) 68%);
+                    rgba(var(--chart-card-accent-rgb, 34, 92, 228), 0.38) 51%,
+                    rgba(var(--chart-card-accent-rgb, 34, 92, 228), 0.08) 56%,
+                    rgba(var(--chart-card-accent-rgb, 34, 92, 228), 0) 68%);
             opacity: 0;
             transform: translate3d(-120%, 0, 0);
             pointer-events: none;
@@ -626,11 +626,11 @@
             z-index: 0;
             background:
                 linear-gradient(var(--chart-reveal-angle, 104deg),
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 18%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.08) 36%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 18%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0.08) 36%,
                     rgba(255,255,255,0.78) 49%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.24) 54%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 76%);
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0.24) 54%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 76%);
             transform: translate3d(var(--chart-reveal-fx-shift, -84px), 0, 0);
             mix-blend-mode: screen;
         }
@@ -638,11 +638,11 @@
         .mini-chart-reveal-flare {
             z-index: 0;
             inset: 1px 0;
-            border: 1px solid rgba(var(--chart-accent-rgb, 74, 127, 165), 0.22);
+            border: 1px solid rgba(var(--chart-accent-rgb, 34, 92, 228), 0.22);
             box-shadow:
                 inset 0 0 0 1px rgba(255,255,255,0.12),
-                inset 0 0 28px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.12),
-                0 0 22px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.16);
+                inset 0 0 28px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.12),
+                0 0 22px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.16);
             clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
             transform: scale(0.96);
         }
@@ -679,7 +679,7 @@
         .mini-chart-artist a:hover,
         .radar-info-artist a:hover,
         .trending-sub a:hover {
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
             text-decoration: underline;
         }
 
@@ -829,7 +829,7 @@
                 transform: translate3d(14px, 0, 0) scale(1.7);
                 filter: blur(10px);
                 letter-spacing: 0.18em;
-                text-shadow: 0 0 18px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.35);
+                text-shadow: 0 0 18px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.35);
             }
             65% {
                 opacity: 1;
@@ -1436,7 +1436,7 @@
 
         #main-chart-card .mini-chart-item:first-child:hover,
         #alt-chart-card .mini-chart-item:first-child:hover {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%), rgba(74, 127, 165, 0.06);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.06) 0%, transparent 70%), rgba(34, 92, 228, 0.06);
         }
 
         body.dark-mode #main-chart-card .mini-chart-item:first-child,
@@ -1870,7 +1870,7 @@
             text-decoration: none;
         }
 
-        .event-title a:hover { color: var(--accent-blue, #4a7fa5); }
+        .event-title a:hover { color: var(--accent-blue, #225ce4); }
 
         .event-meta {
             font-size: 0.85rem;
@@ -2028,7 +2028,7 @@
             text-decoration: none;
         }
 
-        .news-title a:hover { color: var(--accent-blue, #4a7fa5); }
+        .news-title a:hover { color: var(--accent-blue, #225ce4); }
 
         .news-source {
             font-size: 0.75rem;
@@ -2082,7 +2082,7 @@
 
         .artist-chip:hover {
             border-color: var(--accent-blue);
-            background: rgba(74, 127, 165, 0.06);
+            background: rgba(34, 92, 228, 0.06);
         }
 
         .artist-chip-avatar,
@@ -2159,7 +2159,7 @@
             height: 72px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--accent-blue, #4a7fa5);
+            border: 2px solid var(--accent-blue, #225ce4);
             flex-shrink: 0;
             background: var(--bg-hover, #eceef1);
         }
@@ -2185,7 +2185,7 @@
             text-decoration: none;
         }
 
-        .discover-name a:hover { color: var(--accent-blue, #4a7fa5); }
+        .discover-name a:hover { color: var(--accent-blue, #225ce4); }
 
         .discover-genre {
             font-size: 0.85rem;
@@ -2214,7 +2214,7 @@
             padding: 0.15rem 0.25rem;
         }
 
-        .discover-links a:hover { color: var(--accent-blue, #4a7fa5); }
+        .discover-links a:hover { color: var(--accent-blue, #225ce4); }
 
         .rising-links {
             display: grid;
@@ -2235,7 +2235,7 @@
             padding: 0.15rem 0.25rem;
         }
 
-        .rising-links a:hover { color: var(--accent-blue, #4a7fa5); }
+        .rising-links a:hover { color: var(--accent-blue, #225ce4); }
 
         .discover-release {
             font-size: 0.72rem;
@@ -2277,7 +2277,7 @@
         }
 
         .discover-release-link:hover {
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
         }
 
         /* ==================== SONGS OF THE DAY ==================== */
@@ -2344,7 +2344,7 @@
 
         .sotd-curator {
             font-size: 0.85rem;
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2367,7 +2367,7 @@
 
         .sotd-relevance a:hover {
             text-decoration: underline;
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
         }
 
         .sotd-relevance .sep {
@@ -2802,7 +2802,7 @@
         }
 
         .verify-name a { color: inherit; text-decoration: none; }
-        .verify-name a:hover { color: var(--accent-blue, #4a7fa5); }
+        .verify-name a:hover { color: var(--accent-blue, #225ce4); }
 
         .verify-btn {
             display: inline-flex;
@@ -2944,9 +2944,9 @@
             justify-content: center;
             min-width: 2.15rem;
             padding: 0.14rem 0.44rem 0.16rem;
-            border: 1px solid rgba(17,24,39,0.08);
-            background: linear-gradient(180deg, rgba(17,24,39,0.03), rgba(17,24,39,0.08));
-            color: var(--text-primary, #1a1d21);
+            border: 1px solid #000;
+            background: #000;
+            color: #fff;
             font-family: 'Montserrat', sans-serif;
             font-size: 0.78rem;
             font-weight: 800;
@@ -2987,6 +2987,12 @@
             min-width: 0.16rem;
         }
 
+        #hot-songs-list .trending-score-segment[class*="is-"][class$="-loss"] {
+            background-color: rgba(229,231,235,0.55);
+            background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(107,114,128,0.55) 4px 8px);
+            opacity: 1;
+        }
+
         #hot-songs-list .trending-score-segment.is-views {
             background: linear-gradient(90deg, rgba(17,24,39,0.9), rgba(17,24,39,0.78));
         }
@@ -2996,11 +3002,7 @@
         }
 
         #hot-songs-list .trending-score-segment.is-balance-bonus {
-            background: linear-gradient(90deg, rgba(74,127,165,0.9), rgba(120,166,198,0.96));
-        }
-
-        #hot-songs-list .trending-score-segment.is-balance-loss {
-            background: repeating-linear-gradient(135deg, rgba(74,127,165,0.16) 0 4px, rgba(74,127,165,0.42) 4px 8px);
+            background: linear-gradient(90deg, rgba(34,92,228,0.9), rgba(120,166,198,0.96));
         }
 
         #hot-songs-list .trending-score-endcap {
@@ -3010,7 +3012,7 @@
             height: 0.96rem;
             transform: translate(-50%, -50%);
             border: 2px solid #fff;
-            background: var(--accent-blue, #4a7fa5);
+            background: var(--accent-blue, #225ce4);
             box-shadow: 0 0 0 1px rgba(17,24,39,0.08);
         }
 
@@ -3045,13 +3047,13 @@
         }
 
         #hot-songs-list .trending-score-chip.is-balance i {
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
         }
 
         body.dark-mode #hot-songs-list .trending-score-inline {
-            border-color: rgba(255,255,255,0.08);
-            background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.09));
-            color: #f4f6f8;
+            border-color: #000;
+            background: #000;
+            color: #fff;
         }
 
         body.dark-mode #hot-songs-list .trending-score-bar {
@@ -3070,8 +3072,9 @@
             background: linear-gradient(90deg, rgba(181,204,223,0.88), rgba(135,182,216,0.98));
         }
 
-        body.dark-mode #hot-songs-list .trending-score-segment.is-balance-loss {
-            background: repeating-linear-gradient(135deg, rgba(181,204,223,0.16) 0 4px, rgba(181,204,223,0.42) 4px 8px);
+        body.dark-mode #hot-songs-list .trending-score-segment[class*="is-"][class$="-loss"] {
+            background-color: rgba(100,116,139,0.42);
+            background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(226,232,240,0.58) 4px 8px);
         }
 
         body.dark-mode #hot-songs-list .trending-score-endcap {

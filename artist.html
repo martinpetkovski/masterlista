@@ -53,10 +53,10 @@
         /* Artist Page Styles */
         :root {
             --artist-color-1: rgba(184, 134, 46, 0.08);
-            --artist-color-2: rgba(74, 127, 165, 0.06);
+            --artist-color-2: rgba(34, 92, 228, 0.06);
             --artist-color-3: rgba(123, 110, 158, 0.05);
             --artist-color-1-dark: rgba(184, 134, 46, 0.06);
-            --artist-color-2-dark: rgba(74, 127, 165, 0.04);
+            --artist-color-2-dark: rgba(34, 92, 228, 0.04);
             --artist-color-3-dark: rgba(123, 110, 158, 0.03);
             --artist-accent: #5b8fb9;
         }
@@ -1012,7 +1012,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(74, 127, 165, 0.08) 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(34, 92, 228, 0.08) 50%, transparent 100%);
             transform: translateX(-100%);
             pointer-events: none;
             z-index: 2;
@@ -2127,7 +2127,7 @@ a.chart-history-item {
             transition: border-color 0.15s, box-shadow 0.15s;
         }
         .tl-search-wrap:focus-within {
-            border-color: var(--accent-blue, #4a7fa5);
+            border-color: var(--accent-blue, #225ce4);
             box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
         }
         .tl-search-icon {
@@ -2155,7 +2155,7 @@ a.chart-history-item {
             border-color: var(--border-color, #2a2e36);
         }
         body.dark-mode .tl-search-wrap:focus-within {
-            border-color: var(--accent-blue, #4a7fa5);
+            border-color: var(--accent-blue, #225ce4);
             box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
         }
         body.dark-mode .tl-search-input {
@@ -2177,7 +2177,7 @@ a.chart-history-item {
             top: 0;
             bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, var(--accent-blue, #4a7fa5) 0%, var(--border-color) 8%, var(--border-color) 85%, transparent);
+            background: linear-gradient(to bottom, var(--accent-blue, #225ce4) 0%, var(--border-color) 8%, var(--border-color) 85%, transparent);
             border-radius: 1px;
         }
         .chart-history-list > .timeline-month-header,
@@ -2202,14 +2202,14 @@ a.chart-history-item {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: var(--artist-accent-2, var(--accent-blue, #4a7fa5));
+            background: var(--accent-red, #ef4444);
             border: 2px solid var(--bg-primary);
-            box-shadow: 0 0 0 1px var(--artist-accent-2, var(--accent-blue, #4a7fa5));
+            box-shadow: 0 0 0 1px var(--accent-red, #ef4444);
         }
         /* New-release marker highlight */
         .chart-history-list > .chart-history-item:has(.release-new-badge)::before {
-            background: #22c55e;
-            box-shadow: 0 0 0 1px #22c55e, 0 0 8px rgba(34, 197, 94, 0.45);
+            background: var(--accent-red, #ef4444);
+            box-shadow: 0 0 0 1px var(--accent-red, #ef4444), 0 0 8px color-mix(in srgb, var(--accent-red, #ef4444) 45%, transparent);
         }
         /* Article marker: amber diamond */
         .chart-history-list > .timeline-item-article::before {
@@ -2244,7 +2244,7 @@ a.chart-history-item {
             width: 0; height: 0;
             border-style: solid;
             border-width: 12px 12px 0 0;
-            border-color: var(--accent-blue, #4a7fa5) transparent transparent transparent;
+            border-color: var(--accent-blue, #225ce4) transparent transparent transparent;
             opacity: 0.45;
         }
         .chart-history-list > .chart-history-item:has(.chart-history-type.single)::after {
@@ -2254,7 +2254,7 @@ a.chart-history-item {
             border-color: #7950f2 transparent transparent transparent;
         }
         .chart-history-list > .chart-history-item:has(.release-new-badge)::after {
-            border-color: #22c55e transparent transparent transparent;
+            border-color: var(--accent-red, #ef4444) transparent transparent transparent;
             opacity: 0.55;
         }
         .chart-history-list > .timeline-item-article::after {
@@ -2580,7 +2580,7 @@ a.chart-history-item {
             -webkit-backdrop-filter: blur(14px);
         }
         .verified-accent .tl-search-wrap:focus-within {
-            border-color: var(--artist-accent-2, var(--accent-blue, #4a7fa5));
+            border-color: var(--artist-accent-2, var(--accent-blue, #225ce4));
             box-shadow: 0 0 0 2px color-mix(in srgb, var(--artist-accent-2, var(--accent-blue)) 18%, transparent);
         }
         .verified-accent .tl-search-icon {
@@ -2729,7 +2729,7 @@ a.chart-history-item {
                 left: -24px;
                 width: 8px;
                 height: 8px;
-                box-shadow: 0 0 0 1px var(--accent-blue, #4a7fa5);
+                box-shadow: 0 0 0 1px var(--accent-red, #ef4444);
             }
             .chart-history-list > .timeline-item-article::before {
                 left: -23px;
@@ -4347,9 +4347,9 @@ a.chart-history-item {
                     const dotY = points[idx].y + frac * (points[nextIdx].y - points[idx].y);
 
                     releaseDotsHtml += `
-                        <line x1="${dotX}" y1="${padding}" x2="${dotX}" y2="${height - padding}" stroke="#22c55e" stroke-width="0.7" opacity="0.35" stroke-dasharray="2,2"/>
-                        <circle cx="${dotX}" cy="${dotY}" r="5" fill="#22c55e" stroke="var(--bg-primary)" stroke-width="2"/>
-                        <text x="${dotX}" y="${dotY - 8}" text-anchor="middle" fill="#22c55e" font-size="8" font-weight="bold">${rel.releaseTitle.length > 14 ? rel.releaseTitle.slice(0, 13) + '…' : rel.releaseTitle}</text>
+                        <line x1="${dotX}" y1="${padding}" x2="${dotX}" y2="${height - padding}" stroke="var(--accent-red, #ef4444)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2,2"/>
+                        <circle cx="${dotX}" cy="${dotY}" r="5" fill="var(--accent-red, #ef4444)" stroke="var(--bg-primary)" stroke-width="2"/>
+                        <text x="${dotX}" y="${dotY - 8}" text-anchor="middle" fill="var(--accent-red, #ef4444)" font-size="8" font-weight="bold">${rel.releaseTitle.length > 14 ? rel.releaseTitle.slice(0, 13) + '…' : rel.releaseTitle}</text>
                     `;
                 });
             }
@@ -4709,7 +4709,7 @@ a.chart-history-item {
                 if (!isPast) {
                     if (daysDiff === 0) badge = '<span style="background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.3);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">' + t('artist.today') + '</span>';
                     else if (daysDiff <= 7) badge = `<span style="background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${daysDiff === 1 ? t('artist.inDays').replace('{0}', daysDiff) : t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
-                    else if (daysDiff <= 30) badge = `<span style="background:rgba(74,127,165,0.08);color:var(--accent-blue);border:1px solid rgba(74,127,165,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
+                    else if (daysDiff <= 30) badge = `<span style="background:rgba(34,92,228,0.08);color:var(--accent-blue);border:1px solid rgba(34,92,228,0.15);font-size:0.6rem;font-weight:700;padding:0.1rem 0.4rem;border-radius:999px;margin-left:0.4rem">${t('artist.inDaysPlural').replace('{0}', daysDiff)}</span>`;
                 }
                 const dateStr = String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
                 const dayStr = MK_DAYS[d.getDay()];

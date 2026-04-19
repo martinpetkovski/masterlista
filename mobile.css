@@ -9,9 +9,9 @@
     --text-secondary: #555b64;
     --text-muted: #8b929a;
     --border-color: #dfe1e5;
-    --accent-blue: #4a7fa5;
+    --accent-blue: #225ce4;
     --accent-green: #22c55e;
-    --accent-orange: #4a7fa5;
+    --accent-orange: #225ce4;
     --accent-red: #ef4444;
     --accent-purple: #7b6e9e;
     --accent-pink: #a86078;
@@ -1021,11 +1021,11 @@ td[data-label="Статус"] > span.status-content {
 .genre-item i { color: #7b6e9e; }
 
 .sounds-like-item {
-    background: rgba(74, 127, 165, 0.1);
+    background: rgba(34, 92, 228, 0.1);
     color: #3a6d8f;
-    border-color: rgba(74, 127, 165, 0.22);
+    border-color: rgba(34, 92, 228, 0.22);
 }
-.sounds-like-item i { color: #4a7fa5; }
+.sounds-like-item i { color: #225ce4; }
 
 .city-item i { color: inherit; }
 
@@ -1268,7 +1268,7 @@ body.dark-mode .form-group select:focus {
 
 .token-input-shell:focus-within {
     border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(74, 127, 165, 0.14);
+    box-shadow: 0 0 0 3px rgba(34, 92, 228, 0.14);
 }
 
 .token-chip-list {
@@ -1894,7 +1894,7 @@ html.dark-mode .delete-band-btn::before {
     --sc-card-border: rgba(0,0,0,0.08);
     --sc-card-hover-bg: rgba(0,0,0,0.08);
     --sc-pref-color: var(--accent-orange, #ff922b);
-    --sc-link-sweep: rgba(74,127,165,0.08);
+    --sc-link-sweep: rgba(34,92,228,0.08);
     --sc-header-separator: rgba(255,255,255,0.5);
     display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0);
     z-index: 10000; align-items: center; justify-content: center;
@@ -2241,7 +2241,7 @@ body.vfx-dark .service-chooser-overlay,
 .service-chooser-links a:hover { background: var(--sc-card-hover-bg, rgba(0,0,0,0.08)); transform: translateY(-1px); border-color: var(--link-accent, rgba(0,0,0,0.08)); }
 .service-chooser-links a::before {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 0%, var(--sc-link-sweep, rgba(74,127,165,0.08)) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--sc-link-sweep, rgba(34,92,228,0.08)) 50%, transparent 100%);
     transform: translateX(-100%); pointer-events: none; z-index: 2;
 }
 .service-chooser-links a::after { content: none; }
@@ -2730,7 +2730,7 @@ body.dark-mode .settings-service-btn:hover {
     padding-right: 2rem;
 }
 .settings-service-select:focus {
-    border-color: var(--accent-blue, #4a7fa5);
+    border-color: var(--accent-blue, #225ce4);
 }
 body.dark-mode .settings-service-select {
     color: var(--text-primary, #e8e8f0);
@@ -3419,7 +3419,7 @@ body.dark-mode .share-lang-btn {
         box-shadow: none; 
     }
     50% { 
-        box-shadow: 0 0 0 6px rgba(74, 127, 165, 0.35);
+        box-shadow: 0 0 0 6px rgba(34, 92, 228, 0.35);
     }
 }
 
@@ -3467,7 +3467,7 @@ html.dark-mode body {
     --border-color: #2a2e36;
     --accent-blue: #5a8ab5;
     --accent-green: #22c55e;
-    --accent-orange: #4a7fa5;
+    --accent-orange: #225ce4;
     --accent-red: #ef4444;
     --accent-purple: #8a7db5;
     --accent-teal: #5a9e92;
@@ -3842,8 +3842,8 @@ body.dark-mode .site-nav-menu a.active:hover i {
 }
 
 @keyframes navActiveGlow {
-    0%, 100% { box-shadow: 0 0 0px rgba(74, 127, 165, 0); }
-    50% { box-shadow: 0 0 8px rgba(74, 127, 165, 0.2), 0 0 2px rgba(74, 127, 165, 0.1); }
+    0%, 100% { box-shadow: 0 0 0px rgba(34, 92, 228, 0); }
+    50% { box-shadow: 0 0 8px rgba(34, 92, 228, 0.2), 0 0 2px rgba(34, 92, 228, 0.1); }
 }
 
 @keyframes navBracketPulse {
@@ -3853,7 +3853,7 @@ body.dark-mode .site-nav-menu a.active:hover i {
 
 .site-nav-menu a.active:hover {
     filter: brightness(1.2);
-    box-shadow: 0 0 14px rgba(74, 127, 165, 0.25);
+    box-shadow: 0 0 14px rgba(34, 92, 228, 0.25);
     animation: none;
 }
 .site-nav-menu a.active:hover::before {

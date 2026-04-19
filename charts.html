@@ -91,7 +91,7 @@
             --border-color: #2a2e36;
             --accent-blue: #5a8ab5;
             --accent-green: #22c55e;
-            --accent-orange: #4a7fa5;
+            --accent-orange: #225ce4;
             --accent-red: #ef4444;
             --accent-purple: #8a7db5;
             --accent-teal: #5a9e92;
@@ -640,7 +640,7 @@
             transition: color 0.15s ease;
         }
         .adv-table .adv-artist-link:hover {
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
             text-decoration: underline;
         }
         .adv-table .adv-release-link {
@@ -649,7 +649,7 @@
             transition: color 0.15s ease;
         }
         .adv-table .adv-release-link:hover {
-            color: var(--accent-blue, #4a7fa5);
+            color: var(--accent-blue, #225ce4);
             text-decoration: underline;
         }
 
@@ -1320,11 +1320,11 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(108deg,
-                rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 18%,
-                rgba(var(--chart-accent-rgb, 74, 127, 165), 0.08) 34%,
+                rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 18%,
+                rgba(var(--chart-accent-rgb, 34, 92, 228), 0.08) 34%,
                 rgba(255,255,255,0.82) 49%,
-                rgba(var(--chart-accent-rgb, 74, 127, 165), 0.24) 54%,
-                rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 76%);
+                rgba(var(--chart-accent-rgb, 34, 92, 228), 0.24) 54%,
+                rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 76%);
             transform: translate3d(-120%, 0, 0);
             opacity: 0;
             mix-blend-mode: screen;
@@ -1361,11 +1361,11 @@
             z-index: 0;
             background:
                 linear-gradient(var(--chart-reveal-angle, 104deg),
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 18%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.08) 36%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 18%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0.08) 36%,
                     rgba(255,255,255,0.78) 49%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0.24) 54%,
-                    rgba(var(--chart-accent-rgb, 74, 127, 165), 0) 76%);
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0.24) 54%,
+                    rgba(var(--chart-accent-rgb, 34, 92, 228), 0) 76%);
             transform: translate3d(var(--chart-reveal-fx-shift, -84px), 0, 0);
             mix-blend-mode: screen;
         }
@@ -1373,11 +1373,11 @@
         .chart-reveal-flare {
             z-index: 0;
             inset: 1px 0;
-            border: 1px solid rgba(var(--chart-accent-rgb, 74, 127, 165), 0.22);
+            border: 1px solid rgba(var(--chart-accent-rgb, 34, 92, 228), 0.22);
             box-shadow:
                 inset 0 0 0 1px rgba(255,255,255,0.12),
-                inset 0 0 28px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.12),
-                0 0 22px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.16);
+                inset 0 0 28px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.12),
+                0 0 22px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.16);
             clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
             transform: scale(0.96);
         }
@@ -1722,7 +1722,7 @@
                 transform: translate3d(14px, 0, 0) scale(1.7);
                 filter: blur(10px);
                 letter-spacing: 0.18em;
-                text-shadow: 0 0 18px rgba(var(--chart-accent-rgb, 74, 127, 165), 0.35);
+                text-shadow: 0 0 18px rgba(var(--chart-accent-rgb, 34, 92, 228), 0.35);
             }
             65% {
                 opacity: 1;
@@ -5091,10 +5091,10 @@
             function getChartRevealAccent(containerId) {
                 if (containerId === 'singles-chart') return '184, 58, 58';
                 if (containerId === 'albums-chart') return '184, 152, 48';
-                if (containerId === 'latest-chart') return '74, 127, 165';
+                if (containerId === 'latest-chart') return '34, 92, 228';
                 if (containerId === 'artists-chart') return '52, 148, 91';
                 if (containerId === 'artists-cumulative-chart') return '52, 148, 91';
-                return '74, 127, 165';
+                return '34, 92, 228';
             }
 
             function getChartRevealStyle(index, accentRgb) {
