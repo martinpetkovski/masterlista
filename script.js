@@ -212,29 +212,13 @@
             return;
         }
         try {
-            const exportData = {
-                muzickaMasterLista: bandsData.map(band => ({
-                    name: band.name, city: band.city, genre: band.genre,
-                    soundsLike: band.soundsLike, links: band.links,
-                    contact: band.contact, label: band.label,
-                    accentColors: band.accentColors || null,
-                    confirmed: band.confirmed || false,
-                    image: band.image || null,
-                    imageSource: band.imageSource || null
-                }))
-            };
+            const exportData = JSON.parse(JSON.stringify({
+                muzickaMasterLista: bandsData
+            }));
             if (window.MMMDrafts) {
-                const originalExport = {
-                    muzickaMasterLista: originalBandsData.map(band => ({
-                        name: band.name, city: band.city, genre: band.genre,
-                        soundsLike: band.soundsLike, links: band.links,
-                        contact: band.contact, label: band.label,
-                        accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false,
-                        image: band.image || null,
-                        imageSource: band.imageSource || null
-                    }))
-                };
+                const originalExport = JSON.parse(JSON.stringify({
+                    muzickaMasterLista: originalBandsData
+                }));
                 window.MMMDrafts.save('bands.json', exportData, originalExport);
             } else {
                 // Fallback to legacy format
@@ -1258,6 +1242,22 @@
                 const filtered = existing.filter(l => !labelsToRemove.includes(l));
                 return filtered.length ? filtered.join(', ') : null;
             }
+
+            function normalizeLoadedBand(band) {
+                const normalizedBand = { ...(band || {}) };
+                normalizedBand.name = normalizedBand.name || 'недостигаат податоци';
+                normalizedBand.city = normalizedBand.city || 'недостигаат податоци';
+                normalizedBand.genre = normalizedBand.genre || 'недостигаат податоци';
+                normalizedBand.soundsLike = normalizedBand.soundsLike || 'недостигаат податоци';
+                normalizedBand.links = Object.keys(normalizedBand.links || {}).length ? normalizedBand.links : { none: 'недостигаат податоци' };
+                normalizedBand.contact = normalizedBand.contact || 'недостигаат податоци';
+                normalizedBand.label = removeComputedLabels(normalizedBand.label || null, CONTROLLED_LABELS);
+                normalizedBand.accentColors = normalizedBand.accentColors || null;
+                normalizedBand.confirmed = normalizedBand.confirmed || false;
+                normalizedBand.image = normalizedBand.image || null;
+                normalizedBand.imageSource = normalizedBand.imageSource || null;
+                return normalizedBand;
+            }
             
             // Check if we should restore pending changes
             if (pendingChanges && pendingChanges.bandsData) {
@@ -1281,45 +1281,11 @@
                 hasUnsavedChanges = true;
                 
                 // Still load original data for comparison
-                const originalFromServer = data.muzickaMasterLista.map((band) => {
-                    let label = band.label || null;
-                    label = removeComputedLabels(label, CONTROLLED_LABELS);
-                    return {
-                        name: band.name || 'недостигаат податоци',
-                        city: band.city || 'недостигаат податоци',
-                        genre: band.genre || 'недостигаат податоци',
-                        soundsLike: band.soundsLike || 'недостигаат податоци',
-                        links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
-                        contact: band.contact || 'недостигаат податоци',
-                        label,
-                        accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false,
-                        image: band.image || null,
-                        imageSource: band.imageSource || null
-                    };
-                });
+                const originalFromServer = data.muzickaMasterLista.map((band) => normalizeLoadedBand(band));
                 originalBandsData = JSON.parse(JSON.stringify(originalFromServer));
             } else {
                 // Normal load - no pending changes
-                bandsData = data.muzickaMasterLista.map((band) => {
-                    // Remove manual "Ново Издание" tags - only Spotify data will add them
-                    let label = band.label || null;
-                    label = removeComputedLabels(label, CONTROLLED_LABELS);
-                    
-                    return {
-                        name: band.name || 'недостигаат податоци',
-                        city: band.city || 'недостигаат податоци',
-                        genre: band.genre || 'недостигаат податоци',
-                        soundsLike: band.soundsLike || 'недостигаат податоци',
-                        links: Object.keys(band.links).length ? band.links : { none: 'недостигаат податоци' },
-                        contact: band.contact || 'недостигаат податоци',
-                        label,
-                        accentColors: band.accentColors || null,
-                        confirmed: band.confirmed || false,
-                        image: band.image || null,
-                        imageSource: band.imageSource || null
-                    };
-                });
+                bandsData = data.muzickaMasterLista.map((band) => normalizeLoadedBand(band));
                 originalBandsData = JSON.parse(JSON.stringify(bandsData));
             }
             primeMasterArtistNameSet(bandsData);
@@ -2013,7 +1979,9 @@
                         genreValue = validGenres.length > 0 ? validGenres.join(', ') : 'недостигаат податоци';
                     }
                     // Silently save the current form data
+                    const bandIndex = parseInt(editIndex, 10);
                     const band = {
+                        ...(bandsData[bandIndex] || {}),
                         name,
                         city: document.getElementById('band-city').value.trim() || 'недостигаат податоци',
                         genre: genreValue,
@@ -2046,7 +2014,7 @@
                     if (Object.keys(band.links).length === 0) {
                         band.links = { none: 'недостигаат податоци' };
                     }
-                    bandsData[parseInt(editIndex)] = band;
+                    bandsData[bandIndex] = band;
                     invalidateBandCache();
                     populateFilters(bandsData);
                     filterBands();
@@ -2255,7 +2223,9 @@
                 return;
             }
 
+            const bandIndex = editIndex !== undefined && editIndex !== '' ? parseInt(editIndex, 10) : -1;
             const band = {
+                ...(bandIndex >= 0 ? (bandsData[bandIndex] || {}) : {}),
                 name,
                 city: document.getElementById('band-city').value.trim() || 'недостигаат податоци',
                 genre: document.getElementById('band-genre').value.trim() || 'недостигаат податоци',
@@ -2294,7 +2264,7 @@
             }
             if (editIndex !== undefined && editIndex !== '') {
                 console.log(`Updating band at index ${editIndex}`);
-                bandsData[parseInt(editIndex)] = band;
+                bandsData[bandIndex] = band;
             } else {
                 console.log('Adding new band');
                 bandsData.push(band);

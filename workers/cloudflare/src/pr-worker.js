@@ -227,6 +227,7 @@ export default {
       const description = body?.description || 'Automated PR from MMM form';
       const contributor = body?.contributor || '';
       const targetPath = body?.path || 'bands.json';
+      const additionalFiles = body?.additionalFiles || [];
 
       if (!bandsJson || typeof bandsJson !== 'string') {
         return json({ error: 'Invalid payload: bandsJson string required' }, 400, corsHeaders);
@@ -388,6 +389,14 @@ export default {
         } catch (_) { /* if parsing fails, leave finalJson as-is */ }
       }
 
+      if (currentContent && !additionalFiles.length && normalizeComparableContent(finalJson) === normalizeComparableContent(currentContent)) {
+        return json({
+          error: 'No effective changes to submit',
+          code: 'NO_EFFECTIVE_CHANGES',
+          path: targetPath
+        }, 409, corsHeaders);
+      }
+
       // 4) Create or update file on new branch
       const putRes = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponent(targetPath)}`, {
         method: 'PUT',
@@ -404,7 +413,6 @@ export default {
       }
 
       // 4b) Commit additional binary/text files (e.g. greeting audio)
-      const additionalFiles = body?.additionalFiles || [];
       const failedFiles = [];
       for (const af of additionalFiles) {
         if (!af.path || !af.contentBase64) continue;
@@ -474,6 +482,15 @@ function b64decode(b64) {
   return decodeURIComponent(escape(atob((b64 || '').replace(/\n/g, '').replace(/\r/g, ''))));
 }
 
+function normalizeComparableContent(content) {
+  if (typeof content !== 'string') return '';
+  try {
+    return JSON.stringify(JSON.parse(content));
+  } catch (_) {
+    return content.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').trim();
+  }
+}
+
 // ---------------- Three-way Merge Helpers ----------------
 
 /**
@@ -538,12 +555,12 @@ function threeWayMergeBands(original, current, modified) {
       const cJson = JSON.stringify(strip(artist));
       const mJson = JSON.stringify(strip(modMap.get(name)));
       if (mJson !== oJson && cJson === oJson) {
-        // Only user changed → take user's version, keep HEAD images
-        merged.push({ ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
+        // Only user changed → take user's version, preserve repo-only fields, keep HEAD images
+        merged.push({ ...artist, ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
         notes.push(`Изменет (корисник): ${name}`);
       } else if (mJson !== oJson && cJson !== oJson) {
-        // Both changed non-image fields → take user's version, flag conflict, keep HEAD images
-        merged.push({ ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
+        // Both changed non-image fields → take user's version, preserve repo-only fields, keep HEAD images
+        merged.push({ ...artist, ...modMap.get(name), image: artist.image, imageSource: artist.imageSource });
         notes.push(`⚠️ Конфликт (земена верзија на корисникот): ${name}`);
       } else {
         // User didn't change (or identical changes) → keep repo version
@@ -678,10 +695,10 @@ function threeWayMergeEvents(original, current, modified) {
       const cJson = JSON.stringify(event);
       const mJson = JSON.stringify(modMap.get(id));
       if (mJson !== oJson && cJson === oJson) {
-        merged.push(modMap.get(id));
+        merged.push({ ...event, ...modMap.get(id) });
         notes.push(`Изменет настан (корисник): ${event.title || id}`);
       } else if (mJson !== oJson && cJson !== oJson) {
-        merged.push(modMap.get(id));
+        merged.push({ ...event, ...modMap.get(id) });
         notes.push(`⚠️ Конфликт настан (земена верзија на корисникот): ${event.title || id}`);
       } else {
         merged.push(event);

@@ -265,6 +265,12 @@ window.MMMDrafts = (function () {
         return lines;
     }
 
+    function _getEventLinks(eventObj) {
+        if (eventObj && Array.isArray(eventObj.links)) return eventObj.links;
+        if (eventObj && eventObj.link) return [{ label: '', url: eventObj.link }];
+        return [];
+    }
+
     function _diffEvents(original, modified) {
         var origList = (original && original.events) || [];
         var modList = (modified && modified.events) || [];
@@ -281,7 +287,7 @@ window.MMMDrafts = (function () {
             if (e.date !== o.date) fields.push(t('drafts.fieldDate'));
             if (e.time !== o.time) fields.push(t('drafts.fieldTime'));
             if (e.place !== o.place) fields.push(t('drafts.fieldPlace'));
-            if (e.link !== o.link) fields.push(t('drafts.fieldLink'));
+            if (JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o))) fields.push(t('drafts.fieldLinks'));
             if (JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands)) fields.push(t('drafts.fieldArtists'));
             if (JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) fields.push(t('drafts.fieldTickets'));
             if (fields.length) changed.push(e.title + ' [' + fields.join(', ') + ']');
@@ -559,7 +565,7 @@ window.MMMDrafts = (function () {
                     if (!origEvtMap[e.id]) { total++; return; }
                     var o = origEvtMap[e.id];
                     if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
-                        e.place !== o.place || e.link !== o.link ||
+                        e.place !== o.place || JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o)) ||
                         JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
                         JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
                         total++;
@@ -635,7 +641,7 @@ window.MMMDrafts = (function () {
                 } else {
                     var o = origEvtMap[e.id];
                     if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
-                        e.place !== o.place || e.link !== o.link ||
+                        e.place !== o.place || JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o)) ||
                         JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
                         JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
                         items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(e.title) + '</a>');

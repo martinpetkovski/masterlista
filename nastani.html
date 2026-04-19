@@ -2607,22 +2607,6 @@
             updateStats();
             renderTable();
             closeModal();
-
-            // Build notification with event details and artist links
-            var notifMsg = t('events.savedLocally') + ' ';
-            if (eventObj) {
-                var isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-                var eventUrl = isLocalhost ? 'nastan.html?id=' + encodeURIComponent(eventObj.id) : '/nastan/' + encodeURIComponent(eventObj.id);
-                notifMsg += '<a href="' + eventUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(eventObj.title)) + '</a>';
-                if (eventObj.artists && eventObj.artists.length) {
-                    var artistLinks = eventObj.artists.map(function(name) {
-                        var artistUrl = isLocalhost ? 'artist.html?name=' + encodeURIComponent(name) : '/artist.html?name=' + encodeURIComponent(name);
-                        return '<a href="' + artistUrl + '" style="color:inherit;text-decoration:underline">' + escHtml(localizeText(name)) + '</a>';
-                    });
-                    notifMsg += ' (' + artistLinks.join(', ') + ')';
-                }
-            }
-            notify(notifMsg, 'info');
         }
 
         // ==================== INIT ====================

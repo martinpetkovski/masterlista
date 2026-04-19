@@ -5851,7 +5851,8 @@ a.chart-history-item {
             const previewName = displayName || (previewMode ? t('lista.addArtist') : '');
             const accentOne = artistEditorSession.colorOneEl.value.trim();
             const accentTwo = artistEditorSession.colorTwoEl.value.trim();
-            const nextArtist = {
+            const baseArtist = artistEditorSession.baseArtist ? Object.assign({}, artistEditorSession.baseArtist) : {};
+            const nextArtist = Object.assign(baseArtist, {
                 name: previewName,
                 city: artistEditorSession.cityEl.value.trim() || 'недостигаат податоци',
                 genre: artistEditorSession.genreEl.value.trim() || 'недостигаат податоци',
@@ -5861,10 +5862,7 @@ a.chart-history-item {
                 accentColors: (accentOne || accentTwo) ? [accentOne || null, accentTwo || null] : null,
                 confirmed: !!artistEditorSession.confirmedEl.checked,
                 links: buildArtistEditorLinkObject()
-            };
-            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist.image) nextArtist.image = artistEditorSession.baseArtist.image;
-            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist.spotifyName) nextArtist.spotifyName = artistEditorSession.baseArtist.spotifyName;
-            if (artistEditorSession.baseArtist && artistEditorSession.baseArtist._activityStatus) nextArtist._activityStatus = artistEditorSession.baseArtist._activityStatus;
+            });
             return nextArtist;
         }
 
@@ -6031,7 +6029,7 @@ a.chart-history-item {
             artistEditorSession.bandIndex = updatedBands.findIndex(function(entry) { return entry.name === nextArtist.name; });
             artistEditorSession.isNew = false;
             history.replaceState(null, '', buildLocalArtistEditorUrl(nextArtist.name));
-            setArtistEditorStatus(t('events.savedLocally'), 'success');
+            setArtistEditorStatus('', 'idle');
             refreshArtistEditorPreview();
         }
 
