@@ -2377,7 +2377,7 @@ body.vfx-dark .service-chooser-overlay,
     border-radius: 0;
     padding: 1.5rem;
     min-width: 0;
-    width: calc(100vw - 2rem);
+    width: calc(100% - 2rem);
     max-width: 340px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     font-family: 'Inter', sans-serif;
