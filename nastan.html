@@ -843,6 +843,8 @@
         }
 
         var eventEditorSession = null;
+        var eventEditorLayoutFrame = 0;
+        var eventEditorLayoutListenerBound = false;
 
         function ensureEventEditorStyles() {
             if (document.getElementById('event-wysiwyg-editor-styles')) return;
@@ -961,31 +963,61 @@
                 '.event-editor-help{' +
                     'font-size:.71rem;line-height:1.4;color:var(--text-muted);margin:0;' +
                 '}' +
-                '@media (max-width: 980px){' +
-                    'body.wysiwyg-editor-active .event-container{transform:none;padding-bottom:min(40rem,72vh);}' +
-                    '.event-editor-panel{top:4.5rem;left:.75rem;right:.75rem;bottom:.75rem;width:auto;border-radius:0;}' +
-                '}' +
-                '@media (max-width: 640px){' +
-                    'body.wysiwyg-editor-active .event-container{padding-bottom:calc(50vh + 1rem);}' +
-                    '.event-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
-                    'body.dark-mode .event-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
-                    '.event-editor-toolbar{position:sticky;top:0;z-index:4;padding:calc(.9rem + env(safe-area-inset-top,0px)) 1rem .9rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
-                    'body.dark-mode .event-editor-toolbar{background:rgba(15,23,42,.98);}' +
-                    '.event-editor-status{padding:0 1rem .65rem;}' +
-                    '.event-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
-                    '.event-editor-toolbar-actions{flex-direction:column;align-items:stretch;gap:.7rem;}' +
-                    '.event-editor-link{width:100%;justify-content:center;}' +
-                    '.event-editor-primary-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-left:0;justify-content:stretch;width:100%;}' +
-                    '.event-editor-primary-actions .event-editor-btn{width:100%;justify-content:center;}' +
-                    '.event-editor-grid{grid-template-columns:1fr;}' +
-                    '.event-editor-row.columns-2{grid-template-columns:1fr;}' +
-                    '.event-editor-row.columns-artist{grid-template-columns:1fr;}' +
-                    '.event-editor-remove{width:100%;height:2.75rem;}' +
-                    '.event-editor-scroll > .event-editor-toolbar-actions:last-child{position:sticky;bottom:0;z-index:3;margin-top:.2rem;padding:.9rem 0 calc(.15rem + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.96) 24%);}' +
-                    'body.dark-mode .event-editor-scroll > .event-editor-toolbar-actions:last-child{background:linear-gradient(180deg,rgba(15,23,42,0),rgba(15,23,42,.98) 24%);}' +
-                    '.event-editor-scroll > .event-editor-toolbar-actions:last-child .event-editor-btn{width:100%;justify-content:center;}' +
-                '}';
+                'body.event-editor-mobile-layout.wysiwyg-editor-active .event-container{transform:none;padding-bottom:calc(50vh + 1rem);}' +
+                'body.event-editor-mobile-layout .event-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;width:auto;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
+                'body.dark-mode.event-editor-mobile-layout .event-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
+                'body.event-editor-mobile-layout .event-editor-toolbar{position:sticky;top:0;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.45rem .55rem;padding:calc(.75rem + env(safe-area-inset-top,0px)) .8rem .7rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
+                'body.dark-mode.event-editor-mobile-layout .event-editor-toolbar{background:rgba(15,23,42,.98);}' +
+                'body.event-editor-mobile-layout .event-editor-title{display:flex;align-items:center;min-height:2.15rem;font-size:clamp(.76rem,3.8vw,.92rem);line-height:1;letter-spacing:.05em;min-width:0;}' +
+                'body.event-editor-mobile-layout .event-editor-status{padding:0 1rem .65rem;}' +
+                'body.event-editor-mobile-layout .event-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
+                'body.event-editor-mobile-layout .event-editor-toolbar-actions{flex-direction:row;align-items:center;justify-content:flex-end;gap:.35rem;flex-wrap:wrap;min-width:0;}' +
+                'body.event-editor-mobile-layout .event-editor-link,body.event-editor-mobile-layout .event-editor-btn{padding:.42rem .58rem;font-size:.68rem;gap:.3rem;white-space:nowrap;}' +
+                'body.event-editor-mobile-layout .event-editor-link{width:auto;justify-content:center;}' +
+                'body.event-editor-mobile-layout .event-editor-toolbar > .event-editor-toolbar-actions .event-editor-link,' +
+                'body.event-editor-mobile-layout .event-editor-toolbar > .event-editor-toolbar-actions .event-editor-primary-actions .event-editor-btn{padding:.45rem;min-width:2.15rem;height:2.15rem;font-size:0;gap:0;}' +
+                'body.event-editor-mobile-layout .event-editor-toolbar > .event-editor-toolbar-actions .event-editor-link i,' +
+                'body.event-editor-mobile-layout .event-editor-toolbar > .event-editor-toolbar-actions .event-editor-primary-actions .event-editor-btn i{font-size:.82rem;margin:0;}' +
+                'body.event-editor-mobile-layout .event-editor-primary-actions{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin-left:0;justify-content:flex-end;width:auto;}' +
+                'body.event-editor-mobile-layout .event-editor-primary-actions .event-editor-btn{width:auto;justify-content:center;}' +
+                'body.event-editor-mobile-layout .event-editor-grid{grid-template-columns:1fr;}' +
+                'body.event-editor-mobile-layout .event-editor-row.columns-2{grid-template-columns:1fr;}' +
+                'body.event-editor-mobile-layout .event-editor-row.columns-artist{grid-template-columns:1fr;}' +
+                'body.event-editor-mobile-layout .event-editor-remove{width:100%;height:2.75rem;}' +
+                'body.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child{position:static;margin-top:.2rem;padding:0;background:none;}' +
+                'body.dark-mode.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child{background:none;}' +
+                'body.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child .event-editor-btn{width:100%;justify-content:center;}';
             document.head.appendChild(style);
+        }
+
+        function applyEventEditorLayoutMode() {
+            eventEditorLayoutFrame = 0;
+            var body = document.body;
+            var panel = document.getElementById('event-editor-panel');
+            var container = document.querySelector('.event-container');
+            if (!body.classList.contains('wysiwyg-editor-active') || !panel || !container) {
+                body.classList.remove('event-editor-mobile-layout');
+                return;
+            }
+            body.classList.remove('event-editor-mobile-layout');
+            var containerRect = container.getBoundingClientRect();
+            var panelRect = panel.getBoundingClientRect();
+            var fitsDesktop = (panelRect.left - containerRect.right) >= 16;
+            body.classList.toggle('event-editor-mobile-layout', !fitsDesktop);
+        }
+
+        function scheduleEventEditorLayoutMode() {
+            if (eventEditorLayoutFrame) return;
+            eventEditorLayoutFrame = window.requestAnimationFrame(applyEventEditorLayoutMode);
+        }
+
+        function ensureEventEditorLayoutListener() {
+            if (eventEditorLayoutListenerBound) return;
+            eventEditorLayoutListenerBound = true;
+            window.addEventListener('resize', scheduleEventEditorLayoutMode);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', scheduleEventEditorLayoutMode);
+            }
         }
 
         function setEventEditorStatus(message, tone) {
@@ -1345,10 +1377,10 @@
                     '<div class="event-editor-toolbar">' +
                         '<p class="event-editor-title" id="event-editor-title"></p>' +
                         '<div class="event-editor-toolbar-actions">' +
-                            '<a class="event-editor-link" id="event-editor-list-link" href="' + buildLocalEventsListUrl() + '"><i class="fas fa-arrow-left"></i> ' + esc(t('events.allEvents')) + '</a>' +
+                            '<a class="event-editor-link" id="event-editor-list-link" href="' + buildLocalEventsListUrl() + '" title="' + escA(t('events.allEvents')) + '" aria-label="' + escA(t('events.allEvents')) + '"><i class="fas fa-arrow-left"></i> ' + esc(t('events.allEvents')) + '</a>' +
                             '<div class="event-editor-primary-actions">' +
-                                '<button type="button" class="event-editor-btn secondary" id="event-editor-cancel-btn" style="display:none"><i class="fas fa-times"></i> ' + esc(t('lista.cancel')) + '</button>' +
-                                '<button type="button" class="event-editor-btn primary" id="event-editor-save-btn"><i class="fas fa-floppy-disk"></i> ' + esc(t('events.save')) + '</button>' +
+                                '<button type="button" class="event-editor-btn secondary" id="event-editor-cancel-btn" style="display:none" title="' + escA(t('lista.cancel')) + '" aria-label="' + escA(t('lista.cancel')) + '"><i class="fas fa-times"></i> ' + esc(t('lista.cancel')) + '</button>' +
+                                '<button type="button" class="event-editor-btn primary" id="event-editor-save-btn" title="' + escA(t('events.save')) + '" aria-label="' + escA(t('events.save')) + '"><i class="fas fa-floppy-disk"></i> ' + esc(t('events.save')) + '</button>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
@@ -1429,6 +1461,8 @@
             initializeEventEditorArtistPicker();
             fillEventEditorForm(evt);
             eventEditorSession.cancelBtn.style.display = options.isNew ? 'none' : 'inline-flex';
+            ensureEventEditorLayoutListener();
+            scheduleEventEditorLayoutMode();
 
             [eventEditorSession.titleEl, eventEditorSession.dateEl, eventEditorSession.timeEl, eventEditorSession.placeEl].forEach(function(input) {
                 input.addEventListener('input', scheduleEventEditorPreview);
