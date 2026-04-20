@@ -24,7 +24,15 @@
           "Robert Spasencovski"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/1P0DXnsIm6pMkUgq0aHsKa"
+      "spotifyUrl": "https://open.spotify.com/artist/1P0DXnsIm6pMkUgq0aHsKa",
+      "youtubeTracks": [
+        {
+          "name": "Cukaj Cukaj",
+          "videoId": "1j_tWFZ9xhU",
+          "url": "https://www.youtube.com/watch?v=1j_tWFZ9xhU",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "GWASS",
@@ -50,7 +58,7 @@
           "name": "Bukara",
           "videoId": "zz7nT2p78g8",
           "url": "https://www.youtube.com/watch?v=zz7nT2p78g8",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -79,7 +87,7 @@
           "name": "Kolku Treba da Se Plati",
           "videoId": "g7VKiDF_YUw",
           "url": "https://www.youtube.com/watch?v=g7VKiDF_YUw",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -108,7 +116,7 @@
           "name": "Jas I Ti",
           "videoId": "8teWGxjjBps",
           "url": "https://www.youtube.com/watch?v=8teWGxjjBps",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
