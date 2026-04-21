@@ -1972,6 +1972,10 @@
             gap: 0.65rem;
         }
 
+        #interviews-list.news-list {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
         .news-item {
             display: flex;
             flex-direction: column;
@@ -1990,6 +1994,13 @@
             object-fit: cover;
             flex-shrink: 0;
             background: var(--bg-hover, #eceef1);
+        }
+
+        .news-thumb.interview-embed {
+            display: block;
+            aspect-ratio: 16 / 9;
+            border: 0;
+            background: #000;
         }
 
         .news-thumb-placeholder {
@@ -3499,6 +3510,25 @@
             overflow: hidden;
         }
 
+        .title-nav-btn-icon-only {
+            gap: 0;
+            justify-content: center;
+            padding-left: 0.55rem;
+            padding-right: 0.55rem;
+        }
+
+        .title-nav-btn-label-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         .title-nav-btn::before {
             content: '';
             position: absolute;
@@ -3960,6 +3990,7 @@
                     <a href="/releases"><i class="fas fa-compact-disc"></i> <span data-i18n="nav.releases">Изданија</span></a>
                     <a href="/nastani"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
                     <a href="/vesti"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
+                    <a href="/interviews"><i class="fas fa-microphone-lines"></i> <span data-i18n="nav.interviews">Интервјуа</span></a>
                     <a href="/kustosi"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
                     <a href="/iznenadi-me"><i class="fas fa-shuffle"></i> <span data-i18n="nav.surprise">Изненади ме</span></a>
                     <a href="/za"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За проектот</span></a>
@@ -3980,8 +4011,9 @@
                 <a href="/releases" class="title-nav-btn"><i class="fas fa-compact-disc"></i> <span data-i18n="nav.releases">Изданија</span></a>
                 <a href="/nastani" class="title-nav-btn"><i class="fas fa-calendar-days"></i> <span data-i18n="nav.events">Настани</span></a>
                 <a href="/vesti" class="title-nav-btn"><i class="fas fa-newspaper"></i> <span data-i18n="nav.news">Вести</span></a>
+                <a href="/interviews" class="title-nav-btn"><i class="fas fa-microphone-lines"></i> <span data-i18n="nav.interviews">Интервјуа</span></a>
                 <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
-                <a href="/za" class="title-nav-btn"><i class="fas fa-info-circle"></i> <span data-i18n="nav.about">За</span></a>
+                <a href="/za" class="title-nav-btn title-nav-btn-icon-only" title="За проектот" aria-label="За проектот" data-i18n-title="nav.about"><i class="fas fa-info-circle"></i><span class="title-nav-btn-label-hidden" data-i18n="nav.about">За проектот</span></a>
             </nav>
             <div class="title-nav-lang-wrap">
                 <a href="#" class="title-nav-btn title-nav-lang-btn" id="index-lang-toggle" title="Language" aria-haspopup="true" aria-expanded="false"><i class="fas fa-globe"></i></a>
@@ -4160,6 +4192,15 @@
             </div>
             <div class="dash-loading" id="news-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="news-list" id="news-list" style="display:none;"></ul>
+        </div>
+
+        <div class="dash-card full-width" id="interviews-card">
+            <div class="dash-card-header">
+                <h2><i class="fas fa-microphone-lines"></i> <span data-i18n="dashboard.interviews">Интервјуа</span></h2>
+                <a href="/interviews" class="more-link" title="Сите интервјуа" data-i18n-title="common.allInterviews"><i class="fas fa-microphone-lines"></i></a>
+            </div>
+            <div class="dash-loading" id="interviews-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
+            <ul class="news-list" id="interviews-list" style="display:none;"></ul>
         </div>
 
         <!-- ==================== VERIFY ARTISTS ==================== -->
@@ -4468,6 +4509,7 @@
             renderHotSongs();
             renderEvents();
             renderNews();
+            renderInterviews();
             renderVerifyArtists();
             renderReleaseStats();
             renderTitleCollage();
@@ -5495,33 +5537,63 @@
             list.style.display = '';
         }
 
-        // ==================== RENDER: NEWS (pre-computed from site-master.json) ====================
-        function renderNews() {
-            var newsData = siteMaster && siteMaster.news ? siteMaster.news : null;
-            if (!newsData) {
-                document.getElementById('news-loading').innerHTML = '<span>' + t('dashboard.noNews') + '</span>';
+        // ==================== RENDER: NEWS / INTERVIEWS (pre-computed from site-master.json) ====================
+        function getDashboardMediaVideoId(item) {
+            if (item && item.videoId) return String(item.videoId);
+
+            var link = item && item.link ? String(item.link) : '';
+            if (!link) return '';
+
+            try {
+                var url = new URL(link, window.location.href);
+                var host = (url.hostname || '').toLowerCase();
+                if (host.indexOf('youtu.be') !== -1) {
+                    return url.pathname.replace(/^\/+/, '').split('/')[0] || '';
+                }
+
+                var directId = url.searchParams.get('v');
+                if (directId) return directId;
+
+                var pathMatch = url.pathname.match(/\/(?:embed|shorts)\/([^/?#]+)/i);
+                if (pathMatch) return pathMatch[1];
+            } catch (e) {
+                // Fall back to regex parsing below.
+            }
+
+            var queryMatch = link.match(/[?&]v=([^&#]+)/i);
+            if (queryMatch) return queryMatch[1];
+
+            var shortMatch = link.match(/youtu\.be\/([^?&#/]+)/i);
+            if (shortMatch) return shortMatch[1];
+
+            return '';
+        }
+
+        function renderDashboardMediaCard(options) {
+            var mediaData = siteMaster && siteMaster[options.feedKey] ? siteMaster[options.feedKey] : null;
+            var loading = document.getElementById(options.loadingId);
+            var list = document.getElementById(options.listId);
+
+            if (!mediaData || !mediaData.matched || mediaData.matched.length === 0) {
+                loading.innerHTML = '<span>' + t(options.emptyLabelKey) + '</span>';
                 return;
             }
 
-            // Use pre-matched articles; fall back to all if fewer than 5
-            var pool = newsData.matched;
-            if (!pool || pool.length === 0) {
-                document.getElementById('news-loading').innerHTML = '<span>' + t('dashboard.noNews') + '</span>';
-                return;
-            }
-
-            // Already sorted by date descending in site-master; take top 5
-            var top5 = pool.slice(0, 5);
-
-            var list = document.getElementById('news-list');
-            var loading = document.getElementById('news-loading');
-
+            var itemLimit = options.itemLimit || 5;
+            var topItems = mediaData.matched.slice(0, itemLimit);
             var noImageText = t('dashboard.noImage');
 
-            list.innerHTML = top5.map(function(a) {
-                var thumbHtml = a.thumbnail
-                    ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas fa-newspaper&quot;></i><span>' + noImageText + '</span></div>\'">'
-                    : '<div class="news-thumb news-thumb-placeholder"><i class="fas fa-newspaper"></i><span>' + noImageText + '</span></div>';
+            list.innerHTML = topItems.map(function(a) {
+                var fallbackThumbHtml = a.thumbnail
+                    ? '<img class="news-thumb" src="' + a.thumbnail + '" alt="" loading="lazy" onerror="this.onerror=null;this.outerHTML=\'<div class=&quot;news-thumb news-thumb-placeholder&quot;><i class=&quot;fas ' + options.iconClass + '&quot;></i><span>' + noImageText + '</span></div>\'">'
+                    : '<div class="news-thumb news-thumb-placeholder"><i class="fas ' + options.iconClass + '"></i><span>' + noImageText + '</span></div>';
+                var thumbHtml = fallbackThumbHtml;
+                if (options.embedVideos) {
+                    var videoId = getDashboardMediaVideoId(a);
+                    if (videoId) {
+                        thumbHtml = '<iframe class="news-thumb interview-embed" src="https://www.youtube-nocookie.com/embed/' + escHtml(videoId) + '?rel=0" title="' + escHtml(a.title || '') + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+                    }
+                }
                 var iconHtml = a.iconUrl ? '<img src="' + a.iconUrl + '" alt="">' : '';
                 var descHtml = a.description ? '<div class="news-desc">' + escHtml(a.description.length > 120 ? a.description.substring(0, 120) + '...' : a.description) + '</div>' : '';
                 var artistNames = [];
@@ -5539,6 +5611,7 @@
                 } else {
                     artistsHtml = '<div class="news-artists"><span class="artist-empty">' + t('dashboard.noArtistsMentioned') + '</span></div>';
                 }
+
                 return '<li class="news-item">' +
                     thumbHtml +
                     '<div class="news-info">' +
@@ -5552,7 +5625,28 @@
 
             loading.style.display = 'none';
             list.style.display = '';
+        }
 
+        function renderNews() {
+            renderDashboardMediaCard({
+                feedKey: 'news',
+                loadingId: 'news-loading',
+                listId: 'news-list',
+                emptyLabelKey: 'dashboard.noNews',
+                iconClass: 'fa-newspaper'
+            });
+        }
+
+        function renderInterviews() {
+            renderDashboardMediaCard({
+                feedKey: 'interviews',
+                loadingId: 'interviews-loading',
+                listId: 'interviews-list',
+                emptyLabelKey: 'dashboard.noInterviews',
+                iconClass: 'fa-microphone-lines',
+                embedVideos: true,
+                itemLimit: 6
+            });
         }
 
         // ==================== RENDER: RELEASE STATS ====================

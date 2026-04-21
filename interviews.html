@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+	<meta charset="UTF-8">
+	<script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Интервјуа | ТопЛиста.мк</title>
+
+	<meta name="title" content="Интервјуа | ТопЛиста.мк">
+	<meta name="description" content="Интервјуа и разговори со артисти од македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
+	<meta name="author" content="ТопЛиста.мк">
+	<meta name="robots" content="index, follow">
+	<meta name="language" content="Macedonian">
+	<link rel="canonical" href="https://toplista.mk/interviews">
+
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://toplista.mk/interviews.html">
+	<meta property="og:title" content="Интервјуа | ТопЛиста.мк">
+	<meta property="og:description" content="Интервјуа и разговори со артисти од македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
+	<meta property="og:image" content="https://toplista.mk/og-image.png">
+	<meta property="og:locale" content="mk_MK">
+
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"name": "Интервјуа | ТопЛиста.мк",
+		"description": "Интервјуа и разговори со артисти од македонската музичка сцена, филтрирани според артисти од Мастер Листата",
+		"url": "https://toplista.mk/interviews.html"
+	}
+	</script>
+
+	<link rel="icon" type="image/png" href="/logo.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+	<link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+	<script src="/common.js?v=10"></script>
+	<script src="/i18n.js?v=1"></script>
+	<script src="/tour.js?v=1" defer></script>
+	<style>
+	body.interviews-page {
+		height: auto;
+		min-height: 100vh;
+		min-height: 100dvh;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+	body.interviews-page main {
+		height: auto;
+		overflow: visible;
+		display: block;
+		padding: 0;
+	}
+	.interviews-page .chart-filter-bar {
+		background: var(--bg-secondary);
+		border-bottom: 1px solid var(--border-color);
+		padding: 0.5rem 1rem;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		display: flex;
+		align-items: center;
+		gap: 0;
+	}
+	body.dark-mode .interviews-page .chart-filter-bar {
+		background: var(--bg-secondary);
+		border-bottom-color: var(--border-color);
+	}
+	.interviews-page .filter-presets {
+		display: flex;
+		align-items: center;
+		gap: 0;
+		flex-shrink: 0;
+	}
+	.interviews-page .filter-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 0.65rem;
+		font-size: 0.7rem;
+		font-weight: 500;
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition: all 0.15s ease;
+		white-space: nowrap;
+	}
+	.interviews-page .filter-btn:hover {
+		background: var(--bg-hover);
+		color: var(--text-primary);
+	}
+	.interviews-page .filter-btn.active {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	.interviews-page .filter-btn i {
+		font-size: 0.65rem;
+	}
+	body.dark-mode .interviews-page .filter-btn {
+		background: var(--bg-hover);
+		border-color: var(--border-color);
+		color: var(--text-secondary);
+	}
+	body.dark-mode .interviews-page .filter-btn:hover {
+		background: #2a2e36;
+		color: var(--text-primary);
+	}
+	body.dark-mode .interviews-page .filter-btn.active {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	.interviews-page .preset-btn {
+		border-radius: 0;
+		font-family: 'Montserrat', sans-serif;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		font-weight: 600;
+		font-size: 0.72rem;
+		padding: 0.3rem 0.85rem;
+		height: 32px;
+		margin-left: -1px;
+	}
+	.interviews-page .preset-btn:first-child {
+		margin-left: 0;
+	}
+	.interviews-page .preset-btn:hover {
+		border-color: var(--accent-blue);
+		color: var(--text-primary);
+		z-index: 1;
+	}
+	.interviews-page .preset-btn.active {
+		border-color: #000;
+		background: #000;
+		color: #fff;
+		z-index: 2;
+	}
+	body.dark-mode .interviews-page .preset-btn.active {
+		border-color: #fff;
+		background: #fff;
+		color: #000;
+	}
+	.interviews-page .news-search-wrap {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		flex: 1;
+		min-width: 200px;
+		position: relative;
+		min-height: 36px;
+		padding: 0.2rem 0.6rem;
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		background: var(--bg-primary);
+		cursor: text;
+		transition: border-color 0.15s, box-shadow 0.15s;
+		margin-left: 0.75rem;
+	}
+	.interviews-page .news-search-wrap:focus-within {
+		border-color: var(--accent-blue);
+		box-shadow: 0 0 0 2px rgba(29,155,240,0.12);
+	}
+	body.dark-mode .interviews-page .news-search-wrap {
+		background: var(--bg-secondary);
+		border-color: var(--border-color);
+	}
+	body.dark-mode .interviews-page .news-search-wrap:focus-within {
+		border-color: var(--accent-blue);
+		box-shadow: 0 0 0 2px rgba(29,155,240,0.2);
+	}
+	.interviews-page .news-search-wrap i {
+		color: var(--text-muted);
+		font-size: 0.8rem;
+		flex-shrink: 0;
+	}
+	.interviews-page #interview-search {
+		flex: 1;
+		min-width: 100px;
+		border: none;
+		outline: none;
+		background: transparent;
+		color: var(--text-primary);
+		font-size: 0.82rem;
+		font-family: 'Inter', sans-serif;
+		padding: 0.2rem 0;
+		height: 30px;
+	}
+	.interviews-page #interview-search::placeholder {
+		color: var(--text-muted);
+	}
+	.interviews-page .news-wrap {
+		margin: 0;
+		padding: 0.75rem;
+	}
+	.interviews-page .news-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		gap: 0.65rem;
+	}
+	.interviews-page .news-item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0.5rem 0.3rem;
+		border-radius: 8px;
+		transition: background 0.15s;
+		position: relative;
+		overflow: visible;
+		animation: interviewCardReveal 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+	}
+	.interviews-page .news-item:nth-child(1) { animation-delay: 0.05s; }
+	.interviews-page .news-item:nth-child(2) { animation-delay: 0.08s; }
+	.interviews-page .news-item:nth-child(3) { animation-delay: 0.11s; }
+	.interviews-page .news-item:nth-child(4) { animation-delay: 0.14s; }
+	.interviews-page .news-item:nth-child(5) { animation-delay: 0.17s; }
+	.interviews-page .news-item:nth-child(n+6) { animation-delay: 0.2s; }
+	.interviews-page .news-item::before,
+	.interviews-page .news-item::after {
+		content: '';
+		position: absolute;
+		width: 0;
+		height: 0;
+		border: 2px solid transparent;
+		transition: width 0.22s cubic-bezier(.4,2,.6,1), height 0.22s cubic-bezier(.4,2,.6,1), opacity 0.18s ease, border-color 0.18s ease;
+		opacity: 0;
+		pointer-events: none;
+		z-index: 2;
+	}
+	.interviews-page .news-item::before {
+		top: -4px;
+		left: -4px;
+		border-right: none;
+		border-bottom: none;
+		border-radius: 8px 0 0 0;
+	}
+	.interviews-page .news-item::after {
+		bottom: -4px;
+		right: -4px;
+		border-left: none;
+		border-top: none;
+		border-radius: 0 0 8px 0;
+	}
+	.interviews-page .news-item:hover::before,
+	.interviews-page .news-item:hover::after {
+		width: 8px;
+		height: 8px;
+		border-color: var(--accent-blue, #225ce4);
+		opacity: 0.5;
+	}
+	.interviews-page .news-item:hover {
+		background: var(--bg-hover, #eceef1);
+	}
+	.interviews-page .news-thumb {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border-radius: 8px;
+		object-fit: cover;
+		flex-shrink: 0;
+		background: var(--bg-hover, #eceef1);
+		display: block;
+		border: 0;
+	}
+	.interviews-page .interview-embed {
+		background: #000;
+	}
+	.interviews-page .news-thumb-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.35rem;
+		color: var(--text-muted, #8b929a);
+		font-size: 0.7rem;
+		font-weight: 600;
+	}
+	.interviews-page .news-thumb-placeholder i {
+		font-size: 0.74rem;
+		opacity: 0.85;
+	}
+	.interviews-page .news-info { flex: 1; min-width: 0; }
+	.interviews-page .news-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--text-primary, #1a1d21);
+		margin-bottom: 0.15rem;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		letter-spacing: -0.01em;
+	}
+	.interviews-page .news-title a {
+		color: inherit;
+		text-decoration: none;
+	}
+	.interviews-page .news-title a:hover { color: var(--accent-blue, #225ce4); }
+	.interviews-page .news-source {
+		font-size: 0.75rem;
+		color: var(--text-muted, #8b929a);
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.interviews-page .news-source img {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+	}
+	.interviews-page .news-desc {
+		font-size: 0.78rem;
+		color: var(--text-secondary, #555b64);
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		margin-bottom: 0.15rem;
+	}
+	.interviews-page .news-artists {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		margin-top: 0.35rem;
+	}
+	.interviews-page .artist-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.34rem;
+		text-decoration: none;
+		padding: 0.12rem 0.44rem 0.12rem 0.12rem;
+		border-radius: 999px;
+		border: 1px solid rgba(34, 92, 228, 0.25);
+		color: var(--accent-blue);
+		background: rgba(34, 92, 228, 0.07);
+		font-size: 0.66rem;
+		font-weight: 600;
+		line-height: 1.2;
+		transition: background 0.12s ease;
+	}
+	.interviews-page .artist-chip:hover {
+		background: rgba(34, 92, 228, 0.16);
+	}
+	.interviews-page .artist-chip-avatar,
+	.interviews-page .artist-chip-avatar-placeholder {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		flex-shrink: 0;
+		border: 1px solid rgba(255,255,255,0.85);
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+	.interviews-page .artist-chip-avatar {
+		display: block;
+		object-fit: cover;
+		background: var(--bg-hover, #eceef1);
+	}
+	.interviews-page .artist-chip-avatar-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.44rem;
+		font-weight: 800;
+		color: #fff;
+		text-shadow: 0 1px 2px rgba(0,0,0,0.28);
+		letter-spacing: 0.02em;
+		line-height: 1;
+		user-select: none;
+	}
+	.interviews-page .artist-chip:hover .artist-chip-avatar,
+	.interviews-page .artist-chip:hover .artist-chip-avatar-placeholder {
+		transform: scale(1.08);
+		box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+	}
+	.interviews-page .artist-chip-name {
+		min-width: 0;
+	}
+	.interviews-page .artist-empty {
+		font-size: 0.68rem;
+		color: var(--text-muted, #8b929a);
+		font-style: italic;
+	}
+	.interviews-page .loading-bar {
+		display: none;
+		height: 2px;
+		background: var(--bg-hover);
+	}
+	.interviews-page .loading-bar.active {
+		display: block;
+	}
+	.interviews-page .loading-progress {
+		height: 100%;
+		width: 34%;
+		background: var(--accent-blue);
+		animation: interviewLoad 1s ease infinite;
+	}
+	.interviews-page .news-empty {
+		border: 1px dashed var(--border-color);
+		background: var(--bg-primary);
+		border-radius: 8px;
+		padding: 2rem 1rem;
+		text-align: center;
+		color: var(--text-muted);
+		font-size: 0.85rem;
+	}
+	.interviews-page .news-empty-wrap {
+		grid-column: 1 / -1;
+		list-style: none;
+	}
+	.interviews-page .load-more-wrap {
+		display: flex;
+		justify-content: center;
+		padding: 1.2rem 0 0.3rem;
+	}
+	.interviews-page .load-more-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 1.2rem;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		border: 1px solid var(--border-color);
+		background: var(--bg-primary);
+		color: var(--text-secondary);
+		border-radius: 0;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+	.interviews-page .load-more-btn:hover {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	body.dark-mode .interviews-page .load-more-btn {
+		background: var(--bg-hover);
+		border-color: var(--border-color);
+		color: var(--text-secondary);
+	}
+	body.dark-mode .interviews-page .load-more-btn:hover {
+		background: var(--text-primary);
+		border-color: var(--text-primary);
+		color: var(--bg-primary);
+	}
+	.interviews-page .filter-count {
+		display: none;
+		background: var(--accent-blue);
+		color: #fff;
+		font-size: 0.58rem;
+		font-weight: 700;
+		padding: 0.08rem 0.35rem;
+		border-radius: 999px;
+		margin-left: 0.3rem;
+	}
+	.interviews-page .filter-count.visible {
+		display: inline-block;
+	}
+	@keyframes interviewCardReveal {
+		from { opacity: 0; transform: translateX(-20px); filter: blur(4px); }
+		to { opacity: 1; transform: translateX(0); filter: blur(0); }
+	}
+	@keyframes interviewLoad {
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(320%); }
+	}
+	@media (max-width: 800px) {
+		.interviews-page .news-list {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 801px) and (max-width: 1100px) {
+		.interviews-page .news-list {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+	@media (max-width: 600px) {
+		.interviews-page .chart-filter-bar {
+			display: none;
+		}
+		.interviews-page .chart-filter-bar.visible {
+			display: flex;
+		}
+		.interviews-page .chart-filter-bar {
+			padding: 0.4rem 0.5rem;
+			flex-wrap: wrap;
+			gap: 0.35rem;
+		}
+		.interviews-page .filter-presets {
+			width: 100%;
+			display: flex;
+			gap: 0;
+		}
+		.interviews-page .filter-presets .preset-btn {
+			flex: 1;
+			justify-content: center;
+			min-width: 0;
+		}
+		.interviews-page .news-search-wrap {
+			min-width: 0;
+			flex-basis: 100%;
+			margin-left: 0;
+		}
+		.interviews-page .news-wrap {
+			padding: 0.4rem;
+		}
+		.interviews-page .news-list {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+		.interviews-page .news-item {
+			padding: 0.35rem 0.2rem;
+		}
+		.interviews-page .news-thumb {
+			width: 100%;
+			aspect-ratio: 16 / 9;
+		}
+		.interviews-page .news-title {
+			font-size: 0.88rem;
+		}
+		.interviews-page .news-desc {
+			font-size: 0.74rem;
+		}
+		.interviews-page .news-source {
+			font-size: 0.68rem;
+		}
+	}
+	</style>
+	<script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}var m;if(m=h.match(/^\/nastan\/(.+)/)){e.preventDefault();location.href='/nastan.html?id='+m[1];return;}if(m=h.match(/^\/kustos\/(.+)/)){e.preventDefault();location.href='/kustos.html?name='+m[1];return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?'),hash=h.indexOf('#'),cut=h.length;if(q>-1&&q<cut)cut=q;if(hash>-1&&hash<cut)cut=hash;location.href=h.substring(0,cut)+'.html'+h.substring(cut);}});</script>
+</head>
+<body class="compact interviews-page">
+	<header id="site-header" data-active="/interviews" data-title="Интервјуа">
+		<span class="header-info">
+			<span><strong id="stat-videos">0</strong> <span data-i18n="interviews.videos">видеа</span></span>
+			<span class="separator">•</span>
+			<span><strong id="stat-channels">0</strong> <span data-i18n="interviews.channels">канали</span></span>
+			<span class="separator">•</span>
+			<span id="stat-updated">ажурирање —</span>
+		</span>
+		<button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="events.search" title="Пребарај"><i class="fas fa-search"></i><span id="filter-count" class="filter-count"></span></button>
+	</header>
+	<script src="/load-header.js"></script>
+
+	<main>
+		<div class="chart-filter-bar" id="controls-bar">
+			<div class="filter-group filter-presets" data-filter-group="preset">
+				<button class="filter-btn preset-btn active" data-genre="all">
+					<i class="fas fa-microphone-lines"></i> <span data-i18n="news.all">Сите</span>
+				</button>
+				<button class="filter-btn preset-btn" data-genre="pop">
+					<i class="fas fa-music"></i> <span data-i18n="news.pop">Поп</span>
+				</button>
+				<button class="filter-btn preset-btn" data-genre="alt">
+					<i class="fas fa-guitar"></i> <span data-i18n="news.alt">Алтернативна</span>
+				</button>
+			</div>
+			<div class="news-search-wrap">
+				<i class="fas fa-search"></i>
+				<input type="text" id="interview-search" data-i18n-placeholder="interviews.searchPlaceholder" placeholder="Пребарај наслов, опис, артист...">
+			</div>
+		</div>
+
+		<div id="loading-bar" class="loading-bar"><div class="loading-progress"></div></div>
+
+		<div class="news-wrap">
+			<ul id="interviews-container" class="news-list"></ul>
+			<div class="load-more-wrap" id="load-more-wrap" style="display:none">
+				<button id="load-more-btn" class="load-more-btn" data-i18n="interviews.loadMore">Вчитај повеќе</button>
+			</div>
+		</div>
+	</main>
+
+	<script>
+	(function() {
+		'use strict';
+
+		var allInterviews = [];
+		var filteredInterviews = [];
+		var bandsData = [];
+		var visibleCount = 36;
+
+		var searchQuery = '';
+		var sourceFilter = 'all';
+		var sortFilter = 'date_desc';
+		var genreFilter = 'all';
+		var lastUpdated = '';
+
+		var searchInput = document.getElementById('interview-search');
+		var loadMoreWrap = document.getElementById('load-more-wrap');
+		var loadMoreBtn = document.getElementById('load-more-btn');
+		var interviewsContainer = document.getElementById('interviews-container');
+		var loadingBar = document.getElementById('loading-bar');
+
+		initSettingsMenu();
+		initNavMenu();
+
+		(function setupSearchToggle() {
+			var btn = document.getElementById('search-toggle-btn');
+			var controls = document.getElementById('controls-bar');
+			var icon = btn ? btn.querySelector('i') : null;
+
+			if (!btn || !controls) return;
+
+			btn.addEventListener('click', function() {
+				var isVisible = controls.classList.toggle('visible');
+				if (icon) icon.className = 'fas ' + (isVisible ? 'fa-times' : 'fa-search');
+				if (isVisible) {
+					setTimeout(function() { searchInput.focus(); }, 50);
+				} else if (searchInput && searchInput.value) {
+					searchInput.value = '';
+					searchQuery = '';
+					visibleCount = 36;
+					applyFilters();
+				}
+			});
+
+			if (window.innerWidth > 600) {
+				controls.classList.add('visible');
+			}
+		})();
+
+		function esc(str) {
+			return escHtml(String(str || ''));
+		}
+
+		function escAttr(str) {
+			return esc(str).replace(/'/g, '&#39;');
+		}
+
+		function normalizeInterview(item) {
+			var artistList = Array.isArray(item.matchedArtists) ? item.matchedArtists.filter(Boolean) : [];
+			return {
+				title: item.title || '',
+				link: item.link || '#',
+				description: item.description || '',
+				date: item.date || '',
+				source: item.source || t('news.unknownSource'),
+				iconUrl: item.iconUrl || '',
+				thumbnail: item.thumbnail || '',
+				videoId: item.videoId || '',
+				matchedArtists: artistList
+			};
+		}
+
+		function normalizeDateOnly(raw) {
+			if (!raw) return '';
+			return String(raw).slice(0, 10);
+		}
+
+		function parseDate(item) {
+			var dateOnly = normalizeDateOnly(item.date);
+			if (!dateOnly) return 0;
+			return new Date(dateOnly + 'T00:00:00').getTime() || 0;
+		}
+
+		function formatDateLabel(dateStr) {
+			var dateOnly = normalizeDateOnly(dateStr);
+			if (!dateOnly) return '';
+			return formatDate(dateOnly);
+		}
+
+		function getYouTubeVideoId(item) {
+			if (item.videoId) return String(item.videoId);
+
+			var link = item.link || '';
+			try {
+				var url = new URL(link, window.location.href);
+				var host = (url.hostname || '').toLowerCase();
+				if (host.indexOf('youtu.be') !== -1) {
+					return url.pathname.replace(/^\/+/, '').split('/')[0] || '';
+				}
+				var directId = url.searchParams.get('v');
+				if (directId) return directId;
+				var pathMatch = url.pathname.match(/\/(?:embed|shorts)\/([^/?#]+)/i);
+				if (pathMatch) return pathMatch[1];
+			} catch (e) {
+				// Ignore malformed URLs and fall back to regex parsing below.
+			}
+
+			var queryMatch = link.match(/[?&]v=([^&#]+)/i);
+			if (queryMatch) return queryMatch[1];
+
+			var shortMatch = link.match(/youtu\.be\/([^?&#/]+)/i);
+			if (shortMatch) return shortMatch[1];
+
+			return '';
+		}
+
+		function artistLink(name) {
+			return getArtistPageUrl(name);
+		}
+
+		function getArtistBandInfo(name) {
+			if (!name || !bandsData || !bandsData.length) return null;
+			var lower = String(name).toLowerCase();
+			for (var i = 0; i < bandsData.length; i++) {
+				if (bandsData[i].name && bandsData[i].name.toLowerCase() === lower) return bandsData[i];
+			}
+			return null;
+		}
+
+		function getArtistAvatarInitials(name) {
+			var trimmed = String(name || '').trim();
+			if (!trimmed) return '?';
+			var words = trimmed.split(/[\s\-&,]+/).filter(function(word) { return word.length > 0; });
+			if (words.length >= 2) {
+				return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+			}
+			return trimmed.substring(0, 2).toUpperCase();
+		}
+
+		function getArtistAvatarGradient(name) {
+			var palette = [
+				['#e74c3c', '#c0392b'], ['#e67e22', '#d35400'], ['#f1c40f', '#e6a700'],
+				['#2ecc71', '#27ae60'], ['#1abc9c', '#16a085'], ['#3498db', '#2980b9'],
+				['#9b59b6', '#8e44ad'], ['#e84393', '#d63384'], ['#fd79a8', '#e17055'],
+				['#00cec9', '#0984e3'], ['#6c5ce7', '#a29bfe'], ['#fdcb6e', '#e17055']
+			];
+			var hash = 0;
+			var artistName = String(name || '');
+			for (var i = 0; i < artistName.length; i++) {
+				hash = ((hash << 5) - hash + artistName.charCodeAt(i)) | 0;
+			}
+			var paletteIndex = ((hash % palette.length) + palette.length) % palette.length;
+			var colors = palette[paletteIndex];
+			return 'background:linear-gradient(145deg,' + colors[0] + ',' + colors[1] + ')';
+		}
+
+		function buildArtistChip(name) {
+			var band = getArtistBandInfo(name);
+			var artistName = band && band.name ? band.name : name;
+			var artistLabel = esc(localizeText(artistName));
+			var avatarHtml = band && band.image
+				? '<img class="artist-chip-avatar" src="' + escAttr(band.image) + '" alt="' + artistLabel + '" loading="lazy" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">'
+				: '<span class="artist-chip-avatar-placeholder" style="' + getArtistAvatarGradient(artistName) + '">' + esc(getArtistAvatarInitials(artistName)) + '</span>';
+			return '<a href="' + escAttr(artistLink(artistName)) + '" class="artist-chip" title="' + escAttr(localizeText(artistName)) + '">' + avatarHtml + '<span class="artist-chip-name">' + artistLabel + '</span></a>';
+		}
+
+		function updateHeaderStats() {
+			var sourceSet = new Set();
+			for (var i = 0; i < allInterviews.length; i++) {
+				if (allInterviews[i].source) sourceSet.add(allInterviews[i].source);
+			}
+			document.getElementById('stat-videos').textContent = allInterviews.length;
+			document.getElementById('stat-channels').textContent = sourceSet.size;
+			document.getElementById('stat-updated').textContent = lastUpdated ? (t('interviews.updated') + ' ' + formatDateLabel(lastUpdated)) : t('interviews.updated') + ' —';
+		}
+
+		function applyFilters() {
+			var q = searchQuery.toLowerCase().trim();
+			filteredInterviews = allInterviews.filter(function(item) {
+				if (sourceFilter !== 'all' && item.source !== sourceFilter) return false;
+
+				if (genreFilter !== 'all' && item.matchedArtists && item.matchedArtists.length) {
+					var anyMatch = item.matchedArtists.some(function(name) {
+						return artistMatchesGenre(name, genreFilter, bandsData);
+					});
+					if (!anyMatch) return false;
+				} else if (genreFilter !== 'all' && (!item.matchedArtists || !item.matchedArtists.length)) {
+					return false;
+				}
+
+				if (!q) return true;
+
+				var artists = (item.matchedArtists || []).join(' ').toLowerCase();
+				var hay = (item.title + ' ' + item.description + ' ' + item.source + ' ' + artists).toLowerCase();
+				return hay.indexOf(q) !== -1;
+			});
+
+			filteredInterviews.sort(function(a, b) {
+				if (sortFilter === 'date_asc') return parseDate(a) - parseDate(b);
+				if (sortFilter === 'source_asc') return a.source.localeCompare(b.source, 'mk');
+				if (sortFilter === 'title_asc') return a.title.localeCompare(b.title, 'mk');
+				return parseDate(b) - parseDate(a);
+			});
+
+			renderInterviews();
+		}
+
+		function renderInterviews() {
+			var activeFilters = 0;
+			if (genreFilter !== 'all') activeFilters++;
+			if (searchQuery.trim()) activeFilters++;
+			var badge = document.getElementById('filter-count');
+			if (badge) {
+				badge.textContent = activeFilters;
+				badge.classList.toggle('visible', activeFilters > 0);
+			}
+
+			if (!filteredInterviews.length) {
+				interviewsContainer.innerHTML = '<li class="news-empty-wrap"><div class="news-empty"><i class="fas fa-microphone-lines" style="font-size:1.3rem;display:block;margin-bottom:0.5rem"></i>' + t('interviews.noInterviews') + '</div></li>';
+				loadMoreWrap.style.display = 'none';
+				return;
+			}
+
+			var shown = filteredInterviews.slice(0, visibleCount);
+			var html = '';
+
+			shown.forEach(function(item) {
+				var videoId = getYouTubeVideoId(item);
+				var videoHtml = videoId
+					? '<iframe class="news-thumb interview-embed" src="https://www.youtube-nocookie.com/embed/' + escAttr(videoId) + '?rel=0" title="' + escAttr(item.title) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>'
+					: '<a href="' + escAttr(item.link) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><div class="news-thumb news-thumb-placeholder"><i class="fas fa-microphone-lines"></i><span>YouTube</span></div></a>';
+				var iconHtml = item.iconUrl ? '<img src="' + escAttr(item.iconUrl) + '" alt="">' : '';
+				var descHtml = item.description ? '<div class="news-desc">' + esc(item.description.length > 120 ? item.description.substring(0, 120) + '...' : item.description) + '</div>' : '';
+				var artistsHtml = '';
+
+				if (item.matchedArtists && item.matchedArtists.length) {
+					artistsHtml = '<div class="news-artists">' + item.matchedArtists.slice(0, 6).map(function(name) {
+						return buildArtistChip(name);
+					}).join('') + '</div>';
+				} else {
+					artistsHtml = '<div class="news-artists"><span class="artist-empty">' + t('news.noArtists') + '</span></div>';
+				}
+
+				html += '<li class="news-item">' +
+					videoHtml +
+					'<div class="news-info">' +
+						'<div class="news-title"><a href="' + escAttr(item.link) + '" target="_blank" rel="noopener">' + esc(item.title) + '</a></div>' +
+						descHtml +
+						'<div class="news-source">' + iconHtml + esc(item.source) + ' &bull; ' + esc(formatDateLabel(item.date)) + '</div>' +
+						artistsHtml +
+					'</div>' +
+				'</li>';
+			});
+
+			interviewsContainer.innerHTML = html;
+			loadMoreWrap.style.display = (visibleCount < filteredInterviews.length) ? '' : 'none';
+		}
+
+		async function loadInterviewData() {
+			loadingBar.classList.add('active');
+			try {
+				try {
+					var bandsResp = await fetch('bands.json');
+					if (bandsResp.ok) {
+						var bandsJson = await bandsResp.json();
+						bandsData = bandsJson.muzickaMasterLista || bandsJson || [];
+						registerArtistNames(bandsData);
+					}
+				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
+
+				var fromMaster = null;
+				var master = await loadSiteMaster();
+				if (master && master.interviews) {
+					fromMaster = master.interviews;
+				}
+
+				if (fromMaster && Array.isArray(fromMaster.matched)) {
+					allInterviews = fromMaster.matched.map(normalizeInterview);
+					lastUpdated = fromMaster.lastUpdated || '';
+				} else {
+					var resp = await fetch('interviews.json');
+					if (!resp.ok) throw new Error(t('interviews.fetchError'));
+					var raw = await resp.json();
+					allInterviews = (raw.interviews || []).map(normalizeInterview);
+					lastUpdated = raw.lastUpdated || '';
+				}
+
+				allInterviews.sort(function(a, b) { return parseDate(b) - parseDate(a); });
+				updateHeaderStats();
+				applyFilters();
+			} catch (err) {
+				console.error('Interviews load error:', err);
+				interviewsContainer.innerHTML = '<li class="news-empty-wrap"><div class="news-empty"><i class="fas fa-triangle-exclamation" style="font-size:1.1rem;display:block;margin-bottom:0.4rem"></i>' + t('interviews.loadError') + '</div></li>';
+			} finally {
+				loadingBar.classList.remove('active');
+			}
+		}
+
+		searchInput.addEventListener('input', function() {
+			searchQuery = this.value || '';
+			visibleCount = 36;
+			applyFilters();
+		});
+
+		document.querySelectorAll('.filter-btn.preset-btn').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				document.querySelectorAll('.filter-btn.preset-btn').forEach(function(b) { b.classList.remove('active'); });
+				btn.classList.add('active');
+				genreFilter = btn.getAttribute('data-genre');
+				visibleCount = 36;
+				applyFilters();
+			});
+		});
+
+		loadMoreBtn.addEventListener('click', function() {
+			visibleCount += 36;
+			renderInterviews();
+		});
+
+		loadInterviewData();
+	})();
+	</script>
+</body>
+</html>

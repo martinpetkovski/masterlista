@@ -6,7 +6,7 @@
 #   1b. YT Matching  - Matches release tracks to YouTube videos, saves unverified links to releases.json
 #   1c. Verification - Pushes releases.json to GitHub, waits for manual link verification
 #   1d. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
-#   2.  Scrape       - Scrapes sites for articles, merges into articles.json
+#   2.  Scrape       - Scrapes sites for articles and interview channels, updates articles.json + interviews.json
 #   3.  Service links - Detects new bands.json entries and extracts streaming links for them
 #   4.  Curators     - Fetches playlist tracklists for curators from streaming APIs
 #   4b. Playlists    - Updates Spotify playlists (top current, top all-time, new releases)
@@ -721,16 +721,22 @@ function Wait-ForYouTubeVerification {
 }
 
 # ============================================================================
-#  TASK 2: SCRAPE ARTICLES
+#  TASK 2: SCRAPE ARTICLES + INTERVIEWS
 # ============================================================================
 
 function Update-ScrapeArticles {
-    Write-Section "TASK 2: SCRAPE ARTICLES"
+    Write-Section "TASK 2: SCRAPE ARTICLES + INTERVIEWS"
     $scrapeStart = Get-Date
 
     $scrapeScript = Join-Path (Join-Path $scriptRoot "scripts") "scrape-articles.js"
+    $interviewScript = Join-Path (Join-Path $scriptRoot "scripts") "fetch-interviews.js"
     if (-not (Test-Path $scrapeScript)) {
         Write-Step "scripts/scrape-articles.js not found, skipping" "Red"
+        return $false
+    }
+
+    if (-not (Test-Path $interviewScript)) {
+        Write-Step "scripts/fetch-interviews.js not found, skipping" "Red"
         return $false
     }
 
@@ -755,6 +761,24 @@ function Update-ScrapeArticles {
             Write-Step "Scraper finished with exit code $scrapeExit" "DarkYellow"
         } else {
             Write-Step "Scraper completed successfully" "Green"
+        }
+
+        Write-Step "Fetching interview videos from configured YouTube channels..."
+        $interviewOutput = & node $interviewScript 2>&1
+        $interviewExit = $LASTEXITCODE
+
+        foreach ($line in $interviewOutput) {
+            if ($line -is [System.Management.Automation.ErrorRecord]) {
+                Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
+            } else {
+                Write-Host "    $line" -ForegroundColor Gray
+            }
+        }
+
+        if ($interviewExit -ne 0) {
+            Write-Step "Interview fetcher finished with exit code $interviewExit" "DarkYellow"
+        } else {
+            Write-Step "Interview fetcher completed successfully" "Green"
         }
     }
     catch {
@@ -1260,15 +1284,15 @@ else {
     Write-Step "Skipping YouTube popularity" "DarkGray"
 }
 
-# --- Task 2: Scrape Articles ---
+# --- Task 2: Scrape Articles + Interviews ---
 if ($runScrape) {
-    Set-OverallProgress "Scrape Articles"
+    Set-OverallProgress "Scrape Articles + Interviews"
     $t = Get-Date
-    $results["Scrape Articles"] = Update-ScrapeArticles
-    $taskTimings["Scrape Articles"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+    $results["Scrape Articles + Interviews"] = Update-ScrapeArticles
+    $taskTimings["Scrape Articles + Interviews"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
-    Write-Step "Skipping article scraping" "DarkGray"
+    Write-Step "Skipping article and interview scraping" "DarkGray"
 }
 
 # --- Task 3: Service Links ---

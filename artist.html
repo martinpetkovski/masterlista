@@ -73,6 +73,13 @@
             flex-direction: column;
             transition: background 0.5s ease;
         }
+
+        body.artist-page #site-header {
+            position: sticky;
+            top: 0;
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
         
         body.artist-page.dark-mode:not(.verified-accent),
         html.dark-mode body.artist-page:not(.verified-accent) {
@@ -1431,7 +1438,8 @@
             border-color: rgba(255, 255, 255, 0.06);
         }
         body.dark-mode .chart-history-list > .chart-history-item::before,
-        body.dark-mode .chart-history-list > .timeline-item-event::before {
+        body.dark-mode .chart-history-list > .timeline-item-event::before,
+        body.dark-mode .chart-history-list > .timeline-item-interview::before {
             border-color: var(--bg-secondary);
         }
         body.dark-mode .chart-history-list > .timeline-item-article::before {
@@ -2205,13 +2213,15 @@ a.chart-history-item {
         .chart-history-list > .timeline-month-header,
         .chart-history-list > .chart-history-item,
         .chart-history-list > .timeline-item-article,
-        .chart-history-list > .timeline-item-event {
+        .chart-history-list > .timeline-item-event,
+        .chart-history-list > .timeline-item-interview {
             position: relative;
         }
         /* Timeline dot for items */
         .chart-history-list > .chart-history-item::before,
         .chart-history-list > .timeline-item-article::before,
-        .chart-history-list > .timeline-item-event::before {
+        .chart-history-list > .timeline-item-event::before,
+        .chart-history-list > .timeline-item-interview::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -2250,6 +2260,15 @@ a.chart-history-item {
             height: 8px;
             border-radius: 50%;
             background: #22c55e;
+            border: 2px solid var(--bg-primary);
+        }
+        /* Interview marker: violet rounded square */
+        .chart-history-list > .timeline-item-interview::before {
+            left: -26px;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: #8b5cf6;
             border: 2px solid var(--bg-primary);
         }
         /* Past event marker: hollow */
@@ -2299,6 +2318,16 @@ a.chart-history-item {
             border-color: #22c55e transparent transparent transparent;
             opacity: 0.4;
         }
+        .chart-history-list > .timeline-item-interview::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 10px 10px 0 0;
+            border-color: #8b5cf6 transparent transparent transparent;
+            opacity: 0.4;
+        }
         .chart-history-list > .timeline-item-event[style*="opacity"]::after {
             border-color: var(--text-muted) transparent transparent transparent;
             opacity: 0.2;
@@ -2340,10 +2369,103 @@ a.chart-history-item {
             margin-top: 0;
         }
         .timeline-item-article,
-        .timeline-item-event {
+        .timeline-item-event,
+        .timeline-item-interview {
             margin-top: 0.35rem;
             overflow: hidden;
             border-radius: 0;
+        }
+        .timeline-item-interview-card {
+            display: block;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        body.dark-mode .timeline-item-interview-card {
+            background: var(--bg-secondary);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .timeline-interview-embed {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: block;
+            border: 0;
+            background: #000;
+        }
+        .timeline-interview-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .timeline-interview-mention-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.09), rgba(249, 115, 22, 0.08));
+            border-bottom: 1px solid rgba(249, 115, 22, 0.14);
+            color: var(--text-primary);
+        }
+        .timeline-interview-mention-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.32rem 0.65rem;
+            border-radius: 999px;
+            background: rgba(249, 115, 22, 0.14);
+            border: 1px solid rgba(249, 115, 22, 0.22);
+            color: var(--accent-orange);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            text-transform: uppercase;
+        }
+        .timeline-interview-mention-copy {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        body.dark-mode .timeline-interview-mention-header {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(249, 115, 22, 0.1));
+            border-bottom-color: rgba(249, 115, 22, 0.18);
+        }
+        .timeline-interview-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-top: 1px solid var(--border-color);
+            transition: background 0.15s ease;
+        }
+        .timeline-interview-meta .artist-link-text {
+            color: inherit;
+            transition: color 0.15s ease;
+        }
+        body.dark-mode .timeline-interview-meta {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+        .timeline-interview-meta:hover {
+            background: var(--bg-hover);
+        }
+        .timeline-interview-meta:hover .artist-link-text {
+            color: var(--accent-orange);
+        }
+        .timeline-interview-source-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            object-fit: cover;
         }
         /* Today marker on the timeline */
         .timeline-today-marker {
@@ -2385,11 +2507,18 @@ a.chart-history-item {
         }
         /* Timeline item articles/events glass */
         .verified-accent .timeline-item-article,
-        .verified-accent .timeline-item-event {
+        .verified-accent .timeline-item-event,
+        .verified-accent .timeline-item-interview {
             background: var(--va-card-bg);
             border-color: var(--va-card-border);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
+        }
+        .verified-accent .timeline-interview-meta {
+            color: var(--va-text);
+        }
+        .verified-accent .timeline-interview-meta:hover {
+            background: var(--va-card-hover-bg);
         }
 
         /* Timeline month header glass */
@@ -2586,7 +2715,8 @@ a.chart-history-item {
         .verified-accent .chart-history-list::before { background: linear-gradient(to bottom, var(--va-card-border) 8%, var(--va-card-border) 85%, transparent); }
         .verified-accent .chart-history-list > .chart-history-item::before { border-color: var(--va-bg); }
         .verified-accent .chart-history-list > .timeline-item-article::before,
-        .verified-accent .chart-history-list > .timeline-item-event::before { border-color: var(--va-bg); }
+        .verified-accent .chart-history-list > .timeline-item-event::before,
+        .verified-accent .chart-history-list > .timeline-item-interview::before { border-color: var(--va-bg); }
         .verified-accent .timeline-month-header { color: var(--va-accent2-text, var(--va-text-muted)); background: var(--va-accent2, var(--va-bg)); border-color: var(--va-accent2, var(--va-card-border)); }
         .verified-accent .timeline-month-header::before { background: var(--va-accent2, var(--va-bg)); border-color: var(--va-accent2-text, var(--va-text-muted)); }
         .verified-accent .tl-stats { color: var(--va-text-muted); }
@@ -2763,11 +2893,17 @@ a.chart-history-item {
                 width: 6px;
                 height: 6px;
             }
+            .chart-history-list > .timeline-item-interview::before {
+                left: -23px;
+                width: 6px;
+                height: 6px;
+            }
             .chart-history-list > .chart-history-item::after {
                 border-width: 10px 10px 0 0;
             }
             .chart-history-list > .timeline-item-article::after,
-            .chart-history-list > .timeline-item-event::after {
+            .chart-history-list > .timeline-item-event::after,
+            .chart-history-list > .timeline-item-interview::after {
                 border-width: 8px 8px 0 0;
             }
             .timeline-month-header {
@@ -4588,8 +4724,8 @@ a.chart-history-item {
             return mon;
         }
 
-        // Render unified timeline of releases, articles, and events
-        function renderTimeline(artistHistory, artistLinks, siteMaster, articles, matchedEvents, artistName, artistSpotifyName) {
+        // Render unified timeline of releases, articles, interviews, and events
+        function renderTimeline(artistHistory, artistLinks, siteMaster, articles, interviews, matchedEvents, artistName, artistSpotifyName) {
             const container = document.getElementById('timeline-container');
             if (!container) return;
             const content = startArtistSectionRender(container);
@@ -4780,6 +4916,74 @@ a.chart-history-item {
                 };
             });
 
+            // ---- INTERVIEWS ----
+            const getInterviewVideoId = (interview) => {
+                if (interview.videoId) return String(interview.videoId);
+
+                const link = interview.link || '';
+                if (!link) return '';
+
+                try {
+                    const url = new URL(link, window.location.href);
+                    const host = (url.hostname || '').toLowerCase();
+                    if (host.includes('youtu.be')) {
+                        return url.pathname.replace(/^\/+/, '').split('/')[0] || '';
+                    }
+
+                    const directId = url.searchParams.get('v');
+                    if (directId) return directId;
+
+                    const pathMatch = url.pathname.match(/\/(?:embed|shorts)\/([^/?#]+)/i);
+                    if (pathMatch) return pathMatch[1];
+                } catch (e) {
+                    // Fall back to regex parsing below.
+                }
+
+                const queryMatch = link.match(/[?&]v=([^&#]+)/i);
+                if (queryMatch) return queryMatch[1];
+
+                const shortMatch = link.match(/youtu\.be\/([^?&#/]+)/i);
+                if (shortMatch) return shortMatch[1];
+
+                return '';
+            };
+
+            const interviewItems = (interviews || []).map(interview => {
+                const dateStr = interview.pubDate.getTime() > 0
+                    ? String(interview.pubDate.getDate()).padStart(2,'0') + '.' + String(interview.pubDate.getMonth()+1).padStart(2,'0') + '.' + interview.pubDate.getFullYear()
+                    : '';
+                const videoId = getInterviewVideoId(interview);
+                const isMention = interview.matchCollection === 'mentioned';
+                const safeLink = escHtml(interview.link || '#');
+                const safeTitle = escHtml(interview.title || '');
+                const safeSource = escHtml(interview.source || '');
+                const safeSourceIcon = escHtml(interview.sourceIcon || '');
+                const mentionLabel = escHtml(t('interviews.mentionsLabel'));
+                const embedHtml = isMention
+                    ? `<div class="timeline-interview-mention-header">
+                        <span class="timeline-interview-mention-badge"><i class="fas fa-quote-right" style="width:auto"></i>${mentionLabel}</span>
+                        <span class="timeline-interview-mention-copy">${escHtml(t('lista.interview'))}</span>
+                    </div>`
+                    : videoId
+                    ? `<iframe class="timeline-interview-embed" src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0" title="${safeTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+                    : `<a href="${safeLink}" target="_blank" rel="noopener" class="timeline-interview-placeholder"><i class="fas fa-microphone-lines" style="font-size:1rem;width:auto"></i><span>YouTube</span></a>`;
+                const sourceIconHtml = interview.sourceIcon
+                    ? `<img src="${safeSourceIcon}" alt="${safeSource}" class="timeline-interview-source-icon">`
+                    : `<span class="timeline-interview-source-icon" style="display:flex;align-items:center;justify-content:center;background:var(--bg-secondary);color:var(--text-muted)"><i class="fas fa-microphone-lines" style="font-size:0.8rem;width:auto"></i></span>`;
+                return {
+                    type: 'interview',
+                    date: interview.pubDate.getTime() > 0 ? interview.pubDate : new Date(0),
+                    html: `<div class="timeline-item-interview timeline-item-interview-card">
+                        ${embedHtml}
+                        <a href="${safeLink}" target="_blank" rel="noopener" class="timeline-interview-meta">
+                            ${sourceIconHtml}
+                            <span class="artist-link-text">${safeTitle}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-microphone-lines" style="margin-right:0.3rem;opacity:0.5;width:auto"></i>${isMention ? mentionLabel : t('lista.interview')} &middot; ${safeSource} &middot; ${dateStr}</span>` : ''}</span>
+                            <i class="fas fa-chevron-right artist-link-arrow"></i>
+                        </a>
+                    </div>`
+                };
+            });
+
             // ---- EVENTS ----
             const upcoming = (matchedEvents || []).filter(e => {
                 const parts = e.date.split('-');
@@ -4833,7 +5037,7 @@ a.chart-history-item {
 
             // ---- MERGE & SORT ----
             // All items sorted newest-first (upcoming events naturally appear at top)
-            const timelineItems = [...releaseItems, ...articleItems, ...pastEventItems, ...upcomingItems]
+            const timelineItems = [...releaseItems, ...articleItems, ...interviewItems, ...pastEventItems, ...upcomingItems]
                 .sort((a, b) => b.date - a.date);
 
             // ---- BUILD HTML ----
@@ -4841,6 +5045,7 @@ a.chart-history-item {
             const totalYtViews = releases.reduce((sum, r) => sum + (r._effectiveViews != null ? r._effectiveViews : (r.youtubeViews || 0)), 0);
             const releaseCountHtml = `<span><i class="fas fa-compact-disc"></i> ${releases.length}</span>`;
             const articleCountHtml = articles && articles.length > 0 ? `<span><i class="fas fa-newspaper"></i> ${articles.length}</span>` : '';
+            const interviewCountHtml = interviews && interviews.length > 0 ? `<span><i class="fas fa-microphone-lines"></i> ${interviews.length}</span>` : '';
             const eventCountHtml = (upcoming.length + past.length) > 0 ? `<span><i class="fas fa-calendar-day"></i> ${upcoming.length + past.length}</span>` : '';
             const ytViewsHtml = totalYtViews > 0
                 ? `<span class="release-yt-views"><i class="fas fa-eye"></i> ${formatViewsAbsoluteHtml(totalYtViews)}</span>`
@@ -4886,6 +5091,7 @@ a.chart-history-item {
                         <div class="tl-stats">
                             ${releaseCountHtml}
                             ${articleCountHtml}
+                            ${interviewCountHtml}
                             ${eventCountHtml}
                             ${ytViewsHtml}
                         </div>
@@ -5860,7 +6066,8 @@ a.chart-history-item {
                 '.release-play-btn { background: ' + c2 + ' !important; }' +
                 '.verified-accent .artist-link:hover { border-color: ' + c1 + '60 !important; }' +
                 '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +
-                '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }';
+                '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }' +
+                '.verified-accent .timeline-interview-meta:hover .artist-link-text { color: ' + c2 + ' !important; }';
             document.head.appendChild(style);
         }
 
@@ -6359,8 +6566,8 @@ a.chart-history-item {
         // Main initialization
         // ==================== ARTICLE MATCHING (from pre-computed site-master.json) ====================
         
-        function getArtistArticles(siteMaster, artistName) {
-            const allMatched = siteMaster?.news?.matched || [];
+        function getArtistMatchedFeedItems(siteMaster, artistName, feedKey, collectionKey = 'matched') {
+            const allMatched = siteMaster?.[feedKey]?.[collectionKey] || [];
             if (!artistName || allMatched.length === 0) return [];
             
             const artistNameLower = artistName.toLowerCase().trim();
@@ -6380,8 +6587,20 @@ a.chart-history-item {
                 pubDate: a.date ? new Date(a.date) : new Date(0),
                 source: a.source || '',
                 sourceIcon: a.iconUrl || a.sourceIcon || '',
-                siteUrl: a.siteUrl || ''
+                siteUrl: a.siteUrl || '',
+                kind: feedKey === 'interviews' ? 'interview' : 'article',
+                matchCollection: collectionKey
             }));
+        }
+
+        function getArtistArticles(siteMaster, artistName) {
+            return getArtistMatchedFeedItems(siteMaster, artistName, 'news');
+        }
+
+        function getArtistInterviews(siteMaster, artistName) {
+            const titleMatches = getArtistMatchedFeedItems(siteMaster, artistName, 'interviews', 'matched');
+            const descriptionMentions = getArtistMatchedFeedItems(siteMaster, artistName, 'interviews', 'mentioned');
+            return titleMatches.concat(descriptionMentions).sort((a, b) => b.pubDate - a.pubDate);
         }
         
         async function init() {
@@ -6592,7 +6811,8 @@ a.chart-history-item {
                         '.release-play-btn { background: ' + c2 + ' !important; }' +
                         '.verified-accent .artist-link:hover { border-color: ' + c1 + '60 !important; }' +
                         '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +
-                        '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }';
+                        '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }' +
+                        '.verified-accent .timeline-interview-meta:hover .artist-link-text { color: ' + c2 + ' !important; }';
                     document.head.appendChild(c2Style);
 
                     // Intersection Observer for parallax reveal of content sections
@@ -6634,6 +6854,7 @@ a.chart-history-item {
                 // Build chart history and unified timeline
                 let chartHistory = null;
                 let timelineArticles = [];
+                let timelineInterviews = [];
                 let timelineEvents = [];
 
                 // Pre-load releases.json for trackArtists and fresh youtube data
@@ -6678,6 +6899,13 @@ a.chart-history-item {
                     console.warn('Could not load articles:', e);
                 }
 
+                // Load interviews
+                try {
+                    timelineInterviews = getArtistInterviews(siteMaster, artist.name);
+                } catch (e) {
+                    console.warn('Could not load interviews:', e);
+                }
+
                 // Load events
                 try {
                     const evResp = await fetch('events.json');
@@ -6700,7 +6928,7 @@ a.chart-history-item {
                 }
 
                 // Render unified timeline
-                renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineEvents, artist.name, artist.spotifyName);
+                renderTimeline(chartHistory, artist.links, siteMaster, timelineArticles, timelineInterviews, timelineEvents, artist.name, artist.spotifyName);
                 if (editorMode) {
                     focusArtistEditorSection(urlParams.get('focus') || '');
                 }
@@ -6979,7 +7207,8 @@ a.chart-history-item {
                     '.release-play-btn { background: ' + c2 + ' !important; }' +
                     '.verified-accent .artist-link:hover { border-color: ' + c1 + '60 !important; }' +
                     '.verified-accent .chart-history-item:hover { border-color: ' + c2 + '40 !important; }' +
-                    '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }';
+                    '.verified-accent a.chart-history-item:hover .chart-history-title { color: ' + c2 + ' !important; }' +
+                    '.verified-accent .timeline-interview-meta:hover .artist-link-text { color: ' + c2 + ' !important; }';
                 document.head.appendChild(previewStyleEl);
             }
 

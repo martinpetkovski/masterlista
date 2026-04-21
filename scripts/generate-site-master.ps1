@@ -29,6 +29,7 @@ $bandsPath = Join-Path $projectRoot "bands.json"
 $releasesPath = Join-Path $projectRoot "releases.json"
 $chartPath = Join-Path $projectRoot "chart-data.json"
 $articlesPath = Join-Path $projectRoot "articles.json"
+$interviewsPath = Join-Path $projectRoot "interviews.json"
 $eventsPath = Join-Path $projectRoot "events.json"
 $curatorsPath = Join-Path $projectRoot "curators.json"
 $curatorTracklistsPath = Join-Path $projectRoot "curators-tracklists.json"
@@ -101,6 +102,10 @@ $releases = @($releaseCatalog | ForEach-Object {
 # Load articles.json
 $articlesJson = Get-Content $articlesPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $allArticles = $articlesJson.articles
+
+# Load interviews.json
+$interviewsJson = if (Test-Path $interviewsPath) { Get-Content $interviewsPath -Raw -Encoding UTF8 | ConvertFrom-Json } else { $null }
+$allInterviews = if ($interviewsJson) { $interviewsJson.interviews } else { @() }
 
 # Load events.json
 $eventsJson = Get-Content $eventsPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -2179,7 +2184,7 @@ Write-Host "  > Filtering and matching news articles..." -ForegroundColor Yellow
 # Build Cyrillic-safe word boundary pattern
 $boundaryChars = '[\s,;:.!?\-\u2013\u2014\/\(\)\[\]"''\ |«»\u201E\u201C\u2018\u2019\u201c\u201d]'
 
-# Build and pre-compile artist name patterns (skip names <= 2 chars)
+# Build and pre-compile artist name patterns for news (original exact-name behavior)
 $artistPatterns = @()
 foreach ($b in $bandsData) {
     if ($b.name -and $b.name.Length -gt 2) {
@@ -2192,6 +2197,100 @@ foreach ($b in $bandsData) {
         $artistPatterns += @{
             name = $b.name
             compiledRegex = [regex]::new($regexStr, [System.Text.RegularExpressions.RegexOptions]::Compiled)
+        }
+    }
+}
+
+# Build and pre-compile artist name variants for interviews (Cyrillic + transliterated)
+$cyrToLatPairs = @(
+    @('А', 'A'), @('а', 'a'), @('Б', 'B'), @('б', 'b'), @('В', 'V'), @('в', 'v'), @('Г', 'G'), @('г', 'g'),
+    @('Д', 'D'), @('д', 'd'), @('Ѓ', 'Gj'), @('ѓ', 'gj'), @('Е', 'E'), @('е', 'e'), @('Ж', 'Zh'), @('ж', 'zh'),
+    @('З', 'Z'), @('з', 'z'), @('Ѕ', 'Dz'), @('ѕ', 'dz'), @('И', 'I'), @('и', 'i'), @('Ј', 'J'), @('ј', 'j'),
+    @('К', 'K'), @('к', 'k'), @('Л', 'L'), @('л', 'l'), @('Љ', 'Lj'), @('љ', 'lj'), @('М', 'M'), @('м', 'm'),
+    @('Н', 'N'), @('н', 'n'), @('Њ', 'Nj'), @('њ', 'nj'), @('О', 'O'), @('о', 'o'), @('П', 'P'), @('п', 'p'),
+    @('Р', 'R'), @('р', 'r'), @('С', 'S'), @('с', 's'), @('Т', 'T'), @('т', 't'), @('Ќ', 'Kj'), @('ќ', 'kj'),
+    @('У', 'U'), @('у', 'u'), @('Ф', 'F'), @('ф', 'f'), @('Х', 'H'), @('х', 'h'), @('Ц', 'C'), @('ц', 'c'),
+    @('Ч', 'Ch'), @('ч', 'ch'), @('Џ', 'Dz'), @('џ', 'dz'), @('Ш', 'Sh'), @('ш', 'sh'),
+    @('Ђ', 'Dj'), @('ђ', 'dj'), @('Ћ', 'C'), @('ћ', 'c'),
+    @('Я', 'Ya'), @('я', 'ya'), @('Ю', 'Yu'), @('ю', 'yu'), @('Щ', 'Sht'), @('щ', 'sht'), @('Ъ', 'A'), @('ъ', 'a'),
+    @('Ь', ''), @('ь', ''), @('Э', 'E'), @('э', 'e'), @('Ы', 'I'), @('ы', 'i'), @('Й', 'J'), @('й', 'j')
+)
+
+$cyrToLatMap = New-Object 'System.Collections.Generic.Dictionary[string,string]' ([System.StringComparer]::Ordinal)
+foreach ($pair in $cyrToLatPairs) {
+    $cyrToLatMap[$pair[0]] = $pair[1]
+}
+
+function Convert-CyrillicToLatin {
+    param([string]$text)
+    if ([string]::IsNullOrWhiteSpace($text)) { return '' }
+
+    $builder = New-Object System.Text.StringBuilder
+    foreach ($char in $text.ToCharArray()) {
+        $key = [string]$char
+        if ($cyrToLatMap.ContainsKey($key)) {
+            [void]$builder.Append($cyrToLatMap[$key])
+        } else {
+            [void]$builder.Append($key)
+        }
+    }
+    return $builder.ToString()
+}
+
+function Convert-ToSimplifiedLatin {
+    param([string]$text)
+    if ([string]::IsNullOrWhiteSpace($text)) { return '' }
+
+    return ($text -replace 'dzh', 'z' -replace 'dz', 'z' -replace 'sh', 's' -replace 'ch', 'c' -replace 'zh', 'z' -replace 'lj', 'l' -replace 'nj', 'n' -replace 'gj', 'g' -replace 'kj', 'k' -replace 'dj', 'd' -replace 'sht', 'st')
+}
+
+function Get-ArtistMatchVariants {
+    param($band)
+
+    $variants = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($candidate in @($band.name, $band.spotifyName, (Convert-CyrillicToLatin $band.name), (Convert-ToSimplifiedLatin (Convert-CyrillicToLatin $band.name)), (Convert-ToSimplifiedLatin $band.spotifyName))) {
+        if (-not [string]::IsNullOrWhiteSpace($candidate)) {
+            $trimmed = $candidate.Trim()
+            if ($trimmed.Length -gt 2) {
+                [void]$variants.Add($trimmed)
+            }
+        }
+    }
+    return @($variants)
+}
+
+function Normalize-MatchKey {
+    param([string]$text)
+    if ([string]::IsNullOrWhiteSpace($text)) { return '' }
+    return ((($text.ToLower() -replace '[^\p{L}\p{N}]', ' ') -replace '\s+', ' ').Trim())
+}
+
+$variantToArtists = @{}
+$tokenToVariants = @{}
+foreach ($b in $bandsData) {
+    if ($b.name) {
+        $variants = @(Get-ArtistMatchVariants $b)
+        if ($variants.Count -gt 0) {
+            foreach ($variant in $variants) {
+                $key = Normalize-MatchKey $variant
+                if ([string]::IsNullOrWhiteSpace($key)) {
+                    continue
+                }
+
+                if (-not $variantToArtists.ContainsKey($key)) {
+                    $variantToArtists[$key] = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+                    $tokens = @($key -split ' ' | Where-Object { $_ })
+                    if ($tokens.Count -gt 0) {
+                        $anchorToken = @($tokens | Sort-Object Length -Descending | Select-Object -First 1)[0]
+                        if (-not $tokenToVariants.ContainsKey($anchorToken)) {
+                            $tokenToVariants[$anchorToken] = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+                        }
+                        [void]$tokenToVariants[$anchorToken].Add($key)
+                    }
+                }
+
+                [void]$variantToArtists[$key].Add($b.name)
+            }
         }
     }
 }
@@ -2210,11 +2309,11 @@ function Test-ArticleBlacklist {
     return $false
 }
 
-function Get-MatchedArtists {
+function Get-NewsMatchedArtists {
     param([string]$title, [string]$description)
     $haystack = "$title $description"
     $matched = [System.Collections.ArrayList]@()
-    
+
     foreach ($artist in $artistPatterns) {
         if ($artist.compiledRegex.IsMatch($haystack)) {
             if (-not $matched.Contains($artist.name)) {
@@ -2222,39 +2321,178 @@ function Get-MatchedArtists {
             }
         }
     }
+
     return ,$matched
 }
 
-# Process all articles: filter by blacklist, then match artists
-$matchedArticles = [System.Collections.ArrayList]::new()
+function Get-InterviewMatchedArtists {
+    param([string]$haystack)
+    $matched = [System.Collections.ArrayList]@()
 
-foreach ($article in $allArticles) {
-    # Apply blacklist
-    if (Test-ArticleBlacklist $article.title $article.description) {
-        continue
+    if ($variantToArtists.Count -eq 0) {
+        return ,$matched
     }
-    
-    $artists = Get-MatchedArtists $article.title $article.description
-    
-    if ($artists.Count -gt 0) {
-        [void]$matchedArticles.Add([PSCustomObject]@{
-            title         = $article.title
-            link          = $article.link
-            description   = $article.description
-            date          = $article.date
-            source        = $article.source
-            siteUrl       = $article.siteUrl
-            iconUrl       = $article.iconUrl
-            thumbnail     = $article.thumbnail
-            matchedArtists = $artists
-        })
+
+    $normalizedHaystack = Normalize-MatchKey $haystack
+    if ([string]::IsNullOrWhiteSpace($normalizedHaystack)) {
+        return ,$matched
+    }
+
+    $paddedHaystack = " $normalizedHaystack "
+    $tokens = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($token in ($normalizedHaystack -split ' ')) {
+        if (-not [string]::IsNullOrWhiteSpace($token)) {
+            [void]$tokens.Add($token)
+        }
+    }
+
+    $checkedVariants = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    $seenArtists = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($token in $tokens) {
+        if (-not $tokenToVariants.ContainsKey($token)) {
+            continue
+        }
+
+        foreach ($variantKey in $tokenToVariants[$token]) {
+            if (-not $checkedVariants.Add($variantKey)) {
+                continue
+            }
+
+            if (-not $paddedHaystack.Contains(" $variantKey ")) {
+                continue
+            }
+
+            foreach ($artistName in $variantToArtists[$variantKey]) {
+                if ($seenArtists.Add($artistName)) {
+                    [void]$matched.Add($artistName)
+                }
+            }
+        }
+    }
+
+    return ,$matched
+}
+
+function Get-InterviewArtistMatches {
+    param([string]$title, [string]$description)
+
+    $titleMatches = Get-InterviewMatchedArtists $title
+    $descriptionMatches = [System.Collections.ArrayList]@()
+
+    if (-not [string]::IsNullOrWhiteSpace($description)) {
+        $seenTitleArtists = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($artistName in $titleMatches) {
+            if (-not [string]::IsNullOrWhiteSpace($artistName)) {
+                [void]$seenTitleArtists.Add($artistName)
+            }
+        }
+
+        foreach ($artistName in (Get-InterviewMatchedArtists $description)) {
+            if ($seenTitleArtists.Contains($artistName)) {
+                continue
+            }
+
+            if (-not $descriptionMatches.Contains($artistName)) {
+                [void]$descriptionMatches.Add($artistName)
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        titleMatches       = $titleMatches
+        descriptionMatches = $descriptionMatches
     }
 }
 
-# Sort by date descending
-$matchedArticles = @($matchedArticles | Sort-Object { $_.date } -Descending)
+function Get-MatchedNewsItems {
+    param($items)
+
+    $matchedItems = [System.Collections.ArrayList]::new()
+
+    foreach ($item in $items) {
+        if (Test-ArticleBlacklist $item.title $item.description) {
+            continue
+        }
+
+        $artists = Get-NewsMatchedArtists $item.title $item.description
+
+        if ($artists.Count -gt 0) {
+            [void]$matchedItems.Add([PSCustomObject]@{
+                title          = $item.title
+                link           = $item.link
+                description    = $item.description
+                date           = $item.date
+                source         = $item.source
+                siteUrl        = $item.siteUrl
+                iconUrl        = $item.iconUrl
+                thumbnail      = $item.thumbnail
+                matchedArtists = $artists
+            })
+        }
+    }
+
+    return @($matchedItems | Sort-Object { $_.date } -Descending)
+}
+
+function Get-MatchedInterviewItems {
+    param($items)
+
+    $matchedItems = [System.Collections.ArrayList]::new()
+    $mentionedItems = [System.Collections.ArrayList]::new()
+
+    foreach ($item in $items) {
+        if (Test-ArticleBlacklist $item.title $item.description) {
+            continue
+        }
+
+        $artistMatches = Get-InterviewArtistMatches $item.title $item.description
+        $titleArtists = $artistMatches.titleMatches
+        $descriptionArtists = $artistMatches.descriptionMatches
+
+        if ($titleArtists.Count -gt 0) {
+            [void]$matchedItems.Add([PSCustomObject]@{
+                title          = $item.title
+                link           = $item.link
+                description    = $item.description
+                date           = $item.date
+                source         = $item.source
+                siteUrl        = $item.siteUrl
+                iconUrl        = $item.iconUrl
+                thumbnail      = $item.thumbnail
+                matchedArtists = $titleArtists
+            })
+        }
+
+        if ($descriptionArtists.Count -gt 0) {
+            [void]$mentionedItems.Add([PSCustomObject]@{
+                title          = $item.title
+                link           = $item.link
+                description    = $item.description
+                date           = $item.date
+                source         = $item.source
+                siteUrl        = $item.siteUrl
+                iconUrl        = $item.iconUrl
+                thumbnail      = $item.thumbnail
+                matchedArtists = $descriptionArtists
+            })
+        }
+    }
+
+    return [PSCustomObject]@{
+        matched   = @($matchedItems | Sort-Object { $_.date } -Descending)
+        mentioned = @($mentionedItems | Sort-Object { $_.date } -Descending)
+    }
+}
+
+# Process all articles: filter by blacklist, then match artists
+$matchedArticles = @(Get-MatchedNewsItems $allArticles)
+$matchedInterviewData = Get-MatchedInterviewItems $allInterviews
+$matchedInterviews = @($matchedInterviewData.matched)
+$mentionedInterviews = @($matchedInterviewData.mentioned)
 
 Write-Host "  > Filtered articles: $($matchedArticles.Count) matched artists" -ForegroundColor DarkGray
+Write-Host "  > Filtered interviews: $($matchedInterviews.Count) matched artists" -ForegroundColor DarkGray
+Write-Host "  > Description mentions: $($mentionedInterviews.Count) matched artists" -ForegroundColor DarkGray
 
 # ============================================================================
 #  10. RELEASE RADAR (latest 10 releases)
@@ -2539,6 +2777,13 @@ $siteMaster = [PSCustomObject]@{
     news = [PSCustomObject]@{
         lastUpdated    = $articlesJson.lastUpdated
         matched        = $matchedArticles
+    }
+
+    # Filtered interview videos (matched against artist names, blacklist applied)
+    interviews = [PSCustomObject]@{
+        lastUpdated    = if ($interviewsJson) { $interviewsJson.lastUpdated } else { $null }
+        matched        = $matchedInterviews
+        mentioned      = $mentionedInterviews
     }
     
     # Header collage thumbnails (top 20 singles thumbnails)

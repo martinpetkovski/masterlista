@@ -1485,6 +1485,7 @@ function initPageTitleTranslation() {
         '/lista':       { title: 'pageTitle.masterList', header: 'pages.masterList' },
         '/nastani':     { title: 'pageTitle.events',     header: 'pages.events' },
         '/vesti':       { title: 'pageTitle.news',       header: 'pages.news' },
+        '/interviews':  { title: 'pageTitle.interviews', header: 'pages.interviews' },
         '/kustosi':     { title: 'pageTitle.curators',   header: 'pages.curators' },
         '/iznenadi-me': { title: 'pageTitle.surprise',   header: 'pages.surprise' },
         '/privatnost':  { title: 'pageTitle.privacy',    header: 'pageTitle.privacyHeader' },
@@ -1569,7 +1570,7 @@ function ensureOverflowMarqueeStyles() {
     styleEl.id = styleId;
     styleEl.textContent = [
         '.js-overflow-marquee,.js-overflow-marquee-auto{min-width:0;}',
-        '.js-overflow-marquee .overflow-marquee__content,.js-overflow-marquee-auto .overflow-marquee__content{display:inline-flex;align-items:center;width:max-content;min-width:100%;transform:translate3d(0,0,0);will-change:transform;white-space:inherit;animation:none;}',
+        '.js-overflow-marquee .overflow-marquee__content,.js-overflow-marquee-auto .overflow-marquee__content{display:inline-block;vertical-align:top;width:max-content;min-width:100%;transform:translate3d(0,0,0);will-change:transform;white-space:inherit;animation:none;}',
         '.js-overflow-marquee.is-marquee-active,.js-overflow-marquee-auto.is-marquee-active{text-overflow:clip !important;}',
         '@keyframes overflow-marquee-slide{0%{transform:translate3d(0,0,0);}100%{transform:translate3d(var(--overflow-marquee-shift, 0px),0,0);}}',
         '@media (max-width: 600px){.js-overflow-marquee.is-marquee-active .overflow-marquee__content,.js-overflow-marquee-auto.is-marquee-active .overflow-marquee__content{animation:overflow-marquee-slide var(--overflow-marquee-duration, 3s) linear infinite alternate;}}',
