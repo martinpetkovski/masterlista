@@ -398,53 +398,109 @@ async function getVideoStatsBatch(videoIds, apiKey) {
     return results;
 }
 
-// ── Load previous week data ─────────────────────────────────────────────────
+// ── Load archive week data ──────────────────────────────────────────────────
 
-function getCurrentWeekId() {
-    const now = new Date();
-    const d = new Date(now);
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    const yearStart = new Date(d.getFullYear(), 0, 1);
-    const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-    return `${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}`;
-}
-
-function loadPreviousWeekData() {
-    if (!fs.existsSync(HISTORY_DIR)) return null;
+function loadRecentArchiveWeeks() {
+    if (!fs.existsSync(HISTORY_DIR)) return { latest: null, previous: null };
 
     const files = fs.readdirSync(HISTORY_DIR)
         .filter(f => f.match(/^chart-\d{4}-W\d{2}\.json$/))
         .sort();
 
-    if (files.length === 0) return null;
+    if (files.length === 0) return { latest: null, previous: null };
 
-    // Weekly deltas should always compare against the latest completed chart week.
-    // If a snapshot for the current ISO week already exists, skip it and use the
-    // next most recent file as the baseline.
-    const currentWeekId = getCurrentWeekId();
-    const currentWeekFile = `chart-${currentWeekId}.json`;
-    const completedWeekFiles = files.filter(f => f !== currentWeekFile);
-
-    let targetFile = files[files.length - 1];
-    if (completedWeekFiles.length > 0 && files.includes(currentWeekFile)) {
-        targetFile = completedWeekFiles[completedWeekFiles.length - 1];
-        console.log(`  Current week snapshot detected (${currentWeekFile}) — using completed week ${targetFile}`);
+    const loaded = [];
+    for (const file of files) {
+        try {
+            const data = JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, file), 'utf8'));
+            loaded.push({
+                fileName: file,
+                weekId: file.replace('chart-', '').replace('.json', ''),
+                releases: data.releases || [],
+                generatedAt: data.generatedAt || null
+            });
+        } catch {
+            // Ignore unreadable history files and continue with the rest.
+        }
     }
 
-    try {
-        const data = JSON.parse(fs.readFileSync(path.join(HISTORY_DIR, targetFile), 'utf8'));
-        console.log(`  Loaded previous week data: ${targetFile} (${data.releases?.length || 0} releases)`);
-        return { weekId: targetFile.replace('chart-', '').replace('.json', ''), releases: data.releases || [], generatedAt: data.generatedAt || null };
-    } catch {
-        return null;
+    if (loaded.length === 0) return { latest: null, previous: null };
+
+    const latest = loaded[loaded.length - 1] || null;
+    const previous = loaded.length > 1 ? loaded[loaded.length - 2] : null;
+
+    if (latest) {
+        console.log(`  Loaded archive baseline: ${latest.fileName} (${latest.releases.length} releases)`);
+    }
+    if (previous) {
+        console.log(`  Loaded fallback display week: ${previous.fileName} (${previous.releases.length} releases)`);
+    }
+
+    return { latest, previous };
+}
+
+function getChartMondayFromWeekId(weekId) {
+    if (!weekId) return null;
+    const match = weekId.match(/^(\d{4})-W(\d{2})$/);
+    if (!match) return null;
+
+    const isoYear = parseInt(match[1], 10);
+    const isoWeek = parseInt(match[2], 10);
+    const jan4 = new Date(Date.UTC(isoYear, 0, 4));
+    const dow = jan4.getUTCDay() || 7;
+    const week1Monday = new Date(jan4);
+    week1Monday.setUTCDate(jan4.getUTCDate() + 1 - dow);
+
+    const chartMonday = new Date(week1Monday);
+    chartMonday.setUTCDate(week1Monday.getUTCDate() + 7 * (isoWeek - 1));
+    return chartMonday;
+}
+
+function applyFrozenPopularity(chartReleases, frozenWeek) {
+    const frozenMap = new Map();
+    for (const release of frozenWeek?.releases || []) {
+        frozenMap.set(release.releaseId, release);
+    }
+
+    let reusedCount = 0;
+    for (const chartRelease of chartReleases) {
+        const frozenRelease = frozenMap.get(chartRelease.releaseId);
+        if (frozenRelease) {
+            chartRelease.popularity = frozenRelease.popularity || 0;
+            reusedCount++;
+        } else {
+            chartRelease.popularity = 0;
+        }
+    }
+
+    return reusedCount;
+}
+
+const NEGATIVE_VIEWS_DELTA_ISSUE_CODE = 'negative-views-delta';
+const NEGATIVE_VIEWS_DELTA_ISSUE_LABEL = 'ГРЕШКА';
+
+function clearChartIssue(release) {
+    if (!release) return;
+    if (release.chartIssueCode === NEGATIVE_VIEWS_DELTA_ISSUE_CODE) {
+        delete release.chartIssueCode;
+        delete release.chartIssueLabel;
+        delete release.chartIssueReason;
     }
 }
 
-/** Check if previous week data has YouTube views (i.e., was generated with this script) */
-function hasYouTubeHistory(prevWeek) {
-    if (!prevWeek?.releases?.length) return false;
-    return prevWeek.releases.some(r => r.youtubeViews !== undefined && r.youtubeViews > 0);
+function flagNegativeViewsDelta(release, baselineWeekId, currentViews, baselineViews) {
+    if (!release) return;
+    release.chartIssueCode = NEGATIVE_VIEWS_DELTA_ISSUE_CODE;
+    release.chartIssueLabel = NEGATIVE_VIEWS_DELTA_ISSUE_LABEL;
+    release.chartIssueReason = baselineWeekId
+        ? `Негативен views delta (${currentViews} < ${baselineViews}) наспроти архивата ${baselineWeekId}`
+        : `Негативен views delta (${currentViews} < ${baselineViews}) наспроти архивската недела`;
+}
+
+/** Check if archive week data has YouTube views (i.e., was generated with this script) */
+function hasYouTubeHistory(archiveWeek) {
+    if (!archiveWeek?.releases?.length) return false;
+    return archiveWeek.releases.some(r => r.youtubeViews !== undefined && r.youtubeViews > 0);
 }
 
 // ── Popularity calculation ──────────────────────────────────────────────────
@@ -514,18 +570,20 @@ async function main() {
     const cachedTracks = Object.keys(cache.tracks).length;
     if (cachedTracks > 0) console.log(`Cache: ${cachedTracks} release track mappings, ${Object.keys(cache.channels).length} channel IDs`);
 
-    // 5. Load previous week data
-    console.log('\n── Loading previous week data ──');
-    const prevWeek = loadPreviousWeekData();
+    // 5. Load recent archive weeks
+    console.log('\n── Loading archive week data ──');
+    const archiveWeeks = loadRecentArchiveWeeks();
+    const deltaBaselineWeek = archiveWeeks.latest;
+    const frozenDisplayWeek = archiveWeeks.previous;
     const prevMap = new Map(); // releaseId -> { popularity, youtubeViews }
-    if (prevWeek) {
-        for (const r of prevWeek.releases) {
+    if (deltaBaselineWeek) {
+        for (const r of deltaBaselineWeek.releases) {
             prevMap.set(r.releaseId, { popularity: r.popularity || 0, youtubeViews: r.youtubeViews || 0, youtubeVideoIds: r.youtubeVideoIds || null });
         }
     }
-    const useYTHistory = hasYouTubeHistory(prevWeek);
+    const useYTHistory = hasYouTubeHistory(deltaBaselineWeek);
     console.log(useYTHistory
-        ? '  Previous week has YouTube views — using real delta'
+        ? '  Archive baseline has YouTube views — using real delta'
         : '  No YouTube history — will approximate last week views from Spotify popularity');
 
     // ── Step 1: Resolve YouTube channels ────────────────────────────────────
@@ -936,39 +994,31 @@ async function main() {
     console.log(`  Counted ${dupeCount} unique YouTube videos across all releases`);
 
     // ── Step 5: Compute popularity ──────────────────────────────────────────
+    const releaseById = new Map();
+    for (const r of releases) releaseById.set(r.releaseId, r);
+
+    let archiveChartData = null;
     if (useYTHistory) {
         // Real YouTube history available — compute delta-based popularity
         console.log('\n── Step 5: Computing popularity from YouTube view deltas ──');
 
-        // Build release lookup for date checking
-        const releaseById = new Map();
-        for (const r of releases) releaseById.set(r.releaseId, r);
-
         let newReleaseDeltaCount = 0;
         let videoFilteredCount = 0;
+        let negativeDeltaCount = 0;
 
         // Determine the Monday of the previous chart-history week from weekId (e.g. "2026-W11")
-        let prevChartMonday = null;
-        if (prevWeek?.weekId) {
-            const m = prevWeek.weekId.match(/^(\d{4})-W(\d{2})$/);
-            if (m) {
-                const isoYear = parseInt(m[1], 10);
-                const isoWeek = parseInt(m[2], 10);
-                // ISO week 1 contains Jan 4; Monday of week 1 = Jan 4 minus its weekday offset
-                const jan4 = new Date(Date.UTC(isoYear, 0, 4));
-                const dow = jan4.getUTCDay() || 7; // Sunday=7
-                const week1Monday = new Date(jan4);
-                week1Monday.setUTCDate(jan4.getUTCDate() + 1 - dow);
-                prevChartMonday = new Date(week1Monday);
-                prevChartMonday.setUTCDate(week1Monday.getUTCDate() + 7 * (isoWeek - 1));
-                console.log(`  Previous chart Monday: ${prevChartMonday.toISOString().slice(0, 10)}`);
-            }
+        const prevChartMonday = getChartMondayFromWeekId(deltaBaselineWeek?.weekId);
+        if (prevChartMonday) {
+            console.log(`  Archive baseline Monday: ${prevChartMonday.toISOString().slice(0, 10)}`);
         }
 
         for (const cr of chartReleases) {
             const rel = releaseById.get(cr.releaseId);
             const effectiveDate = rel?.effectiveReleaseDate || rel?.releaseDate;
             const releaseDate = effectiveDate ? new Date(effectiveDate) : null;
+
+            clearChartIssue(cr);
+            clearChartIssue(rel);
 
             // If the release came out after the previous chart Monday, all views are this week's
             if (releaseDate && prevChartMonday && releaseDate >= prevChartMonday) {
@@ -988,11 +1038,24 @@ async function main() {
                                 comparableViews += stats?.viewCount || 0;
                             }
                         }
-                        cr._viewDelta = Math.max(0, comparableViews - prev.youtubeViews);
+                        const rawDelta = comparableViews - prev.youtubeViews;
+                        if (rawDelta < 0) {
+                            flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, comparableViews, prev.youtubeViews);
+                            flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, comparableViews, prev.youtubeViews);
+                            negativeDeltaCount++;
+                        }
+                        cr._viewDelta = Math.max(0, rawDelta);
                         if (currVideoIds.length > prevIdSet.size) videoFilteredCount++;
                     } else {
                         // No per-video data in prev week — fall back to total comparison
-                        cr._viewDelta = Math.max(0, (cr.youtubeViews || 0) - prev.youtubeViews);
+                        const currentViews = cr.youtubeViews || 0;
+                        const rawDelta = currentViews - prev.youtubeViews;
+                        if (rawDelta < 0) {
+                            flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
+                            flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
+                            negativeDeltaCount++;
+                        }
+                        cr._viewDelta = Math.max(0, rawDelta);
                     }
                 } else {
                     // Not in previous chart-history: all views are new this week
@@ -1006,14 +1069,29 @@ async function main() {
         if (videoFilteredCount > 0) {
             console.log(`  ${videoFilteredCount} release(s) had newly matched videos filtered out of delta calculation`);
         }
+        if (negativeDeltaCount > 0) {
+            console.log(`  ${negativeDeltaCount} release(s) had negative live view deltas and were flagged for chart exclusion`);
+        }
         const typeMap = new Map();
         for (const r of releases) typeMap.set(r.releaseId, r.releaseType);
         computePopularities(chartReleases, typeMap);
+        archiveChartData = JSON.parse(JSON.stringify(chartData));
+
+        const hasPositiveDelta = chartReleases.some(cr => (cr._viewDelta || 0) > 0);
+        if (!hasPositiveDelta && frozenDisplayWeek?.releases?.length) {
+            const reusedCount = applyFrozenPopularity(chartReleases, frozenDisplayWeek);
+            console.log(`  No positive live deltas yet — reusing ${frozenDisplayWeek.weekId} popularity for ${reusedCount} release(s)`);
+        }
+
         for (const cr of chartReleases) { delete cr._totalViews; delete cr._viewDelta; }
     } else {
         // No YouTube history yet — use Spotify popularity as-is
         console.log('\n── Step 5: No YouTube history — using Spotify popularity ──');
-        for (const cr of chartReleases) { delete cr._totalViews; }
+        for (const cr of chartReleases) {
+            delete cr._totalViews;
+            clearChartIssue(cr);
+            clearChartIssue(releaseById.get(cr.releaseId));
+        }
     }
 
     // ── Step 6: Save updated files ──────────────────────────────────────────
@@ -1024,6 +1102,9 @@ async function main() {
 
     // Save chart history FIRST (includes youtubeVideoIds for per-video delta tracking)
     chartData.generatedAt = new Date().toISOString();
+    if (archiveChartData) {
+        archiveChartData.generatedAt = chartData.generatedAt;
+    }
     const now = new Date();
     if (now.getDay() === 1) {
         const d = new Date(now); d.setHours(0, 0, 0, 0);
@@ -1033,7 +1114,8 @@ async function main() {
         const weekFileName = `chart-${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}.json`;
         const weekFilePath = path.join(HISTORY_DIR, weekFileName);
         if (fs.existsSync(weekFilePath)) {
-            fs.writeFileSync(weekFilePath, JSON.stringify(chartData, null, 2), 'utf8');
+            const weekChartData = archiveChartData || chartData;
+            fs.writeFileSync(weekFilePath, JSON.stringify(weekChartData, null, 2), 'utf8');
             console.log(`Updated chart-history/${weekFileName} with YouTube-based popularity`);
         }
     } else {

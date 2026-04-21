@@ -169,6 +169,21 @@
         background: var(--bg-tertiary); color: var(--text-muted);
         text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
     }
+    .yt-release-issue-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.56rem; font-weight: 800;
+        padding: 0.06rem 0.34rem;
+        border-radius: 999px;
+        background: rgba(239, 68, 68, 0.14);
+        border: 1px solid rgba(239, 68, 68, 0.28);
+        color: #b91c1c;
+        text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+    body.dark-mode .yt-release-issue-badge {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(248, 113, 113, 0.35);
+        color: #fecaca;
+    }
     .yt-release-artist { font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; }
     .yt-release-facts {
         display: flex; flex-wrap: wrap; gap: 0.3rem 0.55rem;
@@ -978,6 +993,9 @@
                 var idx = page[i].index;
                 var num = start + i + 1;
                 var typeLabel = r.releaseType === 'album' ? 'Албум' : r.releaseType === 'compilation' ? 'Компилација' : 'Сингл';
+                var issueBadge = r.chartIssueLabel
+                    ? '<span class="yt-release-issue-badge" title="' + esc(r.chartIssueReason || r.chartIssueLabel) + '">' + esc(r.chartIssueLabel) + '</span>'
+                    : '';
 
                 html += '<tr data-idx="' + idx + '">';
                 html += '<td style="color:var(--text-muted);font-size:0.7rem">' + num + '</td>';
@@ -988,6 +1006,7 @@
                 html += '<div class="yt-release-meta">';
                 html += '<div class="yt-release-heading">';
                 html += '<span class="yt-release-title-link js-overflow-marquee" data-release-idx="' + idx + '" title="Отвори во стриминг сервис">' + esc(r.releaseTitle) + '</span>';
+                html += issueBadge;
                 html += '<span class="yt-release-type">' + typeLabel + '</span>';
                 html += '</div>';
                 var ytQuery = encodeURIComponent(r.bandName + ' ' + r.releaseTitle);

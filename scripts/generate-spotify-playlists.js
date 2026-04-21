@@ -242,18 +242,26 @@ function pickWithArtistCap(candidates, maxTracks, maxPerArtist) {
 }
 
 /**
- * Chart sort: null-viewsDelta last, then viewsDelta desc, youtubeViews desc, name asc.
+ * Chart sort: null-viewsDelta last, nonzero deltas before zero, then
+ * viewsDelta desc, youtubeViews desc, name asc.
  * Matches Sort-ChartRanking in generate-site-master.ps1.
  */
 function chartSort(a, b) {
   const aNullVD = (a.viewsDelta == null) ? 1 : 0;
   const bNullVD = (b.viewsDelta == null) ? 1 : 0;
   if (aNullVD !== bNullVD) return aNullVD - bNullVD;
-  const vdDiff = (b.viewsDelta || 0) - (a.viewsDelta || 0);
+  const aZeroVD = (Number(a.viewsDelta || 0) === 0) ? 1 : 0;
+  const bZeroVD = (Number(b.viewsDelta || 0) === 0) ? 1 : 0;
+  if (aZeroVD !== bZeroVD) return aZeroVD - bZeroVD;
+  const vdDiff = Number(b.viewsDelta || 0) - Number(a.viewsDelta || 0);
   if (vdDiff !== 0) return vdDiff;
   const ytDiff = (b.youtubeViews || 0) - (a.youtubeViews || 0);
   if (ytDiff !== 0) return ytDiff;
   return (a.bandName || '').localeCompare(b.bandName || '');
+}
+
+function isChartEligibleRelease(release) {
+  return release && !release.chartIssueCode;
 }
 
 /**
@@ -277,6 +285,7 @@ function getTopCurrent(siteMaster, releases, chartKey, maxTracks, maxPerArtist, 
 
   const extras = releases
     .filter(r => r.releaseType === 'single'
+      && isChartEligibleRelease(r)
       && !usedIds.has(r.releaseId)
       && new Date(r.effectiveReleaseDate || r.releaseDate) >= cutoff)
     .filter(r => !genreFilter || genreFilter(r.bandName))
@@ -295,7 +304,7 @@ function getTopCurrent(siteMaster, releases, chartKey, maxTracks, maxPerArtist, 
  */
 function getTopAllTime(releases, maxTracks, maxPerArtist, genreFilter) {
   const candidates = releases
-    .filter(r => r.releaseType === 'single' && (r.youtubeViews || 0) > 0)
+    .filter(r => r.releaseType === 'single' && isChartEligibleRelease(r) && (r.youtubeViews || 0) > 0)
     .filter(r => !genreFilter || genreFilter(r.bandName))
     .sort((a, b) => (b.youtubeViews || 0) - (a.youtubeViews || 0));
   return pickWithArtistCap(candidates, maxTracks, maxPerArtist);
@@ -311,7 +320,7 @@ function getNewReleases(releases, maxTracks, newReleaseDays, maxPerArtist, genre
   const candidates = releases
     .filter(r => {
       const d = new Date(r.effectiveReleaseDate || r.releaseDate);
-      return d >= cutoff;
+      return d >= cutoff && isChartEligibleRelease(r);
     })
     .filter(r => !genreFilter || genreFilter(r.bandName))
     .sort((a, b) => {

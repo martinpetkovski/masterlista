@@ -541,6 +541,11 @@ function deduplicateCollabs(releases) {
             existing.followers = Math.max(existing.followers || 0, r.followers || 0);
             existing.youtubeViews = Math.max(existing.youtubeViews || 0, r.youtubeViews || 0);
             existing.viewsDelta = Math.max(existing.viewsDelta || 0, r.viewsDelta || 0);
+            if (!existing.chartIssueCode && r.chartIssueCode) {
+                existing.chartIssueCode = r.chartIssueCode;
+                existing.chartIssueLabel = r.chartIssueLabel;
+                existing.chartIssueReason = r.chartIssueReason;
+            }
             existing.isCollab = true;
         } else {
             map.set(r.releaseId, Object.assign({}, r));
@@ -738,7 +743,7 @@ function buildChartRanking(releases, opts) {
     var filtered = deduped.filter(typeFilter);
 
     filtered = filtered.filter(function(r) {
-        return !artistHasLabel(r.bandName, 'AI', bands);
+        return !r.chartIssueCode && !artistHasLabel(r.bandName, 'AI', bands);
     });
 
     // Apply genre filter
@@ -813,13 +818,17 @@ function trimPerArtist(releases) {
 
 /**
  * Deterministic sort comparator for chart ranking.
- * Primary: null viewsDelta last, then viewsDelta desc, youtubeViews desc, name asc.
+ * Primary: null viewsDelta last, nonzero deltas before zero, then viewsDelta desc,
+ * youtubeViews desc, name asc.
  */
 function chartSort(a, b) {
     var aNull = (a.viewsDelta == null) ? 1 : 0;
     var bNull = (b.viewsDelta == null) ? 1 : 0;
     if (aNull !== bNull) return aNull - bNull;
-    var deltaDiff = (b.viewsDelta || 0) - (a.viewsDelta || 0);
+    var aZero = (Number(a.viewsDelta || 0) === 0) ? 1 : 0;
+    var bZero = (Number(b.viewsDelta || 0) === 0) ? 1 : 0;
+    if (aZero !== bZero) return aZero - bZero;
+    var deltaDiff = Number(b.viewsDelta || 0) - Number(a.viewsDelta || 0);
     if (deltaDiff !== 0) return deltaDiff;
     var viewsDiff = (b.youtubeViews || 0) - (a.youtubeViews || 0);
     if (viewsDiff !== 0) return viewsDiff;

@@ -225,6 +225,70 @@ function Get-ArtistInfo {
 }
 
 $chartEligibilityCache = @{}
+$negativeViewsDeltaIssueCode = 'negative-views-delta'
+$negativeViewsDeltaIssueLabel = 'ГРЕШКА'
+
+function Set-ReleaseChartIssueProperty {
+    param([object]$release, [string]$name, $value)
+    if (-not $release -or -not $name) { return }
+    if ($null -ne $release.PSObject.Properties[$name]) {
+        $release.$name = $value
+    } else {
+        $release | Add-Member -NotePropertyName $name -NotePropertyValue $value -Force
+    }
+}
+
+function Clear-ReleaseChartIssue {
+    param([object]$release)
+    if (-not $release) { return }
+
+    Set-ReleaseChartIssueProperty $release 'chartIssueCode' $null
+    Set-ReleaseChartIssueProperty $release 'chartIssueLabel' $null
+    Set-ReleaseChartIssueProperty $release 'chartIssueReason' $null
+}
+
+function Get-NegativeViewsDeltaIssueReason {
+    param([object]$release, [string]$baselineWeekId)
+
+    $currentViews = [int]($release.youtubeViews -as [int])
+    $delta = [int]($release.viewsDelta -as [int])
+    $baselineViews = $currentViews - $delta
+    if ($baselineViews -lt 0) { $baselineViews = 0 }
+
+    if ($baselineWeekId) {
+        return "Негативен views delta ($currentViews < $baselineViews) наспроти архивата $baselineWeekId"
+    }
+
+    return "Негативен views delta ($currentViews < $baselineViews) наспроти архивската недела"
+}
+
+function Set-NegativeViewsDeltaIssue {
+    param([object]$release, [string]$baselineWeekId)
+    if (-not $release) { return }
+
+    Clear-ReleaseChartIssue $release
+    Set-ReleaseChartIssueProperty $release 'chartIssueCode' $negativeViewsDeltaIssueCode
+    Set-ReleaseChartIssueProperty $release 'chartIssueLabel' $negativeViewsDeltaIssueLabel
+    Set-ReleaseChartIssueProperty $release 'chartIssueReason' (Get-NegativeViewsDeltaIssueReason $release $baselineWeekId)
+}
+
+function Set-NegativeViewsDeltaIssues {
+    param([array]$items, [string]$baselineWeekId)
+
+    $count = 0
+    foreach ($item in @($items)) {
+        if (-not $item) { continue }
+        Clear-ReleaseChartIssue $item
+
+        $delta = $item.viewsDelta -as [int]
+        if ($null -ne $delta -and [int]$delta -lt 0) {
+            Set-NegativeViewsDeltaIssue $item $baselineWeekId
+            $count++
+        }
+    }
+
+    return $count
+}
 
 function Get-ArtistLabels {
     param([object]$artistInfo)
@@ -257,16 +321,16 @@ function Test-ReleaseChartEligibility {
     if (-not $release) { return $false }
 
     $cacheKey = if ($release.releaseId) {
-        [string]$release.releaseId
+        "$($release.releaseId)|$([string]$release.chartIssueCode)"
     } else {
-        "$($release.bandName)|$($release.releaseTitle)|$($release.releaseDate)"
+        "$($release.bandName)|$($release.releaseTitle)|$($release.releaseDate)|$([string]$release.chartIssueCode)"
     }
 
     if ($chartEligibilityCache.ContainsKey($cacheKey)) {
         return [bool]$chartEligibilityCache[$cacheKey]
     }
 
-    $eligible = -not (Test-ArtistHasLabel $release.bandName 'AI')
+    $eligible = -not $release.chartIssueCode -and -not (Test-ArtistHasLabel $release.bandName 'AI')
     $chartEligibilityCache[$cacheKey] = $eligible
     return $eligible
 }
@@ -595,11 +659,13 @@ function Invoke-DeduplicateCollabs {
     return @($map.Values)
 }
 
-# Chart sort comparator (matching common.js chartSort: null-delta last, viewsDelta desc, youtubeViews desc, name asc)
+# Chart sort comparator (matching common.js chartSort: null-delta last,
+# nonzero deltas before zero, then viewsDelta desc, youtubeViews desc, name asc)
 function Sort-ChartRanking {
     param([array]$items)
     return $items | Sort-Object @(
         @{ Expression = { if ($null -eq $_.viewsDelta) { 1 } else { 0 } } },
+        @{ Expression = { if ([int]($_.viewsDelta -as [int]) -eq 0) { 1 } else { 0 } } },
         @{ Expression = { -([int]($_.viewsDelta -as [int])) } },
         @{ Expression = { -([int]($_.youtubeViews -as [int])) } },
         @{ Expression = { $_.bandName } }
@@ -859,37 +925,30 @@ foreach ($file in $historyFiles) {
 
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
-# Get the latest completed chart-history week for weekly comparisons.
-# If the current ISO week already has a snapshot file, skip it and use the
-# next most recent week as the baseline for deltas and change indicators.
-$currentIsoWeek = Get-ISOWeek (Get-Date)
-$currentChartWeekId = "{0}-W{1}" -f $currentIsoWeek.year, ([string]$currentIsoWeek.week).PadLeft(2, '0')
-$completedWeekIndex = 0
-if ($chartHistoryWeeks.Count -ge 2 -and $chartHistoryWeeks[0].weekId -eq $currentChartWeekId) {
-    $completedWeekIndex = 1
-    Write-Host "  > Current week snapshot detected: $currentChartWeekId" -ForegroundColor DarkGray
-}
+# Live charts compare against the newest archived snapshot. If that produces no
+# positive deltas yet, current display freezes on the prior archived week.
+$deltaBaselineWeek = if ($chartHistoryWeeks.Count -gt 0) { $chartHistoryWeeks[0] } else { $null }
+$displayFallbackWeek = if ($chartHistoryWeeks.Count -gt 1) { $chartHistoryWeeks[1] } else { $null }
+$displayFallbackReferenceWeek = if ($chartHistoryWeeks.Count -gt 2) { $chartHistoryWeeks[2] } else { $null }
 
 $previousWeekReleases = @()
-$viewsDeltaPrevIndex = $completedWeekIndex
-if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
-    $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
-    Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
+if ($deltaBaselineWeek) {
+    $previousWeekReleases = $deltaBaselineWeek.releases
+    Write-Host "  > Live viewsDelta baseline: $($deltaBaselineWeek.weekId)" -ForegroundColor DarkGray
+}
+if ($displayFallbackWeek) {
+    Write-Host "  > Frozen fallback display week: $($displayFallbackWeek.weekId)" -ForegroundColor DarkGray
+}
+if ($displayFallbackReferenceWeek) {
+    Write-Host "  > Frozen fallback reference week: $($displayFallbackReferenceWeek.weekId)" -ForegroundColor DarkGray
 }
 
-# For chevron indicators: compare the two most recent completed chart-history snapshots
 $chevronCurrentReleases = @()
 $chevronPreviousReleases = @()
-$chevronCurrentIndex = $completedWeekIndex
-$chevronPreviousIndex = $completedWeekIndex + 1
-if ($chartHistoryWeeks.Count -gt $chevronCurrentIndex) {
-    $chevronCurrentReleases = $chartHistoryWeeks[$chevronCurrentIndex].releases
-    Write-Host "  > Chevron current week: $($chartHistoryWeeks[$chevronCurrentIndex].weekId)" -ForegroundColor DarkGray
-}
-if ($chartHistoryWeeks.Count -gt $chevronPreviousIndex) {
-    $chevronPreviousReleases = $chartHistoryWeeks[$chevronPreviousIndex].releases
-    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[$chevronPreviousIndex].weekId)" -ForegroundColor DarkGray
-}
+$chevronCurrentWeekId = $null
+$chevronPreviousWeekId = $null
+$usingFrozenChartState = $false
+$currentDisplayWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
 
 # ============================================================================
 #  1. PRE-CALCULATE CHARTS
@@ -910,22 +969,6 @@ $prevTrackCountMap = @{}
 foreach ($pr in $prevReleasesDeduped) {
     $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
     if ($pr.youtubeTrackCount) { $prevTrackCountMap[$pr.releaseId] = [int]($pr.youtubeTrackCount -as [int]) }
-}
-
-# Determine the Monday of the previous chart-history week
-$prevChartMonday = $null
-if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
-    $prevWeekId = $chartHistoryWeeks[$viewsDeltaPrevIndex].weekId  # e.g. "2026-W11"
-    if ($prevWeekId -match '^(\d{4})-W(\d{2})$') {
-        $isoYear = [int]$Matches[1]
-        $isoWeek = [int]$Matches[2]
-        # ISO week 1 contains Jan 4; Monday of week 1 = Jan 4 minus its weekday offset
-        $jan4 = [datetime]::new($isoYear, 1, 4)
-        $dow = [int]$jan4.DayOfWeek; if ($dow -eq 0) { $dow = 7 }  # Sunday=7
-        $week1Monday = $jan4.AddDays(1 - $dow)
-        $prevChartMonday = $week1Monday.AddDays(7 * ($isoWeek - 1))
-        Write-Host "  > Previous chart Monday: $($prevChartMonday.ToString('yyyy-MM-dd'))" -ForegroundColor DarkGray
-    }
 }
 
 function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
@@ -952,6 +995,88 @@ function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
     return $null
 }
 
+function Get-ChartMondayFromWeekId {
+    param([string]$weekId)
+    if (-not $weekId) { return $null }
+    if ($weekId -match '^(\d{4})-W(\d{2})$') {
+        $isoYear = [int]$Matches[1]
+        $isoWeek = [int]$Matches[2]
+        $jan4 = [datetime]::new($isoYear, 1, 4)
+        $dow = [int]$jan4.DayOfWeek
+        if ($dow -eq 0) { $dow = 7 }
+        $week1Monday = $jan4.AddDays(1 - $dow)
+        return $week1Monday.AddDays(7 * ($isoWeek - 1))
+    }
+    return $null
+}
+
+function Get-ViewsMapFromReleases {
+    param([array]$snapshotReleases)
+    $viewsMap = @{}
+    foreach ($release in @($snapshotReleases)) {
+        $viewsMap[$release.releaseId] = [int]($release.youtubeViews -as [int])
+    }
+    return $viewsMap
+}
+
+function Get-SnapshotViewsDeltaMap {
+    param(
+        [array]$snapshotReleases,
+        [array]$baselineReleases,
+        [string]$baselineWeekId
+    )
+    $snapshotDeltaMap = @{}
+    if (-not $snapshotReleases) { return $snapshotDeltaMap }
+
+    $baselineViewsMap = Get-ViewsMapFromReleases $baselineReleases
+    $baselineMonday = Get-ChartMondayFromWeekId $baselineWeekId
+    foreach ($release in @($snapshotReleases)) {
+        $snapshotDeltaMap[$release.releaseId] = Get-ViewsDelta $release $baselineViewsMap $baselineMonday
+    }
+    return $snapshotDeltaMap
+}
+
+function Merge-ChartSnapshotState {
+    param(
+        [array]$sourceReleases,
+        [array]$snapshotReleases,
+        [hashtable]$snapshotViewsDeltaMap
+    )
+    $snapshotMap = @{}
+    foreach ($snapshot in @($snapshotReleases)) {
+        $snapshotMap[$snapshot.releaseId] = $snapshot
+    }
+
+    return @($sourceReleases | ForEach-Object {
+        $source = $_
+        $snapshot = $snapshotMap[$source.releaseId]
+        $merged = [ordered]@{}
+        foreach ($property in $source.PSObject.Properties) {
+            $merged[$property.Name] = $property.Value
+        }
+
+        if ($snapshot) {
+            $merged['popularity'] = [int]($snapshot.popularity -as [int])
+            $merged['youtubeViews'] = [int]($snapshot.youtubeViews -as [int])
+            $merged['viewsDelta'] = if ($snapshotViewsDeltaMap.ContainsKey($source.releaseId)) { $snapshotViewsDeltaMap[$source.releaseId] } else { $null }
+        } else {
+            $merged['popularity'] = 0
+            $merged['viewsDelta'] = $null
+        }
+
+        [PSCustomObject]$merged
+    })
+}
+
+# Determine the Monday of the live chart-history baseline week
+$prevChartMonday = $null
+if ($deltaBaselineWeek) {
+    $prevChartMonday = Get-ChartMondayFromWeekId $deltaBaselineWeek.weekId
+    if ($prevChartMonday) {
+        Write-Host "  > Live baseline Monday: $($prevChartMonday.ToString('yyyy-MM-dd'))" -ForegroundColor DarkGray
+    }
+}
+
 foreach ($r in $mainReleasesDeduped) {
     $delta = Get-ViewsDelta $r $prevViewsMap $prevChartMonday
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
@@ -962,16 +1087,64 @@ foreach ($r in $releases) {
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 
+$negativeDeltaCount = Set-NegativeViewsDeltaIssues -items $releases -baselineWeekId $(if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null })
+if ($negativeDeltaCount -gt 0) {
+    Write-Host "  > Excluding $negativeDeltaCount release(s) with negative live deltas from charts" -ForegroundColor Yellow
+}
+
+$chartEligibilityCache = @{}
+$mainReleasesDeduped = @(Invoke-DeduplicateCollabs $releases | Where-Object { Test-ReleaseChartEligibility $_ })
+
+$liveMainReleasesDeduped = $mainReleasesDeduped
+$chartSourceReleases = $releases
+$chartSourceDeduped = $mainReleasesDeduped
+$chartDataOutputReleases = $releases
+
+$livePositiveDeltaCount = @($mainReleasesDeduped | Where-Object { [int]($_.viewsDelta -as [int]) -gt 0 }).Count
+if ($livePositiveDeltaCount -le 0 -and $displayFallbackWeek) {
+    $fallbackBaselineReleases = if ($displayFallbackReferenceWeek) { $displayFallbackReferenceWeek.releases } else { @() }
+    $fallbackBaselineWeekId = if ($displayFallbackReferenceWeek) { $displayFallbackReferenceWeek.weekId } else { $null }
+    $fallbackDeltaMap = Get-SnapshotViewsDeltaMap -snapshotReleases $displayFallbackWeek.releases -baselineReleases $fallbackBaselineReleases -baselineWeekId $fallbackBaselineWeekId
+
+    $chartSourceReleases = Merge-ChartSnapshotState -sourceReleases $releases -snapshotReleases $displayFallbackWeek.releases -snapshotViewsDeltaMap $fallbackDeltaMap
+    $chartSourceDeduped = @(Invoke-DeduplicateCollabs $chartSourceReleases | Where-Object { Test-ReleaseChartEligibility $_ })
+    $chartDataOutputReleases = $chartSourceReleases
+    $usingFrozenChartState = $true
+    $currentDisplayWeekId = $displayFallbackWeek.weekId
+    $chevronCurrentReleases = @()
+    $chevronPreviousReleases = if ($displayFallbackReferenceWeek) { $displayFallbackReferenceWeek.releases } else { @() }
+    $chevronCurrentWeekId = $null
+    $chevronPreviousWeekId = if ($displayFallbackReferenceWeek) { $displayFallbackReferenceWeek.weekId } else { $null }
+    Write-Host "  > No positive live deltas yet — reusing $currentDisplayWeekId for current chart display" -ForegroundColor Cyan
+} else {
+    $chevronCurrentReleases = if ($deltaBaselineWeek) { $deltaBaselineWeek.releases } else { @() }
+    $chevronPreviousReleases = if ($displayFallbackWeek) { $displayFallbackWeek.releases } else { @() }
+    $chevronCurrentWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
+    $chevronPreviousWeekId = if ($displayFallbackWeek) { $displayFallbackWeek.weekId } else { $null }
+    if ($livePositiveDeltaCount -gt 0) {
+        Write-Host "  > Positive live deltas detected: $livePositiveDeltaCount" -ForegroundColor DarkGray
+    }
+}
+
+if ($chevronCurrentWeekId) {
+    Write-Host "  > Chevron current week: $chevronCurrentWeekId" -ForegroundColor DarkGray
+}
+if ($chevronPreviousWeekId) {
+    Write-Host "  > Chevron previous week: $chevronPreviousWeekId" -ForegroundColor DarkGray
+}
+
+$mainReleasesDeduped = $chartSourceDeduped
+
 # Pre-filter releases by genre once (avoids re-filtering inside every Build-ChartRanking call)
 $mainByGenre = @{}
-$prevByGenre = @{}
+$liveByGenre = @{}
 foreach ($genre in $genreFilters) {
     if ($genre -eq 'all') {
         $mainByGenre[$genre] = $mainReleasesDeduped
-        $prevByGenre[$genre] = $prevReleasesDeduped
+        $liveByGenre[$genre] = $liveMainReleasesDeduped
     } else {
         $mainByGenre[$genre] = @($mainReleasesDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
-        $prevByGenre[$genre] = @($prevReleasesDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
+        $liveByGenre[$genre] = @($liveMainReleasesDeduped | Where-Object { Test-ArtistGenre $_.bandName $genre })
     }
 }
 
@@ -1578,13 +1751,13 @@ Write-Host "  > Global peak viewsDelta: $globalPeakPopularity" -ForegroundColor 
 
 Write-Host "  > Building all-time artist rankings..." -ForegroundColor Yellow
 
-$deduped = $mainReleasesDeduped
+$deduped = $liveMainReleasesDeduped
 $allTimeArtistsByGenre = @{}  # genre -> array of top 100 artists
 
 foreach ($genre in $genreFilters) {
     $artistViewsMap = @{}  # artistKey(lower) -> { bandName, totalViews, totalDelta, followers, spotifyUrl, thumbnail }
     # Use pre-filtered genre data
-    $genreDeduped = $mainByGenre[$genre]
+    $genreDeduped = $liveByGenre[$genre]
     foreach ($r in $genreDeduped) {
         $aid = $r.artistId
         if (-not $aid) { continue }
@@ -1634,7 +1807,7 @@ $latestReleasesByGenre = @{}  # genre -> array of latest 20
 
 foreach ($genre in $genreFilters) {
     # Reuse pre-filtered genre data
-    $genreFiltered = $mainByGenre[$genre]
+    $genreFiltered = $liveByGenre[$genre]
     $latestReleasesByGenre[$genre] = @($genreFiltered | Sort-Object { $_.releaseDate } -Descending | Select-Object -First 20 |
         ForEach-Object {
             $typeLabel = switch ($_.releaseType) {
@@ -2257,7 +2430,7 @@ foreach ($rid in $releaseSparklines.Keys | Sort-Object) {
 
 # Strip fields from chartData.releases that are unused by client code, remove derivable
 # YouTube URLs (clients reconstruct from videoId), and convert to columnar format
-$strippedReleases = @($releases | ForEach-Object {
+$strippedReleases = @($chartDataOutputReleases | ForEach-Object {
     $props = [ordered]@{}
     foreach ($p in $_.PSObject.Properties) {
         # Skip unused fields
@@ -2320,6 +2493,9 @@ $siteMaster = [PSCustomObject]@{
         generatedAt   = $chartJson.generatedAt
         totalReleases = $chartJson.totalReleases
         totalArtists  = $chartJson.totalArtists
+        baselineWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
+        displayWeekId = $currentDisplayWeekId
+        isFrozenFallback = $usingFrozenChartState
         releases      = $columnarReleases
     }
     

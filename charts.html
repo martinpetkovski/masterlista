@@ -3997,27 +3997,17 @@
                 return escHtml(formatCompactCountPlain(n));
             }
             
-            /** Format a views delta with +/- prefix and K/M suffix */
+            /** Format a views delta while preserving the sign and compact suffix */
             function formatViewsDelta(n) {
                 if (n === null || n === undefined) return '<span class="adv-same">·</span>';
                 if (n === 0) return '<span class="adv-same">·</span>';
-                const formatted = formatCompactCountHtml(Math.abs(n));
-                if (n > 0) {
-                    return '<span class="delta-sign up">▲</span>' + formatted;
-                } else {
-                    return '<span class="delta-sign down">▼</span>' + formatted;
-                }
+                return formatCompactCountHtml(n);
             }
 
             function formatViewsDeltaPlainLetters(n) {
                 if (n === null || n === undefined) return '<span class="adv-same">·</span>';
                 if (n === 0) return '<span class="adv-same">·</span>';
-                const formatted = escHtml(formatCompactCountPlain(Math.abs(n)));
-                if (n > 0) {
-                    return '<span class="delta-sign up">▲</span>' + formatted;
-                } else {
-                    return '<span class="delta-sign down">▼</span>' + formatted;
-                }
+                return escHtml(formatCompactCountPlain(n));
             }
             
             /**
@@ -4851,9 +4841,27 @@
                 return [...enrichedReleases].sort((a, b) => {
                     for (const { column, direction } of sortState) {
                         const colDef = advColumns.find(c => c.key === column);
+                        let cmp = 0;
+                        if (column === 'pdelta') {
+                            const aNull = a._isNew || a._popDelta == null ? 1 : 0;
+                            const bNull = b._isNew || b._popDelta == null ? 1 : 0;
+                            if (aNull !== bNull) return aNull - bNull;
+
+                            const aZero = Number(a._popDelta || 0) === 0 ? 1 : 0;
+                            const bZero = Number(b._popDelta || 0) === 0 ? 1 : 0;
+                            if (aZero !== bZero) return aZero - bZero;
+
+                            const deltaCmp = Number(a._popDelta || 0) - Number(b._popDelta || 0);
+                            if (deltaCmp !== 0) return direction === 'asc' ? deltaCmp : -deltaCmp;
+
+                            const viewsCmp = Number(a._pop || 0) - Number(b._pop || 0);
+                            if (viewsCmp !== 0) return direction === 'asc' ? viewsCmp : -viewsCmp;
+
+                            continue;
+                        }
+
                         const aVal = getSortValue(a, column);
                         const bVal = getSortValue(b, column);
-                        let cmp = 0;
                         if (colDef?.sortType === 'string') {
                             cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
                         } else {

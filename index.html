@@ -4626,7 +4626,7 @@
         function formatViewsDeltaCompact(n) {
             if (n === null || n === undefined) return '·';
             if (n === 0) return '·';
-            return formatCompactCountHtml(Math.abs(n));
+            return formatCompactCountHtml(n);
         }
 
         function getMiniChartRevealStyle(index, genreKey) {
