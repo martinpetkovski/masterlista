@@ -859,27 +859,36 @@ foreach ($file in $historyFiles) {
 
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
-# Get previous week's data for viewsDelta calculation (current views - prev views)
-# On Monday the current week's chart-history was just created/updated with the same
-# YouTube views as chart-data.json, so the delta would be zero. Skip to previous week.
-# viewsDelta = chart-data.json views (today) - previous history week views
+# Get the latest completed chart-history week for weekly comparisons.
+# If the current ISO week already has a snapshot file, skip it and use the
+# next most recent week as the baseline for deltas and change indicators.
+$currentIsoWeek = Get-ISOWeek (Get-Date)
+$currentChartWeekId = "{0}-W{1}" -f $currentIsoWeek.year, ([string]$currentIsoWeek.week).PadLeft(2, '0')
+$completedWeekIndex = 0
+if ($chartHistoryWeeks.Count -ge 2 -and $chartHistoryWeeks[0].weekId -eq $currentChartWeekId) {
+    $completedWeekIndex = 1
+    Write-Host "  > Current week snapshot detected: $currentChartWeekId" -ForegroundColor DarkGray
+}
+
 $previousWeekReleases = @()
-$viewsDeltaPrevIndex = if ((Get-Date).DayOfWeek -eq 'Monday' -and $chartHistoryWeeks.Count -ge 2) { 1 } else { 0 }
+$viewsDeltaPrevIndex = $completedWeekIndex
 if ($chartHistoryWeeks.Count -gt $viewsDeltaPrevIndex) {
     $previousWeekReleases = $chartHistoryWeeks[$viewsDeltaPrevIndex].releases
     Write-Host "  > ViewsDelta baseline: $($chartHistoryWeeks[$viewsDeltaPrevIndex].weekId)" -ForegroundColor DarkGray
 }
 
-# For chevron indicators: compare the two most recent chart-history snapshots
+# For chevron indicators: compare the two most recent completed chart-history snapshots
 $chevronCurrentReleases = @()
 $chevronPreviousReleases = @()
-if ($chartHistoryWeeks.Count -ge 1) {
-    $chevronCurrentReleases = $chartHistoryWeeks[0].releases
-    Write-Host "  > Chevron current week: $($chartHistoryWeeks[0].weekId)" -ForegroundColor DarkGray
+$chevronCurrentIndex = $completedWeekIndex
+$chevronPreviousIndex = $completedWeekIndex + 1
+if ($chartHistoryWeeks.Count -gt $chevronCurrentIndex) {
+    $chevronCurrentReleases = $chartHistoryWeeks[$chevronCurrentIndex].releases
+    Write-Host "  > Chevron current week: $($chartHistoryWeeks[$chevronCurrentIndex].weekId)" -ForegroundColor DarkGray
 }
-if ($chartHistoryWeeks.Count -ge 2) {
-    $chevronPreviousReleases = $chartHistoryWeeks[1].releases
-    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[1].weekId)" -ForegroundColor DarkGray
+if ($chartHistoryWeeks.Count -gt $chevronPreviousIndex) {
+    $chevronPreviousReleases = $chartHistoryWeeks[$chevronPreviousIndex].releases
+    Write-Host "  > Chevron previous week: $($chartHistoryWeeks[$chevronPreviousIndex].weekId)" -ForegroundColor DarkGray
 }
 
 # ============================================================================

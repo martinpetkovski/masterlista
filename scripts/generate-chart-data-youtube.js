@@ -419,21 +419,17 @@ function loadPreviousWeekData() {
 
     if (files.length === 0) return null;
 
-    // On Monday, the current week's snapshot was just created by generate-chart-data.js
-    // with youtubeViews: 0, so we need to skip it and use the actual previous week.
-    // On Tuesday+, the latest file IS the previous week (current week snapshot won't exist yet
-    // or has already been updated with YouTube views).
-    const now = new Date();
-    let targetFile;
-    if (now.getDay() === 1) {
-        const currentWeekId = getCurrentWeekId();
-        const currentWeekFile = `chart-${currentWeekId}.json`;
-        const filtered = files.filter(f => f !== currentWeekFile);
-        if (filtered.length === 0) return null;
-        targetFile = filtered[filtered.length - 1];
-        console.log(`  Monday detected — skipping current week (${currentWeekFile}), using ${targetFile}`);
-    } else {
-        targetFile = files[files.length - 1];
+    // Weekly deltas should always compare against the latest completed chart week.
+    // If a snapshot for the current ISO week already exists, skip it and use the
+    // next most recent file as the baseline.
+    const currentWeekId = getCurrentWeekId();
+    const currentWeekFile = `chart-${currentWeekId}.json`;
+    const completedWeekFiles = files.filter(f => f !== currentWeekFile);
+
+    let targetFile = files[files.length - 1];
+    if (completedWeekFiles.length > 0 && files.includes(currentWeekFile)) {
+        targetFile = completedWeekFiles[completedWeekFiles.length - 1];
+        console.log(`  Current week snapshot detected (${currentWeekFile}) — using completed week ${targetFile}`);
     }
 
     try {
@@ -471,6 +467,7 @@ function computePopularities(chartReleases, typeMap) {
     for (const r of chartReleases) {
         const type = (typeMap.get(r.releaseId) || 'single') === 'album' ? 'album' : 'single';
         const maxDelta = maxDeltas[type];
+        r.viewsDelta = Number.isFinite(r._viewDelta) ? r._viewDelta : null;
         r.popularity = (r._viewDelta > 0 && maxDelta > 0)
             ? Math.min(100, Math.round((r._viewDelta / maxDelta) * 100))
             : 0;
