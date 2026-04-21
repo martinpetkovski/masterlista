@@ -45,7 +45,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=10" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=10" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=3"></script>
+    <script src="/common.js?v=10"></script>
     <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
@@ -63,7 +63,8 @@
         
         body.artist-page {
             background: #f2f3f5;
-            height: auto;
+              height: 100vh;
+              height: 100dvh;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-y: auto;
@@ -93,6 +94,7 @@
         #artist-content {
             display: flex;
             flex-direction: column;
+              flex: 1 0 auto;
             width: 100%;
             min-width: 0;
         }
@@ -1087,7 +1089,6 @@
             text-align: center;
             margin-top: auto;
             padding: 1.5rem 0 3rem;
-            border-top: 1px solid var(--border-color);
         }
         .artist-footer.no-border {
             border-top-color: transparent;
@@ -1162,7 +1163,6 @@
         }
         #popularity-graph-container.section-loaded,
         #timeline-container.section-loaded {
-            max-height: 5000px;
             overflow: visible;
         }
         #popularity-graph-container.section-empty,
@@ -4082,6 +4082,14 @@ a.chart-history-item {
                 container._sectionVisibilityObserver.disconnect();
                 container._sectionVisibilityObserver = null;
             }
+            if (container._sectionTransitionHandler) {
+                container.removeEventListener('transitionend', container._sectionTransitionHandler);
+                container._sectionTransitionHandler = null;
+            }
+            if (container._sectionTransitionTimeout) {
+                clearTimeout(container._sectionTransitionTimeout);
+                container._sectionTransitionTimeout = null;
+            }
 
             container.style.maxHeight = '';
             container.classList.remove('section-loaded', 'section-empty', 'section-content-visible');
@@ -4090,6 +4098,50 @@ a.chart-history-item {
             content.classList.remove('artist-section-content--ready', 'artist-section-content--visible');
             content.innerHTML = '';
             return content;
+        }
+
+        function getArtistSectionTransitionDuration(container) {
+            if (!container || typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+                return 0;
+            }
+
+            function parseTimeToken(token) {
+                var value = String(token || '').trim();
+                if (!value) return 0;
+                if (value.slice(-2) === 'ms') return parseFloat(value) || 0;
+                if (value.slice(-1) === 's') return (parseFloat(value) || 0) * 1000;
+                return parseFloat(value) || 0;
+            }
+
+            var style = window.getComputedStyle(container);
+            var durations = (style.transitionDuration || '0s').split(',').map(parseTimeToken);
+            var delays = (style.transitionDelay || '0s').split(',').map(parseTimeToken);
+            var total = 0;
+            var count = Math.max(durations.length, delays.length);
+
+            for (var i = 0; i < count; i++) {
+                var duration = durations[i] != null ? durations[i] : durations[durations.length - 1] || 0;
+                var delay = delays[i] != null ? delays[i] : delays[delays.length - 1] || 0;
+                total = Math.max(total, duration + delay);
+            }
+
+            return total;
+        }
+
+        function finalizeArtistSectionExpansion(container) {
+            if (!container) return;
+
+            if (container._sectionTransitionHandler) {
+                container.removeEventListener('transitionend', container._sectionTransitionHandler);
+                container._sectionTransitionHandler = null;
+            }
+            if (container._sectionTransitionTimeout) {
+                clearTimeout(container._sectionTransitionTimeout);
+                container._sectionTransitionTimeout = null;
+            }
+
+            container.style.maxHeight = 'none';
+            container.classList.add('section-loaded');
         }
 
         function revealArtistSectionContentWhenVisible(container, content) {
@@ -4146,6 +4198,14 @@ a.chart-history-item {
                 container._sectionVisibilityObserver.disconnect();
                 container._sectionVisibilityObserver = null;
             }
+            if (container._sectionTransitionHandler) {
+                container.removeEventListener('transitionend', container._sectionTransitionHandler);
+                container._sectionTransitionHandler = null;
+            }
+            if (container._sectionTransitionTimeout) {
+                clearTimeout(container._sectionTransitionTimeout);
+                container._sectionTransitionTimeout = null;
+            }
 
             if (!hasContent) {
                 container.classList.remove('section-loading', 'section-loaded', 'section-content-visible');
@@ -4165,13 +4225,20 @@ a.chart-history-item {
                 container.classList.remove('section-empty');
                 container.setAttribute('aria-busy', 'false');
                 void container.offsetWidth;
-                container.classList.add('section-loaded');
-                container.addEventListener('transitionend', function handler(e) {
-                    if (e.target === container && e.propertyName === 'max-height') {
-                        container.style.maxHeight = 'none';
-                        container.removeEventListener('transitionend', handler);
-                    }
-                });
+                container.style.maxHeight = Math.max(
+                    container.scrollHeight,
+                    content ? content.scrollHeight : 0,
+                    content ? content.offsetHeight : 0,
+                    1
+                ) + 'px';
+                container._sectionTransitionHandler = function(e) {
+                    if (e.target !== container || e.propertyName !== 'max-height') return;
+                    finalizeArtistSectionExpansion(container);
+                };
+                container.addEventListener('transitionend', container._sectionTransitionHandler);
+                container._sectionTransitionTimeout = setTimeout(function() {
+                    finalizeArtistSectionExpansion(container);
+                }, getArtistSectionTransitionDuration(container) + 64);
                 container._sectionRevealFrame2 = requestAnimationFrame(function() {
                     container._sectionRevealFrame2 = null;
                     container.classList.remove('section-loading');

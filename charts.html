@@ -74,7 +74,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=3"></script>
+    <script src="/common.js?v=10"></script>
     <script src="/i18n.js?v=1"></script>
     <script src="mmm-drafts.js?v=1"></script>
     <script src="/tour.js?v=1" defer></script>
@@ -646,6 +646,12 @@
         .adv-table .adv-release-link {
             color: var(--text-secondary, #555b64);
             cursor: pointer;
+            display: inline-block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: bottom;
             transition: color 0.15s ease;
         }
         .adv-table .adv-release-link:hover {
@@ -1968,17 +1974,27 @@
         .chart-item.is-new {
             background: rgba(184, 134, 46, 0.06);
         }
-        
-        .chart-item.is-new .chart-title::after {
-            content: 'НОВО';
-            font-size: 0.45rem;
-            font-weight: 700;
+
+        .rank-new-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 10px;
+            padding: 0;
+            font-size: 0.5rem;
+            font-weight: 800;
+            letter-spacing: 0;
+            line-height: 1;
             background: var(--accent-orange);
             color: #fff;
-            padding: 0.1rem 0.25rem;
-                border-radius: 0;
-            margin-left: 0.35rem;
-            vertical-align: middle;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            pointer-events: none;
         }
 
             .chart-title-row {
@@ -4900,7 +4916,7 @@
                         }).join('');
                     }
                     const releaseTitleStr = `${escHtml(localizeText(r.bandName))} \u2014 ${escHtml(localizeText(r.releaseTitle))}`;
-                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(localizeText(r.releaseTitle))}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" data-total-views="${escHtml(String(r.youtubeViews || 0))}" data-views-delta="${escHtml(String(r.viewsDelta || 0))}" title="${escHtml(localizeText(r.releaseTitle))}">${escHtml(localizeText(r.releaseTitle))}</span>`;
+                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link js-overflow-marquee" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(localizeText(r.releaseTitle))}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" data-total-views="${escHtml(String(r.youtubeViews || 0))}" data-views-delta="${escHtml(String(r.viewsDelta || 0))}" title="${escHtml(localizeText(r.releaseTitle))}">${escHtml(localizeText(r.releaseTitle))}</span>`;
                     return `<tr>` +
                         `<td class="col-pos">${posStr}</td>` +
                         `<td class="col-chg">${chgStr}</td>` +
@@ -5005,6 +5021,10 @@
                                 }
                             });
                         });
+                    }
+
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        refreshOverflowMarquees(tbody);
                     }
 
                     advRenderedCount[tableKey] = end;
@@ -5206,8 +5226,10 @@
                     const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                     let changeIndicator = '';
                     
+                    const isFreshRelease = daysElapsed <= 7;
+
                     // Mark as new only if released within the last 7 days
-                    if (daysElapsed <= 7) {
+                    if (isFreshRelease) {
                         itemClass += ' is-new';
                     }
                     
@@ -5286,7 +5308,7 @@
                     const popTooltipHtml = buildHistoryTooltipHTML(release.releaseId, 'views', release.releaseType, rank);
                     
                     // If we have history tooltips, suppress native title to avoid double tooltip
-                    const rankTitle = posTooltipHtml ? '' : (changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
+                    const rankTitle = posTooltipHtml ? '' : (isFreshRelease ? 'НОВО' : changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
                     const popTitle = popTooltipHtml ? '' : metricTitle;
                     
                     // Escape tooltip HTML for data attributes
@@ -5294,12 +5316,18 @@
                     const posTooltipAttr = posTooltipHtml ? ` data-tooltip-html="${escAttr(posTooltipHtml)}"` : '';
                     const popTooltipAttr = popTooltipHtml ? ` data-tooltip-html="${escAttr(popTooltipHtml)}"` : '';
                     
-                    const rankArrowsHtml = changeIndicator === 'rank-up' ? '<span class="rank-arrows up"><i></i><i></i><i></i></span>' : changeIndicator === 'rank-down' ? '<span class="rank-arrows down"><i></i><i></i><i></i></span>' : '';
+                    const rankIndicatorHtml = isFreshRelease
+                        ? '<span class="rank-new-badge">НОВО</span>'
+                        : changeIndicator === 'rank-up'
+                            ? '<span class="rank-arrows up"><i></i><i></i><i></i></span>'
+                            : changeIndicator === 'rank-down'
+                                ? '<span class="rank-arrows down"><i></i><i></i><i></i></span>'
+                                : '';
 
                     return `
                         <li class="${itemClasses.join(' ')}" ${itemStyleAttr}>
                             ${revealMarkup}
-                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}${rankArrowsHtml}</span>` : ''}
+                            ${showPosition ? `<span class="chart-rank ${rankClass} ${changeIndicator}" title="${rankTitle}"${posTooltipAttr}>${rank}${rankIndicatorHtml}</span>` : ''}
                             <div class="chart-cover">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy" decoding="async" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fab fa-spotify\\'></i></div>'">`
@@ -5308,7 +5336,7 @@
                             </div>
                             <div class="chart-info">
                                 <div class="chart-title-row">
-                                    <div class="chart-title" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" data-total-views="${String(release.youtubeViews || 0).replace(/"/g, '&quot;')}" data-views-delta="${String(release.viewsDelta || 0).replace(/"/g, '&quot;')}" title="${t('charts.clickToOpen')}">${localizeText(release.releaseTitle)}</div>
+                                    <div class="chart-title js-overflow-marquee" data-release-url="${release.releaseUrl || ''}" data-thumbnail="${release.thumbnail || ''}" data-artist="${(release.bandName || '').replace(/"/g, '&quot;')}" data-total-views="${String(release.youtubeViews || 0).replace(/"/g, '&quot;')}" data-views-delta="${String(release.viewsDelta || 0).replace(/"/g, '&quot;')}" title="${t('charts.clickToOpen')}">${localizeText(release.releaseTitle)}</div>
                                     ${metaContent}
                                 </div>
                                 <div class="chart-artist">
@@ -5341,6 +5369,10 @@
                         }
                     });
                 });
+
+                if (typeof refreshOverflowMarquees === 'function') {
+                    refreshOverflowMarquees(container);
+                }
                 
                 // Set up hover positioning for history tooltips using portal
                 const tooltipPortal = document.getElementById('chart-tooltip-portal');

@@ -1504,6 +1504,265 @@ if (document.readyState === 'loading') {
     initPageTitleTranslation();
 }
 
+// ==================== OVERFLOW MARQUEE (shared) ====================
+var OVERFLOW_MARQUEE_AUTO_CLASS = 'js-overflow-marquee-auto';
+var OVERFLOW_MARQUEE_SELECTOR = '.js-overflow-marquee, .' + OVERFLOW_MARQUEE_AUTO_CLASS;
+var overflowMarqueeIgnoredTags = {
+    area: true,
+    audio: true,
+    br: true,
+    canvas: true,
+    iframe: true,
+    img: true,
+    input: true,
+    option: true,
+    path: true,
+    progress: true,
+    script: true,
+    select: true,
+    source: true,
+    style: true,
+    svg: true,
+    textarea: true,
+    video: true
+};
+var overflowMarqueeObservedElements = typeof WeakSet === 'function' ? new WeakSet() : null;
+var overflowMarqueeDesktopMediaQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(min-width: 601px)')
+    : null;
+var overflowMarqueeResizeObserver = typeof ResizeObserver === 'function'
+    ? new ResizeObserver(function(entries) {
+        entries.forEach(function(entry) {
+            updateOverflowMarquee(entry.target);
+        });
+    })
+    : null;
+var overflowMarqueeMutationObserver = typeof MutationObserver === 'function'
+    ? new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type !== 'childList') return;
+
+            for (var i = 0; i < mutation.addedNodes.length; i++) {
+                var node = mutation.addedNodes[i];
+                if (node && node.nodeType === 1) {
+                    refreshOverflowMarquees(node);
+                }
+            }
+        });
+    })
+    : null;
+
+function ensureOverflowMarqueeStyles() {
+    var styleId = 'overflow-marquee-style';
+    if (document.getElementById(styleId)) return;
+
+    var styleEl = document.createElement('style');
+    styleEl.id = styleId;
+    styleEl.textContent = [
+        '.js-overflow-marquee,.js-overflow-marquee-auto{min-width:0;}',
+        '.js-overflow-marquee .overflow-marquee__content,.js-overflow-marquee-auto .overflow-marquee__content{display:inline-flex;align-items:center;width:max-content;min-width:100%;transform:translate3d(0,0,0);will-change:transform;white-space:inherit;animation:none;}',
+        '.js-overflow-marquee.is-marquee-active,.js-overflow-marquee-auto.is-marquee-active{text-overflow:clip !important;}',
+        '@keyframes overflow-marquee-slide{0%{transform:translate3d(0,0,0);}100%{transform:translate3d(var(--overflow-marquee-shift, 0px),0,0);}}',
+        '@media (max-width: 600px){.js-overflow-marquee.is-marquee-active .overflow-marquee__content,.js-overflow-marquee-auto.is-marquee-active .overflow-marquee__content{animation:overflow-marquee-slide var(--overflow-marquee-duration, 3s) linear infinite alternate;}}',
+        '@media (min-width: 601px){.js-overflow-marquee.is-marquee-active:hover .overflow-marquee__content,.js-overflow-marquee-auto.is-marquee-active:hover .overflow-marquee__content{animation:overflow-marquee-slide var(--overflow-marquee-duration, 3s) linear infinite alternate;}}'
+    ].join('');
+    document.head.appendChild(styleEl);
+}
+
+function canWrapOverflowMarqueeContent(el) {
+    if (!el || !el.children || el.children.length === 0) return true;
+
+    for (var i = 0; i < el.children.length; i++) {
+        var child = el.children[i];
+        if (!child || !child.tagName) continue;
+
+        var childTag = child.tagName.toLowerCase();
+        if (overflowMarqueeIgnoredTags[childTag]) return false;
+
+        var childDisplay = getComputedStyle(child).display;
+        if (childDisplay === 'block' ||
+            childDisplay === 'flex' ||
+            childDisplay === 'grid' ||
+            childDisplay === 'flow-root' ||
+            childDisplay === 'list-item' ||
+            childDisplay === 'table' ||
+            childDisplay.indexOf('table-') === 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function hasOverflowMarqueeText(el) {
+    return !!(el && el.textContent && el.textContent.replace(/\s+/g, '').length > 0);
+}
+
+function shouldAutoApplyOverflowMarquee(el) {
+    if (!el || !el.classList || !el.tagName) return false;
+    if (el.classList.contains('overflow-marquee__content')) return false;
+    if (el.classList.contains('js-overflow-marquee') || el.classList.contains(OVERFLOW_MARQUEE_AUTO_CLASS)) return true;
+    if (el.hasAttribute('data-marquee-ignore')) return false;
+
+    var tag = el.tagName.toLowerCase();
+    if (overflowMarqueeIgnoredTags[tag]) return false;
+    if (!hasOverflowMarqueeText(el)) return false;
+    if (!canWrapOverflowMarqueeContent(el)) return false;
+
+    var style = getComputedStyle(el);
+    if (style.textOverflow !== 'ellipsis') return false;
+    if ((style.whiteSpace || '').indexOf('nowrap') === -1) return false;
+
+    var overflowX = style.overflowX || '';
+    var overflow = style.overflow || '';
+    if (overflowX !== 'hidden' && overflowX !== 'clip' && overflow !== 'hidden' && overflow !== 'clip') return false;
+
+    return true;
+}
+
+function discoverOverflowMarqueeCandidates(root) {
+    var scope = root && root.nodeType === 1 ? root : (document.body || document.documentElement);
+    if (!scope) return;
+
+    if (shouldAutoApplyOverflowMarquee(scope) && !scope.classList.contains('js-overflow-marquee')) {
+        scope.classList.add(OVERFLOW_MARQUEE_AUTO_CLASS);
+    }
+
+    if (typeof scope.querySelectorAll !== 'function') return;
+
+    var nodes = scope.querySelectorAll('*');
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        if (!shouldAutoApplyOverflowMarquee(node) || node.classList.contains('js-overflow-marquee')) continue;
+        node.classList.add(OVERFLOW_MARQUEE_AUTO_CLASS);
+    }
+}
+
+function ensureOverflowMarqueeContent(el) {
+    if (!el) return null;
+
+    var existing = el.firstElementChild;
+    if (existing && existing.classList && existing.classList.contains('overflow-marquee__content') && el.children.length === 1) {
+        return existing;
+    }
+
+    if (!canWrapOverflowMarqueeContent(el)) return null;
+
+    var content = document.createElement('span');
+    content.className = 'overflow-marquee__content';
+    while (el.firstChild) {
+        content.appendChild(el.firstChild);
+    }
+    el.appendChild(content);
+    return content;
+}
+
+function updateOverflowMarquee(el) {
+    if (!el || !el.isConnected) return;
+
+    ensureOverflowMarqueeStyles();
+    var content = ensureOverflowMarqueeContent(el);
+    if (!content) return;
+
+    el.classList.remove('is-marquee-active');
+    el.style.removeProperty('--overflow-marquee-shift');
+    el.style.removeProperty('--overflow-marquee-duration');
+    content.style.animation = 'none';
+    content.style.transform = 'translate3d(0,0,0)';
+
+    if (el.clientWidth <= 0) return;
+
+    // Force the reset transform to apply before measuring rendered widths.
+    void content.offsetWidth;
+
+    var containerWidth = Math.ceil(el.getBoundingClientRect().width);
+    var contentWidth = Math.ceil(content.getBoundingClientRect().width);
+    var overflow = Math.ceil(contentWidth - containerWidth);
+    if (overflow <= 2) {
+        content.style.animation = '';
+        return;
+    }
+
+    var duration = Math.max(2, Math.min(4.5, overflow / 36));
+    el.style.setProperty('--overflow-marquee-shift', '-' + overflow + 'px');
+    el.style.setProperty('--overflow-marquee-duration', duration.toFixed(2).replace(/\.00$/, '') + 's');
+    el.classList.add('is-marquee-active');
+    content.style.animation = '';
+    content.style.transform = '';
+}
+
+function observeOverflowMarquee(el) {
+    if (!el || !overflowMarqueeResizeObserver) return;
+    if (overflowMarqueeObservedElements && overflowMarqueeObservedElements.has(el)) return;
+
+    overflowMarqueeResizeObserver.observe(el);
+    if (overflowMarqueeObservedElements) {
+        overflowMarqueeObservedElements.add(el);
+    }
+}
+
+function refreshOverflowMarquees(root) {
+    ensureOverflowMarqueeStyles();
+    discoverOverflowMarqueeCandidates(root);
+
+    var scope = root && typeof root.querySelectorAll === 'function' ? root : document;
+    var elements = [];
+
+    if (root && root.nodeType === 1 && typeof root.matches === 'function' && root.matches(OVERFLOW_MARQUEE_SELECTOR)) {
+        elements.push(root);
+    }
+
+    if (scope && typeof scope.querySelectorAll === 'function') {
+        var found = scope.querySelectorAll(OVERFLOW_MARQUEE_SELECTOR);
+        for (var i = 0; i < found.length; i++) {
+            elements.push(found[i]);
+        }
+    }
+
+    elements.forEach(function(el) {
+        observeOverflowMarquee(el);
+        updateOverflowMarquee(el);
+    });
+}
+
+window.refreshOverflowMarquees = refreshOverflowMarquees;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        refreshOverflowMarquees();
+        if (overflowMarqueeMutationObserver && document.body) {
+            overflowMarqueeMutationObserver.observe(document.body, { childList: true, subtree: true });
+        }
+    });
+} else {
+    refreshOverflowMarquees();
+    if (overflowMarqueeMutationObserver && document.body) {
+        overflowMarqueeMutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
+}
+
+window.addEventListener('resize', function() {
+    refreshOverflowMarquees();
+});
+
+if (overflowMarqueeDesktopMediaQuery) {
+    if (typeof overflowMarqueeDesktopMediaQuery.addEventListener === 'function') {
+        overflowMarqueeDesktopMediaQuery.addEventListener('change', function() {
+            refreshOverflowMarquees();
+        });
+    } else if (typeof overflowMarqueeDesktopMediaQuery.addListener === 'function') {
+        overflowMarqueeDesktopMediaQuery.addListener(function() {
+            refreshOverflowMarquees();
+        });
+    }
+}
+
+if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+    document.fonts.ready.then(function() {
+        refreshOverflowMarquees();
+    });
+}
+
 // ==================== SERVICE CHOOSER (shared) ====================
 
 /**
