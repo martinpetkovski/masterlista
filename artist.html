@@ -5014,9 +5014,11 @@ a.chart-history-item {
                 const safeSource = escHtml(interview.source || '');
                 const safeSourceIcon = escHtml(interview.sourceIcon || '');
                 const mentionLabel = escHtml(t('interviews.mentionsLabel'));
-                const interviewHeaderHtml = isMention
+                const specialFeaturesLabel = escHtml(t('interviews.specialFeaturesLabel'));
+                const shortOrMentionLabel = isShort ? specialFeaturesLabel : mentionLabel;
+                const interviewHeaderHtml = (isMention || isShort)
                     ? `<div class="timeline-interview-mention-header">
-                        <span class="timeline-interview-mention-badge"><i class="fas fa-quote-right" style="width:auto"></i>${mentionLabel}</span>
+                        <span class="timeline-interview-mention-badge"><i class="fas fa-quote-right" style="width:auto"></i>${shortOrMentionLabel}</span>
                         <span class="timeline-interview-mention-copy">${escHtml(t('lista.interview'))}</span>
                     </div>`
                     : buildTimelineCardHeader(t('lista.interview'), 'interview');
@@ -5036,7 +5038,7 @@ a.chart-history-item {
                         ${embedHtml}
                         <a href="${safeLink}" target="_blank" rel="noopener" class="timeline-interview-meta">
                             ${sourceIconHtml}
-                            <span class="artist-link-text">${safeTitle}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-microphone-lines" style="margin-right:0.3rem;opacity:0.5;width:auto"></i>${isMention ? mentionLabel : t('lista.interview')} &middot; ${safeSource} &middot; ${dateStr}</span>` : ''}</span>
+                            <span class="artist-link-text">${safeTitle}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-microphone-lines" style="margin-right:0.3rem;opacity:0.5;width:auto"></i>${(isMention || isShort) ? shortOrMentionLabel : t('lista.interview')} &middot; ${safeSource} &middot; ${dateStr}</span>` : ''}</span>
                             <i class="fas fa-chevron-right artist-link-arrow"></i>
                         </a>
                     </div>`

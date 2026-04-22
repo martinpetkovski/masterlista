@@ -177,7 +177,7 @@ function isLikelyShortFormVideo(videoDetails) {
 
     return Number.isFinite(videoDetails.durationSeconds)
         && videoDetails.durationSeconds > 0
-    && videoDetails.durationSeconds < SHORTS_MAX_DURATION_SECONDS;
+        && videoDetails.durationSeconds < SHORTS_MAX_DURATION_SECONDS;
 }
 
 async function getVideoDetailsMap(videoIds, apiKey) {
@@ -335,7 +335,7 @@ async function hydrateExistingInterviewsWithVideoDetails(interviews, apiKey) {
     for (const interview of interviews) {
         const videoId = interview?.videoId;
         if (typeof videoId !== 'string' || !videoId) continue;
-        if (typeof interview.shortForm === 'boolean') continue;
+        if (Number.isFinite(Number(interview?.durationSeconds))) continue;
         if (seenVideoIds.has(videoId)) continue;
         seenVideoIds.add(videoId);
         missingVideoIds.push(videoId);
@@ -350,9 +350,25 @@ async function hydrateExistingInterviewsWithVideoDetails(interviews, apiKey) {
 
     for (const interview of interviews) {
         const videoId = interview?.videoId;
-        let hydratedInterview = interview;
+        const storedDurationSeconds = Number(interview?.durationSeconds);
+        const storedVideoDetails = Number.isFinite(storedDurationSeconds)
+            ? {
+                durationSeconds: storedDurationSeconds,
+                embedWidth: parsePlayerDimension(interview?.embedWidth),
+                embedHeight: parsePlayerDimension(interview?.embedHeight),
+            }
+            : null;
+        let hydratedInterview = storedVideoDetails
+            ? {
+                ...interview,
+                durationSeconds: storedVideoDetails.durationSeconds,
+                embedWidth: storedVideoDetails.embedWidth,
+                embedHeight: storedVideoDetails.embedHeight,
+                shortForm: isLikelyShortFormVideo(storedVideoDetails),
+            }
+            : interview;
 
-        if (typeof videoId === 'string' && videoId && typeof interview.shortForm !== 'boolean') {
+        if (typeof videoId === 'string' && videoId && !storedVideoDetails) {
             const videoDetails = details.get(videoId);
             if (videoDetails) {
                 hydratedInterview = {
