@@ -25,7 +25,7 @@ const API_RETRY_DELAY_MS = 1000;
 const API_MAX_RETRIES = 3;
 const VIDEO_DETAILS_BATCH_SIZE = 50;
 const PLAYER_MAX_DIMENSION = 800;
-const SHORTS_MAX_DURATION_SECONDS = 180;
+const SHORTS_MAX_DURATION_SECONDS = 360;
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -177,10 +177,7 @@ function isLikelyShortFormVideo(videoDetails) {
 
     return Number.isFinite(videoDetails.durationSeconds)
         && videoDetails.durationSeconds > 0
-        && videoDetails.durationSeconds <= SHORTS_MAX_DURATION_SECONDS
-        && Number.isFinite(videoDetails.embedWidth)
-        && Number.isFinite(videoDetails.embedHeight)
-        && videoDetails.embedHeight > videoDetails.embedWidth;
+    && videoDetails.durationSeconds < SHORTS_MAX_DURATION_SECONDS;
 }
 
 async function getVideoDetailsMap(videoIds, apiKey) {
@@ -237,7 +234,6 @@ async function hydrateVideosWithVideoDetails(videos, apiKey) {
         hydratedCount += 1;
         if (videoDetails.shortForm) {
             shortCount += 1;
-            continue;
         }
 
         hydratedVideos.push({
@@ -372,7 +368,6 @@ async function hydrateExistingInterviewsWithVideoDetails(interviews, apiKey) {
 
         if (hydratedInterview?.shortForm === true) {
             shortCount += 1;
-            continue;
         }
 
         hydratedInterviews.push(hydratedInterview);
@@ -495,7 +490,7 @@ async function main() {
         : (Array.isArray(existingOutput?.interviews) ? existingOutput.interviews : []);
     const {
         interviews: existingInterviews,
-        shortCount: prunedExistingShorts,
+        shortCount: existingShorts,
         hydratedCount: hydratedExistingInterviews,
     } = forceFullFetch
         ? { interviews: [], shortCount: 0, hydratedCount: 0 }
@@ -509,8 +504,8 @@ async function main() {
         console.log(`Hydrated API video details for ${hydratedExistingInterviews} existing interviews`);
     }
 
-    if (!forceFullFetch && prunedExistingShorts > 0) {
-        console.log(`Pruned ${prunedExistingShorts} Shorts from existing interviews baseline`);
+    if (!forceFullFetch && existingShorts > 0) {
+        console.log(`Classified ${existingShorts} existing interviews as short-form`);
     }
 
     if (forceFullFetch) {
@@ -563,8 +558,8 @@ async function main() {
 
         console.log(
             shouldFetchFullHistory
-                ? `    Retrieved ${videos.length} videos for full channel fetch${shortCount ? `, skipped ${shortCount} Shorts` : ''}`
-                : `    Retrieved ${videos.length} new videos${stoppedAtKnownVideo ? ' before the first known upload' : ''}${shortCount ? `, skipped ${shortCount} Shorts` : ''}`
+                ? `    Retrieved ${videos.length} videos for full channel fetch${shortCount ? `, classified ${shortCount} as short-form` : ''}`
+                : `    Retrieved ${videos.length} new videos${stoppedAtKnownVideo ? ' before the first known upload' : ''}${shortCount ? `, classified ${shortCount} as short-form` : ''}`
         );
 
         interviews.push(

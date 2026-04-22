@@ -651,6 +651,7 @@
 				iconUrl: item.iconUrl || '',
 				thumbnail: item.thumbnail || '',
 				videoId: item.videoId || '',
+				shortForm: item.shortForm === true,
 				matchedArtists: artistList
 			};
 		}
@@ -860,13 +861,13 @@
 				}
 
 				if (fromMaster && Array.isArray(fromMaster.matched)) {
-					allInterviews = fromMaster.matched.map(normalizeInterview);
+					allInterviews = fromMaster.matched.map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
 					lastUpdated = fromMaster.lastUpdated || '';
 				} else {
 					var resp = await fetch('interviews.json');
 					if (!resp.ok) throw new Error(t('interviews.fetchError'));
 					var raw = await resp.json();
-					allInterviews = (raw.interviews || []).map(normalizeInterview);
+					allInterviews = (raw.interviews || []).map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
 					lastUpdated = raw.lastUpdated || '';
 				}
 

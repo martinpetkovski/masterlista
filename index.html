@@ -5675,14 +5675,19 @@
             var mediaData = siteMaster && siteMaster[options.feedKey] ? siteMaster[options.feedKey] : null;
             var loading = document.getElementById(options.loadingId);
             var list = document.getElementById(options.listId);
+            var matchedItems = mediaData && Array.isArray(mediaData.matched) ? mediaData.matched : [];
 
-            if (!mediaData || !mediaData.matched || mediaData.matched.length === 0) {
+            if (typeof options.itemFilter === 'function') {
+                matchedItems = matchedItems.filter(options.itemFilter);
+            }
+
+            if (!mediaData || matchedItems.length === 0) {
                 loading.innerHTML = '<span>' + t(options.emptyLabelKey) + '</span>';
                 return;
             }
 
             var itemLimit = options.itemLimit || 5;
-            var topItems = mediaData.matched.slice(0, itemLimit);
+            var topItems = matchedItems.slice(0, itemLimit);
             var noImageText = t('dashboard.noImage');
 
             list.innerHTML = topItems.map(function(a) {
@@ -5747,6 +5752,7 @@
                 emptyLabelKey: 'dashboard.noInterviews',
                 iconClass: 'fa-microphone-lines',
                 embedVideos: true,
+                itemFilter: function(item) { return item.shortForm !== true; },
                 itemLimit: 6
             });
         }

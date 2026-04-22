@@ -2321,8 +2321,7 @@ function Test-ArticleBlacklist {
 }
 
 function Get-NewsMatchedArtists {
-    param([string]$title, [string]$description)
-    $haystack = "$title $description"
+    param([string]$haystack)
     $matched = [System.Collections.ArrayList]@()
 
     foreach ($artist in $artistPatterns) {
@@ -2334,6 +2333,37 @@ function Get-NewsMatchedArtists {
     }
 
     return ,$matched
+}
+
+function Get-NewsArtistMatches {
+    param([string]$title, [string]$description)
+
+    $titleMatches = Get-NewsMatchedArtists $title
+    $descriptionMatches = [System.Collections.ArrayList]@()
+
+    if (-not [string]::IsNullOrWhiteSpace($description)) {
+        $seenTitleArtists = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($artistName in $titleMatches) {
+            if (-not [string]::IsNullOrWhiteSpace($artistName)) {
+                [void]$seenTitleArtists.Add($artistName)
+            }
+        }
+
+        foreach ($artistName in (Get-NewsMatchedArtists $description)) {
+            if ($seenTitleArtists.Contains($artistName)) {
+                continue
+            }
+
+            if (-not $descriptionMatches.Contains($artistName)) {
+                [void]$descriptionMatches.Add($artistName)
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        titleMatches       = $titleMatches
+        descriptionMatches = $descriptionMatches
+    }
 }
 
 function Get-InterviewMatchedArtists {
@@ -2419,36 +2449,6 @@ function Get-MatchedNewsItems {
     param($items)
 
     $matchedItems = [System.Collections.ArrayList]::new()
-
-    foreach ($item in $items) {
-        if (Test-ArticleBlacklist $item.title $item.description) {
-            continue
-        }
-
-        $artists = Get-NewsMatchedArtists $item.title $item.description
-
-        if ($artists.Count -gt 0) {
-            [void]$matchedItems.Add([PSCustomObject]@{
-                title          = $item.title
-                link           = $item.link
-                description    = $item.description
-                date           = $item.date
-                source         = $item.source
-                siteUrl        = $item.siteUrl
-                iconUrl        = $item.iconUrl
-                thumbnail      = $item.thumbnail
-                matchedArtists = $artists
-            })
-        }
-    }
-
-    return @($matchedItems | Sort-Object { $_.date } -Descending)
-}
-
-function Get-MatchedInterviewItems {
-    param($items)
-
-    $matchedItems = [System.Collections.ArrayList]::new()
     $mentionedItems = [System.Collections.ArrayList]::new()
 
     foreach ($item in $items) {
@@ -2456,7 +2456,7 @@ function Get-MatchedInterviewItems {
             continue
         }
 
-        $artistMatches = Get-InterviewArtistMatches $item.title $item.description
+        $artistMatches = Get-NewsArtistMatches $item.title $item.description
         $titleArtists = $artistMatches.titleMatches
         $descriptionArtists = $artistMatches.descriptionMatches
 
@@ -2495,13 +2495,68 @@ function Get-MatchedInterviewItems {
     }
 }
 
+function Get-MatchedInterviewItems {
+    param($items)
+
+    $matchedItems = [System.Collections.ArrayList]::new()
+    $mentionedItems = [System.Collections.ArrayList]::new()
+
+    foreach ($item in $items) {
+        if (Test-ArticleBlacklist $item.title $item.description) {
+            continue
+        }
+
+        $artistMatches = Get-InterviewArtistMatches $item.title $item.description
+        $titleArtists = $artistMatches.titleMatches
+        $descriptionArtists = $artistMatches.descriptionMatches
+
+        if ($titleArtists.Count -gt 0) {
+            [void]$matchedItems.Add([PSCustomObject]@{
+                title          = $item.title
+                link           = $item.link
+                description    = $item.description
+                date           = $item.date
+                source         = $item.source
+                siteUrl        = $item.siteUrl
+                iconUrl        = $item.iconUrl
+                thumbnail      = $item.thumbnail
+                shortForm      = ($item.shortForm -eq $true)
+                matchedArtists = $titleArtists
+            })
+        }
+
+        if ($descriptionArtists.Count -gt 0) {
+            [void]$mentionedItems.Add([PSCustomObject]@{
+                title          = $item.title
+                link           = $item.link
+                description    = $item.description
+                date           = $item.date
+                source         = $item.source
+                siteUrl        = $item.siteUrl
+                iconUrl        = $item.iconUrl
+                thumbnail      = $item.thumbnail
+                shortForm      = ($item.shortForm -eq $true)
+                matchedArtists = $descriptionArtists
+            })
+        }
+    }
+
+    return [PSCustomObject]@{
+        matched   = @($matchedItems | Sort-Object { $_.date } -Descending)
+        mentioned = @($mentionedItems | Sort-Object { $_.date } -Descending)
+    }
+}
+
 # Process all articles: filter by blacklist, then match artists
-$matchedArticles = @(Get-MatchedNewsItems $allArticles)
+$matchedNewsData = Get-MatchedNewsItems $allArticles
+$matchedArticles = @($matchedNewsData.matched)
+$mentionedArticles = @($matchedNewsData.mentioned)
 $matchedInterviewData = Get-MatchedInterviewItems $allInterviews
 $matchedInterviews = @($matchedInterviewData.matched)
 $mentionedInterviews = @($matchedInterviewData.mentioned)
 
 Write-Host "  > Filtered articles: $($matchedArticles.Count) matched artists" -ForegroundColor DarkGray
+Write-Host "  > Article mentions: $($mentionedArticles.Count) matched artists" -ForegroundColor DarkGray
 Write-Host "  > Filtered interviews: $($matchedInterviews.Count) matched artists" -ForegroundColor DarkGray
 Write-Host "  > Description mentions: $($mentionedInterviews.Count) matched artists" -ForegroundColor DarkGray
 
@@ -2788,6 +2843,7 @@ $siteMaster = [PSCustomObject]@{
     news = [PSCustomObject]@{
         lastUpdated    = $articlesJson.lastUpdated
         matched        = $matchedArticles
+        mentioned      = $mentionedArticles
     }
 
     # Filtered interview videos (matched against artist names, blacklist applied)

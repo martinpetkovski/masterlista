@@ -4947,7 +4947,15 @@ a.chart-history-item {
                 const dateStr = article.pubDate.getTime() > 0
                     ? String(article.pubDate.getDate()).padStart(2,'0') + '.' + String(article.pubDate.getMonth()+1).padStart(2,'0') + '.' + article.pubDate.getFullYear()
                     : '';
-                const articleHeaderHtml = buildTimelineCardHeader(t('lista.article'), 'article');
+                const isMention = article.matchCollection === 'mentioned';
+                const mentionLabel = escHtml(t('interviews.mentionsLabel'));
+                const articleTypeLabel = isMention ? mentionLabel : t('lista.article');
+                const articleHeaderHtml = isMention
+                    ? `<div class="timeline-interview-mention-header">
+                        <span class="timeline-interview-mention-badge"><i class="fas fa-quote-right" style="width:auto"></i>${mentionLabel}</span>
+                        <span class="timeline-interview-mention-copy">${escHtml(t('lista.article'))}</span>
+                    </div>`
+                    : buildTimelineCardHeader(t('lista.article'), 'article');
                 return {
                     type: 'article',
                     date: article.pubDate.getTime() > 0 ? article.pubDate : new Date(0),
@@ -4955,7 +4963,7 @@ a.chart-history-item {
                         ${articleHeaderHtml}
                         <span class="timeline-card-main">
                             <img src="${article.sourceIcon}" alt="${article.source}" style="width:24px;height:24px;border-radius:3px;flex-shrink:0">
-                            <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-newspaper" style="margin-right:0.3rem;opacity:0.5"></i>${article.source} &middot; ${dateStr}</span>` : ''}</span>
+                            <span class="artist-link-text">${article.title}${dateStr ? `<span style="display:block;font-size:0.7rem;font-weight:400;color:var(--text-muted);margin-top:0.15rem"><i class="fas fa-newspaper" style="margin-right:0.3rem;opacity:0.5"></i>${articleTypeLabel} &middot; ${article.source} &middot; ${dateStr}</span>` : ''}</span>
                             <i class="fas fa-chevron-right artist-link-arrow"></i>
                         </span>
                     </a>`
@@ -5000,6 +5008,7 @@ a.chart-history-item {
                     : '';
                 const videoId = getInterviewVideoId(interview);
                 const isMention = interview.matchCollection === 'mentioned';
+                const isShort = interview.shortForm === true;
                 const safeLink = escHtml(interview.link || '#');
                 const safeTitle = escHtml(interview.title || '');
                 const safeSource = escHtml(interview.source || '');
@@ -5011,7 +5020,7 @@ a.chart-history-item {
                         <span class="timeline-interview-mention-copy">${escHtml(t('lista.interview'))}</span>
                     </div>`
                     : buildTimelineCardHeader(t('lista.interview'), 'interview');
-                const embedHtml = isMention
+                const embedHtml = (isMention || isShort)
                     ? ''
                     : videoId
                     ? `<iframe class="timeline-interview-embed" src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?rel=0" title="${safeTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
@@ -6642,12 +6651,15 @@ a.chart-history-item {
                 sourceIcon: a.iconUrl || a.sourceIcon || '',
                 siteUrl: a.siteUrl || '',
                 kind: feedKey === 'interviews' ? 'interview' : 'article',
+                shortForm: a.shortForm === true,
                 matchCollection: collectionKey
             }));
         }
 
         function getArtistArticles(siteMaster, artistName) {
-            return getArtistMatchedFeedItems(siteMaster, artistName, 'news');
+            const titleMatches = getArtistMatchedFeedItems(siteMaster, artistName, 'news', 'matched');
+            const descriptionMentions = getArtistMatchedFeedItems(siteMaster, artistName, 'news', 'mentioned');
+            return titleMatches.concat(descriptionMentions).sort((a, b) => b.pubDate - a.pubDate);
         }
 
         function getArtistInterviews(siteMaster, artistName) {
