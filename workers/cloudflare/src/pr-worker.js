@@ -336,20 +336,17 @@ export default {
       }
 
       // 2) Create a new branch
-      const safeContributor = contributor ? slug(contributor) : 'anon';
-      const ts = new Date();
-      const branchName = `mmm/update-${ts.getFullYear()}${pad(ts.getMonth()+1)}${pad(ts.getDate())}-${pad(ts.getHours())}${pad(ts.getMinutes())}${pad(ts.getSeconds())}-${safeContributor}`;
-      const createRefRes = await gh(`/repos/${owner}/${repo}/git/refs`, {
-        method: 'POST',
-        body: JSON.stringify({
-          ref: `refs/heads/${branchName}`,
-          sha: baseSha,
-        }),
+      const branchResult = await createUniqueBranch({
+        gh,
+        owner,
+        repo,
+        baseSha,
+        contributor,
       });
-      if (!createRefRes.ok) {
-        const text = await createRefRes.text();
-        return json({ error: 'Failed to create branch', detail: text }, 500, corsHeaders);
+      if (!branchResult.ok) {
+        return json({ error: 'Failed to create branch', detail: branchResult.detail }, 500, corsHeaders);
       }
+      const branchName = branchResult.branchName;
 
       const failedFiles = [];
       const submittedFiles = [];
@@ -614,6 +611,52 @@ async function commitPreparedFile({ gh, owner, repo, branchName, contributor, pr
   }
 
   return { ok: true, failedFiles };
+}
+
+async function createUniqueBranch({ gh, owner, repo, baseSha, contributor }) {
+  const branchStem = buildBranchStem(contributor);
+  let lastError = 'Failed to create branch';
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const branchName = `${branchStem}-${randomBranchSuffix()}`;
+    const createRefRes = await gh(`/repos/${owner}/${repo}/git/refs`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ref: `refs/heads/${branchName}`,
+        sha: baseSha,
+      }),
+    });
+
+    if (createRefRes.ok) {
+      return { ok: true, branchName };
+    }
+
+    const text = await createRefRes.text();
+    lastError = text;
+
+    if (createRefRes.status !== 422 || !/Reference already exists/i.test(text)) {
+      return { ok: false, detail: text };
+    }
+  }
+
+  return { ok: false, detail: lastError };
+}
+
+function buildBranchStem(contributor) {
+  const safeContributor = contributor ? slug(contributor) : 'anon';
+  const ts = new Date();
+  return `mmm/update-${ts.getFullYear()}${pad(ts.getMonth()+1)}${pad(ts.getDate())}-${pad(ts.getHours())}${pad(ts.getMinutes())}${pad(ts.getSeconds())}${pad3(ts.getMilliseconds())}-${safeContributor}`;
+}
+
+function randomBranchSuffix() {
+  return (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`)
+    .replace(/[^a-z0-9]+/gi, '')
+    .toLowerCase()
+    .slice(0, 8);
+}
+
+function pad3(n) {
+  return String(n).padStart(3, '0');
 }
 
 // ---------------- Three-way Merge Helpers ----------------

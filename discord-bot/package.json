@@ -1,0 +1,19 @@
+{
+  "name": "masterlista-discord-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Discord bot for MMM draft submissions",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "register": "node src/register-commands.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.2.3"
+  }
+}
