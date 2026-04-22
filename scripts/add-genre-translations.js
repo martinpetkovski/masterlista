@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const genres = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'genres.json'), 'utf8'));
+const genres = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'static', 'genres.json'), 'utf8'));
 
 // Genre translations for each language
 // Key: English genre name, Value: translated genre name

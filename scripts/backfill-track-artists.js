@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
 
 async function getSpotifyToken(clientId, clientSecret) {
   const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -54,16 +55,16 @@ async function main() {
   // Load credentials
   let clientId, clientSecret;
   try {
-    const creds = JSON.parse(fs.readFileSync(path.join(ROOT, 'spotify-credentials.json'), 'utf8').replace(/^\uFEFF/, ''));
+    const creds = JSON.parse(fs.readFileSync(path.join(ROOT, 'config', 'credentials', 'spotify-credentials.json'), 'utf8').replace(/^\uFEFF/, ''));
     clientId = creds.clientId;
     clientSecret = creds.clientSecret;
   } catch (e) {
-    console.error('Could not load spotify-credentials.json');
+    console.error('Could not load config/credentials/spotify-credentials.json');
     process.exit(1);
   }
 
   // Load releases.json
-  const releasesPath = path.join(ROOT, 'releases.json');
+  const releasesPath = path.join(EDITABLE_DATA_DIR, 'releases.json');
   const releasesData = JSON.parse(fs.readFileSync(releasesPath, 'utf8').replace(/^\uFEFF/, ''));
   const releases = releasesData.releases;
 

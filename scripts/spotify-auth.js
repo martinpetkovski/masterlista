@@ -8,10 +8,10 @@
  * 3. Spotify redirects to https://toplista.mk/callback?code=...
  *    The page will 404, but that's fine — the code is in the address bar
  * 4. Paste the full URL back here
- * 5. The refresh token is saved into spotify-credentials.json
+ * 5. The refresh token is saved into config/credentials/spotify-credentials.json
  *
  * Prerequisites:
- *   - spotify-credentials.json must already have clientId and clientSecret
+ *   - config/credentials/spotify-credentials.json must already have clientId and clientSecret
  *   - In your Spotify Developer Dashboard, add https://toplista.mk/callback
  *     as a Redirect URI for your app
  */
@@ -22,13 +22,13 @@ const readline = require('readline');
 const { exec } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const CREDS_PATH = path.join(ROOT, 'spotify-credentials.json');
+const CREDS_PATH = path.join(ROOT, 'config', 'credentials', 'spotify-credentials.json');
 const REDIRECT_URI = 'https://toplista.mk/callback';
 const SCOPES = 'playlist-modify-public playlist-modify-private';
 
 function loadCreds() {
   if (!fs.existsSync(CREDS_PATH)) {
-    console.error('spotify-credentials.json not found. Create it with clientId and clientSecret first.');
+    console.error('config/credentials/spotify-credentials.json not found. Create it with clientId and clientSecret first.');
     process.exit(1);
   }
   const raw = fs.readFileSync(CREDS_PATH, 'utf8');
@@ -81,7 +81,7 @@ async function exchangeCode(code, clientId, clientSecret) {
 async function main() {
   const creds = loadCreds();
   if (!creds.clientId || !creds.clientSecret) {
-    console.error('spotify-credentials.json must contain clientId and clientSecret');
+    console.error('config/credentials/spotify-credentials.json must contain clientId and clientSecret');
     process.exit(1);
   }
 
@@ -130,7 +130,7 @@ async function main() {
   creds.refreshToken = tokens.refresh_token;
   saveCreds(creds);
 
-  console.log('Refresh token saved to spotify-credentials.json');
+  console.log('Refresh token saved to config/credentials/spotify-credentials.json');
   console.log('You can now run: ./update-all.ps1 -Only playlists');
 }
 

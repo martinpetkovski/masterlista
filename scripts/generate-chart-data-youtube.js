@@ -20,21 +20,25 @@
  * 
  * Prerequisites:
  *   - releases.json and chart-data.json must exist (run generate-chart-data.js first)
- *   - youtube-credentials.json with your YouTube Data API v3 key
+ *   - config/credentials/youtube-credentials.json with your YouTube Data API v3 key
  */
 
 const fs = require('fs');
 const path = require('path');
 
 // ── Config ──────────────────────────────────────────────────────────────────
+const ROOT = path.resolve(__dirname, '..');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
+const GENERATED_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'generated');
 const YT_BATCH_SIZE = 50;
 const API_DELAY_MS = 100;
 const API_RETRY_DELAY_MS = 1000;
 const API_MAX_RETRIES = 3;
-const CACHE_FILE = path.join(__dirname, '..', '.youtube-id-cache.json');
-const RELEASES_FILE = path.join(__dirname, '..', 'releases.json');
-const CHART_DATA = path.join(__dirname, '..', 'chart-data.json');
-const HISTORY_DIR = path.join(__dirname, '..', 'chart-history');
+const CACHE_FILE = path.join(ROOT, '.cache', 'youtube-id-cache.json');
+const BANDS_FILE = path.join(EDITABLE_DATA_DIR, 'bands.json');
+const RELEASES_FILE = path.join(EDITABLE_DATA_DIR, 'releases.json');
+const CHART_DATA = path.join(GENERATED_DATA_DIR, 'chart-data.json');
+const HISTORY_DIR = path.join(GENERATED_DATA_DIR, 'chart-history');
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -69,13 +73,14 @@ function loadCache() {
 }
 
 function saveCache(cache) {
+    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), 'utf8');
 }
 
 function getYouTubeApiKey() {
     if (process.env.YOUTUBE_API_KEY) return process.env.YOUTUBE_API_KEY;
     try {
-        const credPath = path.join(__dirname, '..', 'youtube-credentials.json');
+        const credPath = path.join(ROOT, 'config', 'credentials', 'youtube-credentials.json');
         const creds = JSON.parse(fs.readFileSync(credPath, 'utf8'));
         if (creds.apiKey && creds.apiKey !== 'YOUR_YOUTUBE_DATA_API_V3_KEY_HERE') return creds.apiKey;
     } catch { /* ignore */ }
@@ -555,12 +560,12 @@ async function main() {
     // 2. Load YouTube API key
     const apiKey = getYouTubeApiKey();
     if (!apiKey) {
-        console.error('No YouTube API key. Set YOUTUBE_API_KEY env var or edit youtube-credentials.json.');
+        console.error('No YouTube API key. Set YOUTUBE_API_KEY env var or edit config/credentials/youtube-credentials.json.');
         process.exit(1);
     }
 
     // 3. Load bands.json for YouTube channel links
-    const bandsRaw = fs.readFileSync(path.join(__dirname, '..', 'bands.json'), 'utf8').replace(/^\uFEFF/, '');
+    const bandsRaw = fs.readFileSync(BANDS_FILE, 'utf8').replace(/^\uFEFF/, '');
     const bands = JSON.parse(bandsRaw).muzickaMasterLista || JSON.parse(bandsRaw);
     const bandByName = new Map();
     bands.forEach(b => bandByName.set(b.name.toLowerCase().trim(), b));

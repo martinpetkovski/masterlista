@@ -17,7 +17,7 @@
     <meta property="og:url" id="og-url" content="https://toplista.mk/nastan">
     <meta property="og:title" id="og-title" content="Настан | ТопЛиста.мк">
     <meta property="og:description" id="og-description" content="Музички настан од македонската музичка сцена.">
-    <meta property="og:image" id="og-image" content="https://toplista.mk/og-image.png">
+    <meta property="og:image" id="og-image" content="https://toplista.mk/images/og-image.png">
     <meta property="og:locale" content="mk_MK">
     <meta property="og:site_name" content="Топ Листа МК">
 
@@ -26,10 +26,10 @@
     <meta name="twitter:url" id="twitter-url" content="https://toplista.mk/nastan">
     <meta name="twitter:title" id="twitter-title" content="Настан | ТопЛиста.мк">
     <meta name="twitter:description" id="twitter-description" content="Музички настан од македонската музичка сцена.">
-    <meta name="twitter:image" id="twitter-image" content="https://toplista.mk/og-image.png">
+    <meta name="twitter:image" id="twitter-image" content="https://toplista.mk/images/og-image.png">
 
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,10 +38,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=10"></script>
-    <script src="/i18n.js?v=1"></script>
-    <script src="mmm-drafts.js?v=1"></script>
-    <script src="/tour.js?v=1" defer></script>
+    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
     <style>
         /* Masked date/time input wrapper */
         .masked-input-wrap {
@@ -492,7 +492,7 @@
             <i class="fas fa-pen"></i>
         </button>
     </header>
-    <script src="/load-header.js"></script>
+    <script src="/scripts/site/load-header.js"></script>
     <div class="event-container">
         <div id="event-content">
             <div class="event-loading">
@@ -781,7 +781,7 @@
 
             // Footer
             html += '<div class="event-footer">';
-            html += '<a href="/"><img src="/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28"></a>';
+            html += '<a href="/"><img src="/images/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28"></a>';
             html += '</div>';
 
             document.getElementById('event-content').innerHTML = html;

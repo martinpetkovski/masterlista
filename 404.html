@@ -11,13 +11,13 @@
     <meta property="og:url" content="https://toplista.mk/">
     <meta property="og:title" content="ТопЛиста.мк">
     <meta property="og:description" content="Сите македонски артисти, линкови и информации на едно место.">
-    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:image" content="https://toplista.mk/images/og-image.png">
     <meta property="og:locale" content="mk_MK">
     <meta property="og:site_name" content="Топ Листа МК">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ТопЛиста.мк">
     <meta name="twitter:description" content="Сите македонски артисти, линкови и информации на едно место.">
-    <meta name="twitter:image" content="https://toplista.mk/og-image.png">
+    <meta name="twitter:image" content="https://toplista.mk/images/og-image.png">
 
     <script>
         (function() {
@@ -118,15 +118,13 @@
                 '/iznenadi-me.html', '/za.html', '/nastan.html',
                 '/privatnost.html', '/uslovi.html', '/charts.html',
                 '/robots.txt', '/sitemap.xml', '/CNAME',
-                '/desktop.css', '/mobile.css', '/script.js',
-                '/spotify-api.js', '/bands.json', '/chart-data.json',
+                '/desktop.css', '/mobile.css', '/bands.json', '/chart-data.json',
                 '/curators-tracklists.json', '/loading-messages.json',
-                '/progress-bar.js',
                 '/favicon.svg', '/og-image.svg'
             ];
 
             // Check if path starts with known directories
-            const staticDirs = ['/chart-history/', '/scripts/', '/workers/'];
+            const staticDirs = ['/chart-history/', '/scripts/', '/workers/', '/data/', '/images/'];
             const isStaticDir = staticDirs.some(dir => path.startsWith(dir));
 
             // If it's not a static file or directory, treat it as an artist page

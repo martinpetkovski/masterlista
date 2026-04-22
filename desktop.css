@@ -53,7 +53,7 @@ body {
     font-weight: 400;
     line-height: 1.3;
     color: var(--text-primary);
-    background: var(--bg-body) url('/bg-light.png') center top repeat;
+    background: var(--bg-body) url('/images/bg-light.png') center top repeat;
     background-size: 50%;
     background-color: var(--bg-body);
     height: 100vh;
@@ -2847,7 +2847,7 @@ html.dark-mode body {
     --accent-red: #ef4444;
     --accent-purple: #8a7db5;
     --accent-teal: #5a9e92;
-    background: var(--bg-body) url('/bg-dark.png') center top repeat;
+    background: var(--bg-body) url('/images/bg-dark.png') center top repeat;
     color: #d5d8de;
 }
 

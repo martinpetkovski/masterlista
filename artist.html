@@ -20,7 +20,7 @@
     <meta property="og:url" id="og-url" content="https://toplista.mk/artist.html">
     <meta property="og:title" id="og-title" content="Артист | ТопЛиста.мк">
     <meta property="og:description" id="og-description" content="Профил на македонски музички артист со сите линкови и информации.">
-    <meta property="og:image" id="og-image" content="https://toplista.mk/og-image.png">
+    <meta property="og:image" id="og-image" content="https://toplista.mk/images/og-image.png">
     <meta property="og:locale" content="mk_MK">
     <meta property="og:site_name" content="Топ Листа МК">
     
@@ -29,11 +29,11 @@
     <meta name="twitter:url" id="twitter-url" content="https://toplista.mk/artist.html">
     <meta name="twitter:title" id="twitter-title" content="Артист | ТопЛиста.мк">
     <meta name="twitter:description" id="twitter-description" content="Профил на македонски музички артист.">
-    <meta name="twitter:image" id="twitter-image" content="https://toplista.mk/og-image.png">
+    <meta name="twitter:image" id="twitter-image" content="https://toplista.mk/images/og-image.png">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
     
     <!-- Preconnect to external origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,10 +45,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=10" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=10" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=10"></script>
-    <script src="/i18n.js?v=1"></script>
-    <script src="mmm-drafts.js?v=1"></script>
-    <script src="/tour.js?v=1" defer></script>
+    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
     <style>
         /* Artist Page Styles */
         :root {
@@ -2971,7 +2971,7 @@ a.chart-history-item {
 </head>
 <body class="artist-page">
     <header id="site-header" data-title="Артист" data-title-id="artist-page-title"></header>
-    <script src="/load-header.js"></script>
+    <script src="/scripts/site/load-header.js"></script>
     <div class="artist-container">
         <div id="artist-content">
         </div>
@@ -3502,7 +3502,7 @@ a.chart-history-item {
                         ${t('footer.verifiedArtistNote')}
                     </p>
                     <a href="/">
-                        <img src="/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28">
+                        <img src="/images/logo.png" alt="ТопЛиста.мк" class="mmm-logo-svg" width="28" height="28">
                     </a>
                 `;
                 footerEl.style.display = '';
@@ -6628,10 +6628,18 @@ a.chart-history-item {
         }
         
         // Main initialization
-        // ==================== ARTICLE MATCHING (from pre-computed site-master.json) ====================
+        // ==================== ARTICLE MATCHING (from filtered feed outputs) ====================
+
+        async function loadFilteredFeed(fileName) {
+            const response = await fetch(fileName);
+            if (!response.ok) {
+                throw new Error('Could not load ' + fileName);
+            }
+            return response.json();
+        }
         
-        function getArtistMatchedFeedItems(siteMaster, artistName, feedKey, collectionKey = 'matched') {
-            const allMatched = siteMaster?.[feedKey]?.[collectionKey] || [];
+        function getArtistMatchedFeedItems(feedData, artistName, collectionKey = 'matched', kind = 'article') {
+            const allMatched = feedData?.[collectionKey] || [];
             if (!artistName || allMatched.length === 0) return [];
             
             const artistNameLower = artistName.toLowerCase().trim();
@@ -6652,21 +6660,21 @@ a.chart-history-item {
                 source: a.source || '',
                 sourceIcon: a.iconUrl || a.sourceIcon || '',
                 siteUrl: a.siteUrl || '',
-                kind: feedKey === 'interviews' ? 'interview' : 'article',
+                kind: kind,
                 shortForm: a.shortForm === true,
                 matchCollection: collectionKey
             }));
         }
 
-        function getArtistArticles(siteMaster, artistName) {
-            const titleMatches = getArtistMatchedFeedItems(siteMaster, artistName, 'news', 'matched');
-            const descriptionMentions = getArtistMatchedFeedItems(siteMaster, artistName, 'news', 'mentioned');
+        function getArtistArticles(feedData, artistName) {
+            const titleMatches = getArtistMatchedFeedItems(feedData, artistName, 'matched', 'article');
+            const descriptionMentions = getArtistMatchedFeedItems(feedData, artistName, 'mentioned', 'article');
             return titleMatches.concat(descriptionMentions).sort((a, b) => b.pubDate - a.pubDate);
         }
 
-        function getArtistInterviews(siteMaster, artistName) {
-            const titleMatches = getArtistMatchedFeedItems(siteMaster, artistName, 'interviews', 'matched');
-            const descriptionMentions = getArtistMatchedFeedItems(siteMaster, artistName, 'interviews', 'mentioned');
+        function getArtistInterviews(feedData, artistName) {
+            const titleMatches = getArtistMatchedFeedItems(feedData, artistName, 'matched', 'interview');
+            const descriptionMentions = getArtistMatchedFeedItems(feedData, artistName, 'mentioned', 'interview');
             return titleMatches.concat(descriptionMentions).sort((a, b) => b.pubDate - a.pubDate);
         }
         
@@ -6960,14 +6968,20 @@ a.chart-history-item {
 
                 // Load articles
                 try {
-                    timelineArticles = getArtistArticles(siteMaster, artist.name);
+                    const articleFeed = await loadFilteredFeed('articles-filtered.json').catch(function() {
+                        return siteMaster?.news || null;
+                    });
+                    timelineArticles = getArtistArticles(articleFeed, artist.name);
                 } catch (e) {
                     console.warn('Could not load articles:', e);
                 }
 
                 // Load interviews
                 try {
-                    timelineInterviews = getArtistInterviews(siteMaster, artist.name);
+                    const interviewFeed = await loadFilteredFeed('interviews-filtered.json').catch(function() {
+                        return siteMaster?.interviews || null;
+                    });
+                    timelineInterviews = getArtistInterviews(interviewFeed, artist.name);
                 } catch (e) {
                     console.warn('Could not load interviews:', e);
                 }

@@ -17,7 +17,7 @@
 	<meta property="og:url" content="https://toplista.mk/vesti.html">
 	<meta property="og:title" content="Вести | ТопЛиста.мк">
 	<meta property="og:description" content="Вести и написи за македонската музичка сцена, филтрирани според артисти од Мастер Листата.">
-	<meta property="og:image" content="https://toplista.mk/og-image.png">
+	<meta property="og:image" content="https://toplista.mk/images/og-image.png">
 	<meta property="og:locale" content="mk_MK">
 
 	<script type="application/ld+json">
@@ -30,8 +30,8 @@
 	}
 	</script>
 
-	<link rel="icon" type="image/png" href="/logo.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="/images/logo.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,9 +40,9 @@
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
 	<link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
-	<script src="/common.js?v=10"></script>
-	<script src="/i18n.js?v=1"></script>
-	<script src="/tour.js?v=1" defer></script>
+	<script src="/scripts/site/common.js?v=10"></script>
+	<script src="/scripts/site/i18n.js?v=1"></script>
+	<script src="/scripts/site/tour.js?v=1" defer></script>
 	<style>
 	/* ── Filter bar (same as charts.html) ── */
 	.vesti-page .chart-filter-bar {
@@ -540,7 +540,7 @@
 		</span>
 		<button id="search-toggle-btn" class="header-btn search-toggle" data-i18n-title="events.search" title="Пребарај"><i class="fas fa-search"></i><span id="filter-count" class="filter-count"></span></button>
 	</header>
-	<script src="/load-header.js"></script>
+	<script src="/scripts/site/load-header.js"></script>
 
 	<main>
 		<div class="chart-filter-bar" id="controls-bar">
@@ -819,21 +819,28 @@
 					}
 				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
 
-				var fromMaster = null;
-				var master = await loadSiteMaster();
-				if (master && master.news) {
-					fromMaster = master.news;
-				}
-
-				if (fromMaster && Array.isArray(fromMaster.matched)) {
-					allArticles = fromMaster.matched.map(normalizeArticle);
-					lastUpdated = fromMaster.lastUpdated || '';
+				var filteredResp = await fetch('articles-filtered.json');
+				if (filteredResp.ok) {
+					var filteredRaw = await filteredResp.json();
+					allArticles = (filteredRaw.articles || filteredRaw.matched || []).map(normalizeArticle);
+					lastUpdated = filteredRaw.lastUpdated || filteredRaw.generatedAt || '';
 				} else {
-					var resp = await fetch('articles.json');
-					if (!resp.ok) throw new Error(t('news.fetchError'));
-					var raw = await resp.json();
-					allArticles = (raw.articles || []).map(normalizeArticle);
-					lastUpdated = raw.lastUpdated || '';
+					var fromMaster = null;
+					var master = await loadSiteMaster();
+					if (master && master.news) {
+						fromMaster = master.news;
+					}
+
+					if (fromMaster && Array.isArray(fromMaster.matched)) {
+						allArticles = fromMaster.matched.map(normalizeArticle);
+						lastUpdated = fromMaster.lastUpdated || '';
+					} else {
+						var resp = await fetch('articles.json');
+						if (!resp.ok) throw new Error(t('news.fetchError'));
+						var raw = await resp.json();
+						allArticles = (raw.articles || []).map(normalizeArticle);
+						lastUpdated = raw.lastUpdated || '';
+					}
 				}
 
 				allArticles.sort(function(a, b) { return parseDate(b) - parseDate(a); });

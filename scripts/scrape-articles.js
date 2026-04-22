@@ -26,8 +26,8 @@ const path = require('path');
 // ═══════════════════════════════════════════════════════════════════════════
 
 const ROOT = path.resolve(__dirname, '..');
-const FEEDS_PATH = path.join(ROOT, 'rss-feeds.json');
-const ARTICLES_PATH = path.join(ROOT, 'articles.json');
+const FEEDS_PATH = path.join(ROOT, 'data', 'static', 'rss-feeds.json');
+const ARTICLES_PATH = path.join(ROOT, 'data', 'dynamic', 'generated', 'articles.json');
 
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';

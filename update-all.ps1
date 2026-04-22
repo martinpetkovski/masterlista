@@ -6,7 +6,7 @@
 #   1b. YT Matching  - Matches release tracks to YouTube videos, saves unverified links to releases.json
 #   1c. Verification - Pushes releases.json to GitHub, waits for manual link verification
 #   1d. YT Popularity - Calculates YouTube-based popularity scores, patches chart-data.json
-#   2.  Scrape       - Scrapes sites for articles and interview channels, updates articles.json + interviews.json
+#   2.  Scrape       - Scrapes sites for articles and interview channels, updates raw and filtered media feeds
 #   3.  Service links - Detects new bands.json entries and extracts streaming links for them
 #   4.  Curators     - Fetches playlist tracklists for curators from streaming APIs
 #   4b. Playlists    - Updates Spotify playlists (top current, top all-time, new releases)
@@ -52,7 +52,24 @@ $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Web
 
 $scriptRoot = $PSScriptRoot
-$statePath = Join-Path $scriptRoot ".last-run-state.json"
+$configRoot = Join-Path $scriptRoot "config"
+$credentialsRoot = Join-Path $configRoot "credentials"
+$cacheRoot = Join-Path $scriptRoot ".cache"
+$backupsRoot = Join-Path $scriptRoot "backups"
+$staticDataRoot = Join-Path $scriptRoot "data\static"
+$editableDataRoot = Join-Path $scriptRoot "data\dynamic\editable"
+$generatedDataRoot = Join-Path $scriptRoot "data\dynamic\generated"
+$releasesRepoPath = "data/dynamic/editable/releases.json"
+
+if (-not (Test-Path $cacheRoot)) {
+    New-Item -ItemType Directory -Path $cacheRoot -Force | Out-Null
+}
+
+if (-not (Test-Path $backupsRoot)) {
+    New-Item -ItemType Directory -Path $backupsRoot -Force | Out-Null
+}
+
+$statePath = Join-Path $cacheRoot "last-run-state.json"
 
 # ============================================================================
 #  UTILITY
@@ -115,10 +132,10 @@ function Save-RunState {
 function Update-ChartData {
     Write-Section "TASK 1: CHART DATA"
 
-    $credentialsPath = Join-Path $scriptRoot "spotify-credentials.json"
+    $credentialsPath = Join-Path $credentialsRoot "spotify-credentials.json"
 
     if (-not (Test-Path $credentialsPath)) {
-        Write-Step "spotify-credentials.json not found, skipping chart update" "Red"
+        Write-Step "config/credentials/spotify-credentials.json not found, skipping chart update" "Red"
         return $false
     }
 
@@ -127,12 +144,12 @@ function Update-ChartData {
         $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Failed to parse spotify-credentials.json" "Red"
+        Write-Step "Failed to parse config/credentials/spotify-credentials.json" "Red"
         return $false
     }
 
     if (-not $creds.clientId -or -not $creds.clientSecret) {
-        Write-Step "spotify-credentials.json must contain clientId and clientSecret" "Red"
+        Write-Step "config/credentials/spotify-credentials.json must contain clientId and clientSecret" "Red"
         return $false
     }
 
@@ -304,10 +321,10 @@ function Update-ChartData {
 function Update-YouTubePopularity {
     Write-Section "TASK 1b: YOUTUBE POPULARITY"
 
-    $credentialsPath = Join-Path $scriptRoot "youtube-credentials.json"
+    $credentialsPath = Join-Path $credentialsRoot "youtube-credentials.json"
 
     if (-not (Test-Path $credentialsPath)) {
-        Write-Step "youtube-credentials.json not found, skipping YouTube popularity" "Red"
+        Write-Step "config/credentials/youtube-credentials.json not found, skipping YouTube popularity" "Red"
         return $false
     }
 
@@ -316,12 +333,12 @@ function Update-YouTubePopularity {
         $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Failed to parse youtube-credentials.json" "Red"
+        Write-Step "Failed to parse config/credentials/youtube-credentials.json" "Red"
         return $false
     }
 
     if (-not $creds.apiKey) {
-        Write-Step "youtube-credentials.json must contain apiKey" "Red"
+        Write-Step "config/credentials/youtube-credentials.json must contain apiKey" "Red"
         return $false
     }
 
@@ -444,10 +461,10 @@ function Update-YouTubePopularity {
 function Update-YouTubeMatching {
     Write-Section "TASK 1b: YOUTUBE LINK MATCHING"
 
-    $credentialsPath = Join-Path $scriptRoot "youtube-credentials.json"
+    $credentialsPath = Join-Path $credentialsRoot "youtube-credentials.json"
 
     if (-not (Test-Path $credentialsPath)) {
-        Write-Step "youtube-credentials.json not found, skipping" "Red"
+        Write-Step "config/credentials/youtube-credentials.json not found, skipping" "Red"
         return $false
     }
 
@@ -456,12 +473,12 @@ function Update-YouTubeMatching {
         $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Failed to parse youtube-credentials.json" "Red"
+        Write-Step "Failed to parse config/credentials/youtube-credentials.json" "Red"
         return $false
     }
 
     if (-not $creds.apiKey) {
-        Write-Step "youtube-credentials.json must contain apiKey" "Red"
+        Write-Step "config/credentials/youtube-credentials.json must contain apiKey" "Red"
         return $false
     }
 
@@ -671,7 +688,7 @@ function Wait-ForYouTubeVerification {
         $remoteSha = $null
         try {
             git fetch origin $branch --quiet 2>$null
-            $remoteSha = (git log "origin/$branch" -1 --format="%H" -- releases.json).Trim()
+            $remoteSha = (git log "origin/$branch" -1 --format="%H" -- $releasesRepoPath).Trim()
         }
         catch {
             Write-Step "Git fetch failed, retrying..." "DarkYellow"
@@ -730,6 +747,7 @@ function Update-ScrapeArticles {
 
     $scrapeScript = Join-Path (Join-Path $scriptRoot "scripts") "scrape-articles.js"
     $interviewScript = Join-Path (Join-Path $scriptRoot "scripts") "fetch-interviews.js"
+    $mediaScript = Join-Path (Join-Path $scriptRoot "scripts") "build-media-feeds.js"
     if (-not (Test-Path $scrapeScript)) {
         Write-Step "scripts/scrape-articles.js not found, skipping" "Red"
         return $false
@@ -737,6 +755,11 @@ function Update-ScrapeArticles {
 
     if (-not (Test-Path $interviewScript)) {
         Write-Step "scripts/fetch-interviews.js not found, skipping" "Red"
+        return $false
+    }
+
+    if (-not (Test-Path $mediaScript)) {
+        Write-Step "scripts/build-media-feeds.js not found, skipping" "Red"
         return $false
     }
 
@@ -779,6 +802,24 @@ function Update-ScrapeArticles {
             Write-Step "Interview fetcher finished with exit code $interviewExit" "DarkYellow"
         } else {
             Write-Step "Interview fetcher completed successfully" "Green"
+        }
+
+        Write-Step "Rebuilding filtered article and interview feeds..."
+        $mediaOutput = & node $mediaScript 2>&1
+        $mediaExit = $LASTEXITCODE
+
+        foreach ($line in $mediaOutput) {
+            if ($line -is [System.Management.Automation.ErrorRecord]) {
+                Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
+            } else {
+                Write-Host "    $line" -ForegroundColor Gray
+            }
+        }
+
+        if ($mediaExit -ne 0) {
+            Write-Step "Filtered media rebuild finished with exit code $mediaExit" "DarkYellow"
+        } else {
+            Write-Step "Filtered media rebuild completed successfully" "Green"
         }
     }
     catch {
@@ -902,7 +943,7 @@ function Update-ServiceLinks {
     Write-Section "TASK 3: SERVICE LINKS FOR NEW BANDS"
     $linksStart = Get-Date
 
-    $bandsJsonPath = Join-Path $scriptRoot "bands.json"
+    $bandsJsonPath = Join-Path $editableDataRoot "bands.json"
 
     if (-not (Test-Path $bandsJsonPath)) {
         Write-Step "bands.json not found, skipping" "Red"
@@ -1043,9 +1084,9 @@ function Update-ServiceLinks {
         Write-Step "Saving bands.json with $updated updated artist(s)..."
 
         # Backup
-        $backupPath = Join-Path $scriptRoot "bands.json.backup"
+        $backupPath = Join-Path $backupsRoot "bands.json.backup"
         Copy-Item $bandsJsonPath $backupPath -Force
-        Write-Step "Backup saved to bands.json.backup" "Gray"
+        Write-Step "Backup saved to backups/bands.json.backup" "Gray"
 
         $bandsData | ConvertTo-Json -Depth 10 | Set-Content $bandsJsonPath -Encoding UTF8
         Write-Step "bands.json updated" "Green"
@@ -1080,7 +1121,7 @@ function Update-CuratorTracklists {
         return $false
     }
 
-    $outputPath = Join-Path $scriptRoot "curators-tracklists.json"
+    $outputPath = Join-Path $generatedDataRoot "curators-tracklists.json"
     if (Test-Path $outputPath) {
         $size = [math]::Round((Get-Item $outputPath).Length / 1KB, 1)
         Write-Step "Generated curators-tracklists.json (${size} KB)" "Green"
@@ -1097,15 +1138,15 @@ function Update-CuratorTracklists {
 function Update-SpotifyPlaylists {
     Write-Section "TASK 4b: SPOTIFY PLAYLISTS"
 
-    $playlistConfig = Join-Path $scriptRoot "spotify-playlists.json"
+    $playlistConfig = Join-Path $staticDataRoot "spotify-playlists.json"
     if (-not (Test-Path $playlistConfig)) {
         Write-Step "spotify-playlists.json not found, skipping" "Red"
         return $false
     }
 
-    $credentialsPath = Join-Path $scriptRoot "spotify-credentials.json"
+    $credentialsPath = Join-Path $credentialsRoot "spotify-credentials.json"
     if (-not (Test-Path $credentialsPath)) {
-        Write-Step "spotify-credentials.json not found, skipping" "Red"
+        Write-Step "config/credentials/spotify-credentials.json not found, skipping" "Red"
         return $false
     }
 
@@ -1113,12 +1154,12 @@ function Update-SpotifyPlaylists {
         $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Failed to parse spotify-credentials.json" "Red"
+        Write-Step "Failed to parse config/credentials/spotify-credentials.json" "Red"
         return $false
     }
 
     if (-not $creds.refreshToken) {
-        Write-Step "spotify-credentials.json must contain refreshToken for playlist updates" "Yellow"
+        Write-Step "config/credentials/spotify-credentials.json must contain refreshToken for playlist updates" "Yellow"
         Write-Step "Skipping playlist generation (no refresh token)" "DarkGray"
         return $true
     }
@@ -1357,7 +1398,7 @@ else {
 Write-Progress -Id 0 -Activity "Master Lista Update" -Completed
 
 # --- Save run state (always, so bands.json baseline is tracked) ---
-$bandsJsonPath = Join-Path $scriptRoot "bands.json"
+$bandsJsonPath = Join-Path $editableDataRoot "bands.json"
 $artistNames = @()
 if (Test-Path $bandsJsonPath) {
     try {

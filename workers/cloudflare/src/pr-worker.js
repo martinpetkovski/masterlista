@@ -431,10 +431,30 @@ function encodeRepoPath(filePath) {
   return String(filePath || '').split('/').map(encodeURIComponent).join('/');
 }
 
+const EDITABLE_FILE_PATHS = {
+  'bands.json': 'data/dynamic/editable/bands.json',
+  'events.json': 'data/dynamic/editable/events.json',
+  'releases.json': 'data/dynamic/editable/releases.json',
+};
+
+function normalizeRepoPath(filePath) {
+  const normalized = String(filePath || 'bands.json').replace(/\\/g, '/').replace(/^\/+/, '');
+  if (EDITABLE_FILE_PATHS[normalized]) return EDITABLE_FILE_PATHS[normalized];
+  return normalized || EDITABLE_FILE_PATHS['bands.json'];
+}
+
+function getLogicalFilePath(filePath) {
+  const normalized = normalizeRepoPath(filePath);
+  if (normalized === EDITABLE_FILE_PATHS['bands.json']) return 'bands.json';
+  if (normalized === EDITABLE_FILE_PATHS['events.json']) return 'events.json';
+  if (normalized === EDITABLE_FILE_PATHS['releases.json']) return 'releases.json';
+  return normalized;
+}
+
 function normalizeRequestedFiles(body) {
   if (Array.isArray(body?.files) && body.files.length) {
     return body.files.map(file => ({
-      path: file?.path || 'bands.json',
+      path: normalizeRepoPath(file?.path || 'bands.json'),
       bandsJson: file?.bandsJson,
       originalJson: file?.originalJson || null,
       additionalFiles: Array.isArray(file?.additionalFiles) ? file.additionalFiles : [],
@@ -442,7 +462,7 @@ function normalizeRequestedFiles(body) {
     }));
   }
   return [{
-    path: body?.path || 'bands.json',
+    path: normalizeRepoPath(body?.path || 'bands.json'),
     bandsJson: body?.bandsJson,
     originalJson: body?.originalJson || null,
     additionalFiles: Array.isArray(body?.additionalFiles) ? body.additionalFiles : [],
@@ -451,7 +471,8 @@ function normalizeRequestedFiles(body) {
 }
 
 async function prepareFileUpdate({ gh, owner, repo, baseBranch, file }) {
-  const targetPath = file.path || 'bands.json';
+  const targetPath = normalizeRepoPath(file.path || 'bands.json');
+  const logicalPath = getLogicalFilePath(targetPath);
   const originalJson = file.originalJson || null;
   const additionalFiles = Array.isArray(file.additionalFiles) ? file.additionalFiles : [];
 
@@ -470,13 +491,13 @@ async function prepareFileUpdate({ gh, owner, repo, baseBranch, file }) {
   let mergeNotes = [];
   if (originalJson && currentContent) {
     if (normalizeComparableContent(currentContent) !== normalizeComparableContent(originalJson)) {
-      const mergeResult = threeWayMerge(targetPath, originalJson, currentContent, file.bandsJson);
+      const mergeResult = threeWayMerge(logicalPath, originalJson, currentContent, file.bandsJson);
       finalJson = mergeResult.merged;
       mergeNotes = mergeResult.notes;
     }
   }
 
-  if (targetPath === 'releases.json' && currentContent) {
+  if (logicalPath === 'releases.json' && currentContent) {
     try {
       const repoData = JSON.parse(currentContent);
       const userData = JSON.parse(finalJson);
@@ -505,7 +526,7 @@ async function prepareFileUpdate({ gh, owner, repo, baseBranch, file }) {
     } catch (_) { /* if parsing fails, leave finalJson as-is */ }
   }
 
-  if (targetPath === 'bands.json' && currentContent) {
+  if (logicalPath === 'bands.json' && currentContent) {
     try {
       const repoData = JSON.parse(currentContent);
       const userData = JSON.parse(finalJson);

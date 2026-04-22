@@ -10,7 +10,7 @@
  * JSON-fetched content should NOT include this script.
  *
  * Usage — add to <head> right after the dark-mode snippet:
- *   <script src="/progress-bar.js"></script>
+ *   <script src="/scripts/site/progress-bar.js"></script>
  */
 (function () {
     /* ── Inline fallback messages (used until JSON fetch completes) ── */
@@ -28,7 +28,7 @@
     /* ── Try to fetch the full message list ── */
     try {
         var xhr = new XMLHttpRequest();
-        var messagesUrl = '/loading-messages.json?v=' + Date.now();
+        var messagesUrl = '/data/static/loading-messages.json?v=' + Date.now();
         xhr.open('GET', messagesUrl, true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 0)) {
@@ -139,7 +139,7 @@
 
     var logo = document.createElement('img');
     logo.id = 'mmm-loader-logo';
-    logo.src = '/logo.png';
+    logo.src = '/images/logo.png';
     logo.alt = '';
 
     var track = document.createElement('div');

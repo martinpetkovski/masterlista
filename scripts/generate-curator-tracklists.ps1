@@ -19,8 +19,8 @@ $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptRoot
-$curatorsPath = Join-Path $projectRoot "curators.json"
-$outputPath = Join-Path $projectRoot "curators-tracklists.json"
+$curatorsPath = Join-Path $projectRoot "data\static\curators.json"
+$outputPath = Join-Path $projectRoot "data\dynamic\generated\curators-tracklists.json"
 
 # ============================================================================
 #  UTILITY
@@ -1272,7 +1272,7 @@ foreach ($curator in $curators) {
 }
 
 # ── Post-process: backfill missing Spotify track images via API ──────
-$credentialsPath = Join-Path $projectRoot "spotify-credentials.json"
+$credentialsPath = Join-Path $projectRoot "config\credentials\spotify-credentials.json"
 $spotifyTracksMissing = @()
 
 foreach ($curatorName in $output.curators.Keys) {

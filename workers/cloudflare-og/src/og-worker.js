@@ -10,7 +10,7 @@
 
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/martinpetkovski/masterlista/master';
 const SITE_URL = 'https://toplista.mk';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/images/og-image.png`;
 
 // --------------- OG Translations ---------------
 const OG_LOCALES = {
@@ -224,15 +224,64 @@ const STATIC_PATHS = new Set([
   '/uslovi', '/uslovi.html', '/admin', '/admin.html',
   '/404.html',
   '/robots.txt', '/sitemap.xml', '/CNAME',
-  '/desktop.css', '/mobile.css', '/script.js', '/spotify-api.js',
+  '/desktop.css', '/mobile.css',
   '/bands.json', '/chart-data.json', '/curators-tracklists.json',
-  '/curators.json', '/events.json', '/articles.json', '/rss-feeds.json',
-  '/favicon.svg', '/og-image.svg', '/og-image.png', '/logo.png',
-  '/apple-touch-icon.png', '/mmm-drafts.js', '/tour.js',
+  '/curators.json', '/events.json', '/articles.json', '/articles-filtered.json', '/interviews-filtered.json', '/rss-feeds.json',
+  '/favicon.svg', '/og-image.svg',
   '/napredno',
 ]);
 
-const STATIC_DIR_PREFIXES = ['/chart-history/', '/scripts/', '/workers/', '/greetings/'];
+const STATIC_DIR_PREFIXES = ['/chart-history/', '/scripts/', '/workers/', '/greetings/', '/data/', '/images/'];
+
+const LEGACY_PATH_ALIASES = new Map([
+  ['/common.js', '/scripts/site/common.js'],
+  ['/i18n.js', '/scripts/site/i18n.js'],
+  ['/load-header.js', '/scripts/site/load-header.js'],
+  ['/mmm-drafts.js', '/scripts/site/mmm-drafts.js'],
+  ['/progress-bar.js', '/scripts/site/progress-bar.js'],
+  ['/script.js', '/scripts/site/script.js'],
+  ['/spotify-api.js', '/scripts/site/spotify-api.js'],
+  ['/tour.js', '/scripts/site/tour.js'],
+  ['/scripts/common.js', '/scripts/site/common.js'],
+  ['/scripts/i18n.js', '/scripts/site/i18n.js'],
+  ['/scripts/load-header.js', '/scripts/site/load-header.js'],
+  ['/scripts/mmm-drafts.js', '/scripts/site/mmm-drafts.js'],
+  ['/scripts/progress-bar.js', '/scripts/site/progress-bar.js'],
+  ['/scripts/script.js', '/scripts/site/script.js'],
+  ['/scripts/spotify-api.js', '/scripts/site/spotify-api.js'],
+  ['/scripts/tour.js', '/scripts/site/tour.js'],
+  ['/logo.png', '/images/logo.png'],
+  ['/og-image.png', '/images/og-image.png'],
+  ['/bg-light.png', '/images/bg-light.png'],
+  ['/bg-dark.png', '/images/bg-dark.png'],
+  ['/apple-touch-icon.png', '/images/logo.png'],
+  ['/bands.json', '/data/dynamic/editable/bands.json'],
+  ['/events.json', '/data/dynamic/editable/events.json'],
+  ['/releases.json', '/data/dynamic/editable/releases.json'],
+  ['/genres.json', '/data/static/genres.json'],
+  ['/chart-genres.json', '/data/static/chart-genres.json'],
+  ['/loading-messages.json', '/data/static/loading-messages.json'],
+  ['/curators.json', '/data/static/curators.json'],
+  ['/rss-feeds.json', '/data/static/rss-feeds.json'],
+  ['/spotify-playlists.json', '/data/static/spotify-playlists.json'],
+  ['/articles.json', '/data/dynamic/generated/articles.json'],
+  ['/articles-filtered.json', '/data/dynamic/generated/articles-filtered.json'],
+  ['/interviews.json', '/data/dynamic/generated/interviews.json'],
+  ['/interviews-filtered.json', '/data/dynamic/generated/interviews-filtered.json'],
+  ['/chart-data.json', '/data/dynamic/generated/chart-data.json'],
+  ['/chart-history-data.json', '/data/dynamic/generated/chart-history-data.json'],
+  ['/site-master.json', '/data/dynamic/generated/site-master.json'],
+  ['/advanced-charts.json', '/data/dynamic/generated/advanced-charts.json'],
+  ['/artist-data.json', '/data/dynamic/generated/artist-data.json'],
+  ['/curators-tracklists.json', '/data/dynamic/generated/curators-tracklists.json'],
+]);
+
+function resolveLegacyPath(pathname) {
+  if (LEGACY_PATH_ALIASES.has(pathname)) return LEGACY_PATH_ALIASES.get(pathname);
+  if (pathname.startsWith('/chart-history/')) return `/data/dynamic/generated${pathname}`;
+  if (pathname.startsWith('/lang/')) return `/data/static${pathname}`;
+  return pathname;
+}
 
 // --------------- Data fetching with cache ---------------
 async function fetchJson(url) {
@@ -248,7 +297,7 @@ async function fetchJson(url) {
 async function getBands() {
   const now = Date.now();
   if (bandsCache && (now - bandsCacheTime) < CACHE_TTL) return bandsCache;
-  bandsCache = await fetchJson(`${GITHUB_RAW_BASE}/bands.json`);
+  bandsCache = await fetchJson(`${GITHUB_RAW_BASE}/data/dynamic/editable/bands.json`);
   bandsCacheTime = now;
   return bandsCache;
 }
@@ -256,7 +305,7 @@ async function getBands() {
 async function getCurators() {
   const now = Date.now();
   if (curatorsCache && (now - curatorsCacheTime) < CACHE_TTL) return curatorsCache;
-  curatorsCache = await fetchJson(`${GITHUB_RAW_BASE}/curators.json`);
+  curatorsCache = await fetchJson(`${GITHUB_RAW_BASE}/data/static/curators.json`);
   curatorsCacheTime = now;
   return curatorsCache;
 }
@@ -264,7 +313,7 @@ async function getCurators() {
 async function getEvents() {
   const now = Date.now();
   if (eventsCache && (now - eventsCacheTime) < CACHE_TTL) return eventsCache;
-  eventsCache = await fetchJson(`${GITHUB_RAW_BASE}/events.json`);
+  eventsCache = await fetchJson(`${GITHUB_RAW_BASE}/data/dynamic/editable/events.json`);
   eventsCacheTime = now;
   return eventsCache;
 }
@@ -408,6 +457,13 @@ function defaultOgFallback(lang) {
 
 export default {
   async fetch(request) {
+    const url = new URL(request.url);
+    const aliasPath = resolveLegacyPath(url.pathname);
+    if (aliasPath !== url.pathname) {
+      url.pathname = aliasPath;
+      return fetch(new Request(url.toString(), request));
+    }
+
     const ua = request.headers.get('User-Agent') || '';
 
     // Only intercept crawlers
@@ -415,7 +471,6 @@ export default {
       return fetch(request);
     }
 
-    const url = new URL(request.url);
     const rawPath = url.pathname;
     const lang = url.searchParams.get('lang') || 'mk';
 

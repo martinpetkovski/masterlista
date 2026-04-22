@@ -93,9 +93,11 @@ GITHUB_DEFAULT_BRANCH = "master"
   "bandsJson": "...stringified JSON of bands.json...",
   "contributor": "optional name/email",
   "description": "short description",
-  "path": "bands.json"
+  "path": "data/dynamic/editable/bands.json"
 }
 ```
+
+`path` may still be sent as the legacy short form (`bands.json`, `events.json`, `releases.json`), but the canonical repo paths now live under `data/dynamic/editable/`.
 
 ## Response
 ## Rate Limiting

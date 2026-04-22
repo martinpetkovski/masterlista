@@ -10,8 +10,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const CHART_DATA = path.join(__dirname, '..', 'chart-data.json');
-const RELEASES_FILE = path.join(__dirname, '..', 'releases.json');
+const CHART_DATA = path.join(__dirname, '..', 'data', 'dynamic', 'generated', 'chart-data.json');
+const RELEASES_FILE = path.join(__dirname, '..', 'data', 'dynamic', 'editable', 'releases.json');
 
 if (!fs.existsSync(CHART_DATA)) {
     console.error('chart-data.json not found.');

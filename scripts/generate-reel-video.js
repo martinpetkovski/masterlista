@@ -28,12 +28,13 @@ const http = require('http');
 // ============================================================================
 
 const ROOT = path.resolve(__dirname, '..');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
 const FFMPEG = path.join(ROOT, 'tools', 'ffmpeg.exe');
 const FFPROBE = path.join(ROOT, 'tools', 'ffprobe.exe');
 const YTDLP = path.join(ROOT, 'tools', 'yt-dlp.exe');
 const OUTPUT_DIR = path.join(ROOT, 'chart-videos');
 const TEMP_DIR = path.join(ROOT, 'chart-videos', '.temp');
-const LOGO_PATH = path.join(ROOT, 'logo.png');
+const LOGO_PATH = path.join(ROOT, 'images', 'logo.png');
 
 const FONT_DIR = path.join(ROOT, 'tools', 'fonts');
 const findFont = (name, fallback) =>
@@ -736,7 +737,7 @@ async function modeThrowbackOrDeeperCut() {
   if (thumbnailUrl) { try { await downloadFile(thumbnailUrl, artPath); } catch {} }
 
   // Build collage from general releases
-  const releases = readJSON(path.join(ROOT, 'releases.json'));
+  const releases = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
   const thumbs = releases.releases.slice(0, 30).map(r => r.thumbnail).filter(Boolean);
   const collagePath = path.join(TEMP_DIR, 'collage.png');
   await makeCollage(thumbs, collagePath);
@@ -769,7 +770,7 @@ async function modeThrowbackOrDeeperCut() {
   const extraLines = [];
   if (releaseDate) extraLines.push(formatDateMK(releaseDate));
   // Load releases to get view data
-  const relData = readJSON(path.join(ROOT, 'releases.json'));
+  const relData = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
   const matchedRel = relData.releases.find(r =>
     (r.bandName === artistName || r.bandName.includes(artistName)) &&
     (r.releaseTitle === songTitle || r.releaseTitle.includes(songTitle))
@@ -814,7 +815,7 @@ async function modeThrowbackOrDeeperCut() {
 async function modeReleaseRadar() {
   logS('RELEASE RADAR');
 
-  const releases = readJSON(path.join(ROOT, 'releases.json'));
+  const releases = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 7);
   const cutStr = cutoff.toISOString().slice(0, 10);
@@ -911,8 +912,8 @@ async function modeReleaseRadar() {
 async function modeEvents() {
   logS('WEEKEND EVENTS');
 
-  const eventsData = readJSON(path.join(ROOT, 'events.json'));
-  const releases = readJSON(path.join(ROOT, 'releases.json'));
+  const eventsData = readJSON(path.join(EDITABLE_DATA_DIR, 'events.json'));
+  const releases = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
   const events = eventsData.events || eventsData;
 
   // Find this weekend events
@@ -1002,8 +1003,8 @@ async function modeEvents() {
 async function modeArtist() {
   logS('ARTIST OF THE WEEK');
 
-  const releases = readJSON(path.join(ROOT, 'releases.json'));
-  const bandsData = readJSON(path.join(ROOT, 'bands.json'));
+  const releases = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
+  const bandsData = readJSON(path.join(EDITABLE_DATA_DIR, 'bands.json'));
   const bands = bandsData.muzickaMasterLista || [];
 
   const band = bands.find(b => b.name === artistName || b.spotifyName === artistName);

@@ -44,13 +44,33 @@ function rateLimit(ip, max, windowMs) {
 // ==================== FETCH + CACHE JSON ====================
 const jsonCache = new Map();
 
+const DATA_FILE_MAP = new Map([
+  ['bands.json', 'data/dynamic/editable/bands.json'],
+  ['events.json', 'data/dynamic/editable/events.json'],
+  ['releases.json', 'data/dynamic/editable/releases.json'],
+  ['genres.json', 'data/static/genres.json'],
+  ['chart-data.json', 'data/dynamic/generated/chart-data.json'],
+  ['articles.json', 'data/dynamic/generated/articles.json'],
+  ['articles-filtered.json', 'data/dynamic/generated/articles-filtered.json'],
+  ['curators.json', 'data/static/curators.json'],
+  ['chart-genres.json', 'data/static/chart-genres.json'],
+]);
+
+function resolveDataPath(file) {
+  if (DATA_FILE_MAP.has(file)) return DATA_FILE_MAP.get(file);
+  if (file.startsWith('chart-history/')) return `data/dynamic/generated/${file}`;
+  if (file.startsWith('lang/')) return `data/static/${file}`;
+  return file;
+}
+
 async function fetchJson(env, file) {
-  const key = file;
+  const resolvedFile = resolveDataPath(file);
+  const key = resolvedFile;
   const cached = jsonCache.get(key);
   if (cached && Date.now() - cached.ts < CACHE_TTL * 1000) return cached.data;
 
   const origin = env.ORIGIN || 'https://toplista.mk';
-  const resp = await fetch(`${origin}/${file}`, {
+  const resp = await fetch(`${origin}/${resolvedFile}`, {
     cf: { cacheTtl: CACHE_TTL, cacheEverything: true },
   });
   if (!resp.ok) return null;
@@ -184,9 +204,9 @@ async function handleChartHistory(week, env) {
 }
 
 async function handleArticles(params, env) {
-  const raw = await fetchJson(env, 'articles.json');
+  const raw = await fetchJson(env, 'articles-filtered.json') || await fetchJson(env, 'articles.json');
   if (!raw) return null;
-  let articles = raw.articles || [];
+  let articles = raw.articles || raw.matched || [];
 
   const q = params.get('q');
   const source = params.get('source');

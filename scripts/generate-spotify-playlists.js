@@ -22,6 +22,15 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
+const STATIC_DATA_DIR = path.join(ROOT, 'data', 'static');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
+const GENERATED_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'generated');
+const DATA_FILE_PATHS = {
+  'bands.json': path.join(EDITABLE_DATA_DIR, 'bands.json'),
+  'chart-genres.json': path.join(STATIC_DATA_DIR, 'chart-genres.json'),
+  'site-master.json': path.join(GENERATED_DATA_DIR, 'site-master.json'),
+  'spotify-playlists.json': path.join(STATIC_DATA_DIR, 'spotify-playlists.json'),
+};
 
 // ---------------------------------------------------------------------------
 //  Spotify Auth (User token via refresh_token grant)
@@ -158,7 +167,7 @@ async function getPlaylistName(playlistId, token) {
 // ---------------------------------------------------------------------------
 
 function loadJson(filename) {
-  const p = path.join(ROOT, filename);
+  const p = DATA_FILE_PATHS[filename] || path.join(ROOT, filename);
   if (!fs.existsSync(p)) return null;
   const raw = fs.readFileSync(p, 'utf8');
   return JSON.parse(raw.charCodeAt(0) === 0xFEFF ? raw.slice(1) : raw);

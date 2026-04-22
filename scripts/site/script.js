@@ -320,19 +320,29 @@
     // ==================== ARTICLE LOADING & MATCHING ====================
     
     /**
-     * Load pre-filtered, pre-matched articles from site-master.json.
-     * Uses the news.matched array which has blacklist filtering and artist
-     * matching already applied by generate-site-master.ps1.
+     * Load pre-filtered, pre-matched articles from the standalone feed output.
+     * Falls back to site-master.json only when the dedicated media file is missing.
      * Results are cached in cachedRssArticles.
      */
     async function loadRssFeeds() {
         if (cachedRssArticles !== null) return cachedRssArticles;
         try {
-            const master = await loadSiteMaster();
-            if (!master || !master.news || !master.news.matched) {
-                throw new Error('site-master.json missing news.matched');
+            let feed = null;
+            const filteredResp = await fetch('articles-filtered.json');
+            if (filteredResp.ok) {
+                feed = await filteredResp.json();
             }
-            const allArticles = master.news.matched.map(a => ({
+
+            const matchedArticles = feed?.articles || feed?.matched || null;
+            if (!matchedArticles) {
+                const master = await loadSiteMaster();
+                if (!master || !master.news || !master.news.matched) {
+                    throw new Error('No filtered article feed available');
+                }
+                feed = master.news;
+            }
+
+            const allArticles = (feed.articles || feed.matched || []).map(a => ({
                 title: a.title || '',
                 link: a.link || '',
                 description: a.description || '',
@@ -347,7 +357,7 @@
             cachedRssArticles = allArticles;
             return allArticles;
         } catch (err) {
-            console.warn('Failed to load articles from site-master:', err);
+            console.warn('Failed to load filtered articles:', err);
             cachedRssArticles = [];
             return [];
         }

@@ -25,16 +25,20 @@ $startTime = Get-Date
 
 Write-Host "  > Loading source data..." -ForegroundColor Yellow
 
-$bandsPath = Join-Path $projectRoot "bands.json"
-$releasesPath = Join-Path $projectRoot "releases.json"
-$chartPath = Join-Path $projectRoot "chart-data.json"
-$articlesPath = Join-Path $projectRoot "articles.json"
-$interviewsPath = Join-Path $projectRoot "interviews.json"
-$eventsPath = Join-Path $projectRoot "events.json"
-$curatorsPath = Join-Path $projectRoot "curators.json"
-$curatorTracklistsPath = Join-Path $projectRoot "curators-tracklists.json"
-$blacklistPath = Join-Path $projectRoot "news-word-blacklist.txt"
-$chartHistoryDir = Join-Path $projectRoot "chart-history"
+$staticDataRoot = Join-Path $projectRoot "data\static"
+$editableDataRoot = Join-Path $projectRoot "data\dynamic\editable"
+$generatedDataRoot = Join-Path $projectRoot "data\dynamic\generated"
+
+$bandsPath = Join-Path $editableDataRoot "bands.json"
+$releasesPath = Join-Path $editableDataRoot "releases.json"
+$chartPath = Join-Path $generatedDataRoot "chart-data.json"
+$articlesPath = Join-Path $generatedDataRoot "articles.json"
+$interviewsPath = Join-Path $generatedDataRoot "interviews.json"
+$eventsPath = Join-Path $editableDataRoot "events.json"
+$curatorsPath = Join-Path $staticDataRoot "curators.json"
+$curatorTracklistsPath = Join-Path $generatedDataRoot "curators-tracklists.json"
+$blacklistPath = Join-Path $projectRoot "config\automation\news-word-blacklist.txt"
+$chartHistoryDir = Join-Path $generatedDataRoot "chart-history"
 
 # Load bands.json
 $bandsJson = Get-Content $bandsPath -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -132,7 +136,7 @@ Write-Host "  > Loaded: $($bandsData.Count) bands, $($releases.Count) releases, 
 #  GENRE CONFIGURATION (loaded from chart-genres.json)
 # ============================================================================
 
-$chartGenresPath = Join-Path $PSScriptRoot "..\chart-genres.json"
+$chartGenresPath = Join-Path $staticDataRoot "chart-genres.json"
 $chartGenresData = Get-Content $chartGenresPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $rapGenres = @($chartGenresData.rap)
 $electronicGenres = @($chartGenresData.electronic)
@@ -2763,7 +2767,7 @@ $columnarReleases = ConvertTo-Columnar -Items $strippedReleases
 
 # advanced-charts.json — only loaded by charts.html (Напредно view)
 $advancedChartsJson = $advancedChartsOutput | ConvertTo-Json -Depth 15 -Compress
-$advChartsPath = Join-Path $projectRoot "advanced-charts.json"
+$advChartsPath = Join-Path $generatedDataRoot "advanced-charts.json"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 [System.IO.File]::WriteAllText($advChartsPath, $advancedChartsJson, $utf8NoBom)
 Write-Host "  > Wrote advanced-charts.json ($([math]::Round((Get-Item $advChartsPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
@@ -2775,7 +2779,7 @@ $artistData = [PSCustomObject]@{
     artistActivity         = $activityOutput
 }
 $artistDataJson = $artistData | ConvertTo-Json -Depth 15 -Compress
-$artistDataPath = Join-Path $projectRoot "artist-data.json"
+$artistDataPath = Join-Path $generatedDataRoot "artist-data.json"
 [System.IO.File]::WriteAllText($artistDataPath, $artistDataJson, $utf8NoBom)
 Write-Host "  > Wrote artist-data.json ($([math]::Round((Get-Item $artistDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
 
@@ -2785,7 +2789,7 @@ $chartHistoryDataValue = [PSCustomObject]@{
     data = $weeklyChartsComputed
 }
 $chartHistoryDataJson = $chartHistoryDataValue | ConvertTo-Json -Depth 15 -Compress
-$chartHistoryDataPath = Join-Path $projectRoot "chart-history-data.json"
+$chartHistoryDataPath = Join-Path $generatedDataRoot "chart-history-data.json"
 [System.IO.File]::WriteAllText($chartHistoryDataPath, $chartHistoryDataJson, $utf8NoBom)
 Write-Host "  > Wrote chart-history-data.json ($([math]::Round((Get-Item $chartHistoryDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
 
@@ -2858,7 +2862,7 @@ $siteMaster = [PSCustomObject]@{
 }
 
 # Write to file
-$outputPath = Join-Path $projectRoot "site-master.json"
+$outputPath = Join-Path $generatedDataRoot "site-master.json"
 $json = $siteMaster | ConvertTo-Json -Depth 15 -Compress
 [System.IO.File]::WriteAllText($outputPath, $json, $utf8NoBom)
 

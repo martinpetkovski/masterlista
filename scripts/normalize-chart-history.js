@@ -39,7 +39,7 @@ function convertPopularity(oldPop, releaseType) {
 }
 
 function normalizeFile(weekLabel) {
-  const filePath = path.join(__dirname, '..', 'chart-history', `chart-2026-${weekLabel}.json`);
+  const filePath = path.join(__dirname, '..', 'data', 'dynamic', 'generated', 'chart-history', `chart-2026-${weekLabel}.json`);
   
   if (!fs.existsSync(filePath)) {
     console.log(`Skipping ${weekLabel}: file not found`);

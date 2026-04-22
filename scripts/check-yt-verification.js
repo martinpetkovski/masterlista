@@ -11,7 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const RELEASES_FILE = path.join(__dirname, '..', 'releases.json');
+const RELEASES_FILE = path.join(__dirname, '..', 'data', 'dynamic', 'editable', 'releases.json');
 
 if (!fs.existsSync(RELEASES_FILE)) {
     console.error('releases.json not found');

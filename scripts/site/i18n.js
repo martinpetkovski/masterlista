@@ -10,7 +10,7 @@
  *   - onLanguageChange(fn) — register a callback for language changes
  *
  * Include AFTER common.js and BEFORE page-specific scripts:
- *   <script src="/i18n.js"></script>
+ *   <script src="/scripts/site/i18n.js"></script>
  *
  * HTML usage:
  *   <span data-i18n="nav.home">Дома</span>
@@ -214,7 +214,7 @@
     function loadLanguageSync(lang) {
         if (_translations[lang]) return true;
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/lang/' + lang + '.json', false);
+        xhr.open('GET', '/data/static/lang/' + lang + '.json', false);
         try {
             xhr.send();
             if (xhr.status === 200 || xhr.status === 0) {
@@ -230,7 +230,7 @@
 
         // Load the language manifest (metadata for all languages)
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/lang/languages.json', false);
+        xhr.open('GET', '/data/static/lang/languages.json', false);
         try {
             xhr.send();
             if (xhr.status === 200 || xhr.status === 0) {

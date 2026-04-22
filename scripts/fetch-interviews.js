@@ -1,7 +1,7 @@
 /**
  * fetch-interviews.js
  *
- * Reads YouTube channel URLs from interview-channels.json, resolves each
+ * Reads YouTube channel URLs from config/automation/interview-channels.json, resolves each
  * channel, fetches every uploaded video for new channels, incrementally fetches
  * recent uploads for existing channels, and writes interviews.json.
  *
@@ -17,9 +17,12 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const CHANNELS_PATH = path.join(ROOT, 'interview-channels.json');
-const OUTPUT_PATH = path.join(ROOT, 'interviews.json');
-const CACHE_PATH = path.join(ROOT, '.interview-channel-cache.json');
+const AUTOMATION_CONFIG_DIR = path.join(ROOT, 'config', 'automation');
+const CREDENTIALS_DIR = path.join(ROOT, 'config', 'credentials');
+const CACHE_DIR = path.join(ROOT, '.cache');
+const CHANNELS_PATH = path.join(AUTOMATION_CONFIG_DIR, 'interview-channels.json');
+const OUTPUT_PATH = path.join(ROOT, 'data', 'dynamic', 'generated', 'interviews.json');
+const CACHE_PATH = path.join(CACHE_DIR, 'interview-channel-cache.json');
 const API_DELAY_MS = 100;
 const API_RETRY_DELAY_MS = 1000;
 const API_MAX_RETRIES = 3;
@@ -40,13 +43,14 @@ function readJson(filePath, fallbackValue) {
 }
 
 function writeJson(filePath, value) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(value, null, 4) + '\n', 'utf8');
 }
 
 function getYouTubeApiKey() {
     if (process.env.YOUTUBE_API_KEY) return process.env.YOUTUBE_API_KEY;
     try {
-        const credPath = path.join(ROOT, 'youtube-credentials.json');
+        const credPath = path.join(CREDENTIALS_DIR, 'youtube-credentials.json');
         const creds = JSON.parse(fs.readFileSync(credPath, 'utf8'));
         if (creds.apiKey && creds.apiKey !== 'YOUR_YOUTUBE_DATA_API_V3_KEY_HERE') {
             return creds.apiKey;
@@ -497,7 +501,7 @@ async function main() {
 
     const apiKey = getYouTubeApiKey();
     if (!apiKey) {
-        throw new Error('No YouTube API key. Set YOUTUBE_API_KEY or add youtube-credentials.json.');
+        throw new Error('No YouTube API key. Set YOUTUBE_API_KEY or add config/credentials/youtube-credentials.json.');
     }
 
     const existingOutput = readJson(OUTPUT_PATH, null);

@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const bandsPath = path.join(root, 'bands.json');
-const releasesPath = path.join(root, 'releases.json');
+const bandsPath = path.join(root, 'data', 'dynamic', 'editable', 'bands.json');
+const releasesPath = path.join(root, 'data', 'dynamic', 'editable', 'releases.json');
 
 // Build set of Spotify artist IDs from bands.json
 const bands = JSON.parse(fs.readFileSync(bandsPath, 'utf8')).muzickaMasterLista;

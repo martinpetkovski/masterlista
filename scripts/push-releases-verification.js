@@ -2,7 +2,9 @@ const { spawnSync } = require('child_process');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const releasesPath = path.join(root, 'releases.json');
+const releasesRepoPath = 'data/dynamic/editable/releases.json';
+const releasesUrlPath = releasesRepoPath.split('/').map(encodeURIComponent).join('/');
+const releasesPath = path.join(root, 'data', 'dynamic', 'editable', 'releases.json');
 
 function parseArgs(argv) {
   const args = { unverified: null, dryRun: false, owner: '', repo: '' };
@@ -62,8 +64,8 @@ function parseGitHubRemote(remoteUrl) {
 function buildUrls(owner, repo, branch) {
   if (!owner || !repo || !branch) return { editUrl: null, blobUrl: null };
   return {
-    editUrl: `https://github.com/${owner}/${repo}/edit/${encodeURIComponent(branch)}/releases.json`,
-    blobUrl: `https://github.com/${owner}/${repo}/blob/${encodeURIComponent(branch)}/releases.json`,
+    editUrl: `https://github.com/${owner}/${repo}/edit/${encodeURIComponent(branch)}/${releasesUrlPath}`,
+    blobUrl: `https://github.com/${owner}/${repo}/blob/${encodeURIComponent(branch)}/${releasesUrlPath}`,
   };
 }
 
@@ -80,21 +82,21 @@ function main() {
   const owner = args.owner || process.env.GITHUB_OWNER || parsedRemote.owner || '';
   const repo = args.repo || process.env.GITHUB_REPO || parsedRemote.repo || '';
 
-  const hasUnstaged = gitStatus(['diff', '--quiet', '--', 'releases.json']) !== 0;
-  const hasStaged = gitStatus(['diff', '--cached', '--quiet', '--', 'releases.json']) !== 0;
+  const hasUnstaged = gitStatus(['diff', '--quiet', '--', releasesRepoPath]) !== 0;
+  const hasStaged = gitStatus(['diff', '--cached', '--quiet', '--', releasesRepoPath]) !== 0;
   const hasChanges = hasUnstaged || hasStaged;
 
   let committed = false;
   if (hasChanges) {
     const commitMessage = `YouTube link matching - ${args.unverified || 'pending'} links pending verification`;
     if (!args.dryRun) {
-      runGit(['add', 'releases.json']);
+      runGit(['add', releasesRepoPath]);
       runGit(['commit', '-m', commitMessage, '--quiet']);
       committed = true;
     }
   }
 
-  const commitSha = runGit(['log', '-1', '--format=%H', '--', 'releases.json']);
+  const commitSha = runGit(['log', '-1', '--format=%H', '--', releasesRepoPath]);
   if (!commitSha) {
     throw new Error('Unable to determine latest releases.json commit SHA');
   }

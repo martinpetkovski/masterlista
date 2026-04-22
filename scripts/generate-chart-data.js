@@ -14,6 +14,11 @@
 const fs = require('fs');
 const path = require('path');
 
+const ROOT = path.resolve(__dirname, '..');
+const STATIC_DATA_DIR = path.join(ROOT, 'data', 'static');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
+const GENERATED_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'generated');
+
 // Spotify API helpers
 async function getSpotifyToken(clientId, clientSecret) {
   const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -113,13 +118,13 @@ async function fetchWithRetry(url, options = {}, retries = 5, timeout = 10000) {
 function loadExistingChartData() {
   try {
     // Load releases.json for existing release IDs (primary catalog)
-    const releasesPath = path.join(__dirname, '..', 'releases.json');
+    const releasesPath = path.join(EDITABLE_DATA_DIR, 'releases.json');
     if (fs.existsSync(releasesPath)) {
       const data = JSON.parse(fs.readFileSync(releasesPath, 'utf8'));
       return data;
     }
     // Fallback to chart-data.json for backward compat
-    const chartPath = path.join(__dirname, '..', 'chart-data.json');
+    const chartPath = path.join(GENERATED_DATA_DIR, 'chart-data.json');
     if (fs.existsSync(chartPath)) {
       const data = JSON.parse(fs.readFileSync(chartPath, 'utf8'));
       return data;
@@ -132,7 +137,7 @@ function loadExistingChartData() {
 
 function loadExistingReleases() {
   try {
-    const releasesPath = path.join(__dirname, '..', 'releases.json');
+    const releasesPath = path.join(EDITABLE_DATA_DIR, 'releases.json');
     if (fs.existsSync(releasesPath)) {
       const data = JSON.parse(fs.readFileSync(releasesPath, 'utf8'));
       const map = new Map();
@@ -653,7 +658,7 @@ async function main() {
   // Try to load from local credentials file if not in env
   if (!clientId || !clientSecret) {
     try {
-      const credPath = path.join(__dirname, '..', 'spotify-credentials.json');
+      const credPath = path.join(__dirname, '..', 'config', 'credentials', 'spotify-credentials.json');
       const creds = JSON.parse(fs.readFileSync(credPath, 'utf8'));
       clientId = creds.clientId;
       clientSecret = creds.clientSecret;
@@ -669,7 +674,7 @@ async function main() {
   console.log('Got Spotify token');
   
   // Load bands.json (strip BOM if present)
-  const bandsPath = path.join(__dirname, '..', 'bands.json');
+  const bandsPath = path.join(EDITABLE_DATA_DIR, 'bands.json');
   const bandsRaw = fs.readFileSync(bandsPath, 'utf8').replace(/^\uFEFF/, '');
   const bandsData = JSON.parse(bandsRaw);
   const bands = bandsData.muzickaMasterLista || bandsData;
@@ -857,9 +862,9 @@ async function main() {
     console.log(`Deduplicated: ${releases.length} → ${sortedReleases.length} releases (${releases.length - sortedReleases.length} collab duplicates merged)`);
   }
   
-  const outputPath = path.join(__dirname, '..', 'chart-data.json');
-  const releasesPath = path.join(__dirname, '..', 'releases.json');
-  const historyDir = path.join(__dirname, '..', 'chart-history');
+  const outputPath = path.join(GENERATED_DATA_DIR, 'chart-data.json');
+  const releasesPath = path.join(EDITABLE_DATA_DIR, 'releases.json');
+  const historyDir = path.join(GENERATED_DATA_DIR, 'chart-history');
   
   // Load existing releases.json to preserve youtube track data
   const existingReleases = loadExistingReleases();

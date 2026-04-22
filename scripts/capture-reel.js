@@ -882,7 +882,7 @@ function askQuestion(prompt) {
 }
 
 async function uploadToInstagram(videoPath, dayMode, captionData) {
-  const credPath = path.join(ROOT, 'instagram-credentials.json');
+  const credPath = path.join(ROOT, 'config', 'credentials', 'instagram-credentials.json');
   if (!fs.existsSync(credPath)) {
     logStep('instagram-credentials.json not found \u2014 skipping upload');
     return;
@@ -979,13 +979,13 @@ async function uploadToInstagram(videoPath, dayMode, captionData) {
 }
 
 function buildCaption(dayMode, scenes) {
-  // Load templates from instagram-desc.json
-  const descPath = path.join(ROOT, 'instagram-desc.json');
+  // Load templates from config/automation/instagram-desc.json
+  const descPath = path.join(ROOT, 'config', 'automation', 'instagram-desc.json');
   let desc;
   try {
     desc = JSON.parse(fs.readFileSync(descPath, 'utf-8').replace(/^\uFEFF/, ''));
   } catch (e) {
-    logErr(`Failed to read instagram-desc.json: ${e.message}`);
+    logErr(`Failed to read config/automation/instagram-desc.json: ${e.message}`);
     return `toplista.mk #toplista #${dayMode}`;
   }
   const cfg = desc.modes[dayMode];

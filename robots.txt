@@ -10,6 +10,8 @@ Allow: /lista.html
 
 # Disallow admin and non-public pages
 Disallow: /spotify-credentials.json
+Disallow: /config/credentials/
+Disallow: /config/automation/
 
 # Sitemap
 Sitemap: https://toplista.mk/sitemap.xml

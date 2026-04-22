@@ -22,6 +22,33 @@ window.MMMDrafts = (function () {
     var FILE_BRANCH_MAP = {
         'releases.json': 'youtube-chart-tracking'
     };
+    var REPO_PATH_MAP = {
+        'bands.json': 'data/dynamic/editable/bands.json',
+        'events.json': 'data/dynamic/editable/events.json',
+        'releases.json': 'data/dynamic/editable/releases.json'
+    };
+    var DRAFT_PATH_ALIASES = {
+        'data/dynamic/editable/bands.json': 'bands.json',
+        'data/dynamic/editable/events.json': 'events.json',
+        'data/dynamic/editable/releases.json': 'releases.json'
+    };
+
+    function _normalizeDraftPath(filePath) {
+        return DRAFT_PATH_ALIASES[filePath] || filePath;
+    }
+
+    function _resolveRepoPath(filePath) {
+        var normalized = _normalizeDraftPath(filePath);
+        return REPO_PATH_MAP[normalized] || normalized;
+    }
+
+    function _normalizeStoredDrafts(obj) {
+        var normalized = {};
+        Object.keys(obj || {}).forEach(function(key) {
+            normalized[_normalizeDraftPath(key)] = obj[key];
+        });
+        return normalized;
+    }
 
     // ── Storage helpers ──────────────────────────────────────────
 
@@ -30,7 +57,7 @@ window.MMMDrafts = (function () {
             var raw = localStorage.getItem(STORAGE_KEY);
             if (raw) {
                 var parsed = JSON.parse(raw);
-                if (parsed && typeof parsed === 'object') return parsed;
+                if (parsed && typeof parsed === 'object') return _normalizeStoredDrafts(parsed);
             }
         } catch (_) {}
         return {};
@@ -50,6 +77,7 @@ window.MMMDrafts = (function () {
      *  @param {object} [original] - the original (server) data for diff generation
      */
     function save(filePath, data, original) {
+        filePath = _normalizeDraftPath(filePath);
         var all = _readAll();
         var prevOriginal = all[filePath] ? all[filePath].original : undefined;
         all[filePath] = {
@@ -68,6 +96,7 @@ window.MMMDrafts = (function () {
 
     /** Load a draft. Returns the data object or null. */
     function load(filePath) {
+        filePath = _normalizeDraftPath(filePath);
         var all = _readAll();
         var entry = all[filePath];
         return entry ? entry.data : null;
@@ -75,6 +104,7 @@ window.MMMDrafts = (function () {
 
     /** Clear a single draft. */
     function clear(filePath) {
+        filePath = _normalizeDraftPath(filePath);
         var all = _readAll();
         delete all[filePath];
         _writeAll(all);
@@ -100,6 +130,7 @@ window.MMMDrafts = (function () {
 
     /** Get draft metadata (savedAt) for a file. */
     function getMeta(filePath) {
+        filePath = _normalizeDraftPath(filePath);
         var all = _readAll();
         return all[filePath] || null;
     }
@@ -112,7 +143,7 @@ window.MMMDrafts = (function () {
             var raw = localStorage.getItem(ADDITIONAL_FILES_KEY);
             if (raw) {
                 var parsed = JSON.parse(raw);
-                if (parsed && typeof parsed === 'object') return parsed;
+                if (parsed && typeof parsed === 'object') return _normalizeStoredDrafts(parsed);
             }
         } catch (_) {}
         return {};
@@ -133,6 +164,7 @@ window.MMMDrafts = (function () {
      * @param {string} contentBase64 - base64-encoded file content
      */
     function saveAdditionalFile(draftPath, filePath, contentBase64) {
+        draftPath = _normalizeDraftPath(draftPath);
         var all = _readAdditionalFiles();
         if (!all[draftPath]) all[draftPath] = [];
         // Replace if same path already pending
@@ -145,6 +177,7 @@ window.MMMDrafts = (function () {
      * Remove a pending additional file.
      */
     function removeAdditionalFile(draftPath, filePath) {
+        draftPath = _normalizeDraftPath(draftPath);
         var all = _readAdditionalFiles();
         if (!all[draftPath]) return;
         all[draftPath] = all[draftPath].filter(function (f) { return f.path !== filePath; });
@@ -156,6 +189,7 @@ window.MMMDrafts = (function () {
      * Get all additional files for a draft.
      */
     function getAdditionalFiles(draftPath) {
+        draftPath = _normalizeDraftPath(draftPath);
         var all = _readAdditionalFiles();
         return all[draftPath] || [];
     }
@@ -165,6 +199,7 @@ window.MMMDrafts = (function () {
      */
     function clearAdditionalFiles(draftPath) {
         if (draftPath) {
+            draftPath = _normalizeDraftPath(draftPath);
             var all = _readAdditionalFiles();
             delete all[draftPath];
             _writeAdditionalFiles(all);
@@ -439,7 +474,7 @@ window.MMMDrafts = (function () {
             var fileRequest = {
                 bandsJson: json,
                 originalJson: originalJson,
-                path: filePath
+                path: _resolveRepoPath(filePath)
             };
             if (FILE_BRANCH_MAP[filePath]) {
                 fileRequest.baseBranch = FILE_BRANCH_MAP[filePath];

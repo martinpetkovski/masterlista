@@ -15,8 +15,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const CHART_DATA = path.join(__dirname, '..', 'chart-data.json');
-const HISTORY_DIR = path.join(__dirname, '..', 'chart-history');
+const CHART_DATA = path.join(__dirname, '..', 'data', 'dynamic', 'generated', 'chart-data.json');
+const HISTORY_DIR = path.join(__dirname, '..', 'data', 'dynamic', 'generated', 'chart-history');
 
 // Load current chart-data.json (has real youtubeViews)
 const chartData = JSON.parse(fs.readFileSync(CHART_DATA, 'utf8'));

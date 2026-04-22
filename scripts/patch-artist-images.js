@@ -258,7 +258,7 @@ async function fetchFallbackArtistImage(band) {
 // ==================== Main ====================
 
 async function main() {
-  const bandsPath = path.join(__dirname, '..', 'bands.json');
+  const bandsPath = path.join(__dirname, '..', 'data', 'dynamic', 'editable', 'bands.json');
 
   const bandsRaw = fs.readFileSync(bandsPath, 'utf8').replace(/^\uFEFF/, '');
   const bandsData = JSON.parse(bandsRaw);

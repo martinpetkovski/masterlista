@@ -15,11 +15,11 @@
     <meta property="og:url" content="https://toplista.mk/api">
     <meta property="og:title" content="API | ТопЛиста.мк">
     <meta property="og:description" content="Јавен REST API за пристап до податоците на ТопЛиста.мк.">
-    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:image" content="https://toplista.mk/images/og-image.png">
     <meta property="og:locale" content="mk_MK">
 
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,10 +27,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=10"></script>
-    <script src="/i18n.js?v=1"></script>
-    <script src="mmm-drafts.js?v=1"></script>
-    <script src="/tour.js?v=1" defer></script>
+    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
     <style>
         .help-container {
             max-width: 780px;
@@ -262,11 +262,11 @@
 </head>
 <body class="compact guide-page">
     <header id="site-header" data-active="/za" data-title="API"></header>
-    <script src="/load-header.js"></script>
+    <script src="/scripts/site/load-header.js"></script>
     <main>
         <div class="help-container">
             <div class="logo-hero">
-                <img src="/logo.png" alt="MMM">
+                <img src="/images/logo.png" alt="MMM">
                 <span class="hero-text">ТопЛиста.мк API <span class="version-badge">v1</span></span>
             </div>
 
@@ -410,35 +410,35 @@ print(data['total'])</div>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a href="/bands.json" target="_blank">bands.json</a></td>
+                        <td><a href="/data/dynamic/editable/bands.json" target="_blank">bands.json</a></td>
                         <td>База на артисти</td>
                     </tr>
                     <tr>
-                        <td><a href="/events.json" target="_blank">events.json</a></td>
+                        <td><a href="/data/dynamic/editable/events.json" target="_blank">events.json</a></td>
                         <td>Настани</td>
                     </tr>
                     <tr>
-                        <td><a href="/releases.json" target="_blank">releases.json</a></td>
+                        <td><a href="/data/dynamic/editable/releases.json" target="_blank">releases.json</a></td>
                         <td>Изданија</td>
                     </tr>
                     <tr>
-                        <td><a href="/genres.json" target="_blank">genres.json</a></td>
+                        <td><a href="/data/static/genres.json" target="_blank">genres.json</a></td>
                         <td>Жанрови</td>
                     </tr>
                     <tr>
-                        <td><a href="/chart-data.json" target="_blank">chart-data.json</a></td>
+                        <td><a href="/data/dynamic/generated/chart-data.json" target="_blank">chart-data.json</a></td>
                         <td>Тековни chart податоци</td>
                     </tr>
                     <tr>
-                        <td><a href="/chart-genres.json" target="_blank">chart-genres.json</a></td>
+                        <td><a href="/data/static/chart-genres.json" target="_blank">chart-genres.json</a></td>
                         <td>Chart genre mapping</td>
                     </tr>
                     <tr>
-                        <td><a href="/articles.json" target="_blank">articles.json</a></td>
+                        <td><a href="/data/dynamic/generated/articles.json" target="_blank">articles.json</a></td>
                         <td>Вести</td>
                     </tr>
                     <tr>
-                        <td><a href="/curators.json" target="_blank">curators.json</a></td>
+                        <td><a href="/data/static/curators.json" target="_blank">curators.json</a></td>
                         <td>Кустоси</td>
                     </tr>
                 </tbody>

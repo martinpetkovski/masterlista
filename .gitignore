@@ -1,16 +1,14 @@
 # Update script state
-.last-run-state.json
-.youtube-id-cache.json
+.cache/
 chart-data-youtube.json
 
 # Credentials
-spotify-credentials.json
-instagram-credentials.json
-youtube-credentials.json
+config/credentials/spotify-credentials.json
+config/credentials/instagram-credentials.json
+config/credentials/youtube-credentials.json
 
 # Runtime backups
-bands.json.backup
-.ig-temp/
+backups/bands.json.backup
 
 # Tools (ffmpeg, yt-dlp binaries)
 tools/

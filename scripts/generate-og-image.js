@@ -14,8 +14,8 @@ const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const FFMPEG = path.join(ROOT, 'tools', 'ffmpeg.exe');
-const LOGO = path.join(ROOT, 'logo.png');
-const OUTPUT = path.join(ROOT, 'og-image.png');
+const LOGO = path.join(ROOT, 'images', 'logo.png');
+const OUTPUT = path.join(ROOT, 'images', 'og-image.png');
 
 const FONT_DIR = path.join(ROOT, 'tools', 'fonts');
 const FONT_TITLE = path.join(FONT_DIR, 'DelaGothicOne-Regular.ttf');

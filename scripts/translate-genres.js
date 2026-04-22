@@ -138,7 +138,7 @@ const genreMap = {
   'Турбо Фолк': 'Turbo Folk'
 };
 
-const bandsPath = path.join(__dirname, '..', 'bands.json');
+const bandsPath = path.join(__dirname, '..', 'data', 'dynamic', 'editable', 'bands.json');
 const data = JSON.parse(fs.readFileSync(bandsPath, 'utf8'));
 
 const changes = [];

@@ -8,8 +8,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const chartPath = path.join(root, 'chart-data.json');
-const releasesPath = path.join(root, 'releases.json');
+const chartPath = path.join(root, 'data', 'dynamic', 'generated', 'chart-data.json');
+const releasesPath = path.join(root, 'data', 'dynamic', 'editable', 'releases.json');
 
 let cdRaw = fs.readFileSync(chartPath, 'utf8');
 if (cdRaw.charCodeAt(0) === 0xFEFF) cdRaw = cdRaw.slice(1);

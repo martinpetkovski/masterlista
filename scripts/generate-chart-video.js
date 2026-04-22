@@ -26,12 +26,15 @@ const http = require('http');
 // ============================================================================
 
 const ROOT = path.resolve(__dirname, '..');
+const STATIC_DATA_DIR = path.join(ROOT, 'data', 'static');
+const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
+const GENERATED_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'generated');
 const FFMPEG = path.join(ROOT, 'tools', 'ffmpeg.exe');
 const FFPROBE = path.join(ROOT, 'tools', 'ffprobe.exe');
 const YTDLP = path.join(ROOT, 'tools', 'yt-dlp.exe');
 const OUTPUT_DIR = path.join(ROOT, 'chart-videos');
 const TEMP_DIR = path.join(ROOT, 'chart-videos', '.temp');
-const LOGO_PATH = path.join(ROOT, 'logo.png');
+const LOGO_PATH = path.join(ROOT, 'images', 'logo.png');
 
 const FONT_DIR = path.join(ROOT, 'tools', 'fonts');
 const findFont = (name, fallback) =>
@@ -212,7 +215,7 @@ function hudFrame() {
 //  CHART DATA
 // ============================================================================
 
-const chartGenresData = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'chart-genres.json'), 'utf8'));
+const chartGenresData = JSON.parse(require('fs').readFileSync(path.join(STATIC_DATA_DIR, 'chart-genres.json'), 'utf8'));
 const rapGenres = chartGenresData.rap;
 const electronicGenres = chartGenresData.electronic;
 const popGenres = chartGenresData.pop;
@@ -855,8 +858,8 @@ async function main() {
 
   // --- Load data ---
   logS('LOADING DATA');
-  const chartData = readJSON(path.join(ROOT,'chart-data.json'));
-  const releasesData = readJSON(path.join(ROOT,'releases.json'));
+  const chartData = readJSON(path.join(GENERATED_DATA_DIR, 'chart-data.json'));
+  const releasesData = readJSON(path.join(EDITABLE_DATA_DIR, 'releases.json'));
   // Merge popularity from chart-data into releases catalog
   const popMap = new Map();
   for (const c of chartData.releases) popMap.set(c.releaseId, c);
@@ -866,7 +869,7 @@ async function main() {
   });
   let bandsData = [];
   const spMap = new Map();
-  const bp = path.join(ROOT,'bands.json');
+  const bp = path.join(EDITABLE_DATA_DIR, 'bands.json');
   if (fs.existsSync(bp)) {
     const bj = readJSON(bp);
     bandsData = bj.muzickaMasterLista || [];
@@ -969,7 +972,7 @@ async function main() {
       const wk = parseInt(wm[1]), yr = parseInt(wm[2]);
       let prevWk = wk - 1, prevYr = yr;
       if (prevWk < 1) { prevWk = 52; prevYr--; }
-      const prevFile = path.join(ROOT, 'chart-history', `chart-${prevYr}-W${String(prevWk).padStart(2,'0')}.json`);
+      const prevFile = path.join(GENERATED_DATA_DIR, 'chart-history', `chart-${prevYr}-W${String(prevWk).padStart(2,'0')}.json`);
       if (fs.existsSync(prevFile)) {
         const prevData = readJSON(prevFile);
         const prevTop20 = getSinglesChart(prevData.releases, 20, isAlt?'alt':'all', bandsData);

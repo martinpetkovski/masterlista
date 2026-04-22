@@ -26,16 +26,24 @@ $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Drawing
 
 $scriptRoot = Split-Path -Parent $PSScriptRoot  # Go up from scripts/ to repo root
-if (-not (Test-Path (Join-Path $scriptRoot "chart-data.json"))) {
+if (-not (Test-Path (Join-Path $scriptRoot "data\dynamic\generated\chart-data.json"))) {
     # Fallback: maybe running from repo root directly
     $scriptRoot = $PSScriptRoot
-    if (-not (Test-Path (Join-Path $scriptRoot "chart-data.json"))) {
+    if (-not (Test-Path (Join-Path $scriptRoot "data\dynamic\generated\chart-data.json"))) {
         Write-Host "ERROR: Cannot find chart-data.json. Run from the repo root or scripts/ folder." -ForegroundColor Red
         exit 1
     }
 }
 
-$statePath = Join-Path $scriptRoot ".last-run-state.json"
+$staticDataRoot = Join-Path $scriptRoot "data\static"
+$editableDataRoot = Join-Path $scriptRoot "data\dynamic\editable"
+$generatedDataRoot = Join-Path $scriptRoot "data\dynamic\generated"
+
+$cacheRoot = Join-Path $scriptRoot ".cache"
+if (-not (Test-Path $cacheRoot)) {
+    New-Item -ItemType Directory -Path $cacheRoot -Force | Out-Null
+}
+$statePath = Join-Path $cacheRoot "last-run-state.json"
 
 # ============================================================================
 #  UTILITY
@@ -126,7 +134,7 @@ function Refresh-InstagramToken {
     }
     catch {
         Write-Step "Instagram token is invalid or expired: $($_.Exception.Message)" "Red"
-        Write-Step "Generate a new token at developers.facebook.com and update instagram-credentials.json" "Yellow"
+        Write-Step "Generate a new token at developers.facebook.com and update config/credentials/instagram-credentials.json" "Yellow"
         return $false
     }
 }
@@ -325,7 +333,7 @@ function Merge-Collabs {
 }
 
 # Genre filter data (loaded from chart-genres.json)
-$chartGenresPath = Join-Path $PSScriptRoot "..\chart-genres.json"
+$chartGenresPath = Join-Path $staticDataRoot "chart-genres.json"
 $chartGenresData = Get-Content $chartGenresPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $script:rapGenres = @($chartGenresData.rap)
 $script:electronicGenres = @($chartGenresData.electronic)
@@ -1080,18 +1088,18 @@ if (-not $Force) {
     $state = Get-RunState
     if ($state -and $state.$stateKey -and $state.$stateKey -eq $weekLabel) {
         Write-Step "Already posted $chartLabel chart for $weekLabel" "DarkGray"
-        Write-Step "Use -Force to repost, or clear $stateKey in .last-run-state.json" "DarkGray"
+        Write-Step "Use -Force to repost, or clear $stateKey in .cache/last-run-state.json" "DarkGray"
         exit 0
     }
 }
 
 # --- Load credentials (only needed for posting, not for generate-only) ---
 $creds = $null
-$credentialsPath = Join-Path $scriptRoot "instagram-credentials.json"
+$credentialsPath = Join-Path $scriptRoot "config\credentials\instagram-credentials.json"
 
 if (-not $GenerateOnly) {
     if (-not (Test-Path $credentialsPath)) {
-        Write-Step "instagram-credentials.json not found" "Red"
+        Write-Step "config/credentials/instagram-credentials.json not found" "Red"
         Write-Step "Use -GenerateOnly to just generate images without posting" "Yellow"
         exit 1
     }
@@ -1099,11 +1107,11 @@ if (-not $GenerateOnly) {
         $creds = Get-Content $credentialsPath -Raw | ConvertFrom-Json
     }
     catch {
-        Write-Step "Failed to parse instagram-credentials.json" "Red"
+        Write-Step "Failed to parse config/credentials/instagram-credentials.json" "Red"
         exit 1
     }
     if (-not $creds.accessToken -or -not $creds.igBusinessAccountId) {
-        Write-Step "instagram-credentials.json must contain accessToken and igBusinessAccountId" "Red"
+        Write-Step "config/credentials/instagram-credentials.json must contain accessToken and igBusinessAccountId" "Red"
         exit 1
     }
 
@@ -1116,7 +1124,7 @@ if (-not $GenerateOnly) {
 # --- Load chart data ---
 Write-Section "LOADING DATA"
 
-$chartPath = Join-Path $scriptRoot "chart-data.json"
+$chartPath = Join-Path $generatedDataRoot "chart-data.json"
 if (-not (Test-Path $chartPath)) {
     Write-Step "chart-data.json not found - run chart task first" "Red"
     exit 1
@@ -1124,7 +1132,7 @@ if (-not (Test-Path $chartPath)) {
 $chartData = Get-Content $chartPath -Raw -Encoding UTF8 | ConvertFrom-Json
 
 # Load bands.json for Instagram handles and genre filtering
-$bandsPath = Join-Path $scriptRoot "bands.json"
+$bandsPath = Join-Path $editableDataRoot "bands.json"
 $igHandles = @{}
 $bandsData = @()
 if (Test-Path $bandsPath) {
@@ -1168,7 +1176,7 @@ Write-Host ""
 # --- Generate slide images ---
 Write-Section "GENERATING SLIDES"
 
-$tempDir = Join-Path $scriptRoot ".ig-temp"
+$tempDir = Join-Path $cacheRoot "ig-temp"
 if (-not (Test-Path $tempDir)) { New-Item -ItemType Directory -Path $tempDir -Force | Out-Null }
 
 $slideFiles = @()

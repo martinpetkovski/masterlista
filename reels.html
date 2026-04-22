@@ -961,7 +961,7 @@ body {
 <body>
 
 <div class="topbar">
-  <h1><img src="logo.png" alt="Logo" width="48"> <div style="display: inline-block; vertical-align: top; font-size: 18px; margin-left: 10px;">REELS</div></h1>
+  <h1><img src="/images/logo.png" alt="Logo" width="48"> <div style="display: inline-block; vertical-align: top; font-size: 18px; margin-left: 10px;">REELS</div></h1>
   <div class="status" id="statusText">Loading data...</div>
 </div>
 
@@ -1082,7 +1082,16 @@ const DATA = {
 };
 
 async function loadJSON(url) {
-  const r = await fetch(url);
+  const dataUrlAliases = {
+    'bands.json': '/data/dynamic/editable/bands.json',
+    'events.json': '/data/dynamic/editable/events.json',
+    'releases.json': '/data/dynamic/editable/releases.json',
+    'chart-genres.json': '/data/static/chart-genres.json',
+    'chart-data.json': '/data/dynamic/generated/chart-data.json',
+    'site-master.json': '/data/dynamic/generated/site-master.json'
+  };
+  const requestUrl = dataUrlAliases[url] || url;
+  const r = await fetch(requestUrl);
   if (!r.ok) throw new Error(`Failed to load ${url}`);
   return r.json();
 }
@@ -1104,7 +1113,7 @@ async function loadAllData() {
     DATA.events = events.events || events;
     DATA.chartGenres = chartGenres;
 
-    try { DATA.igDesc = await loadJSON('instagram-desc.json'); } catch { DATA.igDesc = null; }
+    try { DATA.igDesc = await loadJSON('config/automation/instagram-desc.json'); } catch { DATA.igDesc = null; }
     DATA.loaded = true;
     document.getElementById('statusText').textContent = `Loaded: ${DATA.releases.totalReleases} releases, ${DATA.releases.totalArtists} artists`;
   } catch (e) {
@@ -1549,7 +1558,7 @@ function renderScene(sceneData) {
   if (sceneData.type !== 'chart-list' && sceneData.type !== 'outro') {
     const wm = document.createElement('div');
     wm.className = 'scene-watermark';
-    wm.innerHTML = '<img src="logo.png" alt=""><span>toplista.mk</span>';
+    wm.innerHTML = '<img src="/images/logo.png" alt=""><span>toplista.mk</span>';
     scene.appendChild(wm);
   }
 
@@ -1560,7 +1569,7 @@ function renderIntro(container, data) {
   container.classList.add('intro-content');
   const lines = data.lines || [data.title, data.subtitle].filter(Boolean);
   const anims = ['crashIn', 'swipeIn', 'swipeInRight', 'slamDown', 'crashIn', 'swipeIn'];
-  const logo = '<img class="intro-logo" src="logo.png" alt="toplista.mk">';
+  const logo = '<img class="intro-logo" src="/images/logo.png" alt="toplista.mk">';
 
   // Top 3 cover images with slap animation
   let coversHtml = '';
@@ -1692,7 +1701,7 @@ function renderChartList(container, data) {
 function renderOutro(container, data) {
   container.classList.add('outro-content');
   container.innerHTML = `
-    <img class="intro-logo" src="logo.png" alt="toplista.mk" style="width:120px; height:120px;">
+    <img class="intro-logo" src="/images/logo.png" alt="toplista.mk" style="width:120px; height:120px;">
     <div class="outro-word">СЛУШАЈ</div>
     <div class="outro-word">МАКЕДОНСКА</div>
     <div class="outro-word">МУЗИКА!</div>
@@ -2518,7 +2527,7 @@ function updateIGCaption(dayKey) {
 
 function buildIGCaption(dayKey) {
   const desc = DATA.igDesc;
-  if (!desc) return '(instagram-desc.json not loaded)';
+  if (!desc) return '(Instagram descriptions not loaded)';
   const cfg = desc.modes[dayKey];
   if (!cfg) return '(no config for this mode)';
 

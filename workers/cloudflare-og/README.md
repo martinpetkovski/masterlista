@@ -11,16 +11,16 @@ The site uses GitHub Pages with client-side routing via `404.html`. When social 
 This worker sits in front of the GitHub Pages origin (as a Cloudflare Worker Route) and:
 
 1. **Detects social media crawlers** by User-Agent
-2. **For crawlers** — fetches `bands.json` / `curators.json` / `events.json` from the GitHub repo, looks up the entity, and returns a minimal HTML page with correct `og:title`, `og:description`, `og:image`, and Twitter Card meta tags
-3. **For regular visitors** — passes the request straight through to the origin (zero impact on normal browsing)
+2. **For crawlers** — fetches canonical data from `data/dynamic/editable/bands.json`, `data/static/curators.json`, and `data/dynamic/editable/events.json`, looks up the entity, and returns a minimal HTML page with correct `og:title`, `og:description`, `og:image`, and Twitter Card meta tags
+3. **For regular visitors** — passes the request straight through to the origin and also rewrites legacy root JSON URLs like `/bands.json` to their new `/data/...` locations
 
 ### Supported URL patterns
 
 | Pattern | Data source | Example |
 |---|---|---|
-| `/{artist-slug}` | `bands.json` | `/guruvoodoo` |
-| `/kustos/{slug}` | `curators.json` | `/kustos/martin-petkovski` |
-| `/nastan/{id}` | `events.json` | `/nastan/evt-20260206-re-start-festival-ден-1-6z31` |
+| `/{artist-slug}` | `data/dynamic/editable/bands.json` | `/guruvoodoo` |
+| `/kustos/{slug}` | `data/static/curators.json` | `/kustos/martin-petkovski` |
+| `/nastan/{id}` | `data/dynamic/editable/events.json` | `/nastan/evt-20260206-re-start-festival-ден-1-6z31` |
 
 ## Deployment
 

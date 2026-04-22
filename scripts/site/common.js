@@ -6,7 +6,7 @@
  * kustosi.html, nastani.html, nastan.html, vesti.html, iznenadi-me.html.
  *
  * Include this file BEFORE the page-specific <script> block:
- *   <script src="/common.js"></script>
+ *   <script src="/scripts/site/common.js"></script>
  */
 
 // ==================== HTML ESCAPING ====================
@@ -14,6 +14,113 @@ function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+// ==================== DATA URL REMAPPING ====================
+var MASTERLISTA_DATA_PATH_ALIASES = {
+    '/bands.json': '/data/dynamic/editable/bands.json',
+    '/events.json': '/data/dynamic/editable/events.json',
+    '/releases.json': '/data/dynamic/editable/releases.json',
+    '/genres.json': '/data/static/genres.json',
+    '/chart-genres.json': '/data/static/chart-genres.json',
+    '/loading-messages.json': '/data/static/loading-messages.json',
+    '/curators.json': '/data/static/curators.json',
+    '/rss-feeds.json': '/data/static/rss-feeds.json',
+    '/spotify-playlists.json': '/data/static/spotify-playlists.json',
+    '/articles.json': '/data/dynamic/generated/articles.json',
+    '/articles-filtered.json': '/data/dynamic/generated/articles-filtered.json',
+    '/interviews.json': '/data/dynamic/generated/interviews.json',
+    '/interviews-filtered.json': '/data/dynamic/generated/interviews-filtered.json',
+    '/chart-data.json': '/data/dynamic/generated/chart-data.json',
+    '/chart-history-data.json': '/data/dynamic/generated/chart-history-data.json',
+    '/site-master.json': '/data/dynamic/generated/site-master.json',
+    '/advanced-charts.json': '/data/dynamic/generated/advanced-charts.json',
+    '/artist-data.json': '/data/dynamic/generated/artist-data.json',
+    '/curators-tracklists.json': '/data/dynamic/generated/curators-tracklists.json'
+};
+
+function resolveMasterlistaDataUrl(url) {
+    if (!url || typeof url !== 'string') return url;
+
+    var hashIndex = url.indexOf('#');
+    var hash = hashIndex >= 0 ? url.slice(hashIndex) : '';
+    var withoutHash = hashIndex >= 0 ? url.slice(0, hashIndex) : url;
+    var queryIndex = withoutHash.indexOf('?');
+    var query = queryIndex >= 0 ? withoutHash.slice(queryIndex) : '';
+    var barePath = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash;
+
+    if (barePath && barePath.indexOf('://') === -1 && barePath.charAt(0) !== '/') {
+        if (MASTERLISTA_DATA_PATH_ALIASES['/' + barePath]) {
+            return MASTERLISTA_DATA_PATH_ALIASES['/' + barePath] + query + hash;
+        }
+        if (barePath.indexOf('chart-history/') === 0) {
+            return '/data/dynamic/generated/' + barePath + query + hash;
+        }
+        if (barePath.indexOf('lang/') === 0) {
+            return '/data/static/' + barePath + query + hash;
+        }
+    }
+
+    var parsed;
+    try {
+        parsed = new URL(url, window.location.href);
+    } catch (e) {
+        return url;
+    }
+
+    if (parsed.origin !== window.location.origin) return url;
+
+    var mappedPath = MASTERLISTA_DATA_PATH_ALIASES[parsed.pathname];
+    if (!mappedPath) {
+        if (parsed.pathname.indexOf('/chart-history/') === 0) {
+            mappedPath = '/data/dynamic/generated' + parsed.pathname;
+        } else if (parsed.pathname.indexOf('/lang/') === 0) {
+            mappedPath = '/data/static' + parsed.pathname;
+        } else {
+            return url;
+        }
+    }
+
+    parsed.pathname = mappedPath;
+    return parsed.toString();
+}
+
+window.resolveMasterlistaDataUrl = resolveMasterlistaDataUrl;
+
+(function patchMasterlistaDataRequests() {
+    if (window.__mmmDataUrlPatched) return;
+    window.__mmmDataUrlPatched = true;
+
+    function remapRequestInput(input) {
+        if (typeof input === 'string') {
+            return resolveMasterlistaDataUrl(input);
+        }
+        if (typeof Request !== 'undefined' && input instanceof Request) {
+            var resolvedUrl = resolveMasterlistaDataUrl(input.url);
+            if (resolvedUrl === input.url) return input;
+            return new Request(resolvedUrl, input);
+        }
+        return input;
+    }
+
+    if (typeof window.fetch === 'function') {
+        var nativeFetch = window.fetch.bind(window);
+        window.fetch = function(input, init) {
+            return nativeFetch(remapRequestInput(input), init);
+        };
+    }
+
+    if (window.XMLHttpRequest && window.XMLHttpRequest.prototype && !window.XMLHttpRequest.prototype.__mmmDataOpenPatched) {
+        var nativeOpen = window.XMLHttpRequest.prototype.open;
+        window.XMLHttpRequest.prototype.open = function(method, url) {
+            var args = Array.prototype.slice.call(arguments);
+            if (typeof url === 'string') {
+                args[1] = resolveMasterlistaDataUrl(url);
+            }
+            return nativeOpen.apply(this, args);
+        };
+        window.XMLHttpRequest.prototype.__mmmDataOpenPatched = true;
+    }
+})();
 
 // ==================== THEME STATE (shared) ====================
 var THEME_STORAGE_KEY = 'mmm-dark-mode';
@@ -1452,7 +1559,7 @@ function initGlobalMiniFooter() {
         var siteTitle = (typeof t === 'function') ? t('common.siteTitle') : 'Топ Листа';
         miniFooter.innerHTML =
             '<a class="site-mini-footer__logo-link" href="/" aria-label="' + siteTitle + '">' +
-                '<img src="/logo.png" alt="' + siteTitle + '" class="site-mini-footer__logo" width="22" height="22">' +
+                '<img src="/images/logo.png" alt="' + siteTitle + '" class="site-mini-footer__logo" width="22" height="22">' +
             '</a>' +
             '<div class="site-mini-footer__text">' +
                 devBy + ' <a href="' + repoUrl + '" target="_blank" rel="noopener noreferrer">' + authorName + '</a> ' +

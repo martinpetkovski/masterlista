@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
-    <script src="/progress-bar.js"></script>
+    <script src="/scripts/site/progress-bar.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ТопЛиста.мк | Дома</title>
 
@@ -22,7 +22,7 @@
     <meta property="og:url" content="https://toplista.mk/">
     <meta property="og:title" content="ТопЛиста.мк | Дома">
     <meta property="og:description" content="Сè за македонската музичка сцена на едно место. Топ листи, артисти, настани и вести.">
-    <meta property="og:image" content="https://toplista.mk/og-image.png">
+    <meta property="og:image" content="https://toplista.mk/images/og-image.png">
     <meta property="og:locale" content="mk_MK">
     <meta property="og:site_name" content="Топ Листа МК">
 
@@ -31,11 +31,11 @@
     <meta name="twitter:url" content="https://toplista.mk/">
     <meta name="twitter:title" content="ТопЛиста.мк">
     <meta name="twitter:description" content="Сè за македонската музичка сцена на едно место.">
-    <meta name="twitter:image" content="https://toplista.mk/og-image.png">
+    <meta name="twitter:image" content="https://toplista.mk/images/og-image.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
 
     <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,10 +64,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css" media="screen and (max-width: 600px)">
-    <script src="/common.js?v=10"></script>
-    <script src="/i18n.js?v=1"></script>
-    <script src="mmm-drafts.js?v=1"></script>
-    <script src="/tour.js?v=1" defer></script>
+    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
     <style>
         /* ==================== DARK MODE VARIABLES ==================== */
         body.dark-mode,
@@ -4011,14 +4011,14 @@
 </head>
 <body class="compact dashboard-page">
     <header id="site-header" data-active="/" data-title="Дома"></header>
-    <script src="/load-header.js"></script>
+    <script src="/scripts/site/load-header.js"></script>
 
     <div class="dashboard">
 
         <!-- ==================== TITLE BAR WITH NAV ==================== -->
         <div class="site-title">
             <div class="site-title-logo-wrap">
-                <img src="/logo.png" alt="" class="site-title-logo" id="site-title-logo-trigger">
+                <img src="/images/logo.png" alt="" class="site-title-logo" id="site-title-logo-trigger">
                 <div class="site-title-menu" id="site-title-menu">
                     <a href="/"><i class="fas fa-house"></i> <span data-i18n="nav.home">Дома</span></a>
                     <a href="/charts"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
@@ -5838,7 +5838,7 @@
                 var artistUrl = '/artist.html?name=' + encodeURIComponent(b.name);
                 var contactLink = b.links && b.links.instagram ? b.links.instagram : (b.links && b.links.spotify ? b.links.spotify : artistUrl);
                 return '<li class="verify-item">' +
-                    '<img class="verify-img" src="' + (b.image || '/logo.png') + '" alt="" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
+                    '<img class="verify-img" src="' + (b.image || '/images/logo.png') + '" alt="" onerror="this.onerror=null;this.src=ARTIST_FALLBACK_IMG">' +
                     '<span class="verify-name"><a href="' + artistUrl + '">' + escHtml(localizeText(b.name)) + '</a></span>' +
                     '<a href="' + contactLink + '" target="_blank" rel="noopener" class="verify-btn"><i class="fas fa-paper-plane"></i> ' + t('dashboard.contactThem') + '</a>' +
                 '</li>';

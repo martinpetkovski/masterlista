@@ -18,13 +18,13 @@ class SpotifyAPI {
     }
 
     /**
-     * Load credentials from spotify-credentials.json
+     * Load credentials from config/credentials/spotify-credentials.json
      */
     async loadCredentials() {
         if (this.credentials) return this.credentials;
         
         try {
-            const response = await fetch('spotify-credentials.json');
+            const response = await fetch('/config/credentials/spotify-credentials.json');
             if (!response.ok) {
                 console.warn('Spotify credentials not found. New releases feature disabled.');
                 return null;
@@ -32,7 +32,7 @@ class SpotifyAPI {
             this.credentials = await response.json();
             
             if (!this.credentials.clientId || this.credentials.clientId === 'YOUR_SPOTIFY_CLIENT_ID_HERE') {
-                console.warn('Spotify credentials not configured. Edit spotify-credentials.json with your API keys.');
+                console.warn('Spotify credentials not configured. Edit config/credentials/spotify-credentials.json with your API keys.');
                 return null;
             }
             

@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const HISTORY_DIR = path.join(__dirname, '..', 'chart-history');
+const HISTORY_DIR = path.join(__dirname, '..', 'data', 'dynamic', 'generated', 'chart-history');
 
 function computePopularities(releases) {
     const maxDeltas = { single: 0, album: 0 };
