@@ -264,6 +264,11 @@
             grid-column: 1 / -1;
         }
 
+        #events-card,
+        #hot-songs-card {
+            min-height: 31.5rem;
+        }
+
         .dash-card-header {
             display: flex;
             align-items: center;
@@ -475,45 +480,6 @@
         body.dark-mode .dash-card-header-actions .card-action-btn:hover {
             filter: brightness(1.4);
             box-shadow: 0 0 10px rgba(0,0,0,0.15);
-        }
-
-        #hot-songs-card .hot-songs-page-select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            min-width: 3.35rem;
-            height: 26px;
-            padding: 0 1rem 0 0.42rem;
-            border: none;
-            background:
-                linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 0.58rem) 10px / 0.28rem 0.28rem no-repeat,
-                linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.38rem) 10px / 0.28rem 0.28rem no-repeat,
-                #000;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.66rem;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            text-align: center;
-            text-align-last: center;
-            cursor: pointer;
-        }
-
-        #hot-songs-card .hot-songs-page-select:hover {
-            filter: brightness(1.18);
-        }
-
-        #hot-songs-card .hot-songs-page-select:disabled {
-            opacity: 0.45;
-            cursor: default;
-        }
-
-        body.dark-mode #hot-songs-card .hot-songs-page-select {
-            background:
-                linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 0.58rem) 10px / 0.28rem 0.28rem no-repeat,
-                linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.38rem) 10px / 0.28rem 0.28rem no-repeat,
-                #fff;
-            color: #000;
         }
 
         /* ==================== CHART MINI LIST ==================== */
@@ -1625,6 +1591,57 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .radar-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+
+        .radar-pagination button {
+            appearance: none;
+            border: 1px solid var(--border-color, #dfe1e5);
+            background: var(--bg-secondary, #f3f4f6);
+            color: var(--text-secondary, #555b64);
+            min-width: 2.2rem;
+            height: 2.2rem;
+            padding: 0 0.55rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .radar-pagination button:hover {
+            background: var(--bg-hover, #eceef1);
+            color: var(--text-primary, #1a1d21);
+            border-color: var(--accent-blue, #225ce4);
+            transform: translateY(-1px);
+        }
+
+        .radar-pagination button.active {
+            background: #000;
+            border-color: #000;
+            color: #fff;
+        }
+
+        .radar-pagination button:disabled {
+            opacity: 0.45;
+            cursor: default;
+            transform: none;
+        }
+
+        .radar-pagination-summary {
+            margin-left: 0.3rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted, #8b929a);
+            white-space: nowrap;
         }
 
         .event-today-marker {
@@ -3605,6 +3622,11 @@
                 grid-column: 1;
             }
 
+            #events-card,
+            #hot-songs-card {
+                min-height: auto;
+            }
+
             .release-radar-grid {
                 display: flex;
                 flex-wrap: nowrap;
@@ -3658,6 +3680,25 @@
                 font-size: 0.72rem;
             }
 
+            .radar-pagination {
+                justify-content: flex-start;
+                gap: 0.3rem;
+                padding: 0 0.35rem;
+                margin-top: 0.55rem;
+            }
+
+            .radar-pagination button {
+                min-width: 2rem;
+                height: 2rem;
+                font-size: 0.78rem;
+            }
+
+            .radar-pagination-summary {
+                width: 100%;
+                margin-left: 0;
+                font-size: 0.74rem;
+            }
+
             #hot-songs-list .trending-item,
             #verify-card .verify-item {
                 flex: 0 0 auto;
@@ -3677,11 +3718,6 @@
             #hot-songs-list .trending-score-inline {
                 min-width: 1.78rem;
                 font-size: 0.7rem;
-            }
-
-            #hot-songs-card .hot-songs-page-select {
-                min-width: 3rem;
-                font-size: 0.62rem;
             }
 
             #hot-songs-list .trending-score-chip {
@@ -4128,6 +4164,7 @@
             </div>
             <div class="dash-loading" id="radar-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="release-radar-grid" id="radar-list" style="display:none;"></ul>
+            <div class="radar-pagination" id="radar-pagination" style="display:none;"></div>
         </div>
 
         <!-- ==================== SOCIAL CTA ==================== -->
@@ -4169,12 +4206,12 @@
             <div class="dash-card-header">
                 <h2><i class="fas fa-fire"></i> <span data-i18n="dashboard.popular">Популарно</span></h2>
                 <div class="dash-card-header-actions">
-                    <select id="hot-songs-page-select" class="hot-songs-page-select"></select>
                     <a href="/charts" class="more-link" title="Топ Листа" data-i18n-title="common.topChart"><i class="fas fa-chart-line"></i></a>
                 </div>
             </div>
             <div class="dash-loading" id="hot-songs-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
             <ul class="trending-list" id="hot-songs-list" style="display:none;"></ul>
+            <div class="radar-pagination" id="hot-songs-pagination" style="display:none;"></div>
         </div>
 
         <!-- ==================== SURPRISE ME CTA ==================== -->
@@ -4338,6 +4375,10 @@
         var curatorsData = null;
         var curatorTracksData = null;
         var siteMaster = null;  // Pre-calculated data from site-master.json
+        var RELEASE_RADAR_PAGE_SIZE = 9;
+        var RELEASE_RADAR_PAGE_COUNT = 10;
+        var releaseRadarPages = [];
+        var releaseRadarCurrentPage = 0;
 
         function getBestYoutubeUrl(releaseId) {
             if (!releaseId) return '';
@@ -4924,7 +4965,7 @@
                 ].join('|');
         }
 
-        function buildReleaseRadarSelection(radarCount, perArtistLimit) {
+        function getReleaseRadarCandidatePool() {
             var candidatePool = [];
             var seenKeys = {};
             var chartReleases = chartData && Array.isArray(chartData.releases) ? chartData.releases : [];
@@ -4953,7 +4994,13 @@
                 return getReleaseRadarViews(b) - getReleaseRadarViews(a);
             });
 
-            candidatePool = candidatePool.slice(0, Math.max(radarCount * 4, 24));
+            return candidatePool;
+        }
+
+        function buildReleaseRadarSelection(radarCount, perArtistLimit, candidatePool) {
+            var sourcePool = Array.isArray(candidatePool) ? candidatePool.slice() : getReleaseRadarCandidatePool();
+
+            candidatePool = sourcePool.slice(0, Math.max(radarCount * 4, 24));
 
             if (candidatePool.length === 0) return [];
 
@@ -5012,13 +5059,85 @@
                 if (selected.length < radarCount) addRelease(release);
             });
 
+            if (selected.length < radarCount && sourcePool.length > candidatePool.length) {
+                sourcePool.slice(candidatePool.length).forEach(function(release) {
+                    if (selected.length < radarCount) addRelease(release);
+                });
+            }
+
             return selected.slice(0, radarCount);
+        }
+
+        function buildReleaseRadarPages(pageSize, pageCount, perArtistLimit) {
+            var pages = [];
+            var remainingPool = getReleaseRadarCandidatePool();
+
+            while (remainingPool.length > 0 && pages.length < pageCount) {
+                var pageItems = buildReleaseRadarSelection(pageSize, perArtistLimit, remainingPool);
+                if (pageItems.length === 0) break;
+
+                pages.push(pageItems);
+
+                var pageKeys = {};
+                pageItems.forEach(function(release) {
+                    pageKeys[getReleaseRadarKey(release)] = true;
+                });
+
+                remainingPool = remainingPool.filter(function(release) {
+                    return !pageKeys[getReleaseRadarKey(release)];
+                });
+            }
+
+            return pages;
+        }
+
+        function renderReleaseRadarPagination() {
+            var pagination = document.getElementById('radar-pagination');
+            if (!pagination) return;
+
+            var totalPages = releaseRadarPages.length;
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            if (releaseRadarCurrentPage > totalPages - 1) {
+                releaseRadarCurrentPage = totalPages - 1;
+            }
+
+            var html = '';
+            html += '<button type="button" class="radar-pagination-nav" ' + (releaseRadarCurrentPage === 0 ? 'disabled ' : '') + 'data-page="' + (releaseRadarCurrentPage - 1) + '" aria-label="' + escHtml(t('common.prev')) + '">&laquo;</button>';
+            for (var p = 0; p < totalPages; p++) {
+                html += '<button type="button" class="' + (p === releaseRadarCurrentPage ? 'active' : '') + '" data-page="' + p + '" ' + (p === releaseRadarCurrentPage ? 'aria-current="page"' : '') + '>' + (p + 1) + '</button>';
+            }
+            html += '<button type="button" class="radar-pagination-nav" ' + (releaseRadarCurrentPage === totalPages - 1 ? 'disabled ' : '') + 'data-page="' + (releaseRadarCurrentPage + 1) + '" aria-label="' + escHtml(t('common.next')) + '">&raquo;</button>';
+            html += '<span class="radar-pagination-summary">' + (releaseRadarCurrentPage + 1) + ' / ' + totalPages + '</span>';
+
+            pagination.innerHTML = html;
+            pagination.style.display = '';
+
+            var buttons = pagination.querySelectorAll('button[data-page]');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', function() {
+                    if (this.disabled) return;
+                    releaseRadarCurrentPage = parseInt(this.getAttribute('data-page'), 10);
+                    renderReleaseRadar();
+                });
+            }
         }
 
         // ==================== RENDER: RELEASE RADAR (latest 9, pre-computed) ====================
         function renderReleaseRadar() {
-            var radarCount = 9;
-            var displayedReleases = buildReleaseRadarSelection(radarCount, 2);
+            releaseRadarPages = buildReleaseRadarPages(RELEASE_RADAR_PAGE_SIZE, RELEASE_RADAR_PAGE_COUNT, 2);
+
+            if (releaseRadarPages.length === 0) {
+                releaseRadarCurrentPage = 0;
+            } else if (releaseRadarCurrentPage > releaseRadarPages.length - 1) {
+                releaseRadarCurrentPage = releaseRadarPages.length - 1;
+            }
+
+            var displayedReleases = releaseRadarPages[releaseRadarCurrentPage] || [];
 
             var list = document.getElementById('radar-list');
             var loading = document.getElementById('radar-loading');
@@ -5049,6 +5168,8 @@
 
             loading.style.display = 'none';
             list.style.display = '';
+            list.scrollLeft = 0;
+            renderReleaseRadarPagination();
 
         }
 
@@ -5175,6 +5296,7 @@
         // ==================== RENDER: HOT SONGS (pre-computed from site-master.json) ====================
         var previousChartData = null;
         var HOT_SONGS_PAGE_SIZE = 5;
+        var HOT_SONGS_MAX_PAGES = 10;
         var hotSongsPagerState = {
             listKey: '',
             pageIndex: 0,
@@ -5194,65 +5316,45 @@
         }
 
         function sortHotSongsForDisplay(candidates) {
-            return (candidates || []).slice().sort(function(a, b) {
-                var aAdjusted = Number(a.adjustedHotScore != null ? a.adjustedHotScore : (Number(a.hotScore || 0) * Number(a.diversityPenaltyFactor || 1)));
-                var bAdjusted = Number(b.adjustedHotScore != null ? b.adjustedHotScore : (Number(b.hotScore || 0) * Number(b.diversityPenaltyFactor || 1)));
-                if (bAdjusted !== aAdjusted) return bAdjusted - aAdjusted;
-
-                var hotDiff = Number(b.hotScore || 0) - Number(a.hotScore || 0);
-                if (hotDiff !== 0) return hotDiff;
-
-                var deltaDiff = Number(b.viewsDelta || 0) - Number(a.viewsDelta || 0);
-                if (deltaDiff !== 0) return deltaDiff;
-
-                var viewsDiff = Number(b.youtubeViews || 0) - Number(a.youtubeViews || 0);
-                if (viewsDiff !== 0) return viewsDiff;
-
-                var bDate = String(b.effectiveReleaseDate || b.releaseDate || '');
-                var aDate = String(a.effectiveReleaseDate || a.releaseDate || '');
-                if (bDate !== aDate) return bDate > aDate ? 1 : -1;
-
-                return String(a.bandName || '').localeCompare(String(b.bandName || ''), 'mk');
-            });
+            return (candidates || []).slice();
         }
 
-        function initHotSongsPageSelector() {
-            var select = document.getElementById('hot-songs-page-select');
-            if (!select || select.dataset.bound === 'true') return;
-
-            select.dataset.bound = 'true';
-            select.addEventListener('change', function() {
-                hotSongsPagerState.pageIndex = Math.max(0, Number(select.value || 0));
-                renderHotSongs();
-            });
-        }
-
-        function syncHotSongsPageSelector() {
-            initHotSongsPageSelector();
-
-            var select = document.getElementById('hot-songs-page-select');
-            if (!select) return;
+        function renderHotSongsPagination() {
+            var pagination = document.getElementById('hot-songs-pagination');
+            if (!pagination) return;
 
             var totalPages = hotSongsPagerState.totalPages;
-            var needsRebuild = select.options.length !== totalPages;
-            if (needsRebuild) {
-                select.innerHTML = '';
-                for (var pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-                    var option = document.createElement('option');
-                    option.value = String(pageIndex);
-                    option.textContent = (pageIndex + 1) + '/' + totalPages;
-                    select.appendChild(option);
-                }
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                pagination.style.display = 'none';
+                return;
             }
 
-            select.value = String(Math.max(0, Math.min(hotSongsPagerState.pageIndex, totalPages - 1)));
-            select.disabled = totalPages <= 1;
-            select.title = t('dashboard.page');
-            select.setAttribute('aria-label', t('dashboard.page'));
+            var pageIndex = Math.max(0, Math.min(hotSongsPagerState.pageIndex, totalPages - 1));
+            var html = '';
+            html += '<button type="button" class="radar-pagination-nav" ' + (pageIndex === 0 ? 'disabled ' : '') + 'data-page="' + (pageIndex - 1) + '" aria-label="' + escHtml(t('common.prev')) + '">&laquo;</button>';
+            for (var page = 0; page < totalPages; page++) {
+                html += '<button type="button" class="' + (page === pageIndex ? 'active' : '') + '" data-page="' + page + '" ' + (page === pageIndex ? 'aria-current="page"' : '') + '>' + (page + 1) + '</button>';
+            }
+            html += '<button type="button" class="radar-pagination-nav" ' + (pageIndex === totalPages - 1 ? 'disabled ' : '') + 'data-page="' + (pageIndex + 1) + '" aria-label="' + escHtml(t('common.next')) + '">&raquo;</button>';
+            html += '<span class="radar-pagination-summary">' + (pageIndex + 1) + ' / ' + totalPages + '</span>';
+
+            pagination.innerHTML = html;
+            pagination.style.display = '';
+
+            var buttons = pagination.querySelectorAll('button[data-page]');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener('click', function() {
+                    if (this.disabled) return;
+                    hotSongsPagerState.pageIndex = Math.max(0, Number(this.getAttribute('data-page') || 0));
+                    renderHotSongs();
+                });
+            }
         }
 
         function getHotSongsPage(candidates) {
-            var sorted = sortHotSongsForDisplay(candidates);
+            var maxVisibleSongs = HOT_SONGS_PAGE_SIZE * HOT_SONGS_MAX_PAGES;
+            var sorted = sortHotSongsForDisplay(candidates).slice(0, maxVisibleSongs);
             var listKey = getHotSongsListKey(sorted);
             var totalPages = Math.max(1, Math.ceil(sorted.length / HOT_SONGS_PAGE_SIZE));
 
@@ -5268,8 +5370,6 @@
                     hotSongsPagerState.pageIndex = totalPages - 1;
                 }
             }
-
-            syncHotSongsPageSelector();
 
             if (!hotSongsPagerState.sorted.length) {
                 return [];
@@ -5400,6 +5500,7 @@
                 list.innerHTML = '<li class="no-data-msg">' + t('dashboard.noPositiveChange') + '</li>';
                 loading.style.display = 'none';
                 list.style.display = '';
+                renderHotSongsPagination();
                 return;
             }
 
@@ -5432,6 +5533,7 @@
 
             loading.style.display = 'none';
             list.style.display = '';
+            renderHotSongsPagination();
         }
 
         // ==================== RENDER: EVENTS (loaded from events.json) ====================
@@ -5759,7 +5861,6 @@
         }
 
         // ==================== INIT ====================
-        initHotSongsPageSelector();
         bindShuffleButtons();
         fitSiteTitleMain();
         loadAllData().then(function () {

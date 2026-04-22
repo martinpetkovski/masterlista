@@ -2044,6 +2044,17 @@ foreach ($picked in @($hotSongs)) {
     $picked | Add-Member -NotePropertyName adjustedHotScore -NotePropertyValue $balanceMeta.adjustedHotScore -Force
 }
 
+# Serialize hot songs in their final display order so the index page can page them
+# directly from site-master without re-sorting in the browser.
+$hotSongs = @($hotSongs | Sort-Object @(
+    @{ Expression = { [double]($_.adjustedHotScore -as [double]) }; Descending = $true },
+    @{ Expression = { [double]($_.hotScore -as [double]) }; Descending = $true },
+    @{ Expression = { [int]($_.viewsDelta -as [int]) }; Descending = $true },
+    @{ Expression = { [int]($_.youtubeViews -as [int]) }; Descending = $true },
+    @{ Expression = { [string](Get-ReleaseEffectiveDateString $_) }; Descending = $true },
+    @{ Expression = { [string]$_.bandName } }
+))
+
 Write-Host "  > Found $($hotSongs.Count) hot songs (capped at 100 from $($hotSongsAll.Count))" -ForegroundColor DarkGray
 
 # ============================================================================
