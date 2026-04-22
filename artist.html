@@ -2347,6 +2347,7 @@ a.chart-history-item {
         }
         .timeline-card-header {
             --timeline-card-accent: var(--artist-accent-2, var(--accent-blue, #225ce4));
+            --timeline-card-title-color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -2370,7 +2371,7 @@ a.chart-history-item {
             align-items: center;
             gap: 0.3rem;
             padding: 0;
-            color: rgba(0, 0, 0, 0.5);
+            color: color-mix(in srgb, var(--timeline-card-title-color) 50%, transparent);
             font-size: 0.64rem;
             font-weight: 700;
             letter-spacing: 0.03em;
@@ -2437,7 +2438,7 @@ a.chart-history-item {
             border-radius: 999px;
             background: rgba(249, 115, 22, 0.14);
             border: 1px solid rgba(249, 115, 22, 0.22);
-            color: inherit;
+            color: color-mix(in srgb, currentColor 50%, transparent);
             font-size: 0.64rem;
             font-weight: 700;
             letter-spacing: 0.03em;
@@ -2531,14 +2532,10 @@ a.chart-history-item {
             -webkit-backdrop-filter: blur(14px);
         }
         .verified-accent .timeline-card-header {
+            --timeline-card-title-color: var(--va-text);
             background: var(--va-card-bg);
             color: var(--va-text);
             border-bottom-color: var(--va-card-border);
-        }
-        body.dark-mode .timeline-card-badge,
-        html.dark-mode .timeline-card-badge,
-        .verified-accent .timeline-card-badge {
-            color: rgba(255, 255, 255, 0.5);
         }
         .verified-accent .timeline-interview-mention-header {
             color: var(--va-text);
@@ -2889,6 +2886,13 @@ a.chart-history-item {
             
             .chart-history-item {
                 padding: 0.6rem;
+            }
+
+            .chart-history-list > .chart-history-item,
+            .chart-history-list > .timeline-item-article,
+            .chart-history-list > .timeline-item-event,
+            .chart-history-list > .timeline-item-interview {
+                padding: 0;
             }
             
             .chart-history-cover {
