@@ -77,7 +77,7 @@ Useful examples:
 ./update-all.ps1 -SkipPlaylists -SkipCurators
 ```
 
-An additional media build command is available through npm:
+An additional media refresh command is available through npm (delegates to site-master generation):
 
 ```bash
 npm run build:media
