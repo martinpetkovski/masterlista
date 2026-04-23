@@ -29,6 +29,9 @@
     function getActivityStatus(bandName) {
         if (!bandName) return t('lista.statusUnknown');
         const normalizedName = bandName.toLowerCase().trim();
+        const artistSlug = generateArtistSlug(bandName);
+        const precomputedActivity = (typeof getSiteMaster === 'function' ? getSiteMaster() : null)?.artistActivity?.[artistSlug];
+        if (precomputedActivity) return mapActivityStatusToLabel(precomputedActivity);
         
         // Check if the band has had an event in the past year
         const hasRecentEvent = checkRecentEvent(bandName);
@@ -47,6 +50,14 @@
         if (diffYears <= 3) return t('lista.statusMaybe');
         return t('lista.statusInactive');
     }
+
+    function mapActivityStatusToLabel(status) {
+        const normalizedStatus = String(status || '').toLowerCase().trim();
+        if (normalizedStatus === 'active' || normalizedStatus === 'активен') return t('lista.statusActive');
+        if (normalizedStatus === 'inactive' || normalizedStatus === 'неактивен') return t('lista.statusInactive');
+        if (normalizedStatus === 'maybe' || normalizedStatus === 'можеби') return t('lista.statusMaybe');
+        return t('lista.statusUnknown');
+    }
     
     /**
      * Check if a band has had an event in the past year.
@@ -59,7 +70,7 @@
         const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
         return cachedEvents.some(e =>
             e.date >= oneYearAgoStr &&
-            e.artists.some(a => a.toLowerCase() === lower)
+            ((e.artists || e.bands || []).some(a => a.toLowerCase() === lower))
         );
     }
     
@@ -73,10 +84,11 @@
         
         cachedChartData.releases.forEach(release => {
             if (!release.bandName || !release.releaseDate) return;
-            const key = release.bandName.toLowerCase().trim();
-            if (!latestReleaseDateByArtist[key] || release.releaseDate > latestReleaseDateByArtist[key]) {
-                latestReleaseDateByArtist[key] = release.releaseDate;
-            }
+            release.bandName.toLowerCase().split(', ').map(name => name.trim()).filter(Boolean).forEach(key => {
+                if (!latestReleaseDateByArtist[key] || release.releaseDate > latestReleaseDateByArtist[key]) {
+                    latestReleaseDateByArtist[key] = release.releaseDate;
+                }
+            });
         });
     }
     
@@ -3403,10 +3415,6 @@
             let genreHtml = band.genre === 'недостигаат податоци'
                 ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
                 : band.genre.split(',').map(g => g.trim()).map(g => `<span class="genre-item" data-filter="genre" data-value="${g}"><i class="fas fa-tag"></i>${escHtml(localizeGenre(g))}</span>`).join('');
-            let soundsLikeHtml = band.soundsLike === 'недостигаат податоци'
-                ? `<span class="missing-data" title="${t('common.missingData')}"><i class="fas fa-question-circle"></i></span>`
-                : band.soundsLike.split(',').map(s => s.trim()).map(s => `<span class="sounds-like-item" data-filter="sounds-like" data-value="${s}"><i class="fas fa-headphones"></i>${localizeText(s)}</span>`).join('');
-            
             // Get artist thumbnail from chart data
             const artistThumbnail = getArtistThumbnail(band.name);
             const thumbnailHtml = artistThumbnail 
@@ -3446,9 +3454,7 @@
                 }).join('');
             }
             
-            // On mobile, merge media links into the links column
-            const isMobile = window.innerWidth <= 600;
-            const combinedLinksHtml = isMobile && (reviewsHtml || eventsHtml) ? linksHtml + reviewsHtml + eventsHtml : linksHtml;
+            const combinedLinksHtml = linksHtml;
             
             // Greeting slug for confirmed artists
             const greetingSlug = band.confirmed ? generateArtistSlug(band.name) : '';
@@ -3508,10 +3514,7 @@
                 <td data-label="Име" class="name">${nameHtml}</td>
                 <td data-label="Град"><div class="cell-scroll">${cityHtml}</div></td>
                 <td data-label="Жанр"><div class="cell-scroll">${genreHtml}</div></td>
-                <td data-label="Звучи како"><div class="cell-scroll">${soundsLikeHtml}</div></td>
                 <td data-label="Линкови" class="links"><div class="cell-scroll">${combinedLinksHtml}</div></td>
-                <td data-label="Медиуми" class="links reviews"><div class="cell-scroll">${reviewsHtml}</div></td>
-                <td data-label="Настани" class="links events"><div class="cell-scroll">${eventsHtml}</div></td>
                 <td data-label="Серт" class="cert-cell"><div class="cell-scroll">${certHtml}</div></td>
                 <td data-label="Статус" data-status="${activityStatus}" class="${statusClass}">
                     <span class="status-content" data-status-text="${activityStatus}">${activityStatus}</span>

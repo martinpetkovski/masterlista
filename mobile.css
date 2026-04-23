@@ -826,7 +826,6 @@ td {
 
 td[data-label="Град"],
 td[data-label="Жанр"],
-td[data-label="Звучи како"],
 td[data-label="Статус"] { display: none; }
 
 /* Show Actions column on mobile */
@@ -878,7 +877,7 @@ td[data-label="Име"] {
 td[data-label="Линкови"] {
     flex-shrink: 0;
     flex: 0 0 auto;
-    max-width: 100px;
+    max-width: 132px;
     display: flex;
     align-items: center;
     white-space: nowrap;
