@@ -28,7 +28,7 @@ async function ensureCanUseBot(interaction, allowedRoleIds) {
   }
 
   const message = allowedRoleIds && allowedRoleIds.length
-    ? 'You do not have permission to use the MMM draft bot commands.'
+    ? 'You do not have permission to use the toplista.mk bot commands.'
     : 'This command is not available here.';
 
   if (!interaction.replied && !interaction.deferred) {

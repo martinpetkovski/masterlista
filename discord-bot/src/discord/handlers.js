@@ -25,6 +25,16 @@ const {
   formatEventLinksForInput,
   getWorkingEventsState
 } = require('../domain/events');
+const {
+  getAlternativeChart,
+  getInterviews,
+  getNewReleases,
+  getNews,
+  getRandomArtist,
+  getRandomInterview,
+  getRandomSong,
+  getTopChart
+} = require('../domain/discovery');
 const { submitPendingDrafts } = require('../domain/submissions');
 const { getBandsList, getEventsList } = require('../repo-data');
 const { generateArtistSlug } = require('../utils/text');
@@ -36,6 +46,19 @@ const AUTOCOMPLETE_CHOICE_VALUE_MAX = 100;
 
 function truncateForInput(value, maxLength) {
   return String(value || '').slice(0, maxLength);
+}
+
+function truncateForMessage(value, maxLength) {
+  const normalized = String(value || '').trim();
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, Math.max(0, maxLength - 1))}...`;
+}
+
+function buildSafeMessage(lines) {
+  return truncateForInput(lines.join('\n'), 1900);
 }
 
 function withOptionalValue(input, value, maxLength) {
@@ -409,9 +432,224 @@ async function handleSubmitCommand(interaction, deps) {
   }
 
   await interaction.reply({
+    content: buildSafeMessage(lines),
+    ephemeral: true
+  });
+}
+
+async function handleHelpCommand(interaction) {
+  const lines = [
+    'toplista.mk bot quick guide',
+    '',
+    'If this is your first time, use these 3 steps:',
+    '1. Add or edit artists/events with /artist and /event.',
+    '2. Check your changes with /drafts.',
+    '3. Send everything with /submit.',
+    '',
+    'Artist basics:',
+    '- Use /artist add to add a new artist.',
+    '- Use /artist edit to update an existing artist.',
+    '- Use /artist delete to remove an artist from your pending changes.',
+    '- Required fields: name, city, genre.',
+    '',
+    'Event basics:',
+    '- Use /event add to add a new event.',
+    '- Use /event edit to update an event.',
+    '- Use /event delete to remove an event from your pending changes.',
+    '- Required fields: event name, date (YYYY-MM-DD), time (HH:MM).',
+    '',
+    'Useful tips:',
+    '- In links fields, add one URL per line.',
+    '- Use clear in override fields to remove artists or tickets.',
+    '- Autocomplete includes items from your pending draft changes.',
+    '',
+    'Discover mode:',
+    '- Use /discover for random songs/artists, charts, releases, news, and interviews.',
+    '',
+    'About submit:',
+    '- /submit [description] sends your current pending changes.',
+    '- After successful submit, your pending draft list is cleared.'
+  ];
+
+  await interaction.reply({
     content: lines.join('\n'),
     ephemeral: true
   });
+}
+
+function limitCount(rawCount, fallback) {
+  const parsed = Number(rawCount);
+  if (!Number.isInteger(parsed)) {
+    return fallback;
+  }
+
+  return Math.max(1, Math.min(10, parsed));
+}
+
+function formatChartLine(entry, index) {
+  const title = entry.releaseTitle || 'Unknown title';
+  const artist = entry.bandName || 'Unknown artist';
+  const url = entry.releaseUrl || null;
+  return `${index + 1}. ${artist} - ${title}${url ? `\n${url}` : ''}`;
+}
+
+async function handleDiscoverCommand(interaction, deps) {
+  const subcommand = interaction.options.getSubcommand();
+
+  if (subcommand === 'random_song') {
+    const song = getRandomSong(deps.repoRoot);
+    if (!song) {
+      await interaction.reply({ content: 'No songs available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = [
+      'Random song pick',
+      `${song.artist} - ${song.title}`
+    ];
+    if (song.releaseTitle && song.releaseTitle !== song.title) {
+      lines.push(`Release: ${song.releaseTitle}`);
+    }
+    if (song.releaseDate) {
+      lines.push(`Date: ${song.releaseDate}`);
+    }
+    if (song.url) {
+      lines.push(song.url);
+    }
+
+    await interaction.reply({ content: buildSafeMessage(lines), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'random_artist') {
+    const artist = getRandomArtist(deps.repoRoot);
+    if (!artist) {
+      await interaction.reply({ content: 'No artists available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = [
+      'Random artist pick',
+      artist.name
+    ];
+    if (artist.city) lines.push(`City: ${artist.city}`);
+    if (artist.genre) lines.push(`Genre: ${artist.genre}`);
+    if (artist.link) lines.push(artist.link);
+
+    await interaction.reply({ content: buildSafeMessage(lines), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'top_chart') {
+    const count = limitCount(interaction.options.getInteger('count'), 5);
+    const result = getTopChart(deps.repoRoot, count);
+    if (!result.entries.length) {
+      await interaction.reply({ content: 'Top chart is not available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = [`Top chart${result.weekId ? ` (${result.weekId})` : ''}`];
+    result.entries.forEach((entry, index) => lines.push(formatChartLine(entry, index)));
+    await interaction.reply({ content: buildSafeMessage(lines.join('\n\n').split('\n')), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'alternative_chart') {
+    const count = limitCount(interaction.options.getInteger('count'), 5);
+    const result = getAlternativeChart(deps.repoRoot, count);
+    if (!result.entries.length) {
+      await interaction.reply({ content: 'Alternative chart is not available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = [`Alternative chart${result.weekId ? ` (${result.weekId})` : ''}`];
+    result.entries.forEach((entry, index) => lines.push(formatChartLine(entry, index)));
+    await interaction.reply({ content: buildSafeMessage(lines.join('\n\n').split('\n')), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'new_releases') {
+    const count = limitCount(interaction.options.getInteger('count'), 5);
+    const releases = getNewReleases(deps.repoRoot, count);
+    if (!releases.length) {
+      await interaction.reply({ content: 'No recent releases available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = ['New releases'];
+    releases.forEach((release, index) => {
+      const artist = truncateForMessage(release.bandName || 'Unknown artist', 80);
+      const title = truncateForMessage(release.releaseTitle || 'Unknown title', 120);
+      const date = release.effectiveReleaseDate || release.releaseDate || 'Unknown date';
+      const url = release.releaseUrl || '';
+      lines.push(`${index + 1}. ${artist} - ${title} (${date})${url ? `\n${url}` : ''}`);
+    });
+
+    await interaction.reply({ content: buildSafeMessage(lines.join('\n\n').split('\n')), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'news') {
+    const count = limitCount(interaction.options.getInteger('count'), 5);
+    const newsItems = getNews(deps.repoRoot, count);
+    if (!newsItems.length) {
+      await interaction.reply({ content: 'No news available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = ['Latest music news'];
+    newsItems.forEach((item, index) => {
+      const date = item.date || 'Unknown date';
+      const source = item.source || 'Unknown source';
+      const title = truncateForMessage(item.title || 'Untitled', 140);
+      const shortSource = truncateForMessage(source, 40);
+      lines.push(`${index + 1}. ${title} (${date}, ${shortSource})\n${item.link || ''}`);
+    });
+
+    await interaction.reply({ content: buildSafeMessage(lines.join('\n\n').split('\n')), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'interviews') {
+    const count = limitCount(interaction.options.getInteger('count'), 5);
+    const items = getInterviews(deps.repoRoot, count);
+    if (!items.length) {
+      await interaction.reply({ content: 'No interviews available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = ['Latest interviews'];
+    items.forEach((item, index) => {
+      const date = item.date || 'Unknown date';
+      const source = item.source || 'Unknown source';
+      const title = truncateForMessage(item.title || 'Untitled', 140);
+      const shortSource = truncateForMessage(source, 40);
+      lines.push(`${index + 1}. ${title} (${date}, ${shortSource})\n${item.link || ''}`);
+    });
+
+    await interaction.reply({ content: buildSafeMessage(lines.join('\n\n').split('\n')), ephemeral: true });
+    return;
+  }
+
+  if (subcommand === 'random_interview') {
+    const item = getRandomInterview(deps.repoRoot);
+    if (!item) {
+      await interaction.reply({ content: 'No interviews available right now.', ephemeral: true });
+      return;
+    }
+
+    const lines = [
+      'Random interview pick',
+      truncateForMessage(item.title || 'Untitled', 160),
+      `${item.date || 'Unknown date'}${item.source ? `, ${item.source}` : ''}`,
+      item.link || ''
+    ];
+
+    await interaction.reply({ content: buildSafeMessage(lines), ephemeral: true });
+    return;
+  }
+
+  await interaction.reply({ content: `Unsupported discover subcommand: ${subcommand}`, ephemeral: true });
 }
 
 function getModalValue(interaction, customId) {
@@ -479,7 +717,24 @@ async function handleChatInputCommand(interaction, deps) {
     return;
   }
 
-  switch (interaction.commandName) {
+  const rawCommandName = String(interaction.commandName || '');
+  const commandName = rawCommandName
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001F\u007F\u00A0\u2000-\u200D\u2060\uFEFF]/g, '')
+    .trim()
+    .toLowerCase();
+
+  if (commandName === 'help' || commandName.startsWith('help')) {
+    await handleHelpCommand(interaction);
+    return;
+  }
+
+  if (commandName === 'discover' || commandName.startsWith('discover')) {
+    await handleDiscoverCommand(interaction, deps);
+    return;
+  }
+
+  switch (commandName) {
     case 'artist':
       await handleArtistCommand(interaction, deps);
       return;
@@ -491,6 +746,9 @@ async function handleChatInputCommand(interaction, deps) {
       return;
     case 'submit':
       await handleSubmitCommand(interaction, deps);
+      return;
+    case 'discover':
+      await handleDiscoverCommand(interaction, deps);
       return;
     default:
       await interaction.reply({ content: `Unsupported command: ${interaction.commandName}`, ephemeral: true });
