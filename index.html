@@ -1598,8 +1598,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.35rem;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             margin-top: 0.8rem;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .radar-pagination button {
@@ -1615,6 +1617,19 @@
             font-weight: 700;
             cursor: pointer;
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            flex: 0 0 auto;
+        }
+
+        .radar-pagination-ellipsis {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.35rem;
+            height: 2.2rem;
+            color: var(--text-muted, #8b929a);
+            font-size: 0.92rem;
+            font-weight: 700;
+            flex: 0 0 auto;
         }
 
         .radar-pagination button:hover {
@@ -1642,6 +1657,7 @@
             font-weight: 600;
             color: var(--text-muted, #8b929a);
             white-space: nowrap;
+            flex: 0 0 auto;
         }
 
         .event-today-marker {
@@ -3693,9 +3709,15 @@
                 font-size: 0.78rem;
             }
 
+            .radar-pagination-ellipsis {
+                min-width: 1.1rem;
+                height: 2rem;
+                font-size: 0.82rem;
+            }
+
             .radar-pagination-summary {
-                width: 100%;
-                margin-left: 0;
+                width: auto;
+                margin-left: 0.1rem;
                 font-size: 0.74rem;
             }
 
@@ -5091,40 +5113,149 @@
             return pages;
         }
 
-        function renderReleaseRadarPagination() {
-            var pagination = document.getElementById('radar-pagination');
+        function getResponsivePaginationPages(totalPages, currentPage, visiblePageCount) {
+            var normalizedTotalPages = Math.max(0, Number(totalPages || 0));
+            var normalizedVisibleCount = Math.max(1, Math.min(normalizedTotalPages, Number(visiblePageCount || normalizedTotalPages)));
+            var normalizedCurrentPage = Math.max(0, Math.min(normalizedTotalPages - 1, Number(currentPage || 0)));
+            var pages = [];
+
+            function appendRange(start, end) {
+                for (var page = start; page <= end; page++) {
+                    pages.push(page);
+                }
+            }
+
+            if (!normalizedTotalPages) {
+                return pages;
+            }
+
+            if (normalizedVisibleCount >= normalizedTotalPages) {
+                appendRange(0, normalizedTotalPages - 1);
+                return pages;
+            }
+
+            if (normalizedVisibleCount <= 2) {
+                var compactWindowStart = normalizedCurrentPage - Math.floor((normalizedVisibleCount - 1) / 2);
+                var compactMaxStart = Math.max(0, normalizedTotalPages - normalizedVisibleCount);
+                if (compactWindowStart < 0) compactWindowStart = 0;
+                if (compactWindowStart > compactMaxStart) compactWindowStart = compactMaxStart;
+                appendRange(compactWindowStart, compactWindowStart + normalizedVisibleCount - 1);
+                return pages;
+            }
+
+            var middleCount = normalizedVisibleCount - 2;
+            var middleStart = normalizedCurrentPage - Math.floor((middleCount - 1) / 2);
+            var middleEnd = middleStart + middleCount - 1;
+
+            if (middleStart < 1) {
+                middleStart = 1;
+                middleEnd = middleStart + middleCount - 1;
+            }
+
+            if (middleEnd > normalizedTotalPages - 2) {
+                middleEnd = normalizedTotalPages - 2;
+                middleStart = middleEnd - middleCount + 1;
+            }
+
+            pages.push(0);
+            appendRange(middleStart, middleEnd);
+            pages.push(normalizedTotalPages - 1);
+            return pages;
+        }
+
+        function buildResponsivePaginationMarkup(totalPages, currentPage, visiblePageCount) {
+            var pages = getResponsivePaginationPages(totalPages, currentPage, visiblePageCount);
+            var html = '';
+            html += '<button type="button" class="radar-pagination-nav" ' + (currentPage === 0 ? 'disabled ' : '') + 'data-page="' + (currentPage - 1) + '" aria-label="' + escHtml(t('common.prev')) + '">&laquo;</button>';
+
+            if (pages.length && pages[0] > 0) {
+                html += '<span class="radar-pagination-ellipsis" aria-hidden="true">&hellip;</span>';
+            }
+
+            for (var pageIndex = 0; pageIndex < pages.length; pageIndex++) {
+                var page = pages[pageIndex];
+                if (pageIndex > 0 && page - pages[pageIndex - 1] > 1) {
+                    html += '<span class="radar-pagination-ellipsis" aria-hidden="true">&hellip;</span>';
+                }
+                html += '<button type="button" class="' + (page === currentPage ? 'active' : '') + '" data-page="' + page + '" ' + (page === currentPage ? 'aria-current="page"' : '') + '>' + (page + 1) + '</button>';
+            }
+
+            if (pages.length && pages[pages.length - 1] < totalPages - 1) {
+                html += '<span class="radar-pagination-ellipsis" aria-hidden="true">&hellip;</span>';
+            }
+
+            html += '<button type="button" class="radar-pagination-nav" ' + (currentPage === totalPages - 1 ? 'disabled ' : '') + 'data-page="' + (currentPage + 1) + '" aria-label="' + escHtml(t('common.next')) + '">&raquo;</button>';
+            html += '<span class="radar-pagination-summary">' + (currentPage + 1) + ' / ' + totalPages + '</span>';
+            return html;
+        }
+
+        function renderResponsivePagination(pagination, totalPages, currentPage, onPageChange) {
             if (!pagination) return;
 
-            var totalPages = releaseRadarPages.length;
             if (totalPages <= 1) {
                 pagination.innerHTML = '';
                 pagination.style.display = 'none';
                 return;
             }
 
-            if (releaseRadarCurrentPage > totalPages - 1) {
-                releaseRadarCurrentPage = totalPages - 1;
-            }
+            var resolvedPage = Math.max(0, Math.min(totalPages - 1, Number(currentPage || 0)));
+            var visiblePageCount = totalPages;
 
-            var html = '';
-            html += '<button type="button" class="radar-pagination-nav" ' + (releaseRadarCurrentPage === 0 ? 'disabled ' : '') + 'data-page="' + (releaseRadarCurrentPage - 1) + '" aria-label="' + escHtml(t('common.prev')) + '">&laquo;</button>';
-            for (var p = 0; p < totalPages; p++) {
-                html += '<button type="button" class="' + (p === releaseRadarCurrentPage ? 'active' : '') + '" data-page="' + p + '" ' + (p === releaseRadarCurrentPage ? 'aria-current="page"' : '') + '>' + (p + 1) + '</button>';
-            }
-            html += '<button type="button" class="radar-pagination-nav" ' + (releaseRadarCurrentPage === totalPages - 1 ? 'disabled ' : '') + 'data-page="' + (releaseRadarCurrentPage + 1) + '" aria-label="' + escHtml(t('common.next')) + '">&raquo;</button>';
-            html += '<span class="radar-pagination-summary">' + (releaseRadarCurrentPage + 1) + ' / ' + totalPages + '</span>';
-
-            pagination.innerHTML = html;
             pagination.style.display = '';
+
+            do {
+                pagination.innerHTML = buildResponsivePaginationMarkup(totalPages, resolvedPage, visiblePageCount);
+                if (pagination.clientWidth <= 0 || pagination.scrollWidth <= pagination.clientWidth + 1) {
+                    break;
+                }
+                visiblePageCount -= 1;
+            } while (visiblePageCount > 1);
 
             var buttons = pagination.querySelectorAll('button[data-page]');
             for (var i = 0; i < buttons.length; i++) {
                 buttons[i].addEventListener('click', function() {
                     if (this.disabled) return;
-                    releaseRadarCurrentPage = parseInt(this.getAttribute('data-page'), 10);
-                    renderReleaseRadar();
+                    var nextPage = parseInt(this.getAttribute('data-page'), 10);
+                    if (isNaN(nextPage)) return;
+                    onPageChange(nextPage);
                 });
             }
+        }
+
+        var homePaginationResizeFrame = 0;
+
+        function refreshResponsiveHomePagination() {
+            homePaginationResizeFrame = 0;
+            renderReleaseRadarPagination();
+            renderHotSongsPagination();
+        }
+
+        function scheduleResponsiveHomePaginationRefresh() {
+            if (homePaginationResizeFrame) return;
+
+            if (window.requestAnimationFrame) {
+                homePaginationResizeFrame = window.requestAnimationFrame(refreshResponsiveHomePagination);
+                return;
+            }
+
+            homePaginationResizeFrame = window.setTimeout(refreshResponsiveHomePagination, 16);
+        }
+
+        window.addEventListener('resize', scheduleResponsiveHomePaginationRefresh);
+
+        function renderReleaseRadarPagination() {
+            var pagination = document.getElementById('radar-pagination');
+            if (!pagination) return;
+
+            var totalPages = releaseRadarPages ? releaseRadarPages.length : 0;
+            if (releaseRadarCurrentPage > totalPages - 1) {
+                releaseRadarCurrentPage = Math.max(0, totalPages - 1);
+            }
+
+            renderResponsivePagination(pagination, totalPages, releaseRadarCurrentPage, function(nextPage) {
+                releaseRadarCurrentPage = nextPage;
+                renderReleaseRadar();
+            });
         }
 
         // ==================== RENDER: RELEASE RADAR (latest 9, pre-computed) ====================
@@ -5324,32 +5455,12 @@
             if (!pagination) return;
 
             var totalPages = hotSongsPagerState.totalPages;
-            if (totalPages <= 1) {
-                pagination.innerHTML = '';
-                pagination.style.display = 'none';
-                return;
-            }
-
             var pageIndex = Math.max(0, Math.min(hotSongsPagerState.pageIndex, totalPages - 1));
-            var html = '';
-            html += '<button type="button" class="radar-pagination-nav" ' + (pageIndex === 0 ? 'disabled ' : '') + 'data-page="' + (pageIndex - 1) + '" aria-label="' + escHtml(t('common.prev')) + '">&laquo;</button>';
-            for (var page = 0; page < totalPages; page++) {
-                html += '<button type="button" class="' + (page === pageIndex ? 'active' : '') + '" data-page="' + page + '" ' + (page === pageIndex ? 'aria-current="page"' : '') + '>' + (page + 1) + '</button>';
-            }
-            html += '<button type="button" class="radar-pagination-nav" ' + (pageIndex === totalPages - 1 ? 'disabled ' : '') + 'data-page="' + (pageIndex + 1) + '" aria-label="' + escHtml(t('common.next')) + '">&raquo;</button>';
-            html += '<span class="radar-pagination-summary">' + (pageIndex + 1) + ' / ' + totalPages + '</span>';
 
-            pagination.innerHTML = html;
-            pagination.style.display = '';
-
-            var buttons = pagination.querySelectorAll('button[data-page]');
-            for (var i = 0; i < buttons.length; i++) {
-                buttons[i].addEventListener('click', function() {
-                    if (this.disabled) return;
-                    hotSongsPagerState.pageIndex = Math.max(0, Number(this.getAttribute('data-page') || 0));
-                    renderHotSongs();
-                });
-            }
+            renderResponsivePagination(pagination, totalPages, pageIndex, function(nextPage) {
+                hotSongsPagerState.pageIndex = Math.max(0, nextPage);
+                renderHotSongs();
+            });
         }
 
         function getHotSongsPage(candidates) {
