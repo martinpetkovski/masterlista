@@ -819,28 +819,34 @@
 					}
 				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
 
-				var filteredResp = await fetch('articles-filtered.json');
-				if (filteredResp.ok) {
-					var filteredRaw = await filteredResp.json();
-					allArticles = (filteredRaw.articles || filteredRaw.matched || []).map(normalizeArticle);
-					lastUpdated = filteredRaw.lastUpdated || filteredRaw.generatedAt || '';
-				} else {
-					var fromMaster = null;
+				// Prefer site-master.json so the news page shows the same set as the index page.
+				// Falls back to articles-filtered.json, then the raw articles.json if master is unavailable.
+				var loaded = false;
+				try {
 					var master = await loadSiteMaster();
-					if (master && master.news) {
-						fromMaster = master.news;
+					if (master && master.news && Array.isArray(master.news.matched)) {
+						allArticles = master.news.matched.map(normalizeArticle);
+						lastUpdated = master.news.lastUpdated || '';
+						loaded = true;
 					}
+				} catch (e) { /* fall through to other sources */ }
 
-					if (fromMaster && Array.isArray(fromMaster.matched)) {
-						allArticles = fromMaster.matched.map(normalizeArticle);
-						lastUpdated = fromMaster.lastUpdated || '';
-					} else {
-						var resp = await fetch('articles.json');
-						if (!resp.ok) throw new Error(t('news.fetchError'));
-						var raw = await resp.json();
-						allArticles = (raw.articles || []).map(normalizeArticle);
-						lastUpdated = raw.lastUpdated || '';
+				if (!loaded) {
+					var filteredResp = await fetch('articles-filtered.json');
+					if (filteredResp.ok) {
+						var filteredRaw = await filteredResp.json();
+						allArticles = (filteredRaw.articles || filteredRaw.matched || []).map(normalizeArticle);
+						lastUpdated = filteredRaw.lastUpdated || filteredRaw.generatedAt || '';
+						loaded = true;
 					}
+				}
+
+				if (!loaded) {
+					var resp = await fetch('articles.json');
+					if (!resp.ok) throw new Error(t('news.fetchError'));
+					var raw = await resp.json();
+					allArticles = (raw.articles || []).map(normalizeArticle);
+					lastUpdated = raw.lastUpdated || '';
 				}
 
 				allArticles.sort(function(a, b) { return parseDate(b) - parseDate(a); });

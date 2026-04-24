@@ -1110,15 +1110,15 @@
         .nastani-page .tl-content {
             padding: 0;
             display: grid;
-            grid-template-columns: 30px auto 1fr;
+            grid-template-columns: 32px auto 1fr auto;
             grid-template-rows: auto auto;
             align-items: center;
             column-gap: 0;
             row-gap: 0;
         }
         .nastani-page .tl-time {
-            width: 30px;
-            font-size: 0.6rem;
+            width: 32px;
+            font-size: 0.7rem;
             grid-row: 1 / 3;
             grid-column: 1;
             align-self: center;
@@ -1130,10 +1130,10 @@
             align-self: center;
         }
         .nastani-page .tl-title {
-            font-size: 0.78rem;
+            font-size: 0.9rem;
         }
         .nastani-page .tl-name-cell {
-            padding: 0 0.25rem;
+            padding: 0 0.3rem;
             gap: 0.2rem;
             flex: 1;
             min-width: 0;
@@ -1148,22 +1148,53 @@
         .nastani-page .tl-place { display: none; }
         .nastani-page .tl-artists-cell { display: none; }
         .nastani-page .tl-tickets-cell { display: none; }
-        .nastani-page .tl-actions-cell { display: none; }
         .nastani-page .tl-link-cell { display: none; }
+
+        /* Edit action visible on mobile, spans both rows on the right */
+        .nastani-page .tl-actions-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-row: 1 / 3;
+            grid-column: 4;
+            width: 34px;
+            padding: 0 0.25rem;
+        }
+        .nastani-page .tl-actions-cell .edit-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            padding: 0;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+        .nastani-page .tl-actions-cell .edit-btn:active {
+            background: var(--bg-hover);
+            color: var(--accent-blue);
+        }
+
+        .nastani-page .tl-item {
+            min-height: 48px;
+        }
 
         /* Show mobile-specific badges as new row */
         .nastani-page .tl-mobile-badges {
             display: flex !important;
             flex-wrap: wrap;
-            gap: 0.2rem;
+            gap: 0.25rem;
             grid-row: 2;
             grid-column: 3;
-            padding: 0.1rem 0 0.1rem 0.25rem;
+            padding: 0 0 0 0.3rem;
         }
         .nastani-page .tl-mobile-badge {
-            font-size: 0.55rem;
+            font-size: 0.62rem;
             font-weight: 700;
-            padding: 0.08rem 0.3rem;
+            padding: 0.05rem 0.35rem;
             border-radius: 999px;
             white-space: nowrap;
         }
@@ -1180,7 +1211,7 @@
             border: 1px solid rgba(34, 197, 94, 0.2);
         }
         .nastani-page .tl-mobile-badge i {
-            font-size: 0.42rem;
+            font-size: 0.5rem;
         }
 
         .nastani-page .tl-month-label {

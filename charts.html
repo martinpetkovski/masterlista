@@ -77,6 +77,7 @@
     <script src="/scripts/site/common.js?v=10"></script>
     <script src="/scripts/site/i18n.js?v=1"></script>
     <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/virtual-list.js?v=1"></script>
     <script src="/scripts/site/tour.js?v=1" defer></script>
     <style>
         /* Dark mode variables */
@@ -235,8 +236,12 @@
         }
         
         body.dark-mode .chart-item {
-            background: transparent;
+            background: var(--bg-primary);
             border-color: var(--border-color);
+        }
+
+        body.dark-mode .chart-sections.chart-striping-enabled .chart-item {
+            background: transparent;
         }
         
         body.dark-mode .chart-item:hover {
@@ -527,6 +532,7 @@
             width: 100%;
             overflow-x: auto;
             overflow-y: auto;
+            overflow-anchor: none;
             flex: 1;
             min-height: 0;
         }
@@ -608,8 +614,21 @@
             font-size: 13px !important;
         }
 
+        /* Virtualizer: fixed row height so top/bottom spacers line up and
+           column widths stabilize across windowed renders. */
+        .adv-table tbody tr { height: 18px; box-sizing: border-box; background: #fff; }
+        .adv-table tbody tr.vl-spacer { height: auto; }
+        .adv-table tbody tr.vl-spacer td { padding: 0 !important; border: 0 !important; background: transparent !important; }
+        .chart-list .vl-spacer { list-style: none; margin: 0; padding: 0; border: 0; background: transparent; }
+
         .adv-table tbody tr:hover {
             background: var(--bg-hover);
+        }
+
+        .adv-table td {
+            padding: 1px 6px;
+            line-height: 1;
+            background: transparent;
         }
 
         /* Column widths — release is widest, city/genre fit roughly one item */
@@ -745,7 +764,7 @@
 
             .adv-table tbody tr:nth-child(even),
             .adv-table tbody tr:active {
-                background: transparent;
+                background: #fff;
                 transform: none;
             }
 
@@ -1348,11 +1367,15 @@
             padding: 0.2rem 0.85rem 0.2rem 0.2rem;
             gap: 0.3rem;
             transition: all 0.15s ease;
-            background: transparent;
+            background: var(--bg-primary);
             contain: layout style;
             position: relative;
             overflow: hidden;
             clip-path: inset(0);
+        }
+
+        .chart-sections.chart-striping-enabled .chart-item {
+            background: transparent;
         }
 
         .chart-reveal-fx,
@@ -1427,7 +1450,7 @@
             animation-delay: calc(var(--chart-reveal-delay, 0s) + 10ms);
         }
 
-        .chart-item:nth-child(even) {
+        .chart-sections.chart-striping-enabled .chart-item:nth-child(even) {
             background: var(--bg-secondary);
         }
         
@@ -2029,6 +2052,11 @@
         .artist-item.artist-item--cumulative {
             grid-template-columns: 2.6rem 40px minmax(0, 1fr) 88px minmax(5.5rem, max-content);
         }
+        .artist-item.artist-item--alltime,
+        .artist-item.artist-item--cumulative {
+            height: 48px;
+            box-sizing: border-box;
+        }
         .artist-item .chart-rank {
             width: auto;
         }
@@ -2112,8 +2140,8 @@
         .chart-history-tooltip.visible {
             display: block;
         }
-        .chart-rank[data-tooltip-html],
-        .chart-stat.followers[data-tooltip-html] {
+        .chart-rank[data-tooltip-release-id],
+        .chart-stat.followers[data-tooltip-release-id] {
             cursor: help;
         }
         .history-tooltip-title {
@@ -2302,6 +2330,10 @@
             }
             .artist-item.artist-item--cumulative {
                 grid-template-columns: 1.8rem 24px minmax(0, 1fr) 60px minmax(4rem, max-content);
+            }
+            .artist-item.artist-item--alltime,
+            .artist-item.artist-item--cumulative {
+                height: 36px;
             }
             .artist-item.artist-item--cumulative .vu-meter { width: 60px; }
             .artist-item .chart-stat.followers { font-size: 1rem; justify-self: end; text-align: right; }
@@ -2864,7 +2896,7 @@
                 <div class="adv-tables-container">
                     <div class="adv-table-wrapper" id="adv-singles-wrapper">
                         <div class="adv-table-label"><span data-i18n="charts.songs">Песни</span> <span id="adv-singles-count"></span></div>
-                        <div class="adv-table-scroll">
+                        <div class="adv-table-scroll" data-marquee-ignore="true">
                             <table class="adv-table" id="adv-singles-table">
                                 <thead></thead>
                                 <tbody></tbody>
@@ -2873,7 +2905,7 @@
                     </div>
                     <div class="adv-table-wrapper" id="adv-albums-wrapper">
                         <div class="adv-table-label"><span data-i18n="charts.albums">Албуми</span> <span id="adv-albums-count"></span></div>
-                        <div class="adv-table-scroll">
+                        <div class="adv-table-scroll" data-marquee-ignore="true">
                             <table class="adv-table" id="adv-albums-table">
                                 <thead></thead>
                                 <tbody></tbody>
@@ -2888,7 +2920,6 @@
                 <div class="chart-section-header artists">
                     <h2><i class="fas fa-users"></i> <span data-i18n="charts.artistsByCumulative">Артисти</span></h2>
                     <div class="chart-header-right">
-                        <span class="period" id="artists-cumulative-period" data-i18n="charts.cumulativeLabel">кумулативна популарност</span>
                         <button class="share-btn" onclick="shareChart('artists')" data-i18n-title="charts.share" title="Сподели">
                             <i class="fas fa-share-alt"></i> <span data-i18n="charts.share">Сподели</span>
                         </button>
@@ -4086,6 +4117,19 @@
                     ${rows}
                     <div class="history-tooltip-spark">${sparkBars}</div>`;
             }
+
+            function getHistoryTooltipHTMLCached(releaseId, mode, releaseType, currentRank) {
+                if (!releaseId) return '';
+                const cacheKey = `${releaseId}|${mode}|${releaseType || ''}|${currentRank || 0}`;
+                if (historyTooltipCache.has(cacheKey)) {
+                    return historyTooltipCache.get(cacheKey);
+                }
+                const html = buildHistoryTooltipHTML(releaseId, mode, releaseType, currentRank);
+                if (html) {
+                    historyTooltipCache.set(cacheKey, html);
+                }
+                return html;
+            }
             
             // Store bands data for artist info lookups
             let allBandsData = [];
@@ -4391,6 +4435,7 @@
                         releaseHistoryMap.set(rid, historyGenre[rid]);
                     }
                 }
+                historyTooltipCache.clear();
             }
             
             // Apply combined filters and re-render charts (uses pre-computed data from site-master.json)
@@ -4404,9 +4449,11 @@
                 }
                 
                 const { chart, genre, city } = currentFilters;
+                const keepStriping = chart === 'standard' && city === 'all' && (genre === 'all' || genre === 'alt');
+                const sectionsEl = document.querySelector('.chart-sections');
 
+                if (sectionsEl) sectionsEl.classList.toggle('chart-striping-enabled', keepStriping);
 
-                
                 // For city filtering, fall back to client-side computation using raw releases
                 const useCityFilter = city !== 'all';
                 
@@ -4416,22 +4463,6 @@
                 const filterSuffix = [genreLabel, cityLabel].filter(Boolean).join(' • ');
                 
                 if (chart === 'advanced') {
-                    // Advanced view: plain monospaced text listing all singles and albums
-                    document.getElementById('singles-section').style.display = 'none';
-                    document.getElementById('albums-section').style.display = 'none';
-                    document.getElementById('latest-section').style.display = 'none';
-                    document.getElementById('artists-section').style.display = 'none';
-                    document.getElementById('artists-cumulative-section').style.display = 'none';
-                    document.getElementById('advanced-section').style.display = 'flex';
-                    
-                    if (window.innerWidth <= 600) {
-                        const tabs = document.getElementById('mobile-chart-tabs');
-                        if (tabs) tabs.style.display = 'none';
-                        document.getElementById('advanced-section').classList.add('mobile-active');
-                        ['singles-section', 'albums-section', 'latest-section', 'artists-section', 'artists-cumulative-section'].forEach(id => 
-                            document.getElementById(id)?.classList.remove('mobile-active'));
-                    }
-                    
                     let advSingles, advAlbums;
                     if (!useCityFilter) {
                         // Use pre-computed advanced charts (genre filtered from all-chart via _gc field)
@@ -4452,9 +4483,28 @@
                     const advPeriod = t('charts.allReleasesLabel') + (filterSuffix ? ' \u2022 ' + filterSuffix : '');
                     document.getElementById('advanced-period').textContent = advPeriod;
                     renderAdvancedChart(advSingles, advAlbums, prevSinglesMap, prevAlbumsMap);
+                    document.getElementById('singles-section').style.display = 'none';
+                    document.getElementById('albums-section').style.display = 'none';
+                    document.getElementById('latest-section').style.display = 'none';
+                    document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
+                    document.getElementById('advanced-section').style.display = 'flex';
+                    
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = 'none';
+                        document.getElementById('advanced-section').classList.add('mobile-active');
+                        ['singles-section', 'albums-section', 'latest-section', 'artists-section', 'artists-cumulative-section'].forEach(id => 
+                            document.getElementById(id)?.classList.remove('mobile-active'));
+                    }
+                    requestAnimationFrame(() => {
+                        if (advVirtualList.singles) advVirtualList.singles.render();
+                        if (advVirtualList.albums) advVirtualList.albums.render();
+                    });
                     
                 } else if (chart === 'artists') {
-                    // Artists by cumulative popularity
+                    const cumulativeArtists = siteMaster.artistCumulativeRanking || [];
+                    renderCumulativeArtistsChart('artists-cumulative-chart', cumulativeArtists);
                     document.getElementById('singles-section').style.display = 'none';
                     document.getElementById('albums-section').style.display = 'none';
                     document.getElementById('latest-section').style.display = 'none';
@@ -4470,11 +4520,14 @@
                         ['singles-section', 'albums-section', 'latest-section', 'artists-section'].forEach(id => 
                             document.getElementById(id)?.classList.remove('mobile-active'));
                     }
-                    
-                    const cumulativeArtists = siteMaster.artistCumulativeRanking || [];
-                    
-                    document.getElementById('artists-cumulative-period').textContent = t('charts.cumulativeLabel');
-                    renderCumulativeArtistsChart('artists-cumulative-chart', cumulativeArtists);
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        requestAnimationFrame(() => {
+                            if (chartVirtualLists['artists-cumulative-chart']) {
+                                chartVirtualLists['artists-cumulative-chart'].render();
+                            }
+                            refreshOverflowMarquees(document.getElementById('artists-cumulative-chart'));
+                        });
+                    }
                     
                     chartDataStore.artists = cumulativeArtists;
                     chartDataStore.singles = [];
@@ -4482,24 +4535,6 @@
                     chartDataStore.latest = [];
                     
                 } else if (chart === 'alltime') {
-                    // All-time: Show single artists chart sorted by total YouTube views
-                    document.getElementById('singles-section').style.display = 'none';
-                    document.getElementById('albums-section').style.display = 'none';
-                    document.getElementById('latest-section').style.display = 'none';
-                    document.getElementById('artists-section').style.display = 'block';
-                    document.getElementById('artists-cumulative-section').style.display = 'none';
-                    document.getElementById('advanced-section').style.display = 'none';
-                    document.getElementById('advanced-section').classList.remove('mobile-active');
-                    
-                    if (window.innerWidth <= 600) {
-                        const tabs = document.getElementById('mobile-chart-tabs');
-                        if (tabs) tabs.style.display = 'none';
-                        document.getElementById('artists-section').classList.add('mobile-active');
-                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
-                        ['singles-section', 'albums-section', 'latest-section'].forEach(id => 
-                            document.getElementById(id)?.classList.remove('mobile-active'));
-                    }
-                    
                     let topArtists;
                     if (!useCityFilter) {
                         // Use pre-computed all-time artists for this genre
@@ -4540,6 +4575,30 @@
                     
                     document.getElementById('artists-period').textContent = t('charts.allTimeLabel') + (filterSuffix ? ' • ' + filterSuffix : '');
                     renderArtistsChart('artists-chart', topArtists);
+                    document.getElementById('singles-section').style.display = 'none';
+                    document.getElementById('albums-section').style.display = 'none';
+                    document.getElementById('latest-section').style.display = 'none';
+                    document.getElementById('artists-section').style.display = 'block';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
+                    document.getElementById('advanced-section').style.display = 'none';
+                    document.getElementById('advanced-section').classList.remove('mobile-active');
+                    
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = 'none';
+                        document.getElementById('artists-section').classList.add('mobile-active');
+                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
+                        ['singles-section', 'albums-section', 'latest-section'].forEach(id => 
+                            document.getElementById(id)?.classList.remove('mobile-active'));
+                    }
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        requestAnimationFrame(() => {
+                            if (chartVirtualLists['artists-chart']) {
+                                chartVirtualLists['artists-chart'].render();
+                            }
+                            refreshOverflowMarquees(document.getElementById('artists-chart'));
+                        });
+                    }
                     
                     chartDataStore.artists = topArtists;
                     chartDataStore.singles = [];
@@ -4547,28 +4606,6 @@
                     chartDataStore.latest = [];
                     
                 } else {
-                    // Standard view: Show release charts
-                    document.getElementById('singles-section').style.display = 'block';
-                    document.getElementById('albums-section').style.display = 'block';
-                    document.getElementById('latest-section').style.display = 'block';
-                    document.getElementById('artists-section').style.display = 'none';
-                    document.getElementById('artists-cumulative-section').style.display = 'none';
-                    document.getElementById('advanced-section').style.display = 'none';
-                    document.getElementById('advanced-section').classList.remove('mobile-active');
-                    
-                    if (window.innerWidth <= 600) {
-                        const tabs = document.getElementById('mobile-chart-tabs');
-                        if (tabs) tabs.style.display = '';
-                        document.getElementById('artists-section').classList.remove('mobile-active');
-                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
-                        const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
-                        const activeChart = activeTab?.dataset?.chartTab || 'singles';
-                        ['singles', 'albums', 'latest'].forEach(key => {
-                            const section = document.getElementById(key + '-section');
-                            if (section) section.classList.toggle('mobile-active', key === activeChart);
-                        });
-                    }
-                    
                     let topSingles, topAlbums, latestReleases;
                     if (!useCityFilter) {
                         // Use pre-computed charts (with positionChange/popularityChange baked in)
@@ -4607,6 +4644,33 @@
                     renderChart('singles-chart', topSingles, {}, false);
                     renderChart('albums-chart', topAlbums, {}, false);
                     renderChart('latest-chart', latestReleases, {}, true);
+                    document.getElementById('singles-section').style.display = 'block';
+                    document.getElementById('albums-section').style.display = 'block';
+                    document.getElementById('latest-section').style.display = 'block';
+                    document.getElementById('artists-section').style.display = 'none';
+                    document.getElementById('artists-cumulative-section').style.display = 'none';
+                    document.getElementById('advanced-section').style.display = 'none';
+                    document.getElementById('advanced-section').classList.remove('mobile-active');
+                    
+                    if (window.innerWidth <= 600) {
+                        const tabs = document.getElementById('mobile-chart-tabs');
+                        if (tabs) tabs.style.display = '';
+                        document.getElementById('artists-section').classList.remove('mobile-active');
+                        document.getElementById('artists-cumulative-section').classList.remove('mobile-active');
+                        const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
+                        const activeChart = activeTab?.dataset?.chartTab || 'singles';
+                        ['singles', 'albums', 'latest'].forEach(key => {
+                            const section = document.getElementById(key + '-section');
+                            if (section) section.classList.toggle('mobile-active', key === activeChart);
+                        });
+                    }
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        requestAnimationFrame(() => {
+                            refreshOverflowMarquees(document.getElementById('singles-chart'));
+                            refreshOverflowMarquees(document.getElementById('albums-chart'));
+                            refreshOverflowMarquees(document.getElementById('latest-chart'));
+                        });
+                    }
                     
                     chartDataStore.singles = topSingles;
                     chartDataStore.albums = topAlbums;
@@ -4744,11 +4808,30 @@
             let advChartData = { singles: [], albums: [], prevSinglesMap: {}, prevAlbumsMap: {} };
             // Sort state per table: array of { column, direction } in priority order
             let advSortState = { singles: [], albums: [] };
-            // Lazy-loading state
-            const ADV_RENDER_CHUNK = 300;
+            // Virtualized rendering state
             let advSortedData = { singles: [], albums: [] };
-            let advRenderedCount = { singles: 0, albums: 0 };
-            let advRenderRaf = { singles: 0, albums: 0 };
+            let advVirtualList = { singles: null, albums: null };
+            const ADV_ROW_HEIGHT = 18;
+            const ADV_VIRTUAL_OVERSCAN = 96;
+            const ADV_VIRTUAL_RENDER_STEP = 24;
+            const CHART_LOAD_REVEAL_ENABLED = false;
+            const ARTIST_CHART_VIRTUAL_THRESHOLD = 40;
+            let chartVirtualLists = {
+                'artists-chart': null,
+                'artists-cumulative-chart': null
+            };
+            const historyTooltipCache = new Map();
+
+            function getArtistChartRowHeight() {
+                return window.innerWidth <= 600 ? 36 : 48;
+            }
+
+            window.addEventListener('resize', () => {
+                const rowHeight = getArtistChartRowHeight();
+                Object.values(chartVirtualLists).forEach(list => {
+                    if (list) list.setRowHeight(rowHeight);
+                });
+            });
 
             // Column definitions for the advanced table
             const advColumns = [
@@ -4887,55 +4970,55 @@
                 }).join('') + '</tr>';
             }
 
+            function renderAdvancedRow(r, absoluteIndex) {
+                const rowNum = absoluteIndex + 1;
+
+                let chgStr;
+                if (r._isNew) chgStr = `<span class="adv-new">NEW</span>`;
+                else if (r._posChange > 0) chgStr = `<span class="adv-up">+${r._posChange}</span>`;
+                else if (r._posChange < 0) chgStr = `<span class="adv-down">${r._posChange}</span>`;
+                else chgStr = `<span class="adv-same">·</span>`;
+
+                let pdStr;
+                if (r._isNew) pdStr = `<span class="adv-new">NEW</span>`;
+                else if (r._popDelta > 0) pdStr = `<span class="adv-up">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
+                else if (r._popDelta < 0) pdStr = `<span class="adv-down">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
+                else pdStr = `<span class="adv-same">·</span>`;
+
+                const d = r._dateObj;
+                const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+                const artistNames = r.bandName.split(',').map(a => a.trim()).filter(a => a);
+                let artistLinksHtml;
+                if (artistNames.length <= 1) {
+                    const artistLink = getArtistPageUrl(r.bandName);
+                    artistLinksHtml = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(localizeText(r.bandName))}">${escHtml(localizeText(r.bandName))}</a>`;
+                } else {
+                    artistLinksHtml = artistNames.map((name, i) => {
+                        const link = getArtistPageUrl(name);
+                        const sep = i < artistNames.length - 1 ? ', ' : '';
+                        return `<a href="${link}" class="adv-artist-link" title="${escHtml(localizeText(name))}">${escHtml(localizeText(name))}</a>${sep}`;
+                    }).join('');
+                }
+
+                const releaseTitleStr = `${escHtml(localizeText(r.bandName))} \u2014 ${escHtml(localizeText(r.releaseTitle))}`;
+                const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(localizeText(r.releaseTitle))}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" data-total-views="${escHtml(String(r.youtubeViews || 0))}" data-views-delta="${escHtml(String(r.viewsDelta || 0))}" title="${escHtml(localizeText(r.releaseTitle))}">${escHtml(localizeText(r.releaseTitle))}</span>`;
+
+                return `<tr>` +
+                    `<td class="col-pos">${rowNum}</td>` +
+                    `<td class="col-chg">${chgStr}</td>` +
+                    `<td class="col-release" title="${releaseTitleStr}">${releaseCell}</td>` +
+                    `<td class="col-city adv-city" title="${escHtml(localizeText(r._city))}">${escHtml(localizeText(r._city))}</td>` +
+                    `<td class="col-genre adv-genre" title="${escHtml(localizeGenreString(r._genre))}">${escHtml(localizeGenreString(r._genre))}</td>` +
+                    `<td class="col-pop adv-pop">${formatViewsPlainLetters(r._pop)}</td>` +
+                    `<td class="col-pdelta">${pdStr}</td>` +
+                    `<td class="col-date adv-date">${dateStr}</td>` +
+                    `</tr>`;
+            }
+
             // Build tbody HTML from enriched (and sorted) releases
             function buildAdvancedTbody(enrichedReleases, startIndex) {
                 if (enrichedReleases.length === 0) return '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:1rem;">' + t('charts.noReleases') + '</td></tr>';
-                return enrichedReleases.map((r, i) => {
-                    const rowNum = (startIndex || 0) + i + 1;
-                    const posStr = rowNum;
-                    // Position change display
-                    let chgStr;
-                    if (r._isNew) chgStr = `<span class="adv-new">NEW</span>`;
-                    else if (r._posChange > 0) chgStr = `<span class="adv-up">+${r._posChange}</span>`;
-                    else if (r._posChange < 0) chgStr = `<span class="adv-down">${r._posChange}</span>`;
-                    else chgStr = `<span class="adv-same">·</span>`;
-
-                    // Pop delta display
-                    let pdStr;
-                    if (r._isNew) pdStr = `<span class="adv-new">NEW</span>`;
-                    else if (r._popDelta > 0) pdStr = `<span class="adv-up">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
-                    else if (r._popDelta < 0) pdStr = `<span class="adv-down">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
-                    else pdStr = `<span class="adv-same">·</span>`;
-
-                    const d = r._dateObj;
-                    const dateStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
-
-                    // Split collab artists into separate links
-                    const artistNames = r.bandName.split(',').map(a => a.trim()).filter(a => a);
-                    let artistLinksHtml;
-                    if (artistNames.length <= 1) {
-                        const artistLink = getArtistPageUrl(r.bandName);
-                        artistLinksHtml = `<a href="${artistLink}" class="adv-artist-link" title="${escHtml(localizeText(r.bandName))}">${escHtml(localizeText(r.bandName))}</a>`;
-                    } else {
-                        artistLinksHtml = artistNames.map((name, i) => {
-                            const link = getArtistPageUrl(name);
-                            const sep = i < artistNames.length - 1 ? ', ' : '';
-                            return `<a href="${link}" class="adv-artist-link" title="${escHtml(localizeText(name))}">${escHtml(localizeText(name))}</a>${sep}`;
-                        }).join('');
-                    }
-                    const releaseTitleStr = `${escHtml(localizeText(r.bandName))} \u2014 ${escHtml(localizeText(r.releaseTitle))}`;
-                    const releaseCell = `${artistLinksHtml} \u2014 <span class="adv-release-link js-overflow-marquee" data-url="${escHtml(r.releaseUrl || '')}" data-title="${escHtml(localizeText(r.releaseTitle))}" data-artist="${escHtml(r.bandName)}" data-thumb="${escHtml(r.thumbnail || '')}" data-total-views="${escHtml(String(r.youtubeViews || 0))}" data-views-delta="${escHtml(String(r.viewsDelta || 0))}" title="${escHtml(localizeText(r.releaseTitle))}">${escHtml(localizeText(r.releaseTitle))}</span>`;
-                    return `<tr>` +
-                        `<td class="col-pos">${posStr}</td>` +
-                        `<td class="col-chg">${chgStr}</td>` +
-                        `<td class="col-release" title="${releaseTitleStr}">${releaseCell}</td>` +
-                        `<td class="col-city adv-city" title="${escHtml(localizeText(r._city))}">${escHtml(localizeText(r._city))}</td>` +
-                        `<td class="col-genre adv-genre" title="${escHtml(localizeGenreString(r._genre))}">${escHtml(localizeGenreString(r._genre))}</td>` +
-                        `<td class="col-pop adv-pop">${formatViewsPlainLetters(r._pop)}</td>` +
-                        `<td class="col-pdelta">${pdStr}</td>` +
-                        `<td class="col-date adv-date">${dateStr}</td>` +
-                        `</tr>`;
-                }).join('');
+                return enrichedReleases.map((r, i) => renderAdvancedRow(r, (startIndex || 0) + i)).join('');
             }
 
             // Render (or re-render) a single advanced table
@@ -4945,32 +5028,66 @@
                 const table = document.getElementById(tableId);
                 if (!table) return;
 
-                // Cancel any in-progress chunked render
-                if (advRenderRaf[tableKey]) {
-                    cancelAnimationFrame(advRenderRaf[tableKey]);
-                    advRenderRaf[tableKey] = 0;
-                }
-
                 const releases = advChartData[tableKey];
                 const prevMap = tableKey === 'singles' ? advChartData.prevSinglesMap : advChartData.prevAlbumsMap;
 
-                // Enrich data
+                // Enrich + sort
                 const enriched = releases.map((r, i) => enrichRelease(r, i, prevMap));
-
-                // Sort
                 const sorted = sortAdvancedReleases(enriched, advSortState[tableKey]);
-
-                // Store for chunked rendering
                 advSortedData[tableKey] = sorted;
-                advRenderedCount[tableKey] = 0;
 
                 // Render header
                 table.querySelector('thead').innerHTML = buildAdvancedThead(tableKey);
 
-                // Clear tbody and start chunked render
+                // Virtualized tbody render
                 const tbody = table.querySelector('tbody');
-                tbody.innerHTML = '';
-                advRenderAllChunked(tableKey);
+                const scrollEl = table.closest('.adv-table-scroll');
+
+                // Delegated click handler on tbody — attach once per table.
+                if (tbody && !tbody.dataset.clickBound) {
+                    tbody.dataset.clickBound = '1';
+                    tbody.addEventListener('click', (e) => {
+                        const el = e.target.closest('.adv-release-link[data-url]');
+                        if (!el || !tbody.contains(el)) return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const url = el.dataset.url;
+                        const title = el.dataset.title || '';
+                        const artist = el.dataset.artist || '';
+                        const thumb = el.dataset.thumb || '';
+                        const totalViews = el.dataset.totalViews === undefined ? null : Number(el.dataset.totalViews);
+                        const viewsDelta = el.dataset.viewsDelta === undefined ? null : Number(el.dataset.viewsDelta);
+                        const info = getArtistInfo(artist);
+                        if (url) {
+                            openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed, {
+                                totalViews: Number.isFinite(totalViews) ? totalViews : null,
+                                viewsDelta: Number.isFinite(viewsDelta) ? viewsDelta : null
+                            });
+                        }
+                    });
+                }
+
+                if (scrollEl && typeof VirtualList !== 'undefined') {
+                    if (advVirtualList[tableKey]) {
+                        advVirtualList[tableKey].overscan = ADV_VIRTUAL_OVERSCAN;
+                        advVirtualList[tableKey].renderStep = ADV_VIRTUAL_RENDER_STEP;
+                        advVirtualList[tableKey].update(sorted);
+                    } else {
+                        advVirtualList[tableKey] = new VirtualList({
+                            scrollEl,
+                            contentEl: tbody,
+                            items: sorted,
+                            rowHeight: ADV_ROW_HEIGHT,
+                            overscan: ADV_VIRTUAL_OVERSCAN,
+                            renderStep: ADV_VIRTUAL_RENDER_STEP,
+                            colspan: 8,
+                            renderRow: renderAdvancedRow
+                        });
+                    }
+                } else {
+                    // Fallback: render everything at once (small datasets / missing module)
+                    tbody.innerHTML = buildAdvancedTbody(sorted, 0);
+                }
 
                 // Count label
                 const countEl = document.getElementById(countId);
@@ -4981,70 +5098,12 @@
                 const hasSort = advSortState.singles.length > 0 || advSortState.albums.length > 0;
                 if (resetBtn) resetBtn.classList.toggle('visible', hasSort);
 
-                // Attach click handlers to thead
+                // Attach click handlers to thead (rebind because innerHTML replaced them)
                 table.querySelectorAll('thead th[data-col]').forEach(th => {
                     th.addEventListener('click', (e) => {
                         handleAdvancedSort(tableKey, th.dataset.col, e.shiftKey);
                     });
                 });
-            }
-
-            // Render all rows in chunks via requestAnimationFrame to avoid blocking UI
-            function advRenderAllChunked(tableKey) {
-                const tableId = tableKey === 'singles' ? 'adv-singles-table' : 'adv-albums-table';
-                const table = document.getElementById(tableId);
-                if (!table) return;
-                const data = advSortedData[tableKey];
-                const tbody = table.querySelector('tbody');
-
-                function renderNextChunk() {
-                    const start = advRenderedCount[tableKey];
-                    if (start >= data.length) {
-                        advRenderRaf[tableKey] = 0;
-                        return;
-                    }
-                    const end = Math.min(start + ADV_RENDER_CHUNK, data.length);
-                    const batchHtml = buildAdvancedTbody(data.slice(start, end), start);
-                    tbody.insertAdjacentHTML('beforeend', batchHtml);
-
-                    // Attach click handlers to newly added release links
-                    const rows = tbody.querySelectorAll('tr');
-                    for (let i = start; i < end && i < rows.length; i++) {
-                        rows[i].querySelectorAll('.adv-release-link[data-url]').forEach(el => {
-                            el.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const url = el.dataset.url;
-                                const title = el.dataset.title || '';
-                                const artist = el.dataset.artist || '';
-                                const thumb = el.dataset.thumb || '';
-                                const totalViews = el.dataset.totalViews === undefined ? null : Number(el.dataset.totalViews);
-                                const viewsDelta = el.dataset.viewsDelta === undefined ? null : Number(el.dataset.viewsDelta);
-                                const info = getArtistInfo(artist);
-                                if (url) {
-                                    openOnPreferredService(url, title, artist, thumb, info?.accentColors, info?.spotifyName, info?.confirmed, {
-                                        totalViews: Number.isFinite(totalViews) ? totalViews : null,
-                                        viewsDelta: Number.isFinite(viewsDelta) ? viewsDelta : null
-                                    });
-                                }
-                            });
-                        });
-                    }
-
-                    if (typeof refreshOverflowMarquees === 'function') {
-                        refreshOverflowMarquees(tbody);
-                    }
-
-                    advRenderedCount[tableKey] = end;
-
-                    if (end < data.length) {
-                        advRenderRaf[tableKey] = requestAnimationFrame(renderNextChunk);
-                    } else {
-                        advRenderRaf[tableKey] = 0;
-                    }
-                }
-
-                advRenderRaf[tableKey] = requestAnimationFrame(renderNextChunk);
             }
 
             // Handle sort column click
@@ -5155,6 +5214,7 @@
 
             function playChartLoadReveal(container, containerId) {
                 if (!container) return;
+                if (!CHART_LOAD_REVEAL_ENABLED) return;
 
                 clearChartLoadReveal(container);
 
@@ -5293,7 +5353,7 @@
                     const hasAccent = accentColors && (accentColors[0] || accentColors[1]);
                     const accent1 = hasAccent ? (accentColors[0] || accentColors[1]) : '';
                     const accent2 = hasAccent ? (accentColors[1] || accentColors[0]) : '';
-                    const shouldReveal = true;
+                    const shouldReveal = CHART_LOAD_REVEAL_ENABLED;
                     const itemClasses = ['chart-item'];
                     const trimmedItemClass = itemClass.trim();
                     if (trimmedItemClass) itemClasses.push(...trimmedItemClass.split(/\s+/));
@@ -5312,17 +5372,17 @@
                         : '';
                     
                     // Build history tooltips for this release
-                    const posTooltipHtml = showPosition ? buildHistoryTooltipHTML(release.releaseId, 'position', release.releaseType, rank) : '';
-                    const popTooltipHtml = buildHistoryTooltipHTML(release.releaseId, 'views', release.releaseType, rank);
+                    const hasHistory = releaseHistoryMap.has(release.releaseId);
                     
                     // If we have history tooltips, suppress native title to avoid double tooltip
-                    const rankTitle = posTooltipHtml ? '' : (isFreshRelease ? 'НОВО' : changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
-                    const popTitle = popTooltipHtml ? '' : metricTitle;
-                    
-                    // Escape tooltip HTML for data attributes
-                    const escAttr = (html) => html.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    const posTooltipAttr = posTooltipHtml ? ` data-tooltip-html="${escAttr(posTooltipHtml)}"` : '';
-                    const popTooltipAttr = popTooltipHtml ? ` data-tooltip-html="${escAttr(popTooltipHtml)}"` : '';
+                    const rankTitle = hasHistory ? '' : (isFreshRelease ? 'НОВО' : changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
+                    const popTitle = hasHistory ? '' : metricTitle;
+                    const posTooltipAttr = showPosition && hasHistory
+                        ? ` data-tooltip-release-id="${escHtml(String(release.releaseId || ''))}" data-tooltip-mode="position" data-tooltip-type="${escHtml(release.releaseType || '')}" data-tooltip-rank="${rank}"`
+                        : '';
+                    const popTooltipAttr = hasHistory
+                        ? ` data-tooltip-release-id="${escHtml(String(release.releaseId || ''))}" data-tooltip-mode="views" data-tooltip-type="${escHtml(release.releaseType || '')}" data-tooltip-rank="${rank}"`
+                        : '';
                     
                     const rankIndicatorHtml = isFreshRelease
                         ? '<span class="rank-new-badge">НОВО</span>'
@@ -5384,12 +5444,15 @@
                 
                 // Set up hover positioning for history tooltips using portal
                 const tooltipPortal = document.getElementById('chart-tooltip-portal');
-                container.querySelectorAll('[data-tooltip-html]').forEach(el => {
+                container.querySelectorAll('[data-tooltip-release-id]').forEach(el => {
                     function positionAndShow() {
-                        // Decode HTML from data attribute
-                        const raw = el.getAttribute('data-tooltip-html');
-                        if (!raw) return;
-                        const html = raw.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                        const html = getHistoryTooltipHTMLCached(
+                            el.getAttribute('data-tooltip-release-id'),
+                            el.getAttribute('data-tooltip-mode'),
+                            el.getAttribute('data-tooltip-type'),
+                            Number(el.getAttribute('data-tooltip-rank') || '0')
+                        );
+                        if (!html) return;
                         tooltipPortal.innerHTML = html;
                         
                         const rect = el.getBoundingClientRect();
@@ -5439,11 +5502,14 @@
                 });
                 
                 // Close tooltip when tapping elsewhere (mobile)
-                container.addEventListener('click', (e) => {
-                    if (!e.target.closest('[data-tooltip-html]')) {
-                        tooltipPortal.classList.remove('visible');
-                    }
-                });
+                if (!container.dataset.tooltipCloseBound) {
+                    container.dataset.tooltipCloseBound = '1';
+                    container.addEventListener('click', (e) => {
+                        if (!e.target.closest('[data-tooltip-release-id]')) {
+                            tooltipPortal.classList.remove('visible');
+                        }
+                    });
+                }
 
                 playChartLoadReveal(container, containerId);
             }
@@ -5466,7 +5532,7 @@
                 empty.style.display = 'none';
                 container.style.display = 'block';
                 const revealAccent = getChartRevealAccent(containerId);
-                container.innerHTML = artists.map((artist, index) => {
+                const renderArtistRow = (artist, index) => {
                     const rank = index + 1;
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
                     const itemClass = rank <= 3 ? `rank-${rank}` : '';
@@ -5483,7 +5549,7 @@
                     const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
                     const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
                     const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
-                    const shouldReveal = true;
+                    const shouldReveal = CHART_LOAD_REVEAL_ENABLED;
                     const itemClasses = ['chart-item', 'artist-item', 'artist-item--alltime'];
                     if (itemClass) itemClasses.push(itemClass);
                     if (artHasAccent) itemClasses.push('has-accent');
@@ -5527,7 +5593,40 @@
                             </div>
                         </li>
                     `;
-                }).join('');
+                };
+
+                const onRendered = (contentEl) => {
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        refreshOverflowMarquees(contentEl);
+                    }
+                };
+
+                if (window.innerWidth > 600 && artists.length > ARTIST_CHART_VIRTUAL_THRESHOLD && typeof VirtualList !== 'undefined') {
+                    const rowHeight = getArtistChartRowHeight();
+                    if (chartVirtualLists[containerId]) {
+                        chartVirtualLists[containerId].renderRow = renderArtistRow;
+                        chartVirtualLists[containerId].onRendered = onRendered;
+                        chartVirtualLists[containerId].setRowHeight(rowHeight);
+                        chartVirtualLists[containerId].update(artists);
+                    } else {
+                        chartVirtualLists[containerId] = new VirtualList({
+                            scrollEl: container,
+                            contentEl: container,
+                            items: artists,
+                            rowHeight,
+                            overscan: 10,
+                            renderRow: renderArtistRow,
+                            onRendered
+                        });
+                    }
+                } else {
+                    if (chartVirtualLists[containerId]) {
+                        chartVirtualLists[containerId].destroy();
+                        chartVirtualLists[containerId] = null;
+                    }
+                    container.innerHTML = artists.map(renderArtistRow).join('');
+                    onRendered(container);
+                }
 
                 playChartLoadReveal(container, containerId);
             }
@@ -5559,7 +5658,7 @@
                 empty.style.display = 'none';
                 container.style.display = 'block';
                 const revealAccent = getChartRevealAccent(containerId);
-                container.innerHTML = artists.map((artist, index) => {
+                const renderArtistRow = (artist, index) => {
                     const rank = index + 1;
                     const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
                     const itemClass = rank <= 3 ? `rank-${rank}` : '';
@@ -5589,7 +5688,7 @@
                     const artHasAccent = artAccentColors && (artAccentColors[0] || artAccentColors[1]);
                     const artAccent1 = artHasAccent ? (artAccentColors[0] || artAccentColors[1]) : '';
                     const artAccent2 = artHasAccent ? (artAccentColors[1] || artAccentColors[0]) : '';
-                    const shouldReveal = true;
+                    const shouldReveal = CHART_LOAD_REVEAL_ENABLED;
                     const itemClasses = ['chart-item', 'artist-item', 'artist-item--cumulative'];
                     if (itemClass) itemClasses.push(itemClass);
                     if (artHasAccent) itemClasses.push('has-accent');
@@ -5634,7 +5733,40 @@
                             </div>
                         </li>
                     `;
-                }).join('');
+                };
+
+                const onRendered = (contentEl) => {
+                    if (typeof refreshOverflowMarquees === 'function') {
+                        refreshOverflowMarquees(contentEl);
+                    }
+                };
+
+                if (window.innerWidth > 600 && artists.length > ARTIST_CHART_VIRTUAL_THRESHOLD && typeof VirtualList !== 'undefined') {
+                    const rowHeight = getArtistChartRowHeight();
+                    if (chartVirtualLists[containerId]) {
+                        chartVirtualLists[containerId].renderRow = renderArtistRow;
+                        chartVirtualLists[containerId].onRendered = onRendered;
+                        chartVirtualLists[containerId].setRowHeight(rowHeight);
+                        chartVirtualLists[containerId].update(artists);
+                    } else {
+                        chartVirtualLists[containerId] = new VirtualList({
+                            scrollEl: container,
+                            contentEl: container,
+                            items: artists,
+                            rowHeight,
+                            overscan: 10,
+                            renderRow: renderArtistRow,
+                            onRendered
+                        });
+                    }
+                } else {
+                    if (chartVirtualLists[containerId]) {
+                        chartVirtualLists[containerId].destroy();
+                        chartVirtualLists[containerId] = null;
+                    }
+                    container.innerHTML = artists.map(renderArtistRow).join('');
+                    onRendered(container);
+                }
 
                 playChartLoadReveal(container, containerId);
             }

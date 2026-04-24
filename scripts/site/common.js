@@ -1669,6 +1669,10 @@ var overflowMarqueeMutationObserver = typeof MutationObserver === 'function'
     })
     : null;
 
+function isInIgnoredOverflowMarqueeSubtree(el) {
+    return !!(el && el.nodeType === 1 && typeof el.closest === 'function' && el.closest('[data-marquee-ignore]'));
+}
+
 function ensureOverflowMarqueeStyles() {
     var styleId = 'overflow-marquee-style';
     if (document.getElementById(styleId)) return;
@@ -1717,6 +1721,7 @@ function hasOverflowMarqueeText(el) {
 
 function shouldAutoApplyOverflowMarquee(el) {
     if (!el || !el.classList || !el.tagName) return false;
+    if (isInIgnoredOverflowMarqueeSubtree(el)) return false;
     if (el.classList.contains('overflow-marquee__content')) return false;
     if (el.classList.contains('js-overflow-marquee') || el.classList.contains(OVERFLOW_MARQUEE_AUTO_CLASS)) return true;
     if (el.hasAttribute('data-marquee-ignore')) return false;
@@ -1740,6 +1745,7 @@ function shouldAutoApplyOverflowMarquee(el) {
 function discoverOverflowMarqueeCandidates(root) {
     var scope = root && root.nodeType === 1 ? root : (document.body || document.documentElement);
     if (!scope) return;
+    if (isInIgnoredOverflowMarqueeSubtree(scope)) return;
 
     if (shouldAutoApplyOverflowMarquee(scope) && !scope.classList.contains('js-overflow-marquee')) {
         scope.classList.add(OVERFLOW_MARQUEE_AUTO_CLASS);
@@ -1793,7 +1799,10 @@ function updateOverflowMarquee(el) {
     void content.offsetWidth;
 
     var containerWidth = Math.ceil(el.getBoundingClientRect().width);
-    var contentWidth = Math.ceil(content.getBoundingClientRect().width);
+    var contentWidth = Math.ceil(Math.max(
+        content.scrollWidth || 0,
+        content.getBoundingClientRect().width
+    ));
     var overflow = Math.ceil(contentWidth - containerWidth);
     if (overflow <= 2) {
         content.style.animation = '';
@@ -1820,6 +1829,7 @@ function observeOverflowMarquee(el) {
 
 function refreshOverflowMarquees(root) {
     ensureOverflowMarqueeStyles();
+    if (root && root.nodeType === 1 && isInIgnoredOverflowMarqueeSubtree(root)) return;
     discoverOverflowMarqueeCandidates(root);
 
     var scope = root && typeof root.querySelectorAll === 'function' ? root : document;
