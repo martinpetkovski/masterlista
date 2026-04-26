@@ -527,6 +527,53 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .adv-progress {
+            display: none;
+            padding: 0.55rem 0.85rem 0.45rem;
+            background: linear-gradient(180deg, rgba(34, 92, 228, 0.06), transparent);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .adv-progress.visible {
+            display: block;
+        }
+
+        .adv-progress-copy {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.35rem;
+            font-size: 0.68rem;
+        }
+
+        .adv-progress-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .adv-progress-meta {
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .adv-progress-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(34, 92, 228, 0.12);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .adv-progress-fill {
+            display: block;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #225ce4, #4c8cff);
+            transition: width 0.12s linear;
+        }
+
         .adv-table-scroll {
             min-width: 0;
             width: 100%;
@@ -614,8 +661,7 @@
             font-size: 13px !important;
         }
 
-        /* Virtualizer: fixed row height so top/bottom spacers line up and
-           column widths stabilize across windowed renders. */
+          /* Keep advanced rows compact and visually stable while chunked rows append. */
         .adv-table tbody tr { height: 18px; box-sizing: border-box; background: #fff; }
         .adv-table tbody tr.vl-spacer { height: auto; }
         .adv-table tbody tr.vl-spacer td { padding: 0 !important; border: 0 !important; background: transparent !important; }
@@ -710,6 +756,10 @@
             background: #15181e;
         }
 
+        body.dark-mode .adv-progress {
+            background: linear-gradient(180deg, rgba(76, 140, 255, 0.14), transparent);
+        }
+
         body.dark-mode .adv-table th {
             background: #15181e;
         }
@@ -726,6 +776,15 @@
             .adv-table-wrapper + .adv-table-wrapper {
                 border-left: none;
                 border-top: 1px solid var(--border-color);
+            }
+
+            .adv-progress {
+                padding: 0.5rem 0.65rem 0.4rem;
+            }
+
+            .adv-progress-copy {
+                gap: 0.5rem;
+                font-size: 0.62rem;
             }
 
             .adv-table-scroll {
@@ -2893,6 +2952,15 @@
                         <span class="period" id="advanced-period"></span>
                     </div>
                 </div>
+                <div class="adv-progress" id="adv-render-progress" aria-hidden="true">
+                    <div class="adv-progress-copy">
+                        <span class="adv-progress-label" data-i18n="common.loading">Се вчитува...</span>
+                        <span class="adv-progress-meta" id="adv-render-progress-meta">0 / 0 • 0%</span>
+                    </div>
+                    <div class="adv-progress-track" id="adv-render-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <span class="adv-progress-fill" id="adv-render-progress-fill"></span>
+                    </div>
+                </div>
                 <div class="adv-tables-container">
                     <div class="adv-table-wrapper" id="adv-singles-wrapper">
                         <div class="adv-table-label"><span data-i18n="charts.songs">Песни</span> <span id="adv-singles-count"></span></div>
@@ -4497,12 +4565,9 @@
                         ['singles-section', 'albums-section', 'latest-section', 'artists-section', 'artists-cumulative-section'].forEach(id => 
                             document.getElementById(id)?.classList.remove('mobile-active'));
                     }
-                    requestAnimationFrame(() => {
-                        if (advVirtualList.singles) advVirtualList.singles.render();
-                        if (advVirtualList.albums) advVirtualList.albums.render();
-                    });
                     
                 } else if (chart === 'artists') {
+                    cancelAdvancedTableRender();
                     const cumulativeArtists = siteMaster.artistCumulativeRanking || [];
                     renderCumulativeArtistsChart('artists-cumulative-chart', cumulativeArtists);
                     document.getElementById('singles-section').style.display = 'none';
@@ -4535,6 +4600,7 @@
                     chartDataStore.latest = [];
                     
                 } else if (chart === 'alltime') {
+                    cancelAdvancedTableRender();
                     let topArtists;
                     if (!useCityFilter) {
                         // Use pre-computed all-time artists for this genre
@@ -4606,6 +4672,7 @@
                     chartDataStore.latest = [];
                     
                 } else {
+                    cancelAdvancedTableRender();
                     let topSingles, topAlbums, latestReleases;
                     if (!useCityFilter) {
                         // Use pre-computed charts (with positionChange/popularityChange baked in)
@@ -4808,12 +4875,8 @@
             let advChartData = { singles: [], albums: [], prevSinglesMap: {}, prevAlbumsMap: {} };
             // Sort state per table: array of { column, direction } in priority order
             let advSortState = { singles: [], albums: [] };
-            // Virtualized rendering state
-            let advSortedData = { singles: [], albums: [] };
-            let advVirtualList = { singles: null, albums: null };
-            const ADV_ROW_HEIGHT = 18;
-            const ADV_VIRTUAL_OVERSCAN = 96;
-            const ADV_VIRTUAL_RENDER_STEP = 24;
+            const ADV_RENDER_CHUNK_SIZE = 48;
+            let advRenderAbortController = null;
             const CHART_LOAD_REVEAL_ENABLED = false;
             const ARTIST_CHART_VIRTUAL_THRESHOLD = 40;
             let chartVirtualLists = {
@@ -5021,12 +5084,43 @@
                 return enrichedReleases.map((r, i) => renderAdvancedRow(r, (startIndex || 0) + i)).join('');
             }
 
-            // Render (or re-render) a single advanced table
-            function renderAdvancedTable(tableKey) {
+            function updateAdvancedRenderProgress(completedCount, totalCount) {
+                const progressEl = document.getElementById('adv-render-progress');
+                const fillEl = document.getElementById('adv-render-progress-fill');
+                const metaEl = document.getElementById('adv-render-progress-meta');
+                const trackEl = document.getElementById('adv-render-progress-track');
+                if (!progressEl || !fillEl || !metaEl || !trackEl) return;
+
+                if (totalCount <= 0) {
+                    progressEl.classList.remove('visible');
+                    progressEl.setAttribute('aria-hidden', 'true');
+                    fillEl.style.width = '0%';
+                    trackEl.setAttribute('aria-valuenow', '0');
+                    metaEl.textContent = '0 / 0 • 0%';
+                    return;
+                }
+
+                const percent = Math.max(0, Math.min(100, Math.round((completedCount / totalCount) * 100)));
+                progressEl.classList.add('visible');
+                progressEl.setAttribute('aria-hidden', 'false');
+                fillEl.style.width = `${percent}%`;
+                trackEl.setAttribute('aria-valuenow', String(percent));
+                metaEl.textContent = `${completedCount.toLocaleString()} / ${totalCount.toLocaleString()} • ${percent}%`;
+            }
+
+            function cancelAdvancedTableRender() {
+                if (advRenderAbortController) {
+                    advRenderAbortController.abort();
+                    advRenderAbortController = null;
+                }
+                updateAdvancedRenderProgress(0, 0);
+            }
+
+            function prepareAdvancedTable(tableKey) {
                 const tableId = tableKey === 'singles' ? 'adv-singles-table' : 'adv-albums-table';
                 const countId = tableKey === 'singles' ? 'adv-singles-count' : 'adv-albums-count';
                 const table = document.getElementById(tableId);
-                if (!table) return;
+                if (!table) return null;
 
                 const releases = advChartData[tableKey];
                 const prevMap = tableKey === 'singles' ? advChartData.prevSinglesMap : advChartData.prevAlbumsMap;
@@ -5034,12 +5128,10 @@
                 // Enrich + sort
                 const enriched = releases.map((r, i) => enrichRelease(r, i, prevMap));
                 const sorted = sortAdvancedReleases(enriched, advSortState[tableKey]);
-                advSortedData[tableKey] = sorted;
 
                 // Render header
                 table.querySelector('thead').innerHTML = buildAdvancedThead(tableKey);
 
-                // Virtualized tbody render
                 const tbody = table.querySelector('tbody');
                 const scrollEl = table.closest('.adv-table-scroll');
 
@@ -5067,28 +5159,6 @@
                     });
                 }
 
-                if (scrollEl && typeof VirtualList !== 'undefined') {
-                    if (advVirtualList[tableKey]) {
-                        advVirtualList[tableKey].overscan = ADV_VIRTUAL_OVERSCAN;
-                        advVirtualList[tableKey].renderStep = ADV_VIRTUAL_RENDER_STEP;
-                        advVirtualList[tableKey].update(sorted);
-                    } else {
-                        advVirtualList[tableKey] = new VirtualList({
-                            scrollEl,
-                            contentEl: tbody,
-                            items: sorted,
-                            rowHeight: ADV_ROW_HEIGHT,
-                            overscan: ADV_VIRTUAL_OVERSCAN,
-                            renderStep: ADV_VIRTUAL_RENDER_STEP,
-                            colspan: 8,
-                            renderRow: renderAdvancedRow
-                        });
-                    }
-                } else {
-                    // Fallback: render everything at once (small datasets / missing module)
-                    tbody.innerHTML = buildAdvancedTbody(sorted, 0);
-                }
-
                 // Count label
                 const countEl = document.getElementById(countId);
                 if (countEl) countEl.textContent = `(${releases.length})`;
@@ -5104,6 +5174,77 @@
                         handleAdvancedSort(tableKey, th.dataset.col, e.shiftKey);
                     });
                 });
+
+                return { tableKey, sorted, tbody, scrollEl, offset: 0 };
+            }
+
+            // Render one or more advanced tables progressively so the browser can paint between chunks.
+            function renderAdvancedTables(tableKeys) {
+                cancelAdvancedTableRender();
+
+                const preparedTables = tableKeys
+                    .map(prepareAdvancedTable)
+                    .filter(Boolean);
+
+                if (preparedTables.length === 0) {
+                    updateAdvancedRenderProgress(0, 0);
+                    return;
+                }
+
+                let totalRows = 0;
+                for (const prepared of preparedTables) {
+                    if (prepared.scrollEl) prepared.scrollEl.scrollTop = 0;
+                    if (prepared.sorted.length === 0) {
+                        prepared.tbody.innerHTML = buildAdvancedTbody([], 0);
+                        continue;
+                    }
+
+                    prepared.tbody.innerHTML = '';
+                    totalRows += prepared.sorted.length;
+                }
+
+                if (totalRows === 0) {
+                    updateAdvancedRenderProgress(0, 0);
+                    return;
+                }
+
+                advRenderAbortController = new AbortController();
+                const signal = advRenderAbortController.signal;
+                let completedRows = 0;
+
+                updateAdvancedRenderProgress(0, totalRows);
+
+                function renderChunk() {
+                    if (signal.aborted) return;
+
+                    for (const prepared of preparedTables) {
+                        if (prepared.offset >= prepared.sorted.length) continue;
+
+                        const nextOffset = Math.min(prepared.offset + ADV_RENDER_CHUNK_SIZE, prepared.sorted.length);
+                        prepared.tbody.insertAdjacentHTML('beforeend', buildAdvancedTbody(prepared.sorted.slice(prepared.offset, nextOffset), prepared.offset));
+                        completedRows += nextOffset - prepared.offset;
+                        prepared.offset = nextOffset;
+                    }
+
+                    updateAdvancedRenderProgress(completedRows, totalRows);
+
+                    const hasPendingRows = preparedTables.some(prepared => prepared.offset < prepared.sorted.length);
+                    if (hasPendingRows) {
+                        requestAnimationFrame(renderChunk);
+                        return;
+                    }
+
+                    advRenderAbortController = null;
+                    updateAdvancedRenderProgress(totalRows, totalRows);
+                    requestAnimationFrame(() => updateAdvancedRenderProgress(0, 0));
+                }
+
+                requestAnimationFrame(renderChunk);
+            }
+
+            // Render (or re-render) a single advanced table
+            function renderAdvancedTable(tableKey) {
+                renderAdvancedTables([tableKey]);
             }
 
             // Handle sort column click
@@ -5158,16 +5299,14 @@
                 // Default sort: viewsDelta descending
                 advSortState = { singles: [{ column: 'pdelta', direction: 'desc' }, { column: 'pop', direction: 'desc' }], albums: [{ column: 'pdelta', direction: 'desc' }, { column: 'pop', direction: 'desc' }] };
 
-                renderAdvancedTable('singles');
-                renderAdvancedTable('albums');
+                renderAdvancedTables(['singles', 'albums']);
 
                 // Reset button handler
                 const resetBtn = document.getElementById('adv-sort-reset');
                 if (resetBtn) {
                     resetBtn.onclick = () => {
                         advSortState = { singles: [], albums: [] };
-                        renderAdvancedTable('singles');
-                        renderAdvancedTable('albums');
+                        renderAdvancedTables(['singles', 'albums']);
                     };
                 }
             }
