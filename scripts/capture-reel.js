@@ -127,7 +127,9 @@ function downloadYoutubeClip(videoId, outputPath, startSec, clipLen) {
   const endSec = startSec + clipLen;
   const args = [
     '--no-playlist',
-    '-f', 'bestvideo[height<=720]+bestaudio/best[height<=720]',
+    // Prefer a single muxed stream for section downloads. DASH video+audio pairs
+    // have produced truncated audio on some clips when ffmpeg cuts remote ranges.
+    '-f', 'best[height<=720][acodec!=none][vcodec!=none]/bestvideo[height<=720]+bestaudio/best[height<=720]',
     '--download-sections', `*${startSec}-${endSec}`,
     '--force-keyframes-at-cuts',
     '--merge-output-format', 'mp4',
