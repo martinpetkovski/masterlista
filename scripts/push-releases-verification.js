@@ -48,6 +48,25 @@ function gitStatus(args) {
   return result.status;
 }
 
+function readGitConfig(name) {
+  const result = spawnSync('git', ['config', '--get', name], {
+    cwd: root,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (result.error) throw result.error;
+  return result.status === 0 ? (result.stdout || '').trim() : '';
+}
+
+function ensureGitIdentity() {
+  if (!readGitConfig('user.name')) {
+    runGit(['config', 'user.name', process.env.GIT_AUTHOR_NAME || 'github-actions[bot]']);
+  }
+  if (!readGitConfig('user.email')) {
+    runGit(['config', 'user.email', process.env.GIT_AUTHOR_EMAIL || '41898282+github-actions[bot]@users.noreply.github.com']);
+  }
+}
+
 function parseGitHubRemote(remoteUrl) {
   if (!remoteUrl) return null;
   let match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^/.]+)(?:\.git)?$/i);
@@ -90,6 +109,7 @@ function main() {
   if (hasChanges) {
     const commitMessage = `YouTube link matching - ${args.unverified || 'pending'} links pending verification`;
     if (!args.dryRun) {
+      ensureGitIdentity();
       runGit(['add', releasesRepoPath]);
       runGit(['commit', '-m', commitMessage, '--quiet']);
       committed = true;

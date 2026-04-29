@@ -2,9 +2,20 @@ name: Daily update
 
 on:
   schedule:
-    # GitHub cron uses UTC; 17:00 UTC is 18:00 CET.
+    # GitHub cron uses UTC; 17:00 UTC is 18:00 CET, 18:00 UTC is 19:00 CET.
     - cron: "0 17 * * *"
+    - cron: "0 18 * * *"
   workflow_dispatch:
+    inputs:
+      phase:
+        description: "Which update phase to run"
+        required: true
+        default: publish-verification
+        type: choice
+        options:
+          - publish-verification
+          - finalize-after-verification
+          - full
 
 permissions:
   contents: write
@@ -30,6 +41,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Configure Git author
+        shell: powershell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Restore update cache
         uses: actions/cache@v4
@@ -72,9 +89,34 @@ jobs:
             apiKey = $env:YOUTUBE_API_KEY
           } | ConvertTo-Json -Depth 5 | Set-Content config/credentials/youtube-credentials.json -Encoding UTF8
 
+      - name: Determine update phase
+        shell: powershell
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $phase = "${{ inputs.phase }}"
+          }
+          elseif ("${{ github.event.schedule }}" -eq "0 17 * * *") {
+            $phase = "publish-verification"
+          }
+          else {
+            $phase = "finalize-after-verification"
+          }
+
+          Write-Host "Running update phase: $phase"
+          "UPDATE_PHASE=$phase" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Run update-all
         shell: powershell
-        run: .\update-all.ps1 -VerificationTimeoutMinutes 60
+        run: |
+          if ($env:UPDATE_PHASE -eq "publish-verification") {
+            .\update-publish-verification.ps1 -VerificationTimeoutMinutes 60
+          }
+          elseif ($env:UPDATE_PHASE -eq "finalize-after-verification") {
+            .\update-finalize-after-verification.ps1 -VerificationTimeoutMinutes 60
+          }
+          else {
+            .\update-all.ps1 -AutomationPhase full -VerificationTimeoutMinutes 60
+          }
 
       - name: Commit update changes
         shell: powershell
@@ -85,8 +127,6 @@ jobs:
             exit 0
           }
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Daily data update"
+          git commit -m "Daily data update ($env:UPDATE_PHASE)"
           git push

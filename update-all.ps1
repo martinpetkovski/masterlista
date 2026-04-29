@@ -22,6 +22,8 @@
 #   ./update-all.ps1 -SkipYouTubeMatching   # Skip YouTube link matching
 #   ./update-all.ps1 -SkipVerification       # Skip YouTube verification wait (proceed directly)
 #   ./update-all.ps1 -VerificationTimeoutMinutes 60 # Continue if verification is not done within 1 hour
+#   ./update-all.ps1 -AutomationPhase publish-verification # Run pre-verification tasks and publish releases.json
+#   ./update-all.ps1 -AutomationPhase finalize-after-verification # Run post-verification tasks
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only cleanup  # Run only release cleanup
@@ -42,6 +44,8 @@ param(
     [switch]$SkipVerification,
     [switch]$SkipYouTubePopularity,
     [int]$VerificationTimeoutMinutes = 0,
+    [ValidateSet("full", "publish-verification", "finalize-after-verification")]
+    [string]$AutomationPhase = "full",
     [switch]$SkipCurators,
     [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
@@ -598,7 +602,10 @@ function Update-YouTubeMatching {
 # ============================================================================
 
 function Wait-ForYouTubeVerification {
-    param([int]$TimeoutMinutes = 0)
+    param(
+        [int]$TimeoutMinutes = 0,
+        [switch]$PublishOnly
+    )
 
     Write-Section "TASK 1c: YOUTUBE LINK VERIFICATION"
 
@@ -681,6 +688,11 @@ function Wait-ForYouTubeVerification {
         Write-Host "    $($submitResult.blobUrl)" -ForegroundColor DarkGray
     }
     Write-Host ""
+
+    if ($PublishOnly) {
+        Write-Step "Published releases.json for verification; not waiting in this phase" "Green"
+        return $true
+    }
 
     $POLL_INTERVAL_SEC = 30
     $waitStart = Get-Date
@@ -1270,6 +1282,31 @@ if ($Only) {
     $runSiteMaster = $Only -eq "sitemaster"
 }
 
+if ($AutomationPhase -eq "publish-verification") {
+    $runCleanup = -not $SkipCleanup
+    $runChart = -not $SkipChart
+    $runYouTubeMatching = -not $SkipYouTubeMatching
+    $runVerification = -not $SkipVerification
+    $runYouTubePopularity = $false
+    $runScrape = $false
+    $runLinks = $false
+    $runCurators = $false
+    $runPlaylists = $false
+    $runSiteMaster = $false
+}
+elseif ($AutomationPhase -eq "finalize-after-verification") {
+    $runCleanup = $false
+    $runChart = $false
+    $runYouTubeMatching = $false
+    $runVerification = $false
+    $runYouTubePopularity = -not $SkipYouTubePopularity
+    $runScrape = -not $SkipScrape
+    $runLinks = -not $SkipLinks
+    $runCurators = -not $SkipCurators
+    $runPlaylists = -not $SkipPlaylists
+    $runSiteMaster = -not $SkipSiteMaster
+}
+
 $results = @{}
 $taskTimings = @{}
 
@@ -1330,7 +1367,7 @@ else {
 if ($runVerification -and $results["YouTube Matching"] -ne $false) {
     Set-OverallProgress "YouTube Verification"
     $t = Get-Date
-    $results["YouTube Verification"] = Wait-ForYouTubeVerification -TimeoutMinutes $VerificationTimeoutMinutes
+    $results["YouTube Verification"] = Wait-ForYouTubeVerification -TimeoutMinutes $VerificationTimeoutMinutes -PublishOnly:($AutomationPhase -eq "publish-verification")
     $taskTimings["YouTube Verification"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 
     if (-not $results["YouTube Verification"]) {
