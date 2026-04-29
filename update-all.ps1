@@ -1244,6 +1244,25 @@ function Update-SpotifyPlaylists {
     return $true
 }
 
+function Invoke-UpdateTask {
+    param(
+        [string]$Name,
+        [scriptblock]$ScriptBlock
+    )
+
+    try {
+        $taskResult = & $ScriptBlock
+        if ($taskResult -is [array]) {
+            return [bool]$taskResult[-1]
+        }
+        return [bool]$taskResult
+    }
+    catch {
+        Write-Step "$Name failed unexpectedly: $_" "Red"
+        return $false
+    }
+}
+
 
 # ============================================================================
 #  MAIN
@@ -1309,6 +1328,11 @@ elseif ($AutomationPhase -eq "finalize-after-verification") {
 
 $results = @{}
 $taskTimings = @{}
+$criticalTaskNames = switch ($AutomationPhase) {
+    "publish-verification" { @("Chart Data", "YouTube Matching", "YouTube Verification") }
+    "finalize-after-verification" { @("YouTube Popularity", "Site Master") }
+    default { @("Chart Data", "YouTube Matching", "YouTube Verification", "YouTube Popularity", "Site Master") }
+}
 
 # Count how many tasks will actually run for the overall progress bar
 $script:taskTotal = @($runCleanup, $runChart, $runYouTubeMatching, $runVerification, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
@@ -1345,7 +1369,7 @@ else {
 if ($runChart) {
     Set-OverallProgress "Chart Data"
     $t = Get-Date
-    $results["Chart Data"] = Update-ChartData
+    $results["Chart Data"] = Invoke-UpdateTask "Chart Data" { Update-ChartData }
     $taskTimings["Chart Data"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1356,7 +1380,7 @@ else {
 if ($runYouTubeMatching) {
     Set-OverallProgress "YouTube Link Matching"
     $t = Get-Date
-    $results["YouTube Matching"] = Update-YouTubeMatching
+    $results["YouTube Matching"] = Invoke-UpdateTask "YouTube Matching" { Update-YouTubeMatching }
     $taskTimings["YouTube Matching"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1367,7 +1391,7 @@ else {
 if ($runVerification -and $results["YouTube Matching"] -ne $false) {
     Set-OverallProgress "YouTube Verification"
     $t = Get-Date
-    $results["YouTube Verification"] = Wait-ForYouTubeVerification -TimeoutMinutes $VerificationTimeoutMinutes -PublishOnly:($AutomationPhase -eq "publish-verification")
+    $results["YouTube Verification"] = Invoke-UpdateTask "YouTube Verification" { Wait-ForYouTubeVerification -TimeoutMinutes $VerificationTimeoutMinutes -PublishOnly:($AutomationPhase -eq "publish-verification") }
     $taskTimings["YouTube Verification"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 
     if (-not $results["YouTube Verification"]) {
@@ -1386,7 +1410,7 @@ else {
 if ($runYouTubePopularity) {
     Set-OverallProgress "YouTube Popularity"
     $t = Get-Date
-    $results["YouTube Popularity"] = Update-YouTubePopularity
+    $results["YouTube Popularity"] = Invoke-UpdateTask "YouTube Popularity" { Update-YouTubePopularity }
     $taskTimings["YouTube Popularity"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1397,7 +1421,7 @@ else {
 if ($runScrape) {
     Set-OverallProgress "Scrape Articles + Interviews"
     $t = Get-Date
-    $results["Scrape Articles + Interviews"] = Update-ScrapeArticles
+    $results["Scrape Articles + Interviews"] = Invoke-UpdateTask "Scrape Articles + Interviews" { Update-ScrapeArticles }
     $taskTimings["Scrape Articles + Interviews"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1408,7 +1432,7 @@ else {
 if ($runLinks) {
     Set-OverallProgress "Service Links"
     $t = Get-Date
-    $results["Service Links"] = Update-ServiceLinks
+    $results["Service Links"] = Invoke-UpdateTask "Service Links" { Update-ServiceLinks }
     $taskTimings["Service Links"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1419,7 +1443,7 @@ else {
 if ($runCurators) {
     Set-OverallProgress "Curator Tracklists"
     $t = Get-Date
-    $results["Curator Tracklists"] = Update-CuratorTracklists
+    $results["Curator Tracklists"] = Invoke-UpdateTask "Curator Tracklists" { Update-CuratorTracklists }
     $taskTimings["Curator Tracklists"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1430,7 +1454,7 @@ else {
 if ($runPlaylists) {
     Set-OverallProgress "Spotify Playlists"
     $t = Get-Date
-    $results["Spotify Playlists"] = Update-SpotifyPlaylists
+    $results["Spotify Playlists"] = Invoke-UpdateTask "Spotify Playlists" { Update-SpotifyPlaylists }
     $taskTimings["Spotify Playlists"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 }
 else {
@@ -1506,6 +1530,10 @@ Write-Host ""
 foreach ($task in $results.Keys) {
     $status = if ($results[$task]) { "OK" } else { "FAILED" }
     $color = if ($results[$task]) { "Green" } else { "Red" }
+    if ((-not $results[$task]) -and ($criticalTaskNames -notcontains $task)) {
+        $status = "FAILED, NON-BLOCKING"
+        $color = "Yellow"
+    }
     $timing = if ($taskTimings.ContainsKey($task)) { " ($($taskTimings[$task])s)" } else { "" }
     Write-Host "  [$status] $task$timing" -ForegroundColor $color
 }
@@ -1515,8 +1543,15 @@ Write-Host "  Completed in $([math]::Round($elapsed.TotalSeconds, 1))s" -Foregro
 Write-Host ""
 
 $failedTasks = @($results.Keys | Where-Object { -not $results[$_] })
-if ($failedTasks.Count -gt 0) {
-    Write-Host "  Failed task(s): $($failedTasks -join ', ')" -ForegroundColor Red
+$criticalFailedTasks = @($failedTasks | Where-Object { $criticalTaskNames -contains $_ })
+$nonBlockingFailedTasks = @($failedTasks | Where-Object { $criticalTaskNames -notcontains $_ })
+
+if ($nonBlockingFailedTasks.Count -gt 0) {
+    Write-Host "  Non-blocking failed task(s): $($nonBlockingFailedTasks -join ', ')" -ForegroundColor Yellow
+}
+
+if ($criticalFailedTasks.Count -gt 0) {
+    Write-Host "  Critical failed task(s): $($criticalFailedTasks -join ', ')" -ForegroundColor Red
     exit 1
 }
 
