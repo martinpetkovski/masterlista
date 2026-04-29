@@ -21,6 +21,7 @@
 #   ./update-all.ps1 -SkipPlaylists # Skip Spotify playlist update
 #   ./update-all.ps1 -SkipYouTubeMatching   # Skip YouTube link matching
 #   ./update-all.ps1 -SkipVerification       # Skip YouTube verification wait (proceed directly)
+#   ./update-all.ps1 -VerificationTimeoutMinutes 60 # Continue if verification is not done within 1 hour
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
 #   ./update-all.ps1 -Only cleanup  # Run only release cleanup
@@ -40,6 +41,7 @@ param(
     [switch]$SkipYouTubeMatching,
     [switch]$SkipVerification,
     [switch]$SkipYouTubePopularity,
+    [int]$VerificationTimeoutMinutes = 0,
     [switch]$SkipCurators,
     [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
@@ -596,6 +598,8 @@ function Update-YouTubeMatching {
 # ============================================================================
 
 function Wait-ForYouTubeVerification {
+    param([int]$TimeoutMinutes = 0)
+
     Write-Section "TASK 1c: YOUTUBE LINK VERIFICATION"
 
     $checkScript = Join-Path $scriptRoot "scripts\check-yt-verification.js"
@@ -659,7 +663,12 @@ function Wait-ForYouTubeVerification {
     Write-Host "  |     'will-not-verify' for each link                    |" -ForegroundColor Yellow
     Write-Host "  |  3. Commit your edit in GitHub's web UI                |" -ForegroundColor Yellow
     Write-Host "  |                                                         |" -ForegroundColor Yellow
-    Write-Host "  |  Script will auto-continue when all links are verified  |" -ForegroundColor Yellow
+    if ($TimeoutMinutes -gt 0) {
+        Write-Host "  |  Script will auto-continue after $TimeoutMinutes minute(s) max      |" -ForegroundColor Yellow
+    }
+    else {
+        Write-Host "  |  Script will auto-continue when all links are verified  |" -ForegroundColor Yellow
+    }
     Write-Host "  |  Press Ctrl+C to abort                                 |" -ForegroundColor Yellow
     Write-Host "  +---------------------------------------------------------+" -ForegroundColor Yellow
     Write-Host ""
@@ -675,9 +684,27 @@ function Wait-ForYouTubeVerification {
 
     $POLL_INTERVAL_SEC = 30
     $waitStart = Get-Date
+    $deadline = if ($TimeoutMinutes -gt 0) { $waitStart.AddMinutes($TimeoutMinutes) } else { $null }
+
+    if ($deadline) {
+        Write-Step "Waiting up to $TimeoutMinutes minute(s) for verification before continuing" "Cyan"
+    }
 
     while ($true) {
-        Start-Sleep -Seconds $POLL_INTERVAL_SEC
+        if ($deadline -and (Get-Date) -ge $deadline) {
+            Write-Progress -Id 1 -Activity "YouTube link verification" -Completed
+            Write-Step "Verification timeout reached; continuing with remaining update tasks" "Yellow"
+            return $true
+        }
+
+        $sleepSeconds = $POLL_INTERVAL_SEC
+        if ($deadline) {
+            $remainingSeconds = [math]::Ceiling(($deadline - (Get-Date)).TotalSeconds)
+            if ($remainingSeconds -le 0) { continue }
+            $sleepSeconds = [math]::Min($POLL_INTERVAL_SEC, $remainingSeconds)
+        }
+
+        Start-Sleep -Seconds $sleepSeconds
 
         $elapsed = [math]::Round(((Get-Date) - $waitStart).TotalMinutes, 1)
         Write-Progress -Id 1 -Activity "Waiting for YouTube link verification" `
@@ -1303,7 +1330,7 @@ else {
 if ($runVerification -and $results["YouTube Matching"] -ne $false) {
     Set-OverallProgress "YouTube Verification"
     $t = Get-Date
-    $results["YouTube Verification"] = Wait-ForYouTubeVerification
+    $results["YouTube Verification"] = Wait-ForYouTubeVerification -TimeoutMinutes $VerificationTimeoutMinutes
     $taskTimings["YouTube Verification"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
 
     if (-not $results["YouTube Verification"]) {
@@ -1449,3 +1476,11 @@ foreach ($task in $results.Keys) {
 Write-Host ""
 Write-Host "  Completed in $([math]::Round($elapsed.TotalSeconds, 1))s" -ForegroundColor DarkGray
 Write-Host ""
+
+$failedTasks = @($results.Keys | Where-Object { -not $results[$_] })
+if ($failedTasks.Count -gt 0) {
+    Write-Host "  Failed task(s): $($failedTasks -join ', ')" -ForegroundColor Red
+    exit 1
+}
+
+exit 0
