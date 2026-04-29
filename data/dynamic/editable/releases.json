@@ -1,8 +1,37 @@
 {
-  "generatedAt": "2026-04-28T16:10:48.149Z",
-  "totalReleases": 2638,
+  "generatedAt": "2026-04-29T17:40:59.941Z",
+  "totalReleases": 2636,
   "totalArtists": 385,
   "releases": [
+    {
+      "bandName": "Нокаут",
+      "spotifyName": "Nokaut NK",
+      "artistId": "0dUlRb8l5iis3klttz9bzX",
+      "releaseId": "4iJspZ85cuMpGjP6nZFORF",
+      "releaseTitle": "Ima li pilot vo pesnata",
+      "releaseType": "single",
+      "releaseDate": "2026-04-28",
+      "releaseUrl": "https://open.spotify.com/album/4iJspZ85cuMpGjP6nZFORF",
+      "thumbnail": "https://i.scdn.co/image/ab67616d0000b27313508c3c5887f2f2133cf554",
+      "totalTracks": 1,
+      "trackNames": [
+        "Ima li pilot vo pesnata"
+      ],
+      "trackArtists": [
+        [
+          "Nokaut NK"
+        ]
+      ],
+      "spotifyUrl": "https://open.spotify.com/artist/0dUlRb8l5iis3klttz9bzX",
+      "youtubeTracks": [
+        {
+          "name": "Ima li pilot vo pesnata",
+          "videoId": "TpJcyA_UliE",
+          "url": "https://www.youtube.com/watch?v=TpJcyA_UliE",
+          "verified": "verified"
+        }
+      ]
+    },
     {
       "bandName": "Коки Јанков",
       "spotifyName": "Koki Jankov",
@@ -70,6 +99,28 @@
       "effectiveReleaseDate": "2026-04-26"
     },
     {
+      "bandName": "Inserta",
+      "spotifyName": "Insertakick",
+      "artistId": "4H0y0ojlQXvEnn82o18D5s",
+      "releaseId": "2C3Np4NdgLmiMyXEhHc0MX",
+      "releaseTitle": "Topuria",
+      "releaseType": "single",
+      "releaseDate": "2026-04-26",
+      "releaseUrl": "https://open.spotify.com/album/2C3Np4NdgLmiMyXEhHc0MX",
+      "thumbnail": "https://i.scdn.co/image/ab67616d0000b2736892ef4b56af3c3cf23f3beb",
+      "totalTracks": 1,
+      "trackNames": [
+        "Topuria"
+      ],
+      "trackArtists": [
+        [
+          "Luka Chombe",
+          "Insertakick"
+        ]
+      ],
+      "spotifyUrl": "https://open.spotify.com/artist/4H0y0ojlQXvEnn82o18D5s?si=p2BabHDRRpudPLEKt6uTqQ"
+    },
+    {
       "bandName": "Galoski",
       "artistId": "19gU7Hvep0G37JeiLf3TNB",
       "releaseId": "4QCF3i0Dvkduyrj7rKyaXl",
@@ -88,8 +139,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/19gU7Hvep0G37JeiLf3TNB?si=y-Fv2pDqTG6KeZpRO5zu9w",
-      "effectiveReleaseDate": "2026-04-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-24"
     },
     {
       "bandName": "IKO",
@@ -151,8 +201,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4zEAyyL62T5mw5tbzhdxlv?si=YbUnM2ZTSJWNLvvctvvHBg",
-      "effectiveReleaseDate": "2026-04-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-23"
     },
     {
       "bandName": "Nickarth",
@@ -175,8 +224,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-22"
     },
     {
       "bandName": "Нокаут",
@@ -406,8 +454,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6uQDv41alNlfSZuSuJuGJt?si=XufhRvOuQjSBD1KU5sTNaw",
-      "effectiveReleaseDate": "2026-04-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-20"
     },
     {
       "bandName": "Billy Esteban",
@@ -507,8 +554,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-17"
     },
     {
       "bandName": "Peppermint",
@@ -537,6 +583,12 @@
           "verified": "verified",
           "views": 9560,
           "publishedAt": "2026-04-17"
+        },
+        {
+          "name": "Grom vo kopriva",
+          "videoId": "Xtbag0r4PuI",
+          "url": "https://www.youtube.com/watch?v=Xtbag0r4PuI",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 9560,
@@ -636,6 +688,12 @@
           "verified": "verified",
           "views": 450,
           "publishedAt": "2026-04-12"
+        },
+        {
+          "name": "Ne Mi E Denot",
+          "videoId": "mu8DKvod0ls",
+          "url": "https://www.youtube.com/watch?v=mu8DKvod0ls",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 450,
@@ -943,6 +1001,12 @@
           "verified": "verified",
           "views": 14711,
           "publishedAt": "2026-04-05"
+        },
+        {
+          "name": "Ej Kaldrmo",
+          "videoId": "yXjhGSiggKY",
+          "url": "https://www.youtube.com/watch?v=yXjhGSiggKY",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 14711,
@@ -1035,6 +1099,18 @@
           "verified": "verified",
           "views": 49,
           "publishedAt": "2026-04-05"
+        },
+        {
+          "name": "Nokjva tivko dozdot pagja",
+          "videoId": "zXUZgAxfTR0",
+          "url": "https://www.youtube.com/watch?v=zXUZgAxfTR0",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Samo moja si",
+          "videoId": "58tgQhXLStU",
+          "url": "https://www.youtube.com/watch?v=58tgQhXLStU",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 480,
@@ -1108,6 +1184,12 @@
           "verified": "verified",
           "views": 29,
           "publishedAt": "2026-04-04"
+        },
+        {
+          "name": "MVP II",
+          "videoId": "Xp41On3HS_w",
+          "url": "https://www.youtube.com/watch?v=Xp41On3HS_w",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 181,
@@ -1232,8 +1314,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1322,8 +1403,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1412,8 +1492,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1502,8 +1581,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1592,8 +1670,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1682,8 +1759,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1772,8 +1848,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1796,8 +1871,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1820,8 +1894,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1844,8 +1917,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1868,8 +1940,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1892,8 +1963,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1916,8 +1986,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1940,8 +2009,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1964,8 +2032,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -1988,8 +2055,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2012,8 +2078,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2036,8 +2101,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2060,8 +2124,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2084,8 +2147,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2108,8 +2170,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Nickarth",
@@ -2132,8 +2193,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-04-01"
     },
     {
       "bandName": "Makss",
@@ -2264,8 +2324,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2354,8 +2413,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2444,8 +2502,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2534,8 +2591,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2624,8 +2680,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2648,8 +2703,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2672,8 +2726,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2696,8 +2749,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2720,8 +2772,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2744,8 +2795,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2768,8 +2818,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2792,8 +2841,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2816,8 +2864,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Nickarth",
@@ -2840,8 +2887,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2026-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-31"
     },
     {
       "bandName": "Dijana OG",
@@ -2862,8 +2908,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6uvwGBuyKgkxnBjCochV2h?si=CkWbwY49Q8SbTG5-xNQk_w",
-      "effectiveReleaseDate": "2026-03-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-30"
     },
     {
       "bandName": "Коки Јанков",
@@ -2899,6 +2944,12 @@
           "verified": "verified",
           "views": 16648,
           "publishedAt": "2026-03-29"
+        },
+        {
+          "name": "Mene Mesto Ne Me Faka",
+          "videoId": "UUdbD2l8xko",
+          "url": "https://www.youtube.com/watch?v=UUdbD2l8xko",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 16648,
@@ -2932,6 +2983,12 @@
           "verified": "verified",
           "views": 480,
           "publishedAt": "2026-03-29"
+        },
+        {
+          "name": "Bela Ajta",
+          "videoId": "0oPfaMHqYcc",
+          "url": "https://www.youtube.com/watch?v=0oPfaMHqYcc",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 480,
@@ -3105,6 +3162,12 @@
           "verified": "verified",
           "views": 1647,
           "publishedAt": "2025-10-31"
+        },
+        {
+          "name": "Civilizacija",
+          "videoId": "jVmTzkREybo",
+          "url": "https://www.youtube.com/watch?v=jVmTzkREybo",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 3516,
@@ -3228,8 +3291,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1U8O3OWgSgcFxhhQsWunPb?si=5KR0_Y-_R-a7ObSzH1_Yqg",
-      "effectiveReleaseDate": "2026-03-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-24"
     },
     {
       "bandName": "Давид Темелков",
@@ -3251,8 +3313,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1U8O3OWgSgcFxhhQsWunPb?si=5KR0_Y-_R-a7ObSzH1_Yqg",
-      "effectiveReleaseDate": "2026-03-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-24"
     },
     {
       "bandName": "Тамара Волческа",
@@ -3321,6 +3382,12 @@
           "verified": "verified",
           "views": 23406,
           "publishedAt": "2026-03-23"
+        },
+        {
+          "name": "Zaludno E da Se Napijam",
+          "videoId": "0emji73GQE0",
+          "url": "https://www.youtube.com/watch?v=0emji73GQE0",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 23406,
@@ -3360,6 +3427,12 @@
           "verified": "verified",
           "views": 12688,
           "publishedAt": "2026-03-23"
+        },
+        {
+          "name": "Navikni Na Promeni",
+          "videoId": "zasdmMp3IgY",
+          "url": "https://www.youtube.com/watch?v=zasdmMp3IgY",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 12688,
@@ -3493,8 +3566,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1xK852O3AsGzJoSrUq3Z4d?si=dJReMctkSq6YsXojdL22Ig",
-      "effectiveReleaseDate": "2026-03-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-20"
     },
     {
       "bandName": "Влатко Стефановски",
@@ -3920,6 +3992,12 @@
           "verified": "verified",
           "views": 5938,
           "publishedAt": "2026-03-15"
+        },
+        {
+          "name": "Srce skršeno",
+          "videoId": "DqwvMcbaDBs",
+          "url": "https://www.youtube.com/watch?v=DqwvMcbaDBs",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 5938,
@@ -4453,8 +4531,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6GWM6CSXUZekRxOazOCOBs?si=D8444xv-S56VGyWFY8uugw",
-      "effectiveReleaseDate": "2026-03-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-03-03"
     },
     {
       "bandName": "Никеја",
@@ -5337,6 +5414,12 @@
           "verified": "verified",
           "views": 17924,
           "publishedAt": "2026-02-18"
+        },
+        {
+          "name": "Ne baraj gi angelite",
+          "videoId": "EhE1Wzmo5Nw",
+          "url": "https://www.youtube.com/watch?v=EhE1Wzmo5Nw",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 17924,
@@ -6117,8 +6200,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2026-02-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-02-10"
     },
     {
       "bandName": "Димиш",
@@ -7079,8 +7161,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1Typw0HezT717bgUtWbH43",
-      "effectiveReleaseDate": "2026-01-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-01-21"
     },
     {
       "bandName": "The Solution",
@@ -7181,6 +7262,12 @@
           "verified": "verified",
           "views": 2086,
           "publishedAt": "2026-01-15"
+        },
+        {
+          "name": "Pass",
+          "videoId": "QBlR2NsSzRE",
+          "url": "https://www.youtube.com/watch?v=QBlR2NsSzRE",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 2086,
@@ -7462,8 +7549,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2026-01-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2026-01-02"
     },
     {
       "bandName": "Daniel Dann",
@@ -7664,8 +7750,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -7687,8 +7772,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -7710,8 +7794,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -7733,8 +7816,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -7757,8 +7839,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -7780,8 +7861,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2025-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-31"
     },
     {
       "bandName": "Мартија, Роберт Билбилов",
@@ -7925,8 +8005,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2025-12-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-29"
     },
     {
       "bandName": "2bona, Таско",
@@ -8324,8 +8403,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/60FD0FRdAcg8eSoEdZWegN",
-      "effectiveReleaseDate": "2025-12-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-21"
     },
     {
       "bandName": "Фико, Муфи",
@@ -8507,6 +8585,18 @@
           "verified": "verified",
           "views": 55,
           "publishedAt": "2025-12-25"
+        },
+        {
+          "name": "Disko Devojka",
+          "videoId": "rcqkhUFNNpc",
+          "url": "https://www.youtube.com/watch?v=rcqkhUFNNpc",
+          "verified": "verified"
+        },
+        {
+          "name": "Belo",
+          "videoId": "W5tmUgdRlCg",
+          "url": "https://www.youtube.com/watch?v=W5tmUgdRlCg",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 1577,
@@ -8993,6 +9083,12 @@
           "verified": "verified",
           "views": 2511,
           "publishedAt": "2025-12-15"
+        },
+        {
+          "name": "Bedlam",
+          "videoId": "mRMuLNRyD1I",
+          "url": "https://www.youtube.com/watch?v=mRMuLNRyD1I",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 13058,
@@ -9619,8 +9715,7 @@
           "publishedAt": "2025-12-07"
         }
       ],
-      "effectiveReleaseDate": "2025-12-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-12-07"
     },
     {
       "bandName": "Бобан Велјаноски",
@@ -10185,10 +10280,15 @@
           "verified": "verified",
           "views": 315,
           "publishedAt": "2026-02-11"
+        },
+        {
+          "name": "Има или Нема",
+          "videoId": "pC4jcY84LN0",
+          "url": "https://www.youtube.com/watch?v=pC4jcY84LN0",
+          "verified": "verified"
         }
       ],
-      "effectiveReleaseDate": "2025-11-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-30"
     },
     {
       "bandName": "Сара Мејс",
@@ -10494,8 +10594,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5truEiU7f2V16dVCQjB3Dc?si=DTNEOdhaQGieUSiErZE8fw",
-      "effectiveReleaseDate": "2025-11-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-29"
     },
     {
       "bandName": "2bona",
@@ -10698,8 +10797,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-11-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-28"
     },
     {
       "bandName": "Влатко Стефановски",
@@ -11260,8 +11358,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5truEiU7f2V16dVCQjB3Dc?si=DTNEOdhaQGieUSiErZE8fw",
-      "effectiveReleaseDate": "2025-11-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-22"
     },
     {
       "bandName": "Животни",
@@ -11463,8 +11560,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2025-11-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-17"
     },
     {
       "bandName": "TYZEE",
@@ -11672,8 +11768,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-11-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-14"
     },
     {
       "bandName": "Galoski",
@@ -12663,8 +12758,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2025-11-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-11-05"
     },
     {
       "bandName": "Дејан Тасев",
@@ -13147,8 +13241,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-10-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-31"
     },
     {
       "bandName": "Кики Мукаетова",
@@ -13599,8 +13692,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3yQ1KSuRSpk4hc3hK092Ky?si=sVIPOVG8TfGhJc8VxxbSGA",
-      "effectiveReleaseDate": "2025-10-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-28"
     },
     {
       "bandName": "Cassato",
@@ -14137,8 +14229,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5truEiU7f2V16dVCQjB3Dc?si=DTNEOdhaQGieUSiErZE8fw",
-      "effectiveReleaseDate": "2025-10-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-24"
     },
     {
       "bandName": "Катерина Јовановиќ",
@@ -14399,8 +14490,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-10-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-17"
     },
     {
       "bandName": "Dijana OG",
@@ -15056,8 +15146,7 @@
           "publishedAt": "2025-10-13"
         }
       ],
-      "effectiveReleaseDate": "2025-10-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-13"
     },
     {
       "bandName": "Давид Темелков",
@@ -15089,8 +15178,7 @@
           "publishedAt": "2025-10-13"
         }
       ],
-      "effectiveReleaseDate": "2025-10-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-13"
     },
     {
       "bandName": "Калико",
@@ -15591,8 +15679,7 @@
           "publishedAt": "2025-10-04"
         }
       ],
-      "effectiveReleaseDate": "2025-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-04"
     },
     {
       "bandName": "Симона Поповска",
@@ -15656,8 +15743,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5truEiU7f2V16dVCQjB3Dc?si=DTNEOdhaQGieUSiErZE8fw",
-      "effectiveReleaseDate": "2025-10-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-10-03"
     },
     {
       "bandName": "Тамара Волческа",
@@ -16720,6 +16806,42 @@
           "verified": "verified",
           "views": 2260,
           "publishedAt": "2024-05-16"
+        },
+        {
+          "name": "Полип",
+          "videoId": "1AC4GpiSqwU",
+          "url": "https://www.youtube.com/watch?v=1AC4GpiSqwU",
+          "verified": "verified"
+        },
+        {
+          "name": "Мерзост",
+          "videoId": "adZC8Uu8DeA",
+          "url": "https://www.youtube.com/watch?v=adZC8Uu8DeA",
+          "verified": "verified"
+        },
+        {
+          "name": "Суд",
+          "videoId": "FHx6oK_aGPg",
+          "url": "https://www.youtube.com/watch?v=FHx6oK_aGPg",
+          "verified": "verified"
+        },
+        {
+          "name": "Народ",
+          "videoId": "XUVFc67zJ1g",
+          "url": "https://www.youtube.com/watch?v=XUVFc67zJ1g",
+          "verified": "verified"
+        },
+        {
+          "name": "Лице",
+          "videoId": "6Ebh6BSCoxw",
+          "url": "https://www.youtube.com/watch?v=6Ebh6BSCoxw",
+          "verified": "verified"
+        },
+        {
+          "name": "Пулс",
+          "videoId": "0jENOLI9qc8",
+          "url": "https://www.youtube.com/watch?v=0jENOLI9qc8",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 27490,
@@ -16790,8 +16912,7 @@
           "publishedAt": "2025-11-17"
         }
       ],
-      "effectiveReleaseDate": "2025-09-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-09-12"
     },
     {
       "bandName": "Billy Esteban",
@@ -16814,8 +16935,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-09-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-09-12"
     },
     {
       "bandName": "Dubnotic",
@@ -17242,8 +17362,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-09-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-09-05"
     },
     {
       "bandName": "Billy Esteban",
@@ -17277,8 +17396,7 @@
           "publishedAt": "2025-11-14"
         }
       ],
-      "effectiveReleaseDate": "2025-09-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-09-05"
     },
     {
       "bandName": "Billy Esteban",
@@ -17312,8 +17430,7 @@
           "publishedAt": "2025-11-12"
         }
       ],
-      "effectiveReleaseDate": "2025-09-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-09-05"
     },
     {
       "bandName": "Peppermint",
@@ -18198,8 +18315,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-08-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-08-15"
     },
     {
       "bandName": "Маријана",
@@ -19029,8 +19145,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0OtTNgHnj14bWtA30tL56A?si=JiLeqKRrTw2hLpo-FC_E1g",
-      "effectiveReleaseDate": "2025-07-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-26"
     },
     {
       "bandName": "Дивизија",
@@ -20016,6 +20131,24 @@
           "verified": "verified",
           "views": 1122,
           "publishedAt": "2025-10-09"
+        },
+        {
+          "name": "Road to Istanbul",
+          "videoId": "PZvGJgP6o3M",
+          "url": "https://www.youtube.com/watch?v=PZvGJgP6o3M",
+          "verified": "verified"
+        },
+        {
+          "name": "Book of the Sea",
+          "videoId": "aynBGHOniDQ",
+          "url": "https://www.youtube.com/watch?v=aynBGHOniDQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Desert Girl",
+          "videoId": "tVdvIesp2Zw",
+          "url": "https://www.youtube.com/watch?v=tVdvIesp2Zw",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 15500,
@@ -20124,8 +20257,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-07-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-18"
     },
     {
       "bandName": "Александар Тарабунов, Лара Иванова, Сара Мејс, Young Dadi",
@@ -20390,8 +20522,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-07-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-15"
     },
     {
       "bandName": "Владо Јаневски",
@@ -20413,8 +20544,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-07-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-15"
     },
     {
       "bandName": "Discops",
@@ -20582,8 +20712,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/70xws8EBJkG4B40rz6hadI?si=QmeNybxdTziKrAGdoXG87Q",
-      "effectiveReleaseDate": "2025-07-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-12"
     },
     {
       "bandName": "Donplaya",
@@ -20816,8 +20945,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5LEKHM5C24V8HQjTci801k?si=pgx1DQK7T7-t9HDdMk-XkQ",
-      "effectiveReleaseDate": "2025-07-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-07-05"
     },
     {
       "bandName": "Brensis",
@@ -21961,8 +22089,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-06-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-27"
     },
     {
       "bandName": "Galoski",
@@ -22100,8 +22227,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0Vj615Mlb437Q1bz0gTxTD?si=zIEDsXEhSC-_lFHM01xUdA",
-      "effectiveReleaseDate": "2025-06-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-27"
     },
     {
       "bandName": "Ламбе Алабаковски",
@@ -22219,8 +22345,7 @@
           "publishedAt": "2025-06-26"
         }
       ],
-      "effectiveReleaseDate": "2025-06-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-25"
     },
     {
       "bandName": "Давид Темелков",
@@ -22252,8 +22377,7 @@
           "publishedAt": "2025-06-26"
         }
       ],
-      "effectiveReleaseDate": "2025-06-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-25"
     },
     {
       "bandName": "Daniel Dann",
@@ -24018,8 +24142,7 @@
           "publishedAt": "2025-06-06"
         }
       ],
-      "effectiveReleaseDate": "2025-06-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-06"
     },
     {
       "bandName": "KungFoolish",
@@ -24053,8 +24176,7 @@
           "publishedAt": "2025-06-12"
         }
       ],
-      "effectiveReleaseDate": "2025-06-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-06"
     },
     {
       "bandName": "Антониа Гиговска, Пајак",
@@ -25038,8 +25160,7 @@
           "publishedAt": "2026-01-04"
         }
       ],
-      "effectiveReleaseDate": "2025-06-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-06-01"
     },
     {
       "bandName": "Пики",
@@ -25823,8 +25944,7 @@
           "publishedAt": "2025-06-12"
         }
       ],
-      "effectiveReleaseDate": "2025-05-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-30"
     },
     {
       "bandName": "Зад Аголот",
@@ -26164,8 +26284,7 @@
           "publishedAt": "2025-05-22"
         }
       ],
-      "effectiveReleaseDate": "2025-05-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-22"
     },
     {
       "bandName": "Conspiracy",
@@ -26196,8 +26315,7 @@
           "publishedAt": "2025-05-05"
         }
       ],
-      "effectiveReleaseDate": "2025-05-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-05"
     },
     {
       "bandName": "Galoski",
@@ -27166,8 +27284,7 @@
           "publishedAt": "2025-11-09"
         }
       ],
-      "effectiveReleaseDate": "2025-05-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-18"
     },
     {
       "bandName": "Педро Хоризонте",
@@ -27584,10 +27701,15 @@
           "verified": "verified",
           "views": 3743,
           "publishedAt": "2024-02-07"
+        },
+        {
+          "name": "Road to Istanbul - Mixed",
+          "videoId": "PZvGJgP6o3M",
+          "url": "https://www.youtube.com/watch?v=PZvGJgP6o3M",
+          "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2025-05-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-16"
     },
     {
       "bandName": "Billy Esteban",
@@ -27616,8 +27738,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-05-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-16"
     },
     {
       "bandName": "Sinful Glare",
@@ -27937,8 +28058,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0zRPOHYZhlMzZGAYYLN2O6?si=X_EtnMzrQPiRm3etL2MPzQ",
-      "effectiveReleaseDate": "2025-05-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-05-14"
     },
     {
       "bandName": "LD Pistolero",
@@ -28961,8 +29081,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-04-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-25"
     },
     {
       "bandName": "Давид Темелков",
@@ -29035,8 +29154,7 @@
           "publishedAt": "2025-04-24"
         }
       ],
-      "effectiveReleaseDate": "2025-04-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-24"
     },
     {
       "bandName": "Sioto Jazz",
@@ -29206,8 +29324,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-04-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-23"
     },
     {
       "bandName": "Brensis",
@@ -29858,8 +29975,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-04-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-11"
     },
     {
       "bandName": "Мартинијан Кириловски",
@@ -29914,8 +30030,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-04-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-09"
     },
     {
       "bandName": "Владо Јаневски",
@@ -29937,8 +30052,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-04-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-07"
     },
     {
       "bandName": "Владо Јаневски",
@@ -29960,8 +30074,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-04-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-04-07"
     },
     {
       "bandName": "HARSAL",
@@ -30149,8 +30262,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3yQ1KSuRSpk4hc3hK092Ky?si=sVIPOVG8TfGhJc8VxxbSGA",
-      "effectiveReleaseDate": "2025-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-31"
     },
     {
       "bandName": "Donplaya",
@@ -30279,8 +30391,7 @@
           "publishedAt": "2025-03-30"
         }
       ],
-      "effectiveReleaseDate": "2025-03-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-30"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -30302,8 +30413,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5Nx3CHdbm41V16y5Ew7353?si=cyJXfYjRTjWDcMtjwHySlQ",
-      "effectiveReleaseDate": "2025-03-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-30"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -30325,8 +30435,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5Nx3CHdbm41V16y5Ew7353?si=cyJXfYjRTjWDcMtjwHySlQ",
-      "effectiveReleaseDate": "2025-03-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-30"
     },
     {
       "bandName": "Billy Esteban",
@@ -30504,8 +30613,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-24"
     },
     {
       "bandName": "Владо Јаневски",
@@ -30527,8 +30635,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-24"
     },
     {
       "bandName": "Billy Esteban",
@@ -30718,8 +30825,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-18"
     },
     {
       "bandName": "No Name Nation",
@@ -31175,8 +31281,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31206,8 +31311,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31229,8 +31333,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3hnJVFZ7e6S20BGHhtFTLF?si=3koVP0szRBWYnxB8wrT0ig",
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31260,8 +31363,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31283,8 +31385,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3hnJVFZ7e6S20BGHhtFTLF?si=3koVP0szRBWYnxB8wrT0ig",
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31306,8 +31407,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3hnJVFZ7e6S20BGHhtFTLF?si=3koVP0szRBWYnxB8wrT0ig",
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Стојне Николова",
@@ -31791,8 +31891,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-11"
     },
     {
       "bandName": "Лазар Нелковски",
@@ -31847,8 +31946,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-10"
     },
     {
       "bandName": "Владо Јаневски",
@@ -31935,8 +32033,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2bLqvoXODnabK2Wtg8lFLr?si=wj412HN4TmiAuafsmTdZiA",
-      "effectiveReleaseDate": "2025-03-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-03-10"
     },
     {
       "bandName": "Александар Македонски",
@@ -32316,6 +32413,12 @@
           "verified": "verified",
           "views": 843,
           "publishedAt": "2025-03-08"
+        },
+        {
+          "name": "Ne zaboravi da sjetiš se mene",
+          "videoId": "p0s3p5mA1VA",
+          "url": "https://www.youtube.com/watch?v=p0s3p5mA1VA",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 19836,
@@ -32856,8 +32959,7 @@
           "publishedAt": "2025-02-25"
         }
       ],
-      "effectiveReleaseDate": "2025-02-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-02-25"
     },
     {
       "bandName": "Давид Темелков",
@@ -32889,8 +32991,7 @@
           "publishedAt": "2025-02-25"
         }
       ],
-      "effectiveReleaseDate": "2025-02-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-02-25"
     },
     {
       "bandName": "GWASS",
@@ -32921,8 +33022,7 @@
           "publishedAt": "2025-04-20"
         }
       ],
-      "effectiveReleaseDate": "2025-02-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-02-23"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -33102,8 +33202,7 @@
           "publishedAt": "2025-03-04"
         }
       ],
-      "effectiveReleaseDate": "2025-02-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-02-14"
     },
     {
       "bandName": "Karma Scale",
@@ -33482,8 +33581,7 @@
           "publishedAt": "2025-03-08"
         }
       ],
-      "effectiveReleaseDate": "2025-02-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-02-06"
     },
     {
       "bandName": "Д.Н.К",
@@ -33809,7 +33907,7 @@
           "name": "Srekna Nova (Live)",
           "videoId": "qbSAMIXxpWg",
           "url": "https://www.youtube.com/watch?v=qbSAMIXxpWg",
-          "verified": "verified",
+          "verified": "will-not-verify",
           "views": 30644,
           "publishedAt": "2017-12-28"
         },
@@ -33988,6 +34086,12 @@
           "verified": "verified",
           "views": 1408,
           "publishedAt": "2025-01-08"
+        },
+        {
+          "name": "Srekna Nova (Live)",
+          "videoId": "oEmkoJ10TeE",
+          "url": "https://www.youtube.com/watch?v=oEmkoJ10TeE",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 279315,
@@ -35027,6 +35131,12 @@
           "verified": "verified",
           "views": 196,
           "publishedAt": "2022-05-23"
+        },
+        {
+          "name": "Kalajdžisko oro - Live",
+          "videoId": "5Cm2ACihQuM",
+          "url": "https://www.youtube.com/watch?v=5Cm2ACihQuM",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 19000,
@@ -35297,8 +35407,7 @@
           "publishedAt": "2025-01-18"
         }
       ],
-      "effectiveReleaseDate": "2025-01-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-01-18"
     },
     {
       "bandName": "Billy Esteban",
@@ -35443,8 +35552,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2025-01-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-01-17"
     },
     {
       "bandName": "Goreiju",
@@ -36559,8 +36667,7 @@
           "publishedAt": "2025-01-01"
         }
       ],
-      "effectiveReleaseDate": "2025-01-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2025-01-01"
     },
     {
       "bandName": "Бојана Скендеровски",
@@ -36768,8 +36875,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-12-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-12-27"
     },
     {
       "bandName": "GWASS",
@@ -37297,8 +37403,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-12-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-12-20"
     },
     {
       "bandName": "Billy Esteban",
@@ -37527,8 +37632,7 @@
           "publishedAt": "2015-03-18"
         }
       ],
-      "effectiveReleaseDate": "2015-03-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-03-18"
     },
     {
       "bandName": "Драган Дутовски Квартет",
@@ -38327,6 +38431,12 @@
           "verified": "verified",
           "views": 284,
           "publishedAt": "2024-12-14"
+        },
+        {
+          "name": "Mesto Od Spomeni",
+          "videoId": "8MlVVG9MQfc",
+          "url": "https://www.youtube.com/watch?v=8MlVVG9MQfc",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 500,
@@ -38411,8 +38521,7 @@
           "publishedAt": "2024-12-11"
         }
       ],
-      "effectiveReleaseDate": "2024-06-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-16"
     },
     {
       "bandName": "Водолија",
@@ -38778,8 +38887,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/7ksfLJAsrG9EAnCIVcvCFw?si=Il613MJVQtaG141emuwZFw",
-      "effectiveReleaseDate": "2024-12-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-12-01"
     },
     {
       "bandName": "Владо Јаневски",
@@ -38962,8 +39070,7 @@
           "publishedAt": "2024-02-07"
         }
       ],
-      "effectiveReleaseDate": "2024-11-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-29"
     },
     {
       "bandName": "Мартин Ѓаконовски",
@@ -39065,8 +39172,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5v054lI3qAL9w60moMfo61?si=-Mcg2CRER1-9zPwaCZxgIQ",
-      "effectiveReleaseDate": "2024-11-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-29"
     },
     {
       "bandName": "Dakssa",
@@ -40343,8 +40449,7 @@
           "publishedAt": "2024-11-21"
         }
       ],
-      "effectiveReleaseDate": "2024-11-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-21"
     },
     {
       "bandName": "Zabata",
@@ -40728,8 +40833,7 @@
           "publishedAt": "2023-01-23"
         }
       ],
-      "effectiveReleaseDate": "2024-11-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-15"
     },
     {
       "bandName": "Дуке Бојаџиев, Исмаил Лумановски",
@@ -41434,8 +41538,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6qiM7BconkUsCsdFghQ5XF",
-      "effectiveReleaseDate": "2024-11-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-08"
     },
     {
       "bandName": "Слаткаристика",
@@ -41597,8 +41700,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3yQ1KSuRSpk4hc3hK092Ky?si=sVIPOVG8TfGhJc8VxxbSGA",
-      "effectiveReleaseDate": "2024-11-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-04"
     },
     {
       "bandName": "Basement Cult",
@@ -41694,8 +41796,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-11-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-01"
     },
     {
       "bandName": "Druggy",
@@ -41718,8 +41819,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/70xws8EBJkG4B40rz6hadI?si=QmeNybxdTziKrAGdoXG87Q",
-      "effectiveReleaseDate": "2024-11-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-11-01"
     },
     {
       "bandName": "Дуке Бојаџиев",
@@ -42934,8 +43034,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-10-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-18"
     },
     {
       "bandName": "Billy Esteban",
@@ -43568,8 +43667,7 @@
           "publishedAt": "2024-10-06"
         }
       ],
-      "effectiveReleaseDate": "2024-10-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-06"
     },
     {
       "bandName": "Шаро, Вански",
@@ -43710,8 +43808,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-04"
     },
     {
       "bandName": "Billy Esteban",
@@ -43735,8 +43832,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-04"
     },
     {
       "bandName": "Billy Esteban",
@@ -43760,8 +43856,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-04"
     },
     {
       "bandName": "Billy Esteban",
@@ -43796,8 +43891,7 @@
           "publishedAt": "2026-03-04"
         }
       ],
-      "effectiveReleaseDate": "2024-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-04"
     },
     {
       "bandName": "Фолтин",
@@ -43820,8 +43914,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0rXnfWL0gCATJTjiQlH3M7",
-      "effectiveReleaseDate": "2024-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-10-04"
     },
     {
       "bandName": "Климе Ковачески",
@@ -44283,6 +44376,12 @@
           "verified": "verified",
           "views": 21252,
           "publishedAt": "2024-09-30"
+        },
+        {
+          "name": "Za dobro da e",
+          "videoId": "URNAPgq0wb0",
+          "url": "https://www.youtube.com/watch?v=URNAPgq0wb0",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 21252,
@@ -45026,8 +45125,7 @@
           "publishedAt": "2025-01-10"
         }
       ],
-      "effectiveReleaseDate": "2024-09-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-09-16"
     },
     {
       "bandName": "Billy Esteban",
@@ -45062,8 +45160,7 @@
           "publishedAt": "2026-03-04"
         }
       ],
-      "effectiveReleaseDate": "2024-09-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-09-13"
     },
     {
       "bandName": "Мизар",
@@ -45136,8 +45233,7 @@
           "publishedAt": "2024-09-08"
         }
       ],
-      "effectiveReleaseDate": "2024-09-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-09-08"
     },
     {
       "bandName": "Cursed Heart",
@@ -45341,8 +45437,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-09-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-09-06"
     },
     {
       "bandName": "Каролина Гочева",
@@ -45536,8 +45631,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-09-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-09-03"
     },
     {
       "bandName": "Симона Поповска",
@@ -46030,8 +46124,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-08-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-30"
     },
     {
       "bandName": "Димиш",
@@ -47345,8 +47438,7 @@
           "publishedAt": "2024-09-17"
         }
       ],
-      "effectiveReleaseDate": "2024-08-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-29"
     },
     {
       "bandName": "Слаткаристика, Тони Зен",
@@ -47453,8 +47545,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2024-08-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-27"
     },
     {
       "bandName": "Климе Ковачески",
@@ -47632,8 +47723,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-08-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-21"
     },
     {
       "bandName": "Daniel Dann",
@@ -47896,6 +47986,12 @@
           "verified": "verified",
           "views": 14330,
           "publishedAt": "2024-09-18"
+        },
+        {
+          "name": "Road to Istanbul",
+          "videoId": "PZvGJgP6o3M",
+          "url": "https://www.youtube.com/watch?v=PZvGJgP6o3M",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 40926,
@@ -48136,8 +48232,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-08-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-14"
     },
     {
       "bandName": "Billy Esteban",
@@ -48171,8 +48266,7 @@
           "publishedAt": "2026-03-04"
         }
       ],
-      "effectiveReleaseDate": "2024-08-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-09"
     },
     {
       "bandName": "Фико, Муфи",
@@ -48238,8 +48332,7 @@
           "publishedAt": "2024-09-10"
         }
       ],
-      "effectiveReleaseDate": "2024-08-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-08"
     },
     {
       "bandName": "Donplaya",
@@ -48303,8 +48396,7 @@
           "publishedAt": "2024-08-08"
         }
       ],
-      "effectiveReleaseDate": "2024-08-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-08"
     },
     {
       "bandName": "Зарина Првасевда",
@@ -48466,8 +48558,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6qiM7BconkUsCsdFghQ5XF",
-      "effectiveReleaseDate": "2024-08-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-02"
     },
     {
       "bandName": "Billy Esteban",
@@ -48491,8 +48582,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-08-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-02"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -48515,8 +48605,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-08-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-02"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -48539,8 +48628,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-08-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-02"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -48563,8 +48651,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-08-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-08-02"
     },
     {
       "bandName": "Лара Иванова",
@@ -49584,6 +49671,12 @@
           "verified": "verified",
           "views": 1978,
           "publishedAt": "2025-07-16"
+        },
+        {
+          "name": "Dream",
+          "videoId": "vwl8Q0ml2Dg",
+          "url": "https://www.youtube.com/watch?v=vwl8Q0ml2Dg",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 10897,
@@ -49648,8 +49741,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6uvwGBuyKgkxnBjCochV2h?si=CkWbwY49Q8SbTG5-xNQk_w",
-      "effectiveReleaseDate": "2024-07-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-07-11"
     },
     {
       "bandName": "Stefan Petanovski",
@@ -50919,8 +51011,7 @@
           "publishedAt": "2026-03-04"
         }
       ],
-      "effectiveReleaseDate": "2024-07-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-07-05"
     },
     {
       "bandName": "FIN Project",
@@ -51173,8 +51264,7 @@
           "publishedAt": "2025-04-26"
         }
       ],
-      "effectiveReleaseDate": "2024-07-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-07-04"
     },
     {
       "bandName": "Дупер",
@@ -51204,6 +51294,12 @@
           "verified": "verified",
           "views": 181825,
           "publishedAt": "2024-07-03"
+        },
+        {
+          "name": "So tebe ne gledam saat (bejbe)",
+          "videoId": "GwfDpuZn2Xw",
+          "url": "https://www.youtube.com/watch?v=GwfDpuZn2Xw",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 181825,
@@ -51826,8 +51922,7 @@
           "publishedAt": "2024-06-23"
         }
       ],
-      "effectiveReleaseDate": "2024-06-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-23"
     },
     {
       "bandName": "Валдера",
@@ -51859,8 +51954,7 @@
           "publishedAt": "2024-06-23"
         }
       ],
-      "effectiveReleaseDate": "2024-06-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-23"
     },
     {
       "bandName": "Александар Тарабунов",
@@ -52013,8 +52107,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-06-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-21"
     },
     {
       "bandName": "Слаткаристика",
@@ -52218,8 +52311,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-06-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-15"
     },
     {
       "bandName": "Mark Purpose",
@@ -52315,8 +52407,7 @@
           "publishedAt": "2025-04-26"
         }
       ],
-      "effectiveReleaseDate": "2021-08-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-08-20"
     },
     {
       "bandName": "Тони Зен",
@@ -52424,8 +52515,7 @@
           "publishedAt": "2024-08-15"
         }
       ],
-      "effectiveReleaseDate": "2024-06-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-11"
     },
     {
       "bandName": "Драги Иванов",
@@ -52605,8 +52695,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-06-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-06-07"
     },
     {
       "bandName": "Eye Cue",
@@ -53383,6 +53472,12 @@
           "verified": "verified",
           "views": 13909606,
           "publishedAt": "2023-04-19"
+        },
+        {
+          "name": "Ela",
+          "videoId": "9xBDQRe_ytU",
+          "url": "https://www.youtube.com/watch?v=9xBDQRe_ytU",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 16167591,
@@ -54078,6 +54173,12 @@
           "verified": "verified",
           "views": 124,
           "publishedAt": "2024-05-24"
+        },
+        {
+          "name": "Tursija",
+          "videoId": "UpO9APpoGQc",
+          "url": "https://www.youtube.com/watch?v=UpO9APpoGQc",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 126679,
@@ -54357,8 +54458,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5truEiU7f2V16dVCQjB3Dc?si=DTNEOdhaQGieUSiErZE8fw",
-      "effectiveReleaseDate": "2024-05-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-24"
     },
     {
       "bandName": "Тони Зен",
@@ -54907,8 +55007,7 @@
           "publishedAt": "2024-05-23"
         }
       ],
-      "effectiveReleaseDate": "2023-11-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-09"
     },
     {
       "bandName": "КЕМ",
@@ -54948,8 +55047,7 @@
           "publishedAt": "2024-05-10"
         }
       ],
-      "effectiveReleaseDate": "2024-05-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-10"
     },
     {
       "bandName": "Мартија",
@@ -55285,8 +55383,7 @@
           "publishedAt": "2023-12-03"
         }
       ],
-      "effectiveReleaseDate": "2024-05-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-10"
     },
     {
       "bandName": "FIN Project",
@@ -55318,8 +55415,7 @@
           "publishedAt": "2024-05-23"
         }
       ],
-      "effectiveReleaseDate": "2024-05-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-10"
     },
     {
       "bandName": "Марија Спасовска",
@@ -55375,8 +55471,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-05-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-05"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -55399,8 +55494,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-05-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-05"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -55423,8 +55517,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-05-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-05"
     },
     {
       "bandName": "Tonyo San",
@@ -55613,8 +55706,7 @@
           "publishedAt": "2024-09-10"
         }
       ],
-      "effectiveReleaseDate": "2024-05-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-03"
     },
     {
       "bandName": "Cassato",
@@ -55678,8 +55770,7 @@
           "publishedAt": "2024-05-23"
         }
       ],
-      "effectiveReleaseDate": "2024-05-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-05-03"
     },
     {
       "bandName": "Глигор Кондовски",
@@ -55951,8 +56042,7 @@
           "publishedAt": "2024-05-23"
         }
       ],
-      "effectiveReleaseDate": "2016-09-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-09-15"
     },
     {
       "bandName": "Скитер",
@@ -56025,6 +56115,12 @@
           "verified": "verified",
           "views": 12146,
           "publishedAt": "2024-04-23"
+        },
+        {
+          "name": "Makedonski biseri",
+          "videoId": "0Q9iDZtj-1U",
+          "url": "https://www.youtube.com/watch?v=0Q9iDZtj-1U",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 12146,
@@ -56253,8 +56349,7 @@
           "publishedAt": "2023-11-09"
         }
       ],
-      "effectiveReleaseDate": "2023-11-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-09"
     },
     {
       "bandName": "Тамара Тодевска, Young Dadi",
@@ -56746,6 +56841,12 @@
           "verified": "verified",
           "views": 16695,
           "publishedAt": "2024-04-08"
+        },
+        {
+          "name": "Za tebe",
+          "videoId": "xj9Zcij3TgI",
+          "url": "https://www.youtube.com/watch?v=xj9Zcij3TgI",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 47445,
@@ -57029,8 +57130,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6uvwGBuyKgkxnBjCochV2h?si=CkWbwY49Q8SbTG5-xNQk_w",
-      "effectiveReleaseDate": "2024-03-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-23"
     },
     {
       "bandName": "Starboy",
@@ -57356,8 +57456,7 @@
           "publishedAt": "2024-03-15"
         }
       ],
-      "effectiveReleaseDate": "2024-03-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-15"
     },
     {
       "bandName": "Климе Ковачески",
@@ -57519,8 +57618,7 @@
           "publishedAt": "2024-03-14"
         }
       ],
-      "effectiveReleaseDate": "2024-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-13"
     },
     {
       "bandName": "Климе Ковачески",
@@ -57590,8 +57688,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-13"
     },
     {
       "bandName": "Климе Ковачески",
@@ -57653,8 +57750,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-13"
     },
     {
       "bandName": "Климе Ковачески",
@@ -57720,8 +57816,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-13"
     },
     {
       "bandName": "Климе Ковачески",
@@ -57787,8 +57882,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-13"
     },
     {
       "bandName": "2bona, Слаткаристика, Тони Зен",
@@ -58110,10 +58204,15 @@
           "videoId": "euOfEGDji44",
           "url": "https://www.youtube.com/watch?v=euOfEGDji44",
           "verified": "will-not-verify"
+        },
+        {
+          "name": "OhRid",
+          "videoId": "Bq7Erbauiks",
+          "url": "https://www.youtube.com/watch?v=Bq7Erbauiks",
+          "verified": "verified"
         }
       ],
-      "effectiveReleaseDate": "2024-03-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-09"
     },
     {
       "bandName": "Климе Ковачески",
@@ -58171,8 +58270,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-03-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-09"
     },
     {
       "bandName": "Billy Esteban",
@@ -58196,8 +58294,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-03-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-08"
     },
     {
       "bandName": "Бојана Скендеровски",
@@ -58334,8 +58431,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-03-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-03-01"
     },
     {
       "bandName": "Cassato",
@@ -58474,8 +58570,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/70xws8EBJkG4B40rz6hadI?si=QmeNybxdTziKrAGdoXG87Q",
-      "effectiveReleaseDate": "2024-02-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-29"
     },
     {
       "bandName": "Yordan Kostov",
@@ -58766,8 +58861,7 @@
           "publishedAt": "2024-02-07"
         }
       ],
-      "effectiveReleaseDate": "2024-02-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-07"
     },
     {
       "bandName": "Лозано",
@@ -59000,8 +59094,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-02-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-11"
     },
     {
       "bandName": "Billy Esteban",
@@ -59060,8 +59153,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-02-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-09"
     },
     {
       "bandName": "Billy Esteban",
@@ -59201,8 +59293,7 @@
           "publishedAt": "2024-11-21"
         }
       ],
-      "effectiveReleaseDate": "2024-02-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-05"
     },
     {
       "bandName": "Nympholilith",
@@ -59233,8 +59324,7 @@
           "publishedAt": "2024-02-06"
         }
       ],
-      "effectiveReleaseDate": "2024-02-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-05"
     },
     {
       "bandName": "Nympholilith",
@@ -59265,8 +59355,7 @@
           "publishedAt": "2024-02-05"
         }
       ],
-      "effectiveReleaseDate": "2024-02-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-02-05"
     },
     {
       "bandName": "Billy Esteban",
@@ -59664,8 +59753,7 @@
           "publishedAt": "2024-01-27"
         }
       ],
-      "effectiveReleaseDate": "2024-01-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-27"
     },
     {
       "bandName": "Тоше Проески",
@@ -59733,8 +59821,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2024-01-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-26"
     },
     {
       "bandName": "Galoski",
@@ -60496,8 +60583,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2024-01-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-06"
     },
     {
       "bandName": "Billy Esteban",
@@ -60533,8 +60619,7 @@
           "publishedAt": "2024-02-07"
         }
       ],
-      "effectiveReleaseDate": "2024-01-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-05"
     },
     {
       "bandName": "Billy Esteban",
@@ -60557,8 +60642,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2024-01-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-05"
     },
     {
       "bandName": "Климе Ковачески",
@@ -60616,8 +60700,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/02l5lLi4hYq2LBIDarj35z?si=wfh_Lxk0Ta-1C-RZ4gbOyw",
-      "effectiveReleaseDate": "2024-01-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-05"
     },
     {
       "bandName": "Дупер",
@@ -60682,8 +60765,7 @@
           "publishedAt": "2024-01-02"
         }
       ],
-      "effectiveReleaseDate": "2024-01-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2024-01-02"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -60705,8 +60787,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2023-12-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-12-29"
     },
     {
       "bandName": "Nickarth",
@@ -60733,8 +60814,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2023-12-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-12-29"
     },
     {
       "bandName": "Bon Praskiza",
@@ -60788,8 +60868,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "effectiveReleaseDate": "2023-12-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-12-28"
     },
     {
       "bandName": "Слаткаристика",
@@ -61335,8 +61414,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-12-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-12-15"
     },
     {
       "bandName": "Conquering Lion",
@@ -62254,8 +62332,7 @@
           "publishedAt": "2023-12-01"
         }
       ],
-      "effectiveReleaseDate": "2023-11-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-30"
     },
     {
       "bandName": "Mark Purpose",
@@ -62442,8 +62519,7 @@
           "publishedAt": "2023-12-03"
         }
       ],
-      "effectiveReleaseDate": "2023-11-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-24"
     },
     {
       "bandName": "Лара Иванова",
@@ -62561,8 +62637,7 @@
           "publishedAt": "2023-11-24"
         }
       ],
-      "effectiveReleaseDate": "2023-11-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-23"
     },
     {
       "bandName": "Антониа Гиговска",
@@ -62793,8 +62868,7 @@
           "publishedAt": "2023-11-17"
         }
       ],
-      "effectiveReleaseDate": "2023-11-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-16"
     },
     {
       "bandName": "КЕМ",
@@ -62916,6 +62990,12 @@
           "verified": "verified",
           "views": 5021,
           "publishedAt": "2023-11-16"
+        },
+        {
+          "name": "Ne si sam - Live",
+          "videoId": "8M4YtLF-WnY",
+          "url": "https://www.youtube.com/watch?v=8M4YtLF-WnY",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 9400,
@@ -62953,8 +63033,7 @@
           "publishedAt": "2023-11-10"
         }
       ],
-      "effectiveReleaseDate": "2023-11-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-09"
     },
     {
       "bandName": "Димиш",
@@ -63291,8 +63370,7 @@
           "publishedAt": "2023-11-03"
         }
       ],
-      "effectiveReleaseDate": "2023-11-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-11-02"
     },
     {
       "bandName": "Матеј Фолц",
@@ -63811,8 +63889,7 @@
           "publishedAt": "2023-11-01"
         }
       ],
-      "effectiveReleaseDate": "2023-10-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-31"
     },
     {
       "bandName": "Александар Тарабунов",
@@ -63910,8 +63987,7 @@
           "publishedAt": "2023-10-30"
         }
       ],
-      "effectiveReleaseDate": "2023-10-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-30"
     },
     {
       "bandName": "Galoski",
@@ -64139,8 +64215,7 @@
           "publishedAt": "2023-10-27"
         }
       ],
-      "effectiveReleaseDate": "2023-10-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-26"
     },
     {
       "bandName": "Кенопсија",
@@ -64685,8 +64760,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-10-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-06"
     },
     {
       "bandName": "Billy Esteban",
@@ -64731,8 +64805,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-10-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-06"
     },
     {
       "bandName": "Бојана Скендеровски",
@@ -64909,8 +64982,7 @@
           "publishedAt": "2023-10-04"
         }
       ],
-      "effectiveReleaseDate": "2023-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-10-04"
     },
     {
       "bandName": "Billy Esteban",
@@ -64939,8 +65011,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-09-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-29"
     },
     {
       "bandName": "Sioto Jazz",
@@ -65577,8 +65648,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-09-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-22"
     },
     {
       "bandName": "Saso Popovski",
@@ -66220,8 +66290,7 @@
           "publishedAt": "2023-09-12"
         }
       ],
-      "effectiveReleaseDate": "2023-09-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-12"
     },
     {
       "bandName": "Огнен Здравковски",
@@ -66458,8 +66527,7 @@
           "publishedAt": "2023-09-13"
         }
       ],
-      "effectiveReleaseDate": "2023-09-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-14"
     },
     {
       "bandName": "Крсто Роџевски",
@@ -66529,8 +66597,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2023-09-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-12"
     },
     {
       "bandName": "Ламбе Алабаковски",
@@ -66653,8 +66720,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-09-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-09-08"
     },
     {
       "bandName": "Donplaya",
@@ -67452,8 +67518,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-08-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-08-25"
     },
     {
       "bandName": "Galoski",
@@ -67610,8 +67675,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-08-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-08-18"
     },
     {
       "bandName": "Tonyo San",
@@ -68078,8 +68142,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-08-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-08-11"
     },
     {
       "bandName": "Corrosion",
@@ -68395,8 +68458,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2023-07-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-07-30"
     },
     {
       "bandName": "Starboy",
@@ -69236,8 +69298,7 @@
           "publishedAt": "2023-07-08"
         }
       ],
-      "effectiveReleaseDate": "2023-07-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-07-08"
     },
     {
       "bandName": "Mark Purpose",
@@ -69482,8 +69543,7 @@
           "publishedAt": "2025-03-10"
         }
       ],
-      "effectiveReleaseDate": "2023-07-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-07-03"
     },
     {
       "bandName": "FIN Project",
@@ -70377,8 +70437,7 @@
           "publishedAt": "2023-06-17"
         }
       ],
-      "effectiveReleaseDate": "2023-06-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-06-17"
     },
     {
       "bandName": "Малибу",
@@ -70409,8 +70468,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2023-06-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-06-14"
     },
     {
       "bandName": "Дани Димитровска",
@@ -70943,6 +71001,12 @@
           "verified": "verified",
           "views": 6262,
           "publishedAt": "2021-09-26"
+        },
+        {
+          "name": "Silen",
+          "videoId": "2l3gTdIXztE",
+          "url": "https://www.youtube.com/watch?v=2l3gTdIXztE",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 45214,
@@ -71180,8 +71244,7 @@
           "publishedAt": "2023-06-02"
         }
       ],
-      "effectiveReleaseDate": "2023-06-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-06-02"
     },
     {
       "bandName": "Galoski",
@@ -71285,8 +71348,7 @@
           "publishedAt": "2023-05-31"
         }
       ],
-      "effectiveReleaseDate": "2023-05-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-05-31"
     },
     {
       "bandName": "TYZEE",
@@ -71496,8 +71558,7 @@
           "publishedAt": "2023-05-21"
         }
       ],
-      "effectiveReleaseDate": "2023-05-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-05-21"
     },
     {
       "bandName": "Billy Esteban",
@@ -72104,6 +72165,12 @@
           "verified": "verified",
           "views": 42275,
           "publishedAt": "2022-11-13"
+        },
+        {
+          "name": "Sega i zasekogash",
+          "videoId": "YhIqdDivfuk",
+          "url": "https://www.youtube.com/watch?v=YhIqdDivfuk",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 107457,
@@ -72301,8 +72368,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3cOgwNmEfnqYD5l2OsjWgX?si=JwyKnsZSRzi2YuEDFT11Zw",
-      "effectiveReleaseDate": "2023-05-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-05-03"
     },
     {
       "bandName": "Смут",
@@ -73467,8 +73533,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3yQ1KSuRSpk4hc3hK092Ky?si=sVIPOVG8TfGhJc8VxxbSGA",
-      "effectiveReleaseDate": "2023-03-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-03-31"
     },
     {
       "bandName": "Billy Esteban",
@@ -73816,6 +73881,12 @@
           "verified": "verified",
           "views": 681,
           "publishedAt": "2021-09-23"
+        },
+        {
+          "name": "Meteori",
+          "videoId": "5qb7kJxrW80",
+          "url": "https://www.youtube.com/watch?v=5qb7kJxrW80",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 1312500,
@@ -73964,8 +74035,7 @@
           "publishedAt": "2023-06-05"
         }
       ],
-      "effectiveReleaseDate": "2023-03-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-03-24"
     },
     {
       "bandName": "Galoski",
@@ -74282,6 +74352,12 @@
           "verified": "verified",
           "views": 3382,
           "publishedAt": "2023-03-21"
+        },
+        {
+          "name": "Bekjar",
+          "videoId": "_XJoSN3-TIk",
+          "url": "https://www.youtube.com/watch?v=_XJoSN3-TIk",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 7397,
@@ -75438,8 +75514,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2023-02-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-02-17"
     },
     {
       "bandName": "Galoski",
@@ -76233,8 +76308,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4LyzF6Dp7nTJnh1TSsT1uG",
-      "effectiveReleaseDate": "2023-02-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-02-09"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -76843,8 +76917,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2023-01-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-30"
     },
     {
       "bandName": "Малибу",
@@ -76866,8 +76939,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2023-01-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-30"
     },
     {
       "bandName": "Малибу",
@@ -76889,8 +76961,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2023-01-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-30"
     },
     {
       "bandName": "Миа Перевска",
@@ -77191,8 +77262,7 @@
           "publishedAt": "2024-10-12"
         }
       ],
-      "effectiveReleaseDate": "2023-01-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-20"
     },
     {
       "bandName": "FIN Project",
@@ -77769,8 +77839,7 @@
           "publishedAt": "2023-01-05"
         }
       ],
-      "effectiveReleaseDate": "2023-01-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-05"
     },
     {
       "bandName": "Бојана Скендеровски",
@@ -77825,8 +77894,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2023-01-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2023-01-04"
     },
     {
       "bandName": "ИРИС 9",
@@ -78921,8 +78989,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-13"
     },
     {
       "bandName": "Малибу",
@@ -78944,8 +79011,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-13"
     },
     {
       "bandName": "Мизар",
@@ -79489,8 +79555,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-07"
     },
     {
       "bandName": "Малибу",
@@ -79512,8 +79577,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-07"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -79906,8 +79970,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-06"
     },
     {
       "bandName": "Малибу",
@@ -79929,8 +79992,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-06"
     },
     {
       "bandName": "Малибу",
@@ -79952,8 +80014,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-12-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-06"
     },
     {
       "bandName": "Мизар",
@@ -79985,8 +80046,7 @@
           "publishedAt": "2022-12-12"
         }
       ],
-      "effectiveReleaseDate": "2022-12-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-06"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -80050,8 +80110,7 @@
           "publishedAt": "2022-12-10"
         }
       ],
-      "effectiveReleaseDate": "2022-12-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-05"
     },
     {
       "bandName": "Mark Purpose",
@@ -80406,6 +80465,18 @@
           "verified": "verified",
           "views": 1682494,
           "publishedAt": "2022-11-23"
+        },
+        {
+          "name": "Gore ili dole",
+          "videoId": "OrnByew8zao",
+          "url": "https://www.youtube.com/watch?v=OrnByew8zao",
+          "verified": "verified"
+        },
+        {
+          "name": "Nie",
+          "videoId": "j3uL1eGc9jM",
+          "url": "https://www.youtube.com/watch?v=j3uL1eGc9jM",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 17899894,
@@ -80472,8 +80543,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-12-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-03"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -80536,8 +80606,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-12-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-03"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -80567,8 +80636,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-12-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-12-03"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -80937,8 +81005,7 @@
           "publishedAt": "2024-07-03"
         }
       ],
-      "effectiveReleaseDate": "2022-11-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-24"
     },
     {
       "bandName": "Димитар Андоновски",
@@ -80993,8 +81060,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-11-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-23"
     },
     {
       "bandName": "350Teric",
@@ -81026,8 +81092,7 @@
           "publishedAt": "2024-09-10"
         }
       ],
-      "effectiveReleaseDate": "2022-11-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-22"
     },
     {
       "bandName": "Водолија",
@@ -81130,8 +81195,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-11-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-16"
     },
     {
       "bandName": "Billy Esteban",
@@ -81206,8 +81270,7 @@
           "publishedAt": "2022-07-15"
         }
       ],
-      "effectiveReleaseDate": "2022-07-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-07-15"
     },
     {
       "bandName": "Георги Сарески",
@@ -81307,8 +81370,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-11-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-10"
     },
     {
       "bandName": "Фико",
@@ -81714,8 +81776,7 @@
           "publishedAt": "2022-11-01"
         }
       ],
-      "effectiveReleaseDate": "2022-11-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-11-01"
     },
     {
       "bandName": "Да Џака Накот",
@@ -81914,6 +81975,12 @@
           "verified": "verified",
           "views": 1500,
           "publishedAt": "2022-10-30"
+        },
+        {
+          "name": "NE SI SAM",
+          "videoId": "8M4YtLF-WnY",
+          "url": "https://www.youtube.com/watch?v=8M4YtLF-WnY",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 24665,
@@ -81990,8 +82057,7 @@
           "publishedAt": "2022-10-29"
         }
       ],
-      "effectiveReleaseDate": "2022-10-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-29"
     },
     {
       "bandName": "2bona",
@@ -82211,8 +82277,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-10-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-18"
     },
     {
       "bandName": "Galoski",
@@ -82351,8 +82416,7 @@
           "publishedAt": "2022-10-09"
         }
       ],
-      "effectiveReleaseDate": "2022-10-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-09"
     },
     {
       "bandName": "Sexy Marsa",
@@ -82572,8 +82636,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3yQ1KSuRSpk4hc3hK092Ky?si=sVIPOVG8TfGhJc8VxxbSGA",
-      "effectiveReleaseDate": "2022-10-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-06"
     },
     {
       "bandName": "Малибу",
@@ -82603,8 +82666,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-10-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-06"
     },
     {
       "bandName": "Mark Purpose",
@@ -82723,8 +82785,7 @@
           "publishedAt": "2022-10-02"
         }
       ],
-      "effectiveReleaseDate": "2022-10-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-10-02"
     },
     {
       "bandName": "Lufthansa",
@@ -82964,8 +83025,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-09-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-28"
     },
     {
       "bandName": "Малибу",
@@ -82987,8 +83047,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-09-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-28"
     },
     {
       "bandName": "Galoski",
@@ -83051,8 +83110,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-09-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-23"
     },
     {
       "bandName": "AudioCigla",
@@ -83073,8 +83131,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4De4VVOBroZsnd2YYyWAvG?si=CwPgF4-pTBm7LUSheUu0-w",
-      "effectiveReleaseDate": "2022-09-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-22"
     },
     {
       "bandName": "КЕМ",
@@ -83114,8 +83171,7 @@
           "publishedAt": "2022-10-30"
         }
       ],
-      "effectiveReleaseDate": "2022-09-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-16"
     },
     {
       "bandName": "КЕМ",
@@ -83155,8 +83211,7 @@
           "publishedAt": "2022-09-20"
         }
       ],
-      "effectiveReleaseDate": "2022-09-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-16"
     },
     {
       "bandName": "Мартин Ѓаконовски",
@@ -83230,8 +83285,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5v054lI3qAL9w60moMfo61?si=-Mcg2CRER1-9zPwaCZxgIQ",
-      "effectiveReleaseDate": "2022-09-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-16"
     },
     {
       "bandName": "Тони Зен",
@@ -83828,8 +83882,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nR014lSJzJExwpZekL6MO?si=EsDeT6xWSdu3PF5sd_JyQQ",
-      "effectiveReleaseDate": "2022-09-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-11"
     },
     {
       "bandName": "Малибу",
@@ -83851,8 +83904,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-09-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-09"
     },
     {
       "bandName": "Corrosion",
@@ -84517,8 +84569,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-09-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-09-01"
     },
     {
       "bandName": "Малибу",
@@ -84540,8 +84591,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-31"
     },
     {
       "bandName": "ИРИС 9",
@@ -85024,10 +85074,15 @@
           "verified": "verified",
           "views": 7223,
           "publishedAt": "2022-08-26"
+        },
+        {
+          "name": "NE SI SAM",
+          "videoId": "8M4YtLF-WnY",
+          "url": "https://www.youtube.com/watch?v=8M4YtLF-WnY",
+          "verified": "verified"
         }
       ],
-      "effectiveReleaseDate": "2022-08-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-26"
     },
     {
       "bandName": "Малибу",
@@ -85049,8 +85104,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-26"
     },
     {
       "bandName": "Young Dadi",
@@ -85128,8 +85182,7 @@
           "publishedAt": "2022-08-25"
         }
       ],
-      "effectiveReleaseDate": "2022-08-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-25"
     },
     {
       "bandName": "Димитар Андоновски",
@@ -85316,8 +85369,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-08-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-23"
     },
     {
       "bandName": "Павле Камилоски",
@@ -85576,8 +85628,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-19"
     },
     {
       "bandName": "Малибу",
@@ -85599,8 +85650,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-19"
     },
     {
       "bandName": "Малибу",
@@ -85622,8 +85672,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-19"
     },
     {
       "bandName": "Малибу",
@@ -85645,8 +85694,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-17"
     },
     {
       "bandName": "Малибу",
@@ -85668,8 +85716,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-17"
     },
     {
       "bandName": "Малибу",
@@ -85691,8 +85738,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-17"
     },
     {
       "bandName": "Малибу",
@@ -85714,8 +85760,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-17"
     },
     {
       "bandName": "Малибу",
@@ -85737,8 +85782,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-17"
     },
     {
       "bandName": "350Teric",
@@ -85799,8 +85843,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2022-08-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-15"
     },
     {
       "bandName": "Фико",
@@ -86087,8 +86130,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-08-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-05"
     },
     {
       "bandName": "Стој, После!",
@@ -86146,8 +86188,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-08-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-08-05"
     },
     {
       "bandName": "Тони Зен",
@@ -86212,8 +86253,7 @@
           "publishedAt": "2023-06-11"
         }
       ],
-      "effectiveReleaseDate": "2022-07-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-07-31"
     },
     {
       "bandName": "TYZEE",
@@ -86358,6 +86398,12 @@
           "verified": "verified",
           "views": 2244,
           "publishedAt": "2025-11-03"
+        },
+        {
+          "name": "Posleden Udar",
+          "videoId": "YhIqdDivfuk",
+          "url": "https://www.youtube.com/watch?v=YhIqdDivfuk",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 73934,
@@ -86433,8 +86479,7 @@
           "publishedAt": "2022-07-27"
         }
       ],
-      "effectiveReleaseDate": "2022-07-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-07-22"
     },
     {
       "bandName": "Dijana OG",
@@ -86724,8 +86769,7 @@
           "publishedAt": "2022-07-09"
         }
       ],
-      "effectiveReleaseDate": "2022-07-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-07-06"
     },
     {
       "bandName": "Trendkill",
@@ -86951,6 +86995,18 @@
           "verified": "verified",
           "views": 56,
           "publishedAt": "2022-07-04"
+        },
+        {
+          "name": "Agent na Smrtta",
+          "videoId": "EdPppIfx0kU",
+          "url": "https://www.youtube.com/watch?v=EdPppIfx0kU",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Otvori Oci",
+          "videoId": "LoQCwSsWV9c",
+          "url": "https://www.youtube.com/watch?v=LoQCwSsWV9c",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 7752,
@@ -86986,8 +87042,7 @@
           "publishedAt": "2024-09-10"
         }
       ],
-      "effectiveReleaseDate": "2022-07-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-07-03"
     },
     {
       "bandName": "Алембик",
@@ -87495,6 +87550,12 @@
           "verified": "verified",
           "views": 53,
           "publishedAt": "2022-06-26"
+        },
+        {
+          "name": "Polnokj",
+          "videoId": "QjU4a3P6Rhc",
+          "url": "https://www.youtube.com/watch?v=QjU4a3P6Rhc",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 2259,
@@ -87652,8 +87713,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-06-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-17"
     },
     {
       "bandName": "Малибу",
@@ -87675,8 +87735,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-06-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-17"
     },
     {
       "bandName": "Малибу",
@@ -87698,8 +87757,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-06-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-17"
     },
     {
       "bandName": "Inserta",
@@ -87804,8 +87862,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-06-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-13"
     },
     {
       "bandName": "2bona",
@@ -87912,8 +87969,7 @@
           "publishedAt": "2022-06-09"
         }
       ],
-      "effectiveReleaseDate": "2022-06-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-09"
     },
     {
       "bandName": "Next Time",
@@ -88144,8 +88200,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-06-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-06"
     },
     {
       "bandName": "Sexy Marsa",
@@ -88459,8 +88514,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2022-06-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-06-02"
     },
     {
       "bandName": "Дани Димитровска",
@@ -88574,8 +88628,7 @@
           "publishedAt": "2022-05-26"
         }
       ],
-      "effectiveReleaseDate": "2022-05-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-05-26"
     },
     {
       "bandName": "Galoski",
@@ -88827,8 +88880,7 @@
           "publishedAt": "2022-05-19"
         }
       ],
-      "effectiveReleaseDate": "2022-05-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-05-19"
     },
     {
       "bandName": "MIYATTA",
@@ -88859,6 +88911,12 @@
           "verified": "verified",
           "views": 4467,
           "publishedAt": "2022-05-20"
+        },
+        {
+          "name": "Враќање Дома",
+          "videoId": "XrFOIvBAaeQ",
+          "url": "https://www.youtube.com/watch?v=XrFOIvBAaeQ",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 4467,
@@ -89295,6 +89353,12 @@
           "verified": "verified",
           "views": 2405,
           "publishedAt": "2023-02-07"
+        },
+        {
+          "name": "Mosaic",
+          "videoId": "UJ-19YM-Yhw",
+          "url": "https://www.youtube.com/watch?v=UJ-19YM-Yhw",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 17289,
@@ -90551,8 +90615,7 @@
           "publishedAt": "2022-04-13"
         }
       ],
-      "effectiveReleaseDate": "2022-04-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-04-13"
     },
     {
       "bandName": "Mark Purpose",
@@ -90810,8 +90873,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-04-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-04-06"
     },
     {
       "bandName": "Александар Тарабунов",
@@ -91074,8 +91136,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-04-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-04-01"
     },
     {
       "bandName": "Damage Control",
@@ -91412,8 +91473,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-03-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-03-25"
     },
     {
       "bandName": "Зоран Илиев",
@@ -91694,8 +91754,7 @@
           "publishedAt": "2022-03-15"
         }
       ],
-      "effectiveReleaseDate": "2022-03-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-03-15"
     },
     {
       "bandName": "Малибу",
@@ -91725,8 +91784,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-03-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-03-16"
     },
     {
       "bandName": "Малибу",
@@ -91748,8 +91806,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-03-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-03-16"
     },
     {
       "bandName": "Пецо Исток",
@@ -91977,8 +92034,7 @@
           "publishedAt": "2022-02-25"
         }
       ],
-      "effectiveReleaseDate": "2022-02-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-02-25"
     },
     {
       "bandName": "TYZEE",
@@ -92064,8 +92120,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2022-02-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-02-22"
     },
     {
       "bandName": "Да Џака Накот",
@@ -92440,8 +92495,7 @@
           "publishedAt": "2024-05-07"
         }
       ],
-      "effectiveReleaseDate": "2022-02-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-02-22"
     },
     {
       "bandName": "Trendkill",
@@ -92544,8 +92598,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-02-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-02-21"
     },
     {
       "bandName": "Toni Dimitrov",
@@ -92901,8 +92954,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-02-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-02-05"
     },
     {
       "bandName": "2bona",
@@ -93077,8 +93129,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-01-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-01-28"
     },
     {
       "bandName": "Малибу",
@@ -93108,8 +93159,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-01-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-01-26"
     },
     {
       "bandName": "2bona",
@@ -93210,8 +93260,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-01-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-01-21"
     },
     {
       "bandName": "Малибу",
@@ -93241,8 +93290,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2022-01-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-01-21"
     },
     {
       "bandName": "Ареа",
@@ -93305,8 +93353,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2022-01-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2022-01-19"
     },
     {
       "bandName": "Искра",
@@ -93614,6 +93661,12 @@
           "verified": "verified",
           "views": 2516,
           "publishedAt": "2021-09-15"
+        },
+        {
+          "name": "Запалена Шума / Zapalena Shuma",
+          "videoId": "VDIScakLxAs",
+          "url": "https://www.youtube.com/watch?v=VDIScakLxAs",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 6401,
@@ -93816,6 +93869,12 @@
           "verified": "verified",
           "views": 8120,
           "publishedAt": "2024-05-16"
+        },
+        {
+          "name": "Soul",
+          "videoId": "6hfEBKE2_Yk",
+          "url": "https://www.youtube.com/watch?v=6hfEBKE2_Yk",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 8120,
@@ -94087,8 +94146,7 @@
           "publishedAt": "2022-05-17"
         }
       ],
-      "effectiveReleaseDate": "2021-12-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-12-27"
     },
     {
       "bandName": "Mark Purpose",
@@ -94258,8 +94316,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2021-12-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-12-21"
     },
     {
       "bandName": "350Teric",
@@ -94420,8 +94477,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2021-12-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-12-14"
     },
     {
       "bandName": "Матеј Фолц",
@@ -94476,100 +94532,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2021-12-11",
-      "youtubeViews": 0
-    },
-    {
-      "bandName": "Funk Shui",
-      "artistId": "728GwHEF4RySqLnbRgxzww",
-      "releaseId": "14iWC8Vq2QzhfY7irN446H",
-      "releaseTitle": "Funk Shui Live @ Balkanrock Sessions",
-      "releaseType": "single",
-      "releaseDate": "2021-12-10",
-      "releaseUrl": "https://open.spotify.com/album/14iWC8Vq2QzhfY7irN446H",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273723d78161d587408bbe864cb",
-      "totalTracks": 5,
-      "trackNames": [
-        "Meteori - Live",
-        "Arhetip - Live",
-        "Krik - Live",
-        "Deca - Live",
-        "Viulica/Somnezi? & Veter - Live"
-      ],
-      "trackArtists": [
-        [
-          "Funk Shui"
-        ],
-        [
-          "Funk Shui"
-        ],
-        [
-          "Funk Shui"
-        ],
-        [
-          "Funk Shui"
-        ],
-        [
-          "Funk Shui"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/728GwHEF4RySqLnbRgxzww",
-      "youtubeTracks": [
-        {
-          "name": "Meteori - Live",
-          "videoId": "sU5wk7qRgo4",
-          "url": "https://www.youtube.com/watch?v=sU5wk7qRgo4",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "Krik - Live",
-          "videoId": "iIOZuea7Uq4",
-          "url": "https://www.youtube.com/watch?v=iIOZuea7Uq4",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "Meteori - Live",
-          "videoId": "QUXJuMckjbs",
-          "url": "https://www.youtube.com/watch?v=QUXJuMckjbs",
-          "verified": "verified",
-          "views": 1408,
-          "publishedAt": "2021-09-21"
-        },
-        {
-          "name": "Arhetip - Live",
-          "videoId": "hzj_Yl58pcg",
-          "url": "https://www.youtube.com/watch?v=hzj_Yl58pcg",
-          "verified": "verified",
-          "views": 2006,
-          "publishedAt": "2021-09-13"
-        },
-        {
-          "name": "Krik - Live",
-          "videoId": "RLxmJm_l20Q",
-          "url": "https://www.youtube.com/watch?v=RLxmJm_l20Q",
-          "verified": "verified",
-          "views": 681,
-          "publishedAt": "2021-09-23"
-        },
-        {
-          "name": "Deca - Live",
-          "videoId": "e-AfyFklcoA",
-          "url": "https://www.youtube.com/watch?v=e-AfyFklcoA",
-          "verified": "verified",
-          "views": 627,
-          "publishedAt": "2021-09-22"
-        },
-        {
-          "name": "Viulica/Somnezi? & Veter - Live",
-          "videoId": "0GpXw8ij5g4",
-          "url": "https://www.youtube.com/watch?v=0GpXw8ij5g4",
-          "verified": "verified",
-          "views": 2111,
-          "publishedAt": "2021-09-24"
-        }
-      ],
-      "youtubeViews": 4744,
-      "effectiveReleaseDate": "2021-09-13"
+      "effectiveReleaseDate": "2021-12-11"
     },
     {
       "bandName": "Corrosion",
@@ -94783,6 +94746,18 @@
           "verified": "verified",
           "views": 64,
           "publishedAt": "2021-12-09"
+        },
+        {
+          "name": "Intro",
+          "videoId": "8GNGeoaxbag",
+          "url": "https://www.youtube.com/watch?v=8GNGeoaxbag",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Kritika",
+          "videoId": "9hzw1mSP1do",
+          "url": "https://www.youtube.com/watch?v=9hzw1mSP1do",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 1160,
@@ -95161,8 +95136,7 @@
           "publishedAt": "2022-11-21"
         }
       ],
-      "effectiveReleaseDate": "2021-11-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-11-23"
     },
     {
       "bandName": "Amplidyne Effect",
@@ -95191,8 +95165,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2021-11-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-11-19"
     },
     {
       "bandName": "Малибу",
@@ -95214,8 +95187,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2021-11-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-11-14"
     },
     {
       "bandName": "Зад Аголот",
@@ -95566,8 +95538,7 @@
           "publishedAt": "2021-11-08"
         }
       ],
-      "effectiveReleaseDate": "2021-11-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-11-07"
     },
     {
       "bandName": "Каролина Гочева",
@@ -95744,8 +95715,7 @@
           "publishedAt": "2021-10-25"
         }
       ],
-      "effectiveReleaseDate": "2021-10-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-10-25"
     },
     {
       "bandName": "Blackstate",
@@ -97103,8 +97073,7 @@
           "publishedAt": "2021-10-06"
         }
       ],
-      "effectiveReleaseDate": "2021-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-10-04"
     },
     {
       "bandName": "Bon Praskiza",
@@ -97540,8 +97509,7 @@
           "publishedAt": "2021-12-09"
         }
       ],
-      "effectiveReleaseDate": "2021-09-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-09-18"
     },
     {
       "bandName": "Galoski",
@@ -98197,8 +98165,7 @@
           "publishedAt": "2021-09-07"
         }
       ],
-      "effectiveReleaseDate": "2021-08-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-08-28"
     },
     {
       "bandName": "Corrosion",
@@ -98246,8 +98213,7 @@
           "publishedAt": "2021-08-27"
         }
       ],
-      "effectiveReleaseDate": "2021-08-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-08-27"
     },
     {
       "bandName": "Мизар",
@@ -98295,8 +98261,7 @@
           "publishedAt": "2021-05-02"
         }
       ],
-      "effectiveReleaseDate": "2021-08-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-08-25"
     },
     {
       "bandName": "Мизар",
@@ -98336,8 +98301,7 @@
           "publishedAt": "2021-03-14"
         }
       ],
-      "effectiveReleaseDate": "2021-03-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-03-14"
     },
     {
       "bandName": "2bona",
@@ -99309,6 +99273,18 @@
           "verified": "verified",
           "views": 67,
           "publishedAt": "2021-07-31"
+        },
+        {
+          "name": "Parazit",
+          "videoId": "kC89KyFhsbA",
+          "url": "https://www.youtube.com/watch?v=kC89KyFhsbA",
+          "verified": "verified"
+        },
+        {
+          "name": "Nem",
+          "videoId": "wWSfn9KCQVw",
+          "url": "https://www.youtube.com/watch?v=wWSfn9KCQVw",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 17259,
@@ -99606,6 +99582,36 @@
           "verified": "verified",
           "views": 34,
           "publishedAt": "2026-04-05"
+        },
+        {
+          "name": "Argot",
+          "videoId": "CAIotUgPS0Q",
+          "url": "https://www.youtube.com/watch?v=CAIotUgPS0Q",
+          "verified": "verified"
+        },
+        {
+          "name": "Giants",
+          "videoId": "kVHq60rA0mY",
+          "url": "https://www.youtube.com/watch?v=kVHq60rA0mY",
+          "verified": "verified"
+        },
+        {
+          "name": "Reka",
+          "videoId": "9S1lplsPiV4",
+          "url": "https://www.youtube.com/watch?v=9S1lplsPiV4",
+          "verified": "verified"
+        },
+        {
+          "name": "Surpasser",
+          "videoId": "NeCUvQy85gY",
+          "url": "https://www.youtube.com/watch?v=NeCUvQy85gY",
+          "verified": "verified"
+        },
+        {
+          "name": "Formation",
+          "videoId": "rtQTjuzGnys",
+          "url": "https://www.youtube.com/watch?v=rtQTjuzGnys",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 1057,
@@ -99823,8 +99829,7 @@
           "publishedAt": "2021-06-02"
         }
       ],
-      "effectiveReleaseDate": "2021-06-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-02"
     },
     {
       "bandName": "Зад Аголот",
@@ -100492,78 +100497,16 @@
           "verified": "verified",
           "views": 104,
           "publishedAt": "2021-07-16"
+        },
+        {
+          "name": "Невидени",
+          "videoId": "524hHFIm3kY",
+          "url": "https://www.youtube.com/watch?v=524hHFIm3kY",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 4623,
       "effectiveReleaseDate": "2021-06-28"
-    },
-    {
-      "bandName": "Fic & D'Invisibles",
-      "artistId": "5yrPqcoOBtnydGCLSQfZfO",
-      "releaseId": "3yyLRQl91zLm3PnGsSfovw",
-      "releaseTitle": "Live at Rooftop Sunset Festival (Back to Freedom)",
-      "releaseType": "single",
-      "releaseDate": "2021-06-25",
-      "releaseUrl": "https://open.spotify.com/album/3yyLRQl91zLm3PnGsSfovw",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273de2603e117c514bdd6ccdd05",
-      "totalTracks": 4,
-      "trackNames": [
-        "Crno Belo (Studeni Noze)",
-        "Pedigre (Studeni Noze)",
-        "Moeto Kuche (Studeni Noze)",
-        "Opinok (Studeni Noze)"
-      ],
-      "trackArtists": [
-        [
-          "Fic & D'Invisibles"
-        ],
-        [
-          "Fic & D'Invisibles"
-        ],
-        [
-          "Fic & D'Invisibles"
-        ],
-        [
-          "Fic & D'Invisibles"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/5yrPqcoOBtnydGCLSQfZfO?si=h8i72Oy5RSWP2Q-WE_THyA",
-      "youtubeTracks": [
-        {
-          "name": "Crno Belo (Studeni Noze)",
-          "videoId": "CiPMWhiaXjc",
-          "url": "https://www.youtube.com/watch?v=CiPMWhiaXjc",
-          "verified": "verified",
-          "views": 13849,
-          "publishedAt": "2022-10-11"
-        },
-        {
-          "name": "Pedigre (Studeni Noze)",
-          "videoId": "muk5N8Lvir4",
-          "url": "https://www.youtube.com/watch?v=muk5N8Lvir4",
-          "verified": "verified",
-          "views": 12288,
-          "publishedAt": "2023-05-30"
-        },
-        {
-          "name": "Moeto Kuche (Studeni Noze)",
-          "videoId": "ypogut_A6uo",
-          "url": "https://www.youtube.com/watch?v=ypogut_A6uo",
-          "verified": "verified",
-          "views": 12853,
-          "publishedAt": "2023-04-22"
-        },
-        {
-          "name": "Opinok (Studeni Noze)",
-          "videoId": "BJ3lcp-LirY",
-          "url": "https://www.youtube.com/watch?v=BJ3lcp-LirY",
-          "verified": "verified",
-          "views": 3683,
-          "publishedAt": "2023-12-05"
-        }
-      ],
-      "youtubeViews": 42673,
-      "effectiveReleaseDate": "2021-06-25"
     },
     {
       "bandName": "21 Век",
@@ -100603,8 +100546,7 @@
           "publishedAt": "2021-08-25"
         }
       ],
-      "effectiveReleaseDate": "2021-06-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-23"
     },
     {
       "bandName": "Пајак",
@@ -100895,8 +100837,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4LyzF6Dp7nTJnh1TSsT1uG",
-      "effectiveReleaseDate": "2021-06-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-20"
     },
     {
       "bandName": "Мартинијан Кириловски",
@@ -101010,8 +100951,7 @@
           "publishedAt": "2024-07-04"
         }
       ],
-      "effectiveReleaseDate": "2021-06-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-15"
     },
     {
       "bandName": "Калиопи",
@@ -101033,8 +100973,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
-      "effectiveReleaseDate": "2021-06-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-14"
     },
     {
       "bandName": "Калиопи",
@@ -101056,8 +100995,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
-      "effectiveReleaseDate": "2021-06-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-14"
     },
     {
       "bandName": "Pluto's Doubts",
@@ -101210,8 +101148,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/41imdszK6maTqpzNtmOD3E?si=FgPvsFmtTCOoBNus6IVK2Q",
-      "effectiveReleaseDate": "2021-06-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-06-11"
     },
     {
       "bandName": "Да Џака Накот",
@@ -101587,8 +101524,7 @@
           "publishedAt": "2021-05-31"
         }
       ],
-      "effectiveReleaseDate": "2021-05-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-05-31"
     },
     {
       "bandName": "Да Џака Накот",
@@ -101741,8 +101677,7 @@
           "publishedAt": "2022-06-30"
         }
       ],
-      "effectiveReleaseDate": "2021-05-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-05-27"
     },
     {
       "bandName": "Nascor San",
@@ -101893,8 +101828,7 @@
           "publishedAt": "2021-08-20"
         }
       ],
-      "effectiveReleaseDate": "2021-05-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-05-27"
     },
     {
       "bandName": "350Teric",
@@ -102795,6 +102729,12 @@
           "verified": "verified",
           "views": 3308,
           "publishedAt": "2023-02-26"
+        },
+        {
+          "name": "Raml - Billy Esteban Remix",
+          "videoId": "3vAqMfu05ao",
+          "url": "https://www.youtube.com/watch?v=3vAqMfu05ao",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 218126,
@@ -102979,8 +102919,7 @@
           "publishedAt": "2025-03-20"
         }
       ],
-      "effectiveReleaseDate": "2021-04-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-04-23"
     },
     {
       "bandName": "Galoski",
@@ -104832,6 +104771,12 @@
           "verified": "verified",
           "views": 2548,
           "publishedAt": "2024-11-18"
+        },
+        {
+          "name": "Greek Poem",
+          "videoId": "NKR7dLixktE",
+          "url": "https://www.youtube.com/watch?v=NKR7dLixktE",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 2548,
@@ -105875,8 +105820,7 @@
           "publishedAt": "2023-08-02"
         }
       ],
-      "effectiveReleaseDate": "2021-01-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2021-01-15"
     },
     {
       "bandName": "Дина Јашари",
@@ -106417,8 +106361,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1nG76JR0ugpNY8aQZiBuiE?si=4ygErYYJQtOUHBwJkrekEw",
-      "effectiveReleaseDate": "2020-12-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-12-22"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -106530,8 +106473,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4ky1T6mikzP88kx3NOGqaR?si=HUWLetsRSmycGfng7O-DGw",
-      "effectiveReleaseDate": "2020-12-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-12-21"
     },
     {
       "bandName": "Cruel",
@@ -107252,8 +107194,7 @@
           "publishedAt": "2020-12-06"
         }
       ],
-      "effectiveReleaseDate": "2020-12-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-12-05"
     },
     {
       "bandName": "Пајак",
@@ -107597,8 +107538,7 @@
           "publishedAt": "2020-11-27"
         }
       ],
-      "effectiveReleaseDate": "2020-11-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-11-20"
     },
     {
       "bandName": "Филип Динев",
@@ -108002,8 +107942,7 @@
           "publishedAt": "2024-09-29"
         }
       ],
-      "effectiveReleaseDate": "2020-11-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-11-13"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -108301,10 +108240,15 @@
           "verified": "verified",
           "views": 582,
           "publishedAt": "2026-03-04"
+        },
+        {
+          "name": "Huayra - Billy Esteban Remix",
+          "videoId": "3vAqMfu05ao",
+          "url": "https://www.youtube.com/watch?v=3vAqMfu05ao",
+          "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2020-10-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-30"
     },
     {
       "bandName": "Филип Динев",
@@ -108338,8 +108282,7 @@
           "publishedAt": "2020-11-05"
         }
       ],
-      "effectiveReleaseDate": "2020-10-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-30"
     },
     {
       "bandName": "Galoski",
@@ -108949,8 +108892,7 @@
           "publishedAt": "2022-12-28"
         }
       ],
-      "effectiveReleaseDate": "2020-10-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-09"
     },
     {
       "bandName": "Филип Динев",
@@ -108984,8 +108926,7 @@
           "publishedAt": "2020-10-12"
         }
       ],
-      "effectiveReleaseDate": "2020-10-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-09"
     },
     {
       "bandName": "Next to Silence",
@@ -109118,8 +109059,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2020-10-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-02"
     },
     {
       "bandName": "Billy Esteban",
@@ -109166,8 +109106,7 @@
           "publishedAt": "2023-04-12"
         }
       ],
-      "effectiveReleaseDate": "2020-10-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-02"
     },
     {
       "bandName": "Филип Динев",
@@ -109201,8 +109140,7 @@
           "publishedAt": "2022-09-11"
         }
       ],
-      "effectiveReleaseDate": "2020-10-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-10-02"
     },
     {
       "bandName": "Слаткаристика",
@@ -109326,8 +109264,7 @@
           "publishedAt": "2023-03-01"
         }
       ],
-      "effectiveReleaseDate": "2020-09-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-09-25"
     },
     {
       "bandName": "Филип Динев",
@@ -109361,8 +109298,7 @@
           "publishedAt": "2020-09-27"
         }
       ],
-      "effectiveReleaseDate": "2020-09-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-09-25"
     },
     {
       "bandName": "Inserta",
@@ -109493,8 +109429,7 @@
           "publishedAt": "2020-09-20"
         }
       ],
-      "effectiveReleaseDate": "2020-09-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-09-20"
     },
     {
       "bandName": "Billy Esteban",
@@ -109897,8 +109832,7 @@
           "publishedAt": "2023-08-13"
         }
       ],
-      "effectiveReleaseDate": "2020-09-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-09-11"
     },
     {
       "bandName": "Galoski",
@@ -109969,8 +109903,7 @@
           "publishedAt": "2020-09-09"
         }
       ],
-      "effectiveReleaseDate": "2020-09-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-09-09"
     },
     {
       "bandName": "Арсов и Неговиот Најјак Бенд",
@@ -110067,8 +110000,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2020-08-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-08-31"
     },
     {
       "bandName": "2bona",
@@ -110300,8 +110232,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
-      "effectiveReleaseDate": "2020-08-14",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-08-14"
     },
     {
       "bandName": "Panda 5",
@@ -111090,8 +111021,7 @@
           "publishedAt": "2020-07-23"
         }
       ],
-      "effectiveReleaseDate": "2020-07-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-07-23"
     },
     {
       "bandName": "Pluto's Doubts",
@@ -111912,8 +111842,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2020-06-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-06-18"
     },
     {
       "bandName": "Amplidyne Effect",
@@ -111934,8 +111863,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2020-06-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-06-17"
     },
     {
       "bandName": "2bona",
@@ -112098,8 +112026,7 @@
           "publishedAt": "2019-01-30"
         }
       ],
-      "effectiveReleaseDate": "2019-01-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-01-30"
     },
     {
       "bandName": "Billy Esteban",
@@ -112171,8 +112098,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2020-05-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-05-29"
     },
     {
       "bandName": "Funk Shui",
@@ -112211,8 +112137,7 @@
           "publishedAt": "2020-05-28"
         }
       ],
-      "effectiveReleaseDate": "2020-05-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-05-28"
     },
     {
       "bandName": "Виктор Апостоловски",
@@ -112351,8 +112276,7 @@
           "publishedAt": "2020-05-15"
         }
       ],
-      "effectiveReleaseDate": "2020-05-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-05-15"
     },
     {
       "bandName": "Galoski",
@@ -112497,8 +112421,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/1fSzjKjyiT7bCxYihHs4Ra?si=6J-ByoEPR8Wmdre7LGHV0w",
-      "effectiveReleaseDate": "2020-05-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-05-12"
     },
     {
       "bandName": "Mark Purpose",
@@ -113611,8 +113534,7 @@
           "publishedAt": "2019-04-24"
         }
       ],
-      "effectiveReleaseDate": "2019-04-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-04-24"
     },
     {
       "bandName": "Д.Н.К",
@@ -113652,8 +113574,7 @@
           "publishedAt": "2019-01-06"
         }
       ],
-      "effectiveReleaseDate": "2019-01-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-01-06"
     },
     {
       "bandName": "Д.Н.К",
@@ -113699,10 +113620,15 @@
           "verified": "verified",
           "views": 9810,
           "publishedAt": "2019-06-26"
+        },
+        {
+          "name": "Gore ili dole",
+          "videoId": "OrnByew8zao",
+          "url": "https://www.youtube.com/watch?v=OrnByew8zao",
+          "verified": "verified"
         }
       ],
-      "effectiveReleaseDate": "2019-06-21",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-06-21"
     },
     {
       "bandName": "Допе Куќата",
@@ -115425,8 +115351,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4LyzF6Dp7nTJnh1TSsT1uG",
-      "effectiveReleaseDate": "2020-02-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2020-02-26"
     },
     {
       "bandName": "Druggy",
@@ -115709,6 +115634,18 @@
           "verified": "verified",
           "views": 1533,
           "publishedAt": "2021-10-30"
+        },
+        {
+          "name": "World",
+          "videoId": "8AtE2DyaQp0",
+          "url": "https://www.youtube.com/watch?v=8AtE2DyaQp0",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Passion",
+          "videoId": "QBlR2NsSzRE",
+          "url": "https://www.youtube.com/watch?v=QBlR2NsSzRE",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 198770,
@@ -117314,8 +117251,7 @@
           "publishedAt": "2019-12-30"
         }
       ],
-      "effectiveReleaseDate": "2019-12-30",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-12-30"
     },
     {
       "bandName": "Bon Praskiza",
@@ -117651,8 +117587,7 @@
           "publishedAt": "2022-12-26"
         }
       ],
-      "effectiveReleaseDate": "2019-12-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-12-23"
     },
     {
       "bandName": "Bon Praskiza",
@@ -117961,8 +117896,7 @@
           "publishedAt": "2019-12-17"
         }
       ],
-      "effectiveReleaseDate": "2019-12-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-12-17"
     },
     {
       "bandName": "Пиколомини",
@@ -119215,8 +119149,7 @@
           "publishedAt": "2019-09-05"
         }
       ],
-      "effectiveReleaseDate": "2019-09-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-09-05"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -119281,8 +119214,7 @@
           "publishedAt": "2019-10-21"
         }
       ],
-      "effectiveReleaseDate": "2019-10-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-10-18"
     },
     {
       "bandName": "Давид Темелков",
@@ -119843,8 +119775,7 @@
           "publishedAt": "2019-09-22"
         }
       ],
-      "effectiveReleaseDate": "2019-09-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-09-22"
     },
     {
       "bandName": "Викторија Лоба",
@@ -120442,8 +120373,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3gsp4PXZKqOqaOK166AdMh?si=mpjmXF15SliyFa40fTImNQ",
-      "effectiveReleaseDate": "2019-09-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-09-02"
     },
     {
       "bandName": "Conspiracy",
@@ -120598,6 +120528,12 @@
           "verified": "verified",
           "views": 1293,
           "publishedAt": "2019-09-01"
+        },
+        {
+          "name": "Divinity",
+          "videoId": "a3owKIBRU9E",
+          "url": "https://www.youtube.com/watch?v=a3owKIBRU9E",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 9831,
@@ -122275,10 +122211,15 @@
           "verified": "verified",
           "views": 901156,
           "publishedAt": "2019-11-11"
+        },
+        {
+          "name": "Nie",
+          "videoId": "j3uL1eGc9jM",
+          "url": "https://www.youtube.com/watch?v=j3uL1eGc9jM",
+          "verified": "verified"
         }
       ],
-      "effectiveReleaseDate": "2019-06-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-06-11"
     },
     {
       "bandName": "Тамара Стојковска",
@@ -122400,8 +122341,7 @@
           "publishedAt": "2019-07-04"
         }
       ],
-      "effectiveReleaseDate": "2019-06-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-06-03"
     },
     {
       "bandName": "Fiction",
@@ -122602,8 +122542,7 @@
           "publishedAt": "2019-05-06"
         }
       ],
-      "effectiveReleaseDate": "2019-05-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-05-06"
     },
     {
       "bandName": "2bona",
@@ -122625,8 +122564,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3gsp4PXZKqOqaOK166AdMh?si=mpjmXF15SliyFa40fTImNQ",
-      "effectiveReleaseDate": "2019-05-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-05-24"
     },
     {
       "bandName": "Легијата",
@@ -122716,8 +122654,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3gsp4PXZKqOqaOK166AdMh?si=mpjmXF15SliyFa40fTImNQ",
-      "effectiveReleaseDate": "2019-05-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-05-22"
     },
     {
       "bandName": "Слаткаристика",
@@ -123506,8 +123443,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3gsp4PXZKqOqaOK166AdMh?si=mpjmXF15SliyFa40fTImNQ",
-      "effectiveReleaseDate": "2019-04-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-04-15"
     },
     {
       "bandName": "Слаткаристика",
@@ -124110,8 +124046,7 @@
           "publishedAt": "2019-03-26"
         }
       ],
-      "effectiveReleaseDate": "2019-03-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-03-25"
     },
     {
       "bandName": "Zulu 3.4",
@@ -124262,204 +124197,6 @@
       ],
       "youtubeViews": 4956,
       "effectiveReleaseDate": "2019-03-24"
-    },
-    {
-      "bandName": "LD Pistolero",
-      "artistId": "6PcXUcgfFMFiFpQPwOhJzj",
-      "releaseId": "6F3n25mtcmOZ87Crl5HY7o",
-      "releaseTitle": "Daleku",
-      "releaseType": "album",
-      "releaseDate": "2019-03-23",
-      "releaseUrl": "https://open.spotify.com/album/6F3n25mtcmOZ87Crl5HY7o",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b27354cac51d49a9daa16b247e42",
-      "totalTracks": 14,
-      "trackNames": [
-        "Intro",
-        "Kasha",
-        "Zakon",
-        "Ichiban",
-        "Zdravo za gotovo",
-        "Filjanitet",
-        "Yah man",
-        "Tuka pukaj fristajl",
-        "Dvoumica",
-        "Proshetka",
-        "Stravovi",
-        "Tajni mesta",
-        "Daleku",
-        "Bilo i pominalo"
-      ],
-      "trackArtists": [
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Strajk"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Paki"
-        ],
-        [
-          "LD Pistolero",
-          "Rootsman I"
-        ],
-        [
-          "LD Pistolero",
-          "DJ Goce"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/6PcXUcgfFMFiFpQPwOhJzj?si=5WV0MUqLRQiZF5fnwUPp4w",
-      "youtubeTracks": [
-        {
-          "name": "Intro",
-          "videoId": "5vb0tmWJbH4",
-          "url": "https://www.youtube.com/watch?v=5vb0tmWJbH4",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "Intro",
-          "videoId": "1vC49F77Ee4",
-          "url": "https://www.youtube.com/watch?v=1vC49F77Ee4",
-          "verified": "verified",
-          "views": 8443,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Kasha",
-          "videoId": "1kdx44lX6Zk",
-          "url": "https://www.youtube.com/watch?v=1kdx44lX6Zk",
-          "verified": "verified",
-          "views": 32664,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Zakon",
-          "videoId": "EKxa3VDWVXc",
-          "url": "https://www.youtube.com/watch?v=EKxa3VDWVXc",
-          "verified": "verified",
-          "views": 27711,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Ichiban",
-          "videoId": "R1l1vNGEiK8",
-          "url": "https://www.youtube.com/watch?v=R1l1vNGEiK8",
-          "verified": "verified",
-          "views": 80480,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Zdravo za gotovo",
-          "videoId": "oOcOZfQZwZY",
-          "url": "https://www.youtube.com/watch?v=oOcOZfQZwZY",
-          "verified": "verified",
-          "views": 61668,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Filjanitet",
-          "videoId": "Pq0TlQwZdZE",
-          "url": "https://www.youtube.com/watch?v=Pq0TlQwZdZE",
-          "verified": "verified",
-          "views": 40782,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Yah man",
-          "videoId": "ItWc-6QUSsk",
-          "url": "https://www.youtube.com/watch?v=ItWc-6QUSsk",
-          "verified": "verified",
-          "views": 13175,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Tuka pukaj fristajl",
-          "videoId": "BkzpcaTh-ps",
-          "url": "https://www.youtube.com/watch?v=BkzpcaTh-ps",
-          "verified": "verified",
-          "views": 5050,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Dvoumica",
-          "videoId": "0j41AM_jJAI",
-          "url": "https://www.youtube.com/watch?v=0j41AM_jJAI",
-          "verified": "verified",
-          "views": 21689,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Proshetka",
-          "videoId": "NWd1KIC4uZE",
-          "url": "https://www.youtube.com/watch?v=NWd1KIC4uZE",
-          "verified": "verified",
-          "views": 40413,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Stravovi",
-          "videoId": "4SLyEzi0LfE",
-          "url": "https://www.youtube.com/watch?v=4SLyEzi0LfE",
-          "verified": "verified",
-          "views": 20573,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Tajni mesta",
-          "videoId": "VA-uTdlekIA",
-          "url": "https://www.youtube.com/watch?v=VA-uTdlekIA",
-          "verified": "verified",
-          "views": 31822,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Daleku",
-          "videoId": "7px65V2U4UM",
-          "url": "https://www.youtube.com/watch?v=7px65V2U4UM",
-          "verified": "verified",
-          "views": 79044,
-          "publishedAt": "2020-10-01"
-        },
-        {
-          "name": "Bilo i pominalo",
-          "videoId": "vPDqpoW3Z7Q",
-          "url": "https://www.youtube.com/watch?v=vPDqpoW3Z7Q",
-          "verified": "verified",
-          "views": 89657,
-          "publishedAt": "2020-10-01"
-        }
-      ],
-      "youtubeViews": 553171,
-      "effectiveReleaseDate": "2019-03-23"
     },
     {
       "bandName": "2bona",
@@ -124705,8 +124442,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2019-03-13",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-03-13"
     },
     {
       "bandName": "Лозано",
@@ -125137,8 +124873,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/49OuyZuJPvCmm5I86pYUW3?si=dKvATOvBRLaUcpSBeE6Vng",
-      "effectiveReleaseDate": "2019-03-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-03-01"
     },
     {
       "bandName": "Слаткаристика",
@@ -125961,8 +125696,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0vUxbZoTUW2LE7i5ryu4AX?si=N9JRXD-9S2qjVHZzZ6v0dQ",
-      "effectiveReleaseDate": "2019-02-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2019-02-01"
     },
     {
       "bandName": "Yudhisthira",
@@ -126922,8 +126656,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2018-12-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-12-17"
     },
     {
       "bandName": "Yudhisthira",
@@ -127092,8 +126825,7 @@
           "publishedAt": "2018-02-19"
         }
       ],
-      "effectiveReleaseDate": "2018-12-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-12-12"
     },
     {
       "bandName": "Калиопи",
@@ -127389,8 +127121,7 @@
           "publishedAt": "2019-02-16"
         }
       ],
-      "effectiveReleaseDate": "2018-11-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-11-22"
     },
     {
       "bandName": "С.А.М.",
@@ -127454,8 +127185,7 @@
           "publishedAt": "2018-10-17"
         }
       ],
-      "effectiveReleaseDate": "2018-10-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-10-17"
     },
     {
       "bandName": "Слаткаристика",
@@ -127735,8 +127465,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/7oWaJgTxVtkN3g53ABpMZL?si=OB1ZAA3lR1WcSScx7haJlQ",
-      "effectiveReleaseDate": "2018-11-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-11-05"
     },
     {
       "bandName": "Викторија Лоба",
@@ -127781,8 +127510,7 @@
           "publishedAt": "2023-11-09"
         }
       ],
-      "effectiveReleaseDate": "2018-11-05",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-11-05"
     },
     {
       "bandName": "Таско",
@@ -127861,8 +127589,7 @@
           "publishedAt": "2018-10-25"
         }
       ],
-      "effectiveReleaseDate": "2018-10-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-10-25"
     },
     {
       "bandName": "Елена Ристеска",
@@ -127933,8 +127660,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2018-10-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-10-23"
     },
     {
       "bandName": "TYZEE",
@@ -128246,6 +127972,12 @@
           "verified": "verified",
           "views": 2338,
           "publishedAt": "2018-10-06"
+        },
+        {
+          "name": "Son",
+          "videoId": "q_jGRsnWuws",
+          "url": "https://www.youtube.com/watch?v=q_jGRsnWuws",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 45066,
@@ -128351,8 +128083,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
-      "effectiveReleaseDate": "2018-10-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-10-03"
     },
     {
       "bandName": "Мартија",
@@ -128417,8 +128148,7 @@
           "publishedAt": "2018-09-26"
         }
       ],
-      "effectiveReleaseDate": "2018-09-26",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-09-26"
     },
     {
       "bandName": "С.А.М.",
@@ -129407,8 +129137,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6b6B5gaszXchnqZVjPfzqa",
-      "effectiveReleaseDate": "2018-09-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-09-04"
     },
     {
       "bandName": "Galoski",
@@ -129982,8 +129711,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2018-07-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-07-10"
     },
     {
       "bandName": "Александра Јанева",
@@ -130065,8 +129793,7 @@
           "publishedAt": "2018-07-02"
         }
       ],
-      "effectiveReleaseDate": "2018-06-27",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-06-27"
     },
     {
       "bandName": "Дупер",
@@ -130098,8 +129825,7 @@
           "publishedAt": "2018-06-20"
         }
       ],
-      "effectiveReleaseDate": "2018-06-20",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-06-20"
     },
     {
       "bandName": "Крсто Роџевски",
@@ -130614,8 +130340,7 @@
           "publishedAt": "2018-05-02"
         }
       ],
-      "effectiveReleaseDate": "2018-05-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-05-02"
     },
     {
       "bandName": "Таско",
@@ -131640,6 +131365,18 @@
           "verified": "verified",
           "views": 68,
           "publishedAt": "2024-05-01"
+        },
+        {
+          "name": "О.К.",
+          "videoId": "8RUxmIGkF5g",
+          "url": "https://www.youtube.com/watch?v=8RUxmIGkF5g",
+          "verified": "verified"
+        },
+        {
+          "name": "Т.О.",
+          "videoId": "IKmKqvU7Nbw",
+          "url": "https://www.youtube.com/watch?v=IKmKqvU7Nbw",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 27120,
@@ -132080,8 +131817,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2018-02-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-02-11"
     },
     {
       "bandName": "Давид Темелков",
@@ -132154,8 +131890,7 @@
           "publishedAt": "2019-07-04"
         }
       ],
-      "effectiveReleaseDate": "2018-01-15",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2018-01-15"
     },
     {
       "bandName": "Александар Тарабунов",
@@ -133545,8 +133280,7 @@
           "publishedAt": "2017-10-10"
         }
       ],
-      "effectiveReleaseDate": "2017-10-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-10-10"
     },
     {
       "bandName": "Слаткаристика",
@@ -133617,8 +133351,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2017-10-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-10-08"
     },
     {
       "bandName": "Дуке Бојаџиев",
@@ -134303,8 +134036,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2017-08-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-08-23"
     },
     {
       "bandName": "Billy Esteban",
@@ -134533,6 +134265,18 @@
           "verified": "verified",
           "views": 1533,
           "publishedAt": "2021-10-30"
+        },
+        {
+          "name": "Passion",
+          "videoId": "QBlR2NsSzRE",
+          "url": "https://www.youtube.com/watch?v=QBlR2NsSzRE",
+          "verified": "verified"
+        },
+        {
+          "name": "World",
+          "videoId": "8AtE2DyaQp0",
+          "url": "https://www.youtube.com/watch?v=8AtE2DyaQp0",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 18103,
@@ -134836,8 +134580,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/5pQWy1kXvHQjcyVp2h3Sq7",
-      "effectiveReleaseDate": "2017-06-02",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-06-02"
     },
     {
       "bandName": "Елена Ристеска",
@@ -136224,8 +135967,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2017-04-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-04-08"
     },
     {
       "bandName": "Давид Темелков",
@@ -136257,8 +135999,7 @@
           "publishedAt": "2017-04-06"
         }
       ],
-      "effectiveReleaseDate": "2017-04-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2017-04-06"
     },
     {
       "bandName": "Телемама",
@@ -138527,8 +138268,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2016-10-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-10-08"
     },
     {
       "bandName": "350Teric",
@@ -138641,8 +138381,7 @@
           "publishedAt": "2016-10-04"
         }
       ],
-      "effectiveReleaseDate": "2016-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-10-04"
     },
     {
       "bandName": "Тони Зен",
@@ -139173,8 +138912,7 @@
           "publishedAt": "2016-05-17"
         }
       ],
-      "effectiveReleaseDate": "2016-05-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-05-17"
     },
     {
       "bandName": "Давид Темелков",
@@ -139842,8 +139580,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2016-05-03",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-05-03"
     },
     {
       "bandName": "Маја Вукичевиќ",
@@ -139946,8 +139683,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2016-04-11",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-04-11"
     },
     {
       "bandName": "Зад Аголот",
@@ -140050,8 +139786,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3lb3X5AuBfNMlbYgVmaa3y?si=i1j25YpFTke65YbtpTTFGw",
-      "effectiveReleaseDate": "2016-04-09",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2016-04-09"
     },
     {
       "bandName": "Yudhisthira",
@@ -141140,8 +140875,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2015-12-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-12-31"
     },
     {
       "bandName": "Елена Ристеска",
@@ -141531,8 +141265,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/00kSxXDKGafeM1T8EktuFF?si=c3TLNCCuRoe_5WQiagy4bg",
-      "effectiveReleaseDate": "2015-12-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-12-18"
     },
     {
       "bandName": "Culture Development",
@@ -142143,8 +141876,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3lb3X5AuBfNMlbYgVmaa3y?si=i1j25YpFTke65YbtpTTFGw",
-      "effectiveReleaseDate": "2015-11-22",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-11-22"
     },
     {
       "bandName": "Давид Темелков",
@@ -142176,8 +141908,7 @@
           "publishedAt": "2015-11-10"
         }
       ],
-      "effectiveReleaseDate": "2015-11-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-11-10"
     },
     {
       "bandName": "Galoski",
@@ -142820,8 +142551,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2015-10-23",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-10-23"
     },
     {
       "bandName": "Нокаут",
@@ -143152,8 +142882,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2015-09-28",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2015-09-28"
     },
     {
       "bandName": "Donplaya",
@@ -144662,6 +144391,12 @@
           "verified": "verified",
           "views": 102,
           "publishedAt": "2019-03-05"
+        },
+        {
+          "name": "Den",
+          "videoId": "UdiL2feXWtg",
+          "url": "https://www.youtube.com/watch?v=UdiL2feXWtg",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 298646,
@@ -145135,6 +144870,12 @@
           "verified": "verified",
           "views": 34486,
           "publishedAt": "2015-06-15"
+        },
+        {
+          "name": "Soshien",
+          "videoId": "BNKhhAkv_Lk",
+          "url": "https://www.youtube.com/watch?v=BNKhhAkv_Lk",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 288665,
@@ -145684,6 +145425,12 @@
           "verified": "verified",
           "views": 107,
           "publishedAt": "2023-08-01"
+        },
+        {
+          "name": "Eden Den",
+          "videoId": "q9uTZVs7jyQ",
+          "url": "https://www.youtube.com/watch?v=q9uTZVs7jyQ",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 587673,
@@ -145880,6 +145627,12 @@
           "verified": "verified",
           "views": 2445,
           "publishedAt": "2016-12-21"
+        },
+        {
+          "name": "Карма",
+          "videoId": "_2ey7l__nzA",
+          "url": "https://www.youtube.com/watch?v=_2ey7l__nzA",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 7330,
@@ -146126,6 +145879,12 @@
           "verified": "verified",
           "views": 159560,
           "publishedAt": "2011-09-09"
+        },
+        {
+          "name": "Najvazno od se",
+          "videoId": "esC_BBDfGKU",
+          "url": "https://www.youtube.com/watch?v=esC_BBDfGKU",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 444886,
@@ -147232,8 +146991,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2014-10-12",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2014-10-12"
     },
     {
       "bandName": "350Teric",
@@ -147920,8 +147678,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/7oWaJgTxVtkN3g53ABpMZL?si=OB1ZAA3lR1WcSScx7haJlQ",
-      "effectiveReleaseDate": "2014-07-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2014-07-04"
     },
     {
       "bandName": "Маја Вукичевиќ",
@@ -148233,8 +147990,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6b6B5gaszXchnqZVjPfzqa",
-      "effectiveReleaseDate": "2014-05-29",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2014-05-29"
     },
     {
       "bandName": "Amplidyne Effect",
@@ -148291,8 +148047,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2014-05-24",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2014-05-24"
     },
     {
       "bandName": "Синтезис",
@@ -148314,8 +148069,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2dkAbwBLa20UmpE0iWnl7v",
-      "effectiveReleaseDate": "2014-05-16",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2014-05-16"
     },
     {
       "bandName": "350Teric",
@@ -148711,6 +148465,24 @@
           "verified": "verified",
           "views": 2539,
           "publishedAt": "2023-09-05"
+        },
+        {
+          "name": "Kjor Sokak",
+          "videoId": "JKZKh8nhTNY",
+          "url": "https://www.youtube.com/watch?v=JKZKh8nhTNY",
+          "verified": "verified"
+        },
+        {
+          "name": "Kukjichka Na Drvo",
+          "videoId": "Q92LojgoT3g",
+          "url": "https://www.youtube.com/watch?v=Q92LojgoT3g",
+          "verified": "verified"
+        },
+        {
+          "name": "Pazi Shto Pravish",
+          "videoId": "Wa1WxNeY5i4",
+          "url": "https://www.youtube.com/watch?v=Wa1WxNeY5i4",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 992237,
@@ -150388,6 +150160,12 @@
           "verified": "verified",
           "views": 595,
           "publishedAt": "2022-07-12"
+        },
+        {
+          "name": "Dance",
+          "videoId": "adNJy2a2bNs",
+          "url": "https://www.youtube.com/watch?v=adNJy2a2bNs",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 1201,
@@ -151610,6 +151388,12 @@
           "verified": "verified",
           "views": 2613,
           "publishedAt": "2018-07-21"
+        },
+        {
+          "name": "Tatko Mi Chesto Zboreshe",
+          "videoId": "_Og5c2qJk3U",
+          "url": "https://www.youtube.com/watch?v=_Og5c2qJk3U",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 56653,
@@ -152118,6 +151902,12 @@
           "verified": "verified",
           "views": 146,
           "publishedAt": "2015-11-09"
+        },
+        {
+          "name": "Maleshevska Rechenica",
+          "videoId": "BafR0MjYZXY",
+          "url": "https://www.youtube.com/watch?v=BafR0MjYZXY",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 73744,
@@ -152509,8 +152299,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2013-10-25",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2013-10-25"
     },
     {
       "bandName": "Нокаут",
@@ -153435,6 +153224,12 @@
           "verified": "verified",
           "views": 4449,
           "publishedAt": "2013-11-05"
+        },
+        {
+          "name": "Chokolado i vanila",
+          "videoId": "nkCYZzaVq9E",
+          "url": "https://www.youtube.com/watch?v=nkCYZzaVq9E",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 425809,
@@ -154014,8 +153809,7 @@
           "publishedAt": "2013-07-02"
         }
       ],
-      "effectiveReleaseDate": "2013-04-19",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2013-04-19"
     },
     {
       "bandName": "Зад Аголот",
@@ -154037,8 +153831,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3lb3X5AuBfNMlbYgVmaa3y?si=i1j25YpFTke65YbtpTTFGw",
-      "effectiveReleaseDate": "2013-04-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2013-04-10"
     },
     {
       "bandName": "Sethstat",
@@ -154317,223 +154110,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3lb3X5AuBfNMlbYgVmaa3y?si=i1j25YpFTke65YbtpTTFGw",
-      "effectiveReleaseDate": "2013-03-13",
-      "youtubeViews": 0
-    },
-    {
-      "bandName": "LD Pistolero",
-      "artistId": "6PcXUcgfFMFiFpQPwOhJzj",
-      "releaseId": "5LGWiyRfQTgGgmvas6vmZM",
-      "releaseTitle": "Posle mostot",
-      "releaseType": "album",
-      "releaseDate": "2013-03-07",
-      "releaseUrl": "https://open.spotify.com/album/5LGWiyRfQTgGgmvas6vmZM",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b27323fdd21c1db62c804487425b",
-      "totalTracks": 15,
-      "trackNames": [
-        "Intro",
-        "2 po 28",
-        "Bezchustvitelna balada",
-        "Gomno em serator",
-        "Tishina!",
-        "Miren son so ribite",
-        "Losha navika",
-        "Dupla dupla doza",
-        "Boles",
-        "L.D.",
-        "Nema nazad",
-        "Problemi",
-        "Deca na tranzicija",
-        "Bez vas za vas",
-        "Eden den - Bonus Track"
-      ],
-      "trackArtists": [
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Tonyo San"
-        ],
-        [
-          "LD Pistolero",
-          "Strajk"
-        ],
-        [
-          "LD Pistolero",
-          "Tonyo San",
-          "King Fizze"
-        ],
-        [
-          "LD Pistolero",
-          "Da Dzaka Nakot"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Strajk"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Kemp Od"
-        ],
-        [
-          "LD Pistolero"
-        ],
-        [
-          "LD Pistolero",
-          "Da Dzaka Nakot"
-        ],
-        [
-          "LD Pistolero",
-          "DJ Goce"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/6PcXUcgfFMFiFpQPwOhJzj?si=5WV0MUqLRQiZF5fnwUPp4w",
-      "youtubeTracks": [
-        {
-          "name": "Intro",
-          "videoId": "5vb0tmWJbH4",
-          "url": "https://www.youtube.com/watch?v=5vb0tmWJbH4",
-          "verified": "will-not-verify"
-        },
-        {
-          "name": "Intro",
-          "videoId": "9sg9UQWCYDY",
-          "url": "https://www.youtube.com/watch?v=9sg9UQWCYDY",
-          "verified": "verified",
-          "views": 540,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "2 po 28",
-          "videoId": "HE0Gd-fSriI",
-          "url": "https://www.youtube.com/watch?v=HE0Gd-fSriI",
-          "verified": "verified",
-          "views": 1392,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Bezchustvitelna balada",
-          "videoId": "72pa7omRc90",
-          "url": "https://www.youtube.com/watch?v=72pa7omRc90",
-          "verified": "verified",
-          "views": 2798,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Gomno em serator",
-          "videoId": "bSfkxSf0jbg",
-          "url": "https://www.youtube.com/watch?v=bSfkxSf0jbg",
-          "verified": "verified",
-          "views": 1243,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Tishina!",
-          "videoId": "loE4xSAhE2Q",
-          "url": "https://www.youtube.com/watch?v=loE4xSAhE2Q",
-          "verified": "verified",
-          "views": 4079,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Miren son so ribite",
-          "videoId": "sL3oU5h2gh0",
-          "url": "https://www.youtube.com/watch?v=sL3oU5h2gh0",
-          "verified": "verified",
-          "views": 701,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Losha navika",
-          "videoId": "F9o7-XYriy8",
-          "url": "https://www.youtube.com/watch?v=F9o7-XYriy8",
-          "verified": "verified",
-          "views": 989,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Dupla dupla doza",
-          "videoId": "PzEezF_K0WA",
-          "url": "https://www.youtube.com/watch?v=PzEezF_K0WA",
-          "verified": "verified",
-          "views": 1480,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Boles",
-          "videoId": "sieJmNGE4Q4",
-          "url": "https://www.youtube.com/watch?v=sieJmNGE4Q4",
-          "verified": "verified",
-          "views": 1786,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "L.D.",
-          "videoId": "_GRbEAoxIrg",
-          "url": "https://www.youtube.com/watch?v=_GRbEAoxIrg",
-          "verified": "verified",
-          "views": 2174,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Nema nazad",
-          "videoId": "J7m5E-8VOdU",
-          "url": "https://www.youtube.com/watch?v=J7m5E-8VOdU",
-          "verified": "verified",
-          "views": 3852,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Problemi",
-          "videoId": "rvCvQV7AAes",
-          "url": "https://www.youtube.com/watch?v=rvCvQV7AAes",
-          "verified": "verified",
-          "views": 2134,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Deca na tranzicija",
-          "videoId": "C8GOmec8tRM",
-          "url": "https://www.youtube.com/watch?v=C8GOmec8tRM",
-          "verified": "verified",
-          "views": 7399,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Bez vas za vas",
-          "videoId": "YbWsFky-UYk",
-          "url": "https://www.youtube.com/watch?v=YbWsFky-UYk",
-          "verified": "verified",
-          "views": 783,
-          "publishedAt": "2025-07-08"
-        },
-        {
-          "name": "Eden den - Bonus Track",
-          "videoId": "BYwNKQsHIkY",
-          "url": "https://www.youtube.com/watch?v=BYwNKQsHIkY",
-          "verified": "verified",
-          "views": 60851,
-          "publishedAt": "2025-07-08"
-        }
-      ],
-      "youtubeViews": 92201,
-      "effectiveReleaseDate": "2013-03-07"
+      "effectiveReleaseDate": "2013-03-13"
     },
     {
       "bandName": "Лозано",
@@ -155686,6 +155263,12 @@
           "verified": "verified",
           "views": 4643,
           "publishedAt": "2020-06-12"
+        },
+        {
+          "name": "Shto saka neka bide",
+          "videoId": "FF6e8WpJSQk",
+          "url": "https://www.youtube.com/watch?v=FF6e8WpJSQk",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 15740942,
@@ -155852,8 +155435,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/16FDymswtcT1ZQj3keHWiQ?si=L120OHYiSGOsTcFOxnNB-g",
-      "effectiveReleaseDate": "2012-12-18",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012-12-18"
     },
     {
       "bandName": "Суперхикс",
@@ -156278,8 +155860,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3lb3X5AuBfNMlbYgVmaa3y?si=i1j25YpFTke65YbtpTTFGw",
-      "effectiveReleaseDate": "2012-11-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012-11-04"
     },
     {
       "bandName": "Tonyo San",
@@ -156791,8 +156372,7 @@
           "publishedAt": "2014-09-22"
         }
       ],
-      "effectiveReleaseDate": "2012-10-04",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012-10-04"
     },
     {
       "bandName": "Хахаха",
@@ -158237,8 +157817,7 @@
           "publishedAt": "2012-06-23"
         }
       ],
-      "effectiveReleaseDate": "2012-06-06",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012-06-06"
     },
     {
       "bandName": "Слаткаристика",
@@ -158492,6 +158071,18 @@
           "verified": "verified",
           "views": 6301,
           "publishedAt": "2025-12-02"
+        },
+        {
+          "name": "In",
+          "videoId": "MfvsOU4-Yys",
+          "url": "https://www.youtube.com/watch?v=MfvsOU4-Yys",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Sara",
+          "videoId": "oyrkEn8ujOE",
+          "url": "https://www.youtube.com/watch?v=oyrkEn8ujOE",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 164940,
@@ -158722,6 +158313,18 @@
           "verified": "verified",
           "views": 1434,
           "publishedAt": "2010-10-05"
+        },
+        {
+          "name": "Devojkata so tochakot",
+          "videoId": "LU67dYCtDII",
+          "url": "https://www.youtube.com/watch?v=LU67dYCtDII",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Zoshto ne se smeesh",
+          "videoId": "lXGSHFXbIv4",
+          "url": "https://www.youtube.com/watch?v=lXGSHFXbIv4",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 306033,
@@ -159729,8 +159332,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "2012-03-17",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012-03-17"
     },
     {
       "bandName": "Фонија",
@@ -160583,6 +160185,12 @@
           "verified": "verified",
           "views": 475,
           "publishedAt": "2024-09-29"
+        },
+        {
+          "name": "Pretposljednji Waltz",
+          "videoId": "LVW-TMIpquc",
+          "url": "https://www.youtube.com/watch?v=LVW-TMIpquc",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 78854,
@@ -162227,8 +161835,7 @@
           "publishedAt": "2017-03-04"
         }
       ],
-      "effectiveReleaseDate": "2012",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2012"
     },
     {
       "bandName": "Yudhisthira",
@@ -163207,6 +162814,12 @@
           "verified": "verified",
           "views": 9401,
           "publishedAt": "2012-01-12"
+        },
+        {
+          "name": "Next Time",
+          "videoId": "2q7ChteI9Cs",
+          "url": "https://www.youtube.com/watch?v=2q7ChteI9Cs",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 1937481,
@@ -164456,8 +164069,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4o0ELWB8VspQ9HUqj5wSrw?si=4CuKLrUxS1e0X00jvJYNVA",
-      "effectiveReleaseDate": "2011-05-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2011-05-01"
     },
     {
       "bandName": "Страјк",
@@ -169664,8 +169276,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0YePMF4erLDSZPoNOdVoYd?si=Dicxi4ViTW2cZhryD10r9w",
-      "effectiveReleaseDate": "2010-10-08",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2010-10-08"
     },
     {
       "bandName": "Чалгија Саунд Систем",
@@ -171712,6 +171323,12 @@
           "verified": "verified",
           "views": 54,
           "publishedAt": "2023-06-03"
+        },
+        {
+          "name": "Zivees za...?",
+          "videoId": "9nivGrZb9Fs",
+          "url": "https://www.youtube.com/watch?v=9nivGrZb9Fs",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 18597,
@@ -175323,8 +174940,7 @@
           "publishedAt": "2010-05-08"
         }
       ],
-      "effectiveReleaseDate": "2010",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2010"
     },
     {
       "bandName": "Тони Зен",
@@ -179222,8 +178838,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6eBSucvYWxXNHDQ4eh8Dd9",
-      "effectiveReleaseDate": "2009-06-07",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2009-06-07"
     },
     {
       "bandName": "Јован Јованов",
@@ -179980,6 +179595,102 @@
           "verified": "verified",
           "views": 15990,
           "publishedAt": "2013-01-11"
+        },
+        {
+          "name": "Kolku e dobro da si raper",
+          "videoId": "qQhicbpGQuQ",
+          "url": "https://www.youtube.com/watch?v=qQhicbpGQuQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Sakas da si faca",
+          "videoId": "HsG1Cha_irg",
+          "url": "https://www.youtube.com/watch?v=HsG1Cha_irg",
+          "verified": "verified"
+        },
+        {
+          "name": "Top",
+          "videoId": "4aUiBVtvGLk",
+          "url": "https://www.youtube.com/watch?v=4aUiBVtvGLk",
+          "verified": "verified"
+        },
+        {
+          "name": "Shoping",
+          "videoId": "MfvsOU4-Yys",
+          "url": "https://www.youtube.com/watch?v=MfvsOU4-Yys",
+          "verified": "verified"
+        },
+        {
+          "name": "Igra",
+          "videoId": "kHdK-erPH1Y",
+          "url": "https://www.youtube.com/watch?v=kHdK-erPH1Y",
+          "verified": "verified"
+        },
+        {
+          "name": "Sekoj Den",
+          "videoId": "tPEsMewqINU",
+          "url": "https://www.youtube.com/watch?v=tPEsMewqINU",
+          "verified": "verified"
+        },
+        {
+          "name": "Da Poletam",
+          "videoId": "6yiYPoG3w8M",
+          "url": "https://www.youtube.com/watch?v=6yiYPoG3w8M",
+          "verified": "verified"
+        },
+        {
+          "name": "Sto kur baras ti so mene",
+          "videoId": "2JU--xEZ6Jw",
+          "url": "https://www.youtube.com/watch?v=2JU--xEZ6Jw",
+          "verified": "verified"
+        },
+        {
+          "name": "Idiot",
+          "videoId": "-Gjd9m7IYb0",
+          "url": "https://www.youtube.com/watch?v=-Gjd9m7IYb0",
+          "verified": "verified"
+        },
+        {
+          "name": "FM",
+          "videoId": "Lz_JYvDmbDc",
+          "url": "https://www.youtube.com/watch?v=Lz_JYvDmbDc",
+          "verified": "verified"
+        },
+        {
+          "name": "Ostaj me da pisuvam",
+          "videoId": "Uid_iRm9XxE",
+          "url": "https://www.youtube.com/watch?v=Uid_iRm9XxE",
+          "verified": "verified"
+        },
+        {
+          "name": "Site momenti",
+          "videoId": "SY-hvX9cLnE",
+          "url": "https://www.youtube.com/watch?v=SY-hvX9cLnE",
+          "verified": "verified"
+        },
+        {
+          "name": "Zolta Štampa",
+          "videoId": "XioZa8NJgNs",
+          "url": "https://www.youtube.com/watch?v=XioZa8NJgNs",
+          "verified": "verified"
+        },
+        {
+          "name": "Mister Kompleks",
+          "videoId": "oNxr2uWnGS0",
+          "url": "https://www.youtube.com/watch?v=oNxr2uWnGS0",
+          "verified": "verified"
+        },
+        {
+          "name": "Chekeraukc",
+          "videoId": "dh6z4Vm6t6w",
+          "url": "https://www.youtube.com/watch?v=dh6z4Vm6t6w",
+          "verified": "verified"
+        },
+        {
+          "name": "Cubase",
+          "videoId": "pL3HAJEI6lM",
+          "url": "https://www.youtube.com/watch?v=pL3HAJEI6lM",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 23609029,
@@ -180611,6 +180322,24 @@
           "verified": "verified",
           "views": 1786,
           "publishedAt": "2009-05-17"
+        },
+        {
+          "name": "Prosecna noc",
+          "videoId": "Fnb8MPaSNF0",
+          "url": "https://www.youtube.com/watch?v=Fnb8MPaSNF0",
+          "verified": "verified"
+        },
+        {
+          "name": "Sovrsen svet",
+          "videoId": "Uv7BgCDAaSo",
+          "url": "https://www.youtube.com/watch?v=Uv7BgCDAaSo",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Tursija",
+          "videoId": "UpO9APpoGQc",
+          "url": "https://www.youtube.com/watch?v=UpO9APpoGQc",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 11647,
@@ -181369,8 +181098,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0uXVQjRbcAyafydEAsnVXa?si=1c6VY9GwRkWHt7tTvXhcgA",
-      "effectiveReleaseDate": "2009-01-31",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2009-01-31"
     },
     {
       "bandName": "Лозано",
@@ -187983,6 +187711,12 @@
           "verified": "verified",
           "views": 114,
           "publishedAt": "2023-08-31"
+        },
+        {
+          "name": "Za Zhal",
+          "videoId": "qRu5naT4wEc",
+          "url": "https://www.youtube.com/watch?v=qRu5naT4wEc",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 684480,
@@ -188802,6 +188536,12 @@
           "verified": "verified",
           "views": 7316,
           "publishedAt": "2010-01-08"
+        },
+        {
+          "name": "Sovrsen Svet",
+          "videoId": "Uv7BgCDAaSo",
+          "url": "https://www.youtube.com/watch?v=Uv7BgCDAaSo",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 36514,
@@ -189807,6 +189547,12 @@
           "verified": "verified",
           "views": 229,
           "publishedAt": "2024-06-24"
+        },
+        {
+          "name": "Kales Angja",
+          "videoId": "NJ820kaYuH4",
+          "url": "https://www.youtube.com/watch?v=NJ820kaYuH4",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 397232,
@@ -190616,6 +190362,12 @@
           "verified": "verified",
           "views": 983,
           "publishedAt": "2019-01-13"
+        },
+        {
+          "name": "Goceva 3",
+          "videoId": "xLWrF5_ODfk",
+          "url": "https://www.youtube.com/watch?v=xLWrF5_ODfk",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 234001,
@@ -191083,6 +190835,12 @@
           "verified": "verified",
           "views": 506,
           "publishedAt": "2019-01-13"
+        },
+        {
+          "name": "Goceva 3",
+          "videoId": "xLWrF5_ODfk",
+          "url": "https://www.youtube.com/watch?v=xLWrF5_ODfk",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 91188,
@@ -193365,8 +193123,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6b6B5gaszXchnqZVjPfzqa",
-      "effectiveReleaseDate": "2007-06-10",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2007-06-10"
     },
     {
       "bandName": "Да Џака Накот",
@@ -199203,6 +198960,12 @@
           "verified": "verified",
           "views": 265,
           "publishedAt": "2020-06-12"
+        },
+        {
+          "name": "Nem",
+          "videoId": "Wb3jF1oXf3A",
+          "url": "https://www.youtube.com/watch?v=Wb3jF1oXf3A",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 69207,
@@ -201234,6 +200997,36 @@
           "verified": "verified",
           "views": 35658,
           "publishedAt": "2016-02-19"
+        },
+        {
+          "name": "Navikni na promeni",
+          "videoId": "zasdmMp3IgY",
+          "url": "https://www.youtube.com/watch?v=zasdmMp3IgY",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Jas i Ti",
+          "videoId": "8teWGxjjBps",
+          "url": "https://www.youtube.com/watch?v=8teWGxjjBps",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Ej kaldrmo",
+          "videoId": "yXjhGSiggKY",
+          "url": "https://www.youtube.com/watch?v=yXjhGSiggKY",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Ne mi e denot",
+          "videoId": "mu8DKvod0ls",
+          "url": "https://www.youtube.com/watch?v=mu8DKvod0ls",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Pesna za Dule i Koki",
+          "videoId": "4TqBp40VJAA",
+          "url": "https://www.youtube.com/watch?v=4TqBp40VJAA",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 267366,
@@ -201718,8 +201511,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6b6B5gaszXchnqZVjPfzqa",
-      "effectiveReleaseDate": "2006-01-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2006-01-01"
     },
     {
       "bandName": "Тоше Проески",
@@ -204351,8 +204143,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/75xMRPhbmRInCeGJYIUZ5u?si=U0pWwEi_QLSAy-LTheqCRA",
-      "effectiveReleaseDate": "2005-01-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "2005-01-01"
     },
     {
       "bandName": "Синтезис",
@@ -204637,6 +204428,18 @@
           "verified": "verified",
           "views": 1277,
           "publishedAt": "2020-01-11"
+        },
+        {
+          "name": "Goceva 2",
+          "videoId": "xLWrF5_ODfk",
+          "url": "https://www.youtube.com/watch?v=xLWrF5_ODfk",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Vo nashe selo",
+          "videoId": "ltfsW7p4Qz8",
+          "url": "https://www.youtube.com/watch?v=ltfsW7p4Qz8",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 76519,
@@ -207248,6 +207051,12 @@
           "verified": "verified",
           "views": 259,
           "publishedAt": "2025-06-18"
+        },
+        {
+          "name": "Koliko Treba da Se Plati",
+          "videoId": "h9mYs4G5Z80",
+          "url": "https://www.youtube.com/watch?v=h9mYs4G5Z80",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 5297,
@@ -208172,6 +207981,12 @@
           "verified": "verified",
           "views": 8911,
           "publishedAt": "2010-11-19"
+        },
+        {
+          "name": "Goceva 2",
+          "videoId": "xLWrF5_ODfk",
+          "url": "https://www.youtube.com/watch?v=xLWrF5_ODfk",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 1101301,
@@ -210290,6 +210105,12 @@
           "verified": "verified",
           "views": 33,
           "publishedAt": "2023-08-30"
+        },
+        {
+          "name": "Ponekogash",
+          "videoId": "fZqnz82_XjA",
+          "url": "https://www.youtube.com/watch?v=fZqnz82_XjA",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 300570,
@@ -211410,6 +211231,30 @@
           "verified": "verified",
           "views": 1753,
           "publishedAt": "2025-06-18"
+        },
+        {
+          "name": "Marama",
+          "videoId": "5EuyJ65bmYk",
+          "url": "https://www.youtube.com/watch?v=5EuyJ65bmYk",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Zaludno E da Se Napijam",
+          "videoId": "0emji73GQE0",
+          "url": "https://www.youtube.com/watch?v=0emji73GQE0",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Mene Mesto Ne Me Faka",
+          "videoId": "UUdbD2l8xko",
+          "url": "https://www.youtube.com/watch?v=UUdbD2l8xko",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Kolku Treba da Se Plati",
+          "videoId": "g7VKiDF_YUw",
+          "url": "https://www.youtube.com/watch?v=g7VKiDF_YUw",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 2956363,
@@ -213070,6 +212915,12 @@
           "verified": "verified",
           "views": 567,
           "publishedAt": "2023-12-15"
+        },
+        {
+          "name": "Ako denot mi e noќ - Live",
+          "videoId": "Wx5tjxr3p4A",
+          "url": "https://www.youtube.com/watch?v=Wx5tjxr3p4A",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 219959,
@@ -224322,8 +224173,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "1999",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "1999"
     },
     {
       "bandName": "Коки Јанков",
@@ -224521,6 +224371,18 @@
           "verified": "verified",
           "views": 116,
           "publishedAt": "2025-06-18"
+        },
+        {
+          "name": "Nato mori dushmanke",
+          "videoId": "kqiyHAEVDto",
+          "url": "https://www.youtube.com/watch?v=kqiyHAEVDto",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Neka ti e prosteno",
+          "videoId": "9ZtZBuD5PwQ",
+          "url": "https://www.youtube.com/watch?v=9ZtZBuD5PwQ",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 3323,
@@ -225398,8 +225260,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/2u0bS1rh4gyvAWmjpU1UlE?si=AZepRLmLSA2eUPuKNX31Qg",
-      "effectiveReleaseDate": "1998-01-01",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "1998-01-01"
     },
     {
       "bandName": "Ристо Самарџиев",
@@ -227549,8 +227410,7 @@
           "verified": "will-not-verify"
         }
       ],
-      "effectiveReleaseDate": "1994",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "1994"
     },
     {
       "bandName": "Верица Пандиловска",
@@ -227572,8 +227432,7 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0XxLY5FEh2r4QodY5o3PjL?si=C_RmWefuSheDG4OEcjV2aw",
-      "effectiveReleaseDate": "1994",
-      "youtubeViews": 0
+      "effectiveReleaseDate": "1994"
     },
     {
       "bandName": "Меморија",
@@ -228793,6 +228652,18 @@
           "verified": "verified",
           "views": 5911,
           "publishedAt": "2010-01-07"
+        },
+        {
+          "name": "Vozovi",
+          "videoId": "2OVF1gFSuO0",
+          "url": "https://www.youtube.com/watch?v=2OVF1gFSuO0",
+          "verified": "verified"
+        },
+        {
+          "name": "Makedonija",
+          "videoId": "0Q9iDZtj-1U",
+          "url": "https://www.youtube.com/watch?v=0Q9iDZtj-1U",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 510325,
@@ -229645,6 +229516,18 @@
           "verified": "verified",
           "views": 516,
           "publishedAt": "2017-03-14"
+        },
+        {
+          "name": "Ogan pod zvezdite",
+          "videoId": "H7C54Mi-BFA",
+          "url": "https://www.youtube.com/watch?v=H7C54Mi-BFA",
+          "verified": "will-not-verify"
+        },
+        {
+          "name": "Grad",
+          "videoId": "xj9Zcij3TgI",
+          "url": "https://www.youtube.com/watch?v=xj9Zcij3TgI",
+          "verified": "will-not-verify"
         }
       ],
       "youtubeViews": 1632815,
