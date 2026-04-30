@@ -2,8 +2,8 @@ name: Finalize after verification update
 
 on:
   schedule:
-    # GitHub cron uses UTC; 18:00 UTC is 19:00 CET.
-    - cron: "0 18 * * *"
+    # GitHub cron uses UTC; 17:00 UTC is 19:00 in Central Europe during DST.
+    - cron: "0 17 * * *"
   workflow_dispatch:
 
 permissions:

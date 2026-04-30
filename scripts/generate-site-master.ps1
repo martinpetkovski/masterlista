@@ -100,6 +100,8 @@ $releases = @($releaseCatalog | ForEach-Object {
     $merged['youtubeViews'] = $cr.youtubeViews
     $merged['youtubeTrackCount'] = $cr.youtubeTrackCount
     $merged['spotifyPopularity'] = $cr.spotifyPopularity
+    $merged['viewsDelta'] = if ($null -ne $cr.viewsDelta) { $cr.viewsDelta } else { $null }
+    $merged['youtubeVideoIds'] = if ($cr.youtubeVideoIds) { @($cr.youtubeVideoIds) } else { @() }
     [PSCustomObject]$merged
 })
 
@@ -739,14 +741,34 @@ function Expand-ReleasesToSongs {
 
         $totalViews = [int]($r.youtubeViews -as [int])
         $releaseDelta = $r.viewsDelta
+        $deltaVideoIdSet = $null
+        if ($r._deltaVideoIds) {
+            $deltaVideoIdSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+            foreach ($videoId in @($r._deltaVideoIds)) {
+                if ($videoId) { [void]$deltaVideoIdSet.Add([string]$videoId) }
+            }
+        }
+        $deltaCountedVideoIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 
         $tracksByName = [ordered]@{}
         foreach ($track in $tracks) {
             $tName = $track.name
             if (-not $tracksByName.Contains($tName)) {
-                $tracksByName[$tName] = @{ views = 0; index = $tracksByName.Count }
+                $tracksByName[$tName] = @{ views = 0; deltaViews = 0; index = $tracksByName.Count }
             }
-            $tracksByName[$tName].views += [int]($track.views -as [int])
+            $trackViews = [int]($track.views -as [int])
+            $tracksByName[$tName].views += $trackViews
+            $videoId = [string]$track.videoId
+            if ($deltaVideoIdSet -and $videoId -and $deltaVideoIdSet.Contains($videoId) -and (-not $deltaCountedVideoIds.Contains($videoId)) -and (($track.verified) -eq 'verified')) {
+                $tracksByName[$tName].deltaViews += $trackViews
+                [void]$deltaCountedVideoIds.Add($videoId)
+            }
+        }
+
+        $deltaTotalViews = if ($deltaVideoIdSet) {
+            [int](($tracksByName.Values | ForEach-Object { [int]($_.deltaViews -as [int]) } | Measure-Object -Sum).Sum)
+        } else {
+            $totalViews
         }
 
         foreach ($tName in $tracksByName.Keys) {
@@ -755,8 +777,11 @@ function Expand-ReleasesToSongs {
             $ti = $tData.index
 
             $trackDelta = $null
-            if ($null -ne $releaseDelta -and $totalViews -gt 0) {
-                $trackDelta = [int]([math]::Round([double]$releaseDelta * $trackViews / $totalViews))
+            if ($null -ne $releaseDelta -and $deltaTotalViews -gt 0) {
+                $deltaTrackViews = if ($deltaVideoIdSet) { [int]($tData.deltaViews -as [int]) } else { $trackViews }
+                $trackDelta = if ($deltaTrackViews -gt 0) { [int]([math]::Round([double]$releaseDelta * $deltaTrackViews / $deltaTotalViews)) } else { 0 }
+            } elseif ($null -ne $releaseDelta -and $deltaVideoIdSet) {
+                $trackDelta = 0
             }
 
             $songId = if ($tracksByName.Count -eq 1) { $r.releaseId } else { "$($r.releaseId):t$ti" }
@@ -912,6 +937,8 @@ foreach ($file in $historyFiles) {
         $merged['youtubeViews'] = if ($null -ne $compact.youtubeViews) { $compact.youtubeViews } else { 0 }
         $merged['youtubeTrackCount'] = if ($null -ne $compact.youtubeTrackCount) { $compact.youtubeTrackCount } else { 0 }
         $merged['spotifyPopularity'] = if ($null -ne $compact.spotifyPopularity) { $compact.spotifyPopularity } else { 0 }
+        $merged['viewsDelta'] = if ($null -ne $compact.viewsDelta) { $compact.viewsDelta } else { $null }
+        $merged['youtubeVideoIds'] = if ($compact.youtubeVideoIds) { @($compact.youtubeVideoIds) } else { @() }
         [PSCustomObject]$merged
     })
     # Count verified videos (releases with linked YouTube video IDs)
@@ -974,30 +1001,80 @@ $prevReleasesDeduped = @(Invoke-DeduplicateCollabs $previousWeekReleases | Where
 
 # Pre-compute viewsDelta (current - previous week youtubeViews) and attach to each release
 $prevViewsMap = @{}
-$prevTrackCountMap = @{}
+$prevVideoIdsMap = @{}
 foreach ($pr in $prevReleasesDeduped) {
     $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
-    if ($pr.youtubeTrackCount) { $prevTrackCountMap[$pr.releaseId] = [int]($pr.youtubeTrackCount -as [int]) }
+    if ($pr.youtubeVideoIds -and $pr.youtubeVideoIds.Count -gt 0) { $prevVideoIdsMap[$pr.releaseId] = @($pr.youtubeVideoIds) }
 }
 
-function Get-ViewsDelta($r, $prevViewsMap, $prevChartMonday) {
-    $curViews = [int]($r.youtubeViews -as [int])
+function Set-DeltaVideoIds {
+    param([object]$release, [array]$videoIds)
+    if (-not $release) { return }
+
+    $value = if ($videoIds -and $videoIds.Count -gt 0) { @($videoIds) } else { $null }
+    if ($release.PSObject.Properties['_deltaVideoIds']) {
+        $release._deltaVideoIds = $value
+    } else {
+        $release | Add-Member -NotePropertyName '_deltaVideoIds' -NotePropertyValue $value -Force
+    }
+}
+
+function Get-VerifiedViewsForVideoIds {
+    param([object]$release, [array]$videoIds)
+    if (-not $release -or -not $release.youtubeTracks -or -not $videoIds -or $videoIds.Count -le 0) { return 0 }
+
+    $videoIdSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($videoId in @($videoIds)) {
+        if ($videoId) { [void]$videoIdSet.Add([string]$videoId) }
+    }
+    if ($videoIdSet.Count -le 0) { return 0 }
+
+    $countedVideoIds = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    [long]$views = 0
+    foreach ($track in @($release.youtubeTracks)) {
+        $videoId = [string]$track.videoId
+        if (-not $videoId -or -not $videoIdSet.Contains($videoId) -or $countedVideoIds.Contains($videoId)) { continue }
+        if (($track.verified) -ne 'verified') { continue }
+        $views += [long]($track.views -as [long])
+        [void]$countedVideoIds.Add($videoId)
+    }
+    return $views
+}
+
+function Get-ViewsDelta {
+    param(
+        [object]$release,
+        [hashtable]$previousViewsMap,
+        [hashtable]$previousVideoIdsMap,
+        $previousChartMonday,
+        [switch]$UseCurrentTrackVideoFilter
+    )
+
+    Set-DeltaVideoIds $release $null
+
+    $curViews = [long]($release.youtubeViews -as [long])
     if ($curViews -le 0) { return $null }
 
     # Determine release date
     $relDate = $null
-    $effectiveDateStr = if ($r.effectiveReleaseDate) { $r.effectiveReleaseDate } else { $r.releaseDate }
+    $effectiveDateStr = if ($release.effectiveReleaseDate) { $release.effectiveReleaseDate } else { $release.releaseDate }
     if ($effectiveDateStr) { try { $relDate = [datetime]::Parse($effectiveDateStr) } catch {} }
 
     # Released AFTER previous chart Monday → all current views are the delta
-    if ($relDate -and $prevChartMonday -and $relDate -ge $prevChartMonday) {
+    if ($relDate -and $previousChartMonday -and $relDate -ge $previousChartMonday) {
         return $curViews
     }
 
     # Released BEFORE previous chart Monday → delta = current - previous
-    if ($prevViewsMap.ContainsKey($r.releaseId)) {
-        $prevViews = $prevViewsMap[$r.releaseId]
-        if ($prevViews -le 0) { return $null }   # no baseline data → skip
+    if ($previousViewsMap.ContainsKey($release.releaseId)) {
+        $prevViews = [long]($previousViewsMap[$release.releaseId] -as [long])
+        $prevVideoIds = if ($previousVideoIdsMap -and $previousVideoIdsMap.ContainsKey($release.releaseId)) { @($previousVideoIdsMap[$release.releaseId]) } else { @() }
+        if ($UseCurrentTrackVideoFilter -and $prevVideoIds.Count -gt 0) {
+            Set-DeltaVideoIds $release $prevVideoIds
+            $comparableViews = Get-VerifiedViewsForVideoIds $release $prevVideoIds
+            return ($comparableViews - $prevViews)
+        }
+        if ($prevViews -le 0) { return 0 }
         return ($curViews - $prevViews)
     }
 
@@ -1028,6 +1105,17 @@ function Get-ViewsMapFromReleases {
     return $viewsMap
 }
 
+function Get-VideoIdsMapFromReleases {
+    param([array]$snapshotReleases)
+    $videoIdsMap = @{}
+    foreach ($release in @($snapshotReleases)) {
+        if ($release.youtubeVideoIds -and $release.youtubeVideoIds.Count -gt 0) {
+            $videoIdsMap[$release.releaseId] = @($release.youtubeVideoIds)
+        }
+    }
+    return $videoIdsMap
+}
+
 function Get-SnapshotViewsDeltaMap {
     param(
         [array]$snapshotReleases,
@@ -1038,9 +1126,10 @@ function Get-SnapshotViewsDeltaMap {
     if (-not $snapshotReleases) { return $snapshotDeltaMap }
 
     $baselineViewsMap = Get-ViewsMapFromReleases $baselineReleases
+    $baselineVideoIdsMap = Get-VideoIdsMapFromReleases $baselineReleases
     $baselineMonday = Get-ChartMondayFromWeekId $baselineWeekId
     foreach ($release in @($snapshotReleases)) {
-        $snapshotDeltaMap[$release.releaseId] = Get-ViewsDelta $release $baselineViewsMap $baselineMonday
+        $snapshotDeltaMap[$release.releaseId] = Get-ViewsDelta -release $release -previousViewsMap $baselineViewsMap -previousVideoIdsMap $baselineVideoIdsMap -previousChartMonday $baselineMonday
     }
     return $snapshotDeltaMap
 }
@@ -1087,12 +1176,12 @@ if ($deltaBaselineWeek) {
 }
 
 foreach ($r in $mainReleasesDeduped) {
-    $delta = Get-ViewsDelta $r $prevViewsMap $prevChartMonday
+    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 # Also attach viewsDelta to original $releases so it's included in chartData output
 foreach ($r in $releases) {
-    $delta = Get-ViewsDelta $r $prevViewsMap $prevChartMonday
+    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 
@@ -1398,10 +1487,12 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
 
     # Build previous-week views map for delta calculation
     $pvm = @{}
+    $pvidm = @{}
     $pcm = $null
     if ($prevDedWithDelta.Count -gt 0) {
         foreach ($r in $prevDedWithDelta) {
             $pvm[$r.releaseId] = [int]($r.youtubeViews -as [int])
+            if ($r.youtubeVideoIds -and $r.youtubeVideoIds.Count -gt 0) { $pvidm[$r.releaseId] = @($r.youtubeVideoIds) }
         }
         if ($prevWeek.weekId -match '^(\d{4})-W(\d{2})$') {
             $iy = [int]$Matches[1]; $iw = [int]$Matches[2]
@@ -1415,7 +1506,7 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
     # Deduplicate and attach viewsDelta for this week
     $thisDedup = @(Invoke-DeduplicateCollabs $thisWeek.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     foreach ($r in $thisDedup) {
-        $delta = Get-ViewsDelta $r $pvm $pcm
+        $delta = Get-ViewsDelta -release $r -previousViewsMap $pvm -previousVideoIdsMap $pvidm -previousChartMonday $pcm
         $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
     }
     $cachedWeekDedup[$wkId] = $thisDedup
@@ -2742,7 +2833,7 @@ $strippedReleases = @($chartDataOutputReleases | ForEach-Object {
     $props = [ordered]@{}
     foreach ($p in $_.PSObject.Properties) {
         # Skip unused fields
-        if ($p.Name -in @('topTrackName', 'topTrackId', 'topTrackUrl', 'spotifyPopularity')) { continue }
+        if ($p.Name.StartsWith('_') -or $p.Name -in @('topTrackName', 'topTrackId', 'topTrackUrl', 'spotifyPopularity', 'youtubeVideoIds')) { continue }
         if ($p.Name -eq 'youtubeTracks' -and $p.Value) {
             # Strip 'url' from each youtube track (derivable from videoId)
             $cleaned = @($p.Value | ForEach-Object {

@@ -29,8 +29,11 @@ for (const cr of cd.releases) {
     const rel = rMap.get(cr.releaseId);
     // Use releases.json's youtubeViews (computed by youtube script with global dedup)
     const correctViews = rel?.youtubeViews || 0;
-    if (correctViews !== (cr.youtubeViews || 0)) {
+    const correctTrackCount = rel?.youtubeTracks?.length || 0;
+    if (correctViews !== (cr.youtubeViews || 0) || correctTrackCount !== (cr.youtubeTrackCount || 0)) {
         cr.youtubeViews = correctViews;
+        cr.youtubeTrackCount = correctTrackCount;
+        delete cr.viewsDelta;
         updated++;
     }
 }

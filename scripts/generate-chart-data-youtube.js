@@ -1009,6 +1009,8 @@ async function main() {
 
         let newReleaseDeltaCount = 0;
         let videoFilteredCount = 0;
+        let newlyLinkedZeroDeltaCount = 0;
+        let missingBaselineCount = 0;
         let negativeDeltaCount = 0;
 
         // Determine the Monday of the previous chart-history week from weekId (e.g. "2026-W11")
@@ -1031,7 +1033,7 @@ async function main() {
                 newReleaseDeltaCount++;
             } else {
                 const prev = prevMap.get(cr.releaseId);
-                if (prev && prev.youtubeViews > 0) {
+                if (prev) {
                     if (prev.youtubeVideoIds && prev.youtubeVideoIds.length > 0) {
                         // Per-video comparison: only count views from videos that existed last week
                         const prevIdSet = new Set(prev.youtubeVideoIds);
@@ -1051,7 +1053,7 @@ async function main() {
                         }
                         cr._viewDelta = Math.max(0, rawDelta);
                         if (currVideoIds.length > prevIdSet.size) videoFilteredCount++;
-                    } else {
+                    } else if (prev.youtubeViews > 0) {
                         // No per-video data in prev week — fall back to total comparison
                         const currentViews = cr.youtubeViews || 0;
                         const rawDelta = currentViews - prev.youtubeViews;
@@ -1061,10 +1063,17 @@ async function main() {
                             negativeDeltaCount++;
                         }
                         cr._viewDelta = Math.max(0, rawDelta);
+                    } else {
+                        // Older release/link had no previous YouTube baseline. Its newly added
+                        // historical views should start contributing only after this snapshot.
+                        cr._viewDelta = 0;
+                        if ((cr.youtubeViews || 0) > 0) newlyLinkedZeroDeltaCount++;
                     }
                 } else {
-                    // Not in previous chart-history: all views are new this week
-                    cr._viewDelta = cr.youtubeViews || 0;
+                    // Older release was not present in previous chart-history, so there is no
+                    // reliable weekly baseline for its current YouTube views.
+                    cr._viewDelta = null;
+                    if ((cr.youtubeViews || 0) > 0) missingBaselineCount++;
                 }
             }
         }
@@ -1073,6 +1082,12 @@ async function main() {
         }
         if (videoFilteredCount > 0) {
             console.log(`  ${videoFilteredCount} release(s) had newly matched videos filtered out of delta calculation`);
+        }
+        if (newlyLinkedZeroDeltaCount > 0) {
+            console.log(`  ${newlyLinkedZeroDeltaCount} older release(s) had newly added YouTube links with no baseline — using 0 delta`);
+        }
+        if (missingBaselineCount > 0) {
+            console.log(`  ${missingBaselineCount} older release(s) had YouTube views but no archive baseline — skipping delta`);
         }
         if (negativeDeltaCount > 0) {
             console.log(`  ${negativeDeltaCount} release(s) had negative live view deltas and were flagged for chart exclusion`);

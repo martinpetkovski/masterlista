@@ -2,8 +2,8 @@ name: Publish verification update
 
 on:
   schedule:
-    # GitHub cron uses UTC; 17:00 UTC is 18:00 CET.
-    - cron: "0 17 * * *"
+    # GitHub cron uses UTC; 16:00 UTC is 18:00 in Central Europe during DST.
+    - cron: "0 16 * * *"
   workflow_dispatch:
 
 permissions:
