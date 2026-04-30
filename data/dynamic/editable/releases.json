@@ -23,7 +23,15 @@
           "Nickarth"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg"
+      "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
+      "youtubeTracks": [
+        {
+          "name": "I Run",
+          "videoId": "AbsUBNgUO0o",
+          "url": "https://www.youtube.com/watch?v=AbsUBNgUO0o",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Бојана Скендеровски",
@@ -44,7 +52,27 @@
           "Bojana Skenderovski"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/3CI4XImeGjBlbiIuq1V4kL?si=ND06L_vrQa201DzZ3tG1xw"
+      "spotifyUrl": "https://open.spotify.com/artist/3CI4XImeGjBlbiIuq1V4kL?si=ND06L_vrQa201DzZ3tG1xw",
+      "youtubeTracks": [
+        {
+          "name": "Nemam Odbrana (Remastered)",
+          "videoId": "cWsa-5CahY8",
+          "url": "https://www.youtube.com/watch?v=cWsa-5CahY8",
+          "verified": "verified"
+        },
+        {
+          "name": "Nemam Odbrana (Remastered)",
+          "videoId": "fEDw7qtyCcA",
+          "url": "https://www.youtube.com/watch?v=fEDw7qtyCcA",
+          "verified": "verified"
+        },
+        {
+          "name": "Nemam Odbrana (Remastered)",
+          "videoId": "aQl2dH4FdIk",
+          "url": "https://www.youtube.com/watch?v=aQl2dH4FdIk",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Лара Иванова",
@@ -71,7 +99,7 @@
           "name": "Vkus Na Nemoral",
           "videoId": "TXZmW_3PpBA",
           "url": "https://www.youtube.com/watch?v=TXZmW_3PpBA",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -195,7 +223,15 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4H0y0ojlQXvEnn82o18D5s?si=p2BabHDRRpudPLEKt6uTqQ",
-      "effectiveReleaseDate": "2026-04-26"
+      "effectiveReleaseDate": "2026-04-26",
+      "youtubeTracks": [
+        {
+          "name": "Topuria",
+          "videoId": "aPzTncJPRUU",
+          "url": "https://www.youtube.com/watch?v=aPzTncJPRUU",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Galoski",
@@ -216,7 +252,15 @@
         ]
       ],
       "spotifyUrl": "https://open.spotify.com/artist/19gU7Hvep0G37JeiLf3TNB?si=y-Fv2pDqTG6KeZpRO5zu9w",
-      "effectiveReleaseDate": "2026-04-24"
+      "effectiveReleaseDate": "2026-04-24",
+      "youtubeTracks": [
+        {
+          "name": "Just Like That",
+          "videoId": "34WxETaAxX4",
+          "url": "https://www.youtube.com/watch?v=34WxETaAxX4",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "IKO",
