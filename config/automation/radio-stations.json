@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "validForDays": 1,
+  "songPools": {
+    "current": {
+      "maxItems": 120,
+      "minViewsDelta": 1
+    },
+    "recent": {
+      "maxItems": 100,
+      "maxReleaseAgeDays": 120
+    },
+    "catalog": {
+      "maxItems": 180,
+      "minReleaseAgeDays": 180,
+      "minYoutubeViews": 1000
+    },
+    "discovery": {
+      "maxItems": 120,
+      "maxYoutubeViews": 20000,
+      "minYoutubeViews": 20
+    },
+    "all": {
+      "maxItems": 500
+    }
+  },
+  "interviews": {
+    "maxItems": 80,
+    "minDurationSeconds": 180,
+    "maxDurationSeconds": 3600,
+    "includeShortForm": false,
+    "excludedTitlePatterns": [
+      "вести",
+      "news",
+      "live stream",
+      "full live stream"
+    ]
+  },
+  "stations": [
+    {
+      "id": "toplista-radio",
+      "type": "programming",
+      "title": "ТопЛиста Радио",
+      "targetQueueItems": 72,
+      "maxRecentArtistWindow": 10,
+      "maxRecentGenreWindow": 3,
+      "pickWindow": 180,
+      "blockPatterns": [
+        {
+          "id": "chart-catalog-discovery",
+          "slots": ["current", "catalog", "current", "discovery"]
+        },
+        {
+          "id": "radio-interview-block",
+          "slots": ["current", "catalog", "interview", "current", "discovery"]
+        },
+        {
+          "id": "new-and-known",
+          "slots": ["recent", "current", "catalog", "current"]
+        }
+      ]
+    },
+    {
+      "id": "toplista-music",
+      "type": "music-only",
+      "title": "Само музика",
+      "targetQueueItems": 96,
+      "maxRecentArtistWindow": 10,
+      "maxRecentGenreWindow": 4,
+      "pickWindow": 220,
+      "blockPatterns": [
+        {
+          "id": "current-catalog-flow",
+          "slots": ["current", "catalog", "current", "discovery", "catalog"]
+        },
+        {
+          "id": "new-current-catalog",
+          "slots": ["recent", "current", "catalog", "current"]
+        },
+        {
+          "id": "deep-catalog-current",
+          "slots": ["discovery", "catalog", "current", "catalog"]
+        }
+      ]
+    },
+    {
+      "id": "toplista-alternative",
+      "type": "music-only",
+      "title": "Алтернативна",
+      "targetQueueItems": 96,
+      "maxRecentArtistWindow": 12,
+      "maxRecentGenreWindow": 3,
+      "pickWindow": 220,
+      "chartGenreFilter": "alt",
+      "blockPatterns": [
+        {
+          "id": "alt-current-catalog",
+          "slots": ["current", "catalog", "discovery", "catalog"]
+        },
+        {
+          "id": "alt-new-current",
+          "slots": ["recent", "current", "catalog", "discovery"]
+        },
+        {
+          "id": "alt-deep-flow",
+          "slots": ["catalog", "discovery", "catalog", "current"]
+        }
+      ]
+    }
+  ]
+}

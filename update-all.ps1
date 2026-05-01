@@ -26,6 +26,7 @@
 #   ./update-all.ps1 -AutomationPhase finalize-after-verification # Run post-verification tasks
 #   ./update-all.ps1 -SkipYouTubePopularity # Skip YouTube popularity calculation
 #   ./update-all.ps1 -SkipSiteMaster # Skip site-master.json generation
+#   ./update-all.ps1 -SkipRadio # Skip radio source generation
 #   ./update-all.ps1 -Only cleanup  # Run only release cleanup
 #   ./update-all.ps1 -Only chart   # Run only chart task
 #   ./update-all.ps1 -Only ytmatching  # Run only YouTube link matching
@@ -35,6 +36,7 @@
 #   ./update-all.ps1 -Only curators # Run only curator tracklists
 #   ./update-all.ps1 -Only playlists # Run only Spotify playlist update
 #   ./update-all.ps1 -Only sitemaster # Run only site-master generation
+#   ./update-all.ps1 -Only radio # Run only radio source generation
 
 param(
     [switch]$SkipChart,
@@ -49,8 +51,9 @@ param(
     [switch]$SkipCurators,
     [switch]$SkipPlaylists,
     [switch]$SkipSiteMaster,
+    [switch]$SkipRadio,
     [switch]$SkipCleanup,
-    [ValidateSet("cleanup", "chart", "ytmatching", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster")]
+    [ValidateSet("cleanup", "chart", "ytmatching", "ytpopularity", "scrape", "links", "curators", "playlists", "sitemaster", "radio")]
     [string]$Only
 )
 
@@ -1244,6 +1247,46 @@ function Update-SpotifyPlaylists {
     return $true
 }
 
+# ============================================================================
+#  TASK 6: RADIO SOURCE
+# ============================================================================
+
+function Update-RadioSource {
+    Write-Section "TASK 6: RADIO SOURCE"
+
+    $nodeScript = Join-Path $scriptRoot "scripts\generate-radio-source.js"
+    if (-not (Test-Path $nodeScript)) {
+        Write-Step "scripts/generate-radio-source.js not found" "Red"
+        return $false
+    }
+
+    Write-Step "Running radio source generation..."
+    $radioStart = Get-Date
+    try {
+        $output = & node $nodeScript 2>&1
+        foreach ($line in $output) {
+            if ($line -is [System.Management.Automation.ErrorRecord]) {
+                Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
+            } else {
+                Write-Host "    $line" -ForegroundColor Gray
+            }
+        }
+
+        if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+            Write-Step "Radio source script exited with code $LASTEXITCODE" "Red"
+            return $false
+        }
+    }
+    catch {
+        Write-Step "Radio source generation failed: $_" "Red"
+        return $false
+    }
+
+    Write-Step "Radio source generated" "Green"
+    Write-Elapsed $radioStart
+    return $true
+}
+
 function Invoke-UpdateTask {
     param(
         [string]$Name,
@@ -1287,6 +1330,7 @@ $runLinks     = -not $SkipLinks
 $runCurators  = -not $SkipCurators
 $runPlaylists = -not $SkipPlaylists
 $runSiteMaster = -not $SkipSiteMaster
+$runRadio = -not $SkipRadio
 
 if ($Only) {
     $runCleanup   = $Only -eq "cleanup"
@@ -1299,6 +1343,7 @@ if ($Only) {
     $runCurators  = $Only -eq "curators"
     $runPlaylists = $Only -eq "playlists"
     $runSiteMaster = $Only -eq "sitemaster"
+    $runRadio = $Only -eq "radio"
 }
 
 if ($AutomationPhase -eq "publish-verification") {
@@ -1312,6 +1357,7 @@ if ($AutomationPhase -eq "publish-verification") {
     $runCurators = $false
     $runPlaylists = $false
     $runSiteMaster = $false
+    $runRadio = $false
 }
 elseif ($AutomationPhase -eq "finalize-after-verification") {
     $runCleanup = $false
@@ -1324,18 +1370,19 @@ elseif ($AutomationPhase -eq "finalize-after-verification") {
     $runCurators = -not $SkipCurators
     $runPlaylists = -not $SkipPlaylists
     $runSiteMaster = -not $SkipSiteMaster
+    $runRadio = -not $SkipRadio
 }
 
 $results = @{}
 $taskTimings = @{}
 $criticalTaskNames = switch ($AutomationPhase) {
     "publish-verification" { @("Chart Data", "YouTube Matching", "YouTube Verification") }
-    "finalize-after-verification" { @("YouTube Popularity", "Site Master") }
-    default { @("Chart Data", "YouTube Matching", "YouTube Verification", "YouTube Popularity", "Site Master") }
+    "finalize-after-verification" { @("YouTube Popularity", "Site Master", "Radio Source") }
+    default { @("Chart Data", "YouTube Matching", "YouTube Verification", "YouTube Popularity", "Site Master", "Radio Source") }
 }
 
 # Count how many tasks will actually run for the overall progress bar
-$script:taskTotal = @($runCleanup, $runChart, $runYouTubeMatching, $runVerification, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
+$script:taskTotal = @($runCleanup, $runChart, $runYouTubeMatching, $runVerification, $runYouTubePopularity, $runScrape, $runLinks, $runCurators, $runPlaylists, $runSiteMaster, $runRadio) | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count
 $script:taskIndex = 0
 
 # --- Task 0: Cleanup Releases ---
@@ -1485,6 +1532,17 @@ if ($runSiteMaster) {
 }
 else {
     Write-Step "Skipping site-master generation" "DarkGray"
+}
+
+# --- Task 6: Radio Source ---
+if ($runRadio) {
+    Set-OverallProgress "Radio Source"
+    $t = Get-Date
+    $results["Radio Source"] = Invoke-UpdateTask "Radio Source" { Update-RadioSource }
+    $taskTimings["Radio Source"] = [math]::Round(((Get-Date) - $t).TotalSeconds, 1)
+}
+else {
+    Write-Step "Skipping radio source generation" "DarkGray"
 }
 
 Write-Progress -Id 0 -Activity "Master Lista Update" -Completed

@@ -41,6 +41,14 @@
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
     </url>
+
+    <!-- Radio Page -->
+    <url>
+        <loc>https://toplista.mk/radio</loc>
+        <lastmod>2026-05-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
     
     <!-- Events Page -->
     <url>

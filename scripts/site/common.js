@@ -30,6 +30,7 @@ var MASTERLISTA_DATA_PATH_ALIASES = {
     '/articles-filtered.json': '/data/dynamic/generated/articles-filtered.json',
     '/interviews.json': '/data/dynamic/generated/interviews.json',
     '/interviews-filtered.json': '/data/dynamic/generated/interviews-filtered.json',
+    '/radio-source.json': '/data/dynamic/generated/radio-source.json',
     '/chart-data.json': '/data/dynamic/generated/chart-data.json',
     '/chart-history-data.json': '/data/dynamic/generated/chart-history-data.json',
     '/site-master.json': '/data/dynamic/generated/site-master.json',

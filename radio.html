@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Радио | ТопЛиста.мк</title>
+
+    <meta name="title" content="Радио | ТопЛиста.мк">
+    <meta name="description" content="Персонализирана дневна радио програма од македонската музичка сцена.">
+    <meta name="author" content="ТопЛиста.мк">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Macedonian">
+    <link rel="canonical" href="https://toplista.mk/radio">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/radio.html">
+    <meta property="og:title" content="Радио | ТопЛиста.мк">
+    <meta property="og:description" content="Персонализирана дневна радио програма од македонската музичка сцена.">
+    <meta property="og:image" content="https://toplista.mk/images/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Радио | ТопЛиста.мк",
+        "description": "Персонализирана дневна радио програма од македонската музичка сцена",
+        "url": "https://toplista.mk/radio.html"
+    }
+    </script>
+
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
+    <script>if(location.hostname==='localhost'||location.hostname==='127.0.0.1')document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href');if(!h||!h.startsWith('/'))return;if(h==='/'){e.preventDefault();location.href='/index.html';return;}if(h.indexOf('.')===-1){e.preventDefault();var q=h.indexOf('?'),hash=h.indexOf('#'),cut=h.length;if(q>-1&&q<cut)cut=q;if(hash>-1&&hash<cut)cut=hash;location.href=h.substring(0,cut)+'.html'+h.substring(cut);}});</script>
+    <style>
+    body.radio-page {
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: var(--bg-body) url('/images/bg-light.png') center top repeat;
+        background-size: 50%;
+    }
+    body.dark-mode.radio-page,
+    html.dark-mode body.radio-page {
+        background: var(--bg-body) url('/images/bg-dark.png') center top repeat;
+        background-size: 50%;
+    }
+    body.radio-page main {
+        height: auto;
+        min-height: calc(100dvh - 60px);
+        overflow: visible;
+        padding: 0;
+        display: block;
+    }
+    .radio-app {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+        gap: 1rem;
+        padding: 1rem;
+        max-width: 1440px;
+        margin: 0 auto;
+    }
+    .radio-toolbar {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+    }
+    .radio-stations {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+    }
+    .radio-station-btn {
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border: 0;
+        border-right: 1px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        padding: 0 0.9rem;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .radio-station-btn:last-child { border-right: 0; }
+    .radio-station-btn.active {
+        background: var(--text-primary);
+        color: var(--bg-primary);
+    }
+    .radio-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+    }
+    .radio-player-panel,
+    .radio-queue-panel {
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        overflow: hidden;
+    }
+    .radio-player-shell {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        min-height: 270px;
+        background: #080b10;
+    }
+    .radio-player-layer iframe,
+    .radio-player-frame {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: 0;
+    }
+    .radio-player-layer {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.65s linear;
+        background: #080b10;
+    }
+    .radio-player-layer.active {
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 2;
+    }
+    .radio-player-layer.standby {
+        z-index: 1;
+    }
+    .radio-player-layer.mixing-in {
+        opacity: 1;
+        z-index: 3;
+    }
+    .radio-player-layer.mixing-out {
+        opacity: 0;
+        z-index: 2;
+    }
+    .radio-player-placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 2rem;
+        pointer-events: none;
+        opacity: 0.72;
+    }
+    .radio-player-shell.player-ready .radio-player-placeholder { display: none; }
+    .radio-control-strip {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1rem;
+        border-top: 1px solid var(--border-color);
+        padding: 0.75rem;
+        background: var(--bg-secondary);
+    }
+    .radio-play-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 116px;
+        min-height: 42px;
+        border: 1px solid var(--text-primary);
+        border-radius: 0;
+        background: var(--text-primary);
+        color: var(--bg-primary);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    .radio-status {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.55rem;
+        min-height: 32px;
+        padding: 0.32rem 0.75rem;
+        margin-left: auto;
+        flex: 0 0 auto;
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        color: var(--text-muted);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        line-height: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .radio-status::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        flex: 0 0 8px;
+        display: block;
+        background: currentColor;
+        border-radius: 50%;
+        opacity: 0.52;
+        transform-origin: center;
+    }
+    .radio-status[data-radio-status="on-air"] {
+        color: #05a56a;
+        border-color: rgba(5,165,106,0.45);
+        background: rgba(5,165,106,0.08);
+    }
+    .radio-status[data-radio-status="on-air"]::before {
+        background: #ef2424;
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(239,36,36,0.34);
+        animation: radioLivePulse 1.15s linear infinite;
+    }
+    .radio-status[data-radio-status="loading"] {
+        color: #d18400;
+        border-color: rgba(209,132,0,0.42);
+    }
+    .radio-status[data-radio-status="paused"] {
+        color: var(--text-secondary);
+    }
+    .radio-status[data-radio-status="error"] {
+        color: #c92424;
+        border-color: rgba(201,36,36,0.42);
+    }
+    @keyframes radioLivePulse {
+        0% {
+            transform: scale(0.94);
+            box-shadow: 0 0 0 0 rgba(239,36,36,0.34);
+        }
+        65% {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 7px rgba(239,36,36,0);
+        }
+        100% {
+            transform: scale(0.94);
+            box-shadow: 0 0 0 0 rgba(239,36,36,0);
+        }
+    }
+    .radio-now {
+        display: grid;
+        grid-template-columns: 118px minmax(0, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        align-items: center;
+        border-top: 1px solid var(--border-color);
+    }
+    .radio-now-thumb {
+        width: 118px;
+        aspect-ratio: 1 / 1;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    .radio-now-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .radio-thumb-fallback {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: var(--text-muted);
+        font-size: 1.5rem;
+    }
+    .radio-kicker {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 0.2rem 0.45rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+        color: var(--text-muted);
+        font-size: 0.62rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.5rem;
+    }
+    .radio-now-copy {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .radio-now h2 {
+        margin: 0;
+        color: var(--text-primary);
+        font-family: 'Montserrat', sans-serif;
+        font-size: clamp(1.3rem, 2vw, 2.1rem);
+        line-height: 1.05;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+    }
+    .radio-now-artist {
+        margin-top: 0.55rem;
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        max-width: 100%;
+        padding: 0.32rem 0.72rem;
+        border-left: 3px solid var(--text-primary);
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.01em;
+        overflow-wrap: anywhere;
+    }
+    .radio-now-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 0.65rem;
+    }
+    .radio-meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 30px;
+        max-width: 100%;
+        padding: 0.28rem 0.62rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        line-height: 1;
+    }
+    .radio-meta-chip i {
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        flex: 0 0 auto;
+    }
+    .radio-meta-chip span,
+    .radio-meta-chip .compact-count {
+        min-width: 0;
+        white-space: nowrap;
+    }
+    .radio-meta-chip-source span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .radio-queue-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+    }
+    .radio-queue-head h2 {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+    .radio-queue-head i { color: var(--text-muted); }
+    .radio-next-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .radio-next-list li {
+        display: grid;
+        grid-template-columns: 2rem 42px minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .radio-next-list li:last-child { border-bottom: 0; }
+    .radio-queue-num {
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
+        font-size: 0.72rem;
+    }
+    .radio-queue-thumb {
+        width: 42px;
+        aspect-ratio: 1 / 1;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-muted);
+        overflow: hidden;
+        font-size: 0.88rem;
+    }
+    .radio-queue-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .radio-queue-main {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+    .radio-queue-main strong,
+    .radio-queue-main em {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-style: normal;
+    }
+    .radio-queue-main strong {
+        color: var(--text-primary);
+        font-size: 0.86rem;
+        font-weight: 650;
+    }
+    .radio-queue-main em {
+        color: var(--text-muted);
+        font-size: 0.74rem;
+    }
+    .radio-queue-kind {
+        border: 1px solid var(--border-color);
+        padding: 0.18rem 0.38rem;
+        color: var(--text-muted);
+        font-size: 0.58rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .radio-queue-duration {
+        color: var(--text-secondary);
+        font-size: 0.68rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+    .radio-empty {
+        padding: 1rem;
+        color: var(--text-muted);
+    }
+    body.dark-mode .radio-player-panel,
+    body.dark-mode .radio-queue-panel {
+        background: var(--bg-secondary);
+    }
+    @media (max-width: 900px) {
+        .radio-app { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+        .radio-app { padding: 0.75rem; gap: 0.75rem; }
+        .radio-toolbar { align-items: stretch; flex-direction: column; }
+        .radio-stations { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .radio-station-btn { justify-content: center; padding: 0 0.35rem; min-height: 48px; font-size: 0.62rem; white-space: normal; line-height: 1.05; }
+        .radio-player-shell { min-height: 210px; }
+        .radio-now { grid-template-columns: 82px minmax(0, 1fr); gap: 0.75rem; padding: 0.75rem; }
+        .radio-now-thumb { width: 82px; }
+        .radio-now h2 { font-size: 1.12rem; }
+        .radio-now-artist { margin-top: 0.45rem; padding: 0.28rem 0.58rem; font-size: 0.74rem; }
+        .radio-now-meta { gap: 0.35rem; margin-top: 0.5rem; }
+        .radio-meta-chip { min-height: 28px; padding: 0.24rem 0.48rem; font-size: 0.62rem; }
+        .radio-next-list li { grid-template-columns: 1.35rem 38px minmax(0, 1fr) auto; gap: 0.55rem; padding: 0.72rem; }
+        .radio-queue-thumb { width: 38px; }
+        .radio-queue-kind { display: none; }
+    }
+    </style>
+</head>
+<body class="radio-page">
+    <header id="site-header" data-active="/radio" data-title="Радио"></header>
+    <script src="/scripts/site/load-header.js"></script>
+
+    <main>
+        <section class="radio-app" aria-label="ТопЛиста радио">
+            <div class="radio-toolbar">
+                <div class="radio-stations" role="group" aria-label="Станица">
+                    <button type="button" class="radio-station-btn active" data-radio-station="toplista-radio" aria-pressed="true">
+                        <i class="fas fa-tower-broadcast"></i><span data-i18n="radio.stationRadio">Радио</span>
+                    </button>
+                    <button type="button" class="radio-station-btn" data-radio-station="toplista-music" aria-pressed="false">
+                        <i class="fas fa-music"></i><span data-i18n="radio.stationMusic">Само музика</span>
+                    </button>
+                    <button type="button" class="radio-station-btn" data-radio-station="toplista-alternative" aria-pressed="false">
+                        <i class="fas fa-guitar"></i><span data-i18n="charts.genreAlt">Алтернативна</span>
+                    </button>
+                </div>
+                <div class="radio-meta">
+                    <i class="fab fa-youtube"></i>
+                    <span data-i18n="radio.poweredBy">YouTube програма</span>
+                    <span id="radio-date"></span>
+                </div>
+            </div>
+
+            <section class="radio-player-panel" aria-label="Плеер">
+                <div class="radio-player-shell">
+                    <div class="radio-player-layer active" data-radio-player-layer="a"><div id="radio-youtube-player-a" class="radio-player-frame"></div></div>
+                    <div class="radio-player-layer standby" data-radio-player-layer="b"><div id="radio-youtube-player-b" class="radio-player-frame"></div></div>
+                    <div class="radio-player-placeholder" aria-hidden="true"><i class="fas fa-tower-broadcast"></i></div>
+                </div>
+                <div class="radio-control-strip">
+                    <button type="button" id="radio-play-toggle" class="radio-play-btn">
+                        <i class="fas fa-play"></i><span data-i18n="radio.play">Пушти</span>
+                    </button>
+                    <div id="radio-status" class="radio-status" data-radio-status="loading" data-i18n="radio.loading">Се вчитува...</div>
+                </div>
+                <div id="radio-now" class="radio-now" aria-live="polite">
+                    <div class="radio-empty" data-i18n="radio.loading">Се вчитува...</div>
+                </div>
+            </section>
+
+            <aside class="radio-queue-panel" aria-label="Следно">
+                <div class="radio-queue-head">
+                    <h2 data-i18n="radio.next">Следно</h2>
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <ol id="radio-next-list" class="radio-next-list"></ol>
+            </aside>
+        </section>
+    </main>
+
+    <script src="/scripts/site/radio.js?v=2"></script>
+</body>
+</html>
