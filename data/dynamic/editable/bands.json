@@ -7913,6 +7913,24 @@
       "imageSource": "spotify"
     },
     {
+      "name": "OBITEL",
+      "city": "Битола",
+      "genre": "Electronic, Dance, Electropop, House, Lo-Fi",
+      "soundsLike": "Obitel",
+      "label": "Издвојуваме",
+      "contact": "obitel@gmail.com",
+      "accentColors": [
+        "#696e3f",
+        "#0000ff"
+      ],
+      "confirmed": true,
+      "links": {
+        "spotify": "https://open.spotify.com/artist/5lzBaOHruzgHQSxDkrdKwi?si=9rzG1YmPSjS-bJSF0OeNDw",
+        "youtube": "https://youtube.com/@obitel-official?si=YssQEMgQ2ZofkgW8"
+      },
+      "_activityStatus": "unknown"
+    },
+    {
       "name": "Огнен Здравковски",
       "city": "Скопје",
       "genre": "Pop, Folk",
