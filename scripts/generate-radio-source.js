@@ -268,7 +268,6 @@ function makeInterviewPool(config, interviews, filteredInterviews) {
 function validateSource(source) {
   const errors = [];
   const songs = source.pools.songs;
-  if (!songs.current.length) errors.push('No current songs available');
   if (!songs.catalog.length) errors.push('No catalog songs available');
   if (!songs.all.length) errors.push('No playable songs available');
 

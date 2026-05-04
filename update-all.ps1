@@ -1377,7 +1377,7 @@ $results = @{}
 $taskTimings = @{}
 $criticalTaskNames = switch ($AutomationPhase) {
     "publish-verification" { @("Chart Data", "YouTube Matching", "YouTube Verification") }
-    "finalize-after-verification" { @("YouTube Popularity", "Site Master", "Radio Source") }
+    "finalize-after-verification" { @("YouTube Popularity", "Site Master") }
     default { @("Chart Data", "YouTube Matching", "YouTube Verification", "YouTube Popularity", "Site Master", "Radio Source") }
 }
 
