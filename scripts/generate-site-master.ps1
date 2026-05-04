@@ -961,11 +961,44 @@ foreach ($file in $historyFiles) {
 
 Write-Host "  > Loaded $($chartHistoryWeeks.Count) chart history weeks (hydrated from catalog)" -ForegroundColor DarkGray
 
-# Live charts compare against the newest archived snapshot. If that produces no
-# positive deltas yet, current display freezes on the prior archived week.
-$deltaBaselineWeek = if ($chartHistoryWeeks.Count -gt 0) { $chartHistoryWeeks[0] } else { $null }
-$displayFallbackWeek = if ($chartHistoryWeeks.Count -gt 1) { $chartHistoryWeeks[1] } else { $null }
-$displayFallbackReferenceWeek = if ($chartHistoryWeeks.Count -gt 2) { $chartHistoryWeeks[2] } else { $null }
+function Get-IsoWeekId {
+    param([datetime]$Date)
+    $d = $Date.Date
+    $day = [int]$d.DayOfWeek
+    if ($day -eq 0) { $day = 7 }
+    $thursday = $d.AddDays(4 - $day)
+    $yearStart = [datetime]::new($thursday.Year, 1, 1)
+    $week = [int][math]::Ceiling(((($thursday - $yearStart).TotalDays) + 1) / 7)
+    return ("{0}-W{1:D2}" -f $thursday.Year, $week)
+}
+
+# Live charts normally compare against the newest archived snapshot. On Monday,
+# the newest archive is today's just-created snapshot, so it must not become the
+# live baseline for the same run.
+$latestArchiveWeek = if ($chartHistoryWeeks.Count -gt 0) { $chartHistoryWeeks[0] } else { $null }
+$previousArchiveWeek = if ($chartHistoryWeeks.Count -gt 1) { $chartHistoryWeeks[1] } else { $null }
+$archiveBeforePreviousWeek = if ($chartHistoryWeeks.Count -gt 2) { $chartHistoryWeeks[2] } else { $null }
+$today = Get-Date
+$currentIsoWeekId = Get-IsoWeekId $today
+$usingPreviousWeekForMonday = $false
+
+if ([int]$today.DayOfWeek -eq 1 -and $latestArchiveWeek -and $previousArchiveWeek -and $latestArchiveWeek.weekId -eq $currentIsoWeekId) {
+    $usingPreviousWeekForMonday = $true
+    $deltaBaselineWeek = $previousArchiveWeek
+    $displayFallbackWeek = $previousArchiveWeek
+    $displayFallbackReferenceWeek = $archiveBeforePreviousWeek
+    Write-Host "  > Current Monday archive $($latestArchiveWeek.weekId) is today's snapshot; live baseline stays on $($deltaBaselineWeek.weekId)" -ForegroundColor Cyan
+} else {
+    $deltaBaselineWeek = $latestArchiveWeek
+    $displayFallbackWeek = $previousArchiveWeek
+    $displayFallbackReferenceWeek = $archiveBeforePreviousWeek
+}
+
+$displayChartHistoryWeeks = @($chartHistoryWeeks)
+if ($usingPreviousWeekForMonday -and $latestArchiveWeek) {
+    $displayChartHistoryWeeks = @($chartHistoryWeeks | Where-Object { $_.weekId -ne $latestArchiveWeek.weekId })
+    Write-Host "  > Display history uses $($displayChartHistoryWeeks.Count) archived week(s), latest usable: $($displayChartHistoryWeeks[0].weekId)" -ForegroundColor DarkGray
+}
 
 $previousWeekReleases = @()
 if ($deltaBaselineWeek) {
@@ -984,7 +1017,7 @@ $chevronPreviousReleases = @()
 $chevronCurrentWeekId = $null
 $chevronPreviousWeekId = $null
 $usingFrozenChartState = $false
-$currentDisplayWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
+$currentDisplayWeekId = if ($usingPreviousWeekForMonday -and $latestArchiveWeek) { $latestArchiveWeek.weekId } elseif ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
 
 # ============================================================================
 #  1. PRE-CALCULATE CHARTS
@@ -1215,10 +1248,11 @@ if ($livePositiveDeltaCount -le 0 -and $displayFallbackWeek) {
     $chevronPreviousWeekId = if ($displayFallbackReferenceWeek) { $displayFallbackReferenceWeek.weekId } else { $null }
     Write-Host "  > No positive live deltas yet — reusing $currentDisplayWeekId for current chart display" -ForegroundColor Cyan
 } else {
+    $chevronPreviousWeek = if ($usingPreviousWeekForMonday) { $displayFallbackReferenceWeek } else { $displayFallbackWeek }
     $chevronCurrentReleases = if ($deltaBaselineWeek) { $deltaBaselineWeek.releases } else { @() }
-    $chevronPreviousReleases = if ($displayFallbackWeek) { $displayFallbackWeek.releases } else { @() }
+    $chevronPreviousReleases = if ($chevronPreviousWeek) { $chevronPreviousWeek.releases } else { @() }
     $chevronCurrentWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
-    $chevronPreviousWeekId = if ($displayFallbackWeek) { $displayFallbackWeek.weekId } else { $null }
+    $chevronPreviousWeekId = if ($chevronPreviousWeek) { $chevronPreviousWeek.weekId } else { $null }
     if ($livePositiveDeltaCount -gt 0) {
         Write-Host "  > Positive live deltas detected: $livePositiveDeltaCount" -ForegroundColor DarkGray
     }
@@ -1471,7 +1505,7 @@ function Get-WeekDateRange {
     return ''
 }
 
-$weeksOldestFirst = @($chartHistoryWeeks | Sort-Object { $_.weekId })
+$weeksOldestFirst = @($displayChartHistoryWeeks | Sort-Object { $_.weekId })
 $weeklyChartsComputed = [ordered]@{}
 $allWeekIds = [System.Collections.ArrayList]::new()
 $cachedWeekDedup = @{}  # weekId -> deduped releases with viewsDelta
@@ -1612,20 +1646,20 @@ if ($allWeekIds.Count -gt 0) {
 Write-Host "  > Building chart history map..." -ForegroundColor Yellow
 
 # For tooltip display: last 10 weeks of ranked history per release, keyed by genre
-$tooltipWeekCount = [Math]::Min(10, $chartHistoryWeeks.Count)
+$tooltipWeekCount = [Math]::Min(10, $displayChartHistoryWeeks.Count)
 $releaseHistoryByGenre = @{}  # genre -> { releaseId -> array of { weekId, popularity, singlesPos, albumsPos } }
 
 # Pre-deduplicate each history week once (avoids re-deduplicating 5 genres × N weeks)
 $historyWeekDeduped = @{}
 for ($w = 0; $w -lt $tooltipWeekCount; $w++) {
-    $historyWeekDeduped[$w] = @(Invoke-DeduplicateCollabs $chartHistoryWeeks[$w].releases | Where-Object { Test-ReleaseChartEligibility $_ })
+    $historyWeekDeduped[$w] = @(Invoke-DeduplicateCollabs $displayChartHistoryWeeks[$w].releases | Where-Object { Test-ReleaseChartEligibility $_ })
 }
 
 foreach ($genre in $genreFilters) {
     $genreHistoryMap = @{}  # releaseId -> ArrayList of entries
     
     for ($w = 0; $w -lt $tooltipWeekCount; $w++) {
-        $weekData = $chartHistoryWeeks[$w]
+        $weekData = $displayChartHistoryWeeks[$w]
         $weekId = $weekData.weekId
         $weekDeduped = $historyWeekDeduped[$w]
         
@@ -1682,7 +1716,7 @@ Write-Host "  > Built history for $($releaseHistoryMap.Count) releases across $t
 
 Write-Host "  > Building artist popularity graphs..." -ForegroundColor Yellow
 
-$artistGraphWeekCount = [Math]::Min(20, $chartHistoryWeeks.Count)
+$artistGraphWeekCount = [Math]::Min(20, $displayChartHistoryWeeks.Count)
 $artistPopularityGraphs = @{}  # artistName(lower) -> array of { weekId, value, hasNewRelease }
 
 # Build first-seen baseline: for each release, record its youtubeViews in the earliest
@@ -1691,7 +1725,7 @@ $artistPopularityGraphs = @{}  # artistName(lower) -> array of { weekId, value, 
 # Subtracting the first non-zero snapshot ensures only genuine weekly growth is used.
 $firstSeenViews = @{}  # releaseId -> youtubeViews in first week with views > 0
 for ($w = $artistGraphWeekCount - 1; $w -ge 0; $w--) {
-    foreach ($r in $chartHistoryWeeks[$w].releases) {
+    foreach ($r in $displayChartHistoryWeeks[$w].releases) {
         $views = [int]($r.youtubeViews -as [int])
         if ($views -gt 0 -and -not $firstSeenViews.ContainsKey($r.releaseId)) {
             $firstSeenViews[$r.releaseId] = $views
@@ -1700,7 +1734,7 @@ for ($w = $artistGraphWeekCount - 1; $w -ge 0; $w--) {
 }
 
 for ($w = 0; $w -lt $artistGraphWeekCount; $w++) {
-    $weekData = $chartHistoryWeeks[$w]
+    $weekData = $displayChartHistoryWeeks[$w]
     $weekId = $weekData.weekId
     $weekReleases = @(Invoke-DeduplicateCollabs $weekData.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     
@@ -2695,10 +2729,10 @@ Write-Host "  > Building per-release sparklines..." -ForegroundColor Yellow
 
 # For each release, build weekly popularity values from chart history
 $releaseSparklines = @{}
-$sparkWeekCount = [Math]::Min(20, $chartHistoryWeeks.Count)
+$sparkWeekCount = [Math]::Min(20, $displayChartHistoryWeeks.Count)
 
 for ($w = 0; $w -lt $sparkWeekCount; $w++) {
-    $weekData = $chartHistoryWeeks[$w]
+    $weekData = $displayChartHistoryWeeks[$w]
     $weekId = $weekData.weekId
     $weekReleases = @(Invoke-DeduplicateCollabs $weekData.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     foreach ($r in $weekReleases) {

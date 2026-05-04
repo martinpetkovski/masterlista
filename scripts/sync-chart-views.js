@@ -33,7 +33,6 @@ for (const cr of cd.releases) {
     if (correctViews !== (cr.youtubeViews || 0) || correctTrackCount !== (cr.youtubeTrackCount || 0)) {
         cr.youtubeViews = correctViews;
         cr.youtubeTrackCount = correctTrackCount;
-        delete cr.viewsDelta;
         updated++;
     }
 }

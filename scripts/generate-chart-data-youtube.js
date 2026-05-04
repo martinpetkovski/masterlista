@@ -406,13 +406,13 @@ async function getVideoStatsBatch(videoIds, apiKey) {
 // ── Load archive week data ──────────────────────────────────────────────────
 
 function loadRecentArchiveWeeks() {
-    if (!fs.existsSync(HISTORY_DIR)) return { latest: null, previous: null };
+    if (!fs.existsSync(HISTORY_DIR)) return { latest: null, previous: null, beforePrevious: null, all: [] };
 
     const files = fs.readdirSync(HISTORY_DIR)
         .filter(f => f.match(/^chart-\d{4}-W\d{2}\.json$/))
         .sort();
 
-    if (files.length === 0) return { latest: null, previous: null };
+    if (files.length === 0) return { latest: null, previous: null, beforePrevious: null, all: [] };
 
     const loaded = [];
     for (const file of files) {
@@ -429,19 +429,20 @@ function loadRecentArchiveWeeks() {
         }
     }
 
-    if (loaded.length === 0) return { latest: null, previous: null };
+    if (loaded.length === 0) return { latest: null, previous: null, beforePrevious: null, all: [] };
 
     const latest = loaded[loaded.length - 1] || null;
     const previous = loaded.length > 1 ? loaded[loaded.length - 2] : null;
+    const beforePrevious = loaded.length > 2 ? loaded[loaded.length - 3] : null;
 
     if (latest) {
-        console.log(`  Loaded archive baseline: ${latest.fileName} (${latest.releases.length} releases)`);
+        console.log(`  Loaded latest archive: ${latest.fileName} (${latest.releases.length} releases)`);
     }
     if (previous) {
-        console.log(`  Loaded fallback display week: ${previous.fileName} (${previous.releases.length} releases)`);
+        console.log(`  Loaded previous archive: ${previous.fileName} (${previous.releases.length} releases)`);
     }
 
-    return { latest, previous };
+    return { latest, previous, beforePrevious, all: loaded };
 }
 
 function getChartMondayFromWeekId(weekId) {
@@ -461,20 +462,101 @@ function getChartMondayFromWeekId(weekId) {
     return chartMonday;
 }
 
-function applyFrozenPopularity(chartReleases, frozenWeek) {
+function getISOWeekId(date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    const week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+function selectLiveArchiveWeeks(archiveWeeks, now = new Date()) {
+    const latest = archiveWeeks.latest;
+    const previous = archiveWeeks.previous;
+    const beforePrevious = archiveWeeks.beforePrevious;
+    const currentWeekId = getISOWeekId(now);
+    const isCurrentMondayArchive = now.getDay() === 1 && latest?.weekId === currentWeekId && previous;
+
+    if (isCurrentMondayArchive) {
+        console.log(`  Current Monday archive ${latest.fileName} is today's snapshot — using ${previous.fileName} as live baseline`);
+        return {
+            deltaBaseline: previous,
+            frozenDisplay: previous,
+            frozenReference: beforePrevious,
+            ignoredCurrent: latest,
+            usingPreviousWeekForMonday: true
+        };
+    }
+
+    return {
+        deltaBaseline: latest,
+        frozenDisplay: previous,
+        frozenReference: beforePrevious,
+        ignoredCurrent: null,
+        usingPreviousWeekForMonday: false
+    };
+}
+
+function parseReleaseDate(release) {
+    const dateValue = release?.effectiveReleaseDate || release?.releaseDate;
+    if (!dateValue) return null;
+    const parsed = new Date(dateValue);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function buildArchiveReleaseMap(releases) {
+    const releaseMap = new Map();
+    for (const release of releases || []) {
+        releaseMap.set(release.releaseId, release);
+    }
+    return releaseMap;
+}
+
+function computeArchiveViewsDelta(snapshotRelease, baselineRelease, baselineMonday, releaseById) {
+    const snapshotViews = Number(snapshotRelease?.youtubeViews || 0);
+    if (snapshotViews <= 0) return null;
+
+    const releaseDate = parseReleaseDate(releaseById?.get(snapshotRelease.releaseId));
+    if (releaseDate && baselineMonday && releaseDate >= baselineMonday) {
+        return snapshotViews;
+    }
+
+    if (baselineRelease) {
+        const baselineViews = Number(baselineRelease.youtubeViews || 0);
+        if (baselineViews <= 0) return 0;
+        return snapshotViews - baselineViews;
+    }
+
+    return null;
+}
+
+function applyFrozenChartState(chartReleases, frozenWeek, frozenBaselineWeek, releaseById) {
     const frozenMap = new Map();
     for (const release of frozenWeek?.releases || []) {
         frozenMap.set(release.releaseId, release);
     }
+    const frozenBaselineMap = buildArchiveReleaseMap(frozenBaselineWeek?.releases || []);
+    const frozenBaselineMonday = getChartMondayFromWeekId(frozenBaselineWeek?.weekId);
 
     let reusedCount = 0;
     for (const chartRelease of chartReleases) {
         const frozenRelease = frozenMap.get(chartRelease.releaseId);
         if (frozenRelease) {
             chartRelease.popularity = frozenRelease.popularity || 0;
+            chartRelease.youtubeViews = frozenRelease.youtubeViews || 0;
+            chartRelease.youtubeTrackCount = frozenRelease.youtubeTrackCount || 0;
+            const storedDelta = Number(frozenRelease.viewsDelta);
+            const computedDelta = Number.isFinite(storedDelta)
+                ? storedDelta
+                : computeArchiveViewsDelta(frozenRelease, frozenBaselineMap.get(frozenRelease.releaseId), frozenBaselineMonday, releaseById);
+            chartRelease.viewsDelta = Number.isFinite(computedDelta) ? computedDelta : null;
             reusedCount++;
         } else {
             chartRelease.popularity = 0;
+            chartRelease.youtubeViews = 0;
+            chartRelease.youtubeTrackCount = 0;
+            chartRelease.viewsDelta = null;
         }
     }
 
@@ -578,8 +660,10 @@ async function main() {
     // 5. Load recent archive weeks
     console.log('\n── Loading archive week data ──');
     const archiveWeeks = loadRecentArchiveWeeks();
-    const deltaBaselineWeek = archiveWeeks.latest;
-    const frozenDisplayWeek = archiveWeeks.previous;
+    const selectedArchiveWeeks = selectLiveArchiveWeeks(archiveWeeks);
+    const deltaBaselineWeek = selectedArchiveWeeks.deltaBaseline;
+    const frozenDisplayWeek = selectedArchiveWeeks.frozenDisplay;
+    const frozenReferenceWeek = selectedArchiveWeeks.frozenReference;
     const prevMap = new Map(); // releaseId -> { popularity, youtubeViews }
     if (deltaBaselineWeek) {
         for (const r of deltaBaselineWeek.releases) {
@@ -1013,7 +1097,7 @@ async function main() {
         let missingBaselineCount = 0;
         let negativeDeltaCount = 0;
 
-        // Determine the Monday of the previous chart-history week from weekId (e.g. "2026-W11")
+        // Determine the Monday of the selected chart-history baseline week from weekId (e.g. "2026-W11")
         const prevChartMonday = getChartMondayFromWeekId(deltaBaselineWeek?.weekId);
         if (prevChartMonday) {
             console.log(`  Archive baseline Monday: ${prevChartMonday.toISOString().slice(0, 10)}`);
@@ -1099,8 +1183,8 @@ async function main() {
 
         const hasPositiveDelta = chartReleases.some(cr => (cr._viewDelta || 0) > 0);
         if (!hasPositiveDelta && frozenDisplayWeek?.releases?.length) {
-            const reusedCount = applyFrozenPopularity(chartReleases, frozenDisplayWeek);
-            console.log(`  No positive live deltas yet — reusing ${frozenDisplayWeek.weekId} popularity for ${reusedCount} release(s)`);
+            const reusedCount = applyFrozenChartState(chartReleases, frozenDisplayWeek, frozenReferenceWeek, releaseById);
+            console.log(`  No positive live deltas yet — reusing ${frozenDisplayWeek.weekId} chart state for ${reusedCount} release(s)`);
         }
 
         for (const cr of chartReleases) { delete cr._totalViews; delete cr._viewDelta; }
