@@ -1407,20 +1407,17 @@
     },
     {
       "id": "evt-20260522-superhiks-live-kantina-bistro-bar-jpvl",
-      "title": "Superhiks Live !!- Kantina Bistro Bar",
+      "title": "Superhiks Live !!",
       "date": "2026-05-22",
       "time": "20:30",
-      "place": "Kantina Urban Bistro Skopje",
-      "artists": [],
-      "tickets": [
-        {
-          "label": "..",
-          "price": "...."
-        }
+      "place": "Кантина Урбан Бистро, Скопје",
+      "artists": [
+        "Суперхикс"
       ],
+      "tickets": [],
       "links": [
         {
-          "label": "Rezervacii vo bistroto",
+          "label": "Резервации во бистрото",
           "url": "https://www.instagram.com/kantina.mk?igsh=MWVjN3llbGtqazc2aA=="
         }
       ]
