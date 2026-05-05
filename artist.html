@@ -5742,9 +5742,13 @@ a.chart-history-item {
                     'background:rgba(239,68,68,.16);border-color:rgba(248,113,113,.28);color:#fecaca;' +
                 '}' +
                 '.artist-editor-link:hover,.artist-editor-btn:hover{transform:translateY(-1px);}' +
-                '.artist-editor-status{padding:0 1rem .75rem;min-height:1.2rem;font-size:.74rem;line-height:1.45;color:var(--text-muted);}' +
-                '.artist-editor-status[data-tone="error"]{color:#b91c1c;}' +
-                '.artist-editor-status[data-tone="success"]{color:#15803d;}' +
+                '.artist-editor-status{display:none;margin:0 1rem .75rem;padding:.58rem .72rem;border-radius:6px;font-size:.75rem;line-height:1.35;font-weight:700;color:var(--text-color);background:rgba(15,23,42,.05);border:1px solid rgba(15,23,42,.08);}' +
+                '.artist-editor-status:not(:empty){display:flex;align-items:flex-start;}' +
+                'body.dark-mode .artist-editor-status{background:rgba(148,163,184,.10);border-color:rgba(148,163,184,.16);}' +
+                '.artist-editor-status[data-tone="error"]{color:#b91c1c;background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.22);}' +
+                '.artist-editor-status[data-tone="success"]{color:#166534;background:rgba(34,197,94,.11);border-color:rgba(34,197,94,.24);}' +
+                'body.dark-mode .artist-editor-status[data-tone="error"]{color:#fecaca;background:rgba(239,68,68,.16);border-color:rgba(248,113,113,.26);}' +
+                'body.dark-mode .artist-editor-status[data-tone="success"]{color:#bbf7d0;background:rgba(34,197,94,.16);border-color:rgba(74,222,128,.26);}' +
                 '.artist-editor-scroll{padding:0 1rem 1rem;overflow:auto;display:flex;flex-direction:column;gap:1rem;}' +
                 '.artist-editor-section{' +
                     'display:flex;flex-direction:column;gap:.7rem;padding:.9rem;border-radius:0;background:rgba(15,23,42,.03);border:1px solid rgba(15,23,42,.05);' +
@@ -5787,13 +5791,17 @@ a.chart-history-item {
                 'body.dark-mode .artist-editor-switch-slider{background:rgba(71,85,105,.92);box-shadow:inset 0 0 0 1px rgba(148,163,184,.18);}' +
                 'body.dark-mode .artist-editor-switch input:checked + .artist-editor-switch-slider{background:#22c55e;}' +
                 '.artist-editor-color-input{padding:.18rem;height:2.7rem;cursor:pointer;}' +
+                '.artist-editor-bottom-actions{display:flex;flex-direction:column;gap:.85rem;padding-bottom:.2rem;}' +
+                '.artist-editor-bottom-save{width:100%;justify-content:center;padding:.82rem 1rem;font-size:.88rem;box-shadow:0 10px 24px rgba(37,99,235,.22);}' +
+                '.artist-editor-danger-zone{display:flex;justify-content:flex-end;margin-top:.1rem;padding-top:.85rem;border-top:1px solid rgba(239,68,68,.18);}' +
+                '.artist-editor-danger-zone .artist-editor-btn.danger{padding:.52rem .72rem;font-size:.72rem;opacity:.86;}' +
                 'body.artist-editor-mobile-layout.artist-editor-active .artist-container{transform:none;padding-bottom:calc(50vh + 1rem);}' +
                 'body.artist-editor-mobile-layout .artist-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;width:auto;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
                 'body.dark-mode.artist-editor-mobile-layout .artist-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
                 'body.artist-editor-mobile-layout .artist-editor-toolbar{position:sticky;top:0;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.45rem .55rem;padding:calc(.75rem + env(safe-area-inset-top,0px)) .8rem .7rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
                 'body.dark-mode.artist-editor-mobile-layout .artist-editor-toolbar{background:rgba(15,23,42,.98);}' +
                 'body.artist-editor-mobile-layout .artist-editor-title{display:flex;align-items:center;min-height:2.15rem;font-size:clamp(.76rem,3.8vw,.92rem);line-height:1;letter-spacing:.05em;min-width:0;}' +
-                'body.artist-editor-mobile-layout .artist-editor-status{padding:0 1rem .65rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-status{margin:0 .8rem .65rem;padding:.5rem .62rem;}' +
                 'body.artist-editor-mobile-layout .artist-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
                 'body.artist-editor-mobile-layout .artist-editor-toolbar-actions{flex-direction:row;align-items:center;justify-content:flex-end;gap:.35rem;flex-wrap:wrap;min-width:0;}' +
                 'body.artist-editor-mobile-layout .artist-editor-link,body.artist-editor-mobile-layout .artist-editor-btn{padding:.42rem .58rem;font-size:.68rem;gap:.3rem;white-space:nowrap;}' +
@@ -5808,12 +5816,15 @@ a.chart-history-item {
                 'body.artist-editor-mobile-layout #artist-editor-greeting-preview{flex-direction:column;align-items:stretch !important;}' +
                 'body.artist-editor-mobile-layout #artist-editor-greeting-preview .artist-editor-btn{width:100%;justify-content:center;}' +
                 'body.artist-editor-mobile-layout .artist-editor-grid{grid-template-columns:1fr;}' +
-                'body.artist-editor-mobile-layout .artist-editor-link-row{grid-template-columns:1fr;}' +
-                'body.artist-editor-mobile-layout .artist-editor-links-actions .artist-editor-btn{width:100%;justify-content:center;}' +
-                'body.artist-editor-mobile-layout .artist-editor-remove{width:100%;height:2.75rem;}' +
-                'body.artist-editor-mobile-layout .artist-editor-scroll > .artist-editor-toolbar-actions:last-child{position:static;margin-top:.2rem;padding:0;background:none;}' +
-                'body.dark-mode.artist-editor-mobile-layout .artist-editor-scroll > .artist-editor-toolbar-actions:last-child{background:none;}' +
-                'body.artist-editor-mobile-layout .artist-editor-scroll > .artist-editor-toolbar-actions:last-child .artist-editor-btn{width:100%;justify-content:center;}';
+                'body.artist-editor-mobile-layout .artist-editor-link-row{grid-template-columns:minmax(5.8rem,.85fr) minmax(0,1.15fr) 2.35rem;gap:.4rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-link-row .artist-editor-input,body.artist-editor-mobile-layout .artist-editor-link-row .artist-editor-select{padding:.6rem .62rem;font-size:.78rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-links-actions .artist-editor-btn{width:auto;justify-content:center;}' +
+                'body.artist-editor-mobile-layout .artist-editor-remove{width:2.35rem;height:2.35rem;padding:0;}' +
+                'body.artist-editor-mobile-layout .artist-editor-remove i{font-size:.78rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-bottom-actions{gap:.7rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-bottom-save{height:auto;min-height:2.65rem;font-size:.78rem;padding:.68rem .8rem;}' +
+                'body.artist-editor-mobile-layout .artist-editor-danger-zone{justify-content:flex-end;}' +
+                'body.artist-editor-mobile-layout .artist-editor-danger-zone .artist-editor-btn{width:auto;}';
             document.head.appendChild(style);
         }
 
@@ -5891,8 +5902,20 @@ a.chart-history-item {
 
         function setArtistEditorStatus(message, tone) {
             if (!artistEditorSession || !artistEditorSession.statusEl) return;
+            if (artistEditorSession.statusTimer) {
+                clearTimeout(artistEditorSession.statusTimer);
+                artistEditorSession.statusTimer = null;
+            }
             artistEditorSession.statusEl.textContent = message || '';
             artistEditorSession.statusEl.dataset.tone = tone || 'idle';
+            if (message && tone === 'success') {
+                artistEditorSession.statusTimer = setTimeout(function() {
+                    if (artistEditorSession && artistEditorSession.statusEl) {
+                        artistEditorSession.statusEl.textContent = '';
+                        artistEditorSession.statusEl.dataset.tone = 'idle';
+                    }
+                }, 2600);
+            }
         }
 
         function formatArtistEditorRecordingTime(totalSeconds) {
@@ -6469,8 +6492,11 @@ a.chart-history-item {
                             '<div class="artist-editor-links" id="artist-editor-links"></div>' +
                             '<div class="artist-editor-links-actions"><button type="button" class="artist-editor-btn secondary" id="artist-editor-add-link-btn"><i class="fas fa-plus"></i> ' + esc(t('lista.links')) + '</button></div>' +
                         '</div>' +
-                        '<div class="artist-editor-toolbar-actions" style="justify-content:flex-end;padding-bottom:.2rem">' +
-                            '<button type="button" class="artist-editor-btn danger" id="artist-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('lista.deleteArtist')) + '</button>' +
+                        '<div class="artist-editor-bottom-actions">' +
+                            '<button type="button" class="artist-editor-btn primary artist-editor-bottom-save" id="artist-editor-bottom-save-btn" title="' + escA(t('lista.save')) + '" aria-label="' + escA(t('lista.save')) + '"><i class="fas fa-floppy-disk"></i> ' + esc(t('lista.save')) + '</button>' +
+                            '<div class="artist-editor-danger-zone">' +
+                                '<button type="button" class="artist-editor-btn danger" id="artist-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('lista.deleteArtist')) + '</button>' +
+                            '</div>' +
                         '</div>' +
                     '</div>';
                 document.body.appendChild(panel);
@@ -6530,6 +6556,7 @@ a.chart-history-item {
                 greetingRecordingSeconds: 0,
                 linksEl: panel.querySelector('#artist-editor-links'),
                 cancelBtn: panel.querySelector('#artist-editor-cancel-btn'),
+                bottomSaveBtn: panel.querySelector('#artist-editor-bottom-save-btn'),
                 previewTimer: null
             };
 
@@ -6560,6 +6587,7 @@ a.chart-history-item {
                 artistEditorSession.linksEl.appendChild(createArtistEditorLinkRow('none', ''));
             };
             panel.querySelector('#artist-editor-save-btn').onclick = function() { saveArtistEditorChanges(); };
+            artistEditorSession.bottomSaveBtn.onclick = function() { saveArtistEditorChanges(); };
             artistEditorSession.cancelBtn.onclick = function() {
                 window.location.href = buildLocalArtistPageUrl(artistEditorSession.baseArtist && artistEditorSession.baseArtist.name);
             };

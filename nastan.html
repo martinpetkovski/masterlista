@@ -801,20 +801,19 @@
         }
 
         function buildLocalEventPageUrl(eventId, editorMode) {
-            var url = 'nastan.html';
-            if (eventId) {
-                url += '?id=' + encodeURIComponent(eventId);
-            } else {
-                url += '?new=1';
+            var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            if (!isLocal && eventId) {
+                return '/nastan/' + encodeURIComponent(eventId) + (editorMode ? '?editor=1' : '');
             }
-            if (editorMode) {
-                url += (url.indexOf('?') === -1 ? '?' : '&') + 'editor=1';
-            }
-            return url;
+            var params = new URLSearchParams();
+            if (eventId) params.set('id', eventId);
+            else params.set('new', '1');
+            if (editorMode) params.set('editor', '1');
+            return (isLocal ? 'nastan.html' : '/nastan.html') + '?' + params.toString();
         }
 
         function buildLocalEventsListUrl() {
-            return 'nastani.html';
+            return (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'nastani.html' : '/nastani';
         }
 
         function hasEventEditorMode() {
@@ -896,10 +895,14 @@
                 '}' +
                 '.event-editor-link:hover,.event-editor-btn:hover{transform:translateY(-1px);}' +
                 '.event-editor-status{' +
-                    'padding:0 1rem .75rem;font-size:.74rem;line-height:1.45;color:var(--text-muted);min-height:1.2rem;' +
+                    'display:none;margin:0 1rem .75rem;padding:.58rem .72rem;border-radius:6px;font-size:.75rem;line-height:1.35;font-weight:700;color:var(--text-color);background:rgba(15,23,42,.05);border:1px solid rgba(15,23,42,.08);' +
                 '}' +
-                '.event-editor-status[data-tone="error"]{color:#b91c1c;}' +
-                '.event-editor-status[data-tone="success"]{color:#15803d;}' +
+                '.event-editor-status:not(:empty){display:flex;align-items:flex-start;}' +
+                'body.dark-mode .event-editor-status{background:rgba(148,163,184,.10);border-color:rgba(148,163,184,.16);}' +
+                '.event-editor-status[data-tone="error"]{color:#b91c1c;background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.22);}' +
+                '.event-editor-status[data-tone="success"]{color:#166534;background:rgba(34,197,94,.11);border-color:rgba(34,197,94,.24);}' +
+                'body.dark-mode .event-editor-status[data-tone="error"]{color:#fecaca;background:rgba(239,68,68,.16);border-color:rgba(248,113,113,.26);}' +
+                'body.dark-mode .event-editor-status[data-tone="success"]{color:#bbf7d0;background:rgba(34,197,94,.16);border-color:rgba(74,222,128,.26);}' +
                 '.event-editor-scroll{' +
                     'padding:0 1rem 1rem;overflow:auto;display:flex;flex-direction:column;gap:1rem;' +
                 '}' +
@@ -979,13 +982,17 @@
                 '.event-editor-help{' +
                     'font-size:.71rem;line-height:1.4;color:var(--text-muted);margin:0;' +
                 '}' +
+                '.event-editor-bottom-actions{display:flex;flex-direction:column;gap:.85rem;padding-bottom:.2rem;}' +
+                '.event-editor-bottom-save{width:100%;justify-content:center;padding:.82rem 1rem;font-size:.88rem;box-shadow:0 10px 24px rgba(37,99,235,.22);}' +
+                '.event-editor-danger-zone{display:flex;justify-content:flex-end;margin-top:.1rem;padding-top:.85rem;border-top:1px solid rgba(239,68,68,.18);}' +
+                '.event-editor-danger-zone .event-editor-btn.danger{padding:.52rem .72rem;font-size:.72rem;opacity:.86;}' +
                 'body.event-editor-mobile-layout.wysiwyg-editor-active .event-container{transform:none;padding-bottom:calc(50vh + 1rem);}' +
                 'body.event-editor-mobile-layout .event-editor-panel{top:max(3.5rem,50vh);left:0;right:0;bottom:0;width:auto;z-index:150;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -18px 36px rgba(15,23,42,.18);}' +
                 'body.dark-mode.event-editor-mobile-layout .event-editor-panel{box-shadow:0 -18px 36px rgba(2,6,23,.42);}' +
                 'body.event-editor-mobile-layout .event-editor-toolbar{position:sticky;top:0;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.45rem .55rem;padding:calc(.75rem + env(safe-area-inset-top,0px)) .8rem .7rem;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}' +
                 'body.dark-mode.event-editor-mobile-layout .event-editor-toolbar{background:rgba(15,23,42,.98);}' +
                 'body.event-editor-mobile-layout .event-editor-title{display:flex;align-items:center;min-height:2.15rem;font-size:clamp(.76rem,3.8vw,.92rem);line-height:1;letter-spacing:.05em;min-width:0;}' +
-                'body.event-editor-mobile-layout .event-editor-status{padding:0 1rem .65rem;}' +
+                'body.event-editor-mobile-layout .event-editor-status{margin:0 .8rem .65rem;padding:.5rem .62rem;}' +
                 'body.event-editor-mobile-layout .event-editor-scroll{padding:0 1rem calc(1rem + env(safe-area-inset-bottom,0px));}' +
                 'body.event-editor-mobile-layout .event-editor-toolbar-actions{flex-direction:row;align-items:center;justify-content:flex-end;gap:.35rem;flex-wrap:wrap;min-width:0;}' +
                 'body.event-editor-mobile-layout .event-editor-link,body.event-editor-mobile-layout .event-editor-btn{padding:.42rem .58rem;font-size:.68rem;gap:.3rem;white-space:nowrap;}' +
@@ -997,12 +1004,16 @@
                 'body.event-editor-mobile-layout .event-editor-primary-actions{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;margin-left:0;justify-content:flex-end;width:auto;}' +
                 'body.event-editor-mobile-layout .event-editor-primary-actions .event-editor-btn{width:auto;justify-content:center;}' +
                 'body.event-editor-mobile-layout .event-editor-grid{grid-template-columns:1fr;}' +
-                'body.event-editor-mobile-layout .event-editor-row.columns-2{grid-template-columns:1fr;}' +
-                'body.event-editor-mobile-layout .event-editor-row.columns-artist{grid-template-columns:1fr;}' +
-                'body.event-editor-mobile-layout .event-editor-remove{width:100%;height:2.75rem;}' +
-                'body.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child{position:static;margin-top:.2rem;padding:0;background:none;}' +
-                'body.dark-mode.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child{background:none;}' +
-                'body.event-editor-mobile-layout .event-editor-scroll > .event-editor-toolbar-actions:last-child .event-editor-btn{width:100%;justify-content:center;}';
+                'body.event-editor-mobile-layout .event-editor-row{gap:.4rem;}' +
+                'body.event-editor-mobile-layout .event-editor-row.columns-2{grid-template-columns:minmax(5.6rem,.82fr) minmax(0,1.18fr) 2.35rem;}' +
+                'body.event-editor-mobile-layout .event-editor-row.columns-artist{grid-template-columns:minmax(0,1fr) 2.35rem;}' +
+                'body.event-editor-mobile-layout .event-editor-row .event-editor-input{padding:.6rem .62rem;font-size:.78rem;}' +
+                'body.event-editor-mobile-layout .event-editor-remove{width:2.35rem;height:2.35rem;padding:0;}' +
+                'body.event-editor-mobile-layout .event-editor-remove i{font-size:.78rem;}' +
+                'body.event-editor-mobile-layout .event-editor-bottom-actions{gap:.7rem;}' +
+                'body.event-editor-mobile-layout .event-editor-bottom-save{height:auto;min-height:2.65rem;font-size:.78rem;padding:.68rem .8rem;}' +
+                'body.event-editor-mobile-layout .event-editor-danger-zone{justify-content:flex-end;}' +
+                'body.event-editor-mobile-layout .event-editor-danger-zone .event-editor-btn{width:auto;}';
             document.head.appendChild(style);
         }
 
@@ -1038,8 +1049,20 @@
 
         function setEventEditorStatus(message, tone) {
             if (!eventEditorSession || !eventEditorSession.statusEl) return;
+            if (eventEditorSession.statusTimer) {
+                clearTimeout(eventEditorSession.statusTimer);
+                eventEditorSession.statusTimer = null;
+            }
             eventEditorSession.statusEl.textContent = message || '';
             eventEditorSession.statusEl.dataset.tone = tone || 'idle';
+            if (message && tone === 'success') {
+                eventEditorSession.statusTimer = setTimeout(function() {
+                    if (eventEditorSession && eventEditorSession.statusEl) {
+                        eventEditorSession.statusEl.textContent = '';
+                        eventEditorSession.statusEl.dataset.tone = 'idle';
+                    }
+                }, 2600);
+            }
         }
 
         function splitEventEditorTokenValues(value) {
@@ -1571,8 +1594,11 @@
                             '<p class="event-editor-help">' + esc(t('events.linksHelp')) + '</p>' +
                             '<div class="event-editor-rows" id="event-editor-links"></div>' +
                         '</div>' +
-                        '<div class="event-editor-toolbar-actions" style="justify-content:flex-end;padding-bottom:.2rem">' +
-                            '<button type="button" class="event-editor-btn danger" id="event-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('events.deleteEvent')) + '</button>' +
+                        '<div class="event-editor-bottom-actions">' +
+                            '<button type="button" class="event-editor-btn primary event-editor-bottom-save" id="event-editor-bottom-save-btn" title="' + escA(t('events.save')) + '" aria-label="' + escA(t('events.save')) + '"><i class="fas fa-floppy-disk"></i> ' + esc(t('events.save')) + '</button>' +
+                            '<div class="event-editor-danger-zone">' +
+                                '<button type="button" class="event-editor-btn danger" id="event-editor-delete-btn"><i class="fas fa-trash"></i> ' + esc(t('events.deleteEvent')) + '</button>' +
+                            '</div>' +
                         '</div>' +
                     '</div>';
                 document.body.appendChild(panel);
@@ -1598,6 +1624,7 @@
                 linksEl: panel.querySelector('#event-editor-links'),
                 statusEl: panel.querySelector('#event-editor-status'),
                 saveBtn: panel.querySelector('#event-editor-save-btn'),
+                bottomSaveBtn: panel.querySelector('#event-editor-bottom-save-btn'),
                 cancelBtn: panel.querySelector('#event-editor-cancel-btn'),
                 deleteBtn: panel.querySelector('#event-editor-delete-btn'),
                 titleLabelEl: panel.querySelector('#event-editor-title'),
@@ -1661,6 +1688,7 @@
                 window.location.href = buildLocalEventPageUrl(eventEditorSession.eventId, false);
             };
             eventEditorSession.saveBtn.onclick = saveEventEditorChanges;
+            eventEditorSession.bottomSaveBtn.onclick = saveEventEditorChanges;
             eventEditorSession.deleteBtn.onclick = deleteEventFromEditor;
         }
 

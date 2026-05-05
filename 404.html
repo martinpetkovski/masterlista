@@ -103,8 +103,9 @@
             if (path.startsWith('/nastan/')) {
                 const eventId = decodeURIComponent(path.substring('/nastan/'.length).replace(/\/$/, ''));
                 if (eventId) {
-                    sessionStorage.setItem('eventCleanPath', path);
-                    window.location.replace('/nastan.html?id=' + encodeURIComponent(eventId));
+                    const eventSearch = search ? '&' + search.slice(1) : '';
+                    sessionStorage.setItem('eventCleanPath', path + search);
+                    window.location.replace('/nastan.html?id=' + encodeURIComponent(eventId) + eventSearch);
                     return;
                 }
                 window.location.replace('/nastani.html');

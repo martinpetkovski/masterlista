@@ -280,15 +280,7 @@ window.MMMDrafts = (function () {
         modList.forEach(function (b) {
             if (!origMap[b.name]) { added.push(b.name); return; }
             var o = origMap[b.name];
-            var fields = [];
-            if (b.city !== o.city) fields.push(t('drafts.fieldCity'));
-            if (b.genre !== o.genre) fields.push(t('drafts.fieldGenre'));
-            if (b.soundsLike !== o.soundsLike) fields.push(t('drafts.fieldSoundsLike'));
-            if (b.contact !== o.contact) fields.push(t('drafts.fieldContact'));
-            if (b.label !== o.label) fields.push(t('drafts.fieldLabel'));
-            if (b.confirmed !== o.confirmed) fields.push(t('drafts.fieldConfirmed'));
-            if (JSON.stringify(b.links) !== JSON.stringify(o.links)) fields.push(t('drafts.fieldLinks'));
-            if (JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) fields.push(t('drafts.fieldColors'));
+            var fields = _getBandChangedFields(b, o);
             if (fields.length) changed.push(b.name + ' [' + fields.join(', ') + ']');
         });
         origList.forEach(function (b) { if (!modMap[b.name]) removed.push(b.name); });
@@ -306,6 +298,110 @@ window.MMMDrafts = (function () {
         return [];
     }
 
+    var MISSING_TEXT_VALUE = 'недостигаат податоци';
+    var CONTROLLED_ARTIST_LABELS = ['Ново Издание', '★', 'Ново'];
+
+    function _stableSortValue(value) {
+        if (Array.isArray(value)) return value.map(_stableSortValue);
+        if (value && typeof value === 'object') {
+            var sorted = {};
+            Object.keys(value).sort().forEach(function(key) {
+                sorted[key] = _stableSortValue(value[key]);
+            });
+            return sorted;
+        }
+        return value === undefined ? null : value;
+    }
+
+    function _stableStringify(value) {
+        return JSON.stringify(_stableSortValue(value));
+    }
+
+    function _normalizeMissingText(value) {
+        var text = String(value || '').trim();
+        return text || MISSING_TEXT_VALUE;
+    }
+
+    function _normalizeOptionalText(value) {
+        var text = String(value || '').trim();
+        return (!text || text === MISSING_TEXT_VALUE) ? null : text;
+    }
+
+    function _normalizeArtistLabel(value) {
+        var text = _normalizeOptionalText(value);
+        if (!text) return null;
+        var labels = text.split(',').map(function(label) { return label.trim(); }).filter(Boolean).filter(function(label) {
+            return CONTROLLED_ARTIST_LABELS.indexOf(label) === -1;
+        });
+        return labels.length ? labels.join(', ') : null;
+    }
+
+    function _normalizeArtistLinks(links) {
+        if (!links || typeof links !== 'object' || links.none === MISSING_TEXT_VALUE || !Object.keys(links).length) {
+            return { none: MISSING_TEXT_VALUE };
+        }
+        var normalized = {};
+        Object.keys(links).sort().forEach(function(platform) {
+            var value = links[platform];
+            if (Array.isArray(value)) {
+                var urls = value.map(function(url) { return String(url || '').trim(); }).filter(function(url) { return url && url !== MISSING_TEXT_VALUE; });
+                if (urls.length) normalized[platform] = urls;
+            } else {
+                var url = String(value || '').trim();
+                if (url && url !== MISSING_TEXT_VALUE) normalized[platform] = url;
+            }
+        });
+        return Object.keys(normalized).length ? normalized : { none: MISSING_TEXT_VALUE };
+    }
+
+    function _normalizeAccentColors(value) {
+        if (!Array.isArray(value)) return null;
+        var first = value[0] || null;
+        var second = value[1] || null;
+        return (first || second) ? [first, second] : null;
+    }
+
+    function _getBandChangedFields(b, o) {
+        var fields = [];
+        if (_normalizeMissingText(b.city) !== _normalizeMissingText(o.city)) fields.push(t('drafts.fieldCity'));
+        if (_normalizeMissingText(b.genre) !== _normalizeMissingText(o.genre)) fields.push(t('drafts.fieldGenre'));
+        if (_normalizeMissingText(b.soundsLike) !== _normalizeMissingText(o.soundsLike)) fields.push(t('drafts.fieldSoundsLike'));
+        if (_normalizeMissingText(b.contact) !== _normalizeMissingText(o.contact)) fields.push(t('drafts.fieldContact'));
+        if (_normalizeArtistLabel(b.label) !== _normalizeArtistLabel(o.label)) fields.push(t('drafts.fieldLabel'));
+        if (!!b.confirmed !== !!o.confirmed) fields.push(t('drafts.fieldConfirmed'));
+        if (_stableStringify(_normalizeArtistLinks(b.links)) !== _stableStringify(_normalizeArtistLinks(o.links))) fields.push(t('drafts.fieldLinks'));
+        if (_stableStringify(_normalizeAccentColors(b.accentColors)) !== _stableStringify(_normalizeAccentColors(o.accentColors))) fields.push(t('drafts.fieldColors'));
+        return fields;
+    }
+
+    function _normalizeEventArtists(eventObj) {
+        return ((eventObj && (eventObj.artists || eventObj.bands)) || []).map(function(name) { return String(name || '').trim(); }).filter(Boolean);
+    }
+
+    function _normalizeEventTickets(eventObj) {
+        return ((eventObj && eventObj.tickets) || []).map(function(ticket) {
+            return { label: String((ticket && ticket.label) || '').trim(), price: String((ticket && ticket.price) || '').trim() };
+        }).filter(function(ticket) { return ticket.label || ticket.price; });
+    }
+
+    function _normalizeEventLinks(eventObj) {
+        return _getEventLinks(eventObj).map(function(link) {
+            return { label: String((link && link.label) || '').trim(), url: String((link && link.url) || '').trim() };
+        }).filter(function(link) { return link.url; });
+    }
+
+    function _getEventChangedFields(e, o) {
+        var fields = [];
+        if (String(e.title || '').trim() !== String(o.title || '').trim()) fields.push(t('drafts.fieldTitle'));
+        if (String(e.date || '').trim() !== String(o.date || '').trim()) fields.push(t('drafts.fieldDate'));
+        if (String(e.time || '').trim() !== String(o.time || '').trim()) fields.push(t('drafts.fieldTime'));
+        if (String(e.place || '').trim() !== String(o.place || '').trim()) fields.push(t('drafts.fieldPlace'));
+        if (_stableStringify(_normalizeEventLinks(e)) !== _stableStringify(_normalizeEventLinks(o))) fields.push(t('drafts.fieldLinks'));
+        if (_stableStringify(_normalizeEventArtists(e)) !== _stableStringify(_normalizeEventArtists(o))) fields.push(t('drafts.fieldArtists'));
+        if (_stableStringify(_normalizeEventTickets(e)) !== _stableStringify(_normalizeEventTickets(o))) fields.push(t('drafts.fieldTickets'));
+        return fields;
+    }
+
     function _diffEvents(original, modified) {
         var origList = (original && original.events) || [];
         var modList = (modified && modified.events) || [];
@@ -317,14 +413,7 @@ window.MMMDrafts = (function () {
         modList.forEach(function (e) {
             if (!origMap[e.id]) { added.push(e.title + ' (' + e.date + ')'); return; }
             var o = origMap[e.id];
-            var fields = [];
-            if (e.title !== o.title) fields.push(t('drafts.fieldTitle'));
-            if (e.date !== o.date) fields.push(t('drafts.fieldDate'));
-            if (e.time !== o.time) fields.push(t('drafts.fieldTime'));
-            if (e.place !== o.place) fields.push(t('drafts.fieldPlace'));
-            if (JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o))) fields.push(t('drafts.fieldLinks'));
-            if (JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands)) fields.push(t('drafts.fieldArtists'));
-            if (JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) fields.push(t('drafts.fieldTickets'));
+            var fields = _getEventChangedFields(e, o);
             if (fields.length) changed.push(e.title + ' [' + fields.join(', ') + ']');
         });
         origList.forEach(function (e) { if (!modMap[e.id]) removed.push(e.title); });
@@ -591,10 +680,7 @@ window.MMMDrafts = (function () {
                 modList.forEach(function (b) {
                     if (!origMap[b.name]) { total++; return; }
                     var o = origMap[b.name];
-                    if (b.city !== o.city || b.genre !== o.genre || b.soundsLike !== o.soundsLike ||
-                        b.contact !== o.contact || b.label !== o.label || b.confirmed !== o.confirmed ||
-                        JSON.stringify(b.links) !== JSON.stringify(o.links) ||
-                        JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) {
+                    if (_getBandChangedFields(b, o).length) {
                         total++;
                     }
                 });
@@ -608,10 +694,7 @@ window.MMMDrafts = (function () {
                 modEvts.forEach(function (e) {
                     if (!origEvtMap[e.id]) { total++; return; }
                     var o = origEvtMap[e.id];
-                    if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
-                        e.place !== o.place || JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o)) ||
-                        JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
-                        JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
+                    if (_getEventChangedFields(e, o).length) {
                         total++;
                     }
                 });
@@ -658,10 +741,7 @@ window.MMMDrafts = (function () {
                     items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(b.name) + '</a>');
                 } else {
                     var o = origMap[b.name];
-                    if (b.city !== o.city || b.genre !== o.genre || b.soundsLike !== o.soundsLike ||
-                        b.contact !== o.contact || b.label !== o.label || b.confirmed !== o.confirmed ||
-                        JSON.stringify(b.links) !== JSON.stringify(o.links) ||
-                        JSON.stringify(b.accentColors) !== JSON.stringify(o.accentColors)) {
+                    if (_getBandChangedFields(b, o).length) {
                         items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(b.name) + '</a>');
                     }
                 }
@@ -684,10 +764,7 @@ window.MMMDrafts = (function () {
                     items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">+ ' + _esc(e.title) + '</a>');
                 } else {
                     var o = origEvtMap[e.id];
-                    if (e.title !== o.title || e.date !== o.date || e.time !== o.time ||
-                        e.place !== o.place || JSON.stringify(_getEventLinks(e)) !== JSON.stringify(_getEventLinks(o)) ||
-                        JSON.stringify(e.artists || e.bands) !== JSON.stringify(o.artists || o.bands) ||
-                        JSON.stringify(e.tickets) !== JSON.stringify(o.tickets)) {
+                    if (_getEventChangedFields(e, o).length) {
                         items.push('<a href="' + link + '" style="color:inherit;text-decoration:underline">' + _esc(e.title) + '</a>');
                     }
                 }
