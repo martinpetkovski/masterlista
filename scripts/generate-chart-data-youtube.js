@@ -505,6 +505,156 @@ function parseReleaseDate(release) {
     return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function parseDateOnly(dateValue) {
+    if (!dateValue) return null;
+    const parsed = new Date(dateValue);
+    if (Number.isNaN(parsed.getTime())) return null;
+    parsed.setUTCHours(0, 0, 0, 0);
+    return parsed;
+}
+
+function getVideoPublishedDate(videoId, release, statsByVideoId) {
+    const statsDate = statsByVideoId?.get(videoId)?.publishedAt;
+    if (statsDate) return parseDateOnly(statsDate);
+
+    for (const track of release?.youtubeTracks || []) {
+        if (track?.videoId === videoId && track?.publishedAt) {
+            return parseDateOnly(track.publishedAt);
+        }
+    }
+    return null;
+}
+
+function isSameDate(dateA, dateB) {
+    return !!(dateA && dateB && dateA.getTime() === dateB.getTime());
+}
+
+function wasVideoPublishedOnOrAfter(videoId, release, baselineMonday, statsByVideoId) {
+    const publishedDate = getVideoPublishedDate(videoId, release, statsByVideoId);
+    return !!(publishedDate && baselineMonday && publishedDate >= baselineMonday);
+}
+
+function wasVideoPublishedOnReleaseDate(videoId, release, statsByVideoId) {
+    return isSameDate(getVideoPublishedDate(videoId, release, statsByVideoId), parseReleaseDate(release));
+}
+
+function isVideoEligibleForReleaseWeekDelta(videoId, release, baselineMonday, statsByVideoId) {
+    return wasVideoPublishedOnOrAfter(videoId, release, baselineMonday, statsByVideoId) &&
+        wasVideoPublishedOnReleaseDate(videoId, release, statsByVideoId);
+}
+
+function getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId) {
+    const snapshotViews = snapshotRelease?.youtubeVideoViews?.[videoId];
+    if (Number.isFinite(Number(snapshotViews))) return Number(snapshotViews);
+
+    const statsViews = statsByVideoId?.get(videoId)?.viewCount;
+    if (Number.isFinite(Number(statsViews))) return Number(statsViews);
+
+    return null;
+}
+
+function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineMonday, release, statsByVideoId) {
+    const snapshotVideoIds = Array.isArray(snapshotRelease?.youtubeVideoIds) ? snapshotRelease.youtubeVideoIds : [];
+    const baselineVideoIds = Array.isArray(baselineRelease?.youtubeVideoIds) ? baselineRelease.youtubeVideoIds : [];
+    if (snapshotVideoIds.length === 0 || baselineVideoIds.length === 0) {
+        return { canCompute: false, hasExcludedNewlyLinkedVideos: false, includedVideoIds: [] };
+    }
+
+    const baselineVideoIdSet = new Set(baselineVideoIds);
+    let comparableViews = 0;
+    let hasMissingVideoViews = false;
+    let newlyPublishedVideoCount = 0;
+    let newlyLinkedOldVideoCount = 0;
+    let deferredMismatchedVideoCount = 0;
+    const includedVideoIds = [];
+
+    for (const videoId of snapshotVideoIds) {
+        const existedInBaseline = baselineVideoIdSet.has(videoId);
+        const publishedDuringChartWeek = !existedInBaseline && wasVideoPublishedOnOrAfter(videoId, release, baselineMonday, statsByVideoId);
+        const eligibleReleaseWeekVideo = publishedDuringChartWeek && wasVideoPublishedOnReleaseDate(videoId, release, statsByVideoId);
+
+        if (existedInBaseline || eligibleReleaseWeekVideo) {
+            const videoViews = getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId);
+            if (videoViews === null) {
+                hasMissingVideoViews = true;
+            } else {
+                comparableViews += videoViews;
+            }
+            includedVideoIds.push(videoId);
+            if (eligibleReleaseWeekVideo) newlyPublishedVideoCount++;
+        } else if (publishedDuringChartWeek) {
+            deferredMismatchedVideoCount++;
+        } else {
+            newlyLinkedOldVideoCount++;
+        }
+    }
+
+    const baselineViews = Number(baselineRelease?.youtubeViews || 0);
+    return {
+        canCompute: !hasMissingVideoViews,
+        comparableViews,
+        rawDelta: comparableViews - baselineViews,
+        hasExcludedNewlyLinkedVideos: newlyLinkedOldVideoCount > 0 || deferredMismatchedVideoCount > 0,
+        newlyPublishedVideoCount,
+        newlyLinkedOldVideoCount,
+        deferredMismatchedVideoCount,
+        includedVideoIds
+    };
+}
+
+function computeNewlyPublishedVideoViews(snapshotRelease, baselineMonday, release, statsByVideoId, currentViews = null) {
+    const snapshotVideoIds = Array.isArray(snapshotRelease?.youtubeVideoIds) ? snapshotRelease.youtubeVideoIds : [];
+    if (snapshotVideoIds.length === 0) return { canCompute: false, views: 0, videoCount: 0, allVideosAreNew: false, includedVideoIds: [] };
+
+    let views = 0;
+    let videoCount = 0;
+    let oldOrUnknownVideoCount = 0;
+    let deferredMismatchedVideoCount = 0;
+    let hasMissingVideoViews = false;
+    const includedVideoIds = [];
+
+    for (const videoId of snapshotVideoIds) {
+        const publishedDuringChartWeek = wasVideoPublishedOnOrAfter(videoId, release, baselineMonday, statsByVideoId);
+        const eligibleReleaseWeekVideo = publishedDuringChartWeek && wasVideoPublishedOnReleaseDate(videoId, release, statsByVideoId);
+
+        if (eligibleReleaseWeekVideo) {
+            const videoViews = getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId);
+            if (videoViews === null) {
+                hasMissingVideoViews = true;
+            } else {
+                views += videoViews;
+            }
+            videoCount++;
+            includedVideoIds.push(videoId);
+        } else if (publishedDuringChartWeek) {
+            deferredMismatchedVideoCount++;
+        } else {
+            oldOrUnknownVideoCount++;
+        }
+    }
+
+    const allVideosAreNew = videoCount > 0 && oldOrUnknownVideoCount === 0 && deferredMismatchedVideoCount === 0;
+    if (hasMissingVideoViews && allVideosAreNew && Number.isFinite(Number(currentViews))) {
+        return {
+            canCompute: true,
+            views: Number(currentViews),
+            videoCount,
+            allVideosAreNew: true,
+            deferredMismatchedVideoCount,
+            includedVideoIds
+        };
+    }
+
+    return {
+        canCompute: !hasMissingVideoViews,
+        views,
+        videoCount,
+        allVideosAreNew,
+        deferredMismatchedVideoCount,
+        includedVideoIds
+    };
+}
+
 function buildArchiveReleaseMap(releases) {
     const releaseMap = new Map();
     for (const release of releases || []) {
@@ -517,15 +667,25 @@ function computeArchiveViewsDelta(snapshotRelease, baselineRelease, baselineMond
     const snapshotViews = Number(snapshotRelease?.youtubeViews || 0);
     if (snapshotViews <= 0) return null;
 
-    const releaseDate = parseReleaseDate(releaseById?.get(snapshotRelease.releaseId));
+    const release = releaseById?.get(snapshotRelease.releaseId);
+    const releaseDate = parseReleaseDate(release);
     if (releaseDate && baselineMonday && releaseDate >= baselineMonday) {
-        return snapshotViews;
+        const releaseWeekVideoViews = computeNewlyPublishedVideoViews(snapshotRelease, baselineMonday, release, null, snapshotViews);
+        return releaseWeekVideoViews.canCompute && releaseWeekVideoViews.views > 0 ? releaseWeekVideoViews.views : null;
     }
 
     if (baselineRelease) {
         const baselineViews = Number(baselineRelease.youtubeViews || 0);
+        const videoDelta = computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineMonday, release, null);
+        if (videoDelta.canCompute) return videoDelta.rawDelta;
+        if (videoDelta.hasExcludedNewlyLinkedVideos) return null;
         if (baselineViews <= 0) return 0;
         return snapshotViews - baselineViews;
+    }
+
+    const newlyPublishedVideoViews = computeNewlyPublishedVideoViews(snapshotRelease, baselineMonday, release, null);
+    if (newlyPublishedVideoViews.canCompute && newlyPublishedVideoViews.views > 0) {
+        return newlyPublishedVideoViews.views;
     }
 
     return null;
@@ -969,6 +1129,7 @@ async function main() {
         let totalViews = 0;
         const ytTracks = [];
         const contributingVideoIds = [];
+        const contributingVideoViews = {};
         const existingTracks = existingYtMap.get(r.releaseId) || new Map();
 
         for (const t of trackMatches) {
@@ -993,6 +1154,7 @@ async function main() {
                 if (isVerified && !alreadyCounted) {
                     totalViews += views;
                     contributingVideoIds.push(vid);
+                    contributingVideoViews[vid] = views;
                 }
                 existingTracks.delete(vid); // Mark as processed
             }
@@ -1010,6 +1172,7 @@ async function main() {
                 if (isVerified && !alreadyCounted) {
                     totalViews += views;
                     contributingVideoIds.push(vid);
+                    contributingVideoViews[vid] = views;
                 }
                 ytTracks.push({
                     name: info.name,
@@ -1074,6 +1237,7 @@ async function main() {
             chartEntry.youtubeViews = totalViews;
             chartEntry.youtubeTrackCount = ytTracks.length;
             chartEntry.youtubeVideoIds = contributingVideoIds.length > 0 ? contributingVideoIds : undefined;
+            chartEntry.youtubeVideoViews = Object.keys(contributingVideoViews).length > 0 ? contributingVideoViews : undefined;
             chartEntry.spotifyPopularity = chartEntry.popularity || 0;
             chartEntry._totalViews = totalViews;
         }
@@ -1092,7 +1256,9 @@ async function main() {
         console.log('\n── Step 5: Computing popularity from YouTube view deltas ──');
 
         let newReleaseDeltaCount = 0;
+        let newlyPublishedVideoDeltaCount = 0;
         let videoFilteredCount = 0;
+        let deferredVideoDeltaCount = 0;
         let newlyLinkedZeroDeltaCount = 0;
         let missingBaselineCount = 0;
         let negativeDeltaCount = 0;
@@ -1111,32 +1277,33 @@ async function main() {
             clearChartIssue(cr);
             clearChartIssue(rel);
 
-            // If the release came out after the previous chart Monday, all views are this week's
+            // If the release came out after the previous chart Monday, count only videos uploaded on the release date.
             if (releaseDate && prevChartMonday && releaseDate >= prevChartMonday) {
-                cr._viewDelta = cr.youtubeViews || 0;
-                newReleaseDeltaCount++;
+                const releaseWeekVideoViews = computeNewlyPublishedVideoViews(cr, prevChartMonday, rel, allStats, cr.youtubeViews || 0);
+                if (releaseWeekVideoViews.canCompute && releaseWeekVideoViews.views > 0) {
+                    cr._viewDelta = releaseWeekVideoViews.views;
+                    newReleaseDeltaCount++;
+                } else {
+                    cr._viewDelta = null;
+                    if (releaseWeekVideoViews.deferredMismatchedVideoCount > 0) deferredVideoDeltaCount++;
+                }
             } else {
                 const prev = prevMap.get(cr.releaseId);
                 if (prev) {
                     if (prev.youtubeVideoIds && prev.youtubeVideoIds.length > 0) {
-                        // Per-video comparison: only count views from videos that existed last week
-                        const prevIdSet = new Set(prev.youtubeVideoIds);
-                        const currVideoIds = cr.youtubeVideoIds || [];
-                        let comparableViews = 0;
-                        for (const vid of currVideoIds) {
-                            if (prevIdSet.has(vid)) {
-                                const stats = allStats.get(vid);
-                                comparableViews += stats?.viewCount || 0;
-                            }
-                        }
-                        const rawDelta = comparableViews - prev.youtubeViews;
+                        // Per-video comparison: count baseline videos plus videos published during this chart week.
+                        // Older videos first linked this week have no reliable baseline, so their historical views stay out.
+                        const videoDelta = computeComparableVideoDelta(cr, prev, prevChartMonday, rel, allStats);
+                        const rawDelta = videoDelta.canCompute ? videoDelta.rawDelta : null;
                         if (rawDelta < 0) {
-                            flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, comparableViews, prev.youtubeViews);
-                            flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, comparableViews, prev.youtubeViews);
+                            flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, videoDelta.comparableViews, prev.youtubeViews);
+                            flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, videoDelta.comparableViews, prev.youtubeViews);
                             negativeDeltaCount++;
                         }
-                        cr._viewDelta = Math.max(0, rawDelta);
-                        if (currVideoIds.length > prevIdSet.size) videoFilteredCount++;
+                        cr._viewDelta = Number.isFinite(rawDelta) ? Math.max(0, rawDelta) : null;
+                        if (videoDelta.newlyPublishedVideoCount > 0) newlyPublishedVideoDeltaCount++;
+                        if (videoDelta.newlyLinkedOldVideoCount > 0) videoFilteredCount++;
+                        if (videoDelta.deferredMismatchedVideoCount > 0) deferredVideoDeltaCount++;
                     } else if (prev.youtubeViews > 0) {
                         // No per-video data in prev week — fall back to total comparison
                         const currentViews = cr.youtubeViews || 0;
@@ -1150,22 +1317,42 @@ async function main() {
                     } else {
                         // Older release/link had no previous YouTube baseline. Its newly added
                         // historical views should start contributing only after this snapshot.
-                        cr._viewDelta = 0;
-                        if ((cr.youtubeViews || 0) > 0) newlyLinkedZeroDeltaCount++;
+                        const newlyPublishedVideoViews = computeNewlyPublishedVideoViews(cr, prevChartMonday, rel, allStats, cr.youtubeViews || 0);
+                        if (newlyPublishedVideoViews.canCompute && newlyPublishedVideoViews.views > 0) {
+                            cr._viewDelta = newlyPublishedVideoViews.views;
+                            newlyPublishedVideoDeltaCount++;
+                        } else {
+                            cr._viewDelta = 0;
+                            if (newlyPublishedVideoViews.deferredMismatchedVideoCount > 0) deferredVideoDeltaCount++;
+                            if ((cr.youtubeViews || 0) > 0) newlyLinkedZeroDeltaCount++;
+                        }
                     }
                 } else {
-                    // Older release was not present in previous chart-history, so there is no
-                    // reliable weekly baseline for its current YouTube views.
-                    cr._viewDelta = null;
-                    if ((cr.youtubeViews || 0) > 0) missingBaselineCount++;
+                    const newlyPublishedVideoViews = computeNewlyPublishedVideoViews(cr, prevChartMonday, rel, allStats, cr.youtubeViews || 0);
+                    if (newlyPublishedVideoViews.canCompute && newlyPublishedVideoViews.views > 0) {
+                        cr._viewDelta = newlyPublishedVideoViews.views;
+                        newlyPublishedVideoDeltaCount++;
+                    } else {
+                        // Older release was not present in previous chart-history, so there is no
+                        // reliable weekly baseline for its current YouTube views.
+                        cr._viewDelta = null;
+                        if (newlyPublishedVideoViews.deferredMismatchedVideoCount > 0) deferredVideoDeltaCount++;
+                        if ((cr.youtubeViews || 0) > 0) missingBaselineCount++;
+                    }
                 }
             }
         }
         if (newReleaseDeltaCount > 0) {
-            console.log(`  ${newReleaseDeltaCount} new release(s) released after previous chart Monday — using total views as delta`);
+            console.log(`  ${newReleaseDeltaCount} new release(s) used release-day video views as delta`);
+        }
+        if (newlyPublishedVideoDeltaCount > 0) {
+            console.log(`  ${newlyPublishedVideoDeltaCount} release(s) had videos published during the chart week counted as full delta`);
         }
         if (videoFilteredCount > 0) {
-            console.log(`  ${videoFilteredCount} release(s) had newly matched videos filtered out of delta calculation`);
+            console.log(`  ${videoFilteredCount} release(s) had older newly matched videos filtered out of delta calculation`);
+        }
+        if (deferredVideoDeltaCount > 0) {
+            console.log(`  ${deferredVideoDeltaCount} release(s) had videos deferred until next Monday because upload date differs from release date`);
         }
         if (newlyLinkedZeroDeltaCount > 0) {
             console.log(`  ${newlyLinkedZeroDeltaCount} older release(s) had newly added YouTube links with no baseline — using 0 delta`);
@@ -1226,8 +1413,11 @@ async function main() {
         console.log(`Skipping chart-history update (today is not Monday)`);
     }
 
-    // Strip youtubeVideoIds before saving chart-data.json (only needed in chart history for delta tracking)
-    for (const cr of chartReleases) { delete cr.youtubeVideoIds; }
+    // Strip video snapshot details before saving chart-data.json (only needed in chart history for delta tracking)
+    for (const cr of chartReleases) {
+        delete cr.youtubeVideoIds;
+        delete cr.youtubeVideoViews;
+    }
 
     // Save chart-data.json (with updated views and popularity, without video ID lists)
     fs.writeFileSync(CHART_DATA, JSON.stringify(chartData, null, 2), 'utf8');

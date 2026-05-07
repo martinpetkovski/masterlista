@@ -1383,27 +1383,81 @@ function getDeeperCut(forceId) {
 //  DATE HELPERS
 // ═══════════════════════════════════════════════════════════════════════
 
-function getWeekLabel(refDate) {
-  const n = refDate ? new Date(refDate) : new Date(); n.setDate(n.getDate() - 7);
-  const j4 = new Date(n.getFullYear(), 0, 4);
-  const doy = Math.ceil((n - new Date(n.getFullYear(), 0, 1)) / 86400000);
-  const wk = Math.ceil((doy + j4.getDay()) / 7);
-  return `W${String(wk).padStart(2, '0')} ${n.getFullYear()}`;
+const MK_MONTHS = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
+
+function parseDateOnlyValue(value) {
+  if (!value) return null;
+  const text = String(value);
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
+function getIsoWeekMonday(weekId) {
+  const match = String(weekId || '').match(/^(\d{4})-W(\d{2})$/);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+  const jan4 = new Date(year, 0, 4);
+  const jan4Dow = (jan4.getDay() + 6) % 7;
+  const weekOneMonday = new Date(jan4);
+  weekOneMonday.setDate(jan4.getDate() - jan4Dow);
+  const monday = new Date(weekOneMonday);
+  monday.setDate(weekOneMonday.getDate() + ((week - 1) * 7));
+  return monday;
+}
+
+function formatDateRangeBounds(start, end) {
+  if (!start || !end) return '';
+  const f = d => `${String(d.getDate()).padStart(2,'0')} ${MK_MONTHS[d.getMonth()]}`;
+  const startLabel = start.getFullYear() === end.getFullYear() ? f(start) : `${f(start)} ${start.getFullYear()}`;
+  return `${startLabel} – ${f(end)} ${end.getFullYear()}`;
+}
+
+function getReelChartDateBounds() {
+  const rc = DATA.siteMaster?.reelCharts;
+  if (!rc) return null;
+
+  const start = parseDateOnlyValue(rc.dateRangeStart);
+  const end = parseDateOnlyValue(rc.dateRangeEnd);
+  if (start && end) return { start, end };
+
+  const snapshotMonday = getIsoWeekMonday(rc.weekId);
+  if (snapshotMonday) {
+    const rangeStart = new Date(snapshotMonday);
+    rangeStart.setDate(snapshotMonday.getDate() - 7);
+    return { start: rangeStart, end: snapshotMonday };
+  }
+
+  const generatedAt = parseDateOnlyValue(rc.generatedAt);
+  if (generatedAt) {
+    const rangeStart = new Date(generatedAt);
+    rangeStart.setDate(generatedAt.getDate() - 7);
+    return { start: rangeStart, end: generatedAt };
+  }
+
+  return null;
+}
+
+function getReelChartDateRange() {
+  const bounds = getReelChartDateBounds();
+  if (bounds) return formatDateRangeBounds(bounds.start, bounds.end);
+  return DATA.siteMaster?.reelCharts?.dateRange || getDateRange();
 }
 
 function getDateRange(refDate) {
   const n = refDate ? new Date(refDate) : new Date(); n.setDate(n.getDate() - 7); const d = (n.getDay() + 6) % 7;
   const s = new Date(n); s.setDate(s.getDate() - d);
   const e = new Date(s); e.setDate(e.getDate() + 6);
-  const mo = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
-  const f = x => `${String(x.getDate()).padStart(2,'0')} ${mo[x.getMonth()]}`;
+  const f = x => `${String(x.getDate()).padStart(2,'0')} ${MK_MONTHS[x.getMonth()]}`;
   return `${f(s)} – ${f(e)} ${e.getFullYear()}`;
 }
 
 function formatDateMK(dateStr) {
   const d = new Date(dateStr);
-  const mo = ['Јануари','Февруари','Март','Април','Мај','Јуни','Јули','Август','Септември','Октомври','Ноември','Декември'];
-  return `${d.getDate()} ${mo[d.getMonth()]} ${d.getFullYear()}`;
+  return `${d.getDate()} ${MK_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function daysAgoMK(dateStr) {
@@ -1903,7 +1957,6 @@ function buildMondayScenes() {
   const chart = getChartForMode('standard');
   const thumbs = getChartThumbs(chart);
   const top3 = chart.slice(0, 3);
-  const chartDate = DATA.siteMaster?.reelCharts?.generatedAt;
 
   const scenes = [];
 
@@ -1911,7 +1964,7 @@ function buildMondayScenes() {
   scenes.push({
     type: 'intro',
     lines: ['Топ Листа'],
-    date: getDateRange(chartDate),
+    date: getReelChartDateRange(),
     covers: thumbs.slice(0, 3),
     bg: createCollageBG(thumbs),
     duration: 2.5
@@ -1957,14 +2010,13 @@ function buildTuesdayScenes() {
   const chart = getChartForMode('alt');
   const thumbs = getChartThumbs(chart);
   const top3 = chart.slice(0, 3);
-  const chartDate = DATA.siteMaster?.reelCharts?.generatedAt;
 
   const scenes = [];
 
   scenes.push({
     type: 'intro',
     lines: ['Алт', 'Топ', 'Листа'],
-    date: getDateRange(chartDate),
+    date: getReelChartDateRange(),
     covers: thumbs.slice(0, 3),
     bg: createCollageBG(thumbs),
     duration: 2.5
@@ -3198,13 +3250,13 @@ function switchDay(dayKey, opts) {
   totalDuration = currentScenes.reduce((sum, s) => sum + (s.duration || 4), 0);
 
   // Day info
-  const chartRef = (dayKey === 'mon' || dayKey === 'tue') ? DATA.siteMaster?.reelCharts?.generatedAt : undefined;
+  const periodLabel = (dayKey === 'mon' || dayKey === 'tue') ? getReelChartDateRange() : getDateRange();
   const infoEl = document.getElementById('dayInfo');
   infoEl.innerHTML = `
     <div class="info-item"><div class="label">Тип</div><div class="value">${day.mk}</div></div>
     <div class="info-item"><div class="label">Сегменти</div><div class="value">${currentScenes.length} сцени</div></div>
     <div class="info-item"><div class="label">Траење</div><div class="value">~${totalDuration}s</div></div>
-    <div class="info-item"><div class="label">Недела</div><div class="value">${getWeekLabel(chartRef)}</div></div>
+    <div class="info-item"><div class="label">Недела</div><div class="value">${periodLabel}</div></div>
   `;
 
   // Render preview

@@ -939,6 +939,7 @@ foreach ($file in $historyFiles) {
         $merged['spotifyPopularity'] = if ($null -ne $compact.spotifyPopularity) { $compact.spotifyPopularity } else { 0 }
         $merged['viewsDelta'] = if ($null -ne $compact.viewsDelta) { $compact.viewsDelta } else { $null }
         $merged['youtubeVideoIds'] = if ($compact.youtubeVideoIds) { @($compact.youtubeVideoIds) } else { @() }
+        $merged['youtubeVideoViews'] = if ($compact.youtubeVideoViews) { $compact.youtubeVideoViews } else { $null }
         [PSCustomObject]$merged
     })
     # Count verified videos (releases with linked YouTube video IDs)
@@ -1074,6 +1075,233 @@ function Get-VerifiedViewsForVideoIds {
     return $views
 }
 
+function ConvertTo-DateOnlyOrNull {
+    param($value)
+    if (-not $value) { return $null }
+    try { return ([datetime]::Parse([string]$value)).Date } catch { return $null }
+}
+
+function Get-ReleaseDeltaDate {
+    param([object]$release)
+    if (-not $release) { return $null }
+    $dateValue = if ($release.effectiveReleaseDate) { $release.effectiveReleaseDate } else { $release.releaseDate }
+    return ConvertTo-DateOnlyOrNull $dateValue
+}
+
+function Test-ReleaseInDateRange {
+    param([object]$release, $rangeStart, $rangeEnd)
+    if (-not $release -or -not $rangeStart -or -not $rangeEnd) { return $false }
+    $releaseDate = Get-ReleaseDeltaDate $release
+    return ($releaseDate -and $releaseDate -ge $rangeStart.Date -and $releaseDate -le $rangeEnd.Date)
+}
+
+function Test-DateSameDay {
+    param($left, $right)
+    return ($left -and $right -and $left.Date -eq $right.Date)
+}
+
+function Get-ReleaseVideoIdsForDelta {
+    param([object]$release, [switch]$UseTrackFallback)
+    $ids = [System.Collections.ArrayList]::new()
+    $seen = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+
+    if ($release -and $release.youtubeVideoIds) {
+        foreach ($videoId in @($release.youtubeVideoIds)) {
+            if ($videoId -and $seen.Add([string]$videoId)) { [void]$ids.Add([string]$videoId) }
+        }
+    }
+
+    if ($ids.Count -eq 0 -and $UseTrackFallback -and $release -and $release.youtubeTracks) {
+        foreach ($track in @($release.youtubeTracks)) {
+            if (($track.verified) -ne 'verified') { continue }
+            $videoId = [string]$track.videoId
+            if ($videoId -and $seen.Add($videoId)) { [void]$ids.Add($videoId) }
+        }
+    }
+
+    return @($ids)
+}
+
+function Get-ReleaseVideoViewsMapForDelta {
+    param([object]$release, [switch]$UseTrackFallback)
+    $viewsMap = @{}
+
+    if ($release -and $release.youtubeVideoViews) {
+        foreach ($property in @($release.youtubeVideoViews.PSObject.Properties)) {
+            if ($property.Name) { $viewsMap[[string]$property.Name] = [long]($property.Value -as [long]) }
+        }
+    }
+
+    if ($viewsMap.Count -eq 0 -and $UseTrackFallback -and $release -and $release.youtubeTracks) {
+        foreach ($track in @($release.youtubeTracks)) {
+            if (($track.verified) -ne 'verified') { continue }
+            $videoId = [string]$track.videoId
+            if (-not $videoId -or $viewsMap.ContainsKey($videoId)) { continue }
+            $viewsMap[$videoId] = [long]($track.views -as [long])
+        }
+    }
+
+    return $viewsMap
+}
+
+function Get-ReleaseVideoPublishedDateMap {
+    param([object]$release)
+    $dateMap = @{}
+    if (-not $release -or -not $release.youtubeTracks) { return $dateMap }
+
+    foreach ($track in @($release.youtubeTracks)) {
+        $videoId = [string]$track.videoId
+        if (-not $videoId -or -not $track.publishedAt -or $dateMap.ContainsKey($videoId)) { continue }
+        $publishedDate = ConvertTo-DateOnlyOrNull $track.publishedAt
+        if ($publishedDate) { $dateMap[$videoId] = $publishedDate }
+    }
+    return $dateMap
+}
+
+function Get-ComparableVideoDelta {
+    param(
+        [object]$release,
+        [array]$currentVideoIds,
+        [hashtable]$currentVideoViewsMap,
+        [array]$previousVideoIds,
+        [long]$previousViews,
+        $previousChartMonday
+    )
+
+    $result = [ordered]@{
+        canCompute = $false
+        rawDelta = $null
+        comparableViews = 0L
+        hasExcludedNewlyLinkedVideos = $false
+        newlyPublishedVideoCount = 0
+        newlyLinkedOldVideoCount = 0
+        deferredMismatchedVideoCount = 0
+        includedVideoIds = @()
+    }
+
+    if (-not $currentVideoIds -or $currentVideoIds.Count -le 0 -or -not $previousVideoIds -or $previousVideoIds.Count -le 0) {
+        return [PSCustomObject]$result
+    }
+
+    $previousIdSet = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($videoId in @($previousVideoIds)) {
+        if ($videoId) { [void]$previousIdSet.Add([string]$videoId) }
+    }
+
+    $publishedDateMap = Get-ReleaseVideoPublishedDateMap $release
+    $releaseDate = Get-ReleaseDeltaDate $release
+    $included = [System.Collections.ArrayList]::new()
+    [long]$comparableViews = 0
+    $missingViews = $false
+
+    foreach ($videoIdRaw in @($currentVideoIds)) {
+        $videoId = [string]$videoIdRaw
+        if (-not $videoId) { continue }
+
+        $existedInBaseline = $previousIdSet.Contains($videoId)
+        $publishedDuringChartWeek = $false
+        if (-not $existedInBaseline -and $previousChartMonday -and $publishedDateMap.ContainsKey($videoId)) {
+            $publishedDuringChartWeek = $publishedDateMap[$videoId] -ge $previousChartMonday.Date
+        }
+        $eligibleReleaseWeekVideo = $publishedDuringChartWeek -and (Test-DateSameDay $publishedDateMap[$videoId] $releaseDate)
+
+        if ($existedInBaseline -or $eligibleReleaseWeekVideo) {
+            if ($currentVideoViewsMap -and $currentVideoViewsMap.ContainsKey($videoId)) {
+                $comparableViews += [long]($currentVideoViewsMap[$videoId] -as [long])
+            } else {
+                $missingViews = $true
+            }
+            [void]$included.Add($videoId)
+            if ($eligibleReleaseWeekVideo) { $result.newlyPublishedVideoCount++ }
+        } elseif ($publishedDuringChartWeek) {
+            $result.hasExcludedNewlyLinkedVideos = $true
+            $result.deferredMismatchedVideoCount++
+        } else {
+            $result.hasExcludedNewlyLinkedVideos = $true
+            $result.newlyLinkedOldVideoCount++
+        }
+    }
+
+    $result.comparableViews = $comparableViews
+    $result.includedVideoIds = @($included)
+    if (-not $missingViews) {
+        $result.canCompute = $true
+        $result.rawDelta = $comparableViews - $previousViews
+    }
+
+    return [PSCustomObject]$result
+}
+
+function Get-NewlyPublishedVideoDelta {
+    param(
+        [object]$release,
+        [array]$currentVideoIds,
+        [hashtable]$currentVideoViewsMap,
+        $previousChartMonday,
+        [long]$currentViews
+    )
+
+    $result = [ordered]@{
+        canCompute = $false
+        views = 0L
+        videoCount = 0
+        allVideosAreNew = $false
+        deferredMismatchedVideoCount = 0
+        includedVideoIds = @()
+    }
+
+    if (-not $currentVideoIds -or $currentVideoIds.Count -le 0 -or -not $previousChartMonday) {
+        return [PSCustomObject]$result
+    }
+
+    $publishedDateMap = Get-ReleaseVideoPublishedDateMap $release
+    $releaseDate = Get-ReleaseDeltaDate $release
+    [long]$views = 0
+    $missingViews = $false
+    $oldOrUnknownCount = 0
+    $deferredMismatchedCount = 0
+    $included = [System.Collections.ArrayList]::new()
+
+    foreach ($videoIdRaw in @($currentVideoIds)) {
+        $videoId = [string]$videoIdRaw
+        if (-not $videoId) { continue }
+
+        $publishedDuringChartWeek = $publishedDateMap.ContainsKey($videoId) -and $publishedDateMap[$videoId] -ge $previousChartMonday.Date
+        $eligibleReleaseWeekVideo = $publishedDuringChartWeek -and (Test-DateSameDay $publishedDateMap[$videoId] $releaseDate)
+        if ($eligibleReleaseWeekVideo) {
+            if ($currentVideoViewsMap -and $currentVideoViewsMap.ContainsKey($videoId)) {
+                $views += [long]($currentVideoViewsMap[$videoId] -as [long])
+            } else {
+                $missingViews = $true
+            }
+            [void]$included.Add($videoId)
+            $result.videoCount++
+        } elseif ($publishedDuringChartWeek) {
+            $deferredMismatchedCount++
+        } else {
+            $oldOrUnknownCount++
+        }
+    }
+
+    $allVideosAreNew = ($result.videoCount -gt 0 -and $oldOrUnknownCount -eq 0 -and $deferredMismatchedCount -eq 0)
+
+    if (-not $missingViews) {
+        $result.canCompute = $true
+        $result.views = $views
+        $result.allVideosAreNew = $allVideosAreNew
+        $result.deferredMismatchedVideoCount = $deferredMismatchedCount
+        $result.includedVideoIds = @($included)
+    } elseif ($allVideosAreNew) {
+        $result.canCompute = $true
+        $result.views = $currentViews
+        $result.allVideosAreNew = $true
+        $result.deferredMismatchedVideoCount = $deferredMismatchedCount
+        $result.includedVideoIds = @($included)
+    }
+
+    return [PSCustomObject]$result
+}
+
 function Get-ViewsDelta {
     param(
         [object]$release,
@@ -1088,27 +1316,49 @@ function Get-ViewsDelta {
     $curViews = [long]($release.youtubeViews -as [long])
     if ($curViews -le 0) { return $null }
 
-    # Determine release date
-    $relDate = $null
-    $effectiveDateStr = if ($release.effectiveReleaseDate) { $release.effectiveReleaseDate } else { $release.releaseDate }
-    if ($effectiveDateStr) { try { $relDate = [datetime]::Parse($effectiveDateStr) } catch {} }
+    $relDate = Get-ReleaseDeltaDate $release
+    $currentVideoIds = Get-ReleaseVideoIdsForDelta -release $release -UseTrackFallback:$UseCurrentTrackVideoFilter
+    $currentVideoViewsMap = Get-ReleaseVideoViewsMapForDelta -release $release -UseTrackFallback:$UseCurrentTrackVideoFilter
 
-    # Released AFTER previous chart Monday → all current views are the delta
+    # Released AFTER previous chart Monday -> count only videos uploaded on the release date.
     if ($relDate -and $previousChartMonday -and $relDate -ge $previousChartMonday) {
-        return $curViews
+        $releaseWeekVideoDelta = Get-NewlyPublishedVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousChartMonday $previousChartMonday -currentViews $curViews
+        if ($releaseWeekVideoDelta.canCompute -and [long]$releaseWeekVideoDelta.views -gt 0) {
+            Set-DeltaVideoIds $release $releaseWeekVideoDelta.includedVideoIds
+            return $releaseWeekVideoDelta.views
+        }
+        return $null
     }
 
     # Released BEFORE previous chart Monday → delta = current - previous
     if ($previousViewsMap.ContainsKey($release.releaseId)) {
         $prevViews = [long]($previousViewsMap[$release.releaseId] -as [long])
         $prevVideoIds = if ($previousVideoIdsMap -and $previousVideoIdsMap.ContainsKey($release.releaseId)) { @($previousVideoIdsMap[$release.releaseId]) } else { @() }
-        if ($UseCurrentTrackVideoFilter -and $prevVideoIds.Count -gt 0) {
-            Set-DeltaVideoIds $release $prevVideoIds
-            $comparableViews = Get-VerifiedViewsForVideoIds $release $prevVideoIds
-            return ($comparableViews - $prevViews)
+        if ($prevVideoIds.Count -gt 0 -and $currentVideoIds.Count -gt 0) {
+            $videoDelta = Get-ComparableVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousVideoIds $prevVideoIds -previousViews $prevViews -previousChartMonday $previousChartMonday
+            if ($videoDelta.canCompute) {
+                Set-DeltaVideoIds $release $videoDelta.includedVideoIds
+                return $videoDelta.rawDelta
+            }
+            if ($videoDelta.hasExcludedNewlyLinkedVideos) {
+                return $null
+            }
         }
-        if ($prevViews -le 0) { return 0 }
+        if ($prevViews -le 0) {
+            $newVideoDelta = Get-NewlyPublishedVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousChartMonday $previousChartMonday -currentViews $curViews
+            if ($newVideoDelta.canCompute -and [long]$newVideoDelta.views -gt 0) {
+                Set-DeltaVideoIds $release $newVideoDelta.includedVideoIds
+                return $newVideoDelta.views
+            }
+            return 0
+        }
         return ($curViews - $prevViews)
+    }
+
+    $newlyPublishedVideoDelta = Get-NewlyPublishedVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousChartMonday $previousChartMonday -currentViews $curViews
+    if ($newlyPublishedVideoDelta.canCompute -and [long]$newlyPublishedVideoDelta.views -gt 0) {
+        Set-DeltaVideoIds $release $newlyPublishedVideoDelta.includedVideoIds
+        return $newlyPublishedVideoDelta.views
     }
 
     return $null
@@ -1127,6 +1377,39 @@ function Get-ChartMondayFromWeekId {
         return $week1Monday.AddDays(7 * ($isoWeek - 1))
     }
     return $null
+}
+
+function New-DateRangeBounds {
+    param($rangeStart, $rangeEnd)
+    if (-not $rangeStart -or -not $rangeEnd) { return $null }
+    return [PSCustomObject]@{
+        start = $rangeStart.Date
+        end = $rangeEnd.Date
+        startIso = $rangeStart.Date.ToString('yyyy-MM-dd')
+        endIso = $rangeEnd.Date.ToString('yyyy-MM-dd')
+    }
+}
+
+function Get-ArchivedChartDateRangeBounds {
+    param([string]$weekId)
+    $snapshotMonday = Get-ChartMondayFromWeekId $weekId
+    if (-not $snapshotMonday) { return $null }
+    return New-DateRangeBounds -rangeStart $snapshotMonday.AddDays(-7) -rangeEnd $snapshotMonday
+}
+
+function Get-LiveChartDateRangeBounds {
+    param([object]$baselineWeek, [object]$displayWeek, [bool]$isFrozenFallback, [string]$generatedAt)
+    if ($isFrozenFallback -and $displayWeek) {
+        return Get-ArchivedChartDateRangeBounds $displayWeek.weekId
+    }
+
+    $rangeStart = if ($baselineWeek) { Get-ChartMondayFromWeekId $baselineWeek.weekId } else { $null }
+    $rangeEnd = $null
+    if ($generatedAt) { $rangeEnd = ConvertTo-DateOnlyOrNull $generatedAt }
+    if (-not $rangeEnd) { $rangeEnd = (Get-Date).Date }
+    if ($rangeStart -and $rangeEnd -lt $rangeStart) { $rangeEnd = $rangeStart }
+
+    return New-DateRangeBounds -rangeStart $rangeStart -rangeEnd $rangeEnd
 }
 
 function Get-ViewsMapFromReleases {
@@ -1266,6 +1549,10 @@ if ($chevronPreviousWeekId) {
 }
 
 $mainReleasesDeduped = $chartSourceDeduped
+$currentChartRangeBounds = Get-LiveChartDateRangeBounds -baselineWeek $deltaBaselineWeek -displayWeek $displayFallbackWeek -isFrozenFallback $usingFrozenChartState -generatedAt $chartJson.generatedAt
+if ($currentChartRangeBounds) {
+    Write-Host "  > Current chart range: $($currentChartRangeBounds.startIso) to $($currentChartRangeBounds.endIso)" -ForegroundColor DarkGray
+}
 
 # Pre-filter releases by genre once (avoids re-filtering inside every Build-ChartRanking call)
 $mainByGenre = @{}
@@ -1352,14 +1639,14 @@ for ($i = 0; $i -lt $curSongsExpanded.Count; $i++) {
 # $curSnapshotMap: current chart-history snapshot for chevron comparison (W12)
 # When both are provided, chevrons compare W12 position vs W11 position (stable week-over-week)
 function Enrich-ChartItems {
-    param([array]$ranked, [hashtable]$prevMap, [hashtable]$curSnapshotMap = @{}, [bool]$includeGenreCity = $false)
+    param([array]$ranked, [hashtable]$prevMap, [hashtable]$curSnapshotMap = @{}, $chartRangeStart = $null, $chartRangeEnd = $null, [bool]$includeGenreCity = $false)
     $enriched = [System.Collections.ArrayList]::new($ranked.Count)
     for ($i = 0; $i -lt $ranked.Count; $i++) {
         $r = $ranked[$i]
         $pos = $i + 1
         $posChange = $null
         $popChange = $null
-        $isNew = $true
+        $isNew = Test-ReleaseInDateRange -release $r -rangeStart $chartRangeStart -rangeEnd $chartRangeEnd
         
         # Use last week's snapshot (curSnap = W12) to compare against current position
         $curSnap = if ($curSnapshotMap.Count -gt 0) { $curSnapshotMap[$r.releaseId] } else { $null }
@@ -1368,15 +1655,12 @@ function Enrich-ChartItems {
             # Song was in last week's chart — compare last week position to current position
             $posChange = $curSnap.position - $pos  # positive = moved up
             $popChange = ([int]($r.youtubeViews -as [int])) - $curSnap.youtubeViews
-            $isNew = $false
         } elseif ($prevMap.Count -gt 0 -and $prevMap.ContainsKey($r.releaseId)) {
             # Not in last week but was in the week before — still compare to current
             $prev = $prevMap[$r.releaseId]
             $posChange = $prev.position - $pos
             $popChange = ([int]($r.youtubeViews -as [int])) - $prev.youtubeViews
-            $isNew = $false
         }
-        # Otherwise: not in any previous week — new entry ($isNew = $true)
         
         $artistInfo = Get-ArtistInfo $r.bandName
         
@@ -1453,7 +1737,7 @@ foreach ($genre in $genreFilters) {
         }
         
         $ranked = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 20 -preDeduped $mainByGenre[$genre]
-        $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd -curSnapshotMap $curMapStd)
+        $charts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap $prevMapStd -curSnapshotMap $curMapStd -chartRangeStart $currentChartRangeBounds.start -chartRangeEnd $currentChartRangeBounds.end)
         
         # Advanced (unlimited) — only for 'all' genre; genre subsets reconstructed client-side via _gc field
         if ($genre -eq 'all') {
@@ -1466,11 +1750,11 @@ foreach ($genre in $genreFilters) {
             $songs = Expand-ReleasesToSongs $mainByGenre['all']
             $sortedSongs = @(Sort-ChartRanking $songs)
             # Use song-expanded prev/cur maps so composite IDs match and positions are comparable
-            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMapSongsUnlimited -curSnapshotMap $curMapSongsUnlimited -includeGenreCity $true)
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $sortedSongs -prevMap $prevMapSongsUnlimited -curSnapshotMap $curMapSongsUnlimited -chartRangeStart $currentChartRangeBounds.start -chartRangeEnd $currentChartRangeBounds.end -includeGenreCity $true)
         } else {
             # Albums: unchanged — reuse the pre-computed prev map
             $rankedAdv = Build-ChartRanking -releasesArr $releases -type $type -genre 'all' -count 0 -preDeduped $mainByGenre['all']
-            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -curSnapshotMap $curSnapshotMap -includeGenreCity $true)
+            $advancedCharts[$advKey] = @(Enrich-ChartItems -ranked $rankedAdv -prevMap $prevMap -curSnapshotMap $curSnapshotMap -chartRangeStart $currentChartRangeBounds.start -chartRangeEnd $currentChartRangeBounds.end -includeGenreCity $true)
         }
         }  # end if ($genre -eq 'all')
     }
@@ -1514,27 +1798,23 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
     $thisWeek = $weeksOldestFirst[$wi]
     $prevWeek = if ($wi -gt 0) { $weeksOldestFirst[$wi - 1] } else { $null }
     $wkId = $thisWeek.weekId
+    $weekRangeBounds = Get-ArchivedChartDateRangeBounds $wkId
     [void]$allWeekIds.Add($wkId)
 
     # Get previous week's deduped+viewsDelta releases (cached from previous iteration)
     $prevDedWithDelta = if ($prevWeek) { $cachedWeekDedup[$prevWeek.weekId] } else { @() }
+    $prevSnapshotReleases = if ($prevWeek) { $prevWeek.releases } else { @() }
 
-    # Build previous-week views map for delta calculation
+    # Build previous-week views map for delta calculation from the full snapshot.
     $pvm = @{}
     $pvidm = @{}
     $pcm = $null
-    if ($prevDedWithDelta.Count -gt 0) {
-        foreach ($r in $prevDedWithDelta) {
+    if ($prevSnapshotReleases.Count -gt 0) {
+        foreach ($r in @($prevSnapshotReleases)) {
             $pvm[$r.releaseId] = [int]($r.youtubeViews -as [int])
             if ($r.youtubeVideoIds -and $r.youtubeVideoIds.Count -gt 0) { $pvidm[$r.releaseId] = @($r.youtubeVideoIds) }
         }
-        if ($prevWeek.weekId -match '^(\d{4})-W(\d{2})$') {
-            $iy = [int]$Matches[1]; $iw = [int]$Matches[2]
-            $j4 = [datetime]::new($iy, 1, 4)
-            $dw = [int]$j4.DayOfWeek; if ($dw -eq 0) { $dw = 7 }
-            $w1m = $j4.AddDays(1 - $dw)
-            $pcm = $w1m.AddDays(7 * ($iw - 1))
-        }
+        $pcm = Get-ChartMondayFromWeekId $prevWeek.weekId
     }
 
     # Deduplicate and attach viewsDelta for this week
@@ -1577,7 +1857,7 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
                     }
                 }
             }
-            $wkCharts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap @{} -curSnapshotMap $curSnapW)
+            $wkCharts[$key] = @(Enrich-ChartItems -ranked $ranked -prevMap @{} -curSnapshotMap $curSnapW -chartRangeStart $weekRangeBounds.start -chartRangeEnd $weekRangeBounds.end)
         }
     }
 
@@ -1603,6 +1883,7 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
                 youtubeViews         = [int]($_.youtubeViews -as [int])
                 viewsDelta           = $_.viewsDelta
                 spotifyUrl           = $_.spotifyUrl
+                isNewEntry           = Test-ReleaseInDateRange -release $_ -rangeStart $weekRangeBounds.start -rangeEnd $weekRangeBounds.end
                 confirmed            = if ($ai) { [bool]$ai.confirmed } else { $false }
             }
         })
@@ -1614,6 +1895,8 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
         totalArtists   = $thisWeek.totalArtists
         verifiedVideos = $thisWeek.verifiedVideos
         dateRange      = Get-WeekDateRange $wkId
+        dateRangeStart = if ($weekRangeBounds) { $weekRangeBounds.startIso } else { $null }
+        dateRangeEnd   = if ($weekRangeBounds) { $weekRangeBounds.endIso } else { $null }
         charts         = $wkCharts
         latestReleases = $wkLatest
     }
@@ -1631,10 +1914,12 @@ if ($allWeekIds.Count -gt 0) {
         $reelChartsOutput[$key] = @($latestWeekData.charts[$key])
     }
     $reelChartsData = [PSCustomObject]@{
-        weekId      = $latestWeekId
-        generatedAt = $latestWeekData.generatedAt
-        dateRange   = $latestWeekData.dateRange
-        charts      = $reelChartsOutput
+        weekId         = $latestWeekId
+        generatedAt    = $latestWeekData.generatedAt
+        dateRange      = $latestWeekData.dateRange
+        dateRangeStart = $latestWeekData.dateRangeStart
+        dateRangeEnd   = $latestWeekData.dateRangeEnd
+        charts         = $reelChartsOutput
     }
     Write-Host "  > Reel charts: $latestWeekId (generated $($latestWeekData.generatedAt))" -ForegroundColor DarkGray
 }
@@ -1967,6 +2252,7 @@ foreach ($genre in $genreFilters) {
                 viewsDelta   = $_.viewsDelta
                 spotifyUrl   = $_.spotifyUrl
                 typeLabel    = $typeLabel
+                isNewEntry   = Test-ReleaseInDateRange -release $_ -rangeStart $currentChartRangeBounds.start -rangeEnd $currentChartRangeBounds.end
                 confirmed    = if ($artistInfo) { [bool]$artistInfo.confirmed } else { $false }
             }
         })
@@ -2928,6 +3214,8 @@ $siteMaster = [PSCustomObject]@{
         totalArtists  = $chartJson.totalArtists
         baselineWeekId = if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null }
         displayWeekId = $currentDisplayWeekId
+        dateRangeStart = if ($currentChartRangeBounds) { $currentChartRangeBounds.startIso } else { $null }
+        dateRangeEnd = if ($currentChartRangeBounds) { $currentChartRangeBounds.endIso } else { $null }
         isFrozenFallback = $usingFrozenChartState
         releases      = $columnarReleases
     }

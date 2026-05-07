@@ -1552,8 +1552,12 @@
                 font-weight: 700;
                 font-family: 'Montserrat', sans-serif;
                 color: var(--text-secondary);
-                white-space: nowrap;
+                white-space: normal;
                 flex-shrink: 0;
+                max-width: 9.5rem;
+                line-height: 1.05;
+                text-align: center;
+                cursor: pointer;
             }
             body.dark-mode .mobile-week-label {
                 color: #aaa;
@@ -2229,7 +2233,9 @@
         .history-tooltip-week {
             color: var(--text-muted, #888);
             font-size: 0.58rem;
-            min-width: 36px;
+            min-width: 86px;
+            max-width: 96px;
+            line-height: 1.05;
         }
         .history-tooltip-value {
             font-weight: 700;
@@ -2497,6 +2503,7 @@
             gap: 0.4rem;
             margin-left: auto;
             flex-shrink: 0;
+            position: relative;
         }
         .week-nav-btn {
             display: inline-flex;
@@ -2527,7 +2534,7 @@
             font-weight: 700;
             color: var(--text-primary);
             white-space: nowrap;
-            min-width: 5.5em;
+            min-width: 13.5em;
             text-align: center;
             cursor: pointer;
             user-select: none;
@@ -2537,10 +2544,9 @@
         }
         .week-nav-label.is-current {
             color: var(--text-muted);
-            cursor: default;
         }
         .week-nav-label.is-current:hover {
-            color: var(--text-muted);
+            color: var(--accent-blue);
         }
         .week-nav-badge {
             font-size: 0.55rem;
@@ -2560,60 +2566,16 @@
         body.dark-mode .week-nav-btn:hover:not(:disabled) {
             background: var(--bg-hover);
         }
-        .week-history-banner {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.35rem 1rem;
-            background: #fff8e1;
-            border-bottom: 1px solid #ffe082;
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: #795548;
-            flex-wrap: wrap;
-        }
-        .week-history-banner.visible {
-            display: flex;
-        }
-        .week-history-banner button {
-            font-size: 0.65rem;
-            font-weight: 600;
-            padding: 0.2rem 0.5rem;
-            border: 1px solid #795548;
-            background: transparent;
-            color: #795548;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .week-history-banner button:hover {
-            background: #795548;
-            color: #fff;
-        }
-        .week-history-stats {
-            font-size: 0.65rem;
-            opacity: 0.85;
-        }
-        .week-history-stats .stat-sep {
-            margin: 0 0.25rem;
-            opacity: 0.5;
-        }
-        body.dark-mode .week-history-banner {
-            background: #2a2518;
-            border-bottom-color: #3d3520;
-            color: #c8a960;
-        }
-        body.dark-mode .week-history-banner button {
-            border-color: #c8a960;
-            color: #c8a960;
-        }
-        body.dark-mode .week-history-banner button:hover {
-            background: #c8a960;
-            color: #1a1a1a;
+        .week-calendar-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
         }
         @media (max-width: 600px) {
             .week-navigator { gap: 0.25rem; }
-            .week-nav-label { font-size: 0.65rem; min-width: 4.5em; }
+            .week-nav-label { font-size: 0.62rem; min-width: 10.5em; }
             .week-nav-btn { width: 26px; height: 26px; }
             .week-nav-badge { font-size: 0.5rem; }
         }
@@ -2799,7 +2761,8 @@
             <!-- Week navigator -->
             <div class="week-navigator" id="week-navigator">
                 <button class="week-nav-btn" id="week-prev-btn" data-i18n-title="charts.prevWeek" title="Претходна недела" disabled><i class="fas fa-chevron-left"></i></button>
-                <span class="week-nav-label is-current" id="week-nav-label">W14</span>
+                <span class="week-nav-label is-current" id="week-nav-label"></span>
+                <input type="date" class="week-calendar-input" id="week-calendar-input" aria-hidden="true" tabindex="-1">
                 <button class="week-nav-btn" id="week-next-btn" data-i18n-title="charts.nextWeek" title="Следна недела" disabled><i class="fas fa-chevron-right"></i></button>
             </div>
             <!-- Advanced filter groups (hidden by default) -->
@@ -2848,14 +2811,6 @@
                 </button>
             </div>
         </div>
-    </div>
-    
-    <!-- History week banner -->
-    <div class="week-history-banner" id="week-history-banner">
-        <i class="fas fa-history"></i>
-        <span id="week-history-text"></span>
-        <span class="week-history-stats" id="week-history-stats"></span>
-        <button id="week-return-current" onclick="returnToCurrentWeek()">← <span data-i18n="charts.returnToCurrent">Сегашна</span></button>
     </div>
     
     <div class="chart-container">
@@ -3773,19 +3728,14 @@
             }
         });
         
-        // Return to current week (called from history banner button)
+        // Return to the live current chart.
         function returnToCurrentWeek() {
             // Dispatch to the DOMContentLoaded scoped function
             if (window._returnToCurrentWeek) window._returnToCurrentWeek();
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
-            const now = new Date();
-            const twoMonthsAgo = new Date(now);
-            twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-            
-            const monthNames = t('months.short');
-            const periodText = `${monthNames[twoMonthsAgo.getMonth()]} - ${monthNames[now.getMonth()]}`;
+            let periodText = '';
             document.getElementById('singles-period').textContent = periodText;
             document.getElementById('albums-period').textContent = periodText;
             document.getElementById('latest-period').textContent = t('charts.last20');
@@ -3811,24 +3761,175 @@
                 return year + '-W' + String(week).padStart(2, '0');
             }
             
-            /** Format a date range using pre-computed dateRange or fallback */
-            function formatWeekDateRange(weekId) {
-                if (chartHistoryData?.data?.[weekId]?.dateRange) {
-                    return chartHistoryData.data[weekId].dateRange;
+            function parseIsoDateOnly(isoDate) {
+                if (!isoDate || typeof isoDate !== 'string') return null;
+                const match = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (!match) return null;
+                return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+            }
+
+            function getFullMonthNames() {
+                const names = t('months.full');
+                return Array.isArray(names) && names.length >= 12
+                    ? names
+                    : ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            }
+
+            function formatDateRangeFull(startIso, endIso, options = {}) {
+                const start = parseIsoDateOnly(startIso);
+                const end = parseIsoDateOnly(endIso);
+                if (!start || !end) return '';
+
+                const months = getFullMonthNames();
+                const includeYear = options.includeYear !== false;
+                const startDay = start.getDate();
+                const endDay = end.getDate();
+                const startMonth = months[start.getMonth()];
+                const endMonth = months[end.getMonth()];
+                const startYear = start.getFullYear();
+                const endYear = end.getFullYear();
+
+                if (startYear === endYear && start.getMonth() === end.getMonth()) {
+                    return `${startDay} - ${endDay} ${endMonth}${includeYear ? ' ' + endYear : ''}`;
                 }
+                if (startYear === endYear) {
+                    return `${startDay} ${startMonth} - ${endDay} ${endMonth}${includeYear ? ' ' + endYear : ''}`;
+                }
+                return `${startDay} ${startMonth}${includeYear ? ' ' + startYear : ''} - ${endDay} ${endMonth}${includeYear ? ' ' + endYear : ''}`;
+            }
+
+            function toIsoDateOnly(date) {
+                if (!date || Number.isNaN(date.getTime())) return '';
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            }
+
+            function getSnapshotRangeBoundsFromWeekId(weekId) {
                 const p = parseWeekId(weekId);
-                if (!p) return '';
+                if (!p) return null;
                 const jan4 = new Date(p.year, 0, 4);
                 const dayOfWeek = jan4.getDay() || 7;
-                const mon = new Date(jan4);
-                mon.setDate(jan4.getDate() - dayOfWeek + 1 + (p.week - 1) * 7);
-                const sun = new Date(mon);
-                sun.setDate(mon.getDate() + 6);
-                const pad = n => String(n).padStart(2, '0');
-                if (mon.getMonth() === sun.getMonth()) {
-                    return `${pad(mon.getDate())}.–${pad(sun.getDate())}.${pad(mon.getMonth()+1)}.${mon.getFullYear()}`;
+                const end = new Date(jan4);
+                end.setDate(jan4.getDate() - dayOfWeek + 1 + (p.week - 1) * 7);
+                const start = new Date(end);
+                start.setDate(end.getDate() - 7);
+                return { start: toIsoDateOnly(start), end: toIsoDateOnly(end) };
+            }
+
+            function getWeekRangeBounds(weekId) {
+                const weekData = chartHistoryData?.data?.[weekId];
+                if (weekData?.dateRangeStart && weekData?.dateRangeEnd) {
+                    return { start: weekData.dateRangeStart, end: weekData.dateRangeEnd };
                 }
-                return `${pad(mon.getDate())}.${pad(mon.getMonth()+1)}. – ${pad(sun.getDate())}.${pad(sun.getMonth()+1)}.${sun.getFullYear()}`;
+                return getSnapshotRangeBoundsFromWeekId(weekId);
+            }
+
+            function getCurrentChartRangeIsoBounds() {
+                const chartData = siteMaster?.chartData;
+                if (chartData?.dateRangeStart && chartData?.dateRangeEnd) {
+                    return { start: chartData.dateRangeStart, end: chartData.dateRangeEnd };
+                }
+                return currentWeekId ? getWeekRangeBounds(currentWeekId) : null;
+            }
+
+            function dateFallsWithinIsoBounds(date, bounds) {
+                if (!date || !bounds) return false;
+                const start = parseIsoDateOnly(bounds.start);
+                const end = parseIsoDateOnly(bounds.end);
+                return !!(start && end && date >= start && date <= end);
+            }
+
+            function findWeekIdForCalendarDate(isoDate) {
+                const date = parseIsoDateOnly(isoDate);
+                if (!date) return selectedWeekId || null;
+
+                const latestArchivedWeek = availableWeeks[availableWeeks.length - 1];
+                const latestArchiveBounds = latestArchivedWeek ? getWeekRangeBounds(latestArchivedWeek) : null;
+                const latestArchiveEnd = latestArchiveBounds ? parseIsoDateOnly(latestArchiveBounds.end) : null;
+                const currentBounds = getCurrentChartRangeIsoBounds();
+
+                if (currentBounds && dateFallsWithinIsoBounds(date, currentBounds) && (!latestArchiveEnd || date > latestArchiveEnd)) {
+                    return null;
+                }
+
+                for (let idx = availableWeeks.length - 1; idx >= 0; idx--) {
+                    const weekId = availableWeeks[idx];
+                    if (dateFallsWithinIsoBounds(date, getWeekRangeBounds(weekId))) {
+                        return weekId;
+                    }
+                }
+
+                return currentBounds && dateFallsWithinIsoBounds(date, currentBounds) ? null : (selectedWeekId || null);
+            }
+
+            function syncWeekCalendarInput() {
+                const input = document.getElementById('week-calendar-input');
+                if (!input) return;
+
+                const activeBounds = selectedWeekId ? getWeekRangeBounds(selectedWeekId) : getCurrentChartRangeIsoBounds();
+                const firstBounds = availableWeeks.length > 0 ? getWeekRangeBounds(availableWeeks[0]) : activeBounds;
+                const currentBounds = getCurrentChartRangeIsoBounds() || activeBounds;
+
+                input.min = firstBounds?.start || '';
+                input.max = currentBounds?.end || activeBounds?.end || '';
+                input.value = activeBounds?.end || input.max || '';
+            }
+
+            async function openWeekCalendar() {
+                await loadChartHistoryData();
+                syncWeekCalendarInput();
+                const input = document.getElementById('week-calendar-input');
+                if (!input) return;
+                input.focus({ preventScroll: true });
+                if (typeof input.showPicker === 'function') {
+                    try { input.showPicker(); return; } catch (_) {}
+                }
+                input.click();
+            }
+
+            async function handleWeekCalendarChange(event) {
+                const targetWeek = findWeekIdForCalendarDate(event.target.value);
+                if (targetWeek) {
+                    await navigateToWeek(targetWeek);
+                    updateWeekUrl(targetWeek);
+                } else {
+                    await navigateToWeek(null);
+                    updateWeekUrl(null);
+                }
+                syncWeekCalendarInput();
+            }
+
+            /** Format a chart snapshot range using localized full month names. */
+            function formatWeekDateRange(weekId, options = {}) {
+                const weekData = chartHistoryData?.data?.[weekId];
+                if (weekData?.dateRangeStart && weekData?.dateRangeEnd) {
+                    return formatDateRangeFull(weekData.dateRangeStart, weekData.dateRangeEnd, options);
+                }
+                const bounds = getSnapshotRangeBoundsFromWeekId(weekId);
+                return bounds ? formatDateRangeFull(bounds.start, bounds.end, options) : '';
+            }
+
+            function getCurrentChartDateRange(options = {}) {
+                const chartData = siteMaster?.chartData;
+                if (chartData?.dateRangeStart && chartData?.dateRangeEnd) {
+                    return formatDateRangeFull(chartData.dateRangeStart, chartData.dateRangeEnd, options);
+                }
+                return currentWeekId ? formatWeekDateRange(currentWeekId, options) : '';
+            }
+
+            function getActiveChartRangeBounds() {
+                if (selectedWeekId) {
+                    const weekData = chartHistoryData?.data?.[selectedWeekId];
+                    if (weekData?.dateRangeStart && weekData?.dateRangeEnd) {
+                        return { start: parseIsoDateOnly(weekData.dateRangeStart), end: parseIsoDateOnly(weekData.dateRangeEnd) };
+                    }
+                    const fallback = getSnapshotRangeBoundsFromWeekId(selectedWeekId);
+                    return fallback ? { start: parseIsoDateOnly(fallback.start), end: parseIsoDateOnly(fallback.end) } : null;
+                }
+                const chartData = siteMaster?.chartData;
+                if (chartData?.dateRangeStart && chartData?.dateRangeEnd) {
+                    return { start: parseIsoDateOnly(chartData.dateRangeStart), end: parseIsoDateOnly(chartData.dateRangeEnd) };
+                }
+                return null;
             }
             
             /** Load pre-computed chart history data */
@@ -3844,9 +3945,6 @@
                 const label = document.getElementById('week-nav-label');
                 const prevBtn = document.getElementById('week-prev-btn');
                 const nextBtn = document.getElementById('week-next-btn');
-                const banner = document.getElementById('week-history-banner');
-                const bannerText = document.getElementById('week-history-text');
-                const bannerStats = document.getElementById('week-history-stats');
                 
                 // Mobile header nav elements
                 const mobilePrev = document.getElementById('mobile-week-prev');
@@ -3856,50 +3954,32 @@
                 const activeWeek = selectedWeekId || currentWeekId;
                 if (!activeWeek || availableWeeks.length === 0) return;
                 
-                const activeIdx = availableWeeks.indexOf(activeWeek);
-                const p = parseWeekId(activeWeek);
-                label.textContent = `W${String(p.week).padStart(2, '0')}`;
-                label.title = formatWeekDateRange(activeWeek);
+                const activeIdx = selectedWeekId ? availableWeeks.indexOf(activeWeek) : availableWeeks.length;
+                const activeRangeLabel = selectedWeekId ? formatWeekDateRange(activeWeek, { includeYear: false }) : getCurrentChartDateRange({ includeYear: false });
+                const activeRangeTitle = selectedWeekId ? formatWeekDateRange(activeWeek) : getCurrentChartDateRange();
+                label.textContent = activeRangeLabel || activeWeek;
+                label.title = activeRangeTitle || activeWeek;
                 
-                const isCurrent = !selectedWeekId || selectedWeekId === currentWeekId;
+                const isCurrent = !selectedWeekId;
                 label.classList.toggle('is-current', isCurrent);
                 
-                // Prev/next based on available weeks only
+                // Live current sits after the newest archived chart, even when both share the same week id.
                 prevBtn.disabled = activeIdx <= 0;
-                nextBtn.disabled = isCurrent || activeIdx >= availableWeeks.length - 1;
+                nextBtn.disabled = isCurrent || activeIdx < 0;
                 
                 // Sync mobile header nav
-                if (mobileLabel) mobileLabel.textContent = `W${String(p.week).padStart(2, '0')}`;
+                if (mobileLabel) mobileLabel.textContent = activeRangeLabel || activeWeek;
+                if (mobileLabel) mobileLabel.title = activeRangeTitle || activeWeek;
                 if (mobilePrev) mobilePrev.disabled = activeIdx <= 0;
-                if (mobileNext) mobileNext.disabled = isCurrent || activeIdx >= availableWeeks.length - 1;
-                
-                // Show/hide history banner
-                if (!isCurrent) {
-                    banner.classList.add('visible');
-                    bannerText.textContent = formatWeekDateRange(activeWeek);
-                    
-                    // Show stats from pre-computed data
-                    const weekData = chartHistoryData?.data?.[activeWeek];
-                    if (weekData) {
-                        let statsHtml = `${weekData.totalReleases} изданија, ${weekData.totalArtists} артисти`;
-                        if (weekData.verifiedVideos > 0) {
-                            const pct = ((weekData.verifiedVideos / weekData.totalReleases) * 100).toFixed(1);
-                            statsHtml += `<span class="stat-sep">•</span><i class="fab fa-youtube" style="color:#c33"></i> ${weekData.verifiedVideos} видеа (${pct}%)`;
-                        }
-                        bannerStats.innerHTML = statsHtml;
-                    } else {
-                        bannerStats.innerHTML = '';
-                    }
-                } else {
-                    banner.classList.remove('visible');
-                }
+                if (mobileNext) mobileNext.disabled = isCurrent || activeIdx < 0;
+                syncWeekCalendarInput();
             }
             
             async function navigateToWeek(weekId) {
                 if (!siteMaster) return;
                 
-                // If navigating to current week, just reset
-                if (weekId === currentWeekId) {
+                // Null means the live current chart; archived weeks are selected explicitly.
+                if (!weekId) {
                     selectedWeekId = null;
                     updateWeekNavigator();
                     applyFilters(); // uses live site-master data
@@ -3929,9 +4009,7 @@
                 const latestReleases = weekData.latestReleases?.[genreKey] || weekData.latestReleases?.['all'] || [];
                 
                 // Update period text with date range
-                const dateRange = weekData.dateRange || formatWeekDateRange(weekId);
-                const wp = parseWeekId(weekId);
-                const weekLabel = `W${String(wp.week).padStart(2, '0')} • ${dateRange}`;
+                const weekLabel = formatWeekDateRange(weekId);
                 document.getElementById('singles-period').textContent = weekLabel;
                 document.getElementById('albums-period').textContent = weekLabel;
                 document.getElementById('latest-period').textContent = t('charts.last20');
@@ -3971,17 +4049,13 @@
             async function initWeekNavigator() {
                 const prevWeekDate = new Date(); prevWeekDate.setDate(prevWeekDate.getDate() - 7);
                 const w = getISOWeek(prevWeekDate);
-                currentWeekId = formatWeekId(w.year, w.week);
+                currentWeekId = siteMaster?.chartData?.displayWeekId || formatWeekId(w.year, w.week);
                 
                 // Load pre-computed chart history data
                 await loadChartHistoryData();
                 
                 if (chartHistoryData?.weeks) {
                     availableWeeks = [...chartHistoryData.weeks];
-                    // Ensure current week is in the list as the last entry
-                    if (!availableWeeks.includes(currentWeekId)) {
-                        availableWeeks.push(currentWeekId);
-                    }
                     availableWeeks.sort();
                 }
                 
@@ -3990,15 +4064,22 @@
                 // Check URL for ?week= parameter
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlWeek = urlParams.get('week');
-                if (urlWeek && parseWeekId(urlWeek) && availableWeeks.includes(urlWeek) && urlWeek !== currentWeekId) {
+                if (urlWeek && parseWeekId(urlWeek) && availableWeeks.includes(urlWeek)) {
                     selectedWeekId = urlWeek;
                 }
                 
                 updateWeekNavigator();
                 
                 document.getElementById('week-prev-btn').addEventListener('click', () => {
-                    const active = selectedWeekId || currentWeekId;
-                    const idx = availableWeeks.indexOf(active);
+                    if (!selectedWeekId) {
+                        const prev = availableWeeks[availableWeeks.length - 1];
+                        if (prev) {
+                            navigateToWeek(prev);
+                            updateWeekUrl(prev);
+                        }
+                        return;
+                    }
+                    const idx = availableWeeks.indexOf(selectedWeekId);
                     if (idx > 0) {
                         const prev = availableWeeks[idx - 1];
                         navigateToWeek(prev);
@@ -4007,27 +4088,21 @@
                 });
                 
                 document.getElementById('week-next-btn').addEventListener('click', () => {
-                    const active = selectedWeekId || currentWeekId;
-                    const idx = availableWeeks.indexOf(active);
+                    if (!selectedWeekId) return;
+                    const idx = availableWeeks.indexOf(selectedWeekId);
                     if (idx >= 0 && idx < availableWeeks.length - 1) {
                         const next = availableWeeks[idx + 1];
-                        if (next === currentWeekId) {
-                            navigateToWeek(currentWeekId);
-                            updateWeekUrl(null);
-                        } else {
-                            navigateToWeek(next);
-                            updateWeekUrl(next);
-                        }
-                    }
-                });
-                
-                // Click on label returns to current week
-                document.getElementById('week-nav-label').addEventListener('click', () => {
-                    if (selectedWeekId) {
-                        navigateToWeek(currentWeekId);
+                        navigateToWeek(next);
+                        updateWeekUrl(next);
+                    } else if (idx === availableWeeks.length - 1) {
+                        navigateToWeek(null);
                         updateWeekUrl(null);
                     }
                 });
+                
+                document.getElementById('week-nav-label').addEventListener('click', openWeekCalendar);
+                const weekCalendarInput = document.getElementById('week-calendar-input');
+                if (weekCalendarInput) weekCalendarInput.addEventListener('change', handleWeekCalendarChange);
 
                 // Mobile header week nav buttons
                 const mobilePrev = document.getElementById('mobile-week-prev');
@@ -4036,8 +4111,15 @@
 
                 if (mobilePrev) {
                     mobilePrev.addEventListener('click', () => {
-                        const active = selectedWeekId || currentWeekId;
-                        const idx = availableWeeks.indexOf(active);
+                        if (!selectedWeekId) {
+                            const prev = availableWeeks[availableWeeks.length - 1];
+                            if (prev) {
+                                navigateToWeek(prev);
+                                updateWeekUrl(prev);
+                            }
+                            return;
+                        }
+                        const idx = availableWeeks.indexOf(selectedWeekId);
                         if (idx > 0) {
                             const prev = availableWeeks[idx - 1];
                             navigateToWeek(prev);
@@ -4048,34 +4130,27 @@
 
                 if (mobileNext) {
                     mobileNext.addEventListener('click', () => {
-                        const active = selectedWeekId || currentWeekId;
-                        const idx = availableWeeks.indexOf(active);
+                        if (!selectedWeekId) return;
+                        const idx = availableWeeks.indexOf(selectedWeekId);
                         if (idx >= 0 && idx < availableWeeks.length - 1) {
                             const next = availableWeeks[idx + 1];
-                            if (next === currentWeekId) {
-                                navigateToWeek(currentWeekId);
-                                updateWeekUrl(null);
-                            } else {
-                                navigateToWeek(next);
-                                updateWeekUrl(next);
-                            }
+                            navigateToWeek(next);
+                            updateWeekUrl(next);
+                        } else if (idx === availableWeeks.length - 1) {
+                            navigateToWeek(null);
+                            updateWeekUrl(null);
                         }
                     });
                 }
 
                 if (mobileLabel) {
-                    mobileLabel.addEventListener('click', () => {
-                        if (selectedWeekId) {
-                            navigateToWeek(currentWeekId);
-                            updateWeekUrl(null);
-                        }
-                    });
+                    mobileLabel.addEventListener('click', openWeekCalendar);
                 }
             }
             
             function updateWeekUrl(weekId) {
                 const url = new URL(window.location);
-                if (weekId && weekId !== currentWeekId) {
+                if (weekId) {
                     url.searchParams.set('week', weekId);
                 } else {
                     url.searchParams.delete('week');
@@ -4159,7 +4234,7 @@
                     const displayVal = val !== null && val > 0 ? (isPosition ? '#' + val : formatViews(val)) : '-';
                     
                     rows += `<div class="history-tooltip-row${isCurrent ? ' current' : ''}">
-                        <span class="history-tooltip-week">${h.weekId.replace(/^\d{4}-/, '')}</span>
+                        <span class="history-tooltip-week">${escHtml(formatWeekDateRange(h.weekId, { includeYear: false }) || h.weekId)}</span>
                         <span class="history-tooltip-value">${displayVal}</span>
                         ${changeHtml}
                     </div>`;
@@ -4240,16 +4315,12 @@
                 // Populate week number in header (previous week, since chart compares to prior week)
                 const headerWeek = document.getElementById('header-week');
                 if (headerWeek) {
-                    const prevWeekDate = new Date(); prevWeekDate.setDate(prevWeekDate.getDate() - 7);
-                    const w = getISOWeek(prevWeekDate);
-                    headerWeek.textContent = `W${String(w.week).padStart(2, '0')} ${w.year}`;
+                    headerWeek.textContent = getCurrentChartDateRange({ includeYear: false });
                 }
                 // Populate week label in mobile chart tabs
                 const mobileWeek = document.getElementById('mobile-week-label');
                 if (mobileWeek) {
-                    const prevWeekDate2 = new Date(); prevWeekDate2.setDate(prevWeekDate2.getDate() - 7);
-                    const w2 = getISOWeek(prevWeekDate2);
-                    mobileWeek.textContent = `W${String(w2.week).padStart(2, '0')}`;
+                    mobileWeek.textContent = getCurrentChartDateRange({ includeYear: false });
                 }
             }
             
@@ -4322,6 +4393,7 @@
                     document.querySelectorAll('.chart-loading').forEach(el => el.textContent = 'Грешка при вчитување.');
                     return;
                 }
+                periodText = getCurrentChartDateRange();
                 
                 // Load bands data for artist info lookups
                 try {
@@ -4511,7 +4583,7 @@
                 if (!siteMaster) return;
                 
                 // If viewing a historical week, re-render with historical data
-                if (selectedWeekId && selectedWeekId !== currentWeekId) {
+                if (selectedWeekId) {
                     navigateToWeek(selectedWeekId);
                     return;
                 }
@@ -4697,6 +4769,7 @@
                         ).slice(0, 20);
                     }
                     
+                    periodText = getCurrentChartDateRange() || periodText;
                     const periodWithFilter = periodText + (filterSuffix ? ' • ' + filterSuffix : '');
                     document.getElementById('singles-period').textContent = periodWithFilter;
                     document.getElementById('albums-period').textContent = periodWithFilter;
@@ -5037,13 +5110,13 @@
                 const rowNum = absoluteIndex + 1;
 
                 let chgStr;
-                if (r._isNew) chgStr = `<span class="adv-new">NEW</span>`;
+                if (r._isNew) chgStr = `<span class="adv-new">НОВО</span>`;
                 else if (r._posChange > 0) chgStr = `<span class="adv-up">+${r._posChange}</span>`;
                 else if (r._posChange < 0) chgStr = `<span class="adv-down">${r._posChange}</span>`;
                 else chgStr = `<span class="adv-same">·</span>`;
 
                 let pdStr;
-                if (r._isNew) pdStr = `<span class="adv-new">NEW</span>`;
+                if (r._isNew) pdStr = `<span class="adv-new">НОВО</span>`;
                 else if (r._popDelta > 0) pdStr = `<span class="adv-up">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
                 else if (r._popDelta < 0) pdStr = `<span class="adv-down">${formatViewsDeltaPlainLetters(r._popDelta)}</span>`;
                 else pdStr = `<span class="adv-same">·</span>`;
@@ -5374,6 +5447,15 @@
                 const container = document.getElementById(containerId);
                 const loading = document.getElementById(`${containerId}-loading`);
                 const empty = document.getElementById(`${containerId}-empty`);
+                const activeRangeBounds = getActiveChartRangeBounds();
+
+                function isReleaseNewForActiveChart(release) {
+                    if (release?.isNewEntry === true) return true;
+                    if (!activeRangeBounds?.start || !activeRangeBounds?.end) return false;
+                    const releaseDate = parseIsoDateOnly(release.effectiveReleaseDate || release.releaseDate);
+                    return !!(releaseDate && releaseDate >= activeRangeBounds.start && releaseDate <= activeRangeBounds.end);
+                }
+
                 clearChartLoadReveal(container);
                 
                 loading.style.display = 'none';
@@ -5433,10 +5515,9 @@
                     const releaseDateStr = `${String(releaseDate.getDate()).padStart(2,'0')}.${String(releaseDate.getMonth()+1).padStart(2,'0')}.${releaseDate.getFullYear()}`;
                     let changeIndicator = '';
                     
-                    const isFreshRelease = daysElapsed <= 7;
+                    const isNewReleaseForChart = isReleaseNewForActiveChart(release);
 
-                    // Mark as new only if released within the last 7 days
-                    if (isFreshRelease) {
+                    if (isNewReleaseForChart) {
                         itemClass += ' is-new';
                     }
                     
@@ -5514,7 +5595,7 @@
                     const hasHistory = releaseHistoryMap.has(release.releaseId);
                     
                     // If we have history tooltips, suppress native title to avoid double tooltip
-                    const rankTitle = hasHistory ? '' : (isFreshRelease ? 'НОВО' : changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
+                    const rankTitle = hasHistory ? '' : (isNewReleaseForChart ? 'НОВО' : changeIndicator === 'rank-up' ? t('charts.rankUp') : changeIndicator === 'rank-down' ? t('charts.rankDown') : changeIndicator === 'rank-same' ? t('charts.rankSame') : '');
                     const popTitle = hasHistory ? '' : metricTitle;
                     const posTooltipAttr = showPosition && hasHistory
                         ? ` data-tooltip-release-id="${escHtml(String(release.releaseId || ''))}" data-tooltip-mode="position" data-tooltip-type="${escHtml(release.releaseType || '')}" data-tooltip-rank="${rank}"`
@@ -5523,7 +5604,7 @@
                         ? ` data-tooltip-release-id="${escHtml(String(release.releaseId || ''))}" data-tooltip-mode="views" data-tooltip-type="${escHtml(release.releaseType || '')}" data-tooltip-rank="${rank}"`
                         : '';
                     
-                    const rankIndicatorHtml = isFreshRelease
+                    const rankIndicatorHtml = isNewReleaseForChart
                         ? '<span class="rank-new-badge">НОВО</span>'
                         : changeIndicator === 'rank-up'
                             ? '<span class="rank-arrows up"><i></i><i></i><i></i></span>'
@@ -5913,9 +5994,9 @@
             loadChartData().then(async () => {
                 await initWeekNavigator();
                 
-                // Expose return-to-current for the global onclick handler
+                // Expose return-to-current for older links/scripts.
                 window._returnToCurrentWeek = () => {
-                    navigateToWeek(currentWeekId);
+                    navigateToWeek(null);
                     updateWeekUrl(null);
                 };
                 
