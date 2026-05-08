@@ -29,7 +29,7 @@
           "name": "Tankli Tunkli",
           "videoId": "quY1hTUc4yU",
           "url": "https://www.youtube.com/watch?v=quY1hTUc4yU",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
@@ -51,7 +51,21 @@
           "Galoski"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/19gU7Hvep0G37JeiLf3TNB?si=y-Fv2pDqTG6KeZpRO5zu9w"
+      "spotifyUrl": "https://open.spotify.com/artist/19gU7Hvep0G37JeiLf3TNB?si=y-Fv2pDqTG6KeZpRO5zu9w",
+      "youtubeTracks": [
+        {
+          "name": "Don't Stop",
+          "videoId": "tmAD-Ixi2Uk",
+          "url": "https://www.youtube.com/watch?v=tmAD-Ixi2Uk",
+          "verified": "verified"
+        },
+        {
+          "name": "Don't Stop",
+          "videoId": "CfBBFIDcTpc",
+          "url": "https://www.youtube.com/watch?v=CfBBFIDcTpc",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Марија Спасовска",
@@ -301,7 +315,7 @@
           "name": "Dobro ti stoi",
           "videoId": "fRUsasnFYmo",
           "url": "https://www.youtube.com/watch?v=fRUsasnFYmo",
-          "verified": "unverified"
+          "verified": "verified"
         }
       ]
     },
