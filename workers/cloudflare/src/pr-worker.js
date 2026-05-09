@@ -1198,16 +1198,16 @@ async function fetchMergedContributionRecords(env) {
   pendingRecords.sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
   const byUser = new Map();
   for (const record of records) {
-    if (record.system) continue;
-    const login = record.submitter.login;
+    const login = record.system ? 'system' : record.submitter.login;
     const existing = byUser.get(login) || {
       login,
-      id: record.submitter.id,
-      name: record.submitter.name || '',
-      avatar_url: record.submitter.avatar_url || '',
-      html_url: record.submitter.html_url || `https://github.com/${login}`,
+      id: record.system ? null : record.submitter.id,
+      name: record.system ? 'System' : (record.submitter.name || ''),
+      avatar_url: record.system ? '' : (record.submitter.avatar_url || ''),
+      html_url: record.system ? '' : (record.submitter.html_url || `https://github.com/${login}`),
       contributions: 0,
       lastContributionAt: null,
+      system: record.system,
     };
     existing.contributions += record.contributionCount;
     if (!existing.lastContributionAt || String(record.mergedAt || '') > String(existing.lastContributionAt || '')) {
@@ -1215,16 +1215,17 @@ async function fetchMergedContributionRecords(env) {
     }
     byUser.set(login, existing);
   }
+  let rank = 1;
   const leaderboard = Array.from(byUser.values())
     .sort((a, b) => (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)))
-    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+    .map((entry) => ({ ...entry, rank: entry.system ? null : rank++ }));
 
   return {
     generatedAt: new Date().toISOString(),
     totalContributions: records.reduce((sum, record) => sum + record.contributionCount, 0),
     leaderboardContributions: records.filter(record => !record.system).reduce((sum, record) => sum + record.contributionCount, 0),
     systemContributions: records.filter(record => record.system).reduce((sum, record) => sum + record.contributionCount, 0),
-    totalContributors: leaderboard.length,
+    totalContributors: leaderboard.filter(entry => !entry.system).length,
     leaderboard,
     records,
     pendingRecords,

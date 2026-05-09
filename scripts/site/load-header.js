@@ -43,6 +43,7 @@
             '/radio': 'radio.html',
             '/kustosi': 'kustosi.html',
             '/contributions': 'contributions.html',
+            '/profile': 'profile.html',
             '/login': 'login.html',
             '/iznenadi-me': 'iznenadi-me.html',
             '/api': 'api.html',
@@ -68,8 +69,8 @@
         if (header.dataset.titleId) h1.id = header.dataset.titleId;
     }
 
-    // Keep the generic share-link button immediately to the left of settings.
-    // Any page-specific controls should appear before that pair.
+    // Keep page-specific controls before the shared action cluster.
+    // The auth/profile control stays as the furthest-right header action.
     var btnContainer = header.querySelector('.header-buttons');
     var shareLinkBtn = header.querySelector('#header-share-link-btn');
     var settingsBtn = header.querySelector('#settings-btn');

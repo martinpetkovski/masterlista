@@ -34,6 +34,7 @@
                 '/kustosi': '/kustosi.html',
                 '/radio': '/radio.html',
                 '/contributions': '/contributions.html',
+                '/profile': '/profile.html',
                 '/login': '/login.html',
                 '/iznenadi-me': '/iznenadi-me.html',
                 '/api': '/api.html',
@@ -84,6 +85,12 @@
                 return;
             }
 
+            if (path.startsWith('/profile/')) {
+                const profileUser = decodeURIComponent(path.substring('/profile/'.length).replace(/\/$/, ''));
+                window.location.replace('/profile.html' + (profileUser ? '?user=' + encodeURIComponent(profileUser) : ''));
+                return;
+            }
+
             // Handle /kustos/[name] routes (individual curator page)
             if (path.startsWith('/kustos/')) {
                 const curatorSlug = decodeURIComponent(path.substring('/kustos/'.length).replace(/\/$/, ''));
@@ -123,7 +130,7 @@
                 '/artist.html', '/kustos.html', '/404.html',
                 '/nastani.html', '/vesti.html', '/kustosi.html',
                 '/releases.html', '/interviews.html', '/radio.html',
-                '/contributions.html', '/login.html', '/iznenadi-me.html', '/api.html',
+                '/contributions.html', '/profile.html', '/login.html', '/iznenadi-me.html', '/api.html',
                 '/za.html', '/nastan.html',
                 '/privatnost.html', '/uslovi.html', '/charts.html',
                 '/robots.txt', '/sitemap.xml', '/CNAME',

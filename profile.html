@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профил | ТопЛиста.мк</title>
+    <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/scripts/site/common.js?v=11"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <style>
+        body.profile-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; }
+        body.profile-page main { height: auto; overflow: visible; display: block; padding: 1rem; }
+        .profile-shell { width: min(100%, 960px); margin: 0 auto; display: grid; gap: 1rem; }
+        .profile-card, .profile-panel, .profile-loading, .profile-error, .profile-empty { border: 1px solid var(--border-color); background: var(--bg-primary); }
+        .profile-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.85rem; align-items: center; padding: 1rem; }
+        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); display: inline-flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1.45rem; }
+        .profile-title { min-width: 0; }
+        .profile-title h2 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.25rem; line-height: 1.15; }
+        .profile-title span { color: var(--text-muted); font-size: 0.82rem; }
+        .profile-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+        .profile-stat { border: 1px solid var(--border-color); background: var(--bg-secondary); padding: 0.7rem; }
+        .profile-stat strong { display: block; font-size: 1.2rem; line-height: 1.1; }
+        .profile-stat span { color: var(--text-muted); font-size: 0.74rem; }
+        .profile-panel { padding: 1rem; }
+        .profile-panel h3 { margin: 0 0 0.75rem; font-family: 'Montserrat', sans-serif; font-size: 1rem; }
+        .profile-list { display: grid; gap: 0.55rem; }
+        .profile-contribution { border: 1px solid var(--border-color); background: var(--bg-primary); padding: 0.7rem; display: grid; gap: 0.45rem; }
+        .profile-contribution a { color: var(--text-primary); text-decoration: none; font-weight: 800; }
+        .profile-contribution a:hover { color: var(--accent-blue); }
+        .profile-meta { color: var(--text-muted); font-size: 0.74rem; }
+        .profile-files { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .profile-file { border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-secondary); padding: 0.2rem 0.35rem; font-size: 0.68rem; }
+        .profile-loading, .profile-error, .profile-empty { padding: 1rem; text-align: center; color: var(--text-secondary); }
+        .profile-loading { display: flex; align-items: center; justify-content: center; gap: 0.55rem; }
+        .profile-loading i { color: var(--accent-orange, #f59e0b); }
+        @media (max-width: 600px) {
+            body.profile-page main { padding: 0.75rem; }
+            .profile-card { grid-template-columns: auto minmax(0, 1fr); padding: 0.85rem; }
+            .profile-avatar { width: 52px; height: 52px; }
+            .profile-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="compact profile-page">
+    <header id="site-header" data-active="/contributions" data-title="Профил"></header>
+    <script src="/scripts/site/load-header.js"></script>
+
+    <main>
+        <div class="profile-shell">
+            <div id="profile-loading" class="profile-loading"><i class="fas fa-spinner fa-spin"></i><span>Се вчитува профил...</span></div>
+            <div id="profile-error" class="profile-error" style="display:none">Профилот не може да се вчита.</div>
+            <section id="profile-content" style="display:none">
+                <div class="profile-card" id="profile-card"></div>
+                <div class="profile-panel">
+                    <h3 id="profile-list-title">Придонеси</h3>
+                    <div id="profile-list" class="profile-list"></div>
+                    <div id="profile-empty" class="profile-empty" style="display:none">Нема придонеси за овој профил.</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            'use strict';
+
+            var OWNER = 'martinpetkovski';
+            var REPO = 'masterlista';
+            var SYSTEM_LOGINS = { martinpetkovski: true };
+            var METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
+            var EMAIL_RE = /([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/ig;
+            var PAGE_LIMIT = 200;
+
+            function localText(key, fallback) {
+                if (typeof t !== 'function') return fallback;
+                var value = t(key);
+                return value === key ? fallback : value;
+            }
+
+            function safeHtml(value) {
+                if (typeof escHtml === 'function') return escHtml(value);
+                return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+                });
+            }
+
+            function maskEmails(value) {
+                return String(value || '').replace(EMAIL_RE, function(_, local, domain) {
+                    return local.slice(0, Math.min(2, local.length)) + '***@' + domain.slice(0, Math.min(2, domain.length)) + '***';
+                });
+            }
+
+            function isSystem(login) {
+                return !!login && !!SYSTEM_LOGINS[String(login).toLowerCase()];
+            }
+
+            function getProfileUser() {
+                var params = new URLSearchParams(window.location.search || '');
+                var user = params.get('user') || params.get('login') || '';
+                if (!user && location.pathname.indexOf('/profile/') === 0) {
+                    user = decodeURIComponent(location.pathname.substring('/profile/'.length).replace(/\/$/, ''));
+                }
+                return String(user || '').trim();
+            }
+
+            function workerBase() {
+                var base = window.MMMAuth && typeof window.MMMAuth.getEndpoint === 'function'
+                    ? window.MMMAuth.getEndpoint()
+                    : (localStorage.getItem('mmm_pr_endpoint') || 'https://muzichka-master-lista.deeeeelay.workers.dev');
+                return base.replace(/\/+$/, '');
+            }
+
+            function workerUrl(offset) {
+                return workerBase() + '/contributions?limit=' + PAGE_LIMIT + '&pending_limit=0&offset=' + offset;
+            }
+
+            function extractContributionMetadata(body) {
+                if (!body || typeof body !== 'string') return null;
+                var re = new RegExp('<!--\\s*' + METADATA_MARKER + '\\s*([\\s\\S]*?)\\s*-->', 'm');
+                var match = body.match(re);
+                if (!match || !match[1]) return null;
+                try {
+                    var parsed = JSON.parse(match[1]);
+                    if (parsed && parsed.source === 'site' && parsed.submitter && parsed.submitter.login) return parsed;
+                } catch (_) {}
+                return null;
+            }
+
+            function publicUser(user) {
+                user = user || {};
+                return {
+                    id: user.id || null,
+                    login: user.login || '',
+                    name: user.name || '',
+                    avatar_url: user.avatar_url || '',
+                    html_url: user.html_url || (user.login ? 'https://github.com/' + user.login : '')
+                };
+            }
+
+            function buildRecord(pr, status) {
+                var metadata = extractContributionMetadata(pr.body || '');
+                var submitter = metadata && metadata.submitter && metadata.submitter.login ? metadata.submitter : publicUser(pr.user);
+                if (!submitter || !submitter.login) return null;
+                var contributionCount = Number(metadata && metadata.contributionCount || 1) || 1;
+                return {
+                    prNumber: pr.number,
+                    prUrl: pr.html_url,
+                    title: pr.title,
+                    mergedAt: pr.merged_at || '',
+                    createdAt: pr.created_at,
+                    updatedAt: pr.updated_at,
+                    contributionCount: status === 'pending' ? 0 : contributionCount,
+                    submitter: submitter,
+                    system: isSystem(submitter.login),
+                    status: status,
+                    source: metadata ? 'site' : 'github',
+                    files: metadata && Array.isArray(metadata.files) ? metadata.files : [],
+                    baseBranch: pr.base && pr.base.ref || ''
+                };
+            }
+
+            async function loadPulls(state, maxPages) {
+                var records = [];
+                for (var page = 1; page <= maxPages; page++) {
+                    var url = 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/pulls?state=' + state + '&sort=updated&direction=desc&per_page=100&page=' + page;
+                    var resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } });
+                    if (!resp.ok) throw new Error(await resp.text());
+                    var prs = await resp.json();
+                    if (!Array.isArray(prs) || !prs.length) break;
+                    prs.forEach(function(pr) {
+                        if (state === 'closed' && !pr.merged_at) return;
+                        var record = buildRecord(pr, state === 'open' ? 'pending' : 'merged');
+                        if (record) records.push(record);
+                    });
+                    if (prs.length < 100) break;
+                }
+                return records;
+            }
+
+            function aggregate(records, base) {
+                var byUser = {};
+                records.forEach(function(record) {
+                    if (!record.submitter || !record.submitter.login) return;
+                    var login = record.system ? 'system' : record.submitter.login;
+                    if (!byUser[login]) {
+                        byUser[login] = {
+                            login: login,
+                            id: record.system ? null : record.submitter.id,
+                            name: record.system ? localText('contributions.system', 'System') : (record.submitter.name || ''),
+                            avatar_url: record.system ? '/images/logo.png' : (record.submitter.avatar_url || ''),
+                            html_url: record.system ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
+                            contributions: 0,
+                            lastContributionAt: null,
+                            system: record.system
+                        };
+                    }
+                    byUser[login].contributions += record.contributionCount || 1;
+                    if (!byUser[login].lastContributionAt || String(record.mergedAt || '') > String(byUser[login].lastContributionAt || '')) {
+                        byUser[login].lastContributionAt = record.mergedAt;
+                    }
+                });
+                var rank = 1;
+                var leaderboard = Object.keys(byUser).map(function(login) { return byUser[login]; })
+                    .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); })
+                    .map(function(entry) {
+                        entry.rank = entry.system ? null : rank++;
+                        return entry;
+                    });
+                return Object.assign({}, base || {}, {
+                    leaderboard: leaderboard,
+                    totalContributors: leaderboard.filter(function(entry) { return !entry.system; }).length,
+                    totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
+                    records: records
+                });
+            }
+
+            async function loadFromWorker() {
+                var offset = 0;
+                var allRecords = [];
+                var first = null;
+                while (true) {
+                    var resp = await fetch(workerUrl(offset));
+                    if (!resp.ok) throw new Error(await resp.text());
+                    var chunk = await resp.json();
+                    if (!first) first = chunk;
+                    var records = Array.isArray(chunk.records) ? chunk.records : [];
+                    allRecords = allRecords.concat(records);
+                    offset += Number(chunk.limit || PAGE_LIMIT) || PAGE_LIMIT;
+                    if (!records.length || offset >= Number(chunk.totalRecords || allRecords.length)) break;
+                }
+                return aggregate(allRecords, first || {});
+            }
+
+            async function loadFromGitHub() {
+                var records = await loadPulls('closed', 10);
+                records.sort(function(a, b) { return String(b.mergedAt || '').localeCompare(String(a.mergedAt || '')); });
+                return aggregate(records, { generatedAt: new Date().toISOString() });
+            }
+
+            function displayName(user) {
+                return maskEmails((user && (user.name || user.login)) || 'GitHub');
+            }
+
+            function displayLogin(login) {
+                return maskEmails(login || '');
+            }
+
+            function displayTitle(title) {
+                return maskEmails(title || '');
+            }
+
+            function formatDate(value) {
+                if (!value) return '';
+                try {
+                    var lang = typeof getLanguage === 'function' ? getLanguage() : 'mk';
+                    return new Intl.DateTimeFormat(lang, { dateStyle: 'medium' }).format(new Date(value));
+                } catch (_) {
+                    return String(value).slice(0, 10);
+                }
+            }
+
+            function matchesProfile(record, requestedUser) {
+                if (!requestedUser) return false;
+                if (requestedUser.toLowerCase() === 'system') return !!record.system;
+                return !record.system && record.submitter && String(record.submitter.login || '').toLowerCase() === requestedUser.toLowerCase();
+            }
+
+            function renderContribution(record) {
+                var files = (record.files || []).map(function(file) { return '<span class="profile-file">' + safeHtml(file) + '</span>'; }).join('');
+                return '<article class="profile-contribution">' +
+                    '<a href="' + safeHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + safeHtml(displayTitle(record.title)) + '</a>' +
+                    '<div class="profile-meta">' + safeHtml(formatDate(record.mergedAt || record.updatedAt || record.createdAt)) + (record.system ? ' · ' + safeHtml(localText('contributions.system', 'System')) : '') + '</div>' +
+                    (files ? '<div class="profile-files">' + files + '</div>' : '') +
+                '</article>';
+            }
+
+            function render(data, requestedUser) {
+                var isSystemProfile = requestedUser.toLowerCase() === 'system';
+                var records = (data.records || []).filter(function(record) { return matchesProfile(record, requestedUser); });
+                var entry = (data.leaderboard || []).find(function(item) {
+                    return isSystemProfile ? item.system : String(item.login || '').toLowerCase() === requestedUser.toLowerCase();
+                });
+                var firstUser = records[0] && records[0].submitter || {};
+                var name = isSystemProfile ? localText('contributions.system', 'System') : displayName(entry || firstUser || { login: requestedUser });
+                var login = isSystemProfile ? 'system' : (entry && entry.login || firstUser.login || requestedUser);
+                var avatar = isSystemProfile ? '/images/logo.png' : (entry && entry.avatar_url || firstUser.avatar_url || '/images/logo.png');
+                var total = records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0);
+                var rank = isSystemProfile || !entry || !entry.rank ? localText('contributions.notRanked', 'Not ranked') : ('#' + entry.rank);
+
+                document.title = name + ' | ТопЛиста.мк';
+                var header = document.getElementById('site-header');
+                if (header) header.setAttribute('data-title', name);
+                var h1 = header && header.querySelector('h1');
+                if (h1) h1.textContent = name;
+
+                document.getElementById('profile-card').innerHTML =
+                    '<img class="profile-avatar" src="' + safeHtml(avatar) + '" alt="" loading="lazy">' +
+                    '<div class="profile-title"><h2>' + safeHtml(name) + '</h2><span>@' + safeHtml(displayLogin(login)) + '</span></div>' +
+                    '<div class="profile-stats">' +
+                        '<div class="profile-stat"><strong>' + total + '</strong><span>' + safeHtml(localText('contributions.total', 'contributions')) + '</span></div>' +
+                        '<div class="profile-stat"><strong>' + safeHtml(rank) + '</strong><span>' + safeHtml(localText('contributions.leaderboard', 'Leaderboard')) + '</span></div>' +
+                    '</div>';
+                document.getElementById('profile-list-title').textContent = localText('contributions.recent', 'Contributions').replace(/^20\s+/, '');
+                document.getElementById('profile-empty').style.display = records.length ? 'none' : 'block';
+                document.getElementById('profile-list').innerHTML = records.map(renderContribution).join('');
+            }
+
+            async function load() {
+                var requestedUser = getProfileUser();
+                var loading = document.getElementById('profile-loading');
+                var error = document.getElementById('profile-error');
+                var content = document.getElementById('profile-content');
+                if (!requestedUser) {
+                    loading.style.display = 'none';
+                    error.style.display = '';
+                    error.textContent = 'Недостасува корисник.';
+                    return;
+                }
+                try {
+                    var data;
+                    try {
+                        data = await loadFromWorker();
+                    } catch (_) {
+                        data = await loadFromGitHub();
+                    }
+                    render(data, requestedUser);
+                    loading.style.display = 'none';
+                    content.style.display = '';
+                } catch (err) {
+                    console.error('Failed to load profile:', err);
+                    loading.style.display = 'none';
+                    error.style.display = '';
+                }
+            }
+
+            if (typeof onLanguageChange === 'function') onLanguageChange(function() { load(); });
+            load();
+        })();
+    </script>
+</body>
+</html>

@@ -309,9 +309,6 @@
             flex-direction: column;
         }
         
-        body.dark-mode.chart-page {
-        }
-        
         /* Chart Filter Bar */
         .chart-filter-bar {
             background: var(--bg-secondary);
@@ -1539,6 +1536,10 @@
         }
         
         @media (max-width: 900px) {
+            body.chart-page .header-info {
+                display: none !important;
+            }
+
             .mobile-week-nav {
                 display: flex;
                 align-items: center;
@@ -2824,7 +2825,7 @@
         
         <div class="chart-sections">
             <!-- Top Singles -->
-            <div class="chart-section" id="singles-section">
+            <div class="chart-section mobile-active" id="singles-section">
                 <div class="chart-section-header singles">
                     <h2><i class="fas fa-music"></i> <span data-i18n="charts.singles">Синглови</span></h2>
                     <div class="chart-header-right">
@@ -3051,11 +3052,15 @@
             albums: t('charts.topAlbums'),
             latest: t('charts.latestReleases')
         };
+
+        function isSingleChartMode() {
+            return window.matchMedia ? window.matchMedia('(max-width: 900px)').matches : window.innerWidth <= 900;
+        }
         
         // Initialize mobile chart tabs (show one chart at a time)
         function initViewModes() {
             localStorage.removeItem('mmm-global-compact');
-            if (window.innerWidth <= 600) {
+            if (isSingleChartMode()) {
                 initMobileChartTabs();
                 initMobileSwipeRow();
             }
@@ -3357,7 +3362,7 @@
         // Share functions
         function shareActiveChart() {
             // Determine which chart section is currently active/visible
-            const isMobileView = window.innerWidth <= 600;
+            const isMobileView = isSingleChartMode();
             let chartType = 'singles';
             if (isMobileView) {
                 const activeTab = document.querySelector('.mobile-chart-tab.active');
@@ -4022,7 +4027,7 @@
                 document.getElementById('artists-cumulative-section').style.display = 'none';
                 document.getElementById('advanced-section').style.display = 'none';
                 
-                if (window.innerWidth <= 600) {
+                if (isSingleChartMode()) {
                     const tabs = document.getElementById('mobile-chart-tabs');
                     if (tabs) tabs.style.display = '';
                     const activeTab = tabs?.querySelector('.mobile-chart-tab.active');
@@ -4630,7 +4635,7 @@
                     document.getElementById('artists-cumulative-section').style.display = 'none';
                     document.getElementById('advanced-section').style.display = 'flex';
                     
-                    if (window.innerWidth <= 600) {
+                    if (isSingleChartMode()) {
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = 'none';
                         document.getElementById('advanced-section').classList.add('mobile-active');
@@ -4650,7 +4655,7 @@
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
-                    if (window.innerWidth <= 600) {
+                    if (isSingleChartMode()) {
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = 'none';
                         document.getElementById('artists-cumulative-section').classList.add('mobile-active');
@@ -4721,7 +4726,7 @@
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
-                    if (window.innerWidth <= 600) {
+                    if (isSingleChartMode()) {
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = 'none';
                         document.getElementById('artists-section').classList.add('mobile-active');
@@ -4792,7 +4797,7 @@
                     document.getElementById('advanced-section').style.display = 'none';
                     document.getElementById('advanced-section').classList.remove('mobile-active');
                     
-                    if (window.innerWidth <= 600) {
+                    if (isSingleChartMode()) {
                         const tabs = document.getElementById('mobile-chart-tabs');
                         if (tabs) tabs.style.display = '';
                         document.getElementById('artists-section').classList.remove('mobile-active');
@@ -4884,7 +4889,7 @@
                         applyFilters();
                         
                         // Scroll charts into view on mobile
-                        if (window.innerWidth <= 600) {
+                        if (isSingleChartMode()) {
                             document.querySelector('.chart-container')?.scrollIntoView({ behavior: 'smooth' });
                         }
                     });
@@ -4913,7 +4918,7 @@
                         applyFilters();
                         
                         // Scroll charts into view on mobile
-                        if (window.innerWidth <= 600) {
+                        if (isSingleChartMode()) {
                             document.querySelector('.chart-container')?.scrollIntoView({ behavior: 'smooth' });
                         }
                     });

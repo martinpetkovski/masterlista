@@ -407,6 +407,7 @@ header p {
 .header-btn i { font-size: 0.9rem; }
 
 .mmm-auth-btn { gap: 0.35rem; padding-inline: 0.65rem; }
+.mmm-auth-mobile-status { display: none !important; }
 .header-btn.mmm-auth-btn:not(.authenticated) {
     padding: 0;
     border-color: rgba(245, 158, 11, 0.85);
@@ -425,7 +426,34 @@ header p {
     box-shadow: 0 10px 22px rgba(245, 158, 11, 0.34);
 }
 .mmm-auth-label { font-size: 0.76rem; font-weight: 800; line-height: 1; }
-.header-btn.mmm-auth-btn.authenticated { padding: 0; }
+.header-btn.mmm-auth-btn.authenticated {
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+}
+.header-btn.mmm-auth-btn.authenticated::before {
+    display: none;
+}
+.header-btn.mmm-auth-btn.authenticated::after {
+    opacity: 1;
+    width: 8px;
+    height: 8px;
+    right: 1px;
+    bottom: 1px;
+    border: 0;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 2px var(--bg-primary, #fff);
+}
+.header-btn.mmm-auth-btn.authenticated:hover {
+    background: transparent;
+    border-color: transparent;
+    color: inherit;
+    filter: none;
+    box-shadow: none;
+}
 .mmm-auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block; }
 .mmm-auth-menu {
     position: fixed;

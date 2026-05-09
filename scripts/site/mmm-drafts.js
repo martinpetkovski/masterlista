@@ -888,14 +888,14 @@ window.MMMDrafts = (function () {
 
     // ── Submit Dialog ────────────────────────────────────────────
 
-    function _showSubmitDialog() {
+    async function _showSubmitDialog() {
         var files = getPendingFiles();
         if (!files.length) {
             _showNotification(t('drafts.noChangesNotif'), 'info');
             return;
         }
 
-        var authState = window.MMMAuth && typeof window.MMMAuth.getState === 'function' ? window.MMMAuth.getState() : null;
+        var authState = await _getGitHubSession();
         var isSignedIn = !!(authState && authState.authenticated && authState.user);
 
         var fileLabels = files.map(function (f) {
@@ -909,7 +909,7 @@ window.MMMDrafts = (function () {
         var userName = user.name || user.login || 'GitHub';
         var identityHtml = isSignedIn
             ? '<div class="mmm-draft-auth-user">' +
-                (user.avatar_url ? '<img src="' + _esc(user.avatar_url) + '" alt="">' : '<i class="fab fa-github"></i>') +
+                (user.avatar_url ? '<img src="' + _esc(user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
                 '<div><span>' + _authText('auth.signedInAs', 'Signed in as') + '</span><strong>' + _esc(userName) + (user.login ? ' (@' + _esc(user.login) + ')' : '') + '</strong></div>' +
             '</div>'
             : '<div class="mmm-draft-auth-user mmm-draft-auth-anon">' +

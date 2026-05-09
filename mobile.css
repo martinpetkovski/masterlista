@@ -367,7 +367,34 @@ header h1, header p { display: none; }
     box-shadow: 0 10px 22px rgba(245, 158, 11, 0.34);
 }
 .mmm-auth-label { font-size: 0.68rem; font-weight: 800; line-height: 1; }
-.header-btn.mmm-auth-btn.authenticated { padding: 0; }
+.header-btn.mmm-auth-btn.authenticated {
+    padding: 0;
+    border-color: transparent;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+}
+.header-btn.mmm-auth-btn.authenticated::before {
+    display: none;
+}
+.header-btn.mmm-auth-btn.authenticated::after {
+    opacity: 1;
+    width: 8px;
+    height: 8px;
+    right: 1px;
+    bottom: 1px;
+    border: 0;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.92);
+}
+.header-btn.mmm-auth-btn.authenticated:hover {
+    background: transparent;
+    border-color: transparent;
+    color: inherit;
+    filter: none;
+    box-shadow: none;
+}
 .mmm-auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block; }
 .mmm-auth-menu {
     position: fixed;
@@ -3849,6 +3876,54 @@ body.dark-mode .site-nav-menu a.active:hover i {
 
 .site-nav-menu.open {
     display: block;
+}
+
+.mmm-auth-mobile-status {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.8rem 0.9rem 0.7rem;
+    margin-bottom: 0.3rem;
+    background: rgba(34, 197, 94, 0.08);
+    border-bottom: 1px solid var(--nav-border, var(--artist-accent-2, #dfe1e5));
+}
+
+.mmm-auth-mobile-status[hidden] {
+    display: none !important;
+}
+
+.mmm-auth-mobile-status > i {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: #16a34a;
+    background: rgba(34, 197, 94, 0.12);
+    flex-shrink: 0;
+}
+
+.mmm-auth-mobile-status strong,
+.mmm-auth-mobile-status span {
+    display: block;
+    line-height: 1.2;
+}
+
+.mmm-auth-mobile-status strong {
+    color: var(--text-primary);
+    font-size: 0.88rem;
+}
+
+.mmm-auth-mobile-status span {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+body.dark-mode .mmm-auth-mobile-status {
+    background: rgba(34, 197, 94, 0.14);
+    border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 .site-nav-menu a {

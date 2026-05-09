@@ -57,6 +57,8 @@
         .contribution-files { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .contribution-file { border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-secondary); padding: 0.2rem 0.35rem; font-size: 0.68rem; }
         .contributions-loading, .contributions-empty, .contributions-error { border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-secondary); padding: 1rem; text-align: center; }
+        .contributions-loading { display: flex; align-items: center; justify-content: center; gap: 0.55rem; }
+        .contributions-loading i { color: var(--accent-orange, #f59e0b); }
         @media (max-width: 800px) {
             .contributions-toolbar { align-items: stretch; flex-direction: column; }
             .contributions-search { width: 100%; }
@@ -81,7 +83,7 @@
                 </label>
             </div>
 
-            <div id="contributions-loading" class="contributions-loading" data-i18n="contributions.loading">Loading contributions...</div>
+            <div id="contributions-loading" class="contributions-loading"><i class="fas fa-spinner fa-spin"></i><span data-i18n="contributions.loading">Loading contributions...</span></div>
             <div id="contributions-error" class="contributions-error" data-i18n="contributions.error" style="display:none">Could not load contributions.</div>
 
             <div id="contributions-content" class="contributions-content" style="display:none">
@@ -190,17 +192,18 @@
                 pendingRecords.sort(function(a, b) { return String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')); });
                 var byUser = {};
                 records.forEach(function(record) {
-                    if (record.system || !record.submitter || !record.submitter.login) return;
-                    var login = record.submitter.login;
+                    if (!record.submitter || !record.submitter.login) return;
+                    var login = record.system ? 'system' : record.submitter.login;
                     if (!byUser[login]) {
                         byUser[login] = {
                             login: login,
-                            id: record.submitter.id,
-                            name: record.submitter.name || '',
-                            avatar_url: record.submitter.avatar_url || '',
-                            html_url: record.submitter.html_url || ('https://github.com/' + login),
+                            id: record.system ? null : record.submitter.id,
+                            name: record.system ? t('contributions.system') : (record.submitter.name || ''),
+                            avatar_url: record.system ? '/images/logo.png' : (record.submitter.avatar_url || ''),
+                            html_url: record.system ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
                             contributions: 0,
-                            lastContributionAt: null
+                            lastContributionAt: null,
+                            system: record.system
                         };
                     }
                     byUser[login].contributions += record.contributionCount || 1;
@@ -209,9 +212,16 @@
                     }
                 });
                 var leaderboard = Object.keys(byUser).map(function(login) { return byUser[login]; })
-                    .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); })
-                    .map(function(entry, index) {
-                        entry.rank = index + 1;
+                    .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); });
+                var rank = 1;
+                leaderboard.forEach(function(entry) {
+                    if (entry.system) entry.rank = null;
+                    else {
+                        entry.rank = rank;
+                        rank += 1;
+                    }
+                });
+                leaderboard = leaderboard.map(function(entry) {
                         return entry;
                     });
                 return {
@@ -219,7 +229,7 @@
                     totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
                     leaderboardContributions: records.filter(function(record) { return !record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
                     systemContributions: records.filter(function(record) { return record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
-                    totalContributors: leaderboard.length,
+                    totalContributors: leaderboard.filter(function(entry) { return !entry.system; }).length,
                     leaderboard: leaderboard,
                     records: records.slice(0, MERGED_LIMIT),
                     pendingRecords: pendingRecords.slice(0, PENDING_LIMIT),
@@ -264,6 +274,24 @@
                 return maskEmails(title || '');
             }
 
+            function localText(key, fallback) {
+                if (typeof t !== 'function') return fallback;
+                var value = t(key);
+                return value === key ? fallback : value;
+            }
+
+            function isLocalPage() {
+                return location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            }
+
+            function profileUrl(login, system) {
+                var user = system ? 'system' : String(login || '').trim();
+                if (!user) return isLocalPage() ? '/contributions.html' : '/contributions';
+                var page = isLocalPage() ? '/profile.html' : '/profile';
+                if (location.protocol === 'file:') page = 'profile.html';
+                return page + '?user=' + encodeURIComponent(user);
+            }
+
             function formatDate(value) {
                 if (!value) return '';
                 try {
@@ -288,10 +316,13 @@
                     return;
                 }
                 el.innerHTML = data.leaderboard.map(function(entry) {
+                    var rankLabel = entry.system ? '—' : ('#' + entry.rank);
+                    var name = entry.system ? t('contributions.system') : displayName(entry);
+                    var subline = entry.system ? localText('contributions.notRanked', 'Not ranked') : ('@' + displayLogin(entry.login));
                     return '<article class="leaderboard-entry">' +
-                        '<div class="leaderboard-rank">#' + entry.rank + '</div>' +
+                        '<div class="leaderboard-rank">' + escHtml(rankLabel) + '</div>' +
                         '<img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
-                        '<div class="leaderboard-name"><a href="' + escHtml(entry.html_url || ('https://github.com/' + entry.login)) + '" target="_blank" rel="noopener">' + escHtml(displayName(entry)) + '</a><span>@' + escHtml(displayLogin(entry.login)) + '</span></div>' +
+                        '<div class="leaderboard-name"><a href="' + escHtml(profileUrl(entry.login, entry.system)) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
                         '<div class="leaderboard-count">' + entry.contributions + '</div>' +
                     '</article>';
                 }).join('');
@@ -306,10 +337,40 @@
                 return '<article class="contribution-entry">' +
                     '<div class="contribution-user">' +
                         '<img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
-                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta">@' + escHtml(displayLogin(user.login)) + ' · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
+                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta"><a href="' + escHtml(profileUrl(user.login, record.system)) + '">@' + escHtml(displayLogin(record.system ? 'system' : user.login)) + '</a> · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
                     '</div>' +
                     (files ? '<div class="contribution-files">' + files + '</div>' : '') +
                 '</article>';
+            }
+
+            function normalizeLeaderboard() {
+                var entries = Array.isArray(data.leaderboard) ? data.leaderboard.slice() : [];
+                var hasSystem = entries.some(function(entry) { return entry && entry.system; });
+                var systemCount = Number(data.systemContributions || 0) || 0;
+                if (!hasSystem && systemCount > 0) {
+                    entries.push({
+                        login: 'system',
+                        name: t('contributions.system'),
+                        avatar_url: '/images/logo.png',
+                        html_url: '',
+                        contributions: systemCount,
+                        lastContributionAt: null,
+                        system: true,
+                        rank: null
+                    });
+                }
+                entries.sort(function(a, b) {
+                    return ((b.contributions || 0) - (a.contributions || 0)) || String(a.login || '').localeCompare(String(b.login || ''));
+                });
+                var rank = 1;
+                entries.forEach(function(entry) {
+                    if (entry.system) entry.rank = null;
+                    else {
+                        entry.rank = rank;
+                        rank += 1;
+                    }
+                });
+                data.leaderboard = entries;
             }
 
             function renderPending() {
@@ -333,6 +394,7 @@
                 document.getElementById('contributors-total').textContent = data.totalContributors || 0;
                 if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
                 if (!Array.isArray(data.records)) data.records = [];
+                normalizeLeaderboard();
                 renderLeaderboard();
                 renderPending();
                 renderRecords();

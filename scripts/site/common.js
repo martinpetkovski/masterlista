@@ -1133,10 +1133,13 @@ function initSettingsMenu(extraServiceDefs) {
 function initNavMenu() {
     var trigger = document.querySelector('.site-nav-trigger');
     var menuEl = document.getElementById('site-nav-menu');
+    if (trigger && trigger.dataset.navMenuBound === '1') return;
     if (trigger && menuEl) {
+        trigger.dataset.navMenuBound = '1';
         trigger.addEventListener('click', function(e) {
             var header = trigger.closest('header');
-            if (window.innerWidth <= 600 || (header && header.classList.contains('nav-collapsed'))) {
+            var mobileMenu = window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+            if (mobileMenu || (header && header.classList.contains('nav-collapsed'))) {
                 e.preventDefault();
                 e.stopPropagation();
                 menuEl.classList.toggle('open');
@@ -1148,6 +1151,17 @@ function initNavMenu() {
             }
         });
     }
+}
+
+function initNavMenuWhenReady() {
+    if (document.getElementById('site-nav-menu')) initNavMenu();
+}
+
+window.addEventListener('mmm-header-loaded', initNavMenuWhenReady);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavMenuWhenReady);
+} else {
+    initNavMenuWhenReady();
 }
 
 // ==================== SHARE LINK BUTTON (shared) ====================
@@ -1785,11 +1799,31 @@ window.MMMAuth = (function () {
         }, 0);
     }
 
+    function renderMobileAuthStatus() {
+        var blocks = document.querySelectorAll('.mmm-auth-mobile-status');
+        if (!blocks.length) return;
+        var i;
+        if (!(state.sessionId && state.user)) {
+            for (i = 0; i < blocks.length; i++) {
+                blocks[i].hidden = true;
+                blocks[i].innerHTML = '';
+            }
+            return;
+        }
+        var name = state.user.name || state.user.login;
+        var iconHtml = '<i class="fas fa-circle-check"></i>';
+        for (i = 0; i < blocks.length; i++) {
+            blocks[i].hidden = false;
+            blocks[i].innerHTML = iconHtml + '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(state.user.login) + '</span></div>';
+        }
+    }
+
     function renderHeader() {
         var btn = document.getElementById('mmm-auth-btn');
         if (!btn) return;
-        btn.classList.toggle('authenticated', !!state.user);
-        if (state.user) {
+        var isAuthenticated = !!(state.sessionId && state.user);
+        btn.classList.toggle('authenticated', isAuthenticated);
+        if (isAuthenticated) {
             btn.title = text('auth.signedInAs', 'Signed in as') + ' @' + state.user.login;
             btn.setAttribute('aria-label', btn.title);
             btn.innerHTML = state.user.avatar_url
@@ -1800,6 +1834,7 @@ window.MMMAuth = (function () {
             btn.setAttribute('aria-label', btn.title);
             btn.innerHTML = '<i class="fas fa-right-to-bracket"></i>';
         }
+        renderMobileAuthStatus();
         if (!btn.dataset.mmmAuthBound) {
             btn.dataset.mmmAuthBound = '1';
             btn.addEventListener('click', function () {
@@ -2010,6 +2045,7 @@ function initPageTitleTranslation() {
         '/interviews':  { title: 'pageTitle.interviews', header: 'pages.interviews' },
         '/kustosi':     { title: 'pageTitle.curators',   header: 'pages.curators' },
         '/contributions': { title: 'pageTitle.contributions', header: 'pages.contributions' },
+        '/profile':     { title: 'pageTitle.profile',     header: 'pages.profile' },
         '/login':       { title: 'pageTitle.login',      header: 'auth.loginTitle' },
         '/iznenadi-me': { title: 'pageTitle.surprise',   header: 'pages.surprise' },
         '/privatnost':  { title: 'pageTitle.privacy',    header: 'pageTitle.privacyHeader' },

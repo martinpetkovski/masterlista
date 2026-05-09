@@ -28,19 +28,25 @@
             box-shadow: 0 12px 30px rgba(0,0,0,0.08);
         }
         body.dark-mode .login-panel, html.dark-mode .login-panel { box-shadow: 0 14px 34px rgba(0,0,0,0.32); }
+        .login-heading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.65rem;
+        }
         .login-mark {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.85rem;
             border: 1px solid var(--border-color);
             background: var(--bg-secondary);
             color: var(--text-primary);
-            font-size: 1.35rem;
+            font-size: 1.05rem;
+            flex-shrink: 0;
         }
-        .login-panel h2 { margin: 0 0 0.45rem; font-family: 'Montserrat', sans-serif; font-size: 1.35rem; line-height: 1.15; }
+        .login-panel h2 { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 1.35rem; line-height: 1.15; }
         .login-panel p { margin: 0 0 1rem; color: var(--text-secondary); line-height: 1.55; }
         .login-github-btn, .login-secondary-btn {
             width: 100%;
@@ -77,8 +83,10 @@
     <main>
         <div class="login-shell">
             <section class="login-panel" aria-labelledby="login-title">
-                <div class="login-mark"><i class="fab fa-github"></i></div>
-                <h2 id="login-title" data-i18n="auth.loginTitle">Најава</h2>
+                <div class="login-heading">
+                    <div class="login-mark"><i class="fas fa-right-to-bracket"></i></div>
+                    <h2 id="login-title" data-i18n="auth.loginTitle">Најава</h2>
+                </div>
                 <p id="login-intro" data-i18n="auth.loginIntro">Најави се за предлозите да се испратат преку твојот GitHub профил.</p>
                 <div id="login-signed-out">
                     <button type="button" id="login-github-btn" class="login-github-btn">
@@ -119,13 +127,16 @@
                 var auth = window.MMMAuth && typeof window.MMMAuth.getState === 'function' ? window.MMMAuth.getState() : { authenticated: false };
                 var signedOut = document.getElementById('login-signed-out');
                 var signedIn = document.getElementById('login-signed-in');
-                signedOut.style.display = auth.authenticated ? 'none' : '';
+                var intro = document.getElementById('login-intro');
+                var pendingSession = !!(auth && auth.sessionId && !auth.ready);
+                signedOut.style.display = auth.authenticated || pendingSession ? 'none' : '';
                 signedIn.style.display = auth.authenticated ? '' : 'none';
+                if (intro) intro.style.display = auth.authenticated || pendingSession ? 'none' : '';
                 if (!auth.authenticated || !auth.user) return;
                 var user = auth.user;
                 var name = user.name || user.login || 'GitHub';
                 document.getElementById('login-user').innerHTML =
-                    (user.avatar_url ? '<img src="' + escHtml(user.avatar_url) + '" alt="">' : '<i class="fab fa-github"></i>') +
+                    (user.avatar_url ? '<img src="' + escHtml(user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
                     '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(user.login || '') + '</span></div>';
             }
 
