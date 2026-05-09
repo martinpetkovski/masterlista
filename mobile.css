@@ -66,6 +66,7 @@ body {
 body.guide-page { overflow: auto; height: auto; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
 body.vesti-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 body.curators-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
+body.contributions-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 body.yt-links-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; min-height: 100dvh; }
 
 /* Generic button (matches index quick-action style) */
@@ -347,6 +348,115 @@ header h1, header p { display: none; }
 .header-btn.master-edit, .header-btn.copy-data { display: none; }
 .header-btn i { font-size: 1rem; }
 
+.mmm-auth-btn { gap: 0.3rem; padding-inline: 0.5rem; }
+.header-btn.mmm-auth-btn:not(.authenticated) {
+    padding: 0;
+    border-color: rgba(245, 158, 11, 0.85);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #111318;
+    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.28);
+}
+.header-btn.mmm-auth-btn:not(.authenticated)::after {
+    border-color: #111318;
+}
+.header-btn.mmm-auth-btn:not(.authenticated):hover {
+    background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+    border-color: rgba(245, 158, 11, 0.92);
+    color: #111318;
+    filter: brightness(1.03);
+    box-shadow: 0 10px 22px rgba(245, 158, 11, 0.34);
+}
+.mmm-auth-label { font-size: 0.68rem; font-weight: 800; line-height: 1; }
+.header-btn.mmm-auth-btn.authenticated { padding: 0; }
+.mmm-auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block; }
+.mmm-auth-menu {
+    position: fixed;
+    z-index: 10000;
+    min-width: 210px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+    padding: 0.55rem;
+}
+.mmm-auth-menu-user {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.mmm-auth-menu-user img,
+.mmm-auth-menu-user > i {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+.mmm-auth-menu-user strong,
+.mmm-auth-menu-user span { display: block; line-height: 1.2; }
+.mmm-auth-menu-user span { color: var(--text-muted); font-size: 0.72rem; }
+.mmm-auth-menu a,
+.mmm-auth-menu button {
+    width: 100%;
+    display: flex;
+    padding: 0.5rem 0.55rem;
+    border: 0;
+    background: transparent;
+    color: var(--text-primary);
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+}
+.mmm-auth-menu a:hover,
+.mmm-auth-menu button:hover { background: var(--bg-hover); }
+.mmm-auth-device-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+    background: rgba(0,0,0,0.45);
+}
+.mmm-auth-device-dialog {
+    width: min(100%, 360px);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    text-align: center;
+}
+.mmm-auth-device-dialog h2 { font-size: 1rem; margin-bottom: 0.6rem; }
+.mmm-auth-device-dialog p { color: var(--text-secondary); margin: 0.4rem 0; }
+.mmm-auth-device-code {
+    display: inline-flex;
+    justify-content: center;
+    min-width: 180px;
+    margin: 0.85rem 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+.mmm-auth-device-status { font-size: 0.78rem; }
+.mmm-auth-device-cancel {
+    margin-top: 0.5rem;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
 /* Glow animation for request change button when there are changes */
 @keyframes pulse-glow-mobile {
     0%, 100% {
@@ -377,6 +487,7 @@ main {
 
 body.guide-page main { padding: 0.4rem; height: auto; overflow: auto; }
 body.vesti-page main { height: auto; overflow: visible; padding: 0; }
+body.contributions-page main { height: auto; overflow: visible; padding: 0; display: block; }
 
 /* Meta strip (ex-footer info) */
 .meta-strip {
@@ -4094,6 +4205,48 @@ body.guide-page .site-footer {
     margin-bottom: 0.2rem;
 }
 .mmm-draft-file-list li i { color: var(--accent-blue, #4da6ff); font-size: 0.65rem; }
+.mmm-draft-auth-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem;
+    margin-bottom: 0.65rem;
+    background: var(--bg-primary, #1a1a2e);
+    border: 1px solid var(--border-color, #2a3a5a);
+    border-radius: 6px;
+}
+.mmm-draft-auth-user img,
+.mmm-draft-auth-user > i {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+}
+.mmm-draft-auth-user span,
+.mmm-draft-auth-user strong {
+    display: block;
+    line-height: 1.2;
+}
+.mmm-draft-auth-user span {
+    color: var(--text-muted, #888);
+    font-size: 0.68rem;
+}
+.mmm-draft-auth-anon { align-items: center; flex-wrap: wrap; }
+.mmm-draft-auth-anon > div { flex: 1; min-width: 150px; }
+.mmm-draft-auth-login {
+    border: 1px solid var(--border-color, #2a3a5a);
+    background: var(--bg-secondary, #16213e);
+    color: var(--text-primary, #f5f5f5);
+    padding: 0.4rem 0.5rem;
+    font: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+.mmm-draft-auth-login:hover { background: var(--bg-hover, rgba(255,255,255,0.08)); }
 .mmm-draft-field { margin-bottom: 0.6rem; }
 .mmm-draft-field label {
     display: block;

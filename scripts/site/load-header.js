@@ -11,7 +11,7 @@
 
     // Load header template (synchronous so DOM is ready for later scripts)
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/header.html', false);
+    xhr.open('GET', location.protocol === 'file:' ? 'header.html' : '/header.html', false);
     xhr.send();
     if (xhr.status === 200 || xhr.status === 0) {
         header.innerHTML = xhr.responseText;
@@ -25,6 +25,38 @@
             if (links[i].getAttribute('href') === activeNav) {
                 links[i].classList.add('active');
                 break;
+            }
+        }
+    }
+
+    // Basic local static servers often do not provide GitHub Pages' 404 fallback.
+    // Use direct .html files in that environment while keeping clean URLs in production.
+    var isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (isLocal) {
+        var cleanPages = {
+            '/charts': 'charts.html',
+            '/lista': 'lista.html',
+            '/releases': 'releases.html',
+            '/nastani': 'nastani.html',
+            '/vesti': 'vesti.html',
+            '/interviews': 'interviews.html',
+            '/radio': 'radio.html',
+            '/kustosi': 'kustosi.html',
+            '/contributions': 'contributions.html',
+            '/login': 'login.html',
+            '/iznenadi-me': 'iznenadi-me.html',
+            '/api': 'api.html',
+            '/za': 'za.html',
+            '/privatnost': 'privatnost.html',
+            '/uslovi': 'uslovi.html'
+        };
+        var localLinks = header.querySelectorAll('a[href]');
+        for (var j = 0; j < localLinks.length; j++) {
+            var href = localLinks[j].getAttribute('href');
+            if (href === '/') {
+                localLinks[j].setAttribute('href', location.protocol === 'file:' ? 'index.html' : '/index.html');
+            } else if (cleanPages[href]) {
+                localLinks[j].setAttribute('href', location.protocol === 'file:' ? cleanPages[href] : '/' + cleanPages[href]);
             }
         }
     }
@@ -48,6 +80,8 @@
 
     // Apply i18n translations to the freshly injected header
     if (typeof applyTranslations === 'function') applyTranslations();
+
+    window.dispatchEvent(new CustomEvent('mmm-header-loaded', { detail: { header: header } }));
 
     // Auto-collapse nav to mobile dropdown when buttons don't fit
     var navMenu = document.getElementById('site-nav-menu');

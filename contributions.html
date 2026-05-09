@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Придонеси | ТопЛиста.мк</title>
+    <meta name="description" content="Преглед на GitHub придонеси кон ТопЛиста.мк и листа на најактивни придонесувачи.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://toplista.mk/contributions">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://toplista.mk/contributions">
+    <meta property="og:title" content="Придонеси | ТопЛиста.мк">
+    <meta property="og:description" content="GitHub придонеси кон ТопЛиста.мк.">
+    <meta property="og:image" content="https://toplista.mk/images/og-image.png">
+    <meta property="og:locale" content="mk_MK">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/scripts/site/common.js?v=11"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <script src="/scripts/site/tour.js?v=1" defer></script>
+    <style>
+        .contributions-shell { width: min(100%, 1120px); margin: 0 auto; padding: 1rem; }
+        .contributions-toolbar { display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .contributions-stats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .contributions-stat { border: 1px solid var(--border-color); background: var(--bg-primary); padding: 0.55rem 0.7rem; min-width: 120px; }
+        .contributions-stat strong { display: block; font-size: 1rem; line-height: 1.1; }
+        .contributions-stat span { color: var(--text-muted); font-size: 0.72rem; }
+        .contributions-search { width: min(100%, 300px); position: relative; }
+        .contributions-search i { position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .contributions-search input { width: 100%; padding: 0.55rem 0.65rem 0.55rem 2rem; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font: inherit; }
+        .contributions-content { display: grid; gap: 1rem; }
+        .contributions-layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 1rem; align-items: start; }
+        .contributions-panel { min-width: 0; }
+        .contributions-panel h2 { font-size: 0.95rem; margin: 0 0 0.65rem; font-family: 'Montserrat', sans-serif; }
+        .leaderboard-list, .contribution-list { display: grid; gap: 0.55rem; }
+        .leaderboard-entry, .contribution-entry { border: 1px solid var(--border-color); background: var(--bg-primary); padding: 0.65rem; }
+        .leaderboard-entry { display: grid; grid-template-columns: auto 40px minmax(0, 1fr) auto; gap: 0.6rem; align-items: center; }
+        .leaderboard-rank { width: 26px; text-align: right; color: var(--text-muted); font-weight: 700; }
+        .leaderboard-entry img, .contribution-user img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); }
+        .leaderboard-name, .contribution-title { min-width: 0; }
+        .leaderboard-name a, .contribution-title a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
+        .leaderboard-name a:hover, .contribution-title a:hover { color: var(--accent-blue); }
+        .leaderboard-name span, .contribution-meta { display: block; color: var(--text-muted); font-size: 0.72rem; margin-top: 0.1rem; }
+        .contribution-system { color: var(--accent-color); font-weight: 700; }
+        .contribution-status { color: var(--accent-orange, #e8a838); font-weight: 700; }
+        .leaderboard-count { font-weight: 800; font-size: 1rem; }
+        .contribution-entry { display: grid; gap: 0.55rem; }
+        .contribution-user { display: flex; align-items: center; gap: 0.55rem; min-width: 0; }
+        .contribution-files { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .contribution-file { border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-secondary); padding: 0.2rem 0.35rem; font-size: 0.68rem; }
+        .contributions-loading, .contributions-empty, .contributions-error { border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-secondary); padding: 1rem; text-align: center; }
+        @media (max-width: 800px) {
+            .contributions-toolbar { align-items: stretch; flex-direction: column; }
+            .contributions-search { width: 100%; }
+            .contributions-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="compact contributions-page">
+    <header id="site-header" data-active="/contributions" data-title="Придонеси"></header>
+    <script src="/scripts/site/load-header.js"></script>
+
+    <main>
+        <div class="contributions-shell">
+            <div class="contributions-toolbar">
+                <div class="contributions-stats">
+                    <div class="contributions-stat"><strong id="contributions-total">0</strong><span data-i18n="contributions.total">contributions</span></div>
+                    <div class="contributions-stat"><strong id="contributors-total">0</strong><span data-i18n="contributions.contributors">contributors</span></div>
+                </div>
+                <label class="contributions-search">
+                    <i class="fas fa-search"></i>
+                    <input id="contributions-search" type="search" data-i18n-placeholder="contributions.searchPlaceholder" placeholder="Search contributions...">
+                </label>
+            </div>
+
+            <div id="contributions-loading" class="contributions-loading" data-i18n="contributions.loading">Loading contributions...</div>
+            <div id="contributions-error" class="contributions-error" data-i18n="contributions.error" style="display:none">Could not load contributions.</div>
+
+            <div id="contributions-content" class="contributions-content" style="display:none">
+                <section class="contributions-panel contributions-pending-panel">
+                    <h2 data-i18n="contributions.pending">Pending changes</h2>
+                    <div id="pending-list" class="contribution-list"></div>
+                    <div id="pending-empty" class="contributions-empty" data-i18n="contributions.pendingEmpty" style="display:none">No pending changes.</div>
+                </section>
+                <div class="contributions-layout">
+                    <section class="contributions-panel">
+                        <h2 data-i18n="contributions.leaderboard">Leaderboard</h2>
+                        <div id="leaderboard-list" class="leaderboard-list"></div>
+                    </section>
+                    <section class="contributions-panel">
+                        <h2 data-i18n="contributions.recent">20 most recent merged changes</h2>
+                        <div id="contribution-list" class="contribution-list"></div>
+                        <div id="contributions-empty" class="contributions-empty" data-i18n="contributions.empty" style="display:none">No contributions yet.</div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            'use strict';
+
+            var data = { leaderboard: [], records: [], pendingRecords: [], totalContributions: 0, totalContributors: 0 };
+            var query = '';
+            var OWNER = 'martinpetkovski';
+            var REPO = 'masterlista';
+            var SYSTEM_LOGINS = { martinpetkovski: true };
+            var METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
+            var MERGED_LIMIT = 20;
+            var PENDING_LIMIT = 100;
+            var EMAIL_RE = /([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/ig;
+
+            function workerEndpoint() {
+                var base = window.MMMAuth && typeof window.MMMAuth.getEndpoint === 'function'
+                    ? window.MMMAuth.getEndpoint()
+                    : (localStorage.getItem('mmm_pr_endpoint') || 'https://muzichka-master-lista.deeeeelay.workers.dev');
+                return base.replace(/\/+$/, '') + '/contributions?limit=' + MERGED_LIMIT + '&pending_limit=' + PENDING_LIMIT;
+            }
+
+            function maskEmails(value) {
+                return String(value || '').replace(EMAIL_RE, function(_, local, domain) {
+                    var localStart = local.slice(0, Math.min(2, local.length));
+                    var domainStart = domain.slice(0, Math.min(2, domain.length));
+                    return localStart + '***@' + domainStart + '***';
+                });
+            }
+
+            function extractContributionMetadata(body) {
+                if (!body || typeof body !== 'string') return null;
+                var re = new RegExp('<!--\\s*' + METADATA_MARKER + '\\s*([\\s\\S]*?)\\s*-->', 'm');
+                var match = body.match(re);
+                if (!match || !match[1]) return null;
+                try {
+                    var parsed = JSON.parse(match[1]);
+                    if (parsed && parsed.source === 'site' && parsed.submitter && parsed.submitter.login) return parsed;
+                } catch (_) {}
+                return null;
+            }
+
+            function publicUser(user) {
+                user = user || {};
+                return {
+                    id: user.id || null,
+                    login: user.login || '',
+                    name: user.name || '',
+                    avatar_url: user.avatar_url || '',
+                    html_url: user.html_url || (user.login ? 'https://github.com/' + user.login : '')
+                };
+            }
+
+            function isSystem(login) {
+                return !!login && !!SYSTEM_LOGINS[String(login).toLowerCase()];
+            }
+
+            function buildRecord(pr, status) {
+                var metadata = extractContributionMetadata(pr.body || '');
+                var submitter = metadata && metadata.submitter && metadata.submitter.login
+                    ? metadata.submitter
+                    : publicUser(pr.user);
+                if (!submitter || !submitter.login) return null;
+                var contributionCount = Number(metadata && metadata.contributionCount || 1) || 1;
+                return {
+                    prNumber: pr.number,
+                    prUrl: pr.html_url,
+                    title: pr.title,
+                    mergedAt: pr.merged_at || '',
+                    createdAt: pr.created_at,
+                    updatedAt: pr.updated_at,
+                    contributionCount: status === 'pending' ? 0 : contributionCount,
+                    submitter: submitter,
+                    system: isSystem(submitter.login),
+                    status: status,
+                    source: metadata ? 'site' : 'github',
+                    files: metadata && Array.isArray(metadata.files) ? metadata.files : [],
+                    baseBranch: pr.base && pr.base.ref || ''
+                };
+            }
+
+            function aggregate(records, pendingRecords) {
+                records.sort(function(a, b) { return String(b.mergedAt || '').localeCompare(String(a.mergedAt || '')); });
+                pendingRecords.sort(function(a, b) { return String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')); });
+                var byUser = {};
+                records.forEach(function(record) {
+                    if (record.system || !record.submitter || !record.submitter.login) return;
+                    var login = record.submitter.login;
+                    if (!byUser[login]) {
+                        byUser[login] = {
+                            login: login,
+                            id: record.submitter.id,
+                            name: record.submitter.name || '',
+                            avatar_url: record.submitter.avatar_url || '',
+                            html_url: record.submitter.html_url || ('https://github.com/' + login),
+                            contributions: 0,
+                            lastContributionAt: null
+                        };
+                    }
+                    byUser[login].contributions += record.contributionCount || 1;
+                    if (!byUser[login].lastContributionAt || String(record.mergedAt || '') > String(byUser[login].lastContributionAt || '')) {
+                        byUser[login].lastContributionAt = record.mergedAt;
+                    }
+                });
+                var leaderboard = Object.keys(byUser).map(function(login) { return byUser[login]; })
+                    .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); })
+                    .map(function(entry, index) {
+                        entry.rank = index + 1;
+                        return entry;
+                    });
+                return {
+                    generatedAt: new Date().toISOString(),
+                    totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
+                    leaderboardContributions: records.filter(function(record) { return !record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
+                    systemContributions: records.filter(function(record) { return record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
+                    totalContributors: leaderboard.length,
+                    leaderboard: leaderboard,
+                    records: records.slice(0, MERGED_LIMIT),
+                    pendingRecords: pendingRecords.slice(0, PENDING_LIMIT),
+                    totalRecords: records.length,
+                    totalPendingRecords: pendingRecords.length
+                };
+            }
+
+            async function loadPulls(state, maxPages) {
+                var records = [];
+                for (var page = 1; page <= maxPages; page++) {
+                    var url = 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/pulls?state=' + state + '&sort=updated&direction=desc&per_page=100&page=' + page;
+                    var resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } });
+                    if (!resp.ok) throw new Error(await resp.text());
+                    var prs = await resp.json();
+                    if (!Array.isArray(prs) || !prs.length) break;
+                    prs.forEach(function(pr) {
+                        if (state === 'closed' && !pr.merged_at) return;
+                        var record = buildRecord(pr, state === 'open' ? 'pending' : 'merged');
+                        if (record) records.push(record);
+                    });
+                    if (prs.length < 100) break;
+                }
+                return records;
+            }
+
+            async function loadFromGitHub() {
+                var pendingRecords = await loadPulls('open', 1);
+                var records = await loadPulls('closed', 10);
+                return aggregate(records, pendingRecords);
+            }
+
+            function displayName(user) {
+                return maskEmails((user && (user.name || user.login)) || 'GitHub');
+            }
+
+            function displayLogin(login) {
+                return maskEmails(login || '');
+            }
+
+            function displayTitle(title) {
+                return maskEmails(title || '');
+            }
+
+            function formatDate(value) {
+                if (!value) return '';
+                try {
+                    var lang = typeof getLanguage === 'function' ? getLanguage() : 'mk';
+                    return new Intl.DateTimeFormat(lang, { dateStyle: 'medium' }).format(new Date(value));
+                } catch (_) {
+                    return String(value).slice(0, 10);
+                }
+            }
+
+            function matches(record) {
+                if (!query) return true;
+                var user = record.submitter || {};
+                var haystack = [displayTitle(record.title), displayLogin(user.login), displayName(user), (record.files || []).join(' ')].join(' ').toLowerCase();
+                return haystack.indexOf(query) !== -1;
+            }
+
+            function renderLeaderboard() {
+                var el = document.getElementById('leaderboard-list');
+                if (!data.leaderboard.length) {
+                    el.innerHTML = '<div class="contributions-empty">' + escHtml(t('contributions.empty')) + '</div>';
+                    return;
+                }
+                el.innerHTML = data.leaderboard.map(function(entry) {
+                    return '<article class="leaderboard-entry">' +
+                        '<div class="leaderboard-rank">#' + entry.rank + '</div>' +
+                        '<img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
+                        '<div class="leaderboard-name"><a href="' + escHtml(entry.html_url || ('https://github.com/' + entry.login)) + '" target="_blank" rel="noopener">' + escHtml(displayName(entry)) + '</a><span>@' + escHtml(displayLogin(entry.login)) + '</span></div>' +
+                        '<div class="leaderboard-count">' + entry.contributions + '</div>' +
+                    '</article>';
+                }).join('');
+            }
+
+            function renderContributionCard(record, pending) {
+                var user = record.submitter || {};
+                var files = (record.files || []).map(function(file) { return '<span class="contribution-file">' + escHtml(file) + '</span>'; }).join('');
+                var systemBadge = record.system ? ' · <span class="contribution-system">' + escHtml(t('contributions.system')) + '</span>' : '';
+                var statusBadge = pending ? ' · <span class="contribution-status">' + escHtml(t('contributions.pending')) + '</span>' : '';
+                var dateValue = pending ? (record.updatedAt || record.createdAt) : record.mergedAt;
+                return '<article class="contribution-entry">' +
+                    '<div class="contribution-user">' +
+                        '<img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
+                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta">@' + escHtml(displayLogin(user.login)) + ' · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
+                    '</div>' +
+                    (files ? '<div class="contribution-files">' + files + '</div>' : '') +
+                '</article>';
+            }
+
+            function renderPending() {
+                var list = document.getElementById('pending-list');
+                var empty = document.getElementById('pending-empty');
+                var records = (data.pendingRecords || []).filter(matches);
+                empty.style.display = records.length ? 'none' : 'block';
+                list.innerHTML = records.map(function(record) { return renderContributionCard(record, true); }).join('');
+            }
+
+            function renderRecords() {
+                var list = document.getElementById('contribution-list');
+                var empty = document.getElementById('contributions-empty');
+                var records = (data.records || []).filter(matches).slice(0, MERGED_LIMIT);
+                empty.style.display = records.length ? 'none' : 'block';
+                list.innerHTML = records.map(function(record) { return renderContributionCard(record, false); }).join('');
+            }
+
+            function render() {
+                document.getElementById('contributions-total').textContent = data.totalContributions || 0;
+                document.getElementById('contributors-total').textContent = data.totalContributors || 0;
+                if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
+                if (!Array.isArray(data.records)) data.records = [];
+                renderLeaderboard();
+                renderPending();
+                renderRecords();
+            }
+
+            async function load() {
+                var loading = document.getElementById('contributions-loading');
+                var error = document.getElementById('contributions-error');
+                var content = document.getElementById('contributions-content');
+                try {
+                    try {
+                        var resp = await fetch(workerEndpoint());
+                        if (!resp.ok) throw new Error(await resp.text());
+                        data = await resp.json();
+                        if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
+                    } catch (_) {
+                        data = await loadFromGitHub();
+                    }
+                    loading.style.display = 'none';
+                    content.style.display = '';
+                    render();
+                } catch (err) {
+                    console.error('Failed to load contributions:', err);
+                    loading.style.display = 'none';
+                    error.style.display = '';
+                }
+            }
+
+            document.getElementById('contributions-search').addEventListener('input', function(e) {
+                query = String(e.target.value || '').trim().toLowerCase();
+                renderPending();
+                renderRecords();
+            });
+
+            if (typeof onLanguageChange === 'function') onLanguageChange(render);
+            load();
+        })();
+    </script>
+</html>

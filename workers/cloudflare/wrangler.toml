@@ -9,3 +9,12 @@ GITHUB_REPO = "masterlista"
 GITHUB_DEFAULT_BRANCH = "master"
 ## Comma-separated list of allowed origins for CORS
 CORS_ORIGINS = "https://toplista.mk,https://www.toplista.mk,https://www.najjak.com,https://martinpetkovski.github.io"
+AUTH_RETURN_ORIGINS = "https://toplista.mk,https://www.toplista.mk,https://www.najjak.com,https://martinpetkovski.github.io,http://localhost:3000,http://localhost:5173,http://localhost:5500,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:5500"
+GITHUB_OAUTH_SCOPE = "public_repo read:user"
+AUTH_SESSION_TTL_SECONDS = "2592000"
+CONTRIBUTIONS_CACHE_TTL_SECONDS = "300"
+CONTRIBUTIONS_MAX_PAGES = "5"
+
+[[kv_namespaces]]
+binding = "AUTH_STORE"
+id = "eb37e818b1bb440a9f8cf023c4678fde"

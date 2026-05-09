@@ -35,7 +35,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
     <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
-    <script src="/scripts/site/common.js?v=10"></script>
+    <script src="/scripts/site/common.js?v=11"></script>
     <script src="/scripts/site/i18n.js?v=1"></script>
     <script src="/scripts/site/mmm-drafts.js?v=1"></script>
     <script src="/scripts/site/tour.js?v=1" defer></script>
@@ -118,7 +118,7 @@
     <script src="/scripts/site/load-header.js"></script>
     <main>
         <div class="legal-container">
-            <p class="last-updated">Последно ажурирање: 8 февруари 2026</p>
+            <p class="last-updated">Последно ажурирање: 8 мај 2026</p>
 
             <h2><i class="fas fa-shield-halved"></i> 1. Вовед</h2>
             <p>
@@ -129,14 +129,15 @@
 
             <h2><i class="fas fa-user-shield"></i> 2. Податоци што ги собираме</h2>
             <p>
-                <strong>Сајтот не собира лични податоци.</strong> Немаме кориснички профили,
-                регистрација, најавување, ниту формулари кои бараат лични информации како име, адреса или телефон.
+                За разгледување на сајтот и испраќање предлози не е потребна регистрација. Ако сакате,
+                може да се најавите со <strong>GitHub</strong> за предлогот да се отвори од вашиот GitHub профил.
             </p>
             <p>
                 Единствените податоци што се чуваат локално на вашиот уред:
             </p>
             <ul>
                 <li><strong>Поставка за темен/светол режим</strong> — се чува во localStorage на вашиот прелистувач за да се запомни вашата преференца. Овој податок никогаш не се испраќа до сервер.</li>
+                <li><strong>GitHub сесија</strong> — ако се најавите, во localStorage се чува краток идентификатор на сесија. GitHub токенот се чува серверски во Cloudflare KV и се користи само за отворање pull request во ваше име.</li>
             </ul>
 
             <h2><i class="fas fa-server"></i> 3. Хостинг и серверски логови</h2>
@@ -165,12 +166,13 @@
                 (Google Analytics, Facebook Pixel и сл.). Не следиме го вашето однесување на сајтот.
             </p>
 
-            <h2><i class="fas fa-paper-plane"></i> 6. Предлози за артисти</h2>
+            <h2><i class="fas fa-paper-plane"></i> 6. Предлози за промени</h2>
             <p>
-                Кога испраќате предлог за додавање или уредување артист, податоците од формуларот
-                (име на артист, жанр, линкови и сл.) се испраќаат до GitHub каде се отвора јавно барање
-                за промена (pull request). <strong>Не се бараат ниту чуваат лични податоци</strong>
-                на испраќачот — предлогот е анонимен.
+                Кога испраќате предлог за додавање или уредување податоци, податоците од формуларот
+                се испраќаат до GitHub каде се отвора јавно барање за промена (pull request). Ако не сте
+                најавени, предлогот се поднесува преку системскиот worker. Ако сте најавени со GitHub,
+                вашето GitHub корисничко име, аватар и линк до профил може јавно да се прикажат на
+                pull request-от и на страницата со придонеси.
             </p>
 
             <h2><i class="fas fa-external-link-alt"></i> 7. Надворешни сервиси</h2>
@@ -180,6 +182,7 @@
             <ul>
                 <li><strong>Google Fonts</strong> — за типографијата (Inter, Montserrat). <a href="https://policies.google.com/privacy" target="_blank">Политика на Google</a></li>
                 <li><strong>cdnjs (Cloudflare)</strong> — за иконите Font Awesome</li>
+                <li><strong>GitHub</strong> — за најава и јавни pull request придонеси. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank">Политика на GitHub</a></li>
                 <li><strong>Spotify</strong> — податоците за чартот доаѓаат од Spotify API (серверска страна, без директен контакт од вашиот прелистувач)</li>
             </ul>
             <p>

@@ -58,6 +58,37 @@ wrangler secret put GITHUB_INSTALLATION_ID
 ```
 If App variables are present worker automatically uses installation tokens.
 
+### GitHub user login and fork submissions
+
+The site can optionally submit changes through the logged-in visitor's GitHub account. Anonymous site submissions still use the legacy root `POST /` worker route, so GitHub login is an enhancement rather than a requirement.
+
+Create a GitHub OAuth App with:
+
+- Homepage URL: `https://toplista.mk`
+- Authorization callback URL: `https://<worker-domain>/auth/callback`
+- Device flow: enabled, so literal local `file://` usage can sign in without an HTTP callback
+
+The `AUTH_STORE` KV namespace is bound in `wrangler.toml` and stores OAuth state, sessions, and the short-lived contributions cache.
+
+Set OAuth secrets:
+
+```powershell
+wrangler secret put GITHUB_OAUTH_CLIENT_ID
+wrangler secret put GITHUB_OAUTH_CLIENT_SECRET
+```
+
+The authenticated site flow uses these endpoints:
+
+- `GET /auth/start?return_to=<url>` redirects to GitHub OAuth.
+- `GET /auth/callback` exchanges the OAuth code and redirects back with an opaque session id.
+- `POST /auth/device/start` and `POST /auth/device/poll` support file-based local usage.
+- `GET /auth/session` validates the current session.
+- `POST /auth/logout` deletes the session.
+- `POST /submit/user` creates or reuses the signed-in user's fork, pushes a branch there, and opens an upstream PR.
+- `GET /contributions` reads open and merged GitHub PRs. It returns `pendingRecords` for open PRs, the requested recent merged `records`, and a leaderboard. System contributors such as `martinpetkovski` are included in the records but excluded from the leaderboard.
+
+The existing root `POST /` route remains available for anonymous site submissions and worker-owned submissions such as the Discord bot.
+
 5) Publish
 
 ```powershell

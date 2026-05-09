@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <script>if(localStorage.getItem('mmm-dark-mode')==='true'){document.documentElement.classList.add('dark-mode');document.documentElement.style.backgroundColor='#111318'}</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Најава | ТопЛиста.мк</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="desktop.css?v=5" media="screen and (min-width: 601px)">
+    <link rel="stylesheet" href="mobile.css?v=5" media="screen and (max-width: 600px)">
+    <script src="/scripts/site/common.js?v=11"></script>
+    <script src="/scripts/site/i18n.js?v=1"></script>
+    <script src="/scripts/site/mmm-drafts.js?v=1"></script>
+    <style>
+        body.login-page { overflow-y: auto; overflow-x: hidden; height: auto; min-height: 100vh; }
+        body.login-page main { min-height: calc(100vh - 48px); height: auto; overflow: visible; display: grid; place-items: center; padding: 1.25rem; }
+        .login-shell { width: min(100%, 440px); margin: 0 auto; }
+        .login-panel {
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            padding: 1.15rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+        body.dark-mode .login-panel, html.dark-mode .login-panel { box-shadow: 0 14px 34px rgba(0,0,0,0.32); }
+        .login-mark {
+            width: 48px;
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.85rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1.35rem;
+        }
+        .login-panel h2 { margin: 0 0 0.45rem; font-family: 'Montserrat', sans-serif; font-size: 1.35rem; line-height: 1.15; }
+        .login-panel p { margin: 0 0 1rem; color: var(--text-secondary); line-height: 1.55; }
+        .login-github-btn, .login-secondary-btn {
+            width: 100%;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            border: 1px solid #111318;
+            background: #111318;
+            color: #fff;
+            font: inherit;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+        }
+        .login-secondary-btn { background: var(--bg-secondary); color: var(--text-primary); border-color: var(--border-color); }
+        .login-github-btn:hover, .login-secondary-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+        .login-github-btn:disabled { opacity: 0.7; cursor: wait; }
+        .login-note { margin-top: 0.75rem; color: var(--text-muted); font-size: 0.78rem; line-height: 1.45; }
+        .login-status { margin-top: 0.85rem; min-height: 1.2rem; color: var(--text-secondary); font-size: 0.82rem; }
+        .login-status.error { color: var(--accent-red, #ef4444); }
+        .login-user { display: flex; align-items: center; gap: 0.7rem; margin: 0.9rem 0; }
+        .login-user img, .login-user i { width: 44px; height: 44px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; object-fit: cover; background: var(--bg-secondary); }
+        .login-user strong, .login-user span { display: block; line-height: 1.2; }
+        .login-user span { color: var(--text-muted); font-size: 0.78rem; margin-top: 0.15rem; }
+        .login-actions { display: grid; gap: 0.55rem; }
+    </style>
+</head>
+<body class="compact login-page">
+    <header id="site-header" data-title="Најава"></header>
+    <script src="/scripts/site/load-header.js"></script>
+    <main>
+        <div class="login-shell">
+            <section class="login-panel" aria-labelledby="login-title">
+                <div class="login-mark"><i class="fab fa-github"></i></div>
+                <h2 id="login-title" data-i18n="auth.loginTitle">Најава</h2>
+                <p id="login-intro" data-i18n="auth.loginIntro">Најави се за предлозите да се испратат преку твојот GitHub профил.</p>
+                <div id="login-signed-out">
+                    <button type="button" id="login-github-btn" class="login-github-btn">
+                        <i class="fab fa-github"></i>
+                        <span data-i18n="auth.continueGitHub">Продолжи со GitHub</span>
+                    </button>
+                    <div class="login-note" data-i18n="auth.loginNote">По најавата, предлозите може да се испраќаат преку твојот GitHub профил. Анонимното испраќање останува достапно.</div>
+                    <div id="login-status" class="login-status" aria-live="polite"></div>
+                </div>
+                <div id="login-signed-in" style="display:none">
+                    <div class="login-user" id="login-user"></div>
+                    <div class="login-actions">
+                        <a class="login-secondary-btn" href="/contributions"><i class="fas fa-code-pull-request"></i> <span data-i18n="auth.viewContributions">Види придонеси</span></a>
+                        <button type="button" id="login-logout-btn" class="login-secondary-btn"><i class="fas fa-right-from-bracket"></i> <span data-i18n="auth.signOut">Одјави се</span></button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script>
+        (function() {
+            'use strict';
+
+            function localText(key, fallback) {
+                if (typeof t !== 'function') return fallback;
+                var value = t(key);
+                return value === key ? fallback : value;
+            }
+
+            function setStatus(message, isError) {
+                var status = document.getElementById('login-status');
+                if (!status) return;
+                status.textContent = message || '';
+                status.classList.toggle('error', !!isError);
+            }
+
+            function render() {
+                var auth = window.MMMAuth && typeof window.MMMAuth.getState === 'function' ? window.MMMAuth.getState() : { authenticated: false };
+                var signedOut = document.getElementById('login-signed-out');
+                var signedIn = document.getElementById('login-signed-in');
+                signedOut.style.display = auth.authenticated ? 'none' : '';
+                signedIn.style.display = auth.authenticated ? '' : 'none';
+                if (!auth.authenticated || !auth.user) return;
+                var user = auth.user;
+                var name = user.name || user.login || 'GitHub';
+                document.getElementById('login-user').innerHTML =
+                    (user.avatar_url ? '<img src="' + escHtml(user.avatar_url) + '" alt="">' : '<i class="fab fa-github"></i>') +
+                    '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(user.login || '') + '</span></div>';
+            }
+
+            document.getElementById('login-github-btn').addEventListener('click', function() {
+                var btn = this;
+                if (!window.MMMAuth || typeof window.MMMAuth.login !== 'function') {
+                    setStatus(localText('auth.unavailable', 'GitHub login is not available yet.'), true);
+                    return;
+                }
+                btn.disabled = true;
+                setStatus(localText('auth.deviceWaiting', 'Waiting for authorization...'), false);
+                window.MMMAuth.login().then(function() {
+                    btn.disabled = false;
+                    setStatus('', false);
+                    render();
+                }).catch(function(err) {
+                    btn.disabled = false;
+                    setStatus((err && err.message) || localText('auth.loginFailed', 'GitHub sign-in failed.'), true);
+                });
+            });
+
+            document.getElementById('login-logout-btn').addEventListener('click', function() {
+                if (!window.MMMAuth || typeof window.MMMAuth.logout !== 'function') return;
+                window.MMMAuth.logout().then(render);
+            });
+
+            if (window.MMMAuth && typeof window.MMMAuth.onChange === 'function') window.MMMAuth.onChange(render);
+            if (typeof onLanguageChange === 'function') onLanguageChange(render);
+            render();
+        })();
+    </script>
+</body>
+</html>

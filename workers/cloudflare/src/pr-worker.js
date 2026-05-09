@@ -2,6 +2,13 @@
 const rlMap = new Map();
 let lastCleanup = Date.now();
 
+const AUTH_STATE_PREFIX = 'oauth-state:';
+const AUTH_SESSION_PREFIX = 'auth-session:';
+const CONTRIBUTIONS_CACHE_KEY = 'contributions:v2';
+const CONTRIBUTION_METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
+const DEFAULT_AUTH_SESSION_TTL = 60 * 60 * 24 * 30;
+const DEFAULT_CONTRIBUTIONS_CACHE_TTL = 300;
+
 function rateLimitCheck(ip, max, windowMs) {
   const now = Date.now();
   if (now - lastCleanup > windowMs * 10) {
@@ -28,10 +35,15 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const configured = (env.CORS_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
     const defaultAllowed = [
+      'https://toplista.mk',
+      'https://www.toplista.mk',
       'https://www.najjak.com',
       'https://martinpetkovski.github.io',
       'http://localhost:3000',
       'http://localhost:5173',
+      'http://localhost:5500',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:5173',
       'http://127.0.0.1:5500',
       'http://localhost'
     ];
@@ -71,8 +83,45 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // ==================== RSS PROXY ENDPOINT ====================
     const url = new URL(request.url);
+
+    if (request.method === 'GET' && url.pathname === '/auth/status') {
+      return handleAuthStatus(env, corsHeaders);
+    }
+
+    if (request.method === 'GET' && url.pathname === '/auth/start') {
+      return handleOAuthStart(request, env, corsHeaders);
+    }
+
+    if (request.method === 'GET' && url.pathname === '/auth/callback') {
+      return handleOAuthCallback(request, env, corsHeaders);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/auth/device/start') {
+      return handleDeviceStart(request, env, corsHeaders);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/auth/device/poll') {
+      return handleDevicePoll(request, env, corsHeaders);
+    }
+
+    if (request.method === 'GET' && url.pathname === '/auth/session') {
+      return handleSessionInfo(request, env, corsHeaders);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/auth/logout') {
+      return handleLogout(request, env, corsHeaders);
+    }
+
+    if (request.method === 'POST' && url.pathname === '/submit/user') {
+      return handleAuthenticatedSubmission(request, env, corsHeaders);
+    }
+
+    if (request.method === 'GET' && url.pathname === '/contributions') {
+      return handleContributions(request, env, corsHeaders);
+    }
+
+    // ==================== RSS PROXY ENDPOINT ====================
     if (request.method === 'GET' && url.pathname === '/rss-proxy') {
       const feedUrl = url.searchParams.get('url');
       if (!feedUrl) {
@@ -426,6 +475,802 @@ function normalizeComparableContent(content) {
 
 function encodeRepoPath(filePath) {
   return String(filePath || '').split('/').map(encodeURIComponent).join('/');
+}
+
+function bearerToken(token) {
+  return `Bearer ${token}`;
+}
+
+function githubRequest(token, userAgent = 'mmm-pr-worker') {
+  const headers = {
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': userAgent,
+  };
+  if (token) headers.Authorization = bearerToken(token);
+
+  return (url, init = {}) => fetch(`https://api.github.com${url}`, {
+    ...init,
+    headers: {
+      ...headers,
+      ...(init.headers || {}),
+    },
+  });
+}
+
+function getWorkerBaseUrl(request) {
+  const url = new URL(request.url);
+  return `${url.protocol}//${url.host}`;
+}
+
+function getSessionTtl(env) {
+  const value = parseInt(env.AUTH_SESSION_TTL_SECONDS || '', 10);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_AUTH_SESSION_TTL;
+}
+
+function getContributionsCacheTtl(env) {
+  const value = parseInt(env.CONTRIBUTIONS_CACHE_TTL_SECONDS || '', 10);
+  return Number.isFinite(value) && value > 0 ? value : DEFAULT_CONTRIBUTIONS_CACHE_TTL;
+}
+
+function getAllowedReturnOrigins(env) {
+  return (env.AUTH_RETURN_ORIGINS || env.CORS_ORIGINS || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+function isAllowedReturnTo(returnTo, env) {
+  if (!returnTo || typeof returnTo !== 'string') return false;
+  let parsed;
+  try {
+    parsed = new URL(returnTo);
+  } catch (_) {
+    return false;
+  }
+  if (parsed.protocol === 'file:') return false;
+  if ((parsed.protocol === 'http:' || parsed.protocol === 'https:') && isLoopbackHostname(parsed.hostname)) return true;
+  const allowedOrigins = getAllowedReturnOrigins(env);
+  if (!allowedOrigins.length) return true;
+  return allowedOrigins.includes(parsed.origin);
+}
+
+function isLoopbackHostname(hostname) {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '[::1]';
+}
+
+function appendParams(url, params) {
+  const parsed = new URL(url);
+  Object.keys(params).forEach(key => {
+    const value = params[key];
+    if (value !== undefined && value !== null && value !== '') parsed.searchParams.set(key, String(value));
+  });
+  return parsed.toString();
+}
+
+function requireAuthConfig(env) {
+  requireOAuthClientId(env);
+  if (!env.GITHUB_OAUTH_CLIENT_SECRET) {
+    throw new Error('Missing GITHUB_OAUTH_CLIENT_SECRET');
+  }
+}
+
+function requireOAuthClientId(env) {
+  if (!env.GITHUB_OAUTH_CLIENT_ID) {
+    throw new Error('Missing GITHUB_OAUTH_CLIENT_ID');
+  }
+  if (!isPlausibleGitHubOAuthClientId(env.GITHUB_OAUTH_CLIENT_ID)) {
+    throw new Error('GITHUB_OAUTH_CLIENT_ID appears to be configured with the wrong value');
+  }
+}
+
+function isPlausibleGitHubOAuthClientId(clientId) {
+  const value = String(clientId || '').trim();
+  if (!value) return false;
+  if (/^[a-f0-9]{40}$/i.test(value)) return false;
+  return true;
+}
+
+function requireAuthStore(env) {
+  if (!env.AUTH_STORE) {
+    throw new Error('Missing AUTH_STORE KV binding');
+  }
+}
+
+function getSessionIdFromRequest(request) {
+  const auth = request.headers.get('Authorization') || '';
+  const bearer = auth.match(/^Bearer\s+(.+)$/i);
+  if (bearer && bearer[1]) return bearer[1].trim();
+  const url = new URL(request.url);
+  return url.searchParams.get('session') || url.searchParams.get('session_id') || '';
+}
+
+function publicUserFromSession(session) {
+  if (!session || !session.user) return null;
+  return {
+    id: session.user.id,
+    login: session.user.login,
+    name: session.user.name || '',
+    avatar_url: session.user.avatar_url || '',
+    html_url: session.user.html_url || '',
+  };
+}
+
+async function readSession(env, sessionId) {
+  requireAuthStore(env);
+  if (!sessionId) return null;
+  const session = await env.AUTH_STORE.get(AUTH_SESSION_PREFIX + sessionId, { type: 'json' });
+  if (!session || !session.accessToken || !session.user) return null;
+  if (session.expiresAt && Date.parse(session.expiresAt) <= Date.now()) {
+    await env.AUTH_STORE.delete(AUTH_SESSION_PREFIX + sessionId);
+    return null;
+  }
+  return session;
+}
+
+async function writeSession(env, accessToken, user, method) {
+  requireAuthStore(env);
+  const sessionId = crypto.randomUUID();
+  const now = new Date();
+  const ttl = getSessionTtl(env);
+  const expiresAt = new Date(now.getTime() + ttl * 1000).toISOString();
+  const session = {
+    accessToken,
+    user: publicUserFromSession({ user }) || user,
+    method: method || 'oauth',
+    createdAt: now.toISOString(),
+    expiresAt,
+  };
+  await env.AUTH_STORE.put(AUTH_SESSION_PREFIX + sessionId, JSON.stringify(session), { expirationTtl: ttl });
+  return { sessionId, session };
+}
+
+async function exchangeOAuthCode(env, code, redirectUri) {
+  requireAuthConfig(env);
+  const res = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'mmm-pr-worker',
+    },
+    body: JSON.stringify({
+      client_id: env.GITHUB_OAUTH_CLIENT_ID,
+      client_secret: env.GITHUB_OAUTH_CLIENT_SECRET,
+      code,
+      redirect_uri: redirectUri,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error || !data.access_token) {
+    throw new Error(data.error_description || data.error || 'OAuth token exchange failed');
+  }
+  return data.access_token;
+}
+
+async function fetchGitHubUser(accessToken) {
+  const gh = githubRequest(accessToken, 'mmm-auth-worker');
+  const userRes = await gh('/user');
+  if (!userRes.ok) {
+    throw new Error(`GitHub user request failed: ${await userRes.text()}`);
+  }
+  const user = await userRes.json();
+  return {
+    id: user.id,
+    login: user.login,
+    name: user.name || '',
+    avatar_url: user.avatar_url || '',
+    html_url: user.html_url || `https://github.com/${user.login}`,
+  };
+}
+
+function getOAuthScope(env) {
+  return env.GITHUB_OAUTH_SCOPE || 'public_repo read:user';
+}
+
+async function handleAuthStatus(env, corsHeaders) {
+  const hasClientId = !!env.GITHUB_OAUTH_CLIENT_ID;
+  const clientIdLooksValid = hasClientId && isPlausibleGitHubOAuthClientId(env.GITHUB_OAUTH_CLIENT_ID);
+  const hasClientSecret = !!env.GITHUB_OAUTH_CLIENT_SECRET;
+  const hasStore = !!env.AUTH_STORE;
+  return json({
+    ok: true,
+    enabled: clientIdLooksValid && hasStore,
+    web: clientIdLooksValid && hasClientSecret && hasStore,
+    device: clientIdLooksValid && hasStore,
+    clientIdLooksValid,
+    missing: [
+      hasClientId ? null : 'GITHUB_OAUTH_CLIENT_ID',
+      hasClientId && !clientIdLooksValid ? 'GITHUB_OAUTH_CLIENT_ID_FORMAT' : null,
+      hasClientSecret ? null : 'GITHUB_OAUTH_CLIENT_SECRET',
+      hasStore ? null : 'AUTH_STORE',
+    ].filter(Boolean),
+  }, 200, { ...corsHeaders, 'Cache-Control': 'no-store' });
+}
+
+async function handleOAuthStart(request, env, corsHeaders) {
+  try {
+    requireAuthConfig(env);
+    requireAuthStore(env);
+    const url = new URL(request.url);
+    const returnTo = url.searchParams.get('return_to') || url.searchParams.get('returnTo') || '';
+    if (!isAllowedReturnTo(returnTo, env)) {
+      return json({ error: 'Return URL is not allowed' }, 400, corsHeaders);
+    }
+    const state = crypto.randomUUID();
+    const redirectUri = `${getWorkerBaseUrl(request)}/auth/callback`;
+    await env.AUTH_STORE.put(AUTH_STATE_PREFIX + state, JSON.stringify({ returnTo, redirectUri, createdAt: new Date().toISOString() }), { expirationTtl: 600 });
+    const githubUrl = new URL('https://github.com/login/oauth/authorize');
+    githubUrl.searchParams.set('client_id', env.GITHUB_OAUTH_CLIENT_ID);
+    githubUrl.searchParams.set('redirect_uri', redirectUri);
+    githubUrl.searchParams.set('scope', getOAuthScope(env));
+    githubUrl.searchParams.set('state', state);
+    githubUrl.searchParams.set('allow_signup', 'true');
+    return new Response(null, { status: 302, headers: { ...corsHeaders, 'Location': githubUrl.toString(), 'Cache-Control': 'no-store' } });
+  } catch (err) {
+    const detail = err?.message || String(err);
+    const status = /GITHUB_OAUTH_CLIENT_ID appears/.test(detail) ? 503 : 500;
+    return json({ error: 'OAuth start failed', detail }, status, corsHeaders);
+  }
+}
+
+async function handleOAuthCallback(request, env, corsHeaders) {
+  try {
+    requireAuthStore(env);
+    const url = new URL(request.url);
+    const state = url.searchParams.get('state') || '';
+    const code = url.searchParams.get('code') || '';
+    const error = url.searchParams.get('error') || '';
+    const stored = state ? await env.AUTH_STORE.get(AUTH_STATE_PREFIX + state, { type: 'json' }) : null;
+    if (!stored || !stored.returnTo || !stored.redirectUri) {
+      return json({ error: 'Invalid or expired OAuth state' }, 400, corsHeaders);
+    }
+    await env.AUTH_STORE.delete(AUTH_STATE_PREFIX + state);
+    if (error) {
+      return new Response(null, { status: 302, headers: { ...corsHeaders, 'Location': appendParams(stored.returnTo, { mmm_auth_error: error }), 'Cache-Control': 'no-store' } });
+    }
+    if (!code) {
+      return new Response(null, { status: 302, headers: { ...corsHeaders, 'Location': appendParams(stored.returnTo, { mmm_auth_error: 'missing_code' }), 'Cache-Control': 'no-store' } });
+    }
+    const accessToken = await exchangeOAuthCode(env, code, stored.redirectUri);
+    const user = await fetchGitHubUser(accessToken);
+    const result = await writeSession(env, accessToken, user, 'oauth');
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...corsHeaders,
+        'Location': appendParams(stored.returnTo, { mmm_session: result.sessionId, mmm_login: user.login }),
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (err) {
+    return json({ error: 'OAuth callback failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+async function handleDeviceStart(request, env, corsHeaders) {
+  try {
+    requireOAuthClientId(env);
+    requireAuthStore(env);
+    const res = await fetch('https://github.com/login/device/code', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'mmm-pr-worker',
+      },
+      body: JSON.stringify({ client_id: env.GITHUB_OAUTH_CLIENT_ID, scope: getOAuthScope(env) }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      return json({ error: data.error || 'Device flow failed', detail: data.error_description || '' }, 502, corsHeaders);
+    }
+    return json({
+      device_code: data.device_code,
+      user_code: data.user_code,
+      verification_uri: data.verification_uri,
+      expires_in: data.expires_in,
+      interval: data.interval,
+    }, 200, corsHeaders);
+  } catch (err) {
+    return json({ error: 'Device flow failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+async function handleDevicePoll(request, env, corsHeaders) {
+  try {
+    requireOAuthClientId(env);
+    requireAuthStore(env);
+    const body = await request.json();
+    const deviceCode = body?.device_code || body?.deviceCode || '';
+    if (!deviceCode) return json({ error: 'Missing device_code' }, 400, corsHeaders);
+    const res = await fetch('https://github.com/login/oauth/access_token', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'mmm-pr-worker',
+      },
+      body: JSON.stringify({
+        client_id: env.GITHUB_OAUTH_CLIENT_ID,
+        device_code: deviceCode,
+        grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+      }),
+    });
+    const data = await res.json();
+    if (data.error === 'authorization_pending' || data.error === 'slow_down') {
+      return json({ pending: true, error: data.error, interval: data.interval || null }, 202, corsHeaders);
+    }
+    if (!res.ok || data.error || !data.access_token) {
+      return json({ error: data.error || 'Device token request failed', detail: data.error_description || '' }, 400, corsHeaders);
+    }
+    const user = await fetchGitHubUser(data.access_token);
+    const result = await writeSession(env, data.access_token, user, 'device');
+    return json({ ok: true, session: result.sessionId, user: publicUserFromSession(result.session) }, 200, corsHeaders);
+  } catch (err) {
+    return json({ error: 'Device poll failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+async function handleSessionInfo(request, env, corsHeaders) {
+  try {
+    const sessionId = getSessionIdFromRequest(request);
+    const session = await readSession(env, sessionId);
+    if (!session) return json({ authenticated: false }, 401, corsHeaders);
+    return json({ authenticated: true, user: publicUserFromSession(session), expiresAt: session.expiresAt }, 200, corsHeaders);
+  } catch (err) {
+    return json({ error: 'Session lookup failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+async function handleLogout(request, env, corsHeaders) {
+  try {
+    requireAuthStore(env);
+    const sessionId = getSessionIdFromRequest(request);
+    if (sessionId) await env.AUTH_STORE.delete(AUTH_SESSION_PREFIX + sessionId);
+    return json({ ok: true }, 200, corsHeaders);
+  } catch (err) {
+    return json({ error: 'Logout failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+function contributorLabelFromUser(user) {
+  if (!user) return '';
+  return user.name ? `${user.name} (@${user.login})` : `@${user.login}`;
+}
+
+function validateSubmissionFiles(files) {
+  if (!files.length) {
+    return { ok: false, status: 400, error: 'Invalid payload: at least one file is required' };
+  }
+  const invalidFile = files.find(file => !file.bandsJson || typeof file.bandsJson !== 'string');
+  if (invalidFile) {
+    return { ok: false, status: 400, error: `Invalid payload: bandsJson string required for ${invalidFile.path || 'bands.json'}` };
+  }
+  const seenPaths = new Set();
+  const duplicateFile = files.find(file => {
+    const key = `${file.baseBranch || ''}:${file.path || 'bands.json'}`;
+    if (seenPaths.has(key)) return true;
+    seenPaths.add(key);
+    return false;
+  });
+  if (duplicateFile) {
+    return { ok: false, status: 400, error: 'Duplicate file in request', path: duplicateFile.path || 'bands.json' };
+  }
+  const requestedBases = Array.from(new Set(files.map(file => file.baseBranch || null).filter(Boolean)));
+  if (requestedBases.length > 1) {
+    return { ok: false, status: 400, error: 'Cannot submit files targeting multiple base branches in one PR', detail: requestedBases.join(', ') };
+  }
+  return { ok: true, requestedBase: requestedBases[0] || null };
+}
+
+async function resolveBaseBranch({ gh, owner, repo, defaultBranch, requestedBase }) {
+  let baseBranch = defaultBranch;
+  if (requestedBase && requestedBase !== defaultBranch) {
+    const checkRef = await gh(`/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(requestedBase)}`);
+    if (checkRef.ok) {
+      baseBranch = requestedBase;
+    }
+  }
+  const refRes = await gh(`/repos/${owner}/${repo}/git/ref/heads/${encodeURIComponent(baseBranch)}`);
+  if (!refRes.ok) {
+    return { ok: false, error: 'Failed to get base ref', detail: await refRes.text() };
+  }
+  const refData = await refRes.json();
+  return { ok: true, baseBranch, baseSha: refData.object.sha };
+}
+
+async function prepareSubmissionFiles({ gh, owner, repo, baseBranch, files }) {
+  const preparedFiles = [];
+  const skippedFiles = [];
+  let mergeNotes = [];
+  for (const file of files) {
+    const prepared = await prepareFileUpdate({ gh, owner, repo, baseBranch, file });
+    if (!prepared.hasChanges && !prepared.additionalFiles.length) {
+      skippedFiles.push({ path: prepared.targetPath, code: 'NO_EFFECTIVE_CHANGES' });
+      continue;
+    }
+    preparedFiles.push(prepared);
+    mergeNotes = mergeNotes.concat(prepared.mergeNotes);
+  }
+  return { preparedFiles, skippedFiles, mergeNotes };
+}
+
+function buildPrBody({ description, submittedFiles, mergeNotes, skippedFiles, contributor, metadata }) {
+  const mergeNotice = mergeNotes.length
+    ? `\n\n---\n🔀 **Авто-спојување:** Основата беше застарена, промените се споени автоматски.\n${mergeNotes.map(n => '• ' + n).join('\n')}\n`
+    : '';
+  const skippedNotice = skippedFiles.length
+    ? `\n\n---\nℹ️ **Без нови промени за:**\n${skippedFiles.map(file => '• ' + file.path).join('\n')}\n`
+    : '';
+  const submittedNotice = submittedFiles.length
+    ? `\n\nФајлови:\n${submittedFiles.map(file => '• ' + file).join('\n')}`
+    : '';
+  const contributorNotice = contributor ? `\nПоднесено од: ${contributor}` : '';
+  const metadataNotice = metadata
+    ? `\n\n<!-- ${CONTRIBUTION_METADATA_MARKER}\n${JSON.stringify(metadata, null, 2)}\n-->`
+    : '';
+  return `${description}${submittedNotice}\n\nАвтоматски генерирано од MMM формуларот.${mergeNotice}${skippedNotice}${contributorNotice}${metadataNotice}`;
+}
+
+async function ensureFork({ gh, owner, repo, userLogin }) {
+  function isExpectedFork(fork) {
+    return fork && fork.fork && fork.parent && fork.parent.full_name && fork.parent.full_name.toLowerCase() === `${owner}/${repo}`.toLowerCase();
+  }
+
+  const forkRes = await gh(`/repos/${userLogin}/${repo}`);
+  if (forkRes.ok) {
+    const fork = await forkRes.json();
+    if (isExpectedFork(fork)) {
+      return { ok: true, fork };
+    }
+    return { ok: false, error: `${userLogin}/${repo} already exists but is not a fork of ${owner}/${repo}.` };
+  }
+
+  const createRes = await gh(`/repos/${owner}/${repo}/forks`, { method: 'POST' });
+  if (!createRes.ok && createRes.status !== 202) {
+    return { ok: false, error: await createRes.text() };
+  }
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const pollRes = await gh(`/repos/${userLogin}/${repo}`);
+    if (pollRes.ok) {
+      const fork = await pollRes.json();
+      if (isExpectedFork(fork)) return { ok: true, fork };
+      return { ok: false, error: `${userLogin}/${repo} exists but is not the expected fork.` };
+    }
+    await wait(1000 + attempt * 500);
+  }
+  return { ok: false, error: 'Fork was requested but was not available yet. Try submitting again in a moment.' };
+}
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function buildContributionMetadata({ user, baseBranch, submittedFiles, skippedFiles, failedFiles, prNumber, prUrl }) {
+  return {
+    schema: 1,
+    source: 'site',
+    createdAt: new Date().toISOString(),
+    submitter: publicUserFromSession({ user }),
+    baseBranch,
+    files: submittedFiles,
+    skippedFiles,
+    failedFiles,
+    contributionCount: 1,
+    prNumber: prNumber || null,
+    prUrl: prUrl || null,
+  };
+}
+
+async function handleAuthenticatedSubmission(request, env, corsHeaders) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const max = parseInt(env.RATE_LIMIT_MAX || '5', 10);
+  const windowSec = parseInt(env.RATE_LIMIT_WINDOW || '60', 10);
+  const rl = rateLimitCheck('submit-user:' + ip, max, windowSec * 1000);
+  if (!rl.allowed) {
+    const retryAfter = Math.max(0, Math.ceil((rl.reset - Date.now()) / 1000));
+    return json({ error: 'Rate limit exceeded', retry_after: retryAfter }, 429, { ...corsHeaders, 'Retry-After': String(retryAfter) });
+  }
+
+  try {
+    const sessionId = getSessionIdFromRequest(request);
+    const session = await readSession(env, sessionId);
+    if (!session) {
+      return json({ error: 'Authentication required', code: 'AUTH_REQUIRED' }, 401, corsHeaders);
+    }
+
+    const body = await request.json();
+    const description = body?.description || 'Automated PR from MMM form';
+    const files = normalizeRequestedFiles(body);
+    const validation = validateSubmissionFiles(files);
+    if (!validation.ok) return json(validation, validation.status || 400, corsHeaders);
+
+    const owner = env.GITHUB_OWNER || 'martinpetkovski';
+    const repo = env.GITHUB_REPO || 'masterlista';
+    const defaultBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
+    const user = session.user;
+    const contributor = contributorLabelFromUser(user);
+    const upstreamGh = githubRequest(session.accessToken, 'mmm-pr-worker-user');
+
+    const base = await resolveBaseBranch({ gh: upstreamGh, owner, repo, defaultBranch, requestedBase: validation.requestedBase });
+    if (!base.ok) return json({ error: base.error, detail: base.detail }, 500, corsHeaders);
+
+    const prepared = await prepareSubmissionFiles({ gh: upstreamGh, owner, repo, baseBranch: base.baseBranch, files });
+    if (!prepared.preparedFiles.length) {
+      return json({ error: 'No effective changes to submit', code: 'NO_EFFECTIVE_CHANGES', skippedFiles: prepared.skippedFiles }, 409, corsHeaders);
+    }
+
+    const forkResult = await ensureFork({ gh: upstreamGh, owner, repo, userLogin: user.login });
+    if (!forkResult.ok) {
+      return json({ error: 'Failed to create or resolve fork', detail: forkResult.error }, 500, corsHeaders);
+    }
+
+    const branchResult = await createUniqueBranch({
+      gh: upstreamGh,
+      owner: user.login,
+      repo,
+      baseSha: base.baseSha,
+      contributor: user.login,
+    });
+    if (!branchResult.ok) {
+      return json({ error: 'Failed to create fork branch', detail: branchResult.detail }, 500, corsHeaders);
+    }
+
+    const branchName = branchResult.branchName;
+    const failedFiles = [];
+    const submittedFiles = [];
+    for (const fileUpdate of prepared.preparedFiles) {
+      const commitResult = await commitPreparedFile({
+        gh: upstreamGh,
+        owner: user.login,
+        repo,
+        branchName,
+        contributor,
+        prepared: fileUpdate,
+      });
+      if (!commitResult.ok) {
+        return json({ error: 'Failed to commit file to fork', detail: commitResult.error, path: commitResult.path }, 500, corsHeaders);
+      }
+      if (fileUpdate.hasChanges) submittedFiles.push(fileUpdate.targetPath);
+      failedFiles.push(...commitResult.failedFiles);
+    }
+
+    const title = `MMM: Предлог промени од @${user.login}`;
+    const metadata = buildContributionMetadata({ user, baseBranch: base.baseBranch, submittedFiles, skippedFiles: prepared.skippedFiles, failedFiles });
+    const bodyText = buildPrBody({
+      description,
+      submittedFiles,
+      mergeNotes: prepared.mergeNotes,
+      skippedFiles: prepared.skippedFiles,
+      contributor,
+      metadata,
+    });
+    const prRes = await upstreamGh(`/repos/${owner}/${repo}/pulls`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        head: `${user.login}:${branchName}`,
+        base: base.baseBranch,
+        body: bodyText,
+        maintainer_can_modify: true,
+      }),
+    });
+    if (!prRes.ok) {
+      return json({ error: 'Failed to create PR', detail: await prRes.text() }, 500, corsHeaders);
+    }
+    const pr = await prRes.json();
+
+    return json({
+      ok: true,
+      pr_url: pr.html_url,
+      pr_number: pr.number,
+      branch: branchName,
+      fork: `${user.login}/${repo}`,
+      files: submittedFiles,
+      skippedFiles: prepared.skippedFiles,
+      failedFiles,
+      user: publicUserFromSession(session),
+    }, 200, corsHeaders);
+  } catch (err) {
+    return json({ error: 'Authenticated submission failed', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
+}
+
+function extractContributionMetadata(body) {
+  if (!body || typeof body !== 'string') return null;
+  const re = new RegExp(`<!--\\s*${CONTRIBUTION_METADATA_MARKER}\\s*([\\s\\S]*?)\\s*-->`, 'm');
+  const match = body.match(re);
+  if (!match || !match[1]) return null;
+  try {
+    const parsed = JSON.parse(match[1]);
+    if (parsed && parsed.source === 'site' && parsed.submitter && parsed.submitter.login) return parsed;
+  } catch (_) {
+    return null;
+  }
+  return null;
+}
+
+function publicUserFromGitHubUser(user) {
+  if (!user) return null;
+  return {
+    id: user.id || null,
+    login: user.login || '',
+    name: user.name || '',
+    avatar_url: user.avatar_url || '',
+    html_url: user.html_url || (user.login ? `https://github.com/${user.login}` : ''),
+  };
+}
+
+function getSystemContributorLogins(env, owner) {
+  const configured = (env.SYSTEM_CONTRIBUTOR_LOGINS || '')
+    .split(',')
+    .map(login => login.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set([owner, 'martinpetkovski', ...configured].map(login => String(login || '').toLowerCase()).filter(Boolean));
+}
+
+function isSystemContributor(login, systemLogins) {
+  return !!login && systemLogins.has(String(login).toLowerCase());
+}
+
+function maskEmails(value) {
+  return String(value || '').replace(/([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/gi, (_, local, domain) => {
+    return `${local.slice(0, Math.min(2, local.length))}***@${domain.slice(0, Math.min(2, domain.length))}***`;
+  });
+}
+
+function sanitizeContributionUser(user) {
+  if (!user) return null;
+  return {
+    ...user,
+    name: maskEmails(user.name || ''),
+  };
+}
+
+async function getReadToken(env) {
+  const hasApp = !!(env.GITHUB_APP_ID && env.GITHUB_INSTALLATION_ID && env.GITHUB_APP_PRIVATE_KEY);
+  if (hasApp) {
+    try {
+      return await getInstallationToken(env);
+    } catch (_) {
+      if (env.GITHUB_TOKEN) return env.GITHUB_TOKEN;
+      return null;
+    }
+  }
+  return env.GITHUB_TOKEN || null;
+}
+
+function buildContributionRecordFromPr(pr, { systemLogins, status }) {
+  const metadata = extractContributionMetadata(pr.body || '');
+  const submitter = sanitizeContributionUser(metadata?.submitter || publicUserFromGitHubUser(pr.user));
+  if (!submitter || !submitter.login) return null;
+  const system = isSystemContributor(submitter.login, systemLogins);
+  return {
+    prNumber: pr.number,
+    prUrl: pr.html_url,
+    title: maskEmails(pr.title || ''),
+    mergedAt: pr.merged_at || '',
+    createdAt: pr.created_at,
+    updatedAt: pr.updated_at,
+    contributionCount: status === 'pending' ? 0 : (Number(metadata?.contributionCount || 1) || 1),
+    submitter,
+    system,
+    status,
+    source: metadata ? 'site' : 'github',
+    files: Array.isArray(metadata?.files) ? metadata.files : [],
+    baseBranch: metadata?.baseBranch || pr.base?.ref || '',
+  };
+}
+
+async function fetchPullRequestRecords({ gh, owner, repo, state, status, systemLogins, maxPages }) {
+  const records = [];
+
+  for (let page = 1; page <= maxPages; page += 1) {
+    const res = await gh(`/repos/${owner}/${repo}/pulls?state=${state}&sort=updated&direction=desc&per_page=100&page=${page}`);
+    if (!res.ok) {
+      throw new Error(`GitHub PR list failed: ${await res.text()}`);
+    }
+    const prs = await res.json();
+    if (!Array.isArray(prs) || !prs.length) break;
+    for (const pr of prs) {
+      if (state === 'closed' && !pr.merged_at) continue;
+      const record = buildContributionRecordFromPr(pr, { systemLogins, status });
+      if (record) records.push(record);
+    }
+    if (prs.length < 100) break;
+  }
+  return records;
+}
+
+async function fetchMergedContributionRecords(env) {
+  const token = await getReadToken(env);
+  const owner = env.GITHUB_OWNER || 'martinpetkovski';
+  const repo = env.GITHUB_REPO || 'masterlista';
+  const gh = githubRequest(token, 'mmm-contributions-worker');
+  const systemLogins = getSystemContributorLogins(env, owner);
+  const maxPages = Math.max(1, Math.min(parseInt(env.CONTRIBUTIONS_MAX_PAGES || '5', 10) || 5, 20));
+  const pendingRecords = await fetchPullRequestRecords({ gh, owner, repo, state: 'open', status: 'pending', systemLogins, maxPages: 1 });
+  const records = await fetchPullRequestRecords({ gh, owner, repo, state: 'closed', status: 'merged', systemLogins, maxPages });
+
+  records.sort((a, b) => String(b.mergedAt || '').localeCompare(String(a.mergedAt || '')));
+  pendingRecords.sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
+  const byUser = new Map();
+  for (const record of records) {
+    if (record.system) continue;
+    const login = record.submitter.login;
+    const existing = byUser.get(login) || {
+      login,
+      id: record.submitter.id,
+      name: record.submitter.name || '',
+      avatar_url: record.submitter.avatar_url || '',
+      html_url: record.submitter.html_url || `https://github.com/${login}`,
+      contributions: 0,
+      lastContributionAt: null,
+    };
+    existing.contributions += record.contributionCount;
+    if (!existing.lastContributionAt || String(record.mergedAt || '') > String(existing.lastContributionAt || '')) {
+      existing.lastContributionAt = record.mergedAt;
+    }
+    byUser.set(login, existing);
+  }
+  const leaderboard = Array.from(byUser.values())
+    .sort((a, b) => (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)))
+    .map((entry, index) => ({ ...entry, rank: index + 1 }));
+
+  return {
+    generatedAt: new Date().toISOString(),
+    totalContributions: records.reduce((sum, record) => sum + record.contributionCount, 0),
+    leaderboardContributions: records.filter(record => !record.system).reduce((sum, record) => sum + record.contributionCount, 0),
+    systemContributions: records.filter(record => record.system).reduce((sum, record) => sum + record.contributionCount, 0),
+    totalContributors: leaderboard.length,
+    leaderboard,
+    records,
+    pendingRecords,
+    totalPendingRecords: pendingRecords.length,
+  };
+}
+
+async function handleContributions(request, env, corsHeaders) {
+  try {
+    const ttl = getContributionsCacheTtl(env);
+    let aggregate = null;
+    if (env.AUTH_STORE) {
+      const cached = await env.AUTH_STORE.get(CONTRIBUTIONS_CACHE_KEY, { type: 'json' });
+      if (cached && cached.generatedAt && Date.now() - Date.parse(cached.generatedAt) < ttl * 1000) {
+        aggregate = cached;
+      }
+    }
+    if (!aggregate) {
+      aggregate = await fetchMergedContributionRecords(env);
+      if (env.AUTH_STORE) {
+        await env.AUTH_STORE.put(CONTRIBUTIONS_CACHE_KEY, JSON.stringify(aggregate), { expirationTtl: ttl });
+      }
+    }
+
+    const url = new URL(request.url);
+    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '20', 10) || 20, 1), 200);
+    const pendingLimit = Math.min(Math.max(parseInt(url.searchParams.get('pending_limit') || '100', 10) || 100, 0), 200);
+    const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
+    return json({
+      generatedAt: aggregate.generatedAt,
+      totalContributions: aggregate.totalContributions,
+      leaderboardContributions: aggregate.leaderboardContributions,
+      systemContributions: aggregate.systemContributions,
+      totalContributors: aggregate.totalContributors,
+      leaderboard: aggregate.leaderboard,
+      records: aggregate.records.slice(offset, offset + limit),
+      pendingRecords: aggregate.pendingRecords.slice(0, pendingLimit),
+      totalRecords: aggregate.records.length,
+      totalPendingRecords: aggregate.totalPendingRecords,
+      limit,
+      pendingLimit,
+      offset,
+    }, 200, { ...corsHeaders, 'Cache-Control': `public, max-age=${ttl}` });
+  } catch (err) {
+    return json({ error: 'Failed to load contributions', detail: err?.message || String(err) }, 500, corsHeaders);
+  }
 }
 
 const EDITABLE_FILE_PATHS = {

@@ -517,13 +517,37 @@ window.MMMDrafts = (function () {
         return DEFAULT_ENDPOINT;
     }
 
+    function _trimEndpoint(endpoint) {
+        return String(endpoint || '').replace(/\/+$/, '');
+    }
+
+    function _authText(key, fallback) {
+        if (typeof t !== 'function') return fallback;
+        var value = t(key);
+        return value === key ? fallback : value;
+    }
+
+    async function _getGitHubSession() {
+        if (!window.MMMAuth || typeof window.MMMAuth.getState !== 'function') return null;
+        var authState = window.MMMAuth.getState();
+        if (authState && authState.authenticated && authState.sessionId) return authState;
+        if (authState && authState.sessionId && typeof window.MMMAuth.refresh === 'function') {
+            try {
+                authState = await window.MMMAuth.refresh();
+                if (authState && authState.authenticated && authState.sessionId) return authState;
+            } catch (_) {}
+        }
+        return null;
+    }
+
     /**
      * Submit all pending drafts to the worker endpoint.
      * All pending files are submitted in a single POST when they share a base branch.
      * Returns a promise that resolves with the worker response.
      */
     async function submitAll(contributor, description) {
-        var endpoint = _resolveEndpoint();
+        var authState = await _getGitHubSession();
+        var endpoint = _trimEndpoint(_resolveEndpoint()) + (authState ? '/submit/user' : '');
         var all = _readAll();
         var files = Object.keys(all);
         if (!files.length) throw new Error(t('drafts.noChangesNotif'));
@@ -583,14 +607,19 @@ window.MMMDrafts = (function () {
             throw new Error('Pending changes target multiple base branches and cannot be submitted in one PR.');
         }
 
+        var headers = { 'Content-Type': 'application/json' };
+        if (authState) headers.Authorization = 'Bearer ' + authState.sessionId;
+
+        var payload = {
+            description: description || '',
+            files: submissionFiles
+        };
+        if (!authState) payload.contributor = contributor || '';
+
         var resp = await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contributor: contributor || '',
-                description: description || '',
-                files: submissionFiles
-            })
+            headers: headers,
+            body: JSON.stringify(payload)
         });
 
         if (!resp.ok) {
@@ -866,12 +895,34 @@ window.MMMDrafts = (function () {
             return;
         }
 
+        var authState = window.MMMAuth && typeof window.MMMAuth.getState === 'function' ? window.MMMAuth.getState() : null;
+        var isSignedIn = !!(authState && authState.authenticated && authState.user);
+
         var fileLabels = files.map(function (f) {
             if (f === 'bands.json') return '<li><i class="fas fa-list"></i> ' + t('drafts.masterList') + '</li>';
             if (f === 'events.json') return '<li><i class="fas fa-calendar-days"></i> ' + t('drafts.events') + '</li>';
             if (f === 'releases.json') return '<li><i class="fas fa-music"></i> Изданија</li>';
             return '<li><i class="fas fa-file"></i> ' + f + '</li>';
         }).join('');
+
+        var user = isSignedIn ? (authState.user || {}) : {};
+        var userName = user.name || user.login || 'GitHub';
+        var identityHtml = isSignedIn
+            ? '<div class="mmm-draft-auth-user">' +
+                (user.avatar_url ? '<img src="' + _esc(user.avatar_url) + '" alt="">' : '<i class="fab fa-github"></i>') +
+                '<div><span>' + _authText('auth.signedInAs', 'Signed in as') + '</span><strong>' + _esc(userName) + (user.login ? ' (@' + _esc(user.login) + ')' : '') + '</strong></div>' +
+            '</div>'
+            : '<div class="mmm-draft-auth-user mmm-draft-auth-anon">' +
+                '<i class="fab fa-github"></i>' +
+                '<div><span>' + _authText('auth.optional', 'Optional') + '</span><strong>' + _authText('auth.submitAnonymous', 'Submit without signing in') + '</strong></div>' +
+                '<button type="button" class="mmm-draft-auth-login" id="mmm-draft-login-btn">' + _authText('auth.signInGitHub', 'Sign in with GitHub') + '</button>' +
+            '</div>';
+
+        var contributorField = isSignedIn ? '' :
+            '<div class="mmm-draft-field">' +
+                '<label for="mmm-draft-contributor">' + t('drafts.contributorLabel') + '</label>' +
+                '<input type="text" id="mmm-draft-contributor" placeholder="' + t('drafts.contributorPlaceholder') + '">' +
+            '</div>';
 
         var overlay = document.createElement('div');
         overlay.className = 'mmm-draft-overlay';
@@ -880,11 +931,9 @@ window.MMMDrafts = (function () {
                 '<h2><i class="fas fa-paper-plane"></i> ' + t('drafts.submitDialogTitle') + '</h2>' +
                 '<p class="mmm-draft-dialog-info">' + t('drafts.submitInfo') + '</p>' +
                 '<ul class="mmm-draft-file-list">' + fileLabels + '</ul>' +
+                identityHtml +
                 '<form id="mmm-draft-submit-form">' +
-                    '<div class="mmm-draft-field">' +
-                        '<label for="mmm-draft-contributor">' + t('drafts.contributorLabel') + '</label>' +
-                        '<input type="text" id="mmm-draft-contributor" placeholder="' + t('drafts.contributorPlaceholder') + '">' +
-                    '</div>' +
+                    contributorField +
                     '<div class="mmm-draft-field">' +
                         '<label for="mmm-draft-description">' + t('drafts.descLabel') + '</label>' +
                         '<textarea id="mmm-draft-description" placeholder="' + t('drafts.descPlaceholder') + '" rows="3" required></textarea>' +
@@ -913,10 +962,31 @@ window.MMMDrafts = (function () {
             overlay.remove();
         });
 
+        var loginBtn = document.getElementById('mmm-draft-login-btn');
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function () {
+                if (!window.MMMAuth || typeof window.MMMAuth.login !== 'function') {
+                    _showNotification(_authText('auth.unavailable', 'GitHub login is not available yet. You can still submit changes without signing in.'), 'warning');
+                    return;
+                }
+                loginBtn.disabled = true;
+                window.MMMAuth.login().then(function (nextState) {
+                    if (nextState && nextState.authenticated) {
+                        overlay.remove();
+                        _showSubmitDialog();
+                    }
+                }).catch(function (err) {
+                    loginBtn.disabled = false;
+                    _showNotification((err && err.message) || _authText('auth.loginFailed', 'GitHub sign-in failed.'), 'warning');
+                });
+            });
+        }
+
         // Submit
         document.getElementById('mmm-draft-submit-form').addEventListener('submit', async function (e) {
             e.preventDefault();
-            var contributor = document.getElementById('mmm-draft-contributor').value.trim();
+            var contributorEl = document.getElementById('mmm-draft-contributor');
+            var contributor = contributorEl ? contributorEl.value.trim() : '';
             var description = document.getElementById('mmm-draft-description').value.trim();
             if (!description) {
                 _showNotification(t('drafts.descRequired'), 'error');
@@ -1070,6 +1140,7 @@ window.MMMDrafts = (function () {
         hasPending: hasPending,
         getMeta: getMeta,
         submitAll: submitAll,
+        notify: _showNotification,
         initUI: initUI,
         _refreshUI: _refreshUI,
         saveAdditionalFile: saveAdditionalFile,

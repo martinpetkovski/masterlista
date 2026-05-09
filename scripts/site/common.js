@@ -1521,6 +1521,420 @@ if (document.readyState === 'loading') {
     initHeaderCollage();
 }
 
+// ==================== GITHUB AUTH (shared) ====================
+window.MMMAuth = (function () {
+    var SESSION_KEY = 'mmm_github_session';
+    var USER_KEY = 'mmm_github_user';
+    var PR_ENDPOINT_KEY = 'mmm_pr_endpoint';
+    var DEFAULT_ENDPOINT = 'https://muzichka-master-lista.deeeeelay.workers.dev';
+    var CHANGE_EVENT = 'mmm-auth-changed';
+    var state = { sessionId: null, user: null, ready: false };
+    var listeners = [];
+    var languageBound = false;
+    var authStatus = null;
+
+    function text(key, fallback) {
+        if (typeof t !== 'function') return fallback;
+        var value = t(key);
+        return value === key ? fallback : value;
+    }
+
+    function getEndpoint() {
+        if (typeof window.MMM_PR_ENDPOINT === 'string' && window.MMM_PR_ENDPOINT.trim()) return window.MMM_PR_ENDPOINT.trim().replace(/\/+$/, '');
+        try {
+            var stored = localStorage.getItem(PR_ENDPOINT_KEY);
+            if (stored && stored.trim()) return stored.trim().replace(/\/+$/, '');
+        } catch (_) {}
+        return DEFAULT_ENDPOINT;
+    }
+
+    function notify(message, type) {
+        type = type || 'info';
+        if (typeof window.showNotification === 'function') {
+            window.showNotification(message, type);
+            return;
+        }
+        if (window.MMMDrafts && typeof window.MMMDrafts.notify === 'function') {
+            window.MMMDrafts.notify(message, type);
+            return;
+        }
+        var container = document.getElementById('mmm-notifications');
+        if (!container && document.body) {
+            container = document.createElement('div');
+            container.id = 'mmm-notifications';
+            container.className = 'notification-area';
+            container.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:10001;max-width:340px;';
+            document.body.appendChild(container);
+        }
+        if (!container) {
+            alert(message);
+            return;
+        }
+        var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+        var el = document.createElement('div');
+        el.className = 'notification ' + type;
+        el.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i> ' + escHtml(message);
+        container.appendChild(el);
+        setTimeout(function () {
+            el.style.opacity = '0';
+            setTimeout(function () { el.remove(); }, 300);
+        }, 5000);
+    }
+
+    function authUnavailableMessage() {
+        return text('auth.unavailable', 'GitHub login is not available yet. You can still submit changes without signing in.');
+    }
+
+    async function getAuthStatus(force) {
+        if (authStatus && !force) return authStatus;
+        try {
+            var resp = await fetch(getEndpoint() + '/auth/status', { cache: 'no-store' });
+            if (!resp.ok) throw new Error(authUnavailableMessage());
+            authStatus = await resp.json();
+            return authStatus;
+        } catch (_) {
+            throw new Error(authUnavailableMessage());
+        }
+    }
+
+    function readStoredState() {
+        try {
+            state.sessionId = localStorage.getItem(SESSION_KEY) || null;
+            var rawUser = localStorage.getItem(USER_KEY);
+            state.user = rawUser ? JSON.parse(rawUser) : null;
+        } catch (_) {
+            state.sessionId = null;
+            state.user = null;
+        }
+    }
+
+    function writeStoredState() {
+        try {
+            if (state.sessionId) localStorage.setItem(SESSION_KEY, state.sessionId);
+            else localStorage.removeItem(SESSION_KEY);
+            if (state.user) localStorage.setItem(USER_KEY, JSON.stringify(state.user));
+            else localStorage.removeItem(USER_KEY);
+        } catch (_) {}
+    }
+
+    function cleanAuthParams() {
+        try {
+            var url = new URL(window.location.href);
+            var changed = false;
+            ['mmm_session', 'mmm_login', 'mmm_auth_error'].forEach(function (key) {
+                if (url.searchParams.has(key)) {
+                    url.searchParams.delete(key);
+                    changed = true;
+                }
+            });
+            if (changed && window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+            }
+        } catch (_) {}
+    }
+
+    function readCallbackState() {
+        try {
+            var params = new URLSearchParams(window.location.search);
+            var session = params.get('mmm_session');
+            var error = params.get('mmm_auth_error');
+            if (session) {
+                state.sessionId = session;
+                writeStoredState();
+            }
+            if (error) {
+                console.warn('GitHub sign-in failed:', error);
+            }
+            if (session || error) cleanAuthParams();
+        } catch (_) {}
+    }
+
+    function emit() {
+        writeStoredState();
+        renderHeader();
+        window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: getState() }));
+        listeners.forEach(function (fn) {
+            try { fn(getState()); } catch (_) {}
+        });
+    }
+
+    function getState() {
+        return { authenticated: !!(state.sessionId && state.user), sessionId: state.sessionId, user: state.user, ready: state.ready };
+    }
+
+    function getReturnUrl() {
+        try {
+            var url = new URL(window.location.href);
+            ['mmm_session', 'mmm_login', 'mmm_auth_error'].forEach(function (key) { url.searchParams.delete(key); });
+            return url.toString();
+        } catch (_) {
+            return window.location.href;
+        }
+    }
+
+    async function refresh() {
+        readCallbackState();
+        readStoredState();
+        if (!state.sessionId) {
+            state.ready = true;
+            emit();
+            return getState();
+        }
+        try {
+            var resp = await fetch(getEndpoint() + '/auth/session', {
+                headers: { 'Authorization': 'Bearer ' + state.sessionId },
+                cache: 'no-store'
+            });
+            if (!resp.ok) throw new Error('Session expired');
+            var data = await resp.json();
+            state.user = data.user || null;
+        } catch (err) {
+            state.sessionId = null;
+            state.user = null;
+        }
+        state.ready = true;
+        emit();
+        return getState();
+    }
+
+    function isFileOrigin() {
+        return window.location.protocol === 'file:';
+    }
+
+    function getLoginUrl() {
+        if (window.location.protocol === 'file:') return 'login.html';
+        var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        return isLocal ? '/login.html' : '/login';
+    }
+
+    function isLoginPage() {
+        var path = window.location.pathname || '';
+        return path === '/login' || /\/login\.html$/i.test(path);
+    }
+
+    async function login() {
+        if (state.sessionId && state.user) return getState();
+        if (isFileOrigin()) {
+            return startDeviceFlow();
+        }
+        var status = await getAuthStatus(true);
+        if (!status || !status.web) {
+            throw new Error(authUnavailableMessage());
+        }
+        var url = getEndpoint() + '/auth/start?return_to=' + encodeURIComponent(getReturnUrl());
+        window.location.href = url;
+        return null;
+    }
+
+    async function requireSession() {
+        if (state.sessionId && state.user) return getState();
+        var refreshed = await refresh();
+        if (refreshed.authenticated) return refreshed;
+        return login();
+    }
+
+    async function logout() {
+        var sessionId = state.sessionId;
+        state.sessionId = null;
+        state.user = null;
+        emit();
+        if (sessionId) {
+            try {
+                await fetch(getEndpoint() + '/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + sessionId }
+                });
+            } catch (_) {}
+        }
+    }
+
+    function removeAuthMenu() {
+        var existing = document.getElementById('mmm-auth-menu');
+        if (existing) existing.remove();
+    }
+
+    function toggleAuthMenu(anchor) {
+        removeAuthMenu();
+        if (!state.user || !anchor) return;
+        var menu = document.createElement('div');
+        menu.id = 'mmm-auth-menu';
+        menu.className = 'mmm-auth-menu';
+        var name = state.user.name || state.user.login;
+        menu.innerHTML =
+            '<div class="mmm-auth-menu-user">' +
+                (state.user.avatar_url ? '<img src="' + escHtml(state.user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
+                '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(state.user.login) + '</span></div>' +
+            '</div>' +
+            '<a href="' + escHtml(state.user.html_url || ('https://github.com/' + state.user.login)) + '" target="_blank" rel="noopener">GitHub</a>' +
+            '<button type="button" id="mmm-auth-logout">' + text('auth.signOut', 'Sign out') + '</button>';
+        document.body.appendChild(menu);
+        var rect = anchor.getBoundingClientRect();
+        menu.style.top = Math.round(rect.bottom + 8) + 'px';
+        menu.style.right = Math.max(8, Math.round(window.innerWidth - rect.right)) + 'px';
+        document.getElementById('mmm-auth-logout').addEventListener('click', function () {
+            removeAuthMenu();
+            logout();
+        });
+        setTimeout(function () {
+            document.addEventListener('click', function onDocClick(e) {
+                if (!menu.contains(e.target) && e.target !== anchor) {
+                    removeAuthMenu();
+                    document.removeEventListener('click', onDocClick);
+                }
+            });
+        }, 0);
+    }
+
+    function renderHeader() {
+        var btn = document.getElementById('mmm-auth-btn');
+        if (!btn) return;
+        btn.classList.toggle('authenticated', !!state.user);
+        if (state.user) {
+            btn.title = text('auth.signedInAs', 'Signed in as') + ' @' + state.user.login;
+            btn.setAttribute('aria-label', btn.title);
+            btn.innerHTML = state.user.avatar_url
+                ? '<img class="mmm-auth-avatar" src="' + escHtml(state.user.avatar_url) + '" alt="">'
+                : '<i class="fas fa-circle-user"></i>';
+        } else {
+            btn.title = text('auth.login', 'Log in');
+            btn.setAttribute('aria-label', btn.title);
+            btn.innerHTML = '<i class="fas fa-right-to-bracket"></i>';
+        }
+        if (!btn.dataset.mmmAuthBound) {
+            btn.dataset.mmmAuthBound = '1';
+            btn.addEventListener('click', function () {
+                if (state.user) toggleAuthMenu(btn);
+                else if (isLoginPage()) {
+                    login().catch(function (err) {
+                        notify((err && err.message) || authUnavailableMessage(), 'warning');
+                    });
+                } else {
+                    window.location.href = getLoginUrl();
+                }
+            });
+        }
+    }
+
+    function closeDeviceDialog() {
+        var overlay = document.getElementById('mmm-auth-device-overlay');
+        if (overlay) overlay.remove();
+    }
+
+    function showDeviceDialog(data) {
+        closeDeviceDialog();
+        var overlay = document.createElement('div');
+        overlay.id = 'mmm-auth-device-overlay';
+        overlay.className = 'mmm-auth-device-overlay';
+        overlay.innerHTML =
+            '<div class="mmm-auth-device-dialog">' +
+                '<h2><i class="fab fa-github"></i> ' + text('auth.deviceTitle', 'Sign in with GitHub') + '</h2>' +
+                '<p>' + text('auth.deviceInstruction', 'Open GitHub and enter this code to continue.') + '</p>' +
+                '<div class="mmm-auth-device-code">' + escHtml(data.user_code || '') + '</div>' +
+                '<a class="btn-generic" href="' + escHtml(data.verification_uri || 'https://github.com/login/device') + '" target="_blank" rel="noopener">' + text('auth.deviceOpen', 'Open GitHub') + '</a>' +
+                '<p class="mmm-auth-device-status" id="mmm-auth-device-status">' + text('auth.deviceWaiting', 'Waiting for authorization...') + '</p>' +
+                '<button type="button" class="mmm-auth-device-cancel" id="mmm-auth-device-cancel">' + text('drafts.cancel', 'Cancel') + '</button>' +
+            '</div>';
+        document.body.appendChild(overlay);
+        document.getElementById('mmm-auth-device-cancel').addEventListener('click', closeDeviceDialog);
+        overlay.addEventListener('click', function (e) { if (e.target === overlay) closeDeviceDialog(); });
+    }
+
+    async function startDeviceFlow() {
+        var status = await getAuthStatus(true);
+        if (!status || !status.device) {
+            throw new Error(authUnavailableMessage());
+        }
+        var startResp = await fetch(getEndpoint() + '/auth/device/start', { method: 'POST' });
+        if (!startResp.ok) throw new Error(text('auth.loginFailed', 'GitHub sign-in failed.'));
+        var data = await startResp.json();
+        showDeviceDialog(data);
+        var interval = Math.max(Number(data.interval || 5), 5);
+        return new Promise(function (resolve, reject) {
+            var expiresAt = Date.now() + Number(data.expires_in || 900) * 1000;
+            async function poll() {
+                if (Date.now() > expiresAt) {
+                    closeDeviceDialog();
+                    reject(new Error(text('auth.loginFailed', 'GitHub sign-in failed.')));
+                    return;
+                }
+                try {
+                    var resp = await fetch(getEndpoint() + '/auth/device/poll', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ device_code: data.device_code })
+                    });
+                    if (resp.status === 202) {
+                        var pending = await resp.json().catch(function () { return {}; });
+                        if (pending.interval) interval = Math.max(Number(pending.interval), interval + 5);
+                        setTimeout(poll, interval * 1000);
+                        return;
+                    }
+                    if (!resp.ok) throw new Error(await resp.text());
+                    var result = await resp.json();
+                    state.sessionId = result.session;
+                    state.user = result.user;
+                    state.ready = true;
+                    closeDeviceDialog();
+                    emit();
+                    resolve(getState());
+                } catch (err) {
+                    var status = document.getElementById('mmm-auth-device-status');
+                    if (status) status.textContent = text('auth.loginFailed', 'GitHub sign-in failed.');
+                    reject(err);
+                }
+            }
+            setTimeout(poll, interval * 1000);
+        });
+    }
+
+    function onChange(fn) {
+        if (typeof fn === 'function') listeners.push(fn);
+        return function () {
+            listeners = listeners.filter(function (item) { return item !== fn; });
+        };
+    }
+
+    function init() {
+        readCallbackState();
+        readStoredState();
+        bindLanguageChange();
+        renderHeader();
+        refresh();
+    }
+
+    function bindLanguageChange() {
+        if (languageBound || typeof onLanguageChange !== 'function') return;
+        onLanguageChange(renderHeader);
+        languageBound = true;
+    }
+
+    window.addEventListener('mmm-header-loaded', function () {
+        bindLanguageChange();
+        renderHeader();
+    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    return {
+        getEndpoint: getEndpoint,
+        getState: getState,
+        getSessionId: function () { return state.sessionId; },
+        getUser: function () { return state.user; },
+        isAuthenticated: function () { return !!(state.sessionId && state.user); },
+        refresh: refresh,
+        login: login,
+        getLoginUrl: getLoginUrl,
+        getAuthStatus: getAuthStatus,
+        logout: logout,
+        requireSession: requireSession,
+        onChange: onChange,
+        eventName: CHANGE_EVENT
+    };
+})();
+
 // ==================== MINI FOOTER (shared) ====================
 function initGlobalMiniFooter() {
     if (!document.body) return;
@@ -1595,6 +2009,8 @@ function initPageTitleTranslation() {
         '/vesti':       { title: 'pageTitle.news',       header: 'pages.news' },
         '/interviews':  { title: 'pageTitle.interviews', header: 'pages.interviews' },
         '/kustosi':     { title: 'pageTitle.curators',   header: 'pages.curators' },
+        '/contributions': { title: 'pageTitle.contributions', header: 'pages.contributions' },
+        '/login':       { title: 'pageTitle.login',      header: 'auth.loginTitle' },
         '/iznenadi-me': { title: 'pageTitle.surprise',   header: 'pages.surprise' },
         '/privatnost':  { title: 'pageTitle.privacy',    header: 'pageTitle.privacyHeader' },
         '/uslovi':      { title: 'pageTitle.terms',      header: 'pageTitle.termsHeader' },

@@ -33,6 +33,14 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
+
+    <!-- Contributions Leaderboard -->
+    <url>
+        <loc>https://toplista.mk/contributions</loc>
+        <lastmod>2026-05-08</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.6</priority>
+    </url>
     
     <!-- Music News Page -->
     <url>
