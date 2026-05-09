@@ -443,6 +443,7 @@ export default {
         return json({ error: 'Failed to create PR', detail: text }, 500, corsHeaders);
       }
       const pr = await prRes.json();
+      await invalidateContributionsCache(env);
 
       return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, files: submittedFiles, skippedFiles, failedFiles }, 200, corsHeaders);
     } catch (err) {
@@ -453,6 +454,13 @@ export default {
 
 function json(obj, status = 200, headers = {}) {
   return new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json', ...headers } });
+}
+
+async function invalidateContributionsCache(env) {
+  if (!env.AUTH_STORE) return;
+  try {
+    await env.AUTH_STORE.delete(CONTRIBUTIONS_CACHE_KEY);
+  } catch (_) {}
 }
 
 function pad(n) { return String(n).padStart(2, '0'); }
@@ -991,31 +999,45 @@ async function handleAuthenticatedSubmission(request, env, corsHeaders) {
     const repo = env.GITHUB_REPO || 'masterlista';
     const defaultBranch = env.GITHUB_DEFAULT_BRANCH || 'master';
     const user = session.user;
+    if (!user?.login) {
+      return json({ error: 'Authenticated GitHub user is missing a login', code: 'INVALID_AUTH_USER' }, 401, corsHeaders);
+    }
     const contributor = contributorLabelFromUser(user);
     const upstreamGh = githubRequest(session.accessToken, 'mmm-pr-worker-user');
+    const userLogin = String(user.login || '');
+    const submitsToUpstream = userLogin.toLowerCase() === String(owner).toLowerCase();
+    const branchOwner = submitsToUpstream ? owner : userLogin;
+    const branchRepoLabel = `${branchOwner}/${repo}`;
+    const repoWriteToken = submitsToUpstream ? await getRepoWriteToken(env) : null;
+    if (repoWriteToken && !repoWriteToken.ok) {
+      return json({ error: repoWriteToken.error, detail: repoWriteToken.detail, hint: repoWriteToken.hint, code: 'REPO_WRITE_AUTH_REQUIRED' }, 500, corsHeaders);
+    }
+    const writeGh = submitsToUpstream ? githubRequest(repoWriteToken.token, 'mmm-pr-worker-repo') : upstreamGh;
 
-    const base = await resolveBaseBranch({ gh: upstreamGh, owner, repo, defaultBranch, requestedBase: validation.requestedBase });
+    const base = await resolveBaseBranch({ gh: writeGh, owner, repo, defaultBranch, requestedBase: validation.requestedBase });
     if (!base.ok) return json({ error: base.error, detail: base.detail }, 500, corsHeaders);
 
-    const prepared = await prepareSubmissionFiles({ gh: upstreamGh, owner, repo, baseBranch: base.baseBranch, files });
+    const prepared = await prepareSubmissionFiles({ gh: writeGh, owner, repo, baseBranch: base.baseBranch, files });
     if (!prepared.preparedFiles.length) {
       return json({ error: 'No effective changes to submit', code: 'NO_EFFECTIVE_CHANGES', skippedFiles: prepared.skippedFiles }, 409, corsHeaders);
     }
 
-    const forkResult = await ensureFork({ gh: upstreamGh, owner, repo, userLogin: user.login });
-    if (!forkResult.ok) {
-      return json({ error: 'Failed to create or resolve fork', detail: forkResult.error }, 500, corsHeaders);
+    if (!submitsToUpstream) {
+      const forkResult = await ensureFork({ gh: upstreamGh, owner, repo, userLogin });
+      if (!forkResult.ok) {
+        return json({ error: 'Failed to create or resolve fork', detail: forkResult.error }, 500, corsHeaders);
+      }
     }
 
     const branchResult = await createUniqueBranch({
-      gh: upstreamGh,
-      owner: user.login,
+      gh: writeGh,
+      owner: branchOwner,
       repo,
       baseSha: base.baseSha,
-      contributor: user.login,
+      contributor: userLogin,
     });
     if (!branchResult.ok) {
-      return json({ error: 'Failed to create fork branch', detail: branchResult.detail }, 500, corsHeaders);
+      return json({ error: submitsToUpstream ? 'Failed to create branch' : 'Failed to create fork branch', detail: branchResult.detail }, 500, corsHeaders);
     }
 
     const branchName = branchResult.branchName;
@@ -1023,15 +1045,15 @@ async function handleAuthenticatedSubmission(request, env, corsHeaders) {
     const submittedFiles = [];
     for (const fileUpdate of prepared.preparedFiles) {
       const commitResult = await commitPreparedFile({
-        gh: upstreamGh,
-        owner: user.login,
+        gh: writeGh,
+        owner: branchOwner,
         repo,
         branchName,
         contributor,
         prepared: fileUpdate,
       });
       if (!commitResult.ok) {
-        return json({ error: 'Failed to commit file to fork', detail: commitResult.error, path: commitResult.path }, 500, corsHeaders);
+        return json({ error: submitsToUpstream ? 'Failed to commit file' : 'Failed to commit file to fork', detail: commitResult.error, path: commitResult.path }, 500, corsHeaders);
       }
       if (fileUpdate.hasChanges) submittedFiles.push(fileUpdate.targetPath);
       failedFiles.push(...commitResult.failedFiles);
@@ -1047,30 +1069,71 @@ async function handleAuthenticatedSubmission(request, env, corsHeaders) {
       contributor,
       metadata,
     });
-    const prRes = await upstreamGh(`/repos/${owner}/${repo}/pulls`, {
+    const prPayload = {
+      title,
+      head: submitsToUpstream ? branchName : `${userLogin}:${branchName}`,
+      base: base.baseBranch,
+      body: bodyText,
+      maintainer_can_modify: !submitsToUpstream,
+    };
+    let prCreateMode = 'user';
+    let prCreateWarning = null;
+    let prRes = await upstreamGh(`/repos/${owner}/${repo}/pulls`, {
       method: 'POST',
-      body: JSON.stringify({
-        title,
-        head: `${user.login}:${branchName}`,
-        base: base.baseBranch,
-        body: bodyText,
-        maintainer_can_modify: true,
-      }),
+      body: JSON.stringify(prPayload),
     });
+    if (!prRes.ok && submitsToUpstream) {
+      prCreateWarning = await prRes.text();
+      prCreateMode = repoWriteToken.mode;
+      prRes = await writeGh(`/repos/${owner}/${repo}/pulls`, {
+        method: 'POST',
+        body: JSON.stringify(prPayload),
+      });
+    }
     if (!prRes.ok) {
-      return json({ error: 'Failed to create PR', detail: await prRes.text() }, 500, corsHeaders);
+      return json({ error: 'Failed to create PR', detail: await prRes.text(), userDetail: prCreateWarning }, 500, corsHeaders);
     }
     const pr = await prRes.json();
+    const finalMetadata = buildContributionMetadata({ user, baseBranch: base.baseBranch, submittedFiles, skippedFiles: prepared.skippedFiles, failedFiles, prNumber: pr.number, prUrl: pr.html_url });
+    const finalBodyText = buildPrBody({
+      description,
+      submittedFiles,
+      mergeNotes: prepared.mergeNotes,
+      skippedFiles: prepared.skippedFiles,
+      contributor,
+      metadata: finalMetadata,
+    });
+    let bodyUpdateRes = await (prCreateMode === 'user' ? upstreamGh : writeGh)(`/repos/${owner}/${repo}/pulls/${pr.number}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ body: finalBodyText }),
+    });
+    let bodyUpdateWarning = bodyUpdateRes.ok ? null : await bodyUpdateRes.text();
+    if (!bodyUpdateRes.ok && submitsToUpstream && prCreateMode === 'user') {
+      const userUpdateWarning = bodyUpdateWarning;
+      bodyUpdateRes = await writeGh(`/repos/${owner}/${repo}/pulls/${pr.number}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ body: finalBodyText }),
+      });
+      bodyUpdateWarning = bodyUpdateRes.ok ? null : await bodyUpdateRes.text() || userUpdateWarning;
+    }
+    await invalidateContributionsCache(env);
 
     return json({
       ok: true,
       pr_url: pr.html_url,
       pr_number: pr.number,
       branch: branchName,
-      fork: `${user.login}/${repo}`,
+      repository: branchRepoLabel,
+      fork: submitsToUpstream ? null : branchRepoLabel,
+      submissionMode: submitsToUpstream ? 'upstream' : 'fork',
+      writeMode: submitsToUpstream ? repoWriteToken.mode : 'user',
+      pullRequestMode: prCreateMode,
+      pullRequestModeWarning: prCreateWarning,
       files: submittedFiles,
       skippedFiles: prepared.skippedFiles,
       failedFiles,
+      metadataUpdated: bodyUpdateRes.ok,
+      metadataUpdateWarning: bodyUpdateWarning,
       user: publicUserFromSession(session),
     }, 200, corsHeaders);
   } catch (err) {
@@ -1140,6 +1203,20 @@ async function getReadToken(env) {
     }
   }
   return env.GITHUB_TOKEN || null;
+}
+
+async function getRepoWriteToken(env) {
+  const hasApp = !!(env.GITHUB_APP_ID && env.GITHUB_INSTALLATION_ID && env.GITHUB_APP_PRIVATE_KEY);
+  if (hasApp) {
+    try {
+      return { ok: true, token: await getInstallationToken(env), mode: 'github_app' };
+    } catch (err) {
+      if (env.GITHUB_TOKEN) return { ok: true, token: env.GITHUB_TOKEN, mode: 'pat' };
+      return { ok: false, error: 'GitHub App auth failed', detail: err?.message || String(err) };
+    }
+  }
+  if (env.GITHUB_TOKEN) return { ok: true, token: env.GITHUB_TOKEN, mode: 'pat' };
+  return { ok: false, error: 'Missing GitHub credentials', hint: 'Set GitHub App vars (GITHUB_APP_ID, GITHUB_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY) or a PAT in GITHUB_TOKEN.' };
 }
 
 function buildContributionRecordFromPr(pr, { systemLogins, status }) {

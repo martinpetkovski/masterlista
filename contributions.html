@@ -44,6 +44,7 @@
         .leaderboard-entry, .contribution-entry { border: 1px solid var(--border-color); background: var(--bg-primary); padding: 0.65rem; }
         .leaderboard-entry { display: grid; grid-template-columns: auto 40px minmax(0, 1fr) auto; gap: 0.6rem; align-items: center; }
         .leaderboard-rank { width: 26px; text-align: right; color: var(--text-muted); font-weight: 700; }
+        .leaderboard-avatar, .contribution-avatar { display: inline-flex; line-height: 0; }
         .leaderboard-entry img, .contribution-user img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); }
         .leaderboard-name, .contribution-title { min-width: 0; }
         .leaderboard-name a, .contribution-title a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
@@ -279,16 +280,16 @@
                 return value === key ? fallback : value;
             }
 
-            function isLocalPage() {
-                return location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-            }
-
             function profileUrl(login, system) {
                 var user = system ? 'system' : String(login || '').trim();
-                if (!user) return isLocalPage() ? '/contributions.html' : '/contributions';
-                var page = isLocalPage() ? '/profile.html' : '/profile';
-                if (location.protocol === 'file:') page = 'profile.html';
-                return page + '?user=' + encodeURIComponent(user);
+                if (window.MMMAuth && typeof window.MMMAuth.getProfileUrl === 'function') {
+                    return window.MMMAuth.getProfileUrl(user);
+                }
+                if (!user) return location.protocol === 'file:' ? 'contributions.html' : '/contributions';
+                if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                    return (location.protocol === 'file:' ? 'profile.html' : '/profile.html') + '?user=' + encodeURIComponent(user);
+                }
+                return '/profile/' + encodeURIComponent(user);
             }
 
             function formatDate(value) {
@@ -318,10 +319,11 @@
                     var rankLabel = entry.system ? '—' : ('#' + entry.rank);
                     var name = entry.system ? t('contributions.system') : displayName(entry);
                     var subline = entry.system ? localText('contributions.notRanked', 'Not ranked') : ('@' + displayLogin(entry.login));
+                    var userProfileUrl = profileUrl(entry.login, entry.system);
                     return '<article class="leaderboard-entry">' +
                         '<div class="leaderboard-rank">' + escHtml(rankLabel) + '</div>' +
-                        '<img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
-                        '<div class="leaderboard-name"><a href="' + escHtml(profileUrl(entry.login, entry.system)) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
+                        '<a class="leaderboard-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
+                        '<div class="leaderboard-name"><a href="' + escHtml(userProfileUrl) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
                         '<div class="leaderboard-count">' + entry.contributions + '</div>' +
                     '</article>';
                 }).join('');
@@ -333,10 +335,11 @@
                 var systemBadge = record.system ? ' · <span class="contribution-system">' + escHtml(t('contributions.system')) + '</span>' : '';
                 var statusBadge = pending ? ' · <span class="contribution-status">' + escHtml(t('contributions.pending')) + '</span>' : '';
                 var dateValue = pending ? (record.updatedAt || record.createdAt) : record.mergedAt;
+                var userProfileUrl = profileUrl(user.login, record.system);
                 return '<article class="contribution-entry">' +
                     '<div class="contribution-user">' +
-                        '<img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy">' +
-                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta"><a href="' + escHtml(profileUrl(user.login, record.system)) + '">@' + escHtml(displayLogin(record.system ? 'system' : user.login)) + '</a> · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
+                        '<a class="contribution-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
+                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta"><a href="' + escHtml(userProfileUrl) + '">@' + escHtml(displayLogin(record.system ? 'system' : user.login)) + '</a> · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
                     '</div>' +
                     (files ? '<div class="contribution-files">' + files + '</div>' : '') +
                 '</article>';

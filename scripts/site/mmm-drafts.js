@@ -1005,9 +1005,21 @@ window.MMMDrafts = (function () {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> ' + t('drafts.success');
                 submitBtn.classList.add('mmm-btn-success');
 
-                setTimeout(function () {
-                    overlay.remove();
-                }, 1200);
+                if (results && results.pr_url) {
+                    var buttons = overlay.querySelector('.mmm-draft-dialog-buttons');
+                    if (buttons) {
+                        buttons.innerHTML =
+                            '<a class="mmm-draft-btn submit" href="' + _esc(results.pr_url) + '" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> ' + _authText('drafts.openPullRequest', 'Open pull request') + '</a>' +
+                            '<button type="button" class="mmm-draft-btn discard" id="mmm-draft-success-close">' + _authText('common.close', 'Close') + '</button>';
+                        document.getElementById('mmm-draft-success-close').addEventListener('click', function () {
+                            overlay.remove();
+                        });
+                    }
+                } else {
+                    setTimeout(function () {
+                        overlay.remove();
+                    }, 1200);
+                }
 
                 _showNotification(t('drafts.submitSuccess'), 'success');
                 window.dispatchEvent(new CustomEvent('mmm-drafts-submitted', { detail: results }));

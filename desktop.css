@@ -4845,7 +4845,9 @@ body.guide-page .site-footer {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
+    text-decoration: none;
     transition: background 0.15s, transform 0.1s, opacity 0.15s;
     font-family: inherit;
 }

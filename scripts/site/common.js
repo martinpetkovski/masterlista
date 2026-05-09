@@ -1135,6 +1135,16 @@ function initNavMenu() {
     var menuEl = document.getElementById('site-nav-menu');
     if (trigger && trigger.dataset.navMenuBound === '1') return;
     if (trigger && menuEl) {
+        function closeMenu() {
+            menuEl.classList.remove('open');
+            document.body.classList.remove('site-nav-menu-open');
+        }
+
+        function toggleMenu() {
+            var open = menuEl.classList.toggle('open');
+            document.body.classList.toggle('site-nav-menu-open', open);
+        }
+
         trigger.dataset.navMenuBound = '1';
         trigger.addEventListener('click', function(e) {
             var header = trigger.closest('header');
@@ -1142,12 +1152,15 @@ function initNavMenu() {
             if (mobileMenu || (header && header.classList.contains('nav-collapsed'))) {
                 e.preventDefault();
                 e.stopPropagation();
-                menuEl.classList.toggle('open');
+                toggleMenu();
             }
+        });
+        menuEl.addEventListener('click', function(e) {
+            if (e.target === menuEl) closeMenu();
         });
         document.addEventListener('click', function(e) {
             if (!menuEl.contains(e.target) && !trigger.contains(e.target)) {
-                menuEl.classList.remove('open');
+                closeMenu();
             }
         });
     }
@@ -1721,6 +1734,14 @@ window.MMMAuth = (function () {
         return isLocal ? '/login.html' : '/login';
     }
 
+    function getProfileUrl(login) {
+        var user = String(login || (state.user && state.user.login) || '').trim();
+        if (!user) return getLoginUrl();
+        var isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocal) return (window.location.protocol === 'file:' ? 'profile.html' : '/profile.html') + '?user=' + encodeURIComponent(user);
+        return '/profile/' + encodeURIComponent(user);
+    }
+
     function isLoginPage() {
         var path = window.location.pathname || '';
         return path === '/login' || /\/login\.html$/i.test(path);
@@ -1779,6 +1800,7 @@ window.MMMAuth = (function () {
                 (state.user.avatar_url ? '<img src="' + escHtml(state.user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
                 '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(state.user.login) + '</span></div>' +
             '</div>' +
+            '<a href="' + escHtml(getProfileUrl(state.user.login)) + '"><i class="fas fa-circle-user"></i> ' + text('pages.profile', 'Profile') + '</a>' +
             '<a href="' + escHtml(state.user.html_url || ('https://github.com/' + state.user.login)) + '" target="_blank" rel="noopener">GitHub</a>' +
             '<button type="button" id="mmm-auth-logout">' + text('auth.signOut', 'Sign out') + '</button>';
         document.body.appendChild(menu);
@@ -1962,6 +1984,7 @@ window.MMMAuth = (function () {
         refresh: refresh,
         login: login,
         getLoginUrl: getLoginUrl,
+        getProfileUrl: getProfileUrl,
         getAuthStatus: getAuthStatus,
         logout: logout,
         requireSession: requireSession,

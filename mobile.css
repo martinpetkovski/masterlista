@@ -633,7 +633,9 @@ body.dark-mode .filter-toggle-btn.active {
 .unified-chip {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.25rem;
+    text-decoration: none;
     padding: 0.2rem 0.5rem;
     border-radius: 14px;
     font-size: 0.72rem;
@@ -3861,21 +3863,33 @@ body.dark-mode .site-nav-menu a.active:hover i {
     cursor: pointer;
 }
 
+body.site-nav-menu-open {
+    overflow: hidden;
+}
+
 .site-nav-menu {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    inset: 0;
     left: 0;
-    z-index: 1300;
-    min-width: 160px;
+    z-index: 3000;
+    width: 100vw;
+    min-width: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
     background: var(--nav-bg, var(--artist-accent-1, #fff));
-    border: 2px solid var(--nav-border, var(--artist-accent-2, #dfe1e5));
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    margin-top: 0.2rem;
+    border: 0;
+    box-shadow: none;
+    margin-top: 0;
+    padding: 4.2rem 1rem 1rem;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .site-nav-menu.open {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
 }
 
 .mmm-auth-mobile-status {
@@ -3930,8 +3944,8 @@ body.dark-mode .mmm-auth-mobile-status {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.95rem;
     color: var(--nav-text, var(--text-primary, #1a1d21));
     text-decoration: none;
     border: 2px solid transparent;
@@ -4070,7 +4084,7 @@ body.dark-mode .mmm-auth-mobile-status {
 .nav-separator {
     height: 1px;
     background: var(--text-secondary, #555b64);
-    margin: 0.2rem 0.5rem;
+    margin: 0.35rem 0;
 }
 body.dark-mode .nav-separator {
     background: #a0a6b0;

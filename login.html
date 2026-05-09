@@ -70,7 +70,9 @@
         .login-note { margin-top: 0.75rem; color: var(--text-muted); font-size: 0.78rem; line-height: 1.45; }
         .login-status { margin-top: 0.85rem; min-height: 1.2rem; color: var(--text-secondary); font-size: 0.82rem; }
         .login-status.error { color: var(--accent-red, #ef4444); }
-        .login-user { display: flex; align-items: center; gap: 0.7rem; margin: 0.9rem 0; }
+        .login-user { margin: 0.9rem 0; }
+        .login-user-link { display: flex; align-items: center; gap: 0.7rem; color: var(--text-primary); text-decoration: none; }
+        .login-user-link:hover strong { color: var(--accent-blue); }
         .login-user img, .login-user i { width: 44px; height: 44px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; object-fit: cover; background: var(--bg-secondary); }
         .login-user strong, .login-user span { display: block; line-height: 1.2; }
         .login-user span { color: var(--text-muted); font-size: 0.78rem; margin-top: 0.15rem; }
@@ -99,6 +101,7 @@
                 <div id="login-signed-in" style="display:none">
                     <div class="login-user" id="login-user"></div>
                     <div class="login-actions">
+                        <a id="login-profile-link" class="login-secondary-btn" href="/profile/system"><i class="fas fa-circle-user"></i> <span data-i18n="pages.profile">Профил</span></a>
                         <a class="login-secondary-btn" href="/contributions"><i class="fas fa-code-pull-request"></i> <span data-i18n="auth.viewContributions">Види придонеси</span></a>
                         <button type="button" id="login-logout-btn" class="login-secondary-btn"><i class="fas fa-right-from-bracket"></i> <span data-i18n="auth.signOut">Одјави се</span></button>
                     </div>
@@ -123,6 +126,18 @@
                 status.classList.toggle('error', !!isError);
             }
 
+            function profileUrl(login) {
+                if (window.MMMAuth && typeof window.MMMAuth.getProfileUrl === 'function') {
+                    return window.MMMAuth.getProfileUrl(login);
+                }
+                var user = String(login || '').trim();
+                if (!user) return location.protocol === 'file:' ? 'profile.html' : '/profile';
+                if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                    return (location.protocol === 'file:' ? 'profile.html' : '/profile.html') + '?user=' + encodeURIComponent(user);
+                }
+                return '/profile/' + encodeURIComponent(user);
+            }
+
             function render() {
                 var auth = window.MMMAuth && typeof window.MMMAuth.getState === 'function' ? window.MMMAuth.getState() : { authenticated: false };
                 var signedOut = document.getElementById('login-signed-out');
@@ -135,9 +150,14 @@
                 if (!auth.authenticated || !auth.user) return;
                 var user = auth.user;
                 var name = user.name || user.login || 'GitHub';
+                var userProfileUrl = profileUrl(user.login);
+                var profileLink = document.getElementById('login-profile-link');
+                if (profileLink) profileLink.href = userProfileUrl;
                 document.getElementById('login-user').innerHTML =
-                    (user.avatar_url ? '<img src="' + escHtml(user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
-                    '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(user.login || '') + '</span></div>';
+                    '<a class="login-user-link" href="' + escHtml(userProfileUrl) + '">' +
+                        (user.avatar_url ? '<img src="' + escHtml(user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
+                        '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(user.login || '') + '</span></div>' +
+                    '</a>';
             }
 
             document.getElementById('login-github-btn').addEventListener('click', function() {
