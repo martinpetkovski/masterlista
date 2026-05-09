@@ -61,7 +61,7 @@
             <section id="profile-content" style="display:none">
                 <div class="profile-card" id="profile-card"></div>
                 <div class="profile-panel">
-                    <h3 id="profile-list-title">Придонеси</h3>
+                    <h3 id="profile-list-title" data-i18n="profile.contributions">Придонеси</h3>
                     <div id="profile-list" class="profile-list"></div>
                     <div id="profile-empty" class="profile-empty" style="display:none">Нема придонеси за овој профил.</div>
                 </div>
@@ -309,7 +309,7 @@
                         '<div class="profile-stat"><strong>' + total + '</strong><span>' + safeHtml(localText('contributions.total', 'contributions')) + '</span></div>' +
                         '<div class="profile-stat"><strong>' + safeHtml(rank) + '</strong><span>' + safeHtml(localText('contributions.leaderboard', 'Leaderboard')) + '</span></div>' +
                     '</div>';
-                document.getElementById('profile-list-title').textContent = localText('contributions.recent', 'Contributions').replace(/^20\s+/, '');
+                document.getElementById('profile-list-title').textContent = localText('profile.contributions', 'Contributions');
                 document.getElementById('profile-empty').style.display = records.length ? 'none' : 'block';
                 document.getElementById('profile-list').innerHTML = records.map(renderContribution).join('');
             }

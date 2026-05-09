@@ -49,6 +49,8 @@
         .leaderboard-name a, .contribution-title a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
         .leaderboard-name a:hover, .contribution-title a:hover { color: var(--accent-blue); }
         .leaderboard-name span, .contribution-meta { display: block; color: var(--text-muted); font-size: 0.72rem; margin-top: 0.1rem; }
+        .contribution-meta a { color: inherit; font-weight: 700; text-decoration: none; }
+        .contribution-meta a:hover { color: var(--accent-blue); }
         .contribution-system { color: var(--accent-color); font-weight: 700; }
         .contribution-status { color: var(--accent-orange, #e8a838); font-weight: 700; }
         .leaderboard-count { font-weight: 800; font-size: 1rem; }
@@ -221,9 +223,6 @@
                         rank += 1;
                     }
                 });
-                leaderboard = leaderboard.map(function(entry) {
-                        return entry;
-                    });
                 return {
                     generatedAt: new Date().toISOString(),
                     totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
