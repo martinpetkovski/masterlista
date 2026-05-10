@@ -1,0 +1,52 @@
+name: Update contributions snapshot
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: update-contributions-snapshot
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate contributions snapshot
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CONTRIBUTIONS_MAX_PAGES: 20
+        run: npm run generate:contributions
+
+      - name: Commit snapshot
+        run: |
+          changes=$(git status --porcelain -- data/dynamic/generated/contributions.json)
+          if [ -z "$changes" ]; then
+            echo "No contribution snapshot changes to commit."
+            exit 0
+          fi
+
+          git add data/dynamic/generated/contributions.json
+          git commit -m "Update contributions snapshot"
+          git push

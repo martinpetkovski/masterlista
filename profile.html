@@ -81,6 +81,7 @@
             var METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
             var EMAIL_RE = /([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/ig;
             var PAGE_LIMIT = 200;
+            var STATIC_CONTRIBUTIONS_FILE = 'data/dynamic/generated/contributions.json';
 
             function localText(key, fallback) {
                 if (typeof t !== 'function') return fallback;
@@ -126,6 +127,21 @@
                 return String(user || '').trim();
             }
 
+            function staticContributionsUrl() {
+                var path = location.protocol === 'file:' ? STATIC_CONTRIBUTIONS_FILE : '/' + STATIC_CONTRIBUTIONS_FILE;
+                return path + '?t=' + Date.now();
+            }
+
+            async function loadStaticContributions() {
+                var resp = await fetch(staticContributionsUrl());
+                if (!resp.ok) throw new Error('Static contributions snapshot unavailable: ' + resp.status);
+                var snapshot = await resp.json();
+                if (!snapshot || !Array.isArray(snapshot.records) || !Array.isArray(snapshot.leaderboard)) {
+                    throw new Error('Static contributions snapshot is invalid.');
+                }
+                return snapshot;
+            }
+
             function workerBase() {
                 var base = window.MMMAuth && typeof window.MMMAuth.getEndpoint === 'function'
                     ? window.MMMAuth.getEndpoint()
@@ -164,8 +180,10 @@
                 var metadata = extractContributionMetadata(pr.body || '');
                 var submitter = metadata && metadata.submitter && metadata.submitter.login ? metadata.submitter : publicUser(pr.user);
                 if (!submitter || !submitter.login) return null;
-                var contributionCount = Number(metadata && metadata.contributionCount || 1) || 1;
+                var stats = contributionStats(pr, metadata);
+                var contributionCount = status === 'pending' ? 0 : stats.lineChanges;
                 var submittedAt = contributionSubmittedAt(pr, metadata);
+                var community = isSystem(submitter.login, submittedAt);
                 return {
                     prNumber: pr.number,
                     prUrl: pr.html_url,
@@ -174,14 +192,34 @@
                     createdAt: pr.created_at,
                     submittedAt: submittedAt,
                     updatedAt: pr.updated_at,
+                    additions: stats.additions,
+                    deletions: stats.deletions,
+                    lineChanges: stats.lineChanges,
                     contributionCount: status === 'pending' ? 0 : contributionCount,
+                    contributionScore: contributionCount,
                     submitter: submitter,
-                    system: isSystem(submitter.login, submittedAt),
+                    system: community,
+                    community: community,
                     status: status,
                     source: metadata ? 'site' : 'github',
                     files: metadata && Array.isArray(metadata.files) ? metadata.files : [],
                     baseBranch: pr.base && pr.base.ref || ''
                 };
+            }
+
+            function toNonNegativeInteger(value) {
+                var number = Number(value);
+                if (!Number.isFinite(number) || number < 0) return 0;
+                return Math.floor(number);
+            }
+
+            function contributionStats(pr, metadata) {
+                var additions = toNonNegativeInteger(pr && pr.additions || metadata && metadata.additions);
+                var deletions = toNonNegativeInteger(pr && pr.deletions || metadata && metadata.deletions);
+                var lineChanges = additions + deletions;
+                if (!lineChanges) lineChanges = toNonNegativeInteger(metadata && (metadata.lineChanges || metadata.contributionScore));
+                if (!lineChanges) lineChanges = Number(metadata && metadata.contributionCount || 1) || 1;
+                return { additions: additions, deletions: deletions, lineChanges: lineChanges };
             }
 
             async function loadPulls(state, maxPages) {
@@ -206,20 +244,24 @@
                 var byUser = {};
                 records.forEach(function(record) {
                     if (!record.submitter || !record.submitter.login) return;
-                    var login = record.system ? 'system' : record.submitter.login;
+                    var community = isCommunityRecord(record);
+                    var login = community ? 'community' : record.submitter.login;
                     if (!byUser[login]) {
                         byUser[login] = {
                             login: login,
-                            id: record.system ? null : record.submitter.id,
-                            name: record.system ? localText('contributions.system', 'System') : (record.submitter.name || ''),
-                            avatar_url: record.system ? '/images/logo.png' : (record.submitter.avatar_url || ''),
-                            html_url: record.system ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
+                            id: community ? null : record.submitter.id,
+                            name: community ? localText('contributions.community', localText('contributions.system', 'Community')) : (record.submitter.name || ''),
+                            avatar_url: community ? '/images/logo.png' : (record.submitter.avatar_url || ''),
+                            html_url: community ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
                             contributions: 0,
+                            lineChanges: 0,
                             lastContributionAt: null,
-                            system: record.system
+                            system: community,
+                            community: community
                         };
                     }
-                    byUser[login].contributions += record.contributionCount || 1;
+                    byUser[login].contributions += Number(record.contributionCount || 0);
+                    byUser[login].lineChanges += Number(record.lineChanges != null ? record.lineChanges : record.contributionCount || 0);
                     if (!byUser[login].lastContributionAt || String(record.mergedAt || '') > String(byUser[login].lastContributionAt || '')) {
                         byUser[login].lastContributionAt = record.mergedAt;
                     }
@@ -228,13 +270,16 @@
                 var leaderboard = Object.keys(byUser).map(function(login) { return byUser[login]; })
                     .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); })
                     .map(function(entry) {
-                        entry.rank = entry.system ? null : rank++;
+                        entry.rank = isCommunityEntry(entry) ? null : rank++;
                         return entry;
                     });
+                var totalLineChanges = records.reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
                 return Object.assign({}, base || {}, {
+                    scoreMode: 'line_changes',
                     leaderboard: leaderboard,
-                    totalContributors: leaderboard.filter(function(entry) { return !entry.system; }).length,
-                    totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
+                    totalContributors: leaderboard.filter(function(entry) { return !isCommunityEntry(entry); }).length,
+                    totalContributions: totalLineChanges,
+                    totalLineChanges: totalLineChanges,
                     records: records
                 });
             }
@@ -284,32 +329,45 @@
                 }
             }
 
+            function isCommunityRecord(record) {
+                return !!(record && (record.community || record.system));
+            }
+
+            function isCommunityEntry(entry) {
+                return !!(entry && (entry.community || entry.system));
+            }
+
+            function isCommunityProfileName(value) {
+                var normalized = String(value || '').toLowerCase();
+                return normalized === 'community' || normalized === 'system';
+            }
+
             function matchesProfile(record, requestedUser) {
                 if (!requestedUser) return false;
-                if (requestedUser.toLowerCase() === 'system') return !!record.system;
-                return !record.system && record.submitter && String(record.submitter.login || '').toLowerCase() === requestedUser.toLowerCase();
+                if (isCommunityProfileName(requestedUser)) return isCommunityRecord(record);
+                return !isCommunityRecord(record) && record.submitter && String(record.submitter.login || '').toLowerCase() === requestedUser.toLowerCase();
             }
 
             function renderContribution(record) {
                 var files = (record.files || []).map(function(file) { return '<span class="profile-file">' + safeHtml(file) + '</span>'; }).join('');
                 return '<article class="profile-contribution">' +
                     '<a href="' + safeHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + safeHtml(displayTitle(record.title)) + '</a>' +
-                    '<div class="profile-meta">' + safeHtml(formatDate(record.mergedAt || record.updatedAt || record.createdAt)) + (record.system ? ' · ' + safeHtml(localText('contributions.system', 'System')) : '') + '</div>' +
+                    '<div class="profile-meta">' + safeHtml(formatDate(record.mergedAt || record.updatedAt || record.createdAt)) + (isCommunityRecord(record) ? ' · ' + safeHtml(localText('contributions.community', localText('contributions.system', 'Community'))) : '') + '</div>' +
                     (files ? '<div class="profile-files">' + files + '</div>' : '') +
                 '</article>';
             }
 
             function render(data, requestedUser) {
-                var isSystemProfile = requestedUser.toLowerCase() === 'system';
+                var isSystemProfile = isCommunityProfileName(requestedUser);
                 var records = (data.records || []).filter(function(record) { return matchesProfile(record, requestedUser); });
                 var entry = (data.leaderboard || []).find(function(item) {
-                    return isSystemProfile ? item.system : String(item.login || '').toLowerCase() === requestedUser.toLowerCase();
+                    return isSystemProfile ? isCommunityEntry(item) : String(item.login || '').toLowerCase() === requestedUser.toLowerCase();
                 });
                 var firstUser = records[0] && records[0].submitter || {};
-                var name = isSystemProfile ? localText('contributions.system', 'System') : displayName(entry || firstUser || { login: requestedUser });
-                var login = isSystemProfile ? 'system' : (entry && entry.login || firstUser.login || requestedUser);
+                var name = isSystemProfile ? localText('contributions.community', localText('contributions.system', 'Community')) : displayName(entry || firstUser || { login: requestedUser });
+                var login = isSystemProfile ? 'community' : (entry && entry.login || firstUser.login || requestedUser);
                 var avatar = isSystemProfile ? '/images/logo.png' : (entry && entry.avatar_url || firstUser.avatar_url || '/images/logo.png');
-                var total = records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0);
+                var total = records.reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
                 var rank = isSystemProfile || !entry || !entry.rank ? localText('contributions.notRanked', 'Not ranked') : ('#' + entry.rank);
 
                 document.title = name + ' | ТопЛиста.мк';
@@ -322,7 +380,7 @@
                     '<img class="profile-avatar" src="' + safeHtml(avatar) + '" alt="" loading="lazy">' +
                     '<div class="profile-title"><h2>' + safeHtml(name) + '</h2><span>@' + safeHtml(displayLogin(login)) + '</span></div>' +
                     '<div class="profile-stats">' +
-                        '<div class="profile-stat"><strong>' + total + '</strong><span>' + safeHtml(localText('contributions.total', 'contributions')) + '</span></div>' +
+                        '<div class="profile-stat"><strong>' + Number(total || 0).toLocaleString() + '</strong><span>' + safeHtml(localText('contributions.lineChanges', localText('contributions.total', 'line changes'))) + '</span></div>' +
                         '<div class="profile-stat"><strong>' + safeHtml(rank) + '</strong><span>' + safeHtml(localText('contributions.leaderboard', 'Leaderboard')) + '</span></div>' +
                     '</div>';
                 document.getElementById('profile-list-title').textContent = localText('profile.contributions', 'Contributions');
@@ -344,9 +402,13 @@
                 try {
                     var data;
                     try {
-                        data = await loadFromWorker();
+                        data = await loadStaticContributions();
                     } catch (_) {
-                        data = await loadFromGitHub();
+                        try {
+                            data = await loadFromWorker();
+                        } catch (_) {
+                            data = await loadFromGitHub();
+                        }
                     }
                     render(data, requestedUser);
                     loading.style.display = 'none';

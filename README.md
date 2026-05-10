@@ -30,6 +30,7 @@ The project is a static website backed by generated JSON artifacts.
 - YouTube links are matched and verified so weekly view deltas can be used in chart calculations.
 - Editorial scripts scrape news and interview sources, then filter results against the artist database.
 - A generated site master dataset precomputes the data needed by the frontend pages.
+- A generated contributions snapshot precomputes GitHub contribution records, profiles, and leaderboard scores after merged pull requests.
 - Cloudflare workers provide supporting API and compatibility behavior around the public site.
 
 This setup keeps the public experience fast while allowing the content pipeline to remain transparent and scriptable.

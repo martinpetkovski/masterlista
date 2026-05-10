@@ -4,7 +4,8 @@ let lastCleanup = Date.now();
 
 const AUTH_STATE_PREFIX = 'oauth-state:';
 const AUTH_SESSION_PREFIX = 'auth-session:';
-const CONTRIBUTIONS_CACHE_KEY = 'contributions:v3';
+const CONTRIBUTIONS_CACHE_KEY = 'contributions:v5';
+const CONTRIBUTIONS_SNAPSHOT_PATH = 'data/dynamic/generated/contributions.json';
 const CONTRIBUTION_METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
 const DEFAULT_AUTH_SESSION_TTL = 60 * 60 * 24 * 30;
 const DEFAULT_CONTRIBUTIONS_CACHE_TTL = 300;
@@ -520,6 +521,21 @@ function githubRequest(token, userAgent = 'mmm-pr-worker') {
   });
 }
 
+function githubGraphqlRequest(token, userAgent = 'mmm-pr-worker') {
+  const headers = {
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+    'User-Agent': userAgent,
+  };
+  if (token) headers.Authorization = bearerToken(token);
+
+  return (query, variables = {}) => fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ query, variables }),
+  });
+}
+
 function getWorkerBaseUrl(request) {
   const url = new URL(request.url);
   return `${url.protocol}//${url.host}`;
@@ -992,6 +1008,7 @@ function buildContributionMetadata({ user, baseBranch, submittedFiles, skippedFi
     skippedFiles,
     failedFiles,
     contributionCount: 1,
+    scoreMode: 'line_changes',
     prNumber: prNumber || null,
     prUrl: prUrl || null,
   };
@@ -1227,7 +1244,7 @@ function getSystemContributorUser(env) {
   return {
     id: null,
     login,
-    name: 'System',
+    name: 'Community',
     avatar_url: '',
     html_url: `https://github.com/${login}`,
   };
@@ -1256,6 +1273,23 @@ function sanitizeContributionUser(user) {
     ...user,
     name: maskEmails(user.name || ''),
   };
+}
+
+function toNonNegativeInteger(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) return 0;
+  return Math.floor(number);
+}
+
+function getContributionLineChanges(pr, metadata) {
+  const additions = toNonNegativeInteger(pr?.additions ?? metadata?.additions);
+  const deletions = toNonNegativeInteger(pr?.deletions ?? metadata?.deletions);
+  const lineChanges = additions + deletions;
+  if (lineChanges > 0 || additions > 0 || deletions > 0) {
+    return { additions, deletions, lineChanges };
+  }
+  const metadataLineChanges = toNonNegativeInteger(metadata?.lineChanges ?? metadata?.contributionScore);
+  return { additions, deletions, lineChanges: metadataLineChanges };
 }
 
 async function getReadToken(env) {
@@ -1291,6 +1325,8 @@ function buildContributionRecordFromPr(pr, { systemRules, status }) {
   if (!submitter || !submitter.login) return null;
   const submittedAt = getContributionSubmittedAt(pr, metadata);
   const system = isSystemContributor(submitter.login, systemRules, submittedAt);
+  const stats = getContributionLineChanges(pr, metadata);
+  const contributionScore = status === 'pending' ? 0 : stats.lineChanges;
   return {
     prNumber: pr.number,
     prUrl: pr.html_url,
@@ -1299,9 +1335,14 @@ function buildContributionRecordFromPr(pr, { systemRules, status }) {
     createdAt: pr.created_at,
     submittedAt,
     updatedAt: pr.updated_at,
-    contributionCount: status === 'pending' ? 0 : (Number(metadata?.contributionCount || 1) || 1),
+    additions: stats.additions,
+    deletions: stats.deletions,
+    lineChanges: stats.lineChanges,
+    contributionCount: contributionScore,
+    contributionScore,
     submitter,
     system,
+    community: system,
     status,
     source: metadata ? 'site' : 'github',
     files: Array.isArray(metadata?.files) ? metadata.files : [],
@@ -1309,22 +1350,87 @@ function buildContributionRecordFromPr(pr, { systemRules, status }) {
   };
 }
 
-async function fetchPullRequestRecords({ gh, owner, repo, state, status, systemRules, maxPages }) {
+const CONTRIBUTIONS_PULL_REQUEST_QUERY = `
+query ContributionsPullRequests($owner: String!, $repo: String!, $states: [PullRequestState!], $after: String) {
+  repository(owner: $owner, name: $repo) {
+    pullRequests(first: 100, after: $after, states: $states, orderBy: { field: UPDATED_AT, direction: DESC }) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        number
+        title
+        body
+        url
+        mergedAt
+        createdAt
+        updatedAt
+        additions
+        deletions
+        baseRefName
+        author {
+          login
+          avatarUrl
+          url
+          ... on User {
+            databaseId
+            name
+          }
+        }
+      }
+    }
+  }
+}`;
+
+function pullRequestFromGraphqlNode(node) {
+  const author = node?.author || {};
+  return {
+    number: node?.number,
+    html_url: node?.url || '',
+    title: node?.title || '',
+    body: node?.body || '',
+    merged_at: node?.mergedAt || '',
+    created_at: node?.createdAt || '',
+    updated_at: node?.updatedAt || '',
+    additions: node?.additions,
+    deletions: node?.deletions,
+    user: {
+      id: author.databaseId || null,
+      login: author.login || '',
+      name: author.name || '',
+      avatar_url: author.avatarUrl || '',
+      html_url: author.url || (author.login ? `https://github.com/${author.login}` : ''),
+    },
+    base: { ref: node?.baseRefName || '' },
+  };
+}
+
+async function fetchPullRequestRecords({ graphql, owner, repo, state, status, systemRules, maxPages }) {
   const records = [];
+  const states = state === 'open' ? ['OPEN'] : ['MERGED'];
+  let after = null;
 
   for (let page = 1; page <= maxPages; page += 1) {
-    const res = await gh(`/repos/${owner}/${repo}/pulls?state=${state}&sort=updated&direction=desc&per_page=100&page=${page}`);
+    const res = await graphql(CONTRIBUTIONS_PULL_REQUEST_QUERY, { owner, repo, states, after });
     if (!res.ok) {
-      throw new Error(`GitHub PR list failed: ${await res.text()}`);
+      throw new Error(`GitHub PR GraphQL failed: ${await res.text()}`);
     }
-    const prs = await res.json();
-    if (!Array.isArray(prs) || !prs.length) break;
-    for (const pr of prs) {
-      if (state === 'closed' && !pr.merged_at) continue;
+    const body = await res.json();
+    if (Array.isArray(body.errors) && body.errors.length) {
+      throw new Error(`GitHub PR GraphQL errors: ${body.errors.map(error => error.message).join('; ')}`);
+    }
+    const connection = body?.data?.repository?.pullRequests;
+    const nodes = Array.isArray(connection?.nodes) ? connection.nodes : [];
+    if (!nodes.length) break;
+    for (const node of nodes) {
+      const pr = pullRequestFromGraphqlNode(node);
       const record = buildContributionRecordFromPr(pr, { systemRules, status });
       if (record) records.push(record);
     }
-    if (prs.length < 100) break;
+    if (!connection?.pageInfo?.hasNextPage) break;
+    after = connection.pageInfo.endCursor || null;
+    if (!after) break;
   }
   return records;
 }
@@ -1333,28 +1439,32 @@ async function fetchMergedContributionRecords(env) {
   const token = await getReadToken(env);
   const owner = env.GITHUB_OWNER || 'martinpetkovski';
   const repo = env.GITHUB_REPO || 'masterlista';
-  const gh = githubRequest(token, 'mmm-contributions-worker');
+  const graphql = githubGraphqlRequest(token, 'mmm-contributions-worker');
   const systemRules = getSystemContributorRules(env, owner);
   const maxPages = Math.max(1, Math.min(parseInt(env.CONTRIBUTIONS_MAX_PAGES || '5', 10) || 5, 20));
-  const pendingRecords = await fetchPullRequestRecords({ gh, owner, repo, state: 'open', status: 'pending', systemRules, maxPages: 1 });
-  const records = await fetchPullRequestRecords({ gh, owner, repo, state: 'closed', status: 'merged', systemRules, maxPages });
+  const pendingRecords = await fetchPullRequestRecords({ graphql, owner, repo, state: 'open', status: 'pending', systemRules, maxPages: 1 });
+  const records = await fetchPullRequestRecords({ graphql, owner, repo, state: 'closed', status: 'merged', systemRules, maxPages });
 
   records.sort((a, b) => String(b.mergedAt || '').localeCompare(String(a.mergedAt || '')));
   pendingRecords.sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));
   const byUser = new Map();
   for (const record of records) {
-    const login = record.system ? 'system' : record.submitter.login;
+    const community = !!(record.community || record.system);
+    const login = community ? 'community' : record.submitter.login;
     const existing = byUser.get(login) || {
       login,
-      id: record.system ? null : record.submitter.id,
-      name: record.system ? 'System' : (record.submitter.name || ''),
-      avatar_url: record.system ? '' : (record.submitter.avatar_url || ''),
-      html_url: record.system ? '' : (record.submitter.html_url || `https://github.com/${login}`),
+      id: community ? null : record.submitter.id,
+      name: community ? 'Community' : (record.submitter.name || ''),
+      avatar_url: community ? '' : (record.submitter.avatar_url || ''),
+      html_url: community ? '' : (record.submitter.html_url || `https://github.com/${login}`),
       contributions: 0,
+      lineChanges: 0,
       lastContributionAt: null,
-      system: record.system,
+      system: community,
+      community,
     };
     existing.contributions += record.contributionCount;
+    existing.lineChanges += record.lineChanges || record.contributionCount || 0;
     if (!existing.lastContributionAt || String(record.mergedAt || '') > String(existing.lastContributionAt || '')) {
       existing.lastContributionAt = record.mergedAt;
     }
@@ -1363,19 +1473,47 @@ async function fetchMergedContributionRecords(env) {
   let rank = 1;
   const leaderboard = Array.from(byUser.values())
     .sort((a, b) => (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)))
-    .map((entry) => ({ ...entry, rank: entry.system ? null : rank++ }));
+    .map((entry) => ({ ...entry, rank: entry.community || entry.system ? null : rank++ }));
+
+  const totalLineChanges = records.reduce((sum, record) => sum + record.contributionCount, 0);
+  const leaderboardLineChanges = records.filter(record => !(record.community || record.system)).reduce((sum, record) => sum + record.contributionCount, 0);
+  const communityLineChanges = records.filter(record => record.community || record.system).reduce((sum, record) => sum + record.contributionCount, 0);
 
   return {
     generatedAt: new Date().toISOString(),
-    totalContributions: records.reduce((sum, record) => sum + record.contributionCount, 0),
-    leaderboardContributions: records.filter(record => !record.system).reduce((sum, record) => sum + record.contributionCount, 0),
-    systemContributions: records.filter(record => record.system).reduce((sum, record) => sum + record.contributionCount, 0),
-    totalContributors: leaderboard.filter(entry => !entry.system).length,
+    scoreMode: 'line_changes',
+    totalContributions: totalLineChanges,
+    totalLineChanges,
+    leaderboardContributions: leaderboardLineChanges,
+    leaderboardLineChanges,
+    systemContributions: communityLineChanges,
+    communityContributions: communityLineChanges,
+    communityLineChanges,
+    totalContributors: leaderboard.filter(entry => !(entry.community || entry.system)).length,
     leaderboard,
     records,
     pendingRecords,
     totalPendingRecords: pendingRecords.length,
   };
+}
+
+async function fetchStaticContributionSnapshot(env) {
+  const owner = env.GITHUB_OWNER || 'martinpetkovski';
+  const repo = env.GITHUB_REPO || 'masterlista';
+  const branch = env.GITHUB_DEFAULT_BRANCH || 'master';
+  const url = `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/${encodeURIComponent(branch)}/${CONTRIBUTIONS_SNAPSHOT_PATH}`;
+  const res = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+      'User-Agent': 'mmm-contributions-worker',
+    },
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Static contributions snapshot failed: ${res.status} ${await res.text()}`);
+  const snapshot = await res.json();
+  if (!snapshot || !Array.isArray(snapshot.records) || !Array.isArray(snapshot.leaderboard)) return null;
+  if (!Array.isArray(snapshot.pendingRecords)) snapshot.pendingRecords = [];
+  return snapshot;
 }
 
 async function handleContributions(request, env, corsHeaders) {
@@ -1389,7 +1527,7 @@ async function handleContributions(request, env, corsHeaders) {
       }
     }
     if (!aggregate) {
-      aggregate = await fetchMergedContributionRecords(env);
+      aggregate = await fetchStaticContributionSnapshot(env) || await fetchMergedContributionRecords(env);
       if (env.AUTH_STORE) {
         await env.AUTH_STORE.put(CONTRIBUTIONS_CACHE_KEY, JSON.stringify(aggregate), { expirationTtl: ttl });
       }
@@ -1399,17 +1537,24 @@ async function handleContributions(request, env, corsHeaders) {
     const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '20', 10) || 20, 1), 200);
     const pendingLimit = Math.min(Math.max(parseInt(url.searchParams.get('pending_limit') || '100', 10) || 100, 0), 200);
     const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10) || 0, 0);
+    const records = Array.isArray(aggregate.records) ? aggregate.records : [];
+    const pendingRecords = Array.isArray(aggregate.pendingRecords) ? aggregate.pendingRecords : [];
     return json({
       generatedAt: aggregate.generatedAt,
       totalContributions: aggregate.totalContributions,
+      totalLineChanges: aggregate.totalLineChanges,
       leaderboardContributions: aggregate.leaderboardContributions,
+      leaderboardLineChanges: aggregate.leaderboardLineChanges,
       systemContributions: aggregate.systemContributions,
+      communityContributions: aggregate.communityContributions,
+      communityLineChanges: aggregate.communityLineChanges,
       totalContributors: aggregate.totalContributors,
+      scoreMode: aggregate.scoreMode || 'line_changes',
       leaderboard: aggregate.leaderboard,
-      records: aggregate.records.slice(offset, offset + limit),
-      pendingRecords: aggregate.pendingRecords.slice(0, pendingLimit),
-      totalRecords: aggregate.records.length,
-      totalPendingRecords: aggregate.totalPendingRecords,
+      records: records.slice(offset, offset + limit),
+      pendingRecords: pendingRecords.slice(0, pendingLimit),
+      totalRecords: records.length,
+      totalPendingRecords: Number(aggregate.totalPendingRecords || pendingRecords.length),
       limit,
       pendingLimit,
       offset,

@@ -124,7 +124,24 @@
             var METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
             var MERGED_LIMIT = 20;
             var PENDING_LIMIT = 100;
+            var STATIC_CONTRIBUTIONS_FILE = 'data/dynamic/generated/contributions.json';
             var EMAIL_RE = /([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/ig;
+
+            function staticContributionsUrl() {
+                var path = location.protocol === 'file:' ? STATIC_CONTRIBUTIONS_FILE : '/' + STATIC_CONTRIBUTIONS_FILE;
+                return path + '?t=' + Date.now();
+            }
+
+            async function loadStaticContributions() {
+                var resp = await fetch(staticContributionsUrl());
+                if (!resp.ok) throw new Error('Static contributions snapshot unavailable: ' + resp.status);
+                var snapshot = await resp.json();
+                if (!snapshot || !Array.isArray(snapshot.records) || !Array.isArray(snapshot.leaderboard)) {
+                    throw new Error('Static contributions snapshot is invalid.');
+                }
+                if (!Array.isArray(snapshot.pendingRecords)) snapshot.pendingRecords = [];
+                return snapshot;
+            }
 
             function workerEndpoint() {
                 var base = window.MMMAuth && typeof window.MMMAuth.getEndpoint === 'function'
@@ -186,8 +203,10 @@
                     ? metadata.submitter
                     : publicUser(pr.user);
                 if (!submitter || !submitter.login) return null;
-                var contributionCount = Number(metadata && metadata.contributionCount || 1) || 1;
+                var stats = contributionStats(pr, metadata);
+                var contributionCount = status === 'pending' ? 0 : stats.lineChanges;
                 var submittedAt = contributionSubmittedAt(pr, metadata);
+                var community = isSystem(submitter.login, submittedAt);
                 return {
                     prNumber: pr.number,
                     prUrl: pr.html_url,
@@ -196,14 +215,34 @@
                     createdAt: pr.created_at,
                     submittedAt: submittedAt,
                     updatedAt: pr.updated_at,
+                    additions: stats.additions,
+                    deletions: stats.deletions,
+                    lineChanges: stats.lineChanges,
                     contributionCount: status === 'pending' ? 0 : contributionCount,
+                    contributionScore: contributionCount,
                     submitter: submitter,
-                    system: isSystem(submitter.login, submittedAt),
+                    system: community,
+                    community: community,
                     status: status,
                     source: metadata ? 'site' : 'github',
                     files: metadata && Array.isArray(metadata.files) ? metadata.files : [],
                     baseBranch: pr.base && pr.base.ref || ''
                 };
+            }
+
+            function toNonNegativeInteger(value) {
+                var number = Number(value);
+                if (!Number.isFinite(number) || number < 0) return 0;
+                return Math.floor(number);
+            }
+
+            function contributionStats(pr, metadata) {
+                var additions = toNonNegativeInteger(pr && pr.additions || metadata && metadata.additions);
+                var deletions = toNonNegativeInteger(pr && pr.deletions || metadata && metadata.deletions);
+                var lineChanges = additions + deletions;
+                if (!lineChanges) lineChanges = toNonNegativeInteger(metadata && (metadata.lineChanges || metadata.contributionScore));
+                if (!lineChanges) lineChanges = Number(metadata && metadata.contributionCount || 1) || 1;
+                return { additions: additions, deletions: deletions, lineChanges: lineChanges };
             }
 
             function aggregate(records, pendingRecords) {
@@ -212,20 +251,24 @@
                 var byUser = {};
                 records.forEach(function(record) {
                     if (!record.submitter || !record.submitter.login) return;
-                    var login = record.system ? 'system' : record.submitter.login;
+                    var community = isCommunityRecord(record);
+                    var login = community ? 'community' : record.submitter.login;
                     if (!byUser[login]) {
                         byUser[login] = {
                             login: login,
-                            id: record.system ? null : record.submitter.id,
-                            name: record.system ? t('contributions.system') : (record.submitter.name || ''),
-                            avatar_url: record.system ? '/images/logo.png' : (record.submitter.avatar_url || ''),
-                            html_url: record.system ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
+                            id: community ? null : record.submitter.id,
+                            name: community ? localText('contributions.community', localText('contributions.system', 'Community')) : (record.submitter.name || ''),
+                            avatar_url: community ? '/images/logo.png' : (record.submitter.avatar_url || ''),
+                            html_url: community ? '' : (record.submitter.html_url || ('https://github.com/' + login)),
                             contributions: 0,
+                            lineChanges: 0,
                             lastContributionAt: null,
-                            system: record.system
+                            system: community,
+                            community: community
                         };
                     }
-                    byUser[login].contributions += record.contributionCount || 1;
+                    byUser[login].contributions += Number(record.contributionCount || 0);
+                    byUser[login].lineChanges += Number(record.lineChanges != null ? record.lineChanges : record.contributionCount || 0);
                     if (!byUser[login].lastContributionAt || String(record.mergedAt || '') > String(byUser[login].lastContributionAt || '')) {
                         byUser[login].lastContributionAt = record.mergedAt;
                     }
@@ -234,18 +277,26 @@
                     .sort(function(a, b) { return (b.contributions - a.contributions) || String(a.login).localeCompare(String(b.login)); });
                 var rank = 1;
                 leaderboard.forEach(function(entry) {
-                    if (entry.system) entry.rank = null;
+                    if (isCommunityEntry(entry)) entry.rank = null;
                     else {
                         entry.rank = rank;
                         rank += 1;
                     }
                 });
+                var totalLineChanges = records.reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
+                var leaderboardLineChanges = records.filter(function(record) { return !isCommunityRecord(record); }).reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
+                var communityLineChanges = records.filter(function(record) { return isCommunityRecord(record); }).reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
                 return {
                     generatedAt: new Date().toISOString(),
-                    totalContributions: records.reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
-                    leaderboardContributions: records.filter(function(record) { return !record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
-                    systemContributions: records.filter(function(record) { return record.system; }).reduce(function(sum, record) { return sum + (record.contributionCount || 1); }, 0),
-                    totalContributors: leaderboard.filter(function(entry) { return !entry.system; }).length,
+                    scoreMode: 'line_changes',
+                    totalContributions: totalLineChanges,
+                    totalLineChanges: totalLineChanges,
+                    leaderboardContributions: leaderboardLineChanges,
+                    leaderboardLineChanges: leaderboardLineChanges,
+                    systemContributions: communityLineChanges,
+                    communityContributions: communityLineChanges,
+                    communityLineChanges: communityLineChanges,
+                    totalContributors: leaderboard.filter(function(entry) { return !isCommunityEntry(entry); }).length,
                     leaderboard: leaderboard,
                     records: records.slice(0, MERGED_LIMIT),
                     pendingRecords: pendingRecords.slice(0, PENDING_LIMIT),
@@ -296,8 +347,16 @@
                 return value === key ? fallback : value;
             }
 
-            function profileUrl(login, system) {
-                var user = system ? 'system' : String(login || '').trim();
+            function isCommunityRecord(record) {
+                return !!(record && (record.community || record.system));
+            }
+
+            function isCommunityEntry(entry) {
+                return !!(entry && (entry.community || entry.system));
+            }
+
+            function profileUrl(login, community) {
+                var user = community ? 'community' : String(login || '').trim();
                 if (window.MMMAuth && typeof window.MMMAuth.getProfileUrl === 'function') {
                     return window.MMMAuth.getProfileUrl(user);
                 }
@@ -306,6 +365,10 @@
                     return (location.protocol === 'file:' ? 'profile.html' : '/profile.html') + '?user=' + encodeURIComponent(user);
                 }
                 return '/profile/' + encodeURIComponent(user);
+            }
+
+            function formatScore(value) {
+                return Number(value || 0).toLocaleString();
             }
 
             function formatDate(value) {
@@ -332,15 +395,16 @@
                     return;
                 }
                 el.innerHTML = data.leaderboard.map(function(entry) {
-                    var rankLabel = entry.system ? '—' : ('#' + entry.rank);
-                    var name = entry.system ? t('contributions.system') : displayName(entry);
-                    var subline = entry.system ? localText('contributions.notRanked', 'Not ranked') : ('@' + displayLogin(entry.login));
-                    var userProfileUrl = profileUrl(entry.login, entry.system);
+                    var community = isCommunityEntry(entry);
+                    var rankLabel = community ? '—' : ('#' + entry.rank);
+                    var name = community ? localText('contributions.community', localText('contributions.system', 'Community')) : displayName(entry);
+                    var subline = community ? localText('contributions.notRanked', 'Not ranked') : ('@' + displayLogin(entry.login));
+                    var userProfileUrl = profileUrl(entry.login, community);
                     return '<article class="leaderboard-entry">' +
                         '<div class="leaderboard-rank">' + escHtml(rankLabel) + '</div>' +
                         '<a class="leaderboard-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
                         '<div class="leaderboard-name"><a href="' + escHtml(userProfileUrl) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
-                        '<div class="leaderboard-count">' + entry.contributions + '</div>' +
+                        '<div class="leaderboard-count">' + escHtml(formatScore(entry.contributions)) + '</div>' +
                     '</article>';
                 }).join('');
             }
@@ -348,14 +412,15 @@
             function renderContributionCard(record, pending) {
                 var user = record.submitter || {};
                 var files = (record.files || []).map(function(file) { return '<span class="contribution-file">' + escHtml(file) + '</span>'; }).join('');
-                var systemBadge = record.system ? ' · <span class="contribution-system">' + escHtml(t('contributions.system')) + '</span>' : '';
+                var community = isCommunityRecord(record);
+                var systemBadge = community ? ' · <span class="contribution-system">' + escHtml(localText('contributions.community', localText('contributions.system', 'Community'))) + '</span>' : '';
                 var statusBadge = pending ? ' · <span class="contribution-status">' + escHtml(t('contributions.pending')) + '</span>' : '';
                 var dateValue = pending ? (record.updatedAt || record.createdAt) : record.mergedAt;
-                var userProfileUrl = profileUrl(user.login, record.system);
+                var userProfileUrl = profileUrl(user.login, community);
                 return '<article class="contribution-entry">' +
                     '<div class="contribution-user">' +
                         '<a class="contribution-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
-                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta"><a href="' + escHtml(userProfileUrl) + '">@' + escHtml(displayLogin(record.system ? 'system' : user.login)) + '</a> · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
+                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener">#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</a><span class="contribution-meta"><a href="' + escHtml(userProfileUrl) + '">@' + escHtml(displayLogin(community ? 'community' : user.login)) + '</a> · ' + escHtml(formatDate(dateValue)) + systemBadge + statusBadge + '</span></div>' +
                     '</div>' +
                     (files ? '<div class="contribution-files">' + files + '</div>' : '') +
                 '</article>';
@@ -363,17 +428,18 @@
 
             function normalizeLeaderboard() {
                 var entries = Array.isArray(data.leaderboard) ? data.leaderboard.slice() : [];
-                var hasSystem = entries.some(function(entry) { return entry && entry.system; });
-                var systemCount = Number(data.systemContributions || 0) || 0;
+                var hasSystem = entries.some(function(entry) { return isCommunityEntry(entry); });
+                var systemCount = Number(data.communityContributions || data.systemContributions || 0) || 0;
                 if (!hasSystem && systemCount > 0) {
                     entries.push({
-                        login: 'system',
-                        name: t('contributions.system'),
+                        login: 'community',
+                        name: localText('contributions.community', localText('contributions.system', 'Community')),
                         avatar_url: '/images/logo.png',
                         html_url: '',
                         contributions: systemCount,
                         lastContributionAt: null,
                         system: true,
+                        community: true,
                         rank: null
                     });
                 }
@@ -382,7 +448,7 @@
                 });
                 var rank = 1;
                 entries.forEach(function(entry) {
-                    if (entry.system) entry.rank = null;
+                    if (isCommunityEntry(entry)) entry.rank = null;
                     else {
                         entry.rank = rank;
                         rank += 1;
@@ -408,7 +474,7 @@
             }
 
             function render() {
-                document.getElementById('contributions-total').textContent = data.totalContributions || 0;
+                document.getElementById('contributions-total').textContent = formatScore(data.totalLineChanges || data.totalContributions || 0);
                 document.getElementById('contributors-total').textContent = data.totalContributors || 0;
                 if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
                 if (!Array.isArray(data.records)) data.records = [];
@@ -424,12 +490,16 @@
                 var content = document.getElementById('contributions-content');
                 try {
                     try {
-                        var resp = await fetch(workerEndpoint());
-                        if (!resp.ok) throw new Error(await resp.text());
-                        data = await resp.json();
-                        if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
+                        data = await loadStaticContributions();
                     } catch (_) {
-                        data = await loadFromGitHub();
+                        try {
+                            var resp = await fetch(workerEndpoint());
+                            if (!resp.ok) throw new Error(await resp.text());
+                            data = await resp.json();
+                            if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
+                        } catch (_) {
+                            data = await loadFromGitHub();
+                        }
                     }
                     loading.style.display = 'none';
                     content.style.display = '';

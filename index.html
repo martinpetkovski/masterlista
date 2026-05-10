@@ -306,6 +306,93 @@
             color: #fff;
         }
 
+        .home-contributions-table {
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        .home-contribution-row {
+            display: grid;
+            grid-template-columns: 3rem minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.7rem;
+            min-height: 3rem;
+            padding: 0.55rem 0;
+            border-top: 1px solid var(--border-color, rgba(0,0,0,0.08));
+        }
+
+        .home-contribution-row:first-child {
+            border-top: 0;
+            padding-top: 0;
+        }
+
+        .home-contribution-rank {
+            width: 2.4rem;
+            height: 2.4rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 800;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body.dark-mode .home-contribution-rank {
+            background: #fff;
+            color: #000;
+        }
+
+        .home-contribution-person {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.12rem;
+        }
+
+        .home-contribution-person a {
+            color: var(--text-primary, #1a1d21);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .home-contribution-person a:hover {
+            text-decoration: underline;
+        }
+
+        .home-contribution-person span {
+            color: var(--text-secondary, #6f7780);
+            font-size: 0.76rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .home-contribution-score {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.12rem;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-primary, #1a1d21);
+            font-weight: 800;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .home-contribution-score span {
+            color: var(--text-secondary, #6f7780);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.68rem;
+        }
+
         .dash-card-header .more-link {
             font-size: 0.72rem;
             font-weight: 600;
@@ -4717,8 +4804,101 @@
             renderInterviews();
             renderVerifyArtists();
             renderReleaseStats();
+            renderContributionLeaderboard();
             renderTitleCollage();
             loadSpotifyPlaylistLinks();
+        }
+
+        function homeText(key, fallback) {
+            var value = typeof t === 'function' ? t(key) : '';
+            return value && value !== key ? value : fallback;
+        }
+
+        function getHomeContributionsEndpoint() {
+            if (window.MMMAuth && typeof window.MMMAuth.getEndpoint === 'function') {
+                return window.MMMAuth.getEndpoint();
+            }
+            return 'https://muzichka-master-lista.deeeeelay.workers.dev';
+        }
+
+        function getHomeStaticContributionsUrl() {
+            var path = 'data/dynamic/generated/contributions.json';
+            return (window.location.protocol === 'file:' ? path : '/' + path) + '?t=' + Date.now();
+        }
+
+        async function loadHomeContributionData() {
+            try {
+                var staticResponse = await fetch(getHomeStaticContributionsUrl());
+                if (!staticResponse.ok) throw new Error('Static contributions unavailable: ' + staticResponse.status);
+                var snapshot = await staticResponse.json();
+                if (!snapshot || !Array.isArray(snapshot.leaderboard)) throw new Error('Invalid static contributions snapshot.');
+                return snapshot;
+            } catch (_) {
+                var endpoint = getHomeContributionsEndpoint().replace(/\/$/, '');
+                var response = await fetch(endpoint + '/contributions?limit=1&pending_limit=0');
+                if (!response.ok) throw new Error('Contributions request failed: ' + response.status);
+                return await response.json();
+            }
+        }
+
+        function isHomeCommunityEntry(entry) {
+            return !!(entry && (entry.community || entry.system || String(entry.login || '').toLowerCase() === 'community' || String(entry.login || '').toLowerCase() === 'system'));
+        }
+
+        function homeProfileUrl(entry) {
+            var login = isHomeCommunityEntry(entry) ? 'community' : String(entry && entry.login || '').trim();
+            var user = encodeURIComponent(login || 'community');
+            if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return (window.location.protocol === 'file:' ? 'profile.html' : '/profile.html') + '?user=' + user;
+            }
+            return '/profile/' + user;
+        }
+
+        function renderHomeContributionRows(data) {
+            var list = document.getElementById('home-contributions-list');
+            var loading = document.getElementById('home-contributions-loading');
+            if (!list || !loading) return;
+
+            var entries = Array.isArray(data && data.leaderboard) ? data.leaderboard.slice() : [];
+            var communityEntry = entries.find(isHomeCommunityEntry);
+            var rankedEntries = entries.filter(function(entry) { return !isHomeCommunityEntry(entry); }).slice(0, 5);
+            if (communityEntry) rankedEntries.push(communityEntry);
+
+            if (!rankedEntries.length) {
+                list.innerHTML = '<div class="no-data-msg">' + escHtml(homeText('contributions.empty', 'No contributions yet.')) + '</div>';
+            } else {
+                var lineLabel = homeText('contributions.lineChanges', 'line changes');
+                list.innerHTML = rankedEntries.map(function(entry) {
+                    var community = isHomeCommunityEntry(entry);
+                    var rank = community ? '&mdash;' : ('#' + (entry.rank || ''));
+                    var name = community ? homeText('contributions.community', homeText('contributions.system', 'Community')) : (entry.name || entry.login || 'Contributor');
+                    var subline = community ? homeText('contributions.notRanked', 'Not ranked') : ('@' + (entry.login || ''));
+                    var score = Number(entry.contributions || entry.lineChanges || 0).toLocaleString();
+                    var href = homeProfileUrl(entry);
+                    return '<article class="home-contribution-row">' +
+                        '<div class="home-contribution-rank">' + rank + '</div>' +
+                        '<div class="home-contribution-person"><a href="' + escHtml(href) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
+                        '<div class="home-contribution-score">' + escHtml(score) + '<span>' + escHtml(lineLabel) + '</span></div>' +
+                    '</article>';
+                }).join('');
+            }
+
+            loading.style.display = 'none';
+            list.style.display = '';
+        }
+
+        async function renderContributionLeaderboard() {
+            var list = document.getElementById('home-contributions-list');
+            var loading = document.getElementById('home-contributions-loading');
+            if (!list || !loading) return;
+            try {
+                renderHomeContributionRows(await loadHomeContributionData());
+            } catch (err) {
+                console.error('Contribution leaderboard error:', err);
+                loading.style.display = 'none';
+                list.style.display = '';
+                list.innerHTML = '<div class="no-data-msg">' + escHtml(homeText('contributions.unavailable', 'Contributions are unavailable.')) + '</div>';
+            }
         }
 
         // ==================== SPOTIFY PLAYLIST LINKS ====================
