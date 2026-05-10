@@ -1924,7 +1924,9 @@ window.MMMAuth = (function () {
             return;
         }
         var name = state.user.name || state.user.login;
-        var iconHtml = '<i class="fas fa-circle-check"></i>';
+        var iconHtml = state.user.avatar_url
+            ? '<img src="' + escHtml(state.user.avatar_url) + '" alt="">'
+            : '<i class="fas fa-circle-user"></i>';
         for (i = 0; i < blocks.length; i++) {
             blocks[i].hidden = false;
             blocks[i].innerHTML = iconHtml + '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(state.user.login) + '</span></div>';
