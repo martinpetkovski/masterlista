@@ -85,9 +85,10 @@ The authenticated site flow uses these endpoints:
 - `GET /auth/session` validates the current session.
 - `POST /auth/logout` deletes the session.
 - `POST /submit/user` creates or reuses the signed-in user's fork, pushes a branch there, and opens an upstream PR.
-- `GET /contributions` reads open and merged GitHub PRs. It returns `pendingRecords` for open PRs, the requested recent merged `records`, and a leaderboard. System contributors such as `martinpetkovski` are included in the records but excluded from the leaderboard.
+- `GET /contributions` reads open and merged GitHub PRs. It returns `pendingRecords` for open PRs, the requested recent merged `records`, and a leaderboard. System contributions are grouped under `system` and excluded from ranked users. Current system submissions use `toplistamk`; legacy submissions before `SYSTEM_CONTRIBUTOR_CUTOFF` can still be grouped as system with `LEGACY_SYSTEM_CONTRIBUTOR_LOGINS`.
 
 The existing root `POST /` route remains available for anonymous site submissions and worker-owned submissions such as the Discord bot.
+Those worker-owned submissions write contribution metadata with the current system account from `SYSTEM_CONTRIBUTOR_LOGINS`.
 
 5) Publish
 
@@ -115,6 +116,9 @@ compatibility_date = "2023-10-02"
 GITHUB_OWNER = "martinpetkovski"
 GITHUB_REPO = "masterlista"
 GITHUB_DEFAULT_BRANCH = "master"
+SYSTEM_CONTRIBUTOR_LOGINS = "toplistamk"
+LEGACY_SYSTEM_CONTRIBUTOR_LOGINS = "martinpetkovski"
+SYSTEM_CONTRIBUTOR_CUTOFF = "2026-05-10T00:00:00.000Z"
 ```
 
 ## Request payload

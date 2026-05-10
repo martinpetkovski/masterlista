@@ -4,7 +4,7 @@ let lastCleanup = Date.now();
 
 const AUTH_STATE_PREFIX = 'oauth-state:';
 const AUTH_SESSION_PREFIX = 'auth-session:';
-const CONTRIBUTIONS_CACHE_KEY = 'contributions:v2';
+const CONTRIBUTIONS_CACHE_KEY = 'contributions:v3';
 const CONTRIBUTION_METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
 const DEFAULT_AUTH_SESSION_TTL = 60 * 60 * 24 * 30;
 const DEFAULT_CONTRIBUTIONS_CACHE_TTL = 300;
@@ -419,16 +419,16 @@ export default {
 
       // 5) Create PR
       const title = `MMM: Предлог промени${contributor ? ` од ${contributor}` : ''}`;
-      const mergeNotice = mergeNotes.length
-        ? `\n\n---\n🔀 **Авто-спојување:** Основата беше застарена, промените се споени автоматски.\n${mergeNotes.map(n => '• ' + n).join('\n')}\n`
-        : '';
-      const skippedNotice = skippedFiles.length
-        ? `\n\n---\nℹ️ **Без нови промени за:**\n${skippedFiles.map(file => '• ' + file.path).join('\n')}\n`
-        : '';
-      const submittedNotice = submittedFiles.length
-        ? `\n\nФајлови:\n${submittedFiles.map(file => '• ' + file).join('\n')}`
-        : '';
-      const bodyText = `${description}${submittedNotice}\n\nАвтоматски генерирано од MMM формуларот.${mergeNotice}${skippedNotice}${contributor ? `\nПоднесено од: ${contributor}` : ''}`;
+      const systemUser = getSystemContributorUser(env);
+      const metadata = buildContributionMetadata({ user: systemUser, baseBranch, submittedFiles, skippedFiles, failedFiles });
+      const bodyText = buildPrBody({
+        description,
+        submittedFiles,
+        mergeNotes,
+        skippedFiles,
+        contributor,
+        metadata,
+      });
       const prRes = await gh(`/repos/${owner}/${repo}/pulls`, {
         method: 'POST',
         body: JSON.stringify({
@@ -443,9 +443,23 @@ export default {
         return json({ error: 'Failed to create PR', detail: text }, 500, corsHeaders);
       }
       const pr = await prRes.json();
+      const finalMetadata = buildContributionMetadata({ user: systemUser, baseBranch, submittedFiles, skippedFiles, failedFiles, prNumber: pr.number, prUrl: pr.html_url });
+      const finalBodyText = buildPrBody({
+        description,
+        submittedFiles,
+        mergeNotes,
+        skippedFiles,
+        contributor,
+        metadata: finalMetadata,
+      });
+      const bodyUpdateRes = await gh(`/repos/${owner}/${repo}/pulls/${pr.number}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ body: finalBodyText }),
+      });
+      const bodyUpdateWarning = bodyUpdateRes.ok ? null : await bodyUpdateRes.text();
       await invalidateContributionsCache(env);
 
-      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, files: submittedFiles, skippedFiles, failedFiles }, 200, corsHeaders);
+      return json({ ok: true, pr_url: pr.html_url, pr_number: pr.number, branch: branchName, files: submittedFiles, skippedFiles, failedFiles, metadataUpdated: bodyUpdateRes.ok, metadataUpdateWarning: bodyUpdateWarning }, 200, corsHeaders);
     } catch (err) {
       return json({ error: 'Unhandled error', detail: err?.message || String(err) }, 500, corsHeaders);
     }
@@ -673,7 +687,17 @@ async function fetchGitHubUser(accessToken) {
 }
 
 function getOAuthScope(env) {
-  return env.GITHUB_OAUTH_SCOPE || 'public_repo read:user';
+  if (Object.prototype.hasOwnProperty.call(env, 'GITHUB_OAUTH_SCOPE')) {
+    return String(env.GITHUB_OAUTH_SCOPE || '').trim();
+  }
+  return 'public_repo read:user';
+}
+
+function buildOAuthDevicePayload(env) {
+  const payload = { client_id: env.GITHUB_OAUTH_CLIENT_ID };
+  const scope = getOAuthScope(env);
+  if (scope) payload.scope = scope;
+  return payload;
 }
 
 async function handleAuthStatus(env, corsHeaders) {
@@ -711,7 +735,8 @@ async function handleOAuthStart(request, env, corsHeaders) {
     const githubUrl = new URL('https://github.com/login/oauth/authorize');
     githubUrl.searchParams.set('client_id', env.GITHUB_OAUTH_CLIENT_ID);
     githubUrl.searchParams.set('redirect_uri', redirectUri);
-    githubUrl.searchParams.set('scope', getOAuthScope(env));
+    const scope = getOAuthScope(env);
+    if (scope) githubUrl.searchParams.set('scope', scope);
     githubUrl.searchParams.set('state', state);
     githubUrl.searchParams.set('allow_signup', 'true');
     return new Response(null, { status: 302, headers: { ...corsHeaders, 'Location': githubUrl.toString(), 'Cache-Control': 'no-store' } });
@@ -767,7 +792,7 @@ async function handleDeviceStart(request, env, corsHeaders) {
         'Content-Type': 'application/json',
         'User-Agent': 'mmm-pr-worker',
       },
-      body: JSON.stringify({ client_id: env.GITHUB_OAUTH_CLIENT_ID, scope: getOAuthScope(env) }),
+      body: JSON.stringify(buildOAuthDevicePayload(env)),
     });
     const data = await res.json();
     if (!res.ok || data.error) {
@@ -1166,16 +1191,57 @@ function publicUserFromGitHubUser(user) {
   };
 }
 
-function getSystemContributorLogins(env, owner) {
-  const configured = (env.SYSTEM_CONTRIBUTOR_LOGINS || '')
+function splitConfiguredLogins(value) {
+  return String(value || '')
     .split(',')
     .map(login => login.trim().toLowerCase())
     .filter(Boolean);
-  return new Set([owner, 'martinpetkovski', ...configured].map(login => String(login || '').toLowerCase()).filter(Boolean));
 }
 
-function isSystemContributor(login, systemLogins) {
-  return !!login && systemLogins.has(String(login).toLowerCase());
+function parseContributionTime(value) {
+  const timestamp = Date.parse(value || '');
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function getSystemContributorRules(env, owner) {
+  const configured = (env.SYSTEM_CONTRIBUTOR_LOGINS || '')
+    ? splitConfiguredLogins(env.SYSTEM_CONTRIBUTOR_LOGINS)
+    : ['toplistamk'];
+  const currentLogins = new Set(['toplistamk', ...configured]);
+  const legacyLogins = new Set([
+    owner,
+    'martinpetkovski',
+    ...currentLogins,
+    ...splitConfiguredLogins(env.LEGACY_SYSTEM_CONTRIBUTOR_LOGINS),
+  ].map(login => String(login || '').toLowerCase()).filter(Boolean));
+  const cutoff = parseContributionTime(env.SYSTEM_CONTRIBUTOR_CUTOFF || '2026-05-10T00:00:00.000Z');
+  return { currentLogins, legacyLogins, cutoff };
+}
+
+function getContributionSubmittedAt(pr, metadata) {
+  return metadata?.createdAt || pr.created_at || pr.updated_at || pr.merged_at || '';
+}
+
+function getSystemContributorUser(env) {
+  const login = splitConfiguredLogins(env.SYSTEM_CONTRIBUTOR_LOGINS)[0] || 'toplistamk';
+  return {
+    id: null,
+    login,
+    name: 'System',
+    avatar_url: '',
+    html_url: `https://github.com/${login}`,
+  };
+}
+
+function isSystemContributor(login, systemRules, submittedAt) {
+  const normalizedLogin = String(login || '').toLowerCase();
+  if (!normalizedLogin) return false;
+  if (systemRules.currentLogins.has(normalizedLogin)) return true;
+  const submittedTime = parseContributionTime(submittedAt);
+  return submittedTime !== null
+    && systemRules.cutoff !== null
+    && submittedTime < systemRules.cutoff
+    && systemRules.legacyLogins.has(normalizedLogin);
 }
 
 function maskEmails(value) {
@@ -1219,17 +1285,19 @@ async function getRepoWriteToken(env) {
   return { ok: false, error: 'Missing GitHub credentials', hint: 'Set GitHub App vars (GITHUB_APP_ID, GITHUB_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY) or a PAT in GITHUB_TOKEN.' };
 }
 
-function buildContributionRecordFromPr(pr, { systemLogins, status }) {
+function buildContributionRecordFromPr(pr, { systemRules, status }) {
   const metadata = extractContributionMetadata(pr.body || '');
   const submitter = sanitizeContributionUser(metadata?.submitter || publicUserFromGitHubUser(pr.user));
   if (!submitter || !submitter.login) return null;
-  const system = isSystemContributor(submitter.login, systemLogins);
+  const submittedAt = getContributionSubmittedAt(pr, metadata);
+  const system = isSystemContributor(submitter.login, systemRules, submittedAt);
   return {
     prNumber: pr.number,
     prUrl: pr.html_url,
     title: maskEmails(pr.title || ''),
     mergedAt: pr.merged_at || '',
     createdAt: pr.created_at,
+    submittedAt,
     updatedAt: pr.updated_at,
     contributionCount: status === 'pending' ? 0 : (Number(metadata?.contributionCount || 1) || 1),
     submitter,
@@ -1241,7 +1309,7 @@ function buildContributionRecordFromPr(pr, { systemLogins, status }) {
   };
 }
 
-async function fetchPullRequestRecords({ gh, owner, repo, state, status, systemLogins, maxPages }) {
+async function fetchPullRequestRecords({ gh, owner, repo, state, status, systemRules, maxPages }) {
   const records = [];
 
   for (let page = 1; page <= maxPages; page += 1) {
@@ -1253,7 +1321,7 @@ async function fetchPullRequestRecords({ gh, owner, repo, state, status, systemL
     if (!Array.isArray(prs) || !prs.length) break;
     for (const pr of prs) {
       if (state === 'closed' && !pr.merged_at) continue;
-      const record = buildContributionRecordFromPr(pr, { systemLogins, status });
+      const record = buildContributionRecordFromPr(pr, { systemRules, status });
       if (record) records.push(record);
     }
     if (prs.length < 100) break;
@@ -1266,10 +1334,10 @@ async function fetchMergedContributionRecords(env) {
   const owner = env.GITHUB_OWNER || 'martinpetkovski';
   const repo = env.GITHUB_REPO || 'masterlista';
   const gh = githubRequest(token, 'mmm-contributions-worker');
-  const systemLogins = getSystemContributorLogins(env, owner);
+  const systemRules = getSystemContributorRules(env, owner);
   const maxPages = Math.max(1, Math.min(parseInt(env.CONTRIBUTIONS_MAX_PAGES || '5', 10) || 5, 20));
-  const pendingRecords = await fetchPullRequestRecords({ gh, owner, repo, state: 'open', status: 'pending', systemLogins, maxPages: 1 });
-  const records = await fetchPullRequestRecords({ gh, owner, repo, state: 'closed', status: 'merged', systemLogins, maxPages });
+  const pendingRecords = await fetchPullRequestRecords({ gh, owner, repo, state: 'open', status: 'pending', systemRules, maxPages: 1 });
+  const records = await fetchPullRequestRecords({ gh, owner, repo, state: 'closed', status: 'merged', systemRules, maxPages });
 
   records.sort((a, b) => String(b.mergedAt || '').localeCompare(String(a.mergedAt || '')));
   pendingRecords.sort((a, b) => String(b.updatedAt || b.createdAt || '').localeCompare(String(a.updatedAt || a.createdAt || '')));

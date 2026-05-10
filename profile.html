@@ -75,7 +75,9 @@
 
             var OWNER = 'martinpetkovski';
             var REPO = 'masterlista';
-            var SYSTEM_LOGINS = { martinpetkovski: true };
+            var CURRENT_SYSTEM_LOGINS = { toplistamk: true };
+            var LEGACY_SYSTEM_LOGINS = { martinpetkovski: true, toplistamk: true };
+            var SYSTEM_CONTRIBUTOR_CUTOFF = Date.parse('2026-05-10T00:00:00.000Z');
             var METADATA_MARKER = 'MMM_CONTRIBUTION_METADATA';
             var EMAIL_RE = /([A-Z0-9._%+-]{1,64})@([A-Z0-9.-]+\.[A-Z]{2,})/ig;
             var PAGE_LIMIT = 200;
@@ -99,8 +101,20 @@
                 });
             }
 
-            function isSystem(login) {
-                return !!login && !!SYSTEM_LOGINS[String(login).toLowerCase()];
+            function contributionSubmittedAt(pr, metadata) {
+                return metadata && metadata.createdAt || pr.created_at || pr.updated_at || pr.merged_at || '';
+            }
+
+            function isBeforeSystemCutoff(value) {
+                var timestamp = Date.parse(value || '');
+                return Number.isFinite(timestamp) && Number.isFinite(SYSTEM_CONTRIBUTOR_CUTOFF) && timestamp < SYSTEM_CONTRIBUTOR_CUTOFF;
+            }
+
+            function isSystem(login, submittedAt) {
+                var normalized = String(login || '').toLowerCase();
+                if (!normalized) return false;
+                if (CURRENT_SYSTEM_LOGINS[normalized]) return true;
+                return isBeforeSystemCutoff(submittedAt) && !!LEGACY_SYSTEM_LOGINS[normalized];
             }
 
             function getProfileUser() {
@@ -151,16 +165,18 @@
                 var submitter = metadata && metadata.submitter && metadata.submitter.login ? metadata.submitter : publicUser(pr.user);
                 if (!submitter || !submitter.login) return null;
                 var contributionCount = Number(metadata && metadata.contributionCount || 1) || 1;
+                var submittedAt = contributionSubmittedAt(pr, metadata);
                 return {
                     prNumber: pr.number,
                     prUrl: pr.html_url,
                     title: pr.title,
                     mergedAt: pr.merged_at || '',
                     createdAt: pr.created_at,
+                    submittedAt: submittedAt,
                     updatedAt: pr.updated_at,
                     contributionCount: status === 'pending' ? 0 : contributionCount,
                     submitter: submitter,
-                    system: isSystem(submitter.login),
+                    system: isSystem(submitter.login, submittedAt),
                     status: status,
                     source: metadata ? 'site' : 'github',
                     files: metadata && Array.isArray(metadata.files) ? metadata.files : [],
