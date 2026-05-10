@@ -308,90 +308,148 @@
 
         .home-contributions-table {
             display: grid;
-            gap: 0.45rem;
+            gap: 0;
         }
 
         .home-contribution-row {
             display: grid;
-            grid-template-columns: 3rem minmax(0, 1fr) auto;
+            grid-template-columns: 2.2rem 2.5rem minmax(0, 1fr) minmax(4.75rem, auto);
             align-items: center;
-            gap: 0.7rem;
-            min-height: 3rem;
-            padding: 0.55rem 0;
+            gap: 0.72rem;
+            min-height: 3.36rem;
+            padding: 0.68rem 0.18rem;
             border-top: 1px solid var(--border-color, rgba(0,0,0,0.08));
+            transition: background 0.16s ease;
         }
 
         .home-contribution-row:first-child {
             border-top: 0;
-            padding-top: 0;
+        }
+
+        .home-contribution-row.community-row {
+            padding-left: 0.45rem;
+            padding-right: 0.45rem;
+            background: color-mix(in srgb, var(--bg-primary, #fff) 96%, var(--accent-blue, #225ce4) 4%);
+        }
+
+        .home-contribution-row.community-row:hover {
+            background: color-mix(in srgb, var(--bg-primary, #fff) 93%, var(--accent-blue, #225ce4) 7%);
+        }
+
+        .home-contribution-row:hover {
+            background: var(--bg-secondary, #f6f7f9);
         }
 
         .home-contribution-rank {
             width: 2.4rem;
-            height: 2.4rem;
-            border-radius: 50%;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            background: #000;
-            color: #fff;
-            font-size: 0.78rem;
+            align-self: center;
+            color: var(--text-muted, #8b929a);
+            font-size: 1.35rem;
             font-weight: 800;
             font-family: 'Montserrat', sans-serif;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
         }
 
-        body.dark-mode .home-contribution-rank {
-            background: #fff;
-            color: #000;
+        .home-contribution-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-secondary, #f1f3f5);
+            display: block;
+            align-self: center;
         }
 
-        .home-contribution-person {
+        #home-contributions-card .home-contribution-person {
             min-width: 0;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            align-content: center;
             gap: 0.12rem;
+            align-self: center;
         }
 
-        .home-contribution-person a {
+        #home-contributions-card .home-contribution-name {
             color: var(--text-primary, #1a1d21);
             text-decoration: none;
-            font-weight: 800;
-            font-size: 0.95rem;
+            display: block;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 17px !important;
+            line-height: 1.02 !important;
+            letter-spacing: -0.03em !important;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .home-contribution-person a:hover {
+        #home-contributions-card .home-contribution-name:hover {
             text-decoration: underline;
         }
 
-        .home-contribution-person span {
+        #home-contributions-card .home-contribution-subline {
+            display: block;
             color: var(--text-secondary, #6f7780);
-            font-size: 0.76rem;
+            font-size: 10px !important;
+            line-height: 1.05;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .home-contribution-score {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.12rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            align-self: center;
+            gap: 0.38rem;
             font-family: 'Montserrat', sans-serif;
             color: var(--text-primary, #1a1d21);
             font-weight: 800;
-            font-size: 0.95rem;
+            font-size: 1.02rem;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
             white-space: nowrap;
+        }
+
+        @media (max-width: 520px) {
+            .home-contribution-row {
+                grid-template-columns: 2.05rem 2.35rem minmax(0, 1fr);
+                gap: 0.62rem;
+                min-height: 3.18rem;
+            }
+
+            .home-contribution-avatar {
+                width: 2.35rem;
+                height: 2.35rem;
+            }
+
+            #home-contributions-card .home-contribution-name {
+                font-size: 16px !important;
+            }
+
+            .home-contribution-score {
+                grid-column: 3;
+                align-items: center;
+                justify-content: flex-start;
+                font-size: 0.88rem;
+                margin-top: 0;
+            }
         }
 
         .home-contribution-score span {
             color: var(--text-secondary, #6f7780);
             font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.68rem;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
         }
+        .home-contribution-score span i { display: block; line-height: 1; }
 
         .dash-card-header .more-link {
             font-size: 0.72rem;
@@ -567,6 +625,29 @@
         body.dark-mode .dash-card-header-actions .card-action-btn:hover {
             filter: brightness(1.4);
             box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        #home-contributions-card .dash-card-header .more-link,
+        body.dark-mode #home-contributions-card .dash-card-header .more-link,
+        #home-contributions-card .dash-card-header-actions .card-action-btn,
+        body.dark-mode #home-contributions-card .dash-card-header-actions .card-action-btn {
+            background: transparent;
+            color: var(--text-primary, #1a1d21);
+            border-radius: 0;
+            box-shadow: none;
+            filter: none;
+        }
+
+        #home-contributions-card .dash-card-header .more-link::before,
+        #home-contributions-card .dash-card-header-actions .card-action-btn::before {
+            content: none;
+        }
+
+        #home-contributions-card .dash-card-header .more-link:hover,
+        #home-contributions-card .dash-card-header-actions .card-action-btn:hover {
+            color: var(--accent-blue, #225ce4);
+            box-shadow: none;
+            filter: none;
         }
 
         /* ==================== CHART MINI LIST ==================== */
@@ -4397,6 +4478,17 @@
             </a>
         </div>
 
+        <div class="dash-card full-width" id="home-contributions-card">
+            <div class="dash-card-header">
+                <h2><i class="fas fa-ranking-star"></i> <span data-i18n="dashboard.contributionLeaderboard">Табела на придонесувачи</span></h2>
+                <div class="dash-card-header-actions">
+                    <a href="/contributions" class="more-link card-action-btn" title="Придонеси" data-i18n-title="nav.contributions" aria-label="Придонеси"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="dash-loading" id="home-contributions-loading"><i class="fas fa-spinner fa-spin"></i> <span data-i18n="common.loading">Се вчитува...</span></div>
+            <div class="home-contributions-table" id="home-contributions-list" style="display:none;"></div>
+        </div>
+
         <!-- ==================== SOCIAL CTA ==================== -->
         <div class="dash-cta-card" id="social-cta">
             <div class="cta-buttons">
@@ -4867,7 +4959,7 @@
             if (!rankedEntries.length) {
                 list.innerHTML = '<div class="no-data-msg">' + escHtml(homeText('contributions.empty', 'No contributions yet.')) + '</div>';
             } else {
-                var lineLabel = homeText('contributions.lineChanges', 'line changes');
+                var pointsLabel = homeText('contributions.lineChanges', 'Points');
                 list.innerHTML = rankedEntries.map(function(entry) {
                     var community = isHomeCommunityEntry(entry);
                     var rank = community ? '&mdash;' : ('#' + (entry.rank || ''));
@@ -4875,10 +4967,12 @@
                     var subline = community ? homeText('contributions.notRanked', 'Not ranked') : ('@' + (entry.login || ''));
                     var score = Number(entry.contributions || entry.lineChanges || 0).toLocaleString();
                     var href = homeProfileUrl(entry);
-                    return '<article class="home-contribution-row">' +
+                    var avatar = community ? '/images/logo.png' : (entry.avatar_url || '/images/logo.png');
+                    return '<article class="home-contribution-row' + (community ? ' community-row' : '') + '">' +
                         '<div class="home-contribution-rank">' + rank + '</div>' +
-                        '<div class="home-contribution-person"><a href="' + escHtml(href) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
-                        '<div class="home-contribution-score">' + escHtml(score) + '<span>' + escHtml(lineLabel) + '</span></div>' +
+                        '<img class="home-contribution-avatar" src="' + escHtml(avatar) + '" alt="" loading="lazy">' +
+                        '<div class="home-contribution-person"><a class="home-contribution-name" href="' + escHtml(href) + '" style="font-size:17px;font-weight:900;line-height:1.02;letter-spacing:-0.03em;">' + escHtml(name) + '</a><span class="home-contribution-subline" style="font-size:10px;line-height:1.05;">' + escHtml(subline) + '</span></div>' +
+                        '<div class="home-contribution-score">' + escHtml(score) + '<span title="' + escHtml(pointsLabel) + '" aria-label="' + escHtml(pointsLabel) + '"><i class="fas fa-star"></i></span></div>' +
                     '</article>';
                 }).join('');
             }

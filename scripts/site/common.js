@@ -1800,9 +1800,9 @@ window.MMMAuth = (function () {
                 (state.user.avatar_url ? '<img src="' + escHtml(state.user.avatar_url) + '" alt="">' : '<i class="fas fa-circle-user"></i>') +
                 '<div><strong>' + escHtml(name) + '</strong><span>@' + escHtml(state.user.login) + '</span></div>' +
             '</div>' +
-            '<a href="' + escHtml(getProfileUrl(state.user.login)) + '"><i class="fas fa-circle-user"></i> ' + text('pages.profile', 'Profile') + '</a>' +
-            '<a href="' + escHtml(state.user.html_url || ('https://github.com/' + state.user.login)) + '" target="_blank" rel="noopener">GitHub</a>' +
-            '<button type="button" id="mmm-auth-logout">' + text('auth.signOut', 'Sign out') + '</button>';
+            '<a href="' + escHtml(getProfileUrl(state.user.login)) + '"><i class="fas fa-circle-user"></i><span>' + text('pages.profile', 'Profile') + '</span></a>' +
+            '<a href="' + escHtml(state.user.html_url || ('https://github.com/' + state.user.login)) + '" target="_blank" rel="noopener"><i class="fab fa-github"></i><span>GitHub</span></a>' +
+            '<button type="button" id="mmm-auth-logout"><i class="fas fa-right-from-bracket"></i><span>' + text('auth.signOut', 'Sign out') + '</span></button>';
         document.body.appendChild(menu);
         var rect = anchor.getBoundingClientRect();
         menu.style.top = Math.round(rect.bottom + 8) + 'px';

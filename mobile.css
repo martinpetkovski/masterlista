@@ -399,21 +399,24 @@ header h1, header p { display: none; }
 .mmm-auth-menu {
     position: fixed;
     z-index: 10000;
-    min-width: 210px;
+    min-width: 230px;
     background: var(--bg-primary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     box-shadow: 0 10px 30px rgba(0,0,0,0.16);
-    padding: 0.55rem;
+    padding: 0.48rem;
+    display: grid;
+    gap: 0.18rem;
 }
 .mmm-auth-menu-user {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.45rem;
+    gap: 0.65rem;
+    padding: 0.16rem 0.18rem 0.62rem;
+    margin-bottom: 0.1rem;
     border-bottom: 1px solid var(--border-color);
 }
+.mmm-auth-menu-user > div { min-width: 0; }
 .mmm-auth-menu-user img,
 .mmm-auth-menu-user > i {
     width: 32px;
@@ -427,18 +430,36 @@ header h1, header p { display: none; }
 }
 .mmm-auth-menu-user strong,
 .mmm-auth-menu-user span { display: block; line-height: 1.2; }
-.mmm-auth-menu-user span { color: var(--text-muted); font-size: 0.72rem; }
+.mmm-auth-menu-user strong { font-family: 'Montserrat', sans-serif; font-size: 1.02rem; font-weight: 900; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mmm-auth-menu-user span { color: var(--text-muted); font-size: 0.66rem; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mmm-auth-menu a,
 .mmm-auth-menu button {
     width: 100%;
     display: flex;
-    padding: 0.5rem 0.55rem;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.62rem;
+    padding: 0.58rem 0.62rem;
     border: 0;
     background: transparent;
     color: var(--text-primary);
     text-decoration: none;
     font: inherit;
+    font-weight: 700;
     cursor: pointer;
+}
+.mmm-auth-menu a i,
+.mmm-auth-menu button i {
+    width: 1rem;
+    color: var(--text-muted);
+    text-align: center;
+    flex-shrink: 0;
+}
+.mmm-auth-menu a span,
+.mmm-auth-menu button span {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
 }
 .mmm-auth-menu a:hover,
 .mmm-auth-menu button:hover { background: var(--bg-hover); }

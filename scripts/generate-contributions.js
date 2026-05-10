@@ -303,7 +303,7 @@ async function main() {
   const records = await fetchPullRequestRecords({ token, owner, repo, states: ['MERGED'], status: 'merged', rules, maxPages });
   const aggregate = aggregateRecords(records, pendingRecords, previous);
   writeJson(OUTPUT_PATH, aggregate);
-  console.log(`Generated ${path.relative(ROOT, OUTPUT_PATH)} with ${aggregate.totalRecords} merged records, ${aggregate.totalPendingRecords} pending records, and ${aggregate.totalLineChanges} line changes.`);
+  console.log(`Generated ${path.relative(ROOT, OUTPUT_PATH)} with ${aggregate.totalRecords} merged records and ${aggregate.totalPendingRecords} pending records. Points: ${aggregate.totalLineChanges}.`);
 }
 
 main().catch(error => {
