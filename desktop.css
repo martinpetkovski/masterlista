@@ -4199,6 +4199,10 @@ body.dark-mode .settings-tour-btn:hover {
     cursor: pointer;
 }
 
+.site-nav-close {
+    display: none;
+}
+
 /* On desktop, show nav as inline buttons next to the title */
 .site-nav-menu {
     display: flex;

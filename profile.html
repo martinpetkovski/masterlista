@@ -24,17 +24,21 @@
         .profile-card, .profile-panel, .profile-loading, .profile-error, .profile-empty { border: 1px solid var(--border-color); background: var(--bg-primary); }
         .profile-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.9rem; align-items: center; padding: 1rem; }
         .profile-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); display: inline-flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1.45rem; }
-        .profile-title { min-width: 0; display: grid; gap: 0.18rem; }
-        .profile-kicker { color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.64rem; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
-        .profile-title h2 { margin: 0; max-width: 100%; font-family: 'Montserrat', sans-serif; font-size: clamp(1.92rem, 3.3vw, 2.34rem); font-weight: 900; line-height: 0.94; letter-spacing: -0.05em; overflow-wrap: anywhere; }
+        .profile-title { min-width: 0; }
+        .profile-heading-line { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 0.85rem; }
+        .profile-identity { min-width: 0; display: grid; gap: 0.18rem; }
+        .profile-kicker { color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.64rem; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 0; }
+        .profile-title h2 { margin: 0; max-width: 100%; font-family: 'Montserrat', sans-serif; font-size: clamp(1.72rem, 3vw, 2.18rem); font-weight: 900; line-height: 1; letter-spacing: 0; overflow-wrap: anywhere; }
         .profile-handle { color: var(--text-muted); font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; min-width: 0; }
-        .profile-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin-top: 0.15rem; padding-top: 0.6rem; border-top: 1px solid var(--border-color); }
-        .profile-stat { background: transparent; padding: 0.2rem 0.1rem 0.05rem; display: grid; grid-template-columns: 0.92rem minmax(0, 1fr); align-items: center; column-gap: 0.6rem; min-width: 0; }
-        .profile-stat + .profile-stat { padding-left: 1rem; border-left: 1px solid var(--border-color); }
-        .profile-stat > i { width: 0.92rem; color: var(--text-muted); font-size: 0.8rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; align-self: center; }
-        .profile-stat div { min-width: 0; display: flex; align-items: center; gap: 0.44rem; min-height: 1.6rem; }
-        .profile-stat strong { display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; font-family: 'Montserrat', sans-serif; font-size: clamp(1.34rem, 1.9vw, 1.66rem); font-weight: 900; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-        .profile-stat span { display: inline-flex; align-items: center; min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-family: 'Montserrat', sans-serif; font-size: clamp(0.62rem, 0.76vw, 0.68rem); font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+        .profile-scoreboard { margin-left: auto; display: grid; grid-template-columns: repeat(2, minmax(4.9rem, auto)); gap: 0.38rem; align-items: stretch; flex: 0 0 auto; }
+        .profile-chart-stat { position: relative; min-width: 0; min-height: 3rem; display: grid; align-content: center; gap: 0.22rem; padding: 0.46rem 0.58rem; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); overflow: hidden; font-variant-numeric: tabular-nums; }
+        .profile-chart-stat::after { content: ''; position: absolute; right: -1px; bottom: -1px; width: 8px; height: 8px; border-style: solid; border-width: 0 2px 2px 0; border-color: currentColor; opacity: 0.3; pointer-events: none; }
+        .profile-chart-stat--points { background: #000; border-color: #000; color: #fff; }
+        body.dark-mode .profile-chart-stat--points, html.dark-mode body .profile-chart-stat--points { background: #fff; border-color: #fff; color: #000; }
+        .profile-chart-value { min-width: 0; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Montserrat', sans-serif; font-size: clamp(1.05rem, 1.7vw, 1.34rem); font-weight: 900; line-height: 1; letter-spacing: 0; }
+        .profile-chart-label { min-width: 0; display: inline-flex; align-items: center; gap: 0.28rem; color: var(--text-muted); font-family: 'Montserrat', sans-serif; font-size: 0.56rem; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: 0; white-space: nowrap; }
+        .profile-chart-stat--points .profile-chart-label { color: rgba(255, 255, 255, 0.68); }
+        body.dark-mode .profile-chart-stat--points .profile-chart-label, html.dark-mode body .profile-chart-stat--points .profile-chart-label { color: rgba(0, 0, 0, 0.62); }
         .profile-panel { padding: 1rem; }
         .profile-panel h3 { margin: 0 0 0.75rem; font-family: 'Montserrat', sans-serif; font-size: 1rem; display: flex; align-items: center; gap: 0.45rem; }
         .profile-panel h3 i { color: var(--text-muted); }
@@ -43,14 +47,13 @@
         .profile-contribution { border-bottom: 1px solid var(--border-color); background: var(--bg-primary); padding: 0.72rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.45rem 0.75rem; align-items: center; transition: background 0.16s ease; }
         .profile-contribution:last-child { border-bottom: 0; }
         .profile-contribution:hover { background: var(--bg-secondary); }
-        .profile-contribution.community-entry { background: color-mix(in srgb, var(--bg-primary) 96%, var(--accent-blue, #225ce4) 4%); }
-        .profile-contribution.community-entry:hover { background: color-mix(in srgb, var(--bg-primary) 93%, var(--accent-blue, #225ce4) 7%); }
         .profile-contribution-main { min-width: 0; display: grid; gap: 0.4rem; }
         .profile-contribution-title { color: var(--text-primary); text-decoration: none; font-weight: 800; display: inline-flex; align-items: center; gap: 0.32rem; min-width: 0; line-height: 1.04; }
         .profile-contribution-title span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
         .profile-contribution-title:hover { color: var(--accent-blue); }
         .profile-meta { color: var(--text-muted); font-size: 0.74rem; display: flex; flex-wrap: wrap; gap: 0.35rem 0.6rem; }
         .profile-meta span { display: inline-flex; align-items: center; gap: 0.28rem; }
+        .profile-kind-icon { color: var(--text-muted); font-size: 0.72rem; }
         .profile-score { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0.34rem; min-width: 5rem; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; align-self: center; }
         .profile-score strong { font-family: 'Montserrat', sans-serif; font-size: 1.06rem; line-height: 1; display: inline-flex; align-items: center; }
         .profile-score span { color: var(--text-muted); font-size: 0.72rem; line-height: 1; display: inline-flex; align-items: center; white-space: nowrap; }
@@ -64,13 +67,18 @@
             body.profile-page main { padding: 0.75rem; }
             .profile-card { grid-template-columns: auto minmax(0, 1fr); padding: 0.85rem; }
             .profile-avatar { width: 52px; height: 52px; }
-            .profile-stats { grid-template-columns: 1fr; }
-            .profile-stat + .profile-stat { padding-left: 0.1rem; border-left: 0; border-top: 1px solid var(--border-color); padding-top: 0.7rem; margin-top: 0.55rem; }
+            .profile-heading-line { align-items: flex-start; gap: 0.55rem; }
+            .profile-scoreboard { grid-template-columns: repeat(2, minmax(4.15rem, auto)); gap: 0.28rem; }
+            .profile-chart-stat { min-height: 2.62rem; padding: 0.38rem 0.44rem; }
             .profile-contribution { grid-template-columns: 1fr; }
             .profile-score { justify-content: flex-start; }
-            .profile-title h2 { font-size: 1.86rem; }
-            .profile-stat strong { font-size: 1.42rem; }
-            .profile-stat span { font-size: 0.62rem; }
+            .profile-title h2 { font-size: 1.42rem; }
+            .profile-chart-value { font-size: 1rem; }
+            .profile-chart-label { font-size: 0.5rem; }
+        }
+        @media (max-width: 420px) {
+            .profile-scoreboard { grid-template-columns: minmax(4.25rem, auto); }
+            .profile-chart-stat { min-height: 2.28rem; }
         }
     </style>
 </head>
@@ -392,11 +400,11 @@
                 var community = isCommunityRecord(record);
                 var scoreValue = Number(record.contributionCount || record.lineChanges || 0);
                 var pointsLabel = localText('contributions.lineChanges', localText('contributions.total', 'Points'));
-                var communityBadge = community ? '<span><i class="fas fa-people-group"></i>' + safeHtml(localText('contributions.community', localText('contributions.system', 'Community'))) + '</span>' : '';
+                var communityIcon = community ? '<i class="profile-kind-icon fas fa-people-group" aria-hidden="true"></i>' : '';
                 return '<article class="profile-contribution' + (community ? ' community-entry' : '') + '">' +
                     '<div class="profile-contribution-main">' +
-                        '<a class="profile-contribution-title" href="' + safeHtml(record.prUrl) + '" target="_blank" rel="noopener"><i class="fas fa-code-merge"></i><span>#' + record.prNumber + ' ' + safeHtml(displayTitle(record.title)) + '</span></a>' +
-                        '<div class="profile-meta"><span><i class="fas fa-calendar-day"></i>' + safeHtml(formatDate(record.mergedAt || record.updatedAt || record.createdAt)) + '</span>' + communityBadge + '</div>' +
+                        '<a class="profile-contribution-title" href="' + safeHtml(record.prUrl) + '" target="_blank" rel="noopener">' + communityIcon + '<i class="fas fa-code-merge"></i><span>#' + record.prNumber + ' ' + safeHtml(displayTitle(record.title)) + '</span></a>' +
+                        '<div class="profile-meta"><span><i class="fas fa-calendar-day"></i>' + safeHtml(formatDate(record.mergedAt || record.updatedAt || record.createdAt)) + '</span></div>' +
                     '</div>' +
                     '<div class="profile-score"><strong>' + Number(scoreValue || 0).toLocaleString() + '</strong><span title="' + safeHtml(pointsLabel) + '" aria-label="' + safeHtml(pointsLabel) + '"><i class="fas fa-star"></i></span></div>' +
                     (files ? '<div class="profile-files">' + files + '</div>' : '') +
@@ -414,9 +422,11 @@
                 var login = isSystemProfile ? 'community' : (entry && entry.login || firstUser.login || requestedUser);
                 var avatar = isSystemProfile ? '/images/logo.png' : (entry && entry.avatar_url || firstUser.avatar_url || '/images/logo.png');
                 var total = records.reduce(function(sum, record) { return sum + Number(record.contributionCount || 0); }, 0);
-                var rank = isSystemProfile || !entry || !entry.rank ? localText('contributions.notRanked', 'Not ranked') : ('#' + entry.rank);
+                var hasRank = !isSystemProfile && entry && entry.rank;
+                var rank = hasRank ? ('#' + entry.rank) : '—';
                 var pointsLabel = localText('contributions.lineChanges', localText('contributions.total', 'Points'));
-                var profileType = isSystemProfile ? localText('contributions.community', localText('contributions.system', 'Community')) : localText('pages.profile', 'Profile');
+                var profileType = localText('pages.profile', 'Profile');
+                var rankLabel = hasRank ? localText('contributions.leaderboard', 'Leaderboard') : localText('contributions.notRanked', 'Not ranked');
 
                 document.title = name + ' | ТопЛиста.мк';
                 var header = document.getElementById('site-header');
@@ -426,11 +436,13 @@
 
                 document.getElementById('profile-card').innerHTML =
                     '<img class="profile-avatar" src="' + safeHtml(avatar) + '" alt="" loading="lazy">' +
-                    '<div class="profile-title"><span class="profile-kicker"><i class="' + (isSystemProfile ? 'fas fa-people-group' : 'fas fa-user') + '"></i>' + safeHtml(profileType) + '</span><h2>' + safeHtml(name) + '</h2><span class="profile-handle">@' + safeHtml(displayLogin(login)) + '</span></div>' +
-                    '<div class="profile-stats">' +
-                        '<div class="profile-stat"><i class="fas fa-star"></i><div><strong>' + Number(total || 0).toLocaleString() + '</strong><span>' + safeHtml(pointsLabel) + '</span></div></div>' +
-                        '<div class="profile-stat"><i class="fas fa-ranking-star"></i><div><strong>' + safeHtml(rank) + '</strong><span>' + safeHtml(localText('contributions.leaderboard', 'Leaderboard')) + '</span></div></div>' +
-                    '</div>';
+                    '<div class="profile-title"><div class="profile-heading-line">' +
+                        '<div class="profile-identity"><span class="profile-kicker"><i class="' + (isSystemProfile ? 'fas fa-people-group' : 'fas fa-user') + '"></i>' + safeHtml(profileType) + '</span><h2>' + safeHtml(name) + '</h2><span class="profile-handle">@' + safeHtml(displayLogin(login)) + '</span></div>' +
+                        '<div class="profile-scoreboard" aria-label="' + safeHtml(pointsLabel + ' / ' + rankLabel) + '">' +
+                            '<div class="profile-chart-stat profile-chart-stat--points"><strong class="profile-chart-value">' + Number(total || 0).toLocaleString() + '</strong><span class="profile-chart-label"><i class="fas fa-star"></i>' + safeHtml(pointsLabel) + '</span></div>' +
+                            '<div class="profile-chart-stat profile-chart-stat--rank"><strong class="profile-chart-value">' + safeHtml(rank) + '</strong><span class="profile-chart-label"><i class="fas fa-ranking-star"></i>' + safeHtml(rankLabel) + '</span></div>' +
+                        '</div>' +
+                    '</div></div>';
                 document.getElementById('profile-list-title').textContent = localText('profile.contributions', 'Contributions');
                 document.getElementById('profile-empty').style.display = records.length ? 'none' : 'block';
                 document.getElementById('profile-list').innerHTML = records.map(renderContribution).join('');

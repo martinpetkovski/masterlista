@@ -63,8 +63,7 @@
         
         body.artist-page {
             background: #f2f3f5;
-              height: 100vh;
-              height: 100dvh;
+                        height: auto;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-y: auto;
@@ -83,6 +82,10 @@
         
         body.artist-page.dark-mode:not(.verified-accent),
         html.dark-mode body.artist-page:not(.verified-accent) {
+            background: #111318 !important;
+        }
+
+        html.dark-mode {
             background: #111318 !important;
         }
         
@@ -1469,12 +1472,48 @@
             overflow: hidden;
             flex-shrink: 0;
             background: var(--bg-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .chart-history-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        button.chart-history-cover {
+            border: 0;
+            padding: 0;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .release-track-menu-trigger:focus-visible,
+        .release-title-button:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        .release-title-button {
+            min-width: 0;
+            flex: 1 1 12rem;
+            display: inline-flex;
+            align-items: flex-start;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            font-weight: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .release-title-button:hover .chart-history-title-text,
+        button.chart-history-cover:hover + .chart-history-info .chart-history-title-text {
+            color: var(--accent-blue);
         }
 
         .release-card-main {
@@ -1964,6 +2003,230 @@ a.chart-history-item {
         .release-track-yt-expand:hover { background: rgba(0,0,0,0.12); }
         body.dark-mode .release-track-yt-expand { background: rgba(255,255,255,0.1); }
         body.dark-mode .release-track-yt-expand:hover { background: rgba(255,255,255,0.18); }
+
+        .release-track-chooser-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.52);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .release-track-chooser-overlay.visible {
+            display: flex;
+        }
+
+        .release-track-chooser {
+            width: min(100%, 430px);
+            max-height: calc(100vh - 2rem);
+            max-height: calc(100dvh - 2rem);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .release-track-chooser-header {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .release-track-chooser-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            color: var(--text-muted);
+        }
+
+        .release-track-chooser-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .release-track-chooser-copy {
+            min-width: 0;
+            display: grid;
+            gap: 0.18rem;
+        }
+
+        .release-track-chooser-kicker {
+            color: var(--text-muted);
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0;
+        }
+
+        .release-track-chooser-title {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .release-track-chooser-artist {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .release-track-chooser-close {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .release-track-chooser-close:hover,
+        .release-track-chooser-close:focus-visible {
+            background: #000;
+            border-color: #000;
+            color: #fff;
+            outline: none;
+        }
+
+        body.dark-mode .release-track-chooser-close:hover,
+        body.dark-mode .release-track-chooser-close:focus-visible {
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+        }
+
+        .release-track-chooser-list {
+            display: grid;
+            gap: 0.35rem;
+            padding: 0.75rem;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+
+        .release-track-choice {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.5rem;
+            min-height: 44px;
+            padding: 0.52rem 0.58rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            text-align: left;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .release-track-choice:hover,
+        .release-track-choice:focus-visible {
+            background: #000;
+            border-color: #000;
+            color: #fff;
+            outline: none;
+        }
+
+        body.dark-mode .release-track-choice:hover,
+        body.dark-mode .release-track-choice:focus-visible {
+            background: #fff;
+            border-color: #fff;
+            color: #000;
+        }
+
+        .release-track-choice-num {
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 0.72rem;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .release-track-choice-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 800;
+        }
+
+        .release-track-choice-stats {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            font-size: 0.64rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .release-track-choice:hover .release-track-choice-num,
+        .release-track-choice:hover .release-track-choice-stats,
+        .release-track-choice:focus-visible .release-track-choice-num,
+        .release-track-choice:focus-visible .release-track-choice-stats {
+            color: currentColor;
+            opacity: 0.78;
+        }
+
+        .verified-accent .release-track-chooser {
+            background: var(--va-card-bg);
+            border-color: var(--va-card-border);
+            color: var(--va-text);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .verified-accent .release-track-chooser-header,
+        .verified-accent .release-track-choice {
+            background: var(--va-card-bg);
+            border-color: var(--va-card-border);
+            color: var(--va-text);
+        }
+
+        .verified-accent .release-track-chooser-kicker,
+        .verified-accent .release-track-chooser-artist,
+        .verified-accent .release-track-choice-num,
+        .verified-accent .release-track-choice-stats {
+            color: var(--va-text-muted);
+        }
+
+        .verified-accent .release-track-choice:hover,
+        .verified-accent .release-track-choice:focus-visible {
+            background: var(--va-card-hover-bg);
+            border-color: var(--va-accent2, var(--va-card-border));
+            color: var(--va-text);
+        }
 
         .chart-history-link {
             margin-left: auto;
@@ -4891,6 +5154,7 @@ a.chart-history-item {
                 const releaseCardMainClass = certificationHtml
                     ? 'release-card-main release-card-main--with-cert'
                     : 'release-card-main';
+                const releasePickerLabel = escapeHtmlAttribute('Избери песна: ' + (release.releaseTitle || ''));
 
                 const allArtists = release.bandName ? release.bandName.split(',').map(a => a.trim()).filter(a => a) : [];
                 let collabHtml = '';
@@ -4919,14 +5183,14 @@ a.chart-history-item {
                         ${releaseHeaderHtml}
                         <div class="${releaseCardMainClass}">
                             ${releaseCertificationRowHtml}
-                            <div class="chart-history-cover">
+                            <button type="button" class="chart-history-cover release-track-menu-trigger" data-release-idx="${rIdx}" aria-label="${releasePickerLabel}">
                                 ${release.thumbnail 
                                     ? `<img src="${release.thumbnail}" alt="${release.releaseTitle}" loading="lazy">`
                                     : `<i class="${typeIcon}" style="font-size: 1.25rem; color: var(--text-muted);"></i>`
                                 }
-                            </div>
+                            </button>
                             <div class="chart-history-info">
-                                <div class="chart-history-title"><span class="chart-history-title-text">${release.releaseTitle}</span>${issueBadge}${newBadge}</div>
+                                <div class="chart-history-title"><button type="button" class="release-title-button release-track-menu-trigger" data-release-idx="${rIdx}" aria-label="${releasePickerLabel}"><span class="chart-history-title-text">${release.releaseTitle}</span></button>${issueBadge}${newBadge}</div>
                                 ${collabHtml}
                                 <div class="chart-history-meta">
                                     <span class="chart-history-type ${typeClass}">
@@ -5202,6 +5466,14 @@ a.chart-history-item {
 
             finishArtistSectionRender(container, true);
 
+            content.querySelectorAll('.release-track-menu-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openReleaseTrackChooser(parseInt(trigger.dataset.releaseIdx, 10), trigger);
+                });
+            });
+
             // Add click handlers for release track items
             content.querySelectorAll('.release-track-item').forEach(item => {
                 item.addEventListener('click', (e) => {
@@ -5219,6 +5491,122 @@ a.chart-history-item {
                     if (item) openTrackServiceChooser(item);
                 });
             });
+        }
+
+        let releaseTrackChooserLastTrigger = null;
+
+        function artistTextOr(key, fallback) {
+            if (typeof t !== 'function') return fallback;
+            const value = t(key);
+            return value === key ? fallback : value;
+        }
+
+        function getReleaseTrackChooserOverlay() {
+            let overlay = document.getElementById('release-track-chooser-overlay');
+            if (overlay) return overlay;
+
+            overlay = document.createElement('div');
+            overlay.id = 'release-track-chooser-overlay';
+            overlay.className = 'release-track-chooser-overlay';
+            overlay.innerHTML = `
+                <div class="release-track-chooser" role="dialog" aria-modal="true" aria-labelledby="release-track-chooser-title">
+                    <div class="release-track-chooser-header">
+                        <span class="release-track-chooser-cover" id="release-track-chooser-cover"></span>
+                        <div class="release-track-chooser-copy">
+                            <span class="release-track-chooser-kicker" id="release-track-chooser-kicker"></span>
+                            <strong class="release-track-chooser-title" id="release-track-chooser-title"></strong>
+                            <span class="release-track-chooser-artist" id="release-track-chooser-artist"></span>
+                        </div>
+                        <button type="button" class="release-track-chooser-close" aria-label="Затвори"><i class="fas fa-xmark"></i></button>
+                    </div>
+                    <div class="release-track-chooser-list" id="release-track-chooser-list"></div>
+                </div>`;
+            document.body.appendChild(overlay);
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeReleaseTrackChooser(true);
+            });
+            overlay.querySelector('.release-track-chooser-close').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeReleaseTrackChooser(true);
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('visible')) {
+                    closeReleaseTrackChooser(true);
+                }
+            });
+            return overlay;
+        }
+
+        function closeReleaseTrackChooser(refocus) {
+            const overlay = document.getElementById('release-track-chooser-overlay');
+            if (!overlay) return;
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
+            if (refocus && releaseTrackChooserLastTrigger && typeof releaseTrackChooserLastTrigger.focus === 'function') {
+                releaseTrackChooserLastTrigger.focus();
+            }
+            if (refocus) releaseTrackChooserLastTrigger = null;
+        }
+
+        function openReleaseTrackChooser(releaseIdx, triggerEl) {
+            const releases = window.artistReleases || [];
+            const release = releases[releaseIdx];
+            if (!release) return;
+
+            const selector = '.release-track-item[data-release-idx="' + releaseIdx + '"]';
+            const trackItems = Array.from(document.querySelectorAll(selector));
+            if (!trackItems.length) return;
+
+            releaseTrackChooserLastTrigger = triggerEl || null;
+            const overlay = getReleaseTrackChooserOverlay();
+            const coverEl = overlay.querySelector('#release-track-chooser-cover');
+            const kickerEl = overlay.querySelector('#release-track-chooser-kicker');
+            const titleEl = overlay.querySelector('#release-track-chooser-title');
+            const artistEl = overlay.querySelector('#release-track-chooser-artist');
+            const listEl = overlay.querySelector('#release-track-chooser-list');
+
+            coverEl.innerHTML = release.thumbnail
+                ? '<img src="' + escapeHtmlAttribute(release.thumbnail) + '" alt="">'
+                : '<i class="fas fa-compact-disc"></i>';
+            kickerEl.textContent = artistTextOr('artist.chooseSong', 'Избери песна');
+            titleEl.textContent = release.releaseTitle || '';
+            artistEl.textContent = release.bandName || '';
+
+            listEl.innerHTML = trackItems.map((item, index) => {
+                const trackName = item.dataset.trackName || item.querySelector('.release-track-name')?.textContent || '';
+                const totalViews = Number(item.dataset.totalViews || 0);
+                const viewsDelta = Number(item.dataset.viewsDelta || 0);
+                const viewsHtml = totalViews > 0
+                    ? '<span><i class="fas fa-eye"></i> ' + formatViewsAbsolute(totalViews) + '</span>'
+                    : '';
+                const deltaHtml = viewsDelta > 0
+                    ? '<span><i class="fas fa-chart-line"></i> ' + formatViewsAbsolute(viewsDelta) + '</span>'
+                    : '';
+                const statsHtml = viewsHtml || deltaHtml
+                    ? '<span class="release-track-choice-stats">' + viewsHtml + deltaHtml + '</span>'
+                    : '<span class="release-track-choice-stats"><i class="fas fa-play"></i></span>';
+                return '<button type="button" class="release-track-choice" data-track-index="' + index + '">' +
+                    '<span class="release-track-choice-num">' + (index + 1) + '</span>' +
+                    '<span class="release-track-choice-name">' + escHtml(trackName) + '</span>' +
+                    statsHtml +
+                '</button>';
+            }).join('');
+
+            listEl.querySelectorAll('.release-track-choice').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const item = trackItems[Number(button.dataset.trackIndex)];
+                    closeReleaseTrackChooser(false);
+                    if (item) openTrackServiceChooser(item);
+                });
+            });
+
+            overlay.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+            const firstChoice = listEl.querySelector('.release-track-choice');
+            if (firstChoice) setTimeout(function() { firstChoice.focus(); }, 0);
         }
 
         function openTrackServiceChooser(item) {

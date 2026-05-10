@@ -29,19 +29,13 @@
     <style>
         body.contributions-page main { height: auto; overflow: visible; display: block; }
         .contributions-shell { width: min(100%, 1180px); margin: 0 auto; padding: clamp(0.75rem, 2vw, 1.25rem); }
-        .contributions-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 340px); align-items: stretch; margin-bottom: 0.72rem; border: 1px solid color-mix(in srgb, var(--border-color) 80%, transparent); background: color-mix(in srgb, var(--bg-primary) 99%, var(--bg-secondary) 1%); overflow: hidden; }
-        .contributions-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; }
-        .contributions-stat { min-height: 3.32rem; padding: 0.58rem 0.72rem; min-width: 0; display: grid; grid-template-columns: 0.82rem minmax(0, 1fr); align-items: center; column-gap: 0.52rem; border-right: 1px solid color-mix(in srgb, var(--border-color) 80%, transparent); }
-        .contributions-stat:last-child { border-right: 0; }
-        .contributions-stat > i { width: 0.82rem; color: color-mix(in srgb, var(--text-muted) 88%, transparent); font-size: 0.72rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; align-self: center; }
-        .contributions-stat div { min-width: 0; display: flex; align-items: center; gap: 0.36rem; min-height: 1.3rem; }
-        .contributions-stat strong { display: inline-flex; align-items: center; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; font-family: 'Montserrat', sans-serif; font-size: clamp(1.08rem, 1.2vw, 1.2rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--text-primary) 88%, transparent); white-space: nowrap; }
-        #contributions-total { font-size: clamp(1.28rem, 1.52vw, 1.46rem); font-weight: 900; color: var(--text-primary); }
-        .contributions-stat span { display: inline-flex; align-items: center; min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; color: color-mix(in srgb, var(--text-muted) 94%, transparent); font-family: 'Montserrat', sans-serif; font-size: clamp(0.54rem, 0.6vw, 0.58rem); font-weight: 700; line-height: 1; margin-top: 0; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
-        .contributions-search { width: 100%; position: relative; display: flex; align-items: stretch; border-left: 1px solid var(--border-color); }
-        .contributions-search i { position: absolute; left: 0.78rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
-        .contributions-search input { width: 100%; min-height: 100%; padding: 0.56rem 0.8rem 0.56rem 2.12rem; border: 0; border-radius: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: 0.84rem; font-weight: 600; }
-        .contributions-search input:focus { outline: 2px solid color-mix(in srgb, var(--accent-blue, #2563eb) 28%, transparent); outline-offset: -2px; }
+        .contributions-search { display: flex; align-items: center; gap: 0.35rem; width: 100%; min-width: 200px; position: relative; min-height: 36px; padding: 0.2rem 0.6rem; margin-bottom: 0.72rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); cursor: text; transition: border-color 0.15s, box-shadow 0.15s; box-sizing: border-box; }
+        .contributions-search:focus-within { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(29,155,240,0.12); }
+        body.dark-mode .contributions-search { background: var(--bg-secondary); border-color: var(--border-color); }
+        body.dark-mode .contributions-search:focus-within { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(29,155,240,0.2); }
+        .contributions-search i { color: var(--text-muted); font-size: 0.8rem; flex-shrink: 0; pointer-events: none; }
+        .contributions-search input { flex: 1; min-width: 100px; border: none; outline: none; background: transparent; color: var(--text-primary); font-size: 0.82rem; font-family: 'Inter', sans-serif; padding: 0.2rem 0; height: 30px; }
+        .contributions-search input::placeholder { color: var(--text-muted); }
         .contributions-content { display: grid; gap: 1rem; }
         .contributions-layout { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 1rem; align-items: start; }
         .contributions-panel { min-width: 0; }
@@ -53,8 +47,6 @@
         .leaderboard-entry:last-child, .contribution-entry:last-child { border-bottom: 0; }
         .leaderboard-entry:hover, .contribution-entry:hover { background: var(--bg-secondary); }
         .leaderboard-entry { display: grid; grid-template-columns: 2.45rem 42px minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; padding: 0.68rem 0.72rem; }
-        .leaderboard-entry.community-entry, .contribution-entry.community-entry { background: color-mix(in srgb, var(--bg-primary) 96%, var(--accent-blue, #225ce4) 4%); }
-        .leaderboard-entry.community-entry:hover, .contribution-entry.community-entry:hover { background: color-mix(in srgb, var(--bg-primary) 93%, var(--accent-blue, #225ce4) 7%); }
         .leaderboard-rank { width: 2.35rem; display: flex; align-items: center; color: var(--text-muted); font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 1.35rem; line-height: 1; text-align: left; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
         .leaderboard-entry:not(.community-entry):first-child .leaderboard-rank { color: var(--text-primary); }
         .leaderboard-avatar, .contribution-avatar { display: inline-flex; line-height: 0; }
@@ -67,10 +59,11 @@
         .leaderboard-name a:hover, .contribution-title a:hover { color: var(--accent-blue); }
         .leaderboard-name a { font-size: 1.02rem; letter-spacing: -0.03em; }
         .leaderboard-name span, .contribution-meta { display: block; color: var(--text-muted); font-size: 0.7rem; margin-top: 0; line-height: 1.3; }
+        .leaderboard-kind-icon, .contribution-kind-icon { color: var(--text-muted); font-size: 0.72rem; margin-right: 0.28rem; }
         .contribution-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 0.6rem; }
         .contribution-meta a, .contribution-meta span { color: inherit; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.28rem; }
         .contribution-meta a:hover { color: var(--accent-blue); }
-        .contribution-system, .contribution-status { font-weight: 800; }
+        .contribution-status { font-weight: 800; }
         .leaderboard-count, .contribution-score { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0.34rem; min-width: 5rem; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; align-self: center; }
         .leaderboard-count strong, .contribution-score strong { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.06rem; line-height: 1; display: inline-flex; align-items: center; }
         .leaderboard-count span, .contribution-score span { color: var(--text-muted); font-size: 0.72rem; line-height: 1; display: inline-flex; align-items: center; }
@@ -84,10 +77,6 @@
         .contributions-loading { display: flex; align-items: center; justify-content: center; gap: 0.55rem; }
         .contributions-loading i { color: var(--text-muted); }
         @media (max-width: 800px) {
-            .contributions-toolbar { grid-template-columns: 1fr; }
-            .contributions-stats { grid-template-columns: 1fr; }
-            .contributions-stat { border-right: 0; border-bottom: 1px solid var(--border-color); }
-            .contributions-search { border-left: 0; }
             .contributions-layout { grid-template-columns: 1fr; }
             .leaderboard-entry { grid-template-columns: 38px 38px minmax(0, 1fr) auto; }
             .contribution-entry { grid-template-columns: 1fr; }
@@ -95,10 +84,6 @@
             .contribution-files { padding-left: 0; }
         }
         @media (max-width: 600px) {
-            .contributions-stat { padding: 0.62rem 0.76rem; }
-            .contributions-stat strong { font-size: 1.1rem; }
-            #contributions-total { font-size: 1.3rem; }
-            .contributions-stat span { font-size: 0.56rem; }
             .leaderboard-name a { font-size: 0.98rem; }
             .leaderboard-name span { font-size: 0.68rem; }
         }
@@ -110,34 +95,27 @@
 
     <main>
         <div class="contributions-shell">
-            <div class="contributions-toolbar">
-                <div class="contributions-stats">
-                    <div class="contributions-stat"><i class="fas fa-star"></i><div><strong id="contributions-total">0</strong><span data-i18n="contributions.total">Points</span></div></div>
-                    <div class="contributions-stat"><i class="fas fa-users"></i><div><strong id="contributors-total">0</strong><span data-i18n="contributions.contributors">contributors</span></div></div>
-                    <div class="contributions-stat"><i class="fas fa-clock"></i><div><strong id="pending-total">0</strong><span data-i18n="contributions.pending">Pending changes</span></div></div>
-                </div>
-                <label class="contributions-search">
-                    <i class="fas fa-search"></i>
-                    <input id="contributions-search" type="search" data-i18n-placeholder="contributions.searchPlaceholder" placeholder="Search contributions...">
-                </label>
-            </div>
+            <label class="contributions-search">
+                <i class="fas fa-search"></i>
+                <input id="contributions-search" type="search" data-i18n-placeholder="contributions.searchPlaceholder" placeholder="Search contributions...">
+            </label>
 
             <div id="contributions-loading" class="contributions-loading"><i class="fas fa-spinner fa-spin"></i><span data-i18n="contributions.loading">Loading contributions...</span></div>
             <div id="contributions-error" class="contributions-error" data-i18n="contributions.error" style="display:none">Could not load contributions.</div>
 
             <div id="contributions-content" class="contributions-content" style="display:none">
                 <section class="contributions-panel contributions-pending-panel">
-                    <h2><i class="fas fa-code-pull-request"></i><span data-i18n="contributions.pending">Pending changes</span></h2>
+                    <h2><i class="fas fa-code-pull-request"></i><span id="pending-heading" data-i18n="contributions.pending">Pending changes</span></h2>
                     <div id="pending-list" class="contribution-list"></div>
                     <div id="pending-empty" class="contributions-empty" data-i18n="contributions.pendingEmpty" style="display:none">No pending changes.</div>
                 </section>
                 <div class="contributions-layout">
                     <section class="contributions-panel">
-                        <h2><i class="fas fa-ranking-star"></i><span data-i18n="contributions.leaderboard">Leaderboard</span></h2>
+                        <h2><i class="fas fa-ranking-star"></i><span id="leaderboard-heading" data-i18n="contributions.leaderboard">Leaderboard</span></h2>
                         <div id="leaderboard-list" class="leaderboard-list"></div>
                     </section>
                     <section class="contributions-panel">
-                        <h2><i class="fas fa-code-merge"></i><span data-i18n="contributions.recent">20 most recent merged changes</span></h2>
+                        <h2><i class="fas fa-code-merge"></i><span id="recent-heading" data-i18n="contributions.recent">Most recent merged changes</span></h2>
                         <div id="contribution-list" class="contribution-list"></div>
                         <div id="contributions-empty" class="contributions-empty" data-i18n="contributions.empty" style="display:none">No contributions yet.</div>
                     </section>
@@ -422,6 +400,12 @@
                 return Number(value || 0).toLocaleString();
             }
 
+            function setCountedHeading(id, key, fallback, count) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = localText(key, fallback) + ' (' + formatScore(count) + ')';
+            }
+
             function formatDate(value) {
                 if (!value) return '';
                 try {
@@ -444,6 +428,7 @@
 
             function renderLeaderboard() {
                 var el = document.getElementById('leaderboard-list');
+                setCountedHeading('leaderboard-heading', 'contributions.leaderboard', 'Leaderboard', data.leaderboard.length);
                 if (!data.leaderboard.length) {
                     el.innerHTML = '<div class="contributions-empty">' + escHtml(t('contributions.empty')) + '</div>';
                     return;
@@ -452,13 +437,14 @@
                     var community = isCommunityEntry(entry);
                     var rankLabel = community ? '—' : ('#' + entry.rank);
                     var name = community ? localText('contributions.community', localText('contributions.system', 'Community')) : displayName(entry);
-                    var subline = community ? localText('contributions.notRanked', 'Not ranked') : ('@' + displayLogin(entry.login));
+                    var subline = '@' + displayLogin(community ? 'community' : entry.login);
                     var userProfileUrl = profileUrl(entry.login, community);
                     var pointsLabel = localText('contributions.lineChanges', localText('contributions.total', 'Points'));
+                    var communityIcon = community ? '<i class="leaderboard-kind-icon fas fa-people-group" aria-hidden="true"></i>' : '';
                     return '<article class="leaderboard-entry' + (community ? ' community-entry' : '') + '">' +
                         '<div class="leaderboard-rank">' + escHtml(rankLabel) + '</div>' +
                         '<a class="leaderboard-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(entry.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
-                        '<div class="leaderboard-name"><a href="' + escHtml(userProfileUrl) + '">' + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
+                        '<div class="leaderboard-name"><a href="' + escHtml(userProfileUrl) + '">' + communityIcon + escHtml(name) + '</a><span>' + escHtml(subline) + '</span></div>' +
                         '<div class="leaderboard-count"><strong>' + escHtml(formatScore(entry.contributions)) + '</strong><span title="' + escHtml(pointsLabel) + '" aria-label="' + escHtml(pointsLabel) + '"><i class="fas fa-star"></i></span></div>' +
                     '</article>';
                 }).join('');
@@ -470,24 +456,20 @@
                     return '<span class="contribution-file"><i class="fas fa-file-lines"></i>' + escHtml(contributionFileLabel(file)) + '</span>';
                 }).join('');
                 var community = isCommunityRecord(record);
-                var systemBadge = community ? '<span class="contribution-system"><i class="fas fa-people-group"></i>' + escHtml(localText('contributions.community', localText('contributions.system', 'Community'))) + '</span>' : '';
                 var statusBadge = pending ? '<span class="contribution-status"><i class="fas fa-clock"></i>' + escHtml(t('contributions.pending')) + '</span>' : '';
                 var dateValue = pending ? (record.updatedAt || record.createdAt) : record.mergedAt;
                 var userProfileUrl = profileUrl(user.login, community);
                 var scoreValue = pending ? Number(record.lineChanges || 0) : Number(record.contributionCount || record.lineChanges || 0);
                 var pointsLabel = localText('contributions.lineChanges', localText('contributions.total', 'Points'));
+                var communityIcon = community ? '<i class="contribution-kind-icon fas fa-people-group" aria-hidden="true"></i>' : '';
                 return '<article class="contribution-entry' + (community ? ' community-entry' : '') + '">' +
                     '<div class="contribution-main"><div class="contribution-user">' +
                         '<a class="contribution-avatar" href="' + escHtml(userProfileUrl) + '"><img src="' + escHtml(user.avatar_url || '/images/logo.png') + '" alt="" loading="lazy"></a>' +
-                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener"><i class="fas fa-code-merge"></i><span>#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</span></a><span class="contribution-meta"><a href="' + escHtml(userProfileUrl) + '">@' + escHtml(displayLogin(community ? 'community' : user.login)) + '</a><span><i class="fas fa-calendar-day"></i>' + escHtml(formatDate(dateValue)) + '</span>' + systemBadge + statusBadge + '</span></div>' +
+                        '<div class="contribution-title"><a href="' + escHtml(record.prUrl) + '" target="_blank" rel="noopener"><i class="fas fa-code-merge"></i><span>#' + record.prNumber + ' ' + escHtml(displayTitle(record.title)) + '</span></a><span class="contribution-meta"><a href="' + escHtml(userProfileUrl) + '">' + communityIcon + '@' + escHtml(displayLogin(community ? 'community' : user.login)) + '</a><span><i class="fas fa-calendar-day"></i>' + escHtml(formatDate(dateValue)) + '</span>' + statusBadge + '</span></div>' +
                     '</div></div>' +
                     '<div class="contribution-score"><strong>' + escHtml(formatScore(scoreValue)) + '</strong><span title="' + escHtml(pointsLabel) + '" aria-label="' + escHtml(pointsLabel) + '"><i class="fas fa-star"></i></span></div>' +
                     (files ? '<div class="contribution-files">' + files + '</div>' : '') +
                 '</article>';
-            }
-
-            function getPendingCount() {
-                return Array.isArray(data.pendingRecords) ? data.pendingRecords.length : 0;
             }
 
             function normalizeLeaderboard() {
@@ -525,6 +507,7 @@
                 var list = document.getElementById('pending-list');
                 var empty = document.getElementById('pending-empty');
                 var records = (data.pendingRecords || []).filter(matches);
+                setCountedHeading('pending-heading', 'contributions.pending', 'Pending changes', records.length);
                 empty.style.display = records.length ? 'none' : 'block';
                 list.innerHTML = records.map(function(record) { return renderContributionCard(record, true); }).join('');
             }
@@ -533,16 +516,14 @@
                 var list = document.getElementById('contribution-list');
                 var empty = document.getElementById('contributions-empty');
                 var records = (data.records || []).filter(matches).slice(0, MERGED_LIMIT);
+                setCountedHeading('recent-heading', 'contributions.recent', 'Most recent merged changes', records.length);
                 empty.style.display = records.length ? 'none' : 'block';
                 list.innerHTML = records.map(function(record) { return renderContributionCard(record, false); }).join('');
             }
 
             function render() {
-                document.getElementById('contributions-total').textContent = formatScore(data.totalLineChanges || data.totalContributions || 0);
-                document.getElementById('contributors-total').textContent = data.totalContributors || 0;
                 if (!Array.isArray(data.pendingRecords)) data.pendingRecords = [];
                 if (!Array.isArray(data.records)) data.records = [];
-                document.getElementById('pending-total').textContent = getPendingCount();
                 normalizeLeaderboard();
                 renderLeaderboard();
                 renderPending();
