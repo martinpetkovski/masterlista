@@ -411,7 +411,21 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3fh56AF8jHy6hM25hAcMoA?si=BYMUUrBdTZu5xw7qq2gwSg",
       "effectiveReleaseDate": "2026-05-03",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Wipeout",
+          "videoId": "KUCW_8sXrhY",
+          "url": "https://www.youtube.com/watch?v=KUCW_8sXrhY",
+          "verified": "verified"
+        },
+        {
+          "name": "Wipeout",
+          "videoId": "OL8GPoJ5PPc",
+          "url": "https://www.youtube.com/watch?v=OL8GPoJ5PPc",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Billy Esteban",
@@ -909,7 +923,21 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/4zEAyyL62T5mw5tbzhdxlv?si=YbUnM2ZTSJWNLvvctvvHBg",
       "effectiveReleaseDate": "2026-04-23",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Prevari je",
+          "videoId": "lty7liYnZ0g",
+          "url": "https://www.youtube.com/watch?v=lty7liYnZ0g",
+          "verified": "verified"
+        },
+        {
+          "name": "Prevari je",
+          "videoId": "u9YL-CH-tm4",
+          "url": "https://www.youtube.com/watch?v=u9YL-CH-tm4",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Филип Ангов",
@@ -1389,7 +1417,21 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6N6cYLgxJf5SgnKWa3oLlx?si=LigBjvcMQ--KuXkZqymPUg",
       "effectiveReleaseDate": "2026-04-17",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Ain't Nobody",
+          "videoId": "V2lVBAkXJOo",
+          "url": "https://www.youtube.com/watch?v=V2lVBAkXJOo",
+          "verified": "verified"
+        },
+        {
+          "name": "Ain't Nobody",
+          "videoId": "JGNgwm5ALBY",
+          "url": "https://www.youtube.com/watch?v=JGNgwm5ALBY",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Peppermint",
@@ -2136,7 +2178,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6CJ2LWkkxBXGZfv6BDCmc9?si=KC1BM0brSwSdFG96sdnOKg",
       "effectiveReleaseDate": "2026-04-01",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Aprililili Freestyle",
+          "videoId": "rPft25UwWeo",
+          "url": "https://www.youtube.com/watch?v=rPft25UwWeo",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Nickarth",
