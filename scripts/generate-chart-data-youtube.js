@@ -6,9 +6,10 @@
  * and computes a popularity score (0–100) based on the week-over-week view increase.
  * 
  * Strategy:
- *   1. Use YouTube channels from bands.json to fetch each artist's uploaded videos
+ *   1. Use YouTube/YouTube Music links from bands.json to fetch each artist's videos
  *      (supports multiple channels per artist — links.youtube can be a string or array)
- *   2. For each release, fuzzy-match ALL its tracks to YouTube videos across all channels
+ *   2. For each release, fuzzy-match ALL its tracks to YouTube videos across all channels,
+ *      including auto-generated Artist - Topic channels when regular uploads miss tracks
  *   3. Sum YouTube views across all tracks in a release (if same song on multiple channels, sum views)
  *   4. Load last week's chart-history to get previous youtubeViews
  *      (if no YT history exists, approximate from Spotify historical popularity)
@@ -34,6 +35,12 @@ const YT_BATCH_SIZE = 50;
 const API_DELAY_MS = 100;
 const API_RETRY_DELAY_MS = 1000;
 const API_MAX_RETRIES = 3;
+const TOPIC_LOOKUP_RETRY_MS = 30 * 24 * 60 * 60 * 1000;
+const DEFAULT_TOPIC_LOOKUP_LIMIT = 75;
+const TOPIC_LOOKUP_LIMIT = (() => {
+    const raw = Number.parseInt(process.env.YOUTUBE_TOPIC_LOOKUP_LIMIT || '', 10);
+    return Number.isFinite(raw) && raw >= 0 ? raw : DEFAULT_TOPIC_LOOKUP_LIMIT;
+})();
 const CACHE_FILE = path.join(ROOT, '.cache', 'youtube-id-cache.json');
 const BANDS_FILE = path.join(EDITABLE_DATA_DIR, 'bands.json');
 const RELEASES_FILE = path.join(EDITABLE_DATA_DIR, 'releases.json');
@@ -45,17 +52,26 @@ const HISTORY_DIR = path.join(GENERATED_DATA_DIR, 'chart-history');
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 let quotaUsed = 0;
+let topicLookupsThisRun = 0;
+let topicLookupLimitReached = false;
+let youtubeQuotaExhausted = false;
 
 function loadCache() {
     try {
         const data = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
         if (!data.channels) data.channels = {};
         if (!data.tracks) data.tracks = {};       // releaseId -> [{ trackName, videoIds: [vid1, ...] }]
-        if (!data.channelVideos) data.channelVideos = {}; // channelId -> [{ videoId, title }]
+        data.channelVideos = {}; // Runtime-only; always refresh upload/topic candidates each run.
         if (!data.globalChannels) data.globalChannels = {}; // url -> channelId
+        if (!data.topicChannels) data.topicChannels = {}; // artist key -> { channelId, checkedAt }
+        if (!data.trackChannelSets) data.trackChannelSets = {}; // releaseId -> channelIds used for matching
         // Migrate old single-channel cache entries to arrays
         for (const [key, val] of Object.entries(data.channels)) {
             if (typeof val === 'string') data.channels[key] = [val];
+        }
+        // Migrate old topic-channel cache entries to objects
+        for (const [key, val] of Object.entries(data.topicChannels)) {
+            if (typeof val === 'string') data.topicChannels[key] = { channelId: val, checkedAt: null };
         }
         // Migrate old track cache entries from single videoId to videoIds array
         for (const [relId, tracks] of Object.entries(data.tracks)) {
@@ -68,13 +84,15 @@ function loadCache() {
         }
         return data;
     } catch {
-        return { channels: {}, tracks: {}, channelVideos: {}, globalChannels: {} };
+        return { channels: {}, tracks: {}, channelVideos: {}, globalChannels: {}, topicChannels: {}, trackChannelSets: {} };
     }
 }
 
 function saveCache(cache) {
     fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), 'utf8');
+    const persisted = { ...cache };
+    delete persisted.channelVideos;
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(persisted, null, 2), 'utf8');
 }
 
 function getYouTubeApiKey() {
@@ -88,6 +106,8 @@ function getYouTubeApiKey() {
 }
 
 async function ytApi(endpoint, params, apiKey) {
+    if (youtubeQuotaExhausted) return null;
+
     const qs = new URLSearchParams({ ...params, key: apiKey }).toString();
     const url = `https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`;
     for (let attempt = 1; attempt <= API_MAX_RETRIES; attempt++) {
@@ -96,6 +116,12 @@ async function ytApi(endpoint, params, apiKey) {
             quotaUsed++;
             if (!res.ok) {
                 const text = await res.text();
+                const isQuotaError = res.status === 403 && /quota/i.test(text);
+                if (isQuotaError) {
+                    youtubeQuotaExhausted = true;
+                    console.error(`  YT API quota exhausted on ${endpoint}; stopping further YouTube API calls for this run`);
+                    return null;
+                }
                 const isRetryable = res.status === 429 || res.status >= 500;
                 if (isRetryable && attempt < API_MAX_RETRIES) {
                     const waitMs = API_RETRY_DELAY_MS * attempt;
@@ -171,6 +197,127 @@ async function resolveCustomUrl(name, apiKey) {
     return await resolveUsername(name, apiKey);
 }
 
+function normalizeLinkList(value) {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    return value ? [value] : [];
+}
+
+function getArtistYouTubeUrls(band) {
+    const links = band?.links || {};
+    const seen = new Set();
+    const urls = [];
+    for (const value of [links.youtube, links.youtube_music]) {
+        for (const url of normalizeLinkList(value)) {
+            if (!url || url === 'недостигаат податоци' || seen.has(url)) continue;
+            seen.add(url);
+            urls.push(url);
+        }
+    }
+    return urls;
+}
+
+function normalizeChannelIds(channelIds) {
+    return Array.from(new Set((channelIds || []).filter(Boolean).map(String))).sort();
+}
+
+function areChannelSetsEqual(left, right) {
+    const a = normalizeChannelIds(left);
+    const b = normalizeChannelIds(right);
+    return a.length === b.length && a.every((id, index) => id === b[index]);
+}
+
+function getTopicCacheEntry(cache, cacheKey) {
+    const entry = cache.topicChannels?.[cacheKey];
+    if (!entry) return null;
+    if (typeof entry === 'string') return { channelId: entry, checkedAt: null };
+    return entry;
+}
+
+function getCachedTopicChannelId(cache, cacheKey) {
+    const entry = getTopicCacheEntry(cache, cacheKey);
+    return entry?.channelId || null;
+}
+
+function shouldRetryTopicLookup(cache, cacheKey) {
+    const entry = getTopicCacheEntry(cache, cacheKey);
+    if (!entry) return true;
+    if (entry.channelId) return false;
+    const checkedAt = entry.checkedAt ? Date.parse(entry.checkedAt) : NaN;
+    return Number.isNaN(checkedAt) || Date.now() - checkedAt > TOPIC_LOOKUP_RETRY_MS;
+}
+
+function setTopicChannelCache(cache, cacheKey, channelId) {
+    cache.topicChannels[cacheKey] = {
+        channelId: channelId || null,
+        checkedAt: new Date().toISOString()
+    };
+}
+
+function getArtistChannelIds(cache, cacheKey) {
+    return normalizeChannelIds([
+        ...(cache.channels[cacheKey] || []),
+        getCachedTopicChannelId(cache, cacheKey)
+    ]);
+}
+
+function getCachedTrackChannelSet(cache, releaseId) {
+    const channelIds = cache.trackChannelSets?.[releaseId];
+    return Array.isArray(channelIds) ? normalizeChannelIds(channelIds) : null;
+}
+
+function hasUnmatchedTrack(trackMatches) {
+    return !trackMatches || trackMatches.length === 0 || trackMatches.some(t => (t.videoIds || []).length === 0);
+}
+
+function isTrackCacheStale(cache, releaseId, channelIds) {
+    const cached = cache.tracks[releaseId];
+    if (!cached) return true;
+    const cachedChannels = getCachedTrackChannelSet(cache, releaseId);
+    if (cachedChannels && !areChannelSetsEqual(cachedChannels, channelIds)) return true;
+    if (!cachedChannels && normalizeChannelIds(channelIds).length > 1) return true;
+    return hasUnmatchedTrack(cached);
+}
+
+function getReleasesNeedingMoreMatching(releases, cache) {
+    return (releases || []).filter(release => hasUnmatchedTrack(cache.tracks[release.releaseId]));
+}
+
+function isLikelyTopicChannelTitle(title, artistName) {
+    const normTitle = normalize(title);
+    const artistVariants = matchVariants(normalize(artistName));
+    return artistVariants.some(artistVariant => normTitle === `${artistVariant} topic`);
+}
+
+async function resolveTopicChannel(artistName, apiKey, cache) {
+    const cacheKey = artistName.toLowerCase().trim();
+    const cached = getCachedTopicChannelId(cache, cacheKey);
+    if (cached) return cached;
+    if (!shouldRetryTopicLookup(cache, cacheKey)) return null;
+    if (topicLookupsThisRun >= TOPIC_LOOKUP_LIMIT) {
+        topicLookupLimitReached = true;
+        return null;
+    }
+
+    topicLookupsThisRun++;
+    const data = await ytApi('search', {
+        part: 'snippet',
+        type: 'channel',
+        maxResults: '5',
+        q: `${artistName} Topic`
+    }, apiKey);
+    if (!data) {
+        await sleep(API_DELAY_MS);
+        return null;
+    }
+    const items = Array.isArray(data?.items) ? data.items : [];
+    const match = items.find(item => isLikelyTopicChannelTitle(item.snippet?.title || '', artistName));
+    const channelId = match?.id?.channelId || null;
+    setTopicChannelCache(cache, cacheKey, channelId);
+    if (channelId) console.log(`    Found Topic channel for ${artistName}: ${match.snippet?.title || channelId}`);
+    await sleep(API_DELAY_MS);
+    return channelId;
+}
+
 // ── Fetch channel uploads ───────────────────────────────────────────────────
 
 async function getChannelVideos(channelId, apiKey, cache) {
@@ -185,6 +332,9 @@ async function getChannelVideos(channelId, apiKey, cache) {
         const params = { part: 'snippet', playlistId: uploadsPlaylistId, maxResults: '50' };
         if (pageToken) params.pageToken = pageToken;
         const data = await ytApi('playlistItems', params, apiKey);
+        if (!data && youtubeQuotaExhausted) {
+            throw new Error('YouTube quota exhausted');
+        }
         if (!data?.items) break;
         for (const item of data.items) {
             const s = item.snippet;
@@ -198,6 +348,15 @@ async function getChannelVideos(channelId, apiKey, cache) {
 
     cache.channelVideos[channelId] = videos;
     return videos;
+}
+
+async function getVideosForChannelIds(channelIds, apiKey, cache) {
+    const allChannelVideos = [];
+    for (const channelId of normalizeChannelIds(channelIds)) {
+        const videos = await getChannelVideos(channelId, apiKey, cache);
+        allChannelVideos.push(videos);
+    }
+    return allChannelVideos;
 }
 
 // ── Fuzzy matching ──────────────────────────────────────────────────────────
@@ -844,12 +1003,9 @@ async function main() {
 
     for (const name of artistNames) {
         const band = bandByName.get(name.toLowerCase().trim());
-        const rawYt = band?.links?.youtube;
-        // Normalize to array of URLs
-        const ytUrls = Array.isArray(rawYt) ? rawYt : (rawYt ? [rawYt] : []);
+        const ytUrls = getArtistYouTubeUrls(band);
         const parsedLinks = [];
         for (const url of ytUrls) {
-            if (!url || url === 'недостигаат податоци') continue;
             const parsed = parseYouTubeLink(url);
             if (parsed) parsedLinks.push({ parsed, ytUrl: url });
         }
@@ -859,26 +1015,32 @@ async function main() {
     console.log(`  ${artistsToProcess.length} artists with YouTube links (${noYtLink} without)`);
 
     // Resolve all to channel IDs (each artist can have multiple)
-    const videoIdArtists = []; // { videoId, artistName, linkIndex }
-    const needsResolve = [];   // { artist, linkIndex, parsed }
+    const videoIdArtists = []; // { videoId, artistName, linkIndex, ytUrl }
+    const needsResolve = [];   // { artist, linkIndex, parsed, ytUrl }
 
     for (const artist of artistsToProcess) {
         const cacheKey = artist.name.toLowerCase().trim();
-        if (cache.channels[cacheKey]?.length > 0) continue; // already resolved
-
-        const channelIds = [];
+        const channelIds = normalizeChannelIds(cache.channels[cacheKey] || []);
         for (let li = 0; li < artist.parsedLinks.length; li++) {
+            const ytUrl = artist.parsedLinks[li].ytUrl;
             const p = artist.parsedLinks[li].parsed;
+            const cachedLinkChannelId = cache.globalChannels[ytUrl];
+            if (cachedLinkChannelId) {
+                if (!channelIds.includes(cachedLinkChannelId)) channelIds.push(cachedLinkChannelId);
+                continue;
+            }
+
             if (p.type === 'channelId') {
-                channelIds.push(p.value);
+                if (!channelIds.includes(p.value)) channelIds.push(p.value);
+                cache.globalChannels[ytUrl] = p.value;
             } else if (p.type === 'videoId') {
-                videoIdArtists.push({ videoId: p.value, artistName: artist.name, linkIndex: li });
+                videoIdArtists.push({ videoId: p.value, artistName: artist.name, linkIndex: li, ytUrl });
             } else {
-                needsResolve.push({ artist, linkIndex: li, parsed: p });
+                needsResolve.push({ artist, linkIndex: li, parsed: p, ytUrl });
             }
         }
         if (channelIds.length > 0) {
-            cache.channels[cacheKey] = channelIds;
+            cache.channels[cacheKey] = normalizeChannelIds(channelIds);
         }
     }
 
@@ -886,12 +1048,13 @@ async function main() {
     if (videoIdArtists.length > 0) {
         console.log(`  Resolving ${videoIdArtists.length} video links to channels...`);
         const vidChannels = await resolveVideoChannels(videoIdArtists.map(v => v.videoId), apiKey);
-        for (const { videoId, artistName } of videoIdArtists) {
+        for (const { videoId, artistName, ytUrl } of videoIdArtists) {
             const chId = vidChannels.get(videoId);
             if (chId) {
                 const cacheKey = artistName.toLowerCase().trim();
                 if (!cache.channels[cacheKey]) cache.channels[cacheKey] = [];
                 if (!cache.channels[cacheKey].includes(chId)) cache.channels[cacheKey].push(chId);
+                if (ytUrl) cache.globalChannels[ytUrl] = chId;
             }
         }
     }
@@ -900,7 +1063,8 @@ async function main() {
     if (needsResolve.length > 0) {
         console.log(`  Resolving ${needsResolve.length} handles/usernames...`);
         for (let i = 0; i < needsResolve.length; i++) {
-            const { artist, parsed: p } = needsResolve[i];
+            if (youtubeQuotaExhausted) break;
+            const { artist, parsed: p, ytUrl } = needsResolve[i];
             const cacheKey = artist.name.toLowerCase().trim();
             let channelId = null;
             if (p.type === 'handle') channelId = await resolveHandle(p.value, apiKey);
@@ -909,6 +1073,7 @@ async function main() {
             if (channelId) {
                 if (!cache.channels[cacheKey]) cache.channels[cacheKey] = [];
                 if (!cache.channels[cacheKey].includes(channelId)) cache.channels[cacheKey].push(channelId);
+                if (ytUrl) cache.globalChannels[ytUrl] = channelId;
             }
             if ((i + 1) % 50 === 0) { console.log(`    ${i + 1}/${needsResolve.length}`); saveCache(cache); }
             await sleep(API_DELAY_MS);
@@ -916,7 +1081,7 @@ async function main() {
     }
 
     saveCache(cache);
-    const resolvedCount = artistsToProcess.filter(a => cache.channels[a.name.toLowerCase().trim()]?.length > 0).length;
+    const resolvedCount = artistsToProcess.filter(a => getArtistChannelIds(cache, a.name.toLowerCase().trim()).length > 0).length;
     console.log(`  Resolved: ${resolvedCount}/${artistsToProcess.length} artists`);
 
     // Build artist -> releases map (used by invalidation and Step 2)
@@ -927,71 +1092,95 @@ async function main() {
         releasesByArtist.get(key).push(r);
     }
 
-    // Invalidate track cache for artists whose channel count increased
-    // (so releases get re-matched across all channels)
+    // Invalidate track cache when the channel set changes, or when a previous
+    // attempt left one or more tracks unmatched. This lets refreshed uploads
+    // and newly found Topic channels fill misses on later runs.
     let invalidated = 0;
     for (const artist of artistsToProcess) {
         const cacheKey = artist.name.toLowerCase().trim();
-        const channelIds = cache.channels[cacheKey] || [];
-        if (channelIds.length <= 1) continue;
+        const channelIds = getArtistChannelIds(cache, cacheKey);
+        if (channelIds.length === 0) continue;
         const artistReleases = releasesByArtist.get(cacheKey) || [];
         for (const r of artistReleases) {
-            const cached = cache.tracks[r.releaseId];
-            if (!cached) continue;
-            // If any track only has 1 videoId but we now have multiple channels, re-match
-            const maxVids = Math.max(0, ...cached.map(t => (t.videoIds || []).length));
-            if (maxVids < channelIds.length) {
+            if (cache.tracks[r.releaseId] && isTrackCacheStale(cache, r.releaseId, channelIds)) {
                 delete cache.tracks[r.releaseId];
+                delete cache.trackChannelSets[r.releaseId];
                 invalidated++;
             }
         }
     }
-    if (invalidated > 0) console.log(`  Invalidated ${invalidated} cached track entries for multi-channel re-matching`);
-
-    // Invalidate releases where ALL tracks have empty videoIds (failed matches should be retried)
-    let emptyInvalidated = 0;
-    for (const [releaseId, tracks] of Object.entries(cache.tracks)) {
-        if (tracks.length > 0 && tracks.every(t => (t.videoIds || []).length === 0)) {
-            delete cache.tracks[releaseId];
-            emptyInvalidated++;
-        }
-    }
-    if (emptyInvalidated > 0) console.log(`  Invalidated ${emptyInvalidated} cached entries with no matched videos (will retry)`);
+    if (invalidated > 0) console.log(`  Invalidated ${invalidated} cached track entries for re-matching`);
 
     // ── Step 2: Match release tracks to YouTube videos ──────────────────────
     console.log('\n── Step 2: Matching release tracks to YouTube videos ──');
 
     let totalTracksMatched = 0, totalTracksUnmatched = 0, artistsDone = 0;
+    let topicChannelsAdded = 0, topicTracksMatched = 0, topicTracksUnmatched = 0;
+    let stoppedForQuota = false;
     const startTime = Date.now();
 
     for (const artist of artistsToProcess) {
+        if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
         const cacheKey = artist.name.toLowerCase().trim();
-        const channelIds = cache.channels[cacheKey] || [];
-        if (channelIds.length === 0) continue;
-
+        let channelIds = getArtistChannelIds(cache, cacheKey);
         const artistReleases = releasesByArtist.get(cacheKey) || [];
-        const uncached = artistReleases.filter(r => !cache.tracks[r.releaseId]);
-        if (uncached.length === 0) { artistsDone++; continue; }
+        if (artistReleases.length === 0) { artistsDone++; continue; }
 
-        // Fetch videos from ALL channels for this artist
-        const allChannelVideos = [];
-        try {
-            for (const chId of channelIds) {
-                const videos = await getChannelVideos(chId, apiKey, cache);
-                allChannelVideos.push(videos);
+        const uncached = artistReleases.filter(r => !cache.tracks[r.releaseId]);
+        if (uncached.length > 0 && channelIds.length > 0) {
+            let allChannelVideos;
+            try {
+                allChannelVideos = await getVideosForChannelIds(channelIds, apiKey, cache);
+            } catch (err) {
+                if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
+                console.warn(`  Skipping ${artist.name}: channel fetch failed (${err.code || err.message})`);
+                artistsDone++;
+                continue;
             }
-        } catch (err) {
-            console.warn(`  Skipping ${artist.name}: channel fetch failed (${err.code || err.message})`);
-            artistsDone++;
-            continue;
+
+            // Match each uncached release's tracks across all known channels
+            for (const release of uncached) {
+                const trackMatches = matchReleaseTracks(release, allChannelVideos);
+                cache.tracks[release.releaseId] = trackMatches;
+                cache.trackChannelSets[release.releaseId] = normalizeChannelIds(channelIds);
+                totalTracksMatched += trackMatches.filter(t => t.videoIds.length > 0).length;
+                totalTracksUnmatched += trackMatches.filter(t => t.videoIds.length === 0).length;
+            }
         }
 
-        // Match each uncached release's tracks across all channels
-        for (const release of uncached) {
-            const trackMatches = matchReleaseTracks(release, allChannelVideos);
-            cache.tracks[release.releaseId] = trackMatches;
-            totalTracksMatched += trackMatches.filter(t => t.videoIds.length > 0).length;
-            totalTracksUnmatched += trackMatches.filter(t => t.videoIds.length === 0).length;
+        const releasesNeedingTopic = getReleasesNeedingMoreMatching(artistReleases, cache);
+        if (releasesNeedingTopic.length > 0 && !getCachedTopicChannelId(cache, cacheKey)) {
+            const topicChannelId = await resolveTopicChannel(artist.name, apiKey, cache);
+            if (topicChannelId) {
+                const expandedChannelIds = normalizeChannelIds([...channelIds, topicChannelId]);
+                if (!areChannelSetsEqual(expandedChannelIds, channelIds)) {
+                    channelIds = expandedChannelIds;
+                    topicChannelsAdded++;
+                    let allChannelVideos;
+                    try {
+                        allChannelVideos = await getVideosForChannelIds(channelIds, apiKey, cache);
+                    } catch (err) {
+                        if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
+                        console.warn(`  Topic fallback skipped for ${artist.name}: channel fetch failed (${err.code || err.message})`);
+                        artistsDone++;
+                        continue;
+                    }
+
+                    const releasesToRematch = artistReleases.filter(r => {
+                        const tracks = cache.tracks[r.releaseId];
+                        const cachedChannels = getCachedTrackChannelSet(cache, r.releaseId);
+                        return !tracks || hasUnmatchedTrack(tracks) || !areChannelSetsEqual(cachedChannels, channelIds);
+                    });
+
+                    for (const release of releasesToRematch) {
+                        const trackMatches = matchReleaseTracks(release, allChannelVideos);
+                        cache.tracks[release.releaseId] = trackMatches;
+                        cache.trackChannelSets[release.releaseId] = normalizeChannelIds(channelIds);
+                        topicTracksMatched += trackMatches.filter(t => t.videoIds.length > 0).length;
+                        topicTracksUnmatched += trackMatches.filter(t => t.videoIds.length === 0).length;
+                    }
+                }
+            }
         }
 
         artistsDone++;
@@ -1006,6 +1195,15 @@ async function main() {
     saveCache(cache);
 
     console.log(`  Done: ${totalTracksMatched} tracks matched, ${totalTracksUnmatched} unmatched`);
+    if (stoppedForQuota) {
+        console.log('  Stopped early because the YouTube API quota was exhausted; rerun after quota resets to continue matching.');
+    }
+    if (topicChannelsAdded > 0) {
+        console.log(`  Topic fallback: ${topicChannelsAdded} channel(s), ${topicTracksMatched} tracks matched, ${topicTracksUnmatched} still unmatched`);
+    }
+    if (topicLookupsThisRun > 0 || topicLookupLimitReached) {
+        console.log(`  Topic lookups: ${topicLookupsThisRun}/${TOPIC_LOOKUP_LIMIT}${topicLookupLimitReached ? ' (limit reached; rerun or raise YOUTUBE_TOPIC_LOOKUP_LIMIT)' : ''}`);
+    }
 
     // ── --match-only: Save matches to releases.json and exit ────────────────
     if (process.argv.includes('--match-only')) {
