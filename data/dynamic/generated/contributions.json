@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-11T18:52:31.708Z",
+  "generatedAt": "2026-05-11T19:04:53.611Z",
   "scoreMode": "line_changes",
   "totalContributions": 618892,
   "totalLineChanges": 618892,
@@ -9613,7 +9613,37 @@
       "baseBranch": "master"
     }
   ],
-  "pendingRecords": [],
+  "pendingRecords": [
+    {
+      "prNumber": 436,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/436",
+      "title": "MMM: Предлог промени од @martinpetkovski",
+      "mergedAt": "",
+      "createdAt": "2026-05-11T19:04:18Z",
+      "submittedAt": "2026-05-11T19:04:19.556Z",
+      "updatedAt": "2026-05-11T19:04:19Z",
+      "additions": 135,
+      "deletions": 135,
+      "lineChanges": 270,
+      "contributionCount": 0,
+      "contributionScore": 0,
+      "submitter": {
+        "id": 3426271,
+        "login": "martinpetkovski",
+        "name": "Martin",
+        "avatar_url": "https://avatars.githubusercontent.com/u/3426271?v=4",
+        "html_url": "https://github.com/martinpetkovski"
+      },
+      "system": false,
+      "community": false,
+      "status": "pending",
+      "source": "site",
+      "files": [
+        "data/dynamic/editable/releases.json"
+      ],
+      "baseBranch": "master"
+    }
+  ],
   "totalRecords": 354,
-  "totalPendingRecords": 0
+  "totalPendingRecords": 1
 }
