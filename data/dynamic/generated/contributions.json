@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-10T14:08:10.027Z",
+  "generatedAt": "2026-05-11T12:21:52.588Z",
   "scoreMode": "line_changes",
-  "totalContributions": 608694,
-  "totalLineChanges": 608694,
+  "totalContributions": 608700,
+  "totalLineChanges": 608700,
   "leaderboardContributions": 17,
   "leaderboardLineChanges": 17,
-  "systemContributions": 608677,
-  "communityContributions": 608677,
-  "communityLineChanges": 608677,
+  "systemContributions": 608683,
+  "communityContributions": 608683,
+  "communityLineChanges": 608683,
   "totalContributors": 1,
   "leaderboard": [
     {
@@ -16,9 +16,9 @@
       "name": "Community",
       "avatar_url": "",
       "html_url": "",
-      "contributions": 608677,
-      "lineChanges": 608677,
-      "lastContributionAt": "2026-05-10T12:50:48Z",
+      "contributions": 608683,
+      "lineChanges": 608683,
+      "lastContributionAt": "2026-05-11T12:21:07Z",
       "system": true,
       "community": true,
       "rank": null
@@ -38,6 +38,33 @@
     }
   ],
   "records": [
+    {
+      "prNumber": 425,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/425",
+      "title": "MMM: Предлог промени од ThA PhonkaZ",
+      "mergedAt": "2026-05-11T12:21:07Z",
+      "createdAt": "2026-05-08T18:12:53Z",
+      "submittedAt": "2026-05-08T18:12:53Z",
+      "updatedAt": "2026-05-11T12:21:10Z",
+      "additions": 6,
+      "deletions": 0,
+      "lineChanges": 6,
+      "contributionCount": 6,
+      "contributionScore": 6,
+      "submitter": {
+        "id": 3426271,
+        "login": "martinpetkovski",
+        "name": "Martin",
+        "avatar_url": "https://avatars.githubusercontent.com/u/3426271?u=589edce6bbc4a33ee1aa307e9ca0ca7797e87d13&v=4",
+        "html_url": "https://github.com/martinpetkovski"
+      },
+      "system": true,
+      "community": true,
+      "status": "merged",
+      "source": "github",
+      "files": [],
+      "baseBranch": "master"
+    },
     {
       "prNumber": 428,
       "prUrl": "https://github.com/martinpetkovski/masterlista/pull/428",
@@ -9441,35 +9468,7 @@
       "baseBranch": "master"
     }
   ],
-  "pendingRecords": [
-    {
-      "prNumber": 425,
-      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/425",
-      "title": "MMM: Предлог промени од ThA PhonkaZ",
-      "mergedAt": "",
-      "createdAt": "2026-05-08T18:12:53Z",
-      "submittedAt": "2026-05-08T18:12:53Z",
-      "updatedAt": "2026-05-08T18:12:53Z",
-      "additions": 6,
-      "deletions": 0,
-      "lineChanges": 6,
-      "contributionCount": 0,
-      "contributionScore": 0,
-      "submitter": {
-        "id": 3426271,
-        "login": "martinpetkovski",
-        "name": "Martin",
-        "avatar_url": "https://avatars.githubusercontent.com/u/3426271?u=589edce6bbc4a33ee1aa307e9ca0ca7797e87d13&v=4",
-        "html_url": "https://github.com/martinpetkovski"
-      },
-      "system": true,
-      "community": true,
-      "status": "pending",
-      "source": "github",
-      "files": [],
-      "baseBranch": "master"
-    }
-  ],
-  "totalRecords": 348,
-  "totalPendingRecords": 1
+  "pendingRecords": [],
+  "totalRecords": 349,
+  "totalPendingRecords": 0
 }
