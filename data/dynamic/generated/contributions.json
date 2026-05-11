@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-11T17:48:47.693Z",
+  "generatedAt": "2026-05-11T18:12:27.346Z",
   "scoreMode": "line_changes",
   "totalContributions": 618242,
   "totalLineChanges": 618242,
@@ -9526,66 +9526,7 @@
       "baseBranch": "master"
     }
   ],
-  "pendingRecords": [
-    {
-      "prNumber": 432,
-      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/432",
-      "title": "MMM: Предлог промени",
-      "mergedAt": "",
-      "createdAt": "2026-05-11T17:47:41Z",
-      "submittedAt": "2026-05-11T17:47:42.522Z",
-      "updatedAt": "2026-05-11T17:47:42Z",
-      "additions": 1,
-      "deletions": 13,
-      "lineChanges": 14,
-      "contributionCount": 0,
-      "contributionScore": 0,
-      "submitter": {
-        "id": null,
-        "login": "toplistamk",
-        "name": "Community",
-        "avatar_url": "",
-        "html_url": "https://github.com/toplistamk"
-      },
-      "system": true,
-      "community": true,
-      "status": "pending",
-      "source": "site",
-      "files": [
-        "data/dynamic/editable/releases.json"
-      ],
-      "baseBranch": "master"
-    },
-    {
-      "prNumber": 429,
-      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/429",
-      "title": "MMM: Предлог промени од Sinisha (ThA PhonkaZ)",
-      "mergedAt": "",
-      "createdAt": "2026-05-11T13:08:24Z",
-      "submittedAt": "2026-05-11T13:08:26.123Z",
-      "updatedAt": "2026-05-11T13:08:26Z",
-      "additions": 1,
-      "deletions": 13,
-      "lineChanges": 14,
-      "contributionCount": 0,
-      "contributionScore": 0,
-      "submitter": {
-        "id": null,
-        "login": "toplistamk",
-        "name": "Community",
-        "avatar_url": "",
-        "html_url": "https://github.com/toplistamk"
-      },
-      "system": true,
-      "community": true,
-      "status": "pending",
-      "source": "site",
-      "files": [
-        "data/dynamic/editable/releases.json"
-      ],
-      "baseBranch": "master"
-    }
-  ],
+  "pendingRecords": [],
   "totalRecords": 351,
-  "totalPendingRecords": 2
+  "totalPendingRecords": 0
 }
