@@ -152,6 +152,23 @@ function loadExistingReleases() {
   return new Map();
 }
 
+function loadExistingWeeklyChartData() {
+  try {
+    const chartPath = path.join(GENERATED_DATA_DIR, 'chart-data.json');
+    if (fs.existsSync(chartPath)) {
+      const data = JSON.parse(fs.readFileSync(chartPath, 'utf8'));
+      const map = new Map();
+      for (const r of (data.releases || [])) {
+        map.set(r.releaseId, r);
+      }
+      return map;
+    }
+  } catch (e) {
+    console.log('Could not load existing chart-data.json:', e.message);
+  }
+  return new Map();
+}
+
 /**
  * Find new releases by comparing against existing chart data
  */
@@ -866,8 +883,9 @@ async function main() {
   const releasesPath = path.join(EDITABLE_DATA_DIR, 'releases.json');
   const historyDir = path.join(GENERATED_DATA_DIR, 'chart-history');
   
-  // Load existing releases.json to preserve youtube track data
+  // Load existing data to preserve verified YouTube state between publish and finalize phases.
   const existingReleases = loadExistingReleases();
+  const existingWeeklyChartData = loadExistingWeeklyChartData();
   
   // ==================== Build releases.json (catalog) ====================
   const releaseCatalog = sortedReleases.map(r => {
@@ -908,13 +926,31 @@ async function main() {
   };
   
   // ==================== Build chart-data.json (weekly views only) ====================
-  const weeklyData = sortedReleases.map(r => ({
-    releaseId: r.releaseId,
-    popularity: r.popularity || 0,
-    followers: r.followers || 0,
-    youtubeViews: 0,
-    spotifyPopularity: 0
-  }));
+  const weeklyData = sortedReleases.map(r => {
+    const existing = existingWeeklyChartData.get(r.releaseId);
+    const entry = {
+      releaseId: r.releaseId,
+      popularity: r.popularity || 0,
+      followers: r.followers || 0,
+      youtubeViews: Number(existing?.youtubeViews || 0),
+      spotifyPopularity: Number(existing?.spotifyPopularity || 0)
+    };
+
+    if (Number.isFinite(Number(existing?.youtubeTrackCount))) {
+      entry.youtubeTrackCount = Number(existing.youtubeTrackCount);
+    }
+    if (existing && Object.prototype.hasOwnProperty.call(existing, 'viewsDelta')) {
+      entry.viewsDelta = existing.viewsDelta;
+    }
+    if (Array.isArray(existing?.youtubeVideoIds) && existing.youtubeVideoIds.length > 0) {
+      entry.youtubeVideoIds = existing.youtubeVideoIds;
+    }
+    if (existing?.youtubeVideoViews) {
+      entry.youtubeVideoViews = existing.youtubeVideoViews;
+    }
+
+    return entry;
+  });
   
   const chartData = {
     generatedAt: now.toISOString(),

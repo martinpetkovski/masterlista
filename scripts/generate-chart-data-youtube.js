@@ -41,6 +41,11 @@ const TOPIC_LOOKUP_LIMIT = (() => {
     const raw = Number.parseInt(process.env.YOUTUBE_TOPIC_LOOKUP_LIMIT || '', 10);
     return Number.isFinite(raw) && raw >= 0 ? raw : DEFAULT_TOPIC_LOOKUP_LIMIT;
 })();
+const DEFAULT_STATS_MIN_COVERAGE = 0.75;
+const STATS_MIN_COVERAGE = (() => {
+    const raw = Number.parseFloat(process.env.YOUTUBE_STATS_MIN_COVERAGE || '');
+    return Number.isFinite(raw) && raw >= 0 && raw <= 1 ? raw : DEFAULT_STATS_MIN_COVERAGE;
+})();
 const CACHE_FILE = path.join(ROOT, '.cache', 'youtube-id-cache.json');
 const BANDS_FILE = path.join(EDITABLE_DATA_DIR, 'bands.json');
 const RELEASES_FILE = path.join(EDITABLE_DATA_DIR, 'releases.json');
@@ -909,6 +914,111 @@ function hasYouTubeHistory(archiveWeek) {
     return archiveWeek.releases.some(r => r.youtubeViews !== undefined && r.youtubeViews > 0);
 }
 
+function clonePreviousReleaseSnapshot(release) {
+    return {
+        releaseId: release.releaseId,
+        youtubeViews: Number(release.youtubeViews || 0),
+        youtubeTracks: Array.isArray(release.youtubeTracks)
+            ? release.youtubeTracks.map(track => ({ ...track }))
+            : []
+    };
+}
+
+function getVerifiedTrackSnapshot(release) {
+    const videoIds = [];
+    const videoViews = {};
+    const seen = new Set();
+
+    for (const track of release?.youtubeTracks || []) {
+        if (track?.verified !== 'verified' || !track.videoId || seen.has(track.videoId)) continue;
+        seen.add(track.videoId);
+        videoIds.push(track.videoId);
+        videoViews[track.videoId] = Number(track.views || 0);
+    }
+
+    return { videoIds, videoViews };
+}
+
+function buildArchiveDataFromPreviousStats(chartData, previousReleaseSnapshots, previousChartSnapshots, generatedAt) {
+    const releases = (chartData.releases || []).map(chartRelease => {
+        const previousRelease = previousReleaseSnapshots.get(chartRelease.releaseId);
+        const previousChart = previousChartSnapshots.get(chartRelease.releaseId) || {};
+        const snapshot = { ...chartRelease };
+        const previousViews = Number(previousRelease?.youtubeViews || previousChart.youtubeViews || 0);
+        const verifiedSnapshot = getVerifiedTrackSnapshot(previousRelease);
+
+        snapshot.popularity = Number(previousChart.popularity || snapshot.popularity || 0);
+        snapshot.youtubeViews = previousViews;
+        snapshot.youtubeTrackCount = Array.isArray(previousRelease?.youtubeTracks)
+            ? previousRelease.youtubeTracks.length
+            : Number(previousChart.youtubeTrackCount || 0);
+
+        if (previousChart.spotifyPopularity !== undefined && previousChart.spotifyPopularity !== null && Number.isFinite(Number(previousChart.spotifyPopularity))) {
+            snapshot.spotifyPopularity = Number(previousChart.spotifyPopularity);
+        }
+        if (previousChart.viewsDelta !== undefined && previousChart.viewsDelta !== null && Number.isFinite(Number(previousChart.viewsDelta))) {
+            snapshot.viewsDelta = Number(previousChart.viewsDelta);
+        }
+        if (verifiedSnapshot.videoIds.length > 0) {
+            snapshot.youtubeVideoIds = verifiedSnapshot.videoIds;
+        } else {
+            delete snapshot.youtubeVideoIds;
+        }
+        if (Object.keys(verifiedSnapshot.videoViews).length > 0) {
+            snapshot.youtubeVideoViews = verifiedSnapshot.videoViews;
+        } else {
+            delete snapshot.youtubeVideoViews;
+        }
+
+        return snapshot;
+    });
+
+    return {
+        ...chartData,
+        generatedAt: generatedAt || chartData.generatedAt,
+        releases
+    };
+}
+
+function getCurrentISOWeekFileName(now) {
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `chart-${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}.json`;
+}
+
+function readJsonFileIfExists(filePath) {
+    if (!fs.existsSync(filePath)) return null;
+    try {
+        return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch {
+        return null;
+    }
+}
+
+function validateStatsCoverage(fetchVideoIds, chartVideoIds, allStats) {
+    if (fetchVideoIds.size > 0 && allStats.size === 0) {
+        throw new Error(`YouTube stats returned 0/${fetchVideoIds.size} requested videos; refusing to overwrite chart views with zeroes.`);
+    }
+
+    if (chartVideoIds.size === 0) return;
+
+    let chartStatsFound = 0;
+    for (const videoId of chartVideoIds) {
+        if (allStats.has(videoId)) chartStatsFound++;
+    }
+
+    const coverage = chartStatsFound / chartVideoIds.size;
+    const missing = chartVideoIds.size - chartStatsFound;
+    console.log(`  Verified chart-video stats coverage: ${chartStatsFound}/${chartVideoIds.size} (${Math.round(coverage * 100)}%)`);
+
+    if (coverage < STATS_MIN_COVERAGE) {
+        throw new Error(`YouTube stats coverage too low for verified chart videos: missing ${missing}/${chartVideoIds.size}; refusing to overwrite chart views.`);
+    }
+}
+
 // ── Popularity calculation ──────────────────────────────────────────────────
 
 /**
@@ -954,6 +1064,22 @@ async function main() {
     const releases = releasesData.releases;
     const chartData = JSON.parse(fs.readFileSync(CHART_DATA, 'utf8'));
     const chartReleases = chartData.releases;
+    const previousReleasesGeneratedAt = releasesData.generatedAt;
+    const previousChartGeneratedAt = chartData.generatedAt;
+    const previousReleaseSnapshots = new Map();
+    for (const release of releases) {
+        previousReleaseSnapshots.set(release.releaseId, clonePreviousReleaseSnapshot(release));
+    }
+    const previousChartSnapshots = new Map();
+    for (const chartRelease of chartReleases) {
+        previousChartSnapshots.set(chartRelease.releaseId, { ...chartRelease });
+    }
+    const previousStatsArchiveData = buildArchiveDataFromPreviousStats(
+        chartData,
+        previousReleaseSnapshots,
+        previousChartSnapshots,
+        previousReleasesGeneratedAt || previousChartGeneratedAt || chartData.generatedAt
+    );
     const chartMap = new Map();
     for (const cr of chartReleases) chartMap.set(cr.releaseId, cr);
     console.log(`Loaded ${releases.length} releases from releases.json, ${chartReleases.length} chart entries`);
@@ -980,16 +1106,28 @@ async function main() {
     console.log('\n── Loading archive week data ──');
     const archiveWeeks = loadRecentArchiveWeeks();
     const selectedArchiveWeeks = selectLiveArchiveWeeks(archiveWeeks);
-    const deltaBaselineWeek = selectedArchiveWeeks.deltaBaseline;
+    let deltaBaselineWeek = selectedArchiveWeeks.deltaBaseline;
     const frozenDisplayWeek = selectedArchiveWeeks.frozenDisplay;
     const frozenReferenceWeek = selectedArchiveWeeks.frozenReference;
+    let useYTHistory = hasYouTubeHistory(deltaBaselineWeek);
+
+    if (!useYTHistory && deltaBaselineWeek && hasYouTubeHistory(previousStatsArchiveData)) {
+        deltaBaselineWeek = {
+            ...deltaBaselineWeek,
+            releases: previousStatsArchiveData.releases,
+            generatedAt: previousStatsArchiveData.generatedAt,
+            repairedFromPreviousStats: true
+        };
+        useYTHistory = true;
+        console.log(`  Archive baseline ${deltaBaselineWeek.weekId} has no YouTube views — using previous release stats as this run's repair baseline`);
+    }
+
     const prevMap = new Map(); // releaseId -> { popularity, youtubeViews }
     if (deltaBaselineWeek) {
         for (const r of deltaBaselineWeek.releases) {
             prevMap.set(r.releaseId, { popularity: r.popularity || 0, youtubeViews: r.youtubeViews || 0, youtubeVideoIds: r.youtubeVideoIds || null });
         }
     }
-    const useYTHistory = hasYouTubeHistory(deltaBaselineWeek);
     console.log(useYTHistory
         ? '  Archive baseline has YouTube views — using real delta'
         : '  No YouTube history — will approximate last week views from Spotify popularity');
@@ -1283,12 +1421,17 @@ async function main() {
 
     // ── Step 3: Fetch view counts only for verified video IDs ───────────────
     // Build a map of existing youtube tracks from releases.json (need verified status)
-    const existingYtMap = new Map(); // releaseId -> Map<videoId, { verified, name }>
+    const existingYtMap = new Map(); // releaseId -> Map<videoId, { verified, name, views, publishedAt }>
     for (const r of releases) {
         if (r.youtubeTracks?.length > 0) {
             const trackMap = new Map();
             for (const t of r.youtubeTracks) {
-                trackMap.set(t.videoId, { verified: t.verified || 'unverified', name: t.name });
+                trackMap.set(t.videoId, {
+                    verified: t.verified || 'unverified',
+                    name: t.name,
+                    views: Number(t.views || 0),
+                    publishedAt: t.publishedAt || null
+                });
             }
             existingYtMap.set(r.releaseId, trackMap);
         }
@@ -1296,6 +1439,7 @@ async function main() {
 
     // Collect video IDs for verified and unverified tracks (skip will-not-verify)
     const fetchVideoIds = new Set();
+    const chartVideoIds = new Set();
     let totalMatchedIds = 0;
     for (const r of releases) {
         const trackMatches = cache.tracks[r.releaseId] || [];
@@ -1304,17 +1448,21 @@ async function main() {
             for (const vid of (t.videoIds || [])) {
                 totalMatchedIds++;
                 const existing = existingTracks.get(vid);
-                if (existing?.verified !== 'will-not-verify') fetchVideoIds.add(vid);
+                const status = existing?.verified || 'unverified';
+                if (status !== 'will-not-verify') fetchVideoIds.add(vid);
+                if (status === 'verified') chartVideoIds.add(vid);
             }
         }
         // Also include manually-added verified/unverified tracks not in cache
         for (const [vid, info] of existingTracks) {
             if (info.verified !== 'will-not-verify') fetchVideoIds.add(vid);
+            if (info.verified === 'verified') chartVideoIds.add(vid);
         }
     }
     console.log(`\n── Step 3: Fetching view counts for ${fetchVideoIds.size} verified+unverified videos (of ${totalMatchedIds} total matched) ──`);
     const allStats = await getVideoStatsBatch([...fetchVideoIds], apiKey);
     console.log(`  Got stats for ${allStats.size} videos`);
+    validateStatsCoverage(fetchVideoIds, chartVideoIds, allStats);
 
     // ── Step 4: Compute per-release total views and update releases.json ─────
     console.log('\n── Step 4: Computing YouTube views per release ──');
@@ -1338,8 +1486,8 @@ async function main() {
                 const isVerified = existing?.verified === 'verified';
                 const isWillNotVerify = existing?.verified === 'will-not-verify';
                 const stats = !isWillNotVerify ? allStats.get(vid) : null;
-                const views = stats?.viewCount || 0;
-                const publishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : null;
+                const views = stats ? stats.viewCount : Number(existing?.views || 0);
+                const publishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : existing?.publishedAt || null;
                 ytTracks.push({
                     name: t.trackName,
                     videoId: vid,
@@ -1365,8 +1513,8 @@ async function main() {
                 globalSeenVideoIds.add(vid);
                 const isVerified = info.verified === 'verified';
                 const stats = isVerified ? allStats.get(vid) : null;
-                const views = stats?.viewCount || 0;
-                const manualPublishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : null;
+                const views = stats ? stats.viewCount : Number(info.views || 0);
+                const manualPublishedAt = stats?.publishedAt ? stats.publishedAt.slice(0, 10) : info.publishedAt || null;
                 if (isVerified && !alreadyCounted) {
                     totalViews += views;
                     contributingVideoIds.push(vid);
@@ -1595,20 +1743,32 @@ async function main() {
         archiveChartData.generatedAt = chartData.generatedAt;
     }
     const now = new Date();
-    if (now.getDay() === 1) {
-        const d = new Date(now); d.setHours(0, 0, 0, 0);
-        d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-        const yearStart = new Date(d.getFullYear(), 0, 1);
-        const isoWeek = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-        const weekFileName = `chart-${d.getFullYear()}-W${String(isoWeek).padStart(2, '0')}.json`;
-        const weekFilePath = path.join(HISTORY_DIR, weekFileName);
-        if (fs.existsSync(weekFilePath)) {
-            const weekChartData = archiveChartData || chartData;
-            fs.writeFileSync(weekFilePath, JSON.stringify(weekChartData, null, 2), 'utf8');
-            console.log(`Updated chart-history/${weekFileName} with YouTube-based popularity`);
+    const weekFileName = getCurrentISOWeekFileName(now);
+    const weekFilePath = path.join(HISTORY_DIR, weekFileName);
+    const existingWeekData = readJsonFileIfExists(weekFilePath);
+    const shouldWriteMondaySnapshot = now.getDay() === 1 && fs.existsSync(weekFilePath);
+    const shouldRepairMissingHistory = now.getDay() !== 1 && fs.existsSync(weekFilePath) && !hasYouTubeHistory(existingWeekData);
+
+    if (shouldWriteMondaySnapshot || shouldRepairMissingHistory) {
+        let weekChartData = archiveChartData || chartData;
+        let updateReason = 'with YouTube-based popularity';
+
+        if (shouldRepairMissingHistory) {
+            if (hasYouTubeHistory(previousStatsArchiveData)) {
+                weekChartData = previousStatsArchiveData;
+                updateReason = 'by repairing missing YouTube baseline from previous release stats';
+            } else if (hasYouTubeHistory(chartData)) {
+                weekChartData = chartData;
+                updateReason = 'by repairing missing YouTube baseline from current stats';
+            }
         }
+
+        fs.writeFileSync(weekFilePath, JSON.stringify(weekChartData, null, 2), 'utf8');
+        console.log(`Updated chart-history/${weekFileName} ${updateReason}`);
+    } else if (!fs.existsSync(weekFilePath)) {
+        console.log(`Skipping chart-history update (${weekFileName} does not exist yet)`);
     } else {
-        console.log(`Skipping chart-history update (today is not Monday)`);
+        console.log(`Skipping chart-history update (today is not Monday and ${weekFileName} already has YouTube history)`);
     }
 
     // Strip video snapshot details before saving chart-data.json (only needed in chart history for delta tracking)
