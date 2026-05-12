@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-05-11T19:10:38.204Z",
+  "generatedAt": "2026-05-12T12:59:22.424Z",
   "scoreMode": "line_changes",
-  "totalContributions": 619162,
-  "totalLineChanges": 619162,
-  "leaderboardContributions": 10479,
-  "leaderboardLineChanges": 10479,
+  "totalContributions": 619368,
+  "totalLineChanges": 619368,
+  "leaderboardContributions": 10685,
+  "leaderboardLineChanges": 10685,
   "systemContributions": 608683,
   "communityContributions": 608683,
   "communityLineChanges": 608683,
@@ -29,15 +29,44 @@
       "name": "Martin",
       "avatar_url": "https://avatars.githubusercontent.com/u/3426271?v=4",
       "html_url": "https://github.com/martinpetkovski",
-      "contributions": 10479,
-      "lineChanges": 10479,
-      "lastContributionAt": "2026-05-11T19:10:02Z",
+      "contributions": 10685,
+      "lineChanges": 10685,
+      "lastContributionAt": "2026-05-12T12:58:59Z",
       "system": false,
       "community": false,
       "rank": 1
     }
   ],
   "records": [
+    {
+      "prNumber": 437,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/437",
+      "title": "MMM: Предлог промени од @martinpetkovski",
+      "mergedAt": "2026-05-12T12:58:59Z",
+      "createdAt": "2026-05-12T12:58:48Z",
+      "submittedAt": "2026-05-12T12:58:49.358Z",
+      "updatedAt": "2026-05-12T12:59:03Z",
+      "additions": 103,
+      "deletions": 103,
+      "lineChanges": 206,
+      "contributionCount": 206,
+      "contributionScore": 206,
+      "submitter": {
+        "id": 3426271,
+        "login": "martinpetkovski",
+        "name": "Martin",
+        "avatar_url": "https://avatars.githubusercontent.com/u/3426271?v=4",
+        "html_url": "https://github.com/martinpetkovski"
+      },
+      "system": false,
+      "community": false,
+      "status": "merged",
+      "source": "site",
+      "files": [
+        "data/dynamic/editable/releases.json"
+      ],
+      "baseBranch": "master"
+    },
     {
       "prNumber": 436,
       "prUrl": "https://github.com/martinpetkovski/masterlista/pull/436",
@@ -9643,6 +9672,6 @@
     }
   ],
   "pendingRecords": [],
-  "totalRecords": 355,
+  "totalRecords": 356,
   "totalPendingRecords": 0
 }
