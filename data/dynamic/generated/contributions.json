@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-12T20:28:11.559Z",
+  "generatedAt": "2026-05-12T21:41:03.987Z",
   "scoreMode": "line_changes",
   "totalContributions": 621232,
   "totalLineChanges": 621232,
@@ -9875,7 +9875,37 @@
       "baseBranch": "master"
     }
   ],
-  "pendingRecords": [],
+  "pendingRecords": [
+    {
+      "prNumber": 445,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/445",
+      "title": "MMM: Предлог промени",
+      "mergedAt": "",
+      "createdAt": "2026-05-12T21:40:32Z",
+      "submittedAt": "2026-05-12T21:40:33.195Z",
+      "updatedAt": "2026-05-12T21:40:33Z",
+      "additions": 8,
+      "deletions": 3,
+      "lineChanges": 11,
+      "contributionCount": 0,
+      "contributionScore": 0,
+      "submitter": {
+        "id": null,
+        "login": "toplistamk",
+        "name": "Community",
+        "avatar_url": "",
+        "html_url": "https://github.com/toplistamk"
+      },
+      "system": true,
+      "community": true,
+      "status": "pending",
+      "source": "site",
+      "files": [
+        "data/dynamic/editable/bands.json"
+      ],
+      "baseBranch": "master"
+    }
+  ],
   "totalRecords": 363,
-  "totalPendingRecords": 0
+  "totalPendingRecords": 1
 }
