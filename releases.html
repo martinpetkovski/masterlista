@@ -1799,26 +1799,85 @@
             return html;
         }
 
+        function bindVerifyButton(btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var ri = parseInt(this.dataset.release, 10);
+                var ti = parseInt(this.dataset.track, 10);
+                verifyTrack(ri, ti, this);
+            });
+        }
+
+        function bindNotVerifyButton(btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var ri = parseInt(this.dataset.release, 10);
+                var ti = parseInt(this.dataset.track, 10);
+                notVerifyTrack(ri, ti, this);
+            });
+        }
+
+        function createTrackStatusButton(kind, releaseIdx, trackIdx) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.release = releaseIdx;
+            btn.dataset.track = trackIdx;
+            if (kind === 'verify') {
+                btn.className = 'yt-verify-btn';
+                btn.title = 'Верификувај';
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                bindVerifyButton(btn);
+            } else {
+                btn.className = 'yt-notverify-btn';
+                btn.title = 'Нема да се верификува';
+                btn.innerHTML = '<i class="fas fa-ban"></i>';
+                bindNotVerifyButton(btn);
+            }
+            return btn;
+        }
+
+        function syncTrackStatusInDom(actionBtn, status, releaseIdx, trackIdx) {
+            if (!actionBtn) return false;
+            var group = actionBtn.closest('.yt-link-group');
+            if (!group) return false;
+
+            var pill = group.querySelector('.yt-link-pill');
+            if (pill) {
+                pill.classList.remove('verified', 'unverified', 'will-not-verify');
+                pill.classList.add(status);
+                var statusIcon = pill.querySelector('i.fas');
+                if (statusIcon) {
+                    statusIcon.className = 'fas ' + (status === 'verified' ? 'fa-check-circle' : 'fa-times-circle');
+                }
+            }
+
+            var verifyBtn = group.querySelector('.yt-verify-btn');
+            var notVerifyBtn = group.querySelector('.yt-notverify-btn');
+            var removeBtn = group.querySelector('.yt-remove-btn');
+
+            if (status === 'verified') {
+                if (verifyBtn) verifyBtn.remove();
+                if (!notVerifyBtn) group.insertBefore(createTrackStatusButton('notverify', releaseIdx, trackIdx), removeBtn || null);
+            } else if (status === 'will-not-verify') {
+                if (notVerifyBtn) notVerifyBtn.remove();
+                if (!verifyBtn) group.insertBefore(createTrackStatusButton('verify', releaseIdx, trackIdx), removeBtn || null);
+            }
+
+            return true;
+        }
+
         // ── Bind track action buttons ────────────────────────────────
         function bindTrackActions() {
             // Verify buttons
             var verifyBtns = document.querySelectorAll('.yt-verify-btn');
             for (var i = 0; i < verifyBtns.length; i++) {
-                verifyBtns[i].addEventListener('click', function () {
-                    var ri = parseInt(this.dataset.release, 10);
-                    var ti = parseInt(this.dataset.track, 10);
-                    verifyTrack(ri, ti);
-                });
+                bindVerifyButton(verifyBtns[i]);
             }
 
             // Not-verify buttons
             var notVerifyBtns = document.querySelectorAll('.yt-notverify-btn');
             for (var i = 0; i < notVerifyBtns.length; i++) {
-                notVerifyBtns[i].addEventListener('click', function () {
-                    var ri = parseInt(this.dataset.release, 10);
-                    var ti = parseInt(this.dataset.track, 10);
-                    notVerifyTrack(ri, ti);
-                });
+                bindNotVerifyButton(notVerifyBtns[i]);
             }
 
             // Remove buttons
@@ -1910,24 +1969,76 @@
             }
         }
 
+        function preservePageScroll(work) {
+            var scrollingEl = document.scrollingElement || document.documentElement;
+            var scrollLeft = window.pageXOffset || scrollingEl.scrollLeft || 0;
+            var scrollTop = window.pageYOffset || scrollingEl.scrollTop || 0;
+            var htmlEl = document.documentElement;
+            var bodyEl = document.body;
+            var prevHtmlScrollBehavior = htmlEl.style.scrollBehavior;
+            var prevBodyScrollBehavior = bodyEl.style.scrollBehavior;
+            var prevHtmlOverflowAnchor = htmlEl.style.overflowAnchor;
+            var prevBodyOverflowAnchor = bodyEl.style.overflowAnchor;
+
+            htmlEl.style.scrollBehavior = 'auto';
+            bodyEl.style.scrollBehavior = 'auto';
+            htmlEl.style.overflowAnchor = 'none';
+            bodyEl.style.overflowAnchor = 'none';
+
+            function restoreScroll() {
+                window.scrollTo(scrollLeft, scrollTop);
+            }
+
+            try {
+                work();
+            } finally {
+                restoreScroll();
+                requestAnimationFrame(function () {
+                    restoreScroll();
+                    requestAnimationFrame(function () {
+                        restoreScroll();
+                        setTimeout(function () {
+                            restoreScroll();
+                            htmlEl.style.scrollBehavior = prevHtmlScrollBehavior;
+                            bodyEl.style.scrollBehavior = prevBodyScrollBehavior;
+                            htmlEl.style.overflowAnchor = prevHtmlOverflowAnchor;
+                            bodyEl.style.overflowAnchor = prevBodyOverflowAnchor;
+                        }, 350);
+                    });
+                });
+            }
+        }
+
+        function renderChangedStatePreservingScroll() {
+            preservePageScroll(function () {
+                markChanged();
+                renderTable();
+                renderStats();
+            });
+        }
+
         // ── Actions ──────────────────────────────────────────────────
-        function verifyTrack(releaseIdx, trackIdx) {
+        function verifyTrack(releaseIdx, trackIdx, actionBtn) {
             var r = releasesData.releases[releaseIdx];
             if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
             r.youtubeTracks[trackIdx].verified = 'verified';
-            markChanged();
-            renderTable();
-            renderStats();
+            preservePageScroll(function () {
+                markChanged();
+                if (!syncTrackStatusInDom(actionBtn, 'verified', releaseIdx, trackIdx)) renderTable();
+                renderStats();
+            });
             showNotification('Линкот е верификуван', 'success');
         }
 
-        function notVerifyTrack(releaseIdx, trackIdx) {
+        function notVerifyTrack(releaseIdx, trackIdx, actionBtn) {
             var r = releasesData.releases[releaseIdx];
             if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
             r.youtubeTracks[trackIdx].verified = 'will-not-verify';
-            markChanged();
-            renderTable();
-            renderStats();
+            preservePageScroll(function () {
+                markChanged();
+                if (!syncTrackStatusInDom(actionBtn, 'will-not-verify', releaseIdx, trackIdx)) renderTable();
+                renderStats();
+            });
             showNotification('Линкот нема да се верификува', 'warning');
         }
 
@@ -1936,9 +2047,7 @@
             if (!r || !r.youtubeTracks || !r.youtubeTracks[trackIdx]) return;
             r.youtubeTracks.splice(trackIdx, 1);
             if (r.youtubeTracks.length === 0) delete r.youtubeTracks;
-            markChanged();
-            renderTable();
-            renderStats();
+            renderChangedStatePreservingScroll();
             showNotification('Линкот е отстранет', 'info');
         }
 
@@ -2068,9 +2177,7 @@
                 verified: 'verified' // manually added = auto-verified
             });
 
-            markChanged();
-            renderTable();
-            renderStats();
+            renderChangedStatePreservingScroll();
             showNotification('Нов YouTube линк додаден (верификуван)', 'success');
         }
 
