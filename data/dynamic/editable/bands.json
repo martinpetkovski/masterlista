@@ -3495,14 +3495,19 @@
       "links": {
         "youtube": "https://www.youtube.com/watch?v=RcufOLx9_1I",
         "spotify": "https://open.spotify.com/artist/56wCuy9e15IZxSDzgHMcoW?si=CwXBVaqsTki3FlHNqRDGww",
-        "itunes": "https://geo.music.apple.com/mk/album/_/921794293?i=921794334&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+        "itunes": "https://geo.music.apple.com/mk/album/_/921794293?i=921794334&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m",
+        "bandcamp": "https://fightingwindmillsmk.bandcamp.com/"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#e94560",
+        "#ffa502"
+      ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab67616d0000b273b38048a75739e4249f284041",
-      "imageSource": "spotify"
+      "imageSource": "spotify",
+      "_activityStatus": "inactive"
     },
     {
       "name": "Фико",
