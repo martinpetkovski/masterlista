@@ -3092,6 +3092,37 @@ function ConvertTo-Columnar {
     return [ordered]@{ _cols = $cols; _rows = @($rows) }
 }
 
+function Write-FilteredMediaFile {
+    param(
+        [string]$FileName,
+        [string]$PrimaryKey,
+        [string]$SourceCountKey,
+        [array]$SourceItems,
+        [array]$MatchedItems,
+        [array]$MentionedItems,
+        [string]$SourceLastUpdated,
+        [string]$GeneratedAt,
+        [System.Text.UTF8Encoding]$Encoding
+    )
+
+    $payload = [ordered]@{}
+    $payload['lastUpdated'] = $GeneratedAt
+    $payload['sourceLastUpdated'] = $SourceLastUpdated
+    $payload['generatedAt'] = $GeneratedAt
+    $payload['classifierVersion'] = 'media-classifier-v1'
+    $payload['totalMatched'] = @($MatchedItems).Count
+    $payload['totalMentioned'] = @($MentionedItems).Count
+    $payload[$SourceCountKey] = @($SourceItems).Count
+    $payload[$PrimaryKey] = @($MatchedItems)
+    $payload['matched'] = @($MatchedItems)
+    $payload['mentioned'] = @($MentionedItems)
+
+    $json = ([PSCustomObject]$payload) | ConvertTo-Json -Depth 15
+    $path = Join-Path $generatedDataRoot $FileName
+    [System.IO.File]::WriteAllText($path, $json, $Encoding)
+    Write-Host "  > Wrote $FileName ($([math]::Round((Get-Item $path).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
+}
+
 # Convert hashtable-based structures to proper objects for JSON serialization
 # IMPORTANT: Use [ordered]@{} and sort keys to ensure deterministic JSON output.
 # Regular @{} hashtables have non-deterministic enumeration order, causing
@@ -3203,6 +3234,11 @@ $chartHistoryDataJson = $chartHistoryDataValue | ConvertTo-Json -Depth 15 -Compr
 $chartHistoryDataPath = Join-Path $generatedDataRoot "chart-history-data.json"
 [System.IO.File]::WriteAllText($chartHistoryDataPath, $chartHistoryDataJson, $utf8NoBom)
 Write-Host "  > Wrote chart-history-data.json ($([math]::Round((Get-Item $chartHistoryDataPath).Length / 1024, 1)) KB)" -ForegroundColor DarkGray
+
+# Compatibility filtered feeds — legacy/direct pages and radio-source still load these files.
+$mediaGeneratedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+Write-FilteredMediaFile -FileName "articles-filtered.json" -PrimaryKey "articles" -SourceCountKey "sourceArticleCount" -SourceItems $allArticles -MatchedItems $matchedArticles -MentionedItems $mentionedArticles -SourceLastUpdated $articlesJson.lastUpdated -GeneratedAt $mediaGeneratedAt -Encoding $utf8NoBom
+Write-FilteredMediaFile -FileName "interviews-filtered.json" -PrimaryKey "interviews" -SourceCountKey "sourceInterviewCount" -SourceItems $allInterviews -MatchedItems $matchedInterviews -MentionedItems $mentionedInterviews -SourceLastUpdated $(if ($interviewsJson) { $interviewsJson.lastUpdated } else { $null }) -GeneratedAt $mediaGeneratedAt -Encoding $utf8NoBom
 
 $siteMaster = [PSCustomObject]@{
     generatedAt = $chartJson.generatedAt

@@ -854,28 +854,32 @@
 					}
 				} catch (e) { console.warn('Could not load bands.json for genre filter:', e); }
 
-				var filteredResp = await fetch('interviews-filtered.json');
-				if (filteredResp.ok) {
-					var filteredRaw = await filteredResp.json();
-					allInterviews = (filteredRaw.interviews || filteredRaw.matched || []).map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
-					lastUpdated = filteredRaw.lastUpdated || filteredRaw.generatedAt || '';
-				} else {
-					var fromMaster = null;
+				var loaded = false;
+				try {
 					var master = await loadSiteMaster();
-					if (master && master.interviews) {
-						fromMaster = master.interviews;
+					if (master && master.interviews && Array.isArray(master.interviews.matched)) {
+						allInterviews = master.interviews.matched.map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
+						lastUpdated = master.interviews.lastUpdated || '';
+						loaded = true;
 					}
+				} catch (e) { /* fall through to other sources */ }
 
-					if (fromMaster && Array.isArray(fromMaster.matched)) {
-						allInterviews = fromMaster.matched.map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
-						lastUpdated = fromMaster.lastUpdated || '';
-					} else {
-						var resp = await fetch('interviews.json');
-						if (!resp.ok) throw new Error(t('interviews.fetchError'));
-						var raw = await resp.json();
-						allInterviews = (raw.interviews || []).map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
-						lastUpdated = raw.lastUpdated || '';
+				if (!loaded) {
+					var filteredResp = await fetch('interviews-filtered.json');
+					if (filteredResp.ok) {
+						var filteredRaw = await filteredResp.json();
+						allInterviews = (filteredRaw.interviews || filteredRaw.matched || []).map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
+						lastUpdated = filteredRaw.sourceLastUpdated || filteredRaw.lastUpdated || filteredRaw.generatedAt || '';
+						loaded = true;
 					}
+				}
+
+				if (!loaded) {
+					var resp = await fetch('interviews.json');
+					if (!resp.ok) throw new Error(t('interviews.fetchError'));
+					var raw = await resp.json();
+					allInterviews = (raw.interviews || []).map(normalizeInterview).filter(function(item) { return item.shortForm !== true; });
+					lastUpdated = raw.lastUpdated || '';
 				}
 
 				allInterviews.sort(function(a, b) { return parseDate(b) - parseDate(a); });

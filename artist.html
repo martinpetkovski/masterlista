@@ -7384,9 +7384,7 @@ a.chart-history-item {
 
                 // Load articles
                 try {
-                    const articleFeed = await loadFilteredFeed('articles-filtered.json').catch(function() {
-                        return siteMaster?.news || null;
-                    });
+                    const articleFeed = siteMaster?.news || await loadFilteredFeed('articles-filtered.json');
                     timelineArticles = getArtistArticles(articleFeed, artist.name);
                 } catch (e) {
                     console.warn('Could not load articles:', e);
@@ -7394,9 +7392,7 @@ a.chart-history-item {
 
                 // Load interviews
                 try {
-                    const interviewFeed = await loadFilteredFeed('interviews-filtered.json').catch(function() {
-                        return siteMaster?.interviews || null;
-                    });
+                    const interviewFeed = siteMaster?.interviews || await loadFilteredFeed('interviews-filtered.json');
                     timelineInterviews = getArtistInterviews(interviewFeed, artist.name);
                 } catch (e) {
                     console.warn('Could not load interviews:', e);
