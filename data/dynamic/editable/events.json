@@ -1684,7 +1684,13 @@
           "price": "1500"
         }
       ],
-      "link": "https://mktickets.mk/event/d-festival-2026/"
+      "link": "https://mktickets.mk/event/d-festival-2026/",
+      "links": [
+        {
+          "label": "",
+          "url": "https://mktickets.mk/event/d-festival-2026/"
+        }
+      ]
     },
     {
       "id": "evt-20260628-д-фест-ден-3-cxh3",
