@@ -806,26 +806,34 @@
         align-items: start;
     }
     .yt-table thead th {
+        margin: 0;
         background: var(--bg-secondary);
-    }
-    .yt-table thead th:last-child {
-        grid-column: 1 / -1;
-        border-top: 1px solid var(--border-color);
     }
     body.dark-mode .yt-table thead th,
     html.dark-mode body .yt-table thead th {
         background: rgba(255, 255, 255, 0.035);
     }
+    .yt-table tbody {
+        padding: 0.35rem;
+        box-sizing: border-box;
+    }
     .yt-table tbody tr,
     .yt-table tbody tr:nth-child(even) {
         background: var(--bg-primary);
         transition: background 0.15s ease, filter 0.15s ease;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .yt-table tbody tr + tr {
+        margin-top: 0.55rem;
     }
     body.dark-mode .yt-table tbody tr,
     html.dark-mode body .yt-table tbody tr,
     body.dark-mode .yt-table tbody tr:nth-child(even),
     html.dark-mode body .yt-table tbody tr:nth-child(even) {
         background: var(--bg-secondary);
+        border-color: rgba(255, 255, 255, 0.08);
     }
     .yt-table tbody tr:hover {
         background: var(--bg-hover);
@@ -844,13 +852,24 @@
     .yt-table td:last-child {
         width: auto !important;
     }
+    .yt-table thead th:first-child,
+    .yt-table tbody td:first-child,
+    .yt-table thead th:nth-child(2),
+    .yt-table tbody td:nth-child(2),
+    .yt-table thead th:nth-child(3),
+    .yt-table tbody td:nth-child(3),
+    .yt-table thead th:nth-child(4),
+    .yt-table tbody td:nth-child(4) {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
     .yt-table td.yt-tracks-cell {
         grid-column: 1 / -1;
         width: 100% !important;
         min-width: 0 !important;
         margin-top: 0;
-        padding-top: 0.78rem;
-        border-top: 1px solid var(--border-color);
+        padding-top: 0.55rem;
+        border-top: 0;
     }
     .yt-release-info {
         gap: 0.8rem;
@@ -1625,7 +1644,7 @@
             }
 
             var html = '<div class="yt-table-wrap"><table class="yt-table"><thead><tr>' +
-                '<th>#</th><th>Издание</th><th><i class="fab fa-spotify" style="color:#1DB954"></i></th><th><i class="fab fa-youtube" style="color:#f00"></i></th><th>YouTube линкови</th>' +
+                '<th>#</th><th>Издание</th><th><i class="fab fa-spotify" style="color:#1DB954"></i></th><th><i class="fab fa-youtube" style="color:#f00"></i></th>' +
                 '</tr></thead><tbody>';
 
             for (var i = 0; i < page.length; i++) {
