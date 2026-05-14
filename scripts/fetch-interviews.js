@@ -29,6 +29,14 @@ const API_MAX_RETRIES = 3;
 const VIDEO_DETAILS_BATCH_SIZE = 50;
 const PLAYER_MAX_DIMENSION = 800;
 const SHORTS_MAX_DURATION_SECONDS = 360;
+const YOUTUBE_API_UNIT_COST = Object.freeze({
+    channels: 1,
+    playlistItems: 1,
+    videos: 1,
+});
+
+let quotaUsed = 0;
+let quotaSummaryPrinted = false;
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -61,13 +69,31 @@ function getYouTubeApiKey() {
     return null;
 }
 
+function getYouTubeApiUnitCost(endpoint) {
+    return Object.prototype.hasOwnProperty.call(YOUTUBE_API_UNIT_COST, endpoint)
+        ? YOUTUBE_API_UNIT_COST[endpoint]
+        : null;
+}
+
+function printQuotaSummary() {
+    if (quotaSummaryPrinted) return;
+    console.log(`YouTube API quota used: ~${quotaUsed} units (of 10,000 daily)`);
+    quotaSummaryPrinted = true;
+}
+
 async function ytApi(endpoint, params, apiKey) {
+    const unitCost = getYouTubeApiUnitCost(endpoint);
+    if (!Number.isFinite(unitCost)) {
+        throw new Error(`YouTube API endpoint ${endpoint} has no configured quota unit cost.`);
+    }
+
     const qs = new URLSearchParams({ ...params, key: apiKey }).toString();
     const url = `https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`;
 
     for (let attempt = 1; attempt <= API_MAX_RETRIES; attempt++) {
         try {
             const response = await fetch(url);
+            quotaUsed += unitCost;
             if (!response.ok) {
                 const body = await response.text();
                 const retryable = response.status === 429 || response.status >= 500;
@@ -496,6 +522,7 @@ async function main() {
             interviews: [],
         });
         console.log('No interview channels configured; wrote empty interviews.json');
+        printQuotaSummary();
         return;
     }
 
@@ -612,9 +639,11 @@ async function main() {
     });
 
     console.log(`Wrote interviews.json with ${interviews.length} videos from ${channelUrls.length} channel(s)`);
+    printQuotaSummary();
 }
 
 main().catch((error) => {
     console.error(error && error.stack ? error.stack : error);
+    if (!quotaSummaryPrinted) printQuotaSummary();
     process.exitCode = 1;
 });

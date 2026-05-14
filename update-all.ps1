@@ -104,6 +104,20 @@ function Write-Elapsed {
     Write-Host "  > Completed in ${sec}s" -ForegroundColor DarkGray
 }
 
+$script:YouTubeApiUnits = 0
+function Add-YouTubeApiUnitsFromLine {
+    param([object]$Line)
+
+    $text = [string]$Line
+    if ($text -match 'YouTube API quota used:\s*~?([0-9,]+)\s+units') {
+        $unitText = $Matches[1] -replace ',', ''
+        $units = 0
+        if ([int]::TryParse($unitText, [ref]$units)) {
+            $script:YouTubeApiUnits += $units
+        }
+    }
+}
+
 # Overall-progress helper (call before each task)
 $script:taskIndex = 0
 $script:taskTotal = 0
@@ -403,6 +417,7 @@ function Update-YouTubePopularity {
                 $lastOutputTime = Get-Date
 
                 if ($item.Stream -eq 'out') {
+                    Add-YouTubeApiUnitsFromLine $item.Text
                     if ($item.Text -match '\((\d+)%\)') {
                         $lastPct = [int]$Matches[1]
                     }
@@ -432,6 +447,7 @@ function Update-YouTubePopularity {
         $item = $null
         while ($outputQueue.TryDequeue([ref]$item)) {
             if ($item.Stream -eq 'out') {
+                Add-YouTubeApiUnitsFromLine $item.Text
                 Write-Host "    [yt] $($item.Text)" -ForegroundColor DarkGray
             }
             else {
@@ -540,6 +556,7 @@ function Update-YouTubeMatching {
 
             while ($outputQueue.TryDequeue([ref]$item)) {
                 if ($item.Stream -eq 'out') {
+                    Add-YouTubeApiUnitsFromLine $item.Text
                     if ($item.Text -match '\((\d+)%\)') {
                         $lastPct = [int]$Matches[1]
                     }
@@ -569,6 +586,7 @@ function Update-YouTubeMatching {
         $item = $null
         while ($outputQueue.TryDequeue([ref]$item)) {
             if ($item.Stream -eq 'out') {
+                Add-YouTubeApiUnitsFromLine $item.Text
                 Write-Host "    [yt-match] $($item.Text)" -ForegroundColor DarkGray
             }
             else {
@@ -833,6 +851,7 @@ function Update-ScrapeArticles {
         $interviewExit = $LASTEXITCODE
 
         foreach ($line in $interviewOutput) {
+            Add-YouTubeApiUnitsFromLine $line
             if ($line -is [System.Management.Automation.ErrorRecord]) {
                 Write-Host "    $($line.ToString())" -ForegroundColor DarkYellow
             } else {
@@ -1594,6 +1613,11 @@ foreach ($task in $results.Keys) {
     }
     $timing = if ($taskTimings.ContainsKey($task)) { " ($($taskTimings[$task])s)" } else { "" }
     Write-Host "  [$status] $task$timing" -ForegroundColor $color
+}
+
+$reportedYouTubeTasks = @("YouTube Matching", "YouTube Popularity", "Scrape Articles + Interviews") | Where-Object { $results.ContainsKey($_) }
+if ($reportedYouTubeTasks.Count -gt 0) {
+    Write-Host "  YouTube API units used: ~$script:YouTubeApiUnits (reported by YouTube tasks)" -ForegroundColor Cyan
 }
 
 Write-Host ""

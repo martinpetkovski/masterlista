@@ -6,16 +6,17 @@
  * and computes a popularity score (0–100) based on the week-over-week view increase.
  * 
  * Strategy:
- *   1. Use YouTube/YouTube Music links from bands.json to fetch each artist's videos
+ *   1. Refresh verified chart video stats first using low-cost videos.list calls
+ *   2. Use YouTube/YouTube Music links from bands.json to fetch each artist's videos
  *      (supports multiple channels per artist — links.youtube can be a string or array)
- *   2. For each release, fuzzy-match ALL its tracks to YouTube videos across all channels,
- *      including auto-generated Artist - Topic channels when regular uploads miss tracks
- *   3. Sum YouTube views across all tracks in a release (if same song on multiple channels, sum views)
- *   4. Load last week's chart-history to get previous youtubeViews
+ *   3. For each release, fuzzy-match tracks to YouTube videos across known low-cost channels,
+ *      prioritizing releases from the last year and using cached Topic channels only
+ *   4. Sum YouTube views across all tracks in a release (if same song on multiple channels, sum views)
+ *   5. Load last week's chart-history to get previous youtubeViews
  *      (if no YT history exists, approximate from Spotify historical popularity)
- *   5. popularity = normalize(thisWeekViews - lastWeekViews) → 0–100
- *   6. Update releases.json with youtube track matches (preserving verified links)
- *   7. Update chart-data.json with new popularity values and youtubeViews
+ *   6. popularity = normalize(thisWeekViews - lastWeekViews) → 0–100
+ *   7. Update releases.json with youtube track matches (preserving verified links)
+ *   8. Update chart-data.json with new popularity values and youtubeViews
  * 
  * Run locally: node scripts/generate-chart-data-youtube.js
  * 
@@ -35,12 +36,14 @@ const YT_BATCH_SIZE = 50;
 const API_DELAY_MS = 100;
 const API_RETRY_DELAY_MS = 1000;
 const API_MAX_RETRIES = 3;
-const TOPIC_LOOKUP_RETRY_MS = 30 * 24 * 60 * 60 * 1000;
-const DEFAULT_TOPIC_LOOKUP_LIMIT = 75;
-const TOPIC_LOOKUP_LIMIT = (() => {
-    const raw = Number.parseInt(process.env.YOUTUBE_TOPIC_LOOKUP_LIMIT || '', 10);
-    return Number.isFinite(raw) && raw >= 0 ? raw : DEFAULT_TOPIC_LOOKUP_LIMIT;
-})();
+const YOUTUBE_LOW_COST_UNIT_LIMIT = 1;
+const YOUTUBE_API_UNIT_COST = Object.freeze({
+    channels: 1,
+    playlistItems: 1,
+    videos: 1,
+    search: 100
+});
+const RELEASE_AUTO_MATCH_RECENCY_MS = 365 * 24 * 60 * 60 * 1000;
 const DEFAULT_STATS_MIN_COVERAGE = 0.75;
 const STATS_MIN_COVERAGE = (() => {
     const raw = Number.parseFloat(process.env.YOUTUBE_STATS_MIN_COVERAGE || '');
@@ -57,9 +60,10 @@ const HISTORY_DIR = path.join(GENERATED_DATA_DIR, 'chart-history');
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 let quotaUsed = 0;
-let topicLookupsThisRun = 0;
-let topicLookupLimitReached = false;
 let youtubeQuotaExhausted = false;
+let quotaSummaryPrinted = false;
+let topicLookupSearchDisabledLogged = false;
+const blockedEndpointWarnings = new Set();
 
 function loadCache() {
     try {
@@ -110,15 +114,43 @@ function getYouTubeApiKey() {
     return null;
 }
 
+function getYouTubeApiUnitCost(endpoint) {
+    return Object.prototype.hasOwnProperty.call(YOUTUBE_API_UNIT_COST, endpoint)
+        ? YOUTUBE_API_UNIT_COST[endpoint]
+        : null;
+}
+
+function warnBlockedYouTubeEndpoint(endpoint, unitCost) {
+    if (blockedEndpointWarnings.has(endpoint)) return;
+    blockedEndpointWarnings.add(endpoint);
+
+    const reason = Number.isFinite(unitCost)
+        ? `it costs ${unitCost} quota units`
+        : 'its quota cost is not configured';
+    console.warn(`  Skipping YouTube ${endpoint} API call because ${reason}; only <=${YOUTUBE_LOW_COST_UNIT_LIMIT}-unit calls are allowed.`);
+}
+
+function printQuotaSummary(indent = '') {
+    if (quotaSummaryPrinted) return;
+    console.log(`${indent}YouTube API quota used: ~${quotaUsed} units (of 10,000 daily)`);
+    quotaSummaryPrinted = true;
+}
+
 async function ytApi(endpoint, params, apiKey) {
     if (youtubeQuotaExhausted) return null;
+
+    const unitCost = getYouTubeApiUnitCost(endpoint);
+    if (!Number.isFinite(unitCost) || unitCost > YOUTUBE_LOW_COST_UNIT_LIMIT) {
+        warnBlockedYouTubeEndpoint(endpoint, unitCost);
+        return null;
+    }
 
     const qs = new URLSearchParams({ ...params, key: apiKey }).toString();
     const url = `https://www.googleapis.com/youtube/v3/${endpoint}?${qs}`;
     for (let attempt = 1; attempt <= API_MAX_RETRIES; attempt++) {
         try {
             const res = await fetch(url);
-            quotaUsed++;
+            quotaUsed += unitCost;
             if (!res.ok) {
                 const text = await res.text();
                 const isQuotaError = res.status === 403 && /quota/i.test(text);
@@ -225,6 +257,42 @@ function normalizeChannelIds(channelIds) {
     return Array.from(new Set((channelIds || []).filter(Boolean).map(String))).sort();
 }
 
+function rememberArtistChannel(cache, cacheKey, channelId, ytUrl = null) {
+    if (!channelId) return;
+    if (!cache.channels[cacheKey]) cache.channels[cacheKey] = [];
+    if (!cache.channels[cacheKey].includes(channelId)) cache.channels[cacheKey].push(channelId);
+    cache.channels[cacheKey] = normalizeChannelIds(cache.channels[cacheKey]);
+    if (ytUrl) cache.globalChannels[ytUrl] = channelId;
+}
+
+async function resolveDeferredArtistChannels(artist, apiKey, cache) {
+    const cacheKey = artist.name.toLowerCase().trim();
+
+    if (artist.videoIdLinks?.length > 0) {
+        const pendingVideoLinks = artist.videoIdLinks.filter(link => !cache.globalChannels[link.ytUrl]);
+        if (pendingVideoLinks.length > 0) {
+            const channelByVideoId = await resolveVideoChannels(pendingVideoLinks.map(link => link.videoId), apiKey);
+            for (const link of pendingVideoLinks) {
+                rememberArtistChannel(cache, cacheKey, channelByVideoId.get(link.videoId), link.ytUrl);
+            }
+        }
+        artist.videoIdLinks = [];
+    }
+
+    if (artist.needsResolve?.length > 0) {
+        for (const link of artist.needsResolve) {
+            if (youtubeQuotaExhausted) break;
+            let channelId = null;
+            if (link.parsed.type === 'handle') channelId = await resolveHandle(link.parsed.value, apiKey);
+            else if (link.parsed.type === 'username') channelId = await resolveUsername(link.parsed.value, apiKey);
+            else if (link.parsed.type === 'customUrl') channelId = await resolveCustomUrl(link.parsed.value, apiKey);
+            rememberArtistChannel(cache, cacheKey, channelId, link.ytUrl);
+            await sleep(API_DELAY_MS);
+        }
+        artist.needsResolve = [];
+    }
+}
+
 function areChannelSetsEqual(left, right) {
     const a = normalizeChannelIds(left);
     const b = normalizeChannelIds(right);
@@ -241,21 +309,6 @@ function getTopicCacheEntry(cache, cacheKey) {
 function getCachedTopicChannelId(cache, cacheKey) {
     const entry = getTopicCacheEntry(cache, cacheKey);
     return entry?.channelId || null;
-}
-
-function shouldRetryTopicLookup(cache, cacheKey) {
-    const entry = getTopicCacheEntry(cache, cacheKey);
-    if (!entry) return true;
-    if (entry.channelId) return false;
-    const checkedAt = entry.checkedAt ? Date.parse(entry.checkedAt) : NaN;
-    return Number.isNaN(checkedAt) || Date.now() - checkedAt > TOPIC_LOOKUP_RETRY_MS;
-}
-
-function setTopicChannelCache(cache, cacheKey, channelId) {
-    cache.topicChannels[cacheKey] = {
-        channelId: channelId || null,
-        checkedAt: new Date().toISOString()
-    };
 }
 
 function getArtistChannelIds(cache, cacheKey) {
@@ -283,44 +336,31 @@ function isTrackCacheStale(cache, releaseId, channelIds) {
     return hasUnmatchedTrack(cached);
 }
 
+function invalidateStaleTrackCache(cache, artistReleases, channelIds) {
+    let invalidated = 0;
+    for (const release of artistReleases) {
+        if (cache.tracks[release.releaseId] && isTrackCacheStale(cache, release.releaseId, channelIds)) {
+            delete cache.tracks[release.releaseId];
+            delete cache.trackChannelSets[release.releaseId];
+            invalidated++;
+        }
+    }
+    return invalidated;
+}
+
 function getReleasesNeedingMoreMatching(releases, cache) {
     return (releases || []).filter(release => hasUnmatchedTrack(cache.tracks[release.releaseId]));
 }
 
-function isLikelyTopicChannelTitle(title, artistName) {
-    const normTitle = normalize(title);
-    const artistVariants = matchVariants(normalize(artistName));
-    return artistVariants.some(artistVariant => normTitle === `${artistVariant} topic`);
-}
-
-async function resolveTopicChannel(artistName, apiKey, cache) {
+async function resolveTopicChannel(artistName, cache) {
     const cacheKey = artistName.toLowerCase().trim();
     const cached = getCachedTopicChannelId(cache, cacheKey);
     if (cached) return cached;
-    if (!shouldRetryTopicLookup(cache, cacheKey)) return null;
-    if (topicLookupsThisRun >= TOPIC_LOOKUP_LIMIT) {
-        topicLookupLimitReached = true;
-        return null;
+    if (!topicLookupSearchDisabledLogged) {
+        console.log('    Topic channel search is disabled to protect YouTube quota; using cached topic channels only.');
+        topicLookupSearchDisabledLogged = true;
     }
-
-    topicLookupsThisRun++;
-    const data = await ytApi('search', {
-        part: 'snippet',
-        type: 'channel',
-        maxResults: '5',
-        q: `${artistName} Topic`
-    }, apiKey);
-    if (!data) {
-        await sleep(API_DELAY_MS);
-        return null;
-    }
-    const items = Array.isArray(data?.items) ? data.items : [];
-    const match = items.find(item => isLikelyTopicChannelTitle(item.snippet?.title || '', artistName));
-    const channelId = match?.id?.channelId || null;
-    setTopicChannelCache(cache, cacheKey, channelId);
-    if (channelId) console.log(`    Found Topic channel for ${artistName}: ${match.snippet?.title || channelId}`);
-    await sleep(API_DELAY_MS);
-    return channelId;
+    return null;
 }
 
 // ── Fetch channel uploads ───────────────────────────────────────────────────
@@ -998,9 +1038,96 @@ function readJsonFileIfExists(filePath) {
     }
 }
 
-function validateStatsCoverage(fetchVideoIds, chartVideoIds, allStats) {
-    if (fetchVideoIds.size > 0 && allStats.size === 0) {
-        throw new Error(`YouTube stats returned 0/${fetchVideoIds.size} requested videos; refusing to overwrite chart views with zeroes.`);
+function buildExistingYoutubeTrackMap(releases) {
+    const trackMapByRelease = new Map();
+
+    for (const release of releases || []) {
+        if (!Array.isArray(release.youtubeTracks) || release.youtubeTracks.length === 0) continue;
+
+        const trackMap = new Map();
+        for (const track of release.youtubeTracks) {
+            if (!track?.videoId) continue;
+            trackMap.set(track.videoId, {
+                ...track,
+                verified: track.verified || 'unverified',
+                name: track.name,
+                views: Number(track.views || 0),
+                publishedAt: track.publishedAt || null
+            });
+        }
+
+        if (trackMap.size > 0) trackMapByRelease.set(release.releaseId, trackMap);
+    }
+
+    return trackMapByRelease;
+}
+
+function collectExistingVideoIds(trackMapByRelease, predicate) {
+    const videoIds = new Set();
+    for (const trackMap of trackMapByRelease.values()) {
+        for (const [videoId, track] of trackMap) {
+            if (!predicate || predicate(track)) videoIds.add(videoId);
+        }
+    }
+    return videoIds;
+}
+
+function mergeVideoStats(targetStats, sourceStats) {
+    for (const [videoId, stats] of sourceStats) targetStats.set(videoId, stats);
+}
+
+async function fetchMissingVideoStats(videoIds, apiKey, allStats) {
+    const missingVideoIds = Array.from(new Set((videoIds || []).filter(Boolean)))
+        .filter(videoId => !allStats.has(videoId));
+
+    if (missingVideoIds.length === 0 || youtubeQuotaExhausted) {
+        return { requested: missingVideoIds.length, fetched: 0 };
+    }
+
+    const stats = await getVideoStatsBatch(missingVideoIds, apiKey);
+    mergeVideoStats(allStats, stats);
+    return { requested: missingVideoIds.length, fetched: stats.size };
+}
+
+function getReleaseSortTime(release) {
+    const parsedDate = parseReleaseDate(release);
+    return parsedDate ? parsedDate.getTime() : 0;
+}
+
+function isReleaseFromLastYear(release, now) {
+    const releaseTime = getReleaseSortTime(release);
+    return Number.isFinite(releaseTime) && releaseTime > 0 && releaseTime >= now.getTime() - RELEASE_AUTO_MATCH_RECENCY_MS;
+}
+
+function compareReleaseAutoMatchPriority(leftRelease, rightRelease, now) {
+    const leftRecent = isReleaseFromLastYear(leftRelease, now);
+    const rightRecent = isReleaseFromLastYear(rightRelease, now);
+    if (leftRecent !== rightRecent) return leftRecent ? -1 : 1;
+
+    const dateDiff = getReleaseSortTime(rightRelease) - getReleaseSortTime(leftRelease);
+    if (dateDiff !== 0) return dateDiff;
+
+    return String(leftRelease.releaseId || '').localeCompare(String(rightRelease.releaseId || ''), 'en');
+}
+
+function compareArtistAutoMatchPriority(leftArtist, rightArtist, releasesByArtist, now) {
+    const leftReleases = releasesByArtist.get(leftArtist.name.toLowerCase().trim()) || [];
+    const rightReleases = releasesByArtist.get(rightArtist.name.toLowerCase().trim()) || [];
+    const leftTopRelease = leftReleases[0] || null;
+    const rightTopRelease = rightReleases[0] || null;
+
+    if (!leftTopRelease && !rightTopRelease) return leftArtist.name.localeCompare(rightArtist.name, 'en');
+    if (!leftTopRelease) return 1;
+    if (!rightTopRelease) return -1;
+
+    const releaseCompare = compareReleaseAutoMatchPriority(leftTopRelease, rightTopRelease, now);
+    if (releaseCompare !== 0) return releaseCompare;
+    return leftArtist.name.localeCompare(rightArtist.name, 'en');
+}
+
+function validateStatsCoverage(chartVideoIds, allStats) {
+    if (chartVideoIds.size > 0 && allStats.size === 0) {
+        throw new Error(`YouTube stats returned 0/${chartVideoIds.size} verified chart videos; refusing to overwrite chart views with zeroes.`);
     }
 
     if (chartVideoIds.size === 0) return;
@@ -1132,8 +1259,37 @@ async function main() {
         ? '  Archive baseline has YouTube views — using real delta'
         : '  No YouTube history — will approximate last week views from Spotify popularity');
 
+    const isMatchOnly = process.argv.includes('--match-only');
+    const existingYtMap = buildExistingYoutubeTrackMap(releases);
+    const existingChartVideoIds = collectExistingVideoIds(existingYtMap, track => track.verified === 'verified');
+    const allStats = new Map();
+    const matchPriorityNow = new Date();
+    const releasesByArtist = new Map();
+    for (const release of releases) {
+        const key = release.bandName.toLowerCase().trim();
+        if (!releasesByArtist.has(key)) releasesByArtist.set(key, []);
+        releasesByArtist.get(key).push(release);
+    }
+    for (const artistReleases of releasesByArtist.values()) {
+        artistReleases.sort((leftRelease, rightRelease) => compareReleaseAutoMatchPriority(leftRelease, rightRelease, matchPriorityNow));
+    }
+    const recentReleaseCount = releases.filter(release => isReleaseFromLastYear(release, matchPriorityNow)).length;
+
+    if (!isMatchOnly) {
+        console.log('\n── Priority: Refreshing verified chart video stats ──');
+        if (existingChartVideoIds.size > 0) {
+            console.log(`  Fetching current views for ${existingChartVideoIds.size} verified chart videos before matching`);
+            const priorityStats = await fetchMissingVideoStats([...existingChartVideoIds], apiKey, allStats);
+            console.log(`  Got priority stats for ${priorityStats.fetched}/${existingChartVideoIds.size} verified chart videos`);
+            validateStatsCoverage(existingChartVideoIds, allStats);
+        } else {
+            console.log('  No verified YouTube videos currently available for chart stats');
+        }
+    }
+
     // ── Step 1: Resolve YouTube channels ────────────────────────────────────
     console.log('\n── Step 1: Resolving YouTube channels ──');
+    console.log(`  Auto-match priority: ${recentReleaseCount} release(s) from the last year first, then older catalog`);
 
     const artistNames = [...new Set(releases.map(r => r.bandName))];
     const artistsToProcess = [];
@@ -1150,104 +1306,45 @@ async function main() {
         if (parsedLinks.length === 0) { noYtLink++; continue; }
         artistsToProcess.push({ name, band, parsedLinks });
     }
+    artistsToProcess.sort((leftArtist, rightArtist) => compareArtistAutoMatchPriority(leftArtist, rightArtist, releasesByArtist, matchPriorityNow));
     console.log(`  ${artistsToProcess.length} artists with YouTube links (${noYtLink} without)`);
 
-    // Resolve all to channel IDs (each artist can have multiple)
-    const videoIdArtists = []; // { videoId, artistName, linkIndex, ytUrl }
-    const needsResolve = [];   // { artist, linkIndex, parsed, ytUrl }
+    // Resolve direct/cached channel IDs now; defer API-based resolution to the
+    // Step 2 artist loop so recent releases spend quota first.
+    let deferredVideoLinkCount = 0;
+    let deferredChannelResolutionCount = 0;
 
     for (const artist of artistsToProcess) {
         const cacheKey = artist.name.toLowerCase().trim();
-        const channelIds = normalizeChannelIds(cache.channels[cacheKey] || []);
+        artist.videoIdLinks = [];
+        artist.needsResolve = [];
         for (let li = 0; li < artist.parsedLinks.length; li++) {
             const ytUrl = artist.parsedLinks[li].ytUrl;
             const p = artist.parsedLinks[li].parsed;
             const cachedLinkChannelId = cache.globalChannels[ytUrl];
             if (cachedLinkChannelId) {
-                if (!channelIds.includes(cachedLinkChannelId)) channelIds.push(cachedLinkChannelId);
+                rememberArtistChannel(cache, cacheKey, cachedLinkChannelId, ytUrl);
                 continue;
             }
 
             if (p.type === 'channelId') {
-                if (!channelIds.includes(p.value)) channelIds.push(p.value);
-                cache.globalChannels[ytUrl] = p.value;
+                rememberArtistChannel(cache, cacheKey, p.value, ytUrl);
             } else if (p.type === 'videoId') {
-                videoIdArtists.push({ videoId: p.value, artistName: artist.name, linkIndex: li, ytUrl });
+                artist.videoIdLinks.push({ videoId: p.value, ytUrl });
+                deferredVideoLinkCount++;
             } else {
-                needsResolve.push({ artist, linkIndex: li, parsed: p, ytUrl });
+                artist.needsResolve.push({ parsed: p, ytUrl });
+                deferredChannelResolutionCount++;
             }
-        }
-        if (channelIds.length > 0) {
-            cache.channels[cacheKey] = normalizeChannelIds(channelIds);
-        }
-    }
-
-    // Resolve video ID links to channel IDs
-    if (videoIdArtists.length > 0) {
-        console.log(`  Resolving ${videoIdArtists.length} video links to channels...`);
-        const vidChannels = await resolveVideoChannels(videoIdArtists.map(v => v.videoId), apiKey);
-        for (const { videoId, artistName, ytUrl } of videoIdArtists) {
-            const chId = vidChannels.get(videoId);
-            if (chId) {
-                const cacheKey = artistName.toLowerCase().trim();
-                if (!cache.channels[cacheKey]) cache.channels[cacheKey] = [];
-                if (!cache.channels[cacheKey].includes(chId)) cache.channels[cacheKey].push(chId);
-                if (ytUrl) cache.globalChannels[ytUrl] = chId;
-            }
-        }
-    }
-
-    // Resolve handles/usernames/custom URLs
-    if (needsResolve.length > 0) {
-        console.log(`  Resolving ${needsResolve.length} handles/usernames...`);
-        for (let i = 0; i < needsResolve.length; i++) {
-            if (youtubeQuotaExhausted) break;
-            const { artist, parsed: p, ytUrl } = needsResolve[i];
-            const cacheKey = artist.name.toLowerCase().trim();
-            let channelId = null;
-            if (p.type === 'handle') channelId = await resolveHandle(p.value, apiKey);
-            else if (p.type === 'username') channelId = await resolveUsername(p.value, apiKey);
-            else if (p.type === 'customUrl') channelId = await resolveCustomUrl(p.value, apiKey);
-            if (channelId) {
-                if (!cache.channels[cacheKey]) cache.channels[cacheKey] = [];
-                if (!cache.channels[cacheKey].includes(channelId)) cache.channels[cacheKey].push(channelId);
-                if (ytUrl) cache.globalChannels[ytUrl] = channelId;
-            }
-            if ((i + 1) % 50 === 0) { console.log(`    ${i + 1}/${needsResolve.length}`); saveCache(cache); }
-            await sleep(API_DELAY_MS);
         }
     }
 
     saveCache(cache);
-    const resolvedCount = artistsToProcess.filter(a => getArtistChannelIds(cache, a.name.toLowerCase().trim()).length > 0).length;
-    console.log(`  Resolved: ${resolvedCount}/${artistsToProcess.length} artists`);
-
-    // Build artist -> releases map (used by invalidation and Step 2)
-    const releasesByArtist = new Map();
-    for (const r of releases) {
-        const key = r.bandName.toLowerCase().trim();
-        if (!releasesByArtist.has(key)) releasesByArtist.set(key, []);
-        releasesByArtist.get(key).push(r);
+    const immediatelyResolvedCount = artistsToProcess.filter(a => getArtistChannelIds(cache, a.name.toLowerCase().trim()).length > 0).length;
+    console.log(`  Cached/direct channels: ${immediatelyResolvedCount}/${artistsToProcess.length} artists`);
+    if (deferredVideoLinkCount > 0 || deferredChannelResolutionCount > 0) {
+        console.log(`  Deferred ${deferredVideoLinkCount + deferredChannelResolutionCount} channel resolution(s) to the recent-first matching pass`);
     }
-
-    // Invalidate track cache when the channel set changes, or when a previous
-    // attempt left one or more tracks unmatched. This lets refreshed uploads
-    // and newly found Topic channels fill misses on later runs.
-    let invalidated = 0;
-    for (const artist of artistsToProcess) {
-        const cacheKey = artist.name.toLowerCase().trim();
-        const channelIds = getArtistChannelIds(cache, cacheKey);
-        if (channelIds.length === 0) continue;
-        const artistReleases = releasesByArtist.get(cacheKey) || [];
-        for (const r of artistReleases) {
-            if (cache.tracks[r.releaseId] && isTrackCacheStale(cache, r.releaseId, channelIds)) {
-                delete cache.tracks[r.releaseId];
-                delete cache.trackChannelSets[r.releaseId];
-                invalidated++;
-            }
-        }
-    }
-    if (invalidated > 0) console.log(`  Invalidated ${invalidated} cached track entries for re-matching`);
 
     // ── Step 2: Match release tracks to YouTube videos ──────────────────────
     console.log('\n── Step 2: Matching release tracks to YouTube videos ──');
@@ -1255,14 +1352,29 @@ async function main() {
     let totalTracksMatched = 0, totalTracksUnmatched = 0, artistsDone = 0;
     let topicChannelsAdded = 0, topicTracksMatched = 0, topicTracksUnmatched = 0;
     let stoppedForQuota = false;
+    let invalidated = 0;
     const startTime = Date.now();
 
     for (const artist of artistsToProcess) {
         if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
         const cacheKey = artist.name.toLowerCase().trim();
-        let channelIds = getArtistChannelIds(cache, cacheKey);
         const artistReleases = releasesByArtist.get(cacheKey) || [];
         if (artistReleases.length === 0) { artistsDone++; continue; }
+
+        if (artist.videoIdLinks?.length > 0 || artist.needsResolve?.length > 0) {
+            try {
+                await resolveDeferredArtistChannels(artist, apiKey, cache);
+                saveCache(cache);
+            } catch (err) {
+                if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
+                console.warn(`  Channel resolution skipped for ${artist.name}: ${err.code || err.message}`);
+            }
+        }
+
+        let channelIds = getArtistChannelIds(cache, cacheKey);
+        if (channelIds.length > 0) {
+            invalidated += invalidateStaleTrackCache(cache, artistReleases, channelIds);
+        }
 
         const uncached = artistReleases.filter(r => !cache.tracks[r.releaseId]);
         if (uncached.length > 0 && channelIds.length > 0) {
@@ -1288,7 +1400,7 @@ async function main() {
 
         const releasesNeedingTopic = getReleasesNeedingMoreMatching(artistReleases, cache);
         if (releasesNeedingTopic.length > 0 && !getCachedTopicChannelId(cache, cacheKey)) {
-            const topicChannelId = await resolveTopicChannel(artist.name, apiKey, cache);
+            const topicChannelId = await resolveTopicChannel(artist.name, cache);
             if (topicChannelId) {
                 const expandedChannelIds = normalizeChannelIds([...channelIds, topicChannelId]);
                 if (!areChannelSetsEqual(expandedChannelIds, channelIds)) {
@@ -1324,7 +1436,7 @@ async function main() {
         artistsDone++;
         if (artistsDone % 25 === 0) {
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`  ${artistsDone}/${resolvedCount} artists | ${totalTracksMatched} tracks matched | ${elapsed}s | quota: ${quotaUsed}`);
+            console.log(`  ${artistsDone}/${artistsToProcess.length} artists | ${totalTracksMatched} tracks matched | ${elapsed}s | quota: ${quotaUsed}`);
             saveCache(cache);
         }
         await sleep(API_DELAY_MS);
@@ -1333,18 +1445,16 @@ async function main() {
     saveCache(cache);
 
     console.log(`  Done: ${totalTracksMatched} tracks matched, ${totalTracksUnmatched} unmatched`);
+    if (invalidated > 0) console.log(`  Invalidated ${invalidated} cached track entries for re-matching`);
     if (stoppedForQuota) {
         console.log('  Stopped early because the YouTube API quota was exhausted; rerun after quota resets to continue matching.');
     }
     if (topicChannelsAdded > 0) {
         console.log(`  Topic fallback: ${topicChannelsAdded} channel(s), ${topicTracksMatched} tracks matched, ${topicTracksUnmatched} still unmatched`);
     }
-    if (topicLookupsThisRun > 0 || topicLookupLimitReached) {
-        console.log(`  Topic lookups: ${topicLookupsThisRun}/${TOPIC_LOOKUP_LIMIT}${topicLookupLimitReached ? ' (limit reached; rerun or raise YOUTUBE_TOPIC_LOOKUP_LIMIT)' : ''}`);
-    }
 
     // ── --match-only: Save matches to releases.json and exit ────────────────
-    if (process.argv.includes('--match-only')) {
+    if (isMatchOnly) {
         console.log('\n── Match-only mode: Saving YouTube track matches to releases.json ──');
 
         // Build map of existing youtube tracks (to preserve verified/will-not-verify)
@@ -1408,7 +1518,7 @@ async function main() {
         console.log(`  Verified:            ${verifiedCount}`);
         console.log(`  Unverified:          ${unverifiedCount}`);
         console.log(`  Will-not-verify:     ${willNotVerifyCount}`);
-        console.log(`  YouTube API quota:   ~${quotaUsed} units`);
+        printQuotaSummary('  ');
 
         if (unverifiedCount > 0) {
             console.log(`\nPlease verify ${unverifiedCount} unverified YouTube link(s) in releases.json`);
@@ -1420,26 +1530,9 @@ async function main() {
     }
 
     // ── Step 3: Fetch view counts only for verified video IDs ───────────────
-    // Build a map of existing youtube tracks from releases.json (need verified status)
-    const existingYtMap = new Map(); // releaseId -> Map<videoId, { verified, name, views, publishedAt }>
-    for (const r of releases) {
-        if (r.youtubeTracks?.length > 0) {
-            const trackMap = new Map();
-            for (const t of r.youtubeTracks) {
-                trackMap.set(t.videoId, {
-                    verified: t.verified || 'unverified',
-                    name: t.name,
-                    views: Number(t.views || 0),
-                    publishedAt: t.publishedAt || null
-                });
-            }
-            existingYtMap.set(r.releaseId, trackMap);
-        }
-    }
-
     // Collect video IDs for verified and unverified tracks (skip will-not-verify)
     const fetchVideoIds = new Set();
-    const chartVideoIds = new Set();
+    const chartVideoIds = new Set(existingChartVideoIds);
     let totalMatchedIds = 0;
     for (const r of releases) {
         const trackMatches = cache.tracks[r.releaseId] || [];
@@ -1459,10 +1552,16 @@ async function main() {
             if (info.verified === 'verified') chartVideoIds.add(vid);
         }
     }
-    console.log(`\n── Step 3: Fetching view counts for ${fetchVideoIds.size} verified+unverified videos (of ${totalMatchedIds} total matched) ──`);
-    const allStats = await getVideoStatsBatch([...fetchVideoIds], apiKey);
-    console.log(`  Got stats for ${allStats.size} videos`);
-    validateStatsCoverage(fetchVideoIds, chartVideoIds, allStats);
+    const remainingStatsVideoIds = [...fetchVideoIds].filter(videoId => !allStats.has(videoId));
+    console.log(`\n── Step 3: Fetching remaining view counts for ${fetchVideoIds.size} verified+unverified videos (of ${totalMatchedIds} total matched) ──`);
+    if (remainingStatsVideoIds.length > 0 && !youtubeQuotaExhausted) {
+        const remainingStats = await fetchMissingVideoStats(remainingStatsVideoIds, apiKey, allStats);
+        console.log(`  Got stats for ${remainingStats.fetched}/${remainingStats.requested} remaining videos`);
+    } else if (remainingStatsVideoIds.length > 0) {
+        console.log(`  Skipped ${remainingStatsVideoIds.length} remaining videos because YouTube quota is exhausted`);
+    }
+    console.log(`  Stats available for ${allStats.size}/${fetchVideoIds.size} videos`);
+    validateStatsCoverage(chartVideoIds, allStats);
 
     // ── Step 4: Compute per-release total views and update releases.json ─────
     console.log('\n── Step 4: Computing YouTube views per release ──');
@@ -1810,10 +1909,12 @@ async function main() {
         console.log(`  #${i + 1} ${name} | views: ${(cr.youtubeViews || 0).toLocaleString()} → pop: ${cr.popularity}`);
     }
 
-    console.log(`\nYouTube API quota used: ~${quotaUsed} units (of 10,000 daily)`);
+    console.log('');
+    printQuotaSummary();
 }
 
 main().catch(err => {
     console.error('Fatal error:', err);
+    if (!quotaSummaryPrinted) printQuotaSummary();
     process.exit(1);
 });
