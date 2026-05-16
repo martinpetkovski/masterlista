@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-05-16T13:43:00Z",
-    "sourceLastUpdated":  "2026-05-15T19:41:19Z",
-    "generatedAt":  "2026-05-16T13:43:00Z",
+    "lastUpdated":  "2026-05-16T17:54:16Z",
+    "sourceLastUpdated":  "2026-05-16T17:39:24Z",
+    "generatedAt":  "2026-05-16T17:54:16Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  151,
+    "totalMatched":  153,
     "totalMentioned":  99,
-    "sourceArticleCount":  32526,
+    "sourceArticleCount":  32815,
     "articles":  [
+                     {
+                         "title":  "Ристо Вртев (Архангел) по 23 години повторно во студио: За новата музика, концертот и оловните дни",
+                         "link":  "https://trn.mk/risto-vrtev-intervju/",
+                         "description":  "",
+                         "date":  "2026-05-16",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/05/r-vrtev-768x511.jpg",
+                         "matchedArtists":  [
+                                                "Архангел"
+                                            ]
+                     },
+                     {
+                         "title":  "(Видео) Фудбалери на Вардар славеа титула со навредлива песна за Каролина Гочева: Осуда од Борко Ристовски, ФФМ отвори постапка",
+                         "link":  "https://libertas.mk/fudbaleri-na-vardar-slavea-titula-so-navredliva-pesna-za-karolina-gocheva-osuda-od-borko-ristovski-ffm-otvori-postapka/",
+                         "description":  "Министерот за Спорт на Република Македонија, Борко Ристовски ги осуди последните настапи на ФК Вардар при прославата на шампионската титула. По освојувањето на титулата во текот на вчерашниот ден, ФК Вардар преку социјалните мрежи испрати многу лоша порака со скандирањето на навивачки песни во ко...",
+                         "date":  "2026-05-16",
+                         "source":  "Либертас",
+                         "siteUrl":  "https://libertas.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=libertas.mk\u0026sz=32",
+                         "thumbnail":  "https://libertas.mk/wp-content/uploads/2026/05/borko-1170x683-1-768x448.jpg",
+                         "matchedArtists":  [
+                                                "Каролина Гочева"
+                                            ]
+                     },
                      {
                          "title":  "Игор Џамбазов: Имам десет работи за Тоше што нема да ги кажам",
                          "link":  "https://www.slobodenpecat.mk/igor-dzhambazov-imam-deset-raboti-za-toshe-shto-nema-da-gi-kazham/",
@@ -1985,6 +2011,32 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Ристо Вртев (Архангел) по 23 години повторно во студио: За новата музика, концертот и оловните дни",
+                        "link":  "https://trn.mk/risto-vrtev-intervju/",
+                        "description":  "",
+                        "date":  "2026-05-16",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/05/r-vrtev-768x511.jpg",
+                        "matchedArtists":  [
+                                               "Архангел"
+                                           ]
+                    },
+                    {
+                        "title":  "(Видео) Фудбалери на Вардар славеа титула со навредлива песна за Каролина Гочева: Осуда од Борко Ристовски, ФФМ отвори постапка",
+                        "link":  "https://libertas.mk/fudbaleri-na-vardar-slavea-titula-so-navredliva-pesna-za-karolina-gocheva-osuda-od-borko-ristovski-ffm-otvori-postapka/",
+                        "description":  "Министерот за Спорт на Република Македонија, Борко Ристовски ги осуди последните настапи на ФК Вардар при прославата на шампионската титула. По освојувањето на титулата во текот на вчерашниот ден, ФК Вардар преку социјалните мрежи испрати многу лоша порака со скандирањето на навивачки песни во ко...",
+                        "date":  "2026-05-16",
+                        "source":  "Либертас",
+                        "siteUrl":  "https://libertas.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=libertas.mk\u0026sz=32",
+                        "thumbnail":  "https://libertas.mk/wp-content/uploads/2026/05/borko-1170x683-1-768x448.jpg",
+                        "matchedArtists":  [
+                                               "Каролина Гочева"
+                                           ]
+                    },
                     {
                         "title":  "Игор Џамбазов: Имам десет работи за Тоше што нема да ги кажам",
                         "link":  "https://www.slobodenpecat.mk/igor-dzhambazov-imam-deset-raboti-za-toshe-shto-nema-da-gi-kazham/",
