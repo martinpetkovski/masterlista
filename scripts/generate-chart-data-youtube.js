@@ -757,6 +757,11 @@ function getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId) {
     return null;
 }
 
+function getBaselineVideoViews(baselineRelease, videoId) {
+    const baselineViews = baselineRelease?.youtubeVideoViews?.[videoId];
+    return Number.isFinite(Number(baselineViews)) ? Number(baselineViews) : null;
+}
+
 function getSnapshotVideoIds(snapshotRelease) {
     return Array.isArray(snapshotRelease?.youtubeVideoIds)
         ? snapshotRelease.youtubeVideoIds.filter(Boolean)
@@ -775,7 +780,9 @@ function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineM
     }
 
     const baselineVideoIdSet = new Set(baselineVideoIds);
+    const hasBaselineVideoViews = !!(baselineRelease?.youtubeVideoViews && Object.keys(baselineRelease.youtubeVideoViews).length > 0);
     let comparableViews = 0;
+    let baselineComparableViews = 0;
     let hasMissingVideoViews = false;
     let newlyPublishedVideoCount = 0;
     let newlyLinkedOldVideoCount = 0;
@@ -788,11 +795,24 @@ function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineM
         const eligibleReleaseWeekVideo = publishedDuringChartWeek && wasVideoPublishedOnReleaseDate(videoId, release, statsByVideoId);
 
         if (existedInBaseline || eligibleReleaseWeekVideo) {
+            let baselineVideoViews = 0;
+            if (existedInBaseline && hasBaselineVideoViews) {
+                baselineVideoViews = getBaselineVideoViews(baselineRelease, videoId);
+                const publishedAt = getVideoPublishedDate(videoId, release, statsByVideoId);
+                const hasTrustedBaselineVideoViews = baselineVideoViews !== null && (baselineVideoViews > 0 || (publishedAt && baselineMonday && publishedAt >= baselineMonday));
+                if (!hasTrustedBaselineVideoViews) {
+                    deferredMismatchedVideoCount++;
+                    continue;
+                }
+            }
             const videoViews = getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId);
             if (videoViews === null) {
                 hasMissingVideoViews = true;
             } else {
                 comparableViews += videoViews;
+            }
+            if (existedInBaseline && hasBaselineVideoViews) {
+                baselineComparableViews += baselineVideoViews;
             }
             includedVideoIds.push(videoId);
             if (eligibleReleaseWeekVideo) newlyPublishedVideoCount++;
@@ -804,10 +824,12 @@ function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineM
     }
 
     const baselineViews = Number(baselineRelease?.youtubeViews || 0);
+    const previousComparableViews = hasBaselineVideoViews ? baselineComparableViews : baselineViews;
     return {
         canCompute: !hasMissingVideoViews,
         comparableViews,
-        rawDelta: comparableViews - baselineViews,
+        baselineComparableViews,
+        rawDelta: comparableViews - previousComparableViews,
         hasExcludedNewlyLinkedVideos: newlyLinkedOldVideoCount > 0 || deferredMismatchedVideoCount > 0,
         newlyPublishedVideoCount,
         newlyLinkedOldVideoCount,

@@ -1036,9 +1036,17 @@ $prevReleasesDeduped = @(Invoke-DeduplicateCollabs $previousWeekReleases | Where
 # Pre-compute viewsDelta (current - previous week youtubeViews) and attach to each release
 $prevViewsMap = @{}
 $prevVideoIdsMap = @{}
+$prevVideoViewsMap = @{}
 foreach ($pr in $prevReleasesDeduped) {
     $prevViewsMap[$pr.releaseId] = [int]($pr.youtubeViews -as [int])
     if ($pr.youtubeVideoIds -and $pr.youtubeVideoIds.Count -gt 0) { $prevVideoIdsMap[$pr.releaseId] = @($pr.youtubeVideoIds) }
+    if ($pr.youtubeVideoViews) {
+        $videoViews = @{}
+        foreach ($property in @($pr.youtubeVideoViews.PSObject.Properties)) {
+            if ($property.Name) { $videoViews[[string]$property.Name] = [long]($property.Value -as [long]) }
+        }
+        if ($videoViews.Count -gt 0) { $prevVideoViewsMap[$pr.releaseId] = $videoViews }
+    }
 }
 
 function Set-DeltaVideoIds {
@@ -1164,6 +1172,7 @@ function Get-ComparableVideoDelta {
         [array]$currentVideoIds,
         [hashtable]$currentVideoViewsMap,
         [array]$previousVideoIds,
+        [hashtable]$previousVideoViewsMap,
         [long]$previousViews,
         $previousChartMonday
     )
@@ -1172,6 +1181,7 @@ function Get-ComparableVideoDelta {
         canCompute = $false
         rawDelta = $null
         comparableViews = 0L
+        baselineComparableViews = 0L
         hasExcludedNewlyLinkedVideos = $false
         newlyPublishedVideoCount = 0
         newlyLinkedOldVideoCount = 0
@@ -1192,7 +1202,9 @@ function Get-ComparableVideoDelta {
     $releaseDate = Get-ReleaseDeltaDate $release
     $included = [System.Collections.ArrayList]::new()
     [long]$comparableViews = 0
+    [long]$baselineComparableViews = 0
     $missingViews = $false
+    $hasPreviousVideoViews = ($previousVideoViewsMap -and $previousVideoViewsMap.Count -gt 0)
 
     foreach ($videoIdRaw in @($currentVideoIds)) {
         $videoId = [string]$videoIdRaw
@@ -1206,10 +1218,27 @@ function Get-ComparableVideoDelta {
         $eligibleReleaseWeekVideo = $publishedDuringChartWeek -and (Test-DateSameDay $publishedDateMap[$videoId] $releaseDate)
 
         if ($existedInBaseline -or $eligibleReleaseWeekVideo) {
+            [long]$baselineVideoViewsForDelta = 0
+            if ($existedInBaseline -and $hasPreviousVideoViews) {
+                $hasTrustedBaselineVideoViews = $false
+                if ($previousVideoViewsMap.ContainsKey($videoId)) {
+                    $baselineVideoViewsForDelta = [long]($previousVideoViewsMap[$videoId] -as [long])
+                    $publishedAt = if ($publishedDateMap.ContainsKey($videoId)) { $publishedDateMap[$videoId] } else { $null }
+                    $hasTrustedBaselineVideoViews = ($baselineVideoViewsForDelta -gt 0) -or ($publishedAt -and $previousChartMonday -and $publishedAt -ge $previousChartMonday.Date)
+                }
+                if (-not $hasTrustedBaselineVideoViews) {
+                    $result.hasExcludedNewlyLinkedVideos = $true
+                    $result.deferredMismatchedVideoCount++
+                    continue
+                }
+            }
             if ($currentVideoViewsMap -and $currentVideoViewsMap.ContainsKey($videoId)) {
                 $comparableViews += [long]($currentVideoViewsMap[$videoId] -as [long])
             } else {
                 $missingViews = $true
+            }
+            if ($existedInBaseline -and $hasPreviousVideoViews) {
+                $baselineComparableViews += $baselineVideoViewsForDelta
             }
             [void]$included.Add($videoId)
             if ($eligibleReleaseWeekVideo) { $result.newlyPublishedVideoCount++ }
@@ -1223,10 +1252,12 @@ function Get-ComparableVideoDelta {
     }
 
     $result.comparableViews = $comparableViews
+    $result.baselineComparableViews = $baselineComparableViews
     $result.includedVideoIds = @($included)
     if (-not $missingViews) {
         $result.canCompute = $true
-        $result.rawDelta = $comparableViews - $previousViews
+        $previousComparableViews = if ($hasPreviousVideoViews) { $baselineComparableViews } else { $previousViews }
+        $result.rawDelta = $comparableViews - $previousComparableViews
     }
 
     return [PSCustomObject]$result
@@ -1307,6 +1338,7 @@ function Get-ViewsDelta {
         [object]$release,
         [hashtable]$previousViewsMap,
         [hashtable]$previousVideoIdsMap,
+        [hashtable]$previousVideoViewsMap,
         $previousChartMonday,
         [switch]$UseCurrentTrackVideoFilter
     )
@@ -1334,8 +1366,9 @@ function Get-ViewsDelta {
     if ($previousViewsMap.ContainsKey($release.releaseId)) {
         $prevViews = [long]($previousViewsMap[$release.releaseId] -as [long])
         $prevVideoIds = if ($previousVideoIdsMap -and $previousVideoIdsMap.ContainsKey($release.releaseId)) { @($previousVideoIdsMap[$release.releaseId]) } else { @() }
+        $prevVideoViews = if ($previousVideoViewsMap -and $previousVideoViewsMap.ContainsKey($release.releaseId)) { $previousVideoViewsMap[$release.releaseId] } else { @{} }
         if ($prevVideoIds.Count -gt 0 -and $currentVideoIds.Count -gt 0) {
-            $videoDelta = Get-ComparableVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousVideoIds $prevVideoIds -previousViews $prevViews -previousChartMonday $previousChartMonday
+            $videoDelta = Get-ComparableVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousVideoIds $prevVideoIds -previousVideoViewsMap $prevVideoViews -previousViews $prevViews -previousChartMonday $previousChartMonday
             if ($videoDelta.canCompute) {
                 Set-DeltaVideoIds $release $videoDelta.includedVideoIds
                 return $videoDelta.rawDelta
@@ -1435,6 +1468,17 @@ function Get-VideoIdsMapFromReleases {
     return $videoIdsMap
 }
 
+function Get-VideoViewsMapFromReleases {
+    param([array]$snapshotReleases)
+    $videoViewsMap = @{}
+    foreach ($release in @($snapshotReleases)) {
+        if ($release.youtubeVideoViews) {
+            $videoViewsMap[$release.releaseId] = Get-ReleaseVideoViewsMapForDelta -release $release
+        }
+    }
+    return $videoViewsMap
+}
+
 function Get-SnapshotViewsDeltaMap {
     param(
         [array]$snapshotReleases,
@@ -1446,9 +1490,10 @@ function Get-SnapshotViewsDeltaMap {
 
     $baselineViewsMap = Get-ViewsMapFromReleases $baselineReleases
     $baselineVideoIdsMap = Get-VideoIdsMapFromReleases $baselineReleases
+    $baselineVideoViewsMap = Get-VideoViewsMapFromReleases $baselineReleases
     $baselineMonday = Get-ChartMondayFromWeekId $baselineWeekId
     foreach ($release in @($snapshotReleases)) {
-        $snapshotDeltaMap[$release.releaseId] = Get-ViewsDelta -release $release -previousViewsMap $baselineViewsMap -previousVideoIdsMap $baselineVideoIdsMap -previousChartMonday $baselineMonday
+        $snapshotDeltaMap[$release.releaseId] = Get-ViewsDelta -release $release -previousViewsMap $baselineViewsMap -previousVideoIdsMap $baselineVideoIdsMap -previousVideoViewsMap $baselineVideoViewsMap -previousChartMonday $baselineMonday
     }
     return $snapshotDeltaMap
 }
@@ -1495,12 +1540,12 @@ if ($deltaBaselineWeek) {
 }
 
 foreach ($r in $mainReleasesDeduped) {
-    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
+    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousVideoViewsMap $prevVideoViewsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 # Also attach viewsDelta to original $releases so it's included in chartData output
 foreach ($r in $releases) {
-    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
+    $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousVideoViewsMap $prevVideoViewsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
 }
 
@@ -1811,11 +1856,13 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
     # Build previous-week views map for delta calculation from the full snapshot.
     $pvm = @{}
     $pvidm = @{}
+    $pvvm = @{}
     $pcm = $null
     if ($prevSnapshotReleases.Count -gt 0) {
         foreach ($r in @($prevSnapshotReleases)) {
             $pvm[$r.releaseId] = [int]($r.youtubeViews -as [int])
             if ($r.youtubeVideoIds -and $r.youtubeVideoIds.Count -gt 0) { $pvidm[$r.releaseId] = @($r.youtubeVideoIds) }
+            if ($r.youtubeVideoViews) { $pvvm[$r.releaseId] = Get-ReleaseVideoViewsMapForDelta -release $r }
         }
         $pcm = Get-ChartMondayFromWeekId $prevWeek.weekId
     }
@@ -1823,7 +1870,7 @@ for ($wi = 0; $wi -lt $weeksOldestFirst.Count; $wi++) {
     # Deduplicate and attach viewsDelta for this week
     $thisDedup = @(Invoke-DeduplicateCollabs $thisWeek.releases | Where-Object { Test-ReleaseChartEligibility $_ })
     foreach ($r in $thisDedup) {
-        $delta = Get-ViewsDelta -release $r -previousViewsMap $pvm -previousVideoIdsMap $pvidm -previousChartMonday $pcm
+        $delta = Get-ViewsDelta -release $r -previousViewsMap $pvm -previousVideoIdsMap $pvidm -previousVideoViewsMap $pvvm -previousChartMonday $pcm
         $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
     }
     $cachedWeekDedup[$wkId] = $thisDedup

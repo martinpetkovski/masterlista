@@ -11,6 +11,8 @@ This project ranks current charts by `viewsDelta`, not by total YouTube views. T
 ## YouTube Video Snapshot Rule
 
 - A YouTube video's views may count toward `viewsDelta` only if that same `videoId` existed in the baseline snapshot for the same `releaseId`.
+- When the baseline snapshot has `youtubeVideoViews`, compute the delta per video: `currentVideoViews[videoId] - baselineVideoViews[videoId]`. Do not subtract the baseline release's aggregate `youtubeViews` from a sum of current per-video views.
+- A baseline per-video value of `0` for a video published before the baseline week is not a trustworthy previous view count. Treat it like a missing baseline and defer that video's views instead of counting from zero.
 - If a video is newly added to an older song/release and that `videoId` was not in the baseline snapshot, its historical views must not be counted this week.
 - If the current row has `youtubeVideoIds` but the baseline row has no `youtubeVideoIds`, do not fall back to `current youtubeViews - baseline youtubeViews`. Use `0` delta for that release until the next weekly snapshot creates a comparable video baseline.
 - If the release itself is new in the current chart window, only videos uploaded on the release date can count as the release-week delta.

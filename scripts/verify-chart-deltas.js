@@ -143,6 +143,15 @@ function isSameDay(left, right) {
     return !!(left && right && left.getTime() === right.getTime());
 }
 
+function getBaselineVideoViewsMap(snapshotRelease) {
+    const viewsMap = new Map();
+    if (!snapshotRelease?.youtubeVideoViews) return viewsMap;
+    for (const [videoId, views] of Object.entries(snapshotRelease.youtubeVideoViews)) {
+        viewsMap.set(videoId, Number(views || 0));
+    }
+    return viewsMap;
+}
+
 function expectedLiveDelta(release, baselineRelease, baselineMonday) {
     const currentViews = Number(release?.youtubeViews || 0);
     if (currentViews <= 0) return null;
@@ -168,6 +177,8 @@ function expectedLiveDelta(release, baselineRelease, baselineMonday) {
     const baselineVideoIds = Array.isArray(baselineRelease.youtubeVideoIds)
         ? baselineRelease.youtubeVideoIds.filter(Boolean)
         : [];
+    const baselineVideoViews = getBaselineVideoViewsMap(baselineRelease);
+    const hasBaselineVideoViews = baselineVideoViews.size > 0;
 
     if (baselineVideoIds.length === 0) {
         return currentVideoIds.length > 0 ? 0 : Math.max(0, currentViews - baselineViews);
@@ -175,15 +186,25 @@ function expectedLiveDelta(release, baselineRelease, baselineMonday) {
 
     const baselineVideoIdSet = new Set(baselineVideoIds);
     let comparableViews = 0;
+    let baselineComparableViews = 0;
     for (const videoId of currentVideoIds) {
         const publishedAt = currentSnapshot.videoDates.get(videoId);
         const releaseWeekVideo = publishedAt && baselineMonday && publishedAt >= baselineMonday && isSameDay(publishedAt, releaseDate);
         if (baselineVideoIdSet.has(videoId) || releaseWeekVideo) {
+            let baselineVideoViewsForDelta = 0;
+            if (baselineVideoIdSet.has(videoId) && hasBaselineVideoViews) {
+                baselineVideoViewsForDelta = baselineVideoViews.has(videoId) ? Number(baselineVideoViews.get(videoId) || 0) : null;
+                const hasTrustedBaselineVideoViews = baselineVideoViewsForDelta !== null && (baselineVideoViewsForDelta > 0 || (publishedAt && baselineMonday && publishedAt >= baselineMonday));
+                if (!hasTrustedBaselineVideoViews) continue;
+            }
             comparableViews += Number(currentSnapshot.videoViews.get(videoId) || 0);
+            if (baselineVideoIdSet.has(videoId) && hasBaselineVideoViews) {
+                baselineComparableViews += baselineVideoViewsForDelta;
+            }
         }
     }
 
-    return Math.max(0, comparableViews - baselineViews);
+    return Math.max(0, comparableViews - (hasBaselineVideoViews ? baselineComparableViews : baselineViews));
 }
 
 function expectedArchiveDelta(snapshotRelease, release, baselineRelease, baselineMonday) {
@@ -210,26 +231,38 @@ function expectedArchiveDelta(snapshotRelease, release, baselineRelease, baselin
     const baselineVideoIds = Array.isArray(baselineRelease.youtubeVideoIds)
         ? baselineRelease.youtubeVideoIds.filter(Boolean)
         : [];
+    const baselineVideoViews = getBaselineVideoViewsMap(baselineRelease);
+    const hasBaselineVideoViews = baselineVideoViews.size > 0;
 
     if (snapshot.videoIds.length > 0 && baselineVideoIds.length === 0) return 0;
     if (snapshot.videoIds.length === 0) return Math.max(0, snapshotViews - baselineViews);
 
     const baselineVideoIdSet = new Set(baselineVideoIds);
     const hasSnapshotVideoViews = !!(snapshotRelease?.youtubeVideoViews && Object.keys(snapshotRelease.youtubeVideoViews).length > 0);
-    if (!hasSnapshotVideoViews && snapshot.videoIds.every(videoId => baselineVideoIdSet.has(videoId))) {
+    if (!hasSnapshotVideoViews && !hasBaselineVideoViews && snapshot.videoIds.every(videoId => baselineVideoIdSet.has(videoId))) {
         return Math.max(0, snapshotViews - baselineViews);
     }
 
     let comparableViews = 0;
+    let baselineComparableViews = 0;
     for (const videoId of snapshot.videoIds) {
         const publishedAt = snapshot.videoDates.get(videoId);
         const releaseWeekVideo = publishedAt && baselineMonday && publishedAt >= baselineMonday && isSameDay(publishedAt, releaseDate);
         if (baselineVideoIdSet.has(videoId) || releaseWeekVideo) {
+            let baselineVideoViewsForDelta = 0;
+            if (baselineVideoIdSet.has(videoId) && hasBaselineVideoViews) {
+                baselineVideoViewsForDelta = baselineVideoViews.has(videoId) ? Number(baselineVideoViews.get(videoId) || 0) : null;
+                const hasTrustedBaselineVideoViews = baselineVideoViewsForDelta !== null && (baselineVideoViewsForDelta > 0 || (publishedAt && baselineMonday && publishedAt >= baselineMonday));
+                if (!hasTrustedBaselineVideoViews) continue;
+            }
             comparableViews += Number(snapshot.videoViews.get(videoId) || 0);
+            if (baselineVideoIdSet.has(videoId) && hasBaselineVideoViews) {
+                baselineComparableViews += baselineVideoViewsForDelta;
+            }
         }
     }
 
-    return Math.max(0, comparableViews - baselineViews);
+    return Math.max(0, comparableViews - (hasBaselineVideoViews ? baselineComparableViews : baselineViews));
 }
 
 function main() {
