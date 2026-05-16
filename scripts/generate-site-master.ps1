@@ -1344,6 +1344,9 @@ function Get-ViewsDelta {
                 return $null
             }
         }
+        if ($currentVideoIds.Count -gt 0 -and $prevVideoIds.Count -eq 0) {
+            return 0
+        }
         if ($prevViews -le 0) {
             $newVideoDelta = Get-NewlyPublishedVideoDelta -release $release -currentVideoIds $currentVideoIds -currentVideoViewsMap $currentVideoViewsMap -previousChartMonday $previousChartMonday -currentViews $curViews
             if ($newVideoDelta.canCompute -and [long]$newVideoDelta.views -gt 0) {

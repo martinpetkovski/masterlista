@@ -757,9 +757,19 @@ function getSnapshotVideoViews(snapshotRelease, videoId, statsByVideoId) {
     return null;
 }
 
+function getSnapshotVideoIds(snapshotRelease) {
+    return Array.isArray(snapshotRelease?.youtubeVideoIds)
+        ? snapshotRelease.youtubeVideoIds.filter(Boolean)
+        : [];
+}
+
+function hasVideoSnapshot(snapshotRelease) {
+    return getSnapshotVideoIds(snapshotRelease).length > 0;
+}
+
 function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineMonday, release, statsByVideoId) {
-    const snapshotVideoIds = Array.isArray(snapshotRelease?.youtubeVideoIds) ? snapshotRelease.youtubeVideoIds : [];
-    const baselineVideoIds = Array.isArray(baselineRelease?.youtubeVideoIds) ? baselineRelease.youtubeVideoIds : [];
+    const snapshotVideoIds = getSnapshotVideoIds(snapshotRelease);
+    const baselineVideoIds = getSnapshotVideoIds(baselineRelease);
     if (snapshotVideoIds.length === 0 || baselineVideoIds.length === 0) {
         return { canCompute: false, hasExcludedNewlyLinkedVideos: false, includedVideoIds: [] };
     }
@@ -807,7 +817,7 @@ function computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineM
 }
 
 function computeNewlyPublishedVideoViews(snapshotRelease, baselineMonday, release, statsByVideoId, currentViews = null) {
-    const snapshotVideoIds = Array.isArray(snapshotRelease?.youtubeVideoIds) ? snapshotRelease.youtubeVideoIds : [];
+    const snapshotVideoIds = getSnapshotVideoIds(snapshotRelease);
     if (snapshotVideoIds.length === 0) return { canCompute: false, views: 0, videoCount: 0, allVideosAreNew: false, includedVideoIds: [] };
 
     let views = 0;
@@ -880,6 +890,7 @@ function computeArchiveViewsDelta(snapshotRelease, baselineRelease, baselineMond
 
     if (baselineRelease) {
         const baselineViews = Number(baselineRelease.youtubeViews || 0);
+        if (hasVideoSnapshot(snapshotRelease) && !hasVideoSnapshot(baselineRelease)) return 0;
         const videoDelta = computeComparableVideoDelta(snapshotRelease, baselineRelease, baselineMonday, release, null);
         if (videoDelta.canCompute) return videoDelta.rawDelta;
         if (videoDelta.hasExcludedNewlyLinkedVideos) return null;
@@ -1705,6 +1716,7 @@ async function main() {
         let videoFilteredCount = 0;
         let deferredVideoDeltaCount = 0;
         let newlyLinkedZeroDeltaCount = 0;
+        let missingVideoBaselineZeroDeltaCount = 0;
         let missingBaselineCount = 0;
         let negativeDeltaCount = 0;
 
@@ -1750,15 +1762,21 @@ async function main() {
                         if (videoDelta.newlyLinkedOldVideoCount > 0) videoFilteredCount++;
                         if (videoDelta.deferredMismatchedVideoCount > 0) deferredVideoDeltaCount++;
                     } else if (prev.youtubeViews > 0) {
-                        // No per-video data in prev week — fall back to total comparison
-                        const currentViews = cr.youtubeViews || 0;
-                        const rawDelta = currentViews - prev.youtubeViews;
-                        if (rawDelta < 0) {
-                            flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
-                            flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
-                            negativeDeltaCount++;
+                        if (hasVideoSnapshot(cr)) {
+                            // Current has video IDs but the baseline does not, so any newly linked old video
+                            // would be indistinguishable from real weekly growth. Wait for the next snapshot.
+                            cr._viewDelta = 0;
+                            missingVideoBaselineZeroDeltaCount++;
+                        } else {
+                            const currentViews = cr.youtubeViews || 0;
+                            const rawDelta = currentViews - prev.youtubeViews;
+                            if (rawDelta < 0) {
+                                flagNegativeViewsDelta(cr, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
+                                flagNegativeViewsDelta(rel, deltaBaselineWeek?.weekId, currentViews, prev.youtubeViews);
+                                negativeDeltaCount++;
+                            }
+                            cr._viewDelta = Math.max(0, rawDelta);
                         }
-                        cr._viewDelta = Math.max(0, rawDelta);
                     } else {
                         // Older release/link had no previous YouTube baseline. Its newly added
                         // historical views should start contributing only after this snapshot.
@@ -1801,6 +1819,9 @@ async function main() {
         }
         if (newlyLinkedZeroDeltaCount > 0) {
             console.log(`  ${newlyLinkedZeroDeltaCount} older release(s) had newly added YouTube links with no baseline — using 0 delta`);
+        }
+        if (missingVideoBaselineZeroDeltaCount > 0) {
+            console.log(`  ${missingVideoBaselineZeroDeltaCount} release(s) had current video snapshots but no baseline video snapshot — using 0 delta`);
         }
         if (missingBaselineCount > 0) {
             console.log(`  ${missingBaselineCount} older release(s) had YouTube views but no archive baseline — skipping delta`);
