@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-17T10:51:51.432Z",
+  "generatedAt": "2026-05-17T17:17:22.726Z",
   "scoreMode": "line_changes",
-  "totalContributions": 621901,
-  "totalLineChanges": 621901,
+  "totalContributions": 621909,
+  "totalLineChanges": 621909,
   "leaderboardContributions": 13185,
   "leaderboardLineChanges": 13185,
-  "systemContributions": 608716,
-  "communityContributions": 608716,
-  "communityLineChanges": 608716,
+  "systemContributions": 608724,
+  "communityContributions": 608724,
+  "communityLineChanges": 608724,
   "totalContributors": 1,
   "leaderboard": [
     {
@@ -16,9 +16,9 @@
       "name": "Community",
       "avatar_url": "",
       "html_url": "",
-      "contributions": 608716,
-      "lineChanges": 608716,
-      "lastContributionAt": "2026-05-13T12:51:03Z",
+      "contributions": 608724,
+      "lineChanges": 608724,
+      "lastContributionAt": "2026-05-17T17:16:41Z",
       "system": true,
       "community": true,
       "rank": null
@@ -38,6 +38,35 @@
     }
   ],
   "records": [
+    {
+      "prNumber": 453,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/453",
+      "title": "MMM: Предлог промени",
+      "mergedAt": "2026-05-17T17:16:41Z",
+      "createdAt": "2026-05-17T17:16:31Z",
+      "submittedAt": "2026-05-17T17:16:32.100Z",
+      "updatedAt": "2026-05-17T17:16:43Z",
+      "additions": 7,
+      "deletions": 1,
+      "lineChanges": 8,
+      "contributionCount": 8,
+      "contributionScore": 8,
+      "submitter": {
+        "id": null,
+        "login": "toplistamk",
+        "name": "Community",
+        "avatar_url": "",
+        "html_url": "https://github.com/toplistamk"
+      },
+      "system": true,
+      "community": true,
+      "status": "merged",
+      "source": "site",
+      "files": [
+        "data/dynamic/editable/releases.json"
+      ],
+      "baseBranch": "master"
+    },
     {
       "prNumber": 452,
       "prUrl": "https://github.com/martinpetkovski/masterlista/pull/452",
@@ -10108,6 +10137,6 @@
     }
   ],
   "pendingRecords": [],
-  "totalRecords": 371,
+  "totalRecords": 372,
   "totalPendingRecords": 0
 }
