@@ -92,15 +92,23 @@
             header.classList.remove('nav-collapsed');
             // Force a layout so measurements are fresh
             void header.offsetWidth;
-            // Check if the nav links overflow the header
-            var headerWidth = header.clientWidth;
+            // Check if the nav links overflow the header or run into page actions.
             var contentEl = header.querySelector('.header-content');
-            if (contentEl && contentEl.scrollWidth > headerWidth + 2) {
+            var buttonsEl = header.querySelector('.header-buttons');
+            var headerRect = header.getBoundingClientRect();
+            var navRect = navMenu.getBoundingClientRect();
+            var buttonsRect = buttonsEl ? buttonsEl.getBoundingClientRect() : null;
+            var contentOverflow = contentEl && contentEl.scrollWidth > contentEl.clientWidth + 2;
+            var navHeaderOverflow = navRect.width > 0 && navRect.right > headerRect.right - 2;
+            var navActionOverlap = buttonsRect && navRect.width > 0 && navRect.right > buttonsRect.left - 2;
+            if (contentOverflow || navHeaderOverflow || navActionOverlap) {
                 header.classList.add('nav-collapsed');
             }
         }
         // Run after layout settles
         checkNavOverflow();
+        setTimeout(checkNavOverflow, 100);
+        window.addEventListener('load', checkNavOverflow);
         window.addEventListener('resize', checkNavOverflow);
         // Re-check when fonts finish loading (widths may change)
         if (document.fonts && document.fonts.ready) {
