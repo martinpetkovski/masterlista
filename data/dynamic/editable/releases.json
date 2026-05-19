@@ -125,7 +125,7 @@
           "name": "Ah Dunya",
           "videoId": "YJwPI_XT3GQ",
           "url": "https://www.youtube.com/watch?v=YJwPI_XT3GQ",
-          "verified": "unverified",
+          "verified": "verified",
           "publishedAt": "2026-05-17"
         }
       ],
@@ -157,7 +157,7 @@
           "name": "Koga Edno Pravat Dve",
           "videoId": "t-1ng8HmZ2k",
           "url": "https://www.youtube.com/watch?v=t-1ng8HmZ2k",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 44,
           "publishedAt": "2026-05-17"
         }
@@ -190,7 +190,7 @@
           "name": "Daj mi shansa",
           "videoId": "_hZStSRmM0Q",
           "url": "https://www.youtube.com/watch?v=_hZStSRmM0Q",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 215,
           "publishedAt": "2026-05-17"
         }
@@ -391,7 +391,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0MfAMHQQ7RLYp5ApJEbTyb?si=3RqroEZlTgiu-xxdYIbWug",
       "effectiveReleaseDate": "2026-05-14",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Devojka so kosa sharena",
+          "videoId": "Nk7GV4VNMl8",
+          "url": "https://www.youtube.com/watch?v=Nk7GV4VNMl8",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Young Dadi",
@@ -205844,7 +205852,7 @@
           "name": "Ljubi",
           "videoId": "K7L6bCRHtVk",
           "url": "https://www.youtube.com/watch?v=K7L6bCRHtVk",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 149,
           "publishedAt": "2026-05-18"
         },
