@@ -26,7 +26,21 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/6x8bVTuT955qryuvhHYIYw?si=Jo5LmO7lRQ6hoClShQIXfg",
       "effectiveReleaseDate": "2026-05-22",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Delirium",
+          "videoId": "faSbtyZZygE",
+          "url": "https://www.youtube.com/watch?v=faSbtyZZygE",
+          "verified": "verified"
+        },
+        {
+          "name": "Delirium",
+          "videoId": "t7bfx2GTslU",
+          "url": "https://www.youtube.com/watch?v=t7bfx2GTslU",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Karayan",
@@ -52,9 +66,15 @@
           "name": "Farsa",
           "videoId": "A7DHdKxKMt4",
           "url": "https://www.youtube.com/watch?v=A7DHdKxKMt4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1491,
           "publishedAt": "2026-05-21"
+        },
+        {
+          "name": "Farsa",
+          "videoId": "NDgHmpFwUpU",
+          "url": "https://www.youtube.com/watch?v=NDgHmpFwUpU",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-05-21",
@@ -87,6 +107,12 @@
           "verified": "verified",
           "views": 1245,
           "publishedAt": "2026-05-20"
+        },
+        {
+          "name": "Pamtivek",
+          "videoId": "vh2_LDx6jzk",
+          "url": "https://www.youtube.com/watch?v=vh2_LDx6jzk",
+          "verified": "verified"
         }
       ],
       "youtubeViews": 1245,
@@ -116,9 +142,15 @@
           "name": "Medozalezna",
           "videoId": "1xg3yxculBU",
           "url": "https://www.youtube.com/watch?v=1xg3yxculBU",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 612,
           "publishedAt": "2026-05-20"
+        },
+        {
+          "name": "Medozalezna",
+          "videoId": "JoHjhJMK9xs",
+          "url": "https://www.youtube.com/watch?v=JoHjhJMK9xs",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-05-20",
@@ -215,7 +247,7 @@
           "name": "115",
           "videoId": "70hSyyjukAM",
           "url": "https://www.youtube.com/watch?v=70hSyyjukAM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 972,
           "publishedAt": "2026-05-17"
         },
@@ -223,7 +255,7 @@
           "name": "faceid",
           "videoId": "M_3H9DPWipU",
           "url": "https://www.youtube.com/watch?v=M_3H9DPWipU",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 708,
           "publishedAt": "2026-05-17"
         },
@@ -231,7 +263,7 @@
           "name": "sjaj",
           "videoId": "OCzBLF1-0SM",
           "url": "https://www.youtube.com/watch?v=OCzBLF1-0SM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 779,
           "publishedAt": "2026-05-17"
         },
@@ -239,7 +271,7 @@
           "name": "jakashtikla",
           "videoId": "XWIBnQe6ef4",
           "url": "https://www.youtube.com/watch?v=XWIBnQe6ef4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1059,
           "publishedAt": "2026-05-17"
         },
@@ -247,7 +279,7 @@
           "name": "karma",
           "videoId": "owv-hjx0J8M",
           "url": "https://www.youtube.com/watch?v=owv-hjx0J8M",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 595,
           "publishedAt": "2026-05-17"
         },
@@ -255,7 +287,7 @@
           "name": "bounce",
           "videoId": "TxN6ZKCBBHU",
           "url": "https://www.youtube.com/watch?v=TxN6ZKCBBHU",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 701,
           "publishedAt": "2026-05-17"
         },
@@ -263,7 +295,7 @@
           "name": "ljubov+klub",
           "videoId": "Dtv4L5Jm_XI",
           "url": "https://www.youtube.com/watch?v=Dtv4L5Jm_XI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 615,
           "publishedAt": "2026-05-17"
         },
@@ -271,7 +303,7 @@
           "name": "vakamie",
           "videoId": "W6vPf9N1F_Q",
           "url": "https://www.youtube.com/watch?v=W6vPf9N1F_Q",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 575,
           "publishedAt": "2026-05-17"
         },
@@ -279,7 +311,7 @@
           "name": "ajsho",
           "videoId": "d9kzIzDMV_E",
           "url": "https://www.youtube.com/watch?v=d9kzIzDMV_E",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 391,
           "publishedAt": "2026-05-17"
         },
@@ -287,7 +319,7 @@
           "name": "2krofni",
           "videoId": "EBpJgpvpiu4",
           "url": "https://www.youtube.com/watch?v=EBpJgpvpiu4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 594,
           "publishedAt": "2026-05-17"
         },
@@ -295,7 +327,7 @@
           "name": "daiquiri",
           "videoId": "ZuNWVG4iIjw",
           "url": "https://www.youtube.com/watch?v=ZuNWVG4iIjw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 505,
           "publishedAt": "2026-05-17"
         },
@@ -303,7 +335,7 @@
           "name": "sp",
           "videoId": "oeGPBq6HCBE",
           "url": "https://www.youtube.com/watch?v=oeGPBq6HCBE",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 789,
           "publishedAt": "2026-05-17"
         },
@@ -311,7 +343,7 @@
           "name": "upallnight",
           "videoId": "YS4JRZMKUHk",
           "url": "https://www.youtube.com/watch?v=YS4JRZMKUHk",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 570,
           "publishedAt": "2026-05-17"
         },
@@ -319,7 +351,7 @@
           "name": "dejavu",
           "videoId": "9M7ZrwBm_e0",
           "url": "https://www.youtube.com/watch?v=9M7ZrwBm_e0",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 594,
           "publishedAt": "2026-05-17"
         },
@@ -327,9 +359,111 @@
           "name": "minuta",
           "videoId": "g5lRgF_oDro",
           "url": "https://www.youtube.com/watch?v=g5lRgF_oDro",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 624,
           "publishedAt": "2026-05-17"
+        },
+        {
+          "name": "volim (skit)",
+          "videoId": "LFsxu5g1skc",
+          "url": "https://www.youtube.com/watch?v=LFsxu5g1skc",
+          "verified": "verified"
+        },
+        {
+          "name": "volim (skit)",
+          "videoId": "zjjR4gRBR0A",
+          "url": "https://www.youtube.com/watch?v=zjjR4gRBR0A",
+          "verified": "verified"
+        },
+        {
+          "name": "115",
+          "videoId": "fi2ZAMw74qc",
+          "url": "https://www.youtube.com/watch?v=fi2ZAMw74qc",
+          "verified": "verified"
+        },
+        {
+          "name": "faceid",
+          "videoId": "nsKxZCjDiQQ",
+          "url": "https://www.youtube.com/watch?v=nsKxZCjDiQQ",
+          "verified": "verified"
+        },
+        {
+          "name": "sjaj",
+          "videoId": "Wp4kp4T99I8",
+          "url": "https://www.youtube.com/watch?v=Wp4kp4T99I8",
+          "verified": "verified"
+        },
+        {
+          "name": "jakashtikla",
+          "videoId": "_R-qZ9s62Ak",
+          "url": "https://www.youtube.com/watch?v=_R-qZ9s62Ak",
+          "verified": "verified"
+        },
+        {
+          "name": "karma",
+          "videoId": "hhi4z3WKp_Q",
+          "url": "https://www.youtube.com/watch?v=hhi4z3WKp_Q",
+          "verified": "verified"
+        },
+        {
+          "name": "bounce",
+          "videoId": "MPcWpfFIAWo",
+          "url": "https://www.youtube.com/watch?v=MPcWpfFIAWo",
+          "verified": "verified"
+        },
+        {
+          "name": "ljubov+klub",
+          "videoId": "YBVL324VDMY",
+          "url": "https://www.youtube.com/watch?v=YBVL324VDMY",
+          "verified": "verified"
+        },
+        {
+          "name": "vakamie",
+          "videoId": "bYnsXOle7eI",
+          "url": "https://www.youtube.com/watch?v=bYnsXOle7eI",
+          "verified": "verified"
+        },
+        {
+          "name": "ajsho",
+          "videoId": "aFLitC2Xo74",
+          "url": "https://www.youtube.com/watch?v=aFLitC2Xo74",
+          "verified": "verified"
+        },
+        {
+          "name": "2krofni",
+          "videoId": "aeWS2fYqfmM",
+          "url": "https://www.youtube.com/watch?v=aeWS2fYqfmM",
+          "verified": "verified"
+        },
+        {
+          "name": "daiquiri",
+          "videoId": "S1nMwVV408A",
+          "url": "https://www.youtube.com/watch?v=S1nMwVV408A",
+          "verified": "verified"
+        },
+        {
+          "name": "sp",
+          "videoId": "cllFJXvbTS4",
+          "url": "https://www.youtube.com/watch?v=cllFJXvbTS4",
+          "verified": "verified"
+        },
+        {
+          "name": "upallnight",
+          "videoId": "WzbhoNf-uMI",
+          "url": "https://www.youtube.com/watch?v=WzbhoNf-uMI",
+          "verified": "verified"
+        },
+        {
+          "name": "dejavu",
+          "videoId": "XJ9XQipHvZM",
+          "url": "https://www.youtube.com/watch?v=XJ9XQipHvZM",
+          "verified": "verified"
+        },
+        {
+          "name": "minuta",
+          "videoId": "BYhP01gPIDw",
+          "url": "https://www.youtube.com/watch?v=BYhP01gPIDw",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-05-19",
