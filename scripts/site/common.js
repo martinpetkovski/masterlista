@@ -1947,7 +1947,10 @@ window.MMMAuth = (function () {
         } else {
             btn.title = text('auth.login', 'Log in');
             btn.setAttribute('aria-label', btn.title);
-            btn.innerHTML = '<i class="fas fa-right-to-bracket"></i>';
+            // Show an inline label alongside the icon so the call-to-action
+            // doesn't look like a stray amber square. The label is hidden on
+            // narrow viewports via CSS.
+            btn.innerHTML = '<i class="fas fa-right-to-bracket"></i><span class="mmm-auth-label">' + escHtml(text('auth.login', 'Log in')) + '</span>';
         }
         renderMobileAuthStatus();
         if (!btn.dataset.mmmAuthBound) {
@@ -2251,7 +2254,7 @@ function ensureOverflowMarqueeStyles() {
     styleEl.textContent = [
         '.js-overflow-marquee,.js-overflow-marquee-auto{min-width:0;}',
         '.js-overflow-marquee .overflow-marquee__content,.js-overflow-marquee-auto .overflow-marquee__content{display:inline-block;vertical-align:top;width:max-content;min-width:100%;transform:translate3d(0,0,0);will-change:transform;white-space:inherit;animation:none;}',
-        '.js-overflow-marquee.is-marquee-active,.js-overflow-marquee-auto.is-marquee-active{text-overflow:clip !important;}',
+        '.js-overflow-marquee.is-marquee-active,.js-overflow-marquee-auto.is-marquee-active{text-overflow:clip !important;--overflow-marquee-fade-size:min(1.35rem,28%);-webkit-mask-image:linear-gradient(to right,#000 calc(100% - var(--overflow-marquee-fade-size)),transparent);mask-image:linear-gradient(to right,#000 calc(100% - var(--overflow-marquee-fade-size)),transparent);}',
         '@keyframes overflow-marquee-slide{0%{transform:translate3d(0,0,0);}100%{transform:translate3d(var(--overflow-marquee-shift, 0px),0,0);}}',
         '@media (max-width: 600px){.js-overflow-marquee.is-marquee-active .overflow-marquee__content,.js-overflow-marquee-auto.is-marquee-active .overflow-marquee__content{animation:overflow-marquee-slide var(--overflow-marquee-duration, 3s) linear infinite alternate;}}',
         '@media (min-width: 601px){.js-overflow-marquee.is-marquee-active:hover .overflow-marquee__content,.js-overflow-marquee-auto.is-marquee-active:hover .overflow-marquee__content{animation:overflow-marquee-slide var(--overflow-marquee-duration, 3s) linear infinite alternate;}}'
@@ -2378,8 +2381,11 @@ function updateOverflowMarquee(el) {
         return;
     }
 
-    var duration = Math.max(2, Math.min(4.5, overflow / 36));
-    el.style.setProperty('--overflow-marquee-shift', '-' + overflow + 'px');
+    var rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    var fadeCompensation = Math.ceil(Math.min(rootSize * 1.35, containerWidth * 0.28));
+    var shift = overflow + fadeCompensation;
+    var duration = Math.max(2, Math.min(4.5, shift / 36));
+    el.style.setProperty('--overflow-marquee-shift', '-' + shift + 'px');
     el.style.setProperty('--overflow-marquee-duration', duration.toFixed(2).replace(/\.00$/, '') + 's');
     el.classList.add('is-marquee-active');
     content.style.animation = '';
@@ -2772,9 +2778,11 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
                     '<img class="service-chooser-img" id="service-chooser-img">' +
                     '<div class="service-chooser-header-text">' +
                         '<div class="service-chooser-artist" id="service-chooser-artist"></div>' +
-                        '<div class="service-chooser-song" id="service-chooser-song"></div>' +
+                        '<div class="service-chooser-song-line">' +
+                            '<div class="service-chooser-song" id="service-chooser-song"></div>' +
+                            '<div class="service-chooser-certification-slot" id="service-chooser-certification"></div>' +
+                        '</div>' +
                     '</div>' +
-                    '<div class="service-chooser-certification-slot" id="service-chooser-certification"></div>' +
                 '</div>' +
                 '<div class="service-chooser-stats" id="service-chooser-stats"></div>' +
                 '<div class="service-chooser-links" id="service-chooser-links"></div>' +
@@ -2847,7 +2855,7 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
 
     if (certEl) {
         certEl.innerHTML = chooserCertificationHtml;
-        certEl.style.display = chooserCertificationHtml ? 'block' : 'none';
+        certEl.style.display = chooserCertificationHtml ? '' : 'none';
     }
     if (headerEl) {
         headerEl.classList.toggle('service-chooser-header--with-cert', !!chooserCertificationHtml);
@@ -3017,8 +3025,8 @@ function showServiceChooserDialog(releaseUrl, title, artistName, thumbnail, acce
         }
         if (!url) continue;
         var linkContent =
-            '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + (isPreferred ? 'preferred' : '') + '">' +
-                '<i class="' + svc.icon + '" style="color:' + svc.color + '"></i> ' + escHtml(svc.name) +
+            '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="' + (isPreferred ? 'preferred' : '') + '" style="--link-accent:' + escHtml(svc.color || '') + '">' +
+                '<i class="' + svc.icon + '" style="color:' + svc.color + '"></i> <span class="sc-label">' + escHtml(svc.name) + '</span>' +
                 (isPreferred ? ' <span class="pref-badge">★</span>' : '') +
             '</a>';
         linksHtml += linkContent;

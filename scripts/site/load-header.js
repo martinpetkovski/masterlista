@@ -87,6 +87,12 @@
     // Auto-collapse nav to mobile dropdown when buttons don't fit
     var navMenu = document.getElementById('site-nav-menu');
     if (navMenu) {
+        // Force-collapse threshold (px). Below this width the inline nav links
+        // become uncomfortably tight regardless of the overflow check (which
+        // can miss-fire when the menu just barely fits). Forcing collapse
+        // here guarantees the hamburger always appears on intermediate
+        // resolutions where the inline nav doesn't really work anyway.
+        var FORCE_COLLAPSE_BELOW = 900;
         function checkNavOverflow() {
             // Temporarily remove collapsed class to measure natural width
             header.classList.remove('nav-collapsed');
@@ -101,7 +107,8 @@
             var contentOverflow = contentEl && contentEl.scrollWidth > contentEl.clientWidth + 2;
             var navHeaderOverflow = navRect.width > 0 && navRect.right > headerRect.right - 2;
             var navActionOverlap = buttonsRect && navRect.width > 0 && navRect.right > buttonsRect.left - 2;
-            if (contentOverflow || navHeaderOverflow || navActionOverlap) {
+            var belowThreshold = window.innerWidth < FORCE_COLLAPSE_BELOW;
+            if (belowThreshold || contentOverflow || navHeaderOverflow || navActionOverlap) {
                 header.classList.add('nav-collapsed');
             }
         }

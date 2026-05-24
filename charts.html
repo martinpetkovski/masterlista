@@ -587,6 +587,7 @@
 
         .adv-table {
             width: 100%;
+            min-width: 820px;
             border-collapse: collapse;
             font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
@@ -677,7 +678,7 @@
         /* Column widths — release is widest, city/genre fit roughly one item */
         .adv-table .col-pos     { white-space: nowrap; text-align: left; }
         .adv-table .col-chg     { white-space: nowrap; text-align: left; }
-        .adv-table .col-release { width: 100%; max-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+        .adv-table .col-release { width: 38%; max-width: 44ch; overflow: hidden; text-overflow: ellipsis; text-align: left; min-width: 28ch; }
         .adv-table .col-city    { width: 1%; max-width: 14ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
         .adv-table .col-genre   { width: 1%; max-width: 16ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
         .adv-table .col-pop     { white-space: nowrap; text-align: left; }
@@ -708,12 +709,12 @@
         .adv-table .adv-release-link {
             color: var(--text-secondary, #555b64);
             cursor: pointer;
-            display: inline-block;
-            max-width: 100%;
+            display: inline;
+            max-width: none;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            vertical-align: bottom;
+            overflow: visible;
+            text-overflow: clip;
+            vertical-align: baseline;
             transition: color 0.15s ease;
         }
         .adv-table .adv-release-link:hover {
@@ -742,6 +743,84 @@
         .adv-sort-reset:hover { background: var(--bg-hover); color: var(--text-primary); }
 
         .adv-sentinel { height: 1px; }
+
+        /* Advanced view sub-tabs (Songs / Albums). Hidden by default; the
+           section toggles .adv-tabs-active when there isn't enough horizontal
+           room to render both tables side-by-side. */
+        .adv-mobile-tabs {
+            display: none;
+            gap: 0.5rem;
+            margin: 0 0 0.65rem;
+        }
+        .advanced-chart-view.adv-tabs-active .adv-mobile-tabs {
+            display: flex;
+        }
+        .adv-mobile-tab {
+            flex: 1 1 0;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--site-button-border, #000);
+            border-radius: 0;
+            padding: 0.52rem 0.75rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: none;
+            line-height: 1;
+            cursor: pointer;
+            transition: filter 0.12s ease, box-shadow 0.12s ease, background var(--transition), color var(--transition), border-color var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .adv-mobile-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+            transform: translateX(-100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .adv-mobile-tab > * {
+            position: relative;
+            z-index: 1;
+        }
+        .adv-mobile-tab:hover {
+            filter: brightness(1.15);
+        }
+        .adv-mobile-tab:hover::before {
+            animation: btnSweep 0.4s ease-out forwards;
+        }
+        .adv-mobile-tab.active {
+            color: var(--site-button-fg, #fff);
+            border-color: var(--site-button-border, #000);
+            background: var(--site-button-bg, #000);
+        }
+        body.dark-mode .adv-mobile-tab { background: var(--bg-secondary); }
+        body.dark-mode .adv-mobile-tab.active { background: var(--site-button-bg, #fff); border-color: var(--site-button-border, #fff); color: var(--site-button-fg, #000); }
+
+        /* When tab-mode is active, only the selected wrapper is visible and
+           it takes the full width of the container. */
+        .advanced-chart-view.adv-tabs-active .adv-tables-container {
+            flex-direction: column;
+        }
+        .advanced-chart-view.adv-tabs-active .adv-table-wrapper {
+            display: none;
+            width: 100%;
+            border-left: none;
+            border-top: none;
+        }
+        .advanced-chart-view.adv-tabs-active .adv-table-wrapper.adv-tab-active {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
 
         /* Dark mode overrides */
         body.dark-mode .advanced-chart-view {
@@ -788,13 +867,15 @@
                 overflow-x: auto;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+                min-height: 0;
+                touch-action: pan-x pan-y;
             }
 
             .adv-table {
                 /* force desktop-identical layout: scrolls horizontally */
                 table-layout: auto;
                 width: 100%;
-                min-width: 700px;
+                min-width: 820px;
             }
 
             .adv-table thead {
@@ -2916,6 +2997,13 @@
                     <div class="adv-progress-track" id="adv-render-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                         <span class="adv-progress-fill" id="adv-render-progress-fill"></span>
                     </div>
+                </div>
+                <!-- Advanced view sub-tabs. Shown only when the side-by-side
+                     tables don't have enough horizontal room; toggled by JS
+                     via the .adv-tabs-active class on the parent section. -->
+                <div class="adv-mobile-tabs" id="adv-mobile-tabs" role="tablist" aria-label="Advanced chart sections">
+                    <button type="button" class="adv-mobile-tab active" data-adv-tab="singles" role="tab" aria-selected="true"><i class="fas fa-music"></i> <span data-i18n="charts.songs">Песни</span></button>
+                    <button type="button" class="adv-mobile-tab" data-adv-tab="albums" role="tab" aria-selected="false"><i class="fas fa-compact-disc"></i> <span data-i18n="charts.albums">Албуми</span></button>
                 </div>
                 <div class="adv-tables-container">
                     <div class="adv-table-wrapper" id="adv-singles-wrapper">
@@ -5387,6 +5475,78 @@
                         renderAdvancedTables(['singles', 'albums']);
                     };
                 }
+
+                setupAdvancedTabs();
+            }
+
+            // ---- Advanced view responsive tabs (Songs / Albums) -----------------
+            // When the advanced container is too narrow to comfortably display
+            // both tables side-by-side, switch to a tabbed layout. We measure
+            // the container width against a minimum that lets each table show
+            // its core columns (rank, name, popularity, delta) without
+            // truncating the name.
+            var ADV_TABS_MIN_WIDTH = 760; // total px below which we switch to tabs
+
+            function applyAdvancedTabSelection(key) {
+                var section = document.getElementById('advanced-section');
+                if (!section) return;
+                var wrappers = section.querySelectorAll('.adv-table-wrapper');
+                wrappers.forEach(function(w) { w.classList.remove('adv-tab-active'); });
+                var target = section.querySelector('#adv-' + key + '-wrapper');
+                if (target) target.classList.add('adv-tab-active');
+                var buttons = section.querySelectorAll('.adv-mobile-tab');
+                buttons.forEach(function(b) {
+                    var isActive = b.getAttribute('data-adv-tab') === key;
+                    b.classList.toggle('active', isActive);
+                    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+            }
+
+            function checkAdvancedTabsNeeded() {
+                var section = document.getElementById('advanced-section');
+                if (!section || section.style.display === 'none') return;
+                var container = section.querySelector('.adv-tables-container');
+                if (!container) return;
+                // Measure the actual available viewport/section width so
+                // mobile layouts do not stay in side-by-side mode because a
+                // wider scroll container happens to be present.
+                var sectionWidth = section.getBoundingClientRect().width;
+                var viewportWidth = window.innerWidth || document.documentElement.clientWidth || sectionWidth;
+                var width = Math.min(sectionWidth || viewportWidth, viewportWidth);
+                var needed = width > 0 && width < ADV_TABS_MIN_WIDTH;
+                section.classList.toggle('adv-tabs-active', needed);
+                if (needed) {
+                    var active = section.querySelector('.adv-mobile-tab.active');
+                    var key = (active && active.getAttribute('data-adv-tab')) || 'singles';
+                    applyAdvancedTabSelection(key);
+                } else {
+                    // Restore both wrappers when leaving tab-mode
+                    var wrappers = section.querySelectorAll('.adv-table-wrapper');
+                    wrappers.forEach(function(w) { w.classList.remove('adv-tab-active'); });
+                }
+            }
+
+            var _advTabsBound = false;
+            function setupAdvancedTabs() {
+                var section = document.getElementById('advanced-section');
+                if (!section) return;
+                if (!_advTabsBound) {
+                    _advTabsBound = true;
+                    var tabs = section.querySelectorAll('.adv-mobile-tab');
+                    tabs.forEach(function(btn) {
+                        btn.addEventListener('click', function() {
+                            applyAdvancedTabSelection(btn.getAttribute('data-adv-tab'));
+                        });
+                    });
+                    var _resizeT = null;
+                    window.addEventListener('resize', function() {
+                        if (_resizeT) clearTimeout(_resizeT);
+                        _resizeT = setTimeout(checkAdvancedTabsNeeded, 80);
+                    });
+                }
+                // Initial check after layout has settled
+                requestAnimationFrame(checkAdvancedTabsNeeded);
+                setTimeout(checkAdvancedTabsNeeded, 200);
             }
 
             const CHART_REVEAL_STAGGER_MS = 39;

@@ -98,43 +98,7 @@
         .event-item {
             position: relative;
             overflow: hidden;
-            transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.22s ease, background 0.18s ease !important;
-        }
-
-        /* ── Neon scanline sweep (::after) ── */
-        .mini-chart-item::after,
-        .radar-item::after,
-        .news-item::after,
-        .discover-artist::after,
-        .sotd-item::after,
-        .trending-item::after,
-        .event-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg,
-                transparent 0%,
-                rgba(34, 92, 228, 0.18) 50%,
-                transparent 100%);
-            transform: translateX(-110%);
-            pointer-events: none;
-            border-radius: 0;
-        }
-
-        .mini-chart-item:hover::after,
-        .radar-item:hover::after,
-        .news-item:hover::after,
-        .discover-artist:hover::after,
-        .sotd-item:hover::after,
-        .trending-item:hover::after,
-        .event-item:hover::after {
-            animation: hoverScanline 0.45s cubic-bezier(.22,.68,.36,1) forwards;
-        }
-
-        @keyframes hoverScanline {
-            0%   { transform: translateX(-110%); opacity: 0.6; }
-            60%  { opacity: 1; }
-            100% { transform: translateX(110%); opacity: 0; }
+            transition: box-shadow 0.22s ease, background 0.18s ease !important;
         }
 
         /* ── Unified hover state ── */
@@ -146,26 +110,9 @@
         .trending-item:hover,
         .event-item:hover {
             background: rgba(34, 92, 228, 0.06);
-            transform: translateY(-2px);
             box-shadow:
                 0 4px 16px rgba(34, 92, 228, 0.12),
                 inset 0 0 0 1px rgba(34, 92, 228, 0.10);
-        }
-
-        /* ── Dark-mode: cyan neon variant ── */
-        body.dark-mode .mini-chart-item::after,
-        body.dark-mode .radar-item::after,
-        body.dark-mode .news-item::after,
-        body.dark-mode .discover-artist::after,
-        body.dark-mode .sotd-item::after,
-        body.dark-mode .trending-item::after,
-        body.dark-mode .event-item::after {
-            background: linear-gradient(90deg,
-                transparent 0%,
-                rgba(0, 200, 255, 0.05) 20%,
-                rgba(0, 200, 255, 0.22) 50%,
-                rgba(0, 200, 255, 0.05) 80%,
-                transparent 100%);
         }
 
         body.dark-mode .mini-chart-item:hover,
@@ -904,6 +851,77 @@
             text-overflow: ellipsis;
         }
 
+        .mini-chart-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.42rem;
+            min-width: 0;
+        }
+
+        .mini-chart-title-row .mini-chart-title {
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .mini-chart-total-views {
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            gap: 0.32rem;
+            flex: 0 0 auto;
+            max-width: 45%;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-secondary, #555b64);
+            line-height: 1.15;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 0.5;
+        }
+
+        .mini-chart-stat-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            line-height: 1;
+        }
+
+        .mini-chart-total-views .mini-chart-stat-icon {
+            color: var(--text-muted, #8b929a);
+            font-size: 0.9em;
+        }
+
+        .mini-chart-stat-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.16rem;
+            min-width: 0;
+        }
+
+        .mini-chart-total-views .mini-chart-stat-value {
+            overflow: hidden;
+        }
+
+        .mini-chart-total-views .compact-count,
+        .mini-chart-pop .compact-count {
+            align-items: center;
+        }
+
+        .mini-chart-total-views .compact-count-badge-svg,
+        .mini-chart-pop .compact-count-badge-svg {
+            width: 1.02em;
+            height: 1.18em;
+            top: 0;
+        }
+
+        .mini-chart-total-views .compact-count-badge-svg text,
+        .mini-chart-pop .compact-count-badge-svg text {
+            transform: translateY(1px);
+        }
+
         .event-artist-link,
         .mini-chart-artist a,
         .radar-info-artist a,
@@ -925,6 +943,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: flex-end;
+            gap: 0.38rem;
             font-family: 'Montserrat', sans-serif;
             font-size: 1.8rem;
             font-weight: 800;
@@ -941,6 +960,16 @@
             min-height: 2.35rem;
             text-align: right;
         }
+
+        .mini-chart-pop .mini-chart-stat-icon {
+            font-size: 0.52em;
+            opacity: 0.74;
+        }
+
+        .mini-chart-pop .mini-chart-stat-value {
+            justify-content: flex-end;
+        }
+
         .mini-chart-item:nth-child(1) .mini-chart-pop { animation-delay: 0.4s; }
         .mini-chart-item:nth-child(2) .mini-chart-pop { animation-delay: 0.6s; }
         .mini-chart-item:nth-child(3) .mini-chart-pop { animation-delay: 0.8s; }
@@ -1254,6 +1283,10 @@
             gap: 3px;
         }
 
+        .mini-chart-item.is-compact .mini-chart-total-views {
+            font-size: 0.67rem;
+        }
+
         .mini-chart-expand-wrap,
         .mini-chart-footer {
             position: relative;
@@ -1305,7 +1338,6 @@
 
         .mini-chart-expand-btn:hover,
         .mini-chart-full-link:hover {
-            transform: translateY(-1px);
             text-decoration: none;
         }
 
@@ -1707,6 +1739,10 @@
             flex-shrink: 0;
         }
 
+        .chart-pop-main {
+            display: contents;
+        }
+
         .pop-bar-track {
             width: 100%;
             height: 4px;
@@ -1790,6 +1826,51 @@
         }
 
         /* ==================== RELEASE RADAR ==================== */
+        .index-inline-views {
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            gap: 0.3rem;
+            min-width: 0;
+            max-width: 100%;
+            font-size: 0.72rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-muted, #8b929a);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .index-inline-views-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            font-size: 0.9em;
+            line-height: 1;
+        }
+
+        .index-inline-views-value {
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .index-inline-views .compact-count {
+            align-items: center;
+        }
+
+        .index-inline-views .compact-count-badge-svg {
+            width: 1em;
+            height: 1.16em;
+            top: 0;
+        }
+
+        .index-inline-views .compact-count-badge-svg text {
+            transform: translateY(1px);
+        }
+
         .release-radar-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1845,6 +1926,24 @@
             overflow: hidden;
             text-overflow: ellipsis;
             letter-spacing: -0.01em;
+        }
+
+        .radar-info-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-width: 0;
+        }
+
+        .radar-info-title-row .radar-info-title {
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .radar-info-title-row .index-inline-views {
+            flex: 0 0 auto;
+            max-width: 44%;
         }
 
         .radar-info-artist {
@@ -1908,7 +2007,6 @@
             background: var(--bg-hover, #eceef1);
             color: var(--text-primary, #1a1d21);
             border-color: var(--accent-blue, #225ce4);
-            transform: translateY(-1px);
         }
 
         .radar-pagination button.active {
@@ -2768,7 +2866,6 @@
 
         .quick-action-btn:hover {
             filter: brightness(1.05);
-            transform: translateY(-2px);
             border-color: rgba(0,0,0,0.24);
             background-position: 0 0, 0 0;
             box-shadow:
@@ -2786,7 +2883,6 @@
         }
 
         .quick-action-btn:hover i {
-            transform: translateX(2px);
             opacity: 1;
         }
 
@@ -2851,37 +2947,10 @@
 
         .index-login-cta {
             flex-shrink: 0;
-            justify-content: center;
-            min-width: 0;
-            gap: 0.3rem;
-            padding: 0.3rem 0.65rem;
-            border: 1px solid rgba(245, 158, 11, 0.85);
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #111318;
-            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.28);
-        }
-
-        .index-login-cta:hover {
-            background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
-            color: #111318;
-            filter: brightness(1.03);
-            box-shadow: 0 10px 24px rgba(245, 158, 11, 0.36);
-        }
-
-        body.dark-mode .index-login-cta {
-            border-color: rgba(251, 191, 36, 0.92);
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #111318;
-            box-shadow: 0 10px 24px rgba(245, 158, 11, 0.24);
-        }
-
-        body.dark-mode .index-login-cta:hover {
-            background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
-            color: #111318;
         }
 
         .index-login-cta i {
-            font-size: 0.72rem;
+            font-size: 0.6rem;
         }
 
         #social-cta .cta-buttons {
@@ -3288,9 +3357,28 @@
 
         #hot-songs-list .trending-title-row {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 0.42rem;
             min-width: 0;
+        }
+
+        #hot-songs-list .trending-title-main {
+            display: flex;
+            align-items: center;
+            gap: 0.38rem;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        #hot-songs-list .trending-title-main .trending-title {
+            flex: 0 1 auto;
+            max-width: 100%;
+        }
+
+        #hot-songs-list .trending-title-main .index-inline-views {
+            flex: 0 0 auto;
+            max-width: 38%;
+            font-size: 0.66rem;
         }
 
         #hot-songs-list .trending-score-inline {
@@ -3739,64 +3827,89 @@
             flex-direction: column;
             position: relative;
             z-index: 2;
+            flex: 1 1 auto;
+            min-width: 0;
         }
 
         .site-title-main-wrap {
             position: relative;
+            display: flex;
+            align-items: flex-start;
+            min-width: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .site-title-main-anchor {
+            position: relative;
             display: inline-flex;
             align-items: flex-start;
-            gap: 0.42rem;
-            flex-wrap: nowrap;
+            min-width: 0;
+            max-width: 100%;
+            font-size: 2rem;
+            line-height: 1;
         }
 
         .site-title-main {
             font-family: 'Dela Gothic One', 'Montserrat', sans-serif;
-            font-size: 2rem;
+            font-size: 1em;
             font-weight: 400;
             letter-spacing: 0.04em;
             line-height: 1.1;
             text-transform: uppercase;
-                display: block;
-                flex: 1 1 auto;
-                min-width: 0;
-                white-space: nowrap;
+            display: block;
+            flex: 0 1 auto;
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
+        }
+
+        .site-title-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.42rem;
+            margin-top: 0.15rem;
+            min-width: 0;
+            max-width: 100%;
         }
 
         .site-title-sub {
-            margin-top: 0.15rem;
             font-family: 'Inter', sans-serif;
             font-size: 0.65rem;
             font-weight: 400;
             letter-spacing: 0.04em;
             text-transform: uppercase;
             color: rgba(255,255,255,0.45);
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .site-title-beta {
             position: relative;
-            top: 0.16rem;
-            right: auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 1.05rem;
-            padding: 0.12rem 0.44rem 0.1rem;
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 0.16rem 0.4rem 0.14rem;
             font-family: 'Inter', sans-serif;
-            font-size: 0.48rem;
+            font-size: 0.58rem;
             font-weight: 800;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.09em;
             text-transform: uppercase;
             color: #000;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
             border-radius: 0;
             line-height: 1;
             white-space: nowrap;
-            transform: rotate(8deg);
-            transform-origin: center;
-            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+            box-shadow: 0 0.12rem 0.38rem rgba(251, 191, 36, 0.32);
             pointer-events: none;
-            z-index: 5;
-            flex-shrink: 0;
         }
 
         .site-title-logo-wrap {
@@ -3854,33 +3967,10 @@
 
         .index-login-cta {
             flex-shrink: 0;
-            justify-content: center;
-            min-width: 0;
-            gap: 0.3rem;
-            padding: 0.3rem 0.65rem;
-            border: 1px solid rgba(245, 158, 11, 0.85);
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-color: rgba(245, 158, 11, 0.85);
             color: #111318;
-            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.28);
-        }
-
-        .index-login-cta:hover {
-            background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
-            color: #111318;
-            filter: brightness(1.03);
-            box-shadow: 0 10px 24px rgba(245, 158, 11, 0.36);
-        }
-
-        body.dark-mode .index-login-cta {
-            border-color: rgba(251, 191, 36, 0.92);
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #111318;
-            box-shadow: 0 10px 24px rgba(245, 158, 11, 0.24);
-        }
-
-        body.dark-mode .index-login-cta:hover {
-            background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
-            color: #111318;
+            box-shadow: 0 0.45rem 1rem rgba(245, 158, 11, 0.25);
         }
 
         .title-nav-btn-icon-only {
@@ -3904,7 +3994,7 @@
         }
 
         .index-login-cta i {
-            font-size: 0.72rem;
+            font-size: 0.6rem;
         }
 
         .title-nav-btn::before {
@@ -3917,10 +4007,16 @@
             z-index: 2;
         }
 
-        .title-nav-btn:hover:not(.index-login-cta) {
+        .title-nav-btn:hover {
             background: #000;
             filter: brightness(1.2);
             box-shadow: 0 0 12px rgba(255,255,255,0.15), 0 0 4px rgba(255,255,255,0.08);
+        }
+        .index-login-cta:hover {
+            background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+            border-color: rgba(245, 158, 11, 0.92);
+            color: #111318;
+            box-shadow: 0 0.55rem 1.15rem rgba(245, 158, 11, 0.32);
         }
         .title-nav-btn:hover::before {
             animation: btnSweep 0.4s ease-out forwards;
@@ -3935,7 +4031,7 @@
             font-size: 0.6rem;
         }
 
-        body.dark-mode .title-nav-btn:not(.index-login-cta) {
+        body.dark-mode .title-nav-btn {
             background: #000;
             border: none;
             color: #fff;
@@ -3943,9 +4039,16 @@
         body.dark-mode .title-nav-btn::before {
             background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.12) 50%, transparent 100%);
         }
-        body.dark-mode .title-nav-btn:hover:not(.index-login-cta) {
+        body.dark-mode .title-nav-btn:hover {
             background: #000;
             box-shadow: 0 0 12px rgba(0,0,0,0.2), 0 0 4px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .index-login-cta,
+        body.dark-mode .index-login-cta:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-color: rgba(245, 158, 11, 0.88);
+            color: #111318;
+            box-shadow: 0 0.45rem 1rem rgba(245, 158, 11, 0.24);
         }
 
         .title-nav-lang-btn {
@@ -4064,6 +4167,15 @@
                 font-size: 1rem;
             }
 
+            .radar-info-title-row {
+                gap: 0.32rem;
+            }
+
+            .radar-info-title-row .index-inline-views {
+                max-width: 42%;
+                font-size: 0.62rem;
+            }
+
             .radar-info-artist {
                 font-size: 0.85rem;
             }
@@ -4111,6 +4223,15 @@
             #hot-songs-list .trending-item {
                 padding: 0.46rem 0;
                 border-radius: 0;
+            }
+
+            #hot-songs-list .trending-title-main {
+                gap: 0.28rem;
+            }
+
+            #hot-songs-list .trending-title-main .index-inline-views {
+                max-width: 42%;
+                font-size: 0.58rem;
             }
 
             #hot-songs-list .trending-score-inline {
@@ -4184,7 +4305,6 @@
             }
 
             .site-title-main-wrap {
-                gap: 0.3rem;
                 width: 100%;
                 min-width: 0;
             }
@@ -4200,7 +4320,7 @@
 
             .site-title-main {
                 overflow: hidden;
-                text-overflow: ellipsis;
+                text-overflow: clip;
 
                 cursor: pointer;
             }
@@ -4287,10 +4407,8 @@
             }
 
             .site-title-beta {
-                top: 0.12rem;
-                min-height: 0.95rem;
-                padding: 0.1rem 0.34rem 0.08rem;
-                font-size: 0.45rem;
+                padding: 0.14rem 0.34rem 0.12rem;
+                font-size: 0.52rem;
             }
 
             #social-cta .quick-action-label-desktop {
@@ -4368,7 +4486,56 @@
                 max-height: calc(4 * 1.65rem);
             }
 
-            /* Mini-chart: single-line, auto-fit font size via JS */
+            /* Mini-chart: move views + progress below the artist on mobile. */
+            .mini-chart-item {
+                display: grid;
+                grid-template-columns: auto auto minmax(0, 1fr);
+                grid-template-areas:
+                    'rank cover info'
+                    'rank cover stats';
+                align-items: center;
+                column-gap: 0.55rem;
+                row-gap: 0.18rem;
+            }
+            .mini-chart-rank {
+                grid-area: rank;
+                align-self: center;
+            }
+            .mini-chart-cover,
+            .chart-sparkle-wrap {
+                grid-area: cover;
+            }
+            .mini-chart-info {
+                grid-area: info;
+                align-self: end;
+            }
+            .chart-pop-wrap {
+                grid-area: stats;
+                display: grid;
+                --mini-chart-pop-width: 5.45rem;
+                grid-template-columns: minmax(0, 1fr) var(--mini-chart-pop-width);
+                align-items: stretch;
+                gap: 0.12rem 0.55rem;
+                min-width: 0;
+                width: 100%;
+            }
+            .chart-pop-main {
+                display: flex;
+                align-items: stretch;
+                min-width: 0;
+                height: 100%;
+            }
+            .mini-chart-title-row {
+                gap: 0.32rem;
+            }
+
+            .mini-chart-total-views {
+                max-width: 48%;
+                font-size: 0.62rem;
+                gap: 0.22rem;
+            }
+
+            /* Mini-chart: single-line, consistent font size */
             .mini-chart-title {
                 white-space: nowrap;
                 overflow: hidden;
@@ -4383,15 +4550,31 @@
                 font-size: 0.85rem;
             }
             .mini-chart-pop {
-                font-size: 1.45rem;
+                font-size: 1rem;
                 min-height: auto;
+                box-sizing: border-box;
+                width: var(--mini-chart-pop-width);
+                min-width: var(--mini-chart-pop-width);
+                max-width: var(--mini-chart-pop-width);
+                padding-left: 0.55rem;
+                border-left: 1px solid rgba(0, 0, 0, 0.14);
+                line-height: 1.1;
             }
             .chart-pop-wrap {
-                min-width: 4.5rem;
+                min-width: 0;
+            }
+            .pop-bar-track {
+                width: 100%;
+                height: 1.1em;
+                min-height: 1.1em;
+                align-self: stretch;
+            }
+            body.dark-mode .mini-chart-pop {
+                border-left-color: rgba(255, 255, 255, 0.16);
             }
 
             .mini-chart-item.is-compact {
-                gap: 0.4rem;
+                column-gap: 0.4rem;
                 padding: 0.25rem 0.2rem;
             }
 
@@ -4415,10 +4598,21 @@
 
             .mini-chart-item.is-compact .mini-chart-pop {
                 font-size: 0.92rem;
+                padding-left: 0.45rem;
+            }
+
+            .mini-chart-item.is-compact .pop-bar-track {
+                height: 1.012rem;
+                min-height: 1.012rem;
             }
 
             .mini-chart-item.is-compact .chart-pop-wrap {
-                min-width: 3rem;
+                min-width: 0;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-total-views {
+                font-size: 0.56rem;
+                gap: 0.18rem;
             }
 
             .mini-chart-expand-wrap,
@@ -4441,6 +4635,44 @@
             #release-stats-card .release-stats-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             #release-stats-card .release-stats-metric,
             #release-stats-card .release-stats-status { padding: 0.75rem; }
+        }
+
+        @media (min-width: 801px) {
+            .chart-pop-wrap {
+                min-width: 8.25rem;
+                gap: 0.18rem;
+            }
+
+            .chart-pop-main {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                width: 100%;
+                gap: 0.18rem;
+            }
+
+            .mini-chart-total-views {
+                max-width: 42%;
+                font-size: 0.72rem;
+            }
+
+            .pop-bar-track {
+                display: none;
+            }
+
+            .mini-chart-pop {
+                width: auto;
+                min-height: auto;
+                line-height: 1.08;
+            }
+
+            .mini-chart-item.is-compact .chart-pop-wrap {
+                min-width: 5.75rem;
+            }
+
+            .mini-chart-item.is-compact .mini-chart-total-views {
+                font-size: 0.56rem;
+            }
         }
 
         @media (min-width: 801px) and (max-width: 1100px) {
@@ -4516,9 +4748,9 @@
             </div>
             <div class="site-title-text">
                 <span class="site-title-main-wrap">
-                    <span class="site-title-main" data-i18n="common.siteTitle">Топ Листа</span><span class="site-title-beta" data-i18n="common.beta">БЕТА</span>
+                    <span class="site-title-main-anchor"><span class="site-title-main" data-i18n="common.siteTitle" data-marquee-ignore="true">Топ Листа</span></span>
                 </span>
-                <span class="site-title-sub" id="site-last-update">—</span>
+                <span class="site-title-meta"><span class="site-title-sub" id="site-last-update">—</span><span class="site-title-beta" data-i18n="common.beta">БЕТА</span></span>
             </div>
             <nav class="title-nav">
                 <a href="/charts" class="title-nav-btn"><i class="fas fa-chart-line"></i> <span data-i18n="nav.charts">Топ Листа</span></a>
@@ -4527,15 +4759,15 @@
                 <a href="/interviews" class="title-nav-btn"><i class="fas fa-microphone-lines"></i> <span data-i18n="nav.interviews">Интервјуа</span></a>
                 <a href="/kustosi" class="title-nav-btn"><i class="fas fa-headphones"></i> <span data-i18n="nav.curators">Кустоси</span></a>
             </nav>
-            <a href="/login" class="title-nav-btn index-login-cta" id="login-cta" data-i18n-title="auth.login" title="Најава" aria-label="Најава">
-                <i class="fas fa-right-to-bracket"></i>
-                <span data-i18n="dashboard.loginCta">Најава</span>
-            </a>
             <a href="/za" class="title-nav-btn title-nav-btn-icon-only index-about-cta" title="За проектот" aria-label="За проектот" data-i18n-title="nav.about"><i class="fas fa-info-circle"></i><span class="title-nav-btn-label-hidden" data-i18n="nav.about">За проектот</span></a>
             <div class="title-nav-lang-wrap">
                 <a href="#" class="title-nav-btn title-nav-lang-btn" id="index-lang-toggle" title="Language" aria-haspopup="true" aria-expanded="false"><i class="fas fa-globe"></i></a>
                 <div class="lang-dropdown" id="index-lang-dropdown"></div>
             </div>
+            <a href="/login" class="title-nav-btn title-nav-btn-icon-only index-login-cta" id="login-cta" data-i18n-title="auth.login" title="Најава" aria-label="Најава">
+                <i class="fas fa-right-to-bracket"></i>
+                <span class="title-nav-btn-label-hidden" data-i18n="dashboard.loginCta">Најава</span>
+            </a>
         </div>
 
         <!-- ==================== TOP 3 MAIN CHART ==================== -->
@@ -5483,13 +5715,65 @@
 
         function fitSiteTitleMain() {
             var title = document.querySelector('.site-title-main');
-            if (!title) return;
+            var anchor = document.querySelector('.site-title-main-anchor');
+            var wrap = document.querySelector('.site-title-main-wrap');
+            var meta = document.querySelector('.site-title-meta');
+            if (!title || !wrap || !anchor) return;
 
-            title.style.fontSize = '';
-            if (!window.matchMedia('(max-width: 800px)').matches) return;
+            anchor.style.fontSize = '';
+            title.style.maxWidth = '';
+            if (meta) meta.style.width = '';
+            title.classList.remove('js-overflow-marquee-auto', 'is-marquee-active');
+            if (!title.hasAttribute('data-marquee-ignore')) {
+                title.setAttribute('data-marquee-ignore', 'true');
+            }
+
+            function syncMetaWidth() {
+                if (!meta) return;
+                var titleWidth = Math.ceil(title.getBoundingClientRect().width);
+                var available = Math.ceil(wrap.getBoundingClientRect().width);
+                if (titleWidth > 0 && available > 0) {
+                    meta.style.width = Math.min(titleWidth, available) + 'px';
+                }
+            }
+
+            var marqueeContent = title.querySelector('.overflow-marquee__content');
+            if (marqueeContent && title.children.length === 1) {
+                title.textContent = marqueeContent.textContent || title.textContent;
+            }
 
             requestAnimationFrame(function() {
-                fitTextToWidth(title, 0.95);
+                var availableWidth = Math.max(0, wrap.getBoundingClientRect().width);
+                if (!availableWidth) return;
+
+                title.style.maxWidth = availableWidth + 'px';
+
+                var computed = parseFloat(getComputedStyle(anchor).fontSize);
+                var rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+                var minRem = 0.72;
+                var minPx = minRem * rootSize;
+                var naturalWidth = title.scrollWidth;
+
+                if (naturalWidth <= availableWidth) {
+                    syncMetaWidth();
+                    return;
+                }
+
+                var fittedPx = Math.max(minPx, (computed * availableWidth) / naturalWidth);
+                anchor.style.fontSize = (Math.round((fittedPx / rootSize) * 100) / 100) + 'rem';
+
+                var guard = 0;
+                while (guard < 12 && title.scrollWidth > title.clientWidth && parseFloat(getComputedStyle(anchor).fontSize) > minPx + 0.1) {
+                    guard += 1;
+                    fittedPx = Math.max(minPx, parseFloat(getComputedStyle(anchor).fontSize) - 0.4);
+                    anchor.style.fontSize = (Math.round((fittedPx / rootSize) * 100) / 100) + 'rem';
+                }
+
+                if (title.scrollWidth > title.clientWidth) {
+                    anchor.style.fontSize = (minPx / rootSize) + 'rem';
+                }
+
+                syncMetaWidth();
             });
         }
 
@@ -5536,6 +5820,13 @@
             if (n === null || n === undefined) return '·';
             if (n === 0) return '·';
             return formatCompactCountHtml(n);
+        }
+
+        function buildIndexViewsInlineHtml(totalViews, extraClass) {
+            var value = Number(totalViews || 0);
+            if (!isFinite(value) || value <= 0) return '';
+            var className = 'index-inline-views' + (extraClass ? ' ' + extraClass : '');
+            return '<span class="' + className + '"><span class="index-inline-views-icon" aria-hidden="true"><i class="fas fa-eye"></i></span><span class="index-inline-views-value">' + formatViewsCompact(value) + '</span></span>';
         }
 
         function getMiniChartRevealStyle(index, genreKey) {
@@ -5653,6 +5944,7 @@
             container.innerHTML = chartItems.map(function(r, i) {
                 var popPct = Math.min(100, Math.round(((r.viewsDelta || 0) / maxPop) * 100));
                 var barClass = i === 0 ? 'pop-gold' : i === 1 ? 'pop-silver' : i === 2 ? 'pop-bronze' : 'pop-default';
+                var deltaIconClass = Number(r.viewsDelta || 0) >= 0 ? 'fas fa-arrow-trend-up' : 'fas fa-arrow-trend-down';
                 var itemClass = 'mini-chart-item';
                 var revealStyle = '';
                 var revealMarkup = '';
@@ -5680,12 +5972,17 @@
                     '<span class="mini-chart-rank">' + (i + 1) + '</span>' +
                     coverHtml +
                     '<div class="mini-chart-info">' +
-                        '<div class="mini-chart-title js-overflow-marquee">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
-                        '<div class="mini-chart-artist">' + buildArtistLinks(r.bandName) + '</div>' +
+                        '<div class="mini-chart-title-row">' +
+                            '<div class="mini-chart-title js-overflow-marquee">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
+                            '<div class="mini-chart-total-views"><span class="mini-chart-stat-icon" aria-hidden="true"><i class="fas fa-eye"></i></span><span class="mini-chart-stat-value">' + formatViewsCompact(r.youtubeViews || 0) + '</span></div>' +
+                        '</div>' +
+                        '<div class="mini-chart-artist js-overflow-marquee">' + buildArtistLinks(r.bandName) + '</div>' +
                     '</div>' +
                     '<div class="chart-pop-wrap">' +
-                        '<span class="mini-chart-pop">' + formatViewsDeltaCompact(r.viewsDelta) + '</span>' +
-                        '<div class="pop-bar-track"><div class="pop-bar-fill ' + barClass + '" style="width:' + popPct + '%"></div></div>' +
+                        '<div class="chart-pop-main">' +
+                            '<div class="pop-bar-track"><div class="pop-bar-fill ' + barClass + '" style="width:' + popPct + '%"></div></div>' +
+                        '</div>' +
+                        '<span class="mini-chart-pop"><span class="mini-chart-stat-icon" aria-hidden="true"><i class="' + deltaIconClass + '"></i></span><span class="mini-chart-stat-value">' + formatViewsDeltaCompact(r.viewsDelta) + '</span></span>' +
                     '</div>' +
                 '</li>';
             }).join('');
@@ -5695,33 +5992,21 @@
             fitMiniChartText(container);
         }
 
-        // Auto-fit song title & artist name to available width
+        // Keep mini-chart title & artist at their CSS-defined size for visual
+        // consistency — long names are handled by the overflow-marquee /
+        // ellipsis fallback rather than by shrinking the font (which used to
+        // produce tiny, inconsistent text).
         function fitMiniChartText(container) {
             requestAnimationFrame(function() {
-                var items = container.querySelectorAll('.mini-chart-info');
-                items.forEach(function(info) {
-                    var title = info.querySelector('.mini-chart-title');
-                    var artist = info.querySelector('.mini-chart-artist');
-                    if (title) fitTextToWidth(title, 0.6);
-                    if (artist) fitTextToWidth(artist, 0.5);
+                var items = container.querySelectorAll('.mini-chart-info .mini-chart-title, .mini-chart-info .mini-chart-artist');
+                items.forEach(function(el) {
+                    // Reset any legacy inline font-size that previous renders may have left.
+                    if (el.style.fontSize) el.style.fontSize = '';
                 });
                 if (typeof refreshOverflowMarquees === 'function') {
                     refreshOverflowMarquees(container);
                 }
             });
-        }
-        function fitTextToWidth(el, minRem) {
-            // Read the CSS-defined font size as our starting (max) value
-            var computed = parseFloat(getComputedStyle(el).fontSize);
-            var rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-            var maxRem = computed / rootSize;
-            var size = maxRem;
-            // Reset any previous override
-            el.style.fontSize = '';
-            while (size > minRem && el.scrollWidth > el.clientWidth + 1) {
-                size = Math.round((size - 0.05) * 100) / 100;
-                el.style.fontSize = size + 'rem';
-            }
         }
 
         function renderMainChart() {
@@ -6090,10 +6375,11 @@
                 });
                 list.innerHTML = displayedReleases.map(function(r) {
                     var releaseDate = r.effectiveReleaseDate || r.releaseDate;
+                    var totalViews = getReleaseRadarViews(r);
                     return '<li class="radar-item" onclick="openServiceChooser(this)" data-url="' + escHtml(r.releaseUrl) + '" data-title="' + escHtml(r.releaseTitle) + '" data-artist="' + escHtml(r.bandName) + '" data-thumb="' + escHtml(r.thumbnail || '') + '" data-total-views="' + escHtml(String(r.youtubeViews || 0)) + '" data-views-delta="' + escHtml(String(r.viewsDelta || 0)) + '" data-youtube-url="' + escHtml(getBestYoutubeUrl(r.releaseId)) + '" title="' + escHtml(r.releaseTitle) + ' - ' + escHtml(r.bandName) + '">' +
                         '<img class="radar-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                         '<div class="radar-info">' +
-                            '<div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
+                            '<div class="radar-info-title-row"><div class="radar-info-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' + buildIndexViewsInlineHtml(totalViews) + '</div>' +
                             '<div class="radar-info-artist">' + buildArtistLinks(r.bandName) + '</div>' +
                             '<div class="radar-age">' + escHtml(formatReleaseAge(releaseDate)) + '</div>' +
                         '</div>' +
@@ -6421,6 +6707,7 @@
 
             list.innerHTML = picked.map(function(r) {
                 var viewsDeltaVal = r.viewsDelta || 0;
+                var totalViews = getReleaseRadarViews(r);
                 var chevCount = viewsDeltaVal > 0 ? (chevronCountMap[r.releaseId] || 1) : 0;
                 var chevHtml = '';
                 if (chevCount > 0) {
@@ -6436,7 +6723,7 @@
                     '<img class="trending-cover" src="' + r.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
                     '<div class="trending-info">' +
                         '<div class="trending-title-row">' +
-                            '<div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' +
+                            '<div class="trending-title-main"><div class="trending-title">' + escHtml(localizeText(r.releaseTitle)) + '</div>' + buildIndexViewsInlineHtml(totalViews) + '</div>' +
                             '<span class="trending-score-inline">' + escHtml(scoreValue) + '</span>' +
                         '</div>' +
                         '<div class="trending-sub">' + buildArtistLinks(r.bandName) + '</div>' +
@@ -6672,13 +6959,15 @@
             });
         }
 
-        // ==================== RENDER: RELEASE STATS ====================
         function renderReleaseStats() {
             var container = document.getElementById('release-stats-content');
             if (!container) return;
 
-            // Use precomputed stats from site-master.json
-            var stats = siteMaster && siteMaster.releaseStats;
+            var snapshot = siteMaster && siteMaster.releaseStats;
+            if (snapshot) renderReleaseStatsFromObject(container, snapshot);
+        }
+
+        function renderReleaseStatsFromObject(container, stats) {
             if (!stats) return;
 
             var totalReleases = stats.totalReleases || 0;
@@ -6735,6 +7024,7 @@
                     '<div class="release-stats-status s-noyt"><span class="release-stats-status-dot"></span><span class="release-stats-status-copy"><span class="release-stats-status-count">' + formatCount(noYtSongs) + '</span><span class="release-stats-status-label" data-i18n="stats.noYoutube">' + t('stats.noYoutube', 'без YouTube') + '</span></span></div>' +
                 '</div>';
             container.style.display = '';
+            if (typeof applyTranslations === 'function') applyTranslations(container);
         }
 
         // ==================== RENDER: VERIFY ARTISTS ====================

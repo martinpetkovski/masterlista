@@ -1350,9 +1350,11 @@
             try { initScrollShadows(); } catch (e) { console.warn('initScrollShadows error:', e); }
             try { handleEditUrlParam(); } catch (e) { console.warn('handleEditUrlParam error:', e); }
             
-            // Fetch last modified date from GitHub API (non-blocking)
+            // Fetch last modified date of bands.json from GitHub API (non-blocking).
+            // The file lives under data/dynamic/editable/ — querying just
+            // "bands.json" returns no commits, so the timestamp would be wrong.
             try {
-                const response = await fetch('https://api.github.com/repos/martinpetkovski/masterlista/commits?path=bands.json&per_page=1');
+                const response = await fetch('https://api.github.com/repos/martinpetkovski/masterlista/commits?path=data/dynamic/editable/bands.json&per_page=1');
                 if (response.ok) {
                     const commits = await response.json();
                     if (commits.length > 0) {

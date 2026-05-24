@@ -9,8 +9,12 @@ permissions:
   contents: write
   pull-requests: read
 
+# Concurrency is scoped per target base-ref so that submissions to different
+# PRs (or different base branches) don't queue each other. Within a single
+# branch, runs queue (no cancellation) so rapid submissions still all
+# regenerate the snapshot in order — see commit step for push-conflict retry.
 concurrency:
-  group: update-contributions-snapshot
+  group: update-contributions-snapshot-${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -52,4 +56,36 @@ jobs:
 
           git add data/dynamic/generated/contributions.json
           git commit -m "Update contributions snapshot"
-          git push origin HEAD:"$TARGET_REF"
+
+          # Retry the push if the base ref moved while we were generating the
+          # snapshot (e.g. another PR merge or a concurrent automated commit).
+          # Without this, rapid submissions could fail the workflow and leave
+          # the snapshot stale.
+          attempts=0
+          max_attempts=5
+          until git push origin HEAD:"$TARGET_REF"; do
+            attempts=$((attempts + 1))
+            if [ "$attempts" -ge "$max_attempts" ]; then
+              echo "::error::Failed to push snapshot after $attempts attempts"
+              exit 1
+            fi
+            echo "Push rejected — rebasing on latest $TARGET_REF and retrying (attempt $attempts/$max_attempts)"
+            git fetch origin "$TARGET_REF"
+            # Rebase our single snapshot commit onto the latest base ref.
+            git rebase "origin/$TARGET_REF" || {
+              echo "::warning::Rebase hit a conflict — re-running generator on latest tree"
+              git rebase --abort || true
+              git reset --hard "origin/$TARGET_REF"
+              GITHUB_TOKEN="$GITHUB_TOKEN" CONTRIBUTIONS_MAX_PAGES=20 npm run generate:contributions
+              changes=$(git status --porcelain -- data/dynamic/generated/contributions.json)
+              if [ -z "$changes" ]; then
+                echo "No contribution snapshot changes after rebase regeneration."
+                exit 0
+              fi
+              git add data/dynamic/generated/contributions.json
+              git commit -m "Update contributions snapshot"
+            }
+            sleep 2
+          done
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
