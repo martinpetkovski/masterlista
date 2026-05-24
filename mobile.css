@@ -2081,7 +2081,6 @@ html.dark-mode .delete-band-btn::before {
     max-width: 72vw; width: calc(75vw - 1rem);
     box-shadow: 0 18px 48px rgba(0,0,0,0.32);
     border: 1px solid rgba(0,0,0,0.14);
-    border-top: 4px solid #000;
     font-family: 'Inter', sans-serif; overflow: hidden;
     opacity: 0; transform: scale(0.85) translateY(20px); filter: blur(4px);
     animation: serviceChooserIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
@@ -2131,7 +2130,7 @@ html.dark-mode .delete-band-btn::before {
 /* --- dark mode --- */
 body.dark-mode .service-chooser,
 body.vfx-dark .service-chooser,
-.service-chooser-overlay.sc-dark .service-chooser { background: #1a1c24; border-color: rgba(255,255,255,0.1); border-top-color: #fff; }
+.service-chooser-overlay.sc-dark .service-chooser { background: #1a1c24; border-color: rgba(255,255,255,0.1); }
 body.dark-mode .service-chooser-overlay,
 body.vfx-dark .service-chooser-overlay,
 .service-chooser-overlay.sc-dark {

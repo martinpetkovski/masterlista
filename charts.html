@@ -659,8 +659,8 @@
             font-size: 13px !important;
         }
 
-          /* Keep advanced rows compact and visually stable while chunked rows append. */
-        .adv-table tbody tr { height: 18px; box-sizing: border-box; background: #fff; }
+        /* Keep advanced rows compact and visually stable while chunked rows append. */
+        .adv-table tbody tr { height: 18px; box-sizing: border-box; background: var(--bg-primary); }
         .adv-table tbody tr.vl-spacer { height: auto; }
         .adv-table tbody tr.vl-spacer td { padding: 0 !important; border: 0 !important; background: transparent !important; }
         .chart-list .vl-spacer { list-style: none; margin: 0; padding: 0; border: 0; background: transparent; }
@@ -896,12 +896,16 @@
                 content-visibility: visible;
                 contain-intrinsic-size: auto;
                 transform: none;
-                background: transparent;
+                background: var(--bg-primary);
             }
 
-            .adv-table tbody tr:nth-child(even),
+            .adv-table tbody tr:nth-child(even) {
+                background: var(--bg-primary);
+                transform: none;
+            }
+
             .adv-table tbody tr:active {
-                background: #fff;
+                background: var(--bg-hover);
                 transform: none;
             }
 
