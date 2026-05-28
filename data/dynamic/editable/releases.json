@@ -21,7 +21,21 @@
           "My Tear"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ"
+      "spotifyUrl": "https://open.spotify.com/artist/0odsk7aDjT94vLvtJfC6CC?si=fQQocnhlT_WMoCyWyMh7GQ",
+      "youtubeTracks": [
+        {
+          "name": "Sonceto gree samo nad oblacite - Single Version",
+          "videoId": "3JqBurefvnE",
+          "url": "https://www.youtube.com/watch?v=3JqBurefvnE",
+          "verified": "verified"
+        },
+        {
+          "name": "Sonceto gree samo nad oblacite - Single Version",
+          "videoId": "qi2s8j4ppX0",
+          "url": "https://www.youtube.com/watch?v=qi2s8j4ppX0",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Вански",
@@ -43,7 +57,21 @@
           "Vanski"
         ]
       ],
-      "spotifyUrl": "https://open.spotify.com/artist/3F4tkWeieOc9tB0bgoStbc?si=Z95KT56VRIO8tQYbEh83sQ"
+      "spotifyUrl": "https://open.spotify.com/artist/3F4tkWeieOc9tB0bgoStbc?si=Z95KT56VRIO8tQYbEh83sQ",
+      "youtubeTracks": [
+        {
+          "name": "Labirint",
+          "videoId": "S1JNE565Hh0",
+          "url": "https://www.youtube.com/watch?v=S1JNE565Hh0",
+          "verified": "verified"
+        },
+        {
+          "name": "Labirint",
+          "videoId": "TMnwWRzqAS8",
+          "url": "https://www.youtube.com/watch?v=TMnwWRzqAS8",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Марија Спасовска",
@@ -70320,7 +70348,13 @@
           "name": "Don Peri",
           "videoId": "A7B0p8TXfKw",
           "url": "https://www.youtube.com/watch?v=A7B0p8TXfKw",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Don Peri",
+          "videoId": "6E-FFmy88GQ",
+          "url": "https://www.youtube.com/watch?v=6E-FFmy88GQ",
+          "verified": "verified"
         }
       ]
     },
@@ -82043,7 +82077,13 @@
           "name": "Alal Vera",
           "videoId": "SVCjQqM9twg",
           "url": "https://www.youtube.com/watch?v=SVCjQqM9twg",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Alal Vera",
+          "videoId": "R8Pc5GpZHPU",
+          "url": "https://www.youtube.com/watch?v=R8Pc5GpZHPU",
+          "verified": "verified"
         }
       ]
     },
@@ -86171,7 +86211,19 @@
           "name": "Sibir",
           "videoId": "ghgUo6kwtQM",
           "url": "https://www.youtube.com/watch?v=ghgUo6kwtQM",
-          "verified": "unverified"
+          "verified": "verified"
+        },
+        {
+          "name": "Sibir",
+          "videoId": "bBsMlQHFUsQ",
+          "url": "https://www.youtube.com/watch?v=bBsMlQHFUsQ",
+          "verified": "verified"
+        },
+        {
+          "name": "Sibir",
+          "videoId": "tg05Vltt3pM",
+          "url": "https://www.youtube.com/watch?v=tg05Vltt3pM",
+          "verified": "verified"
         }
       ]
     },
