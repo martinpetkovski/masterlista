@@ -2103,7 +2103,7 @@
     {
       "name": "Damage Control",
       "city": "Скопје",
-      "genre": "",
+      "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/1YNMKmPz8BBUCtFRwoyxki?si=7BYse3hfRtqvM_wnhP7O9w",
@@ -2121,10 +2121,11 @@
         "#202040",
         "#202020"
       ],
-      "confirmed": false,
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eba3c069b7ccffdd9e7e69ac60",
       "imageSource": "spotify",
-      "spotifyName": "DamageControl"
+      "spotifyName": "DamageControl",
+      "_activityStatus": "active"
     },
     {
       "name": "Дамјан Стоименовски",
