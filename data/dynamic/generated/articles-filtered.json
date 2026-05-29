@@ -1,12 +1,26 @@
 {
-    "lastUpdated":  "2026-05-28T18:32:36Z",
-    "sourceLastUpdated":  "2026-05-28T18:18:20Z",
-    "generatedAt":  "2026-05-28T18:32:36Z",
+    "lastUpdated":  "2026-05-29T18:35:29Z",
+    "sourceLastUpdated":  "2026-05-29T18:20:54Z",
+    "generatedAt":  "2026-05-29T18:35:29Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  179,
+    "totalMatched":  180,
     "totalMentioned":  134,
-    "sourceArticleCount":  36647,
+    "sourceArticleCount":  36954,
     "articles":  [
+                     {
+                         "title":  "Елвир Мекиќ и Јован Јованов го најавија големиот концерт во „Борис Трајковски“",
+                         "link":  "https://netpress.com.mk/elvir-mekik-i-jovan-jovanov-go-najavija-golemiot-konczert-vo-boris-trajkovski/",
+                         "description":  "Во пријатна атмосфера во Intermezzo Music Bar во Скопје, денеска се одржа прес-конференција по повод претстојниот концерт на Јован Јованов и Елвир Мекиќ, кој ќе се одржи на 6 јуни 2026 година во Арена Борис Трајковски. Под мотото „Јован Јованов, Елвир Мекиќ и пријателите“, концертот е замислен ка...",
+                         "date":  "2026-05-29",
+                         "source":  "Нетпрес",
+                         "siteUrl":  "https://netpress.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                         "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/05/jovanov-640x480.jpeg",
+                         "matchedArtists":  [
+                                                "Елвир Мекиќ",
+                                                "Јован Јованов"
+                                            ]
+                     },
                      {
                          "title":  "Анастасија Атанасовска: „Модата има моќ да остави трага не само визуелно, туку и човечки“",
                          "link":  "https://portret.digital/anastasija-atanasovska-modata-ima-mok-da-ostavi-traga-ne-samo-vizuelno-tuku-i-chovechki/",
@@ -2352,6 +2366,20 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Елвир Мекиќ и Јован Јованов го најавија големиот концерт во „Борис Трајковски“",
+                        "link":  "https://netpress.com.mk/elvir-mekik-i-jovan-jovanov-go-najavija-golemiot-konczert-vo-boris-trajkovski/",
+                        "description":  "Во пријатна атмосфера во Intermezzo Music Bar во Скопје, денеска се одржа прес-конференција по повод претстојниот концерт на Јован Јованов и Елвир Мекиќ, кој ќе се одржи на 6 јуни 2026 година во Арена Борис Трајковски. Под мотото „Јован Јованов, Елвир Мекиќ и пријателите“, концертот е замислен ка...",
+                        "date":  "2026-05-29",
+                        "source":  "Нетпрес",
+                        "siteUrl":  "https://netpress.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                        "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/05/jovanov-640x480.jpeg",
+                        "matchedArtists":  [
+                                               "Елвир Мекиќ",
+                                               "Јован Јованов"
+                                           ]
+                    },
                     {
                         "title":  "Анастасија Атанасовска: „Модата има моќ да остави трага не само визуелно, туку и човечки“",
                         "link":  "https://portret.digital/anastasija-atanasovska-modata-ima-mok-da-ostavi-traga-ne-samo-vizuelno-tuku-i-chovechki/",
