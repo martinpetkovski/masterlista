@@ -4305,7 +4305,7 @@
     {
       "name": "GORA$T",
       "city": "недостигаат податоци",
-      "genre": "",
+      "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
         "spotify": "https://open.spotify.com/artist/7ACaHysrjGUB9QAuxabVuL?si=R9QzIt1qQGilhQxrtPTLCg",
@@ -4315,10 +4315,14 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#e94560",
+        "#ffa502"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5eb23397d3e8cf9c70eafef658f",
-      "imageSource": "spotify"
+      "imageSource": "spotify",
+      "_activityStatus": "active"
     },
     {
       "name": "Горан Тодоровски",
