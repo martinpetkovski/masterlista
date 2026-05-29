@@ -1734,8 +1734,12 @@
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
-      "confirmed": false
+      "accentColors": [
+        "#48ff1f",
+        "#e8af2a"
+      ],
+      "confirmed": true,
+      "_activityStatus": "unknown"
     },
     {
       "name": "Член 16",
