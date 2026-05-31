@@ -59,8 +59,8 @@
         "spotify": "https://open.spotify.com/artist/0XCL1iBbw8ZbSVd9uR5zJM?si=u4qmrBbaSwy4y4KWpwDpJw"
       },
       "_activityStatus": "unknown",
-      "image": null,
-      "imageSource": null
+      "image": "https://i.scdn.co/image/ab6761610000e5ebc7005710c43773042aef11c2",
+      "imageSource": "spotify"
     },
     {
       "name": "2bona",
@@ -5268,8 +5268,8 @@
         "youtube": "https://www.youtube.com/watch?v=DbOGc0-dgKI"
       },
       "_activityStatus": "unknown",
-      "image": null,
-      "imageSource": null
+      "image": "https://i.scdn.co/image/ab67616d0000b273b9bd2575e7d28b8392f683dd",
+      "imageSource": "spotify"
     },
     {
       "name": "Johnny Larry",
@@ -5311,8 +5311,8 @@
         "youtube": "https://www.youtube.com/watch?v=0GeFOZ1Way8"
       },
       "_activityStatus": "unknown",
-      "image": null,
-      "imageSource": null
+      "image": "https://i.ytimg.com/vi/0GeFOZ1Way8/hqdefault.jpg",
+      "imageSource": "youtube"
     },
     {
       "name": "Јован Јованов",
@@ -9344,7 +9344,10 @@
         "website": "https://rib.mk/",
         "spotify": "https://open.spotify.com/artist/0zvd98QrDFogMTLcL0Vzcc?si=wAYCFjS_R9-OuMVPCEUKjA"
       },
-      "_activityStatus": "unknown"
+      "_activityStatus": "unknown",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb704e65126c593bd61a7c730c",
+      "imageSource": "spotify",
+      "spotifyName": "Rib"
     },
     {
       "name": "Рики",
@@ -10617,8 +10620,9 @@
         "website": "https://www.stefanijaofficial.com"
       },
       "_activityStatus": "unknown",
-      "image": null,
-      "imageSource": null
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4725858d7b17dc0561de3f1a",
+      "imageSource": "spotify",
+      "spotifyName": "Stefanija"
     },
     {
       "name": "Стих Наумов",
