@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-29T13:19:42.419Z",
+  "generatedAt": "2026-05-31T09:32:02.575Z",
   "scoreMode": "line_changes",
-  "totalContributions": 622947,
-  "totalLineChanges": 622947,
+  "totalContributions": 622956,
+  "totalLineChanges": 622956,
   "leaderboardContributions": 13519,
   "leaderboardLineChanges": 13519,
-  "systemContributions": 609428,
-  "communityContributions": 609428,
-  "communityLineChanges": 609428,
+  "systemContributions": 609437,
+  "communityContributions": 609437,
+  "communityLineChanges": 609437,
   "totalContributors": 1,
   "leaderboard": [
     {
@@ -16,9 +16,9 @@
       "name": "Community",
       "avatar_url": "",
       "html_url": "",
-      "contributions": 609428,
-      "lineChanges": 609428,
-      "lastContributionAt": "2026-05-29T13:19:01Z",
+      "contributions": 609437,
+      "lineChanges": 609437,
+      "lastContributionAt": "2026-05-29T13:19:35Z",
       "system": true,
       "community": true,
       "rank": null
@@ -38,6 +38,35 @@
     }
   ],
   "records": [
+    {
+      "prNumber": 475,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/475",
+      "title": "MMM: Предлог промени",
+      "mergedAt": "2026-05-29T13:19:35Z",
+      "createdAt": "2026-05-28T19:51:42Z",
+      "submittedAt": "2026-05-28T19:51:43.358Z",
+      "updatedAt": "2026-05-29T13:19:37Z",
+      "additions": 5,
+      "deletions": 4,
+      "lineChanges": 9,
+      "contributionCount": 9,
+      "contributionScore": 9,
+      "submitter": {
+        "id": null,
+        "login": "toplistamk",
+        "name": "Community",
+        "avatar_url": "",
+        "html_url": "https://github.com/toplistamk"
+      },
+      "system": true,
+      "community": true,
+      "status": "merged",
+      "source": "site",
+      "files": [
+        "data/dynamic/editable/bands.json"
+      ],
+      "baseBranch": "master"
+    },
     {
       "prNumber": 476,
       "prUrl": "https://github.com/martinpetkovski/masterlista/pull/476",
@@ -10515,35 +10544,35 @@
   ],
   "pendingRecords": [
     {
-      "prNumber": 475,
-      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/475",
-      "title": "MMM: Предлог промени",
+      "prNumber": 479,
+      "prUrl": "https://github.com/martinpetkovski/masterlista/pull/479",
+      "title": "MMM: Предлог промени од @martinpetkovski",
       "mergedAt": "",
-      "createdAt": "2026-05-28T19:51:42Z",
-      "submittedAt": "2026-05-28T19:51:43.358Z",
-      "updatedAt": "2026-05-28T19:51:43Z",
-      "additions": 5,
-      "deletions": 4,
-      "lineChanges": 9,
+      "createdAt": "2026-05-31T09:31:20Z",
+      "submittedAt": "2026-05-31T09:31:21.290Z",
+      "updatedAt": "2026-05-31T09:31:21Z",
+      "additions": 11,
+      "deletions": 11,
+      "lineChanges": 22,
       "contributionCount": 0,
       "contributionScore": 0,
       "submitter": {
-        "id": null,
-        "login": "toplistamk",
-        "name": "Community",
-        "avatar_url": "",
-        "html_url": "https://github.com/toplistamk"
+        "id": 3426271,
+        "login": "martinpetkovski",
+        "name": "Martin",
+        "avatar_url": "https://avatars.githubusercontent.com/u/3426271?v=4",
+        "html_url": "https://github.com/martinpetkovski"
       },
-      "system": true,
-      "community": true,
+      "system": false,
+      "community": false,
       "status": "pending",
       "source": "site",
       "files": [
-        "data/dynamic/editable/bands.json"
+        "data/dynamic/editable/releases.json"
       ],
       "baseBranch": "master"
     }
   ],
-  "totalRecords": 385,
+  "totalRecords": 386,
   "totalPendingRecords": 1
 }
