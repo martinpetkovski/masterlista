@@ -2778,14 +2778,19 @@
       "soundsLike": "недостигаат податоци",
       "links": {
         "instagram": "https://www.instagram.com/dobriladorianduo/",
-        "youtube": "https://www.youtube.com/watch?v=wXvXyFr9zGE"
+        "youtube": "https://www.youtube.com/@dobriladorianduoofficial",
+        "spotify": "https://open.spotify.com/artist/0KrdKa4Qu3adT9Y849XDLW?si=5Ote7Q4WTcyv4aTIxSgICA"
       },
       "contact": "недостигаат податоци",
       "label": null,
-      "accentColors": null,
+      "accentColors": [
+        "#e94560",
+        "#ffa502"
+      ],
       "confirmed": false,
       "image": "https://i.ytimg.com/vi/wXvXyFr9zGE/hqdefault.jpg",
-      "imageSource": "youtube"
+      "imageSource": "youtube",
+      "_activityStatus": "unknown"
     },
     {
       "name": "Don't! Who? One.",
