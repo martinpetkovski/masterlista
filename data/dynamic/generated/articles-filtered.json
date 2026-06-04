@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-06-03T19:01:52Z",
-    "sourceLastUpdated":  "2026-06-03T18:46:56Z",
-    "generatedAt":  "2026-06-03T19:01:52Z",
+    "lastUpdated":  "2026-06-04T18:30:28Z",
+    "sourceLastUpdated":  "2026-06-04T18:13:10Z",
+    "generatedAt":  "2026-06-04T18:30:28Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  197,
-    "totalMentioned":  148,
-    "sourceArticleCount":  38489,
+    "totalMatched":  199,
+    "totalMentioned":  151,
+    "sourceArticleCount":  38772,
     "articles":  [
+                     {
+                         "title":  "Промоција на \"Без никого да удриш\" на Алембик",
+                         "link":  "https://www.mono-ton.com/events/7yx3kza6tnwyjsk9fx34adw72bkgsb",
+                         "description":  "",
+                         "date":  "2026-06-11",
+                         "source":  "mono-ton",
+                         "siteUrl":  "https://www.mono-ton.com/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=www.mono-ton.com\u0026sz=32",
+                         "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/t/6a0625767eb434572fc21dd4/1778787702796/WhatsApp+Image+2026-05-14+at+21.32.59.jpeg?format=1500w",
+                         "matchedArtists":  [
+                                                "Алембик"
+                                            ]
+                     },
+                     {
+                         "title":  "Промоција на стихозбирката „Нервозна сум“ од Стефанија Граовац ќе се одржи во КИЦ-Скопје",
+                         "link":  "https://www.radiomof.mk/promocija-na-stihozbirkata-nervozna-sum-od-stefanija-graovac-kje-se-odrzhi-vo-kic-skopje/",
+                         "description":  "Во Културно-информативниот центар (КИЦ) во Скопје, на 9 јуни 2026 година, со почеток во 19:19 часот во Салон 19:19, ќе се одржи промоција на стихозбирката „Нервозна сум“ од авторката Стефанија Граовац, во издание на издавачката куќа „Темплум“. Промотор на книгата ќе биде Никола Гелевски, а настан...",
+                         "date":  "2026-06-04",
+                         "source":  "Радио МОФ",
+                         "siteUrl":  "https://www.radiomof.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=radiomof.mk\u0026sz=32",
+                         "thumbnail":  "https://www.radiomof.mk/wp-content/uploads/2026/06/foto-stefanija-238x300.webp",
+                         "matchedArtists":  [
+                                                "Стефанија"
+                                            ]
+                     },
                      {
                          "title":  "Новиот проект на Александар Поповски и Кирил Џајковски, „Идеален маж“, предизвика голем интерес во Загреб",
                          "link":  "https://www.slobodenpecat.mk/noviot-proekt-idealen-mazh-na-aleksandar-popovski-i-kiril-dzhajkovski-predizvika-golem-interes-vo-zagreb/",
@@ -2588,6 +2614,32 @@
                  ],
     "matched":  [
                     {
+                        "title":  "Промоција на \"Без никого да удриш\" на Алембик",
+                        "link":  "https://www.mono-ton.com/events/7yx3kza6tnwyjsk9fx34adw72bkgsb",
+                        "description":  "",
+                        "date":  "2026-06-11",
+                        "source":  "mono-ton",
+                        "siteUrl":  "https://www.mono-ton.com/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=www.mono-ton.com\u0026sz=32",
+                        "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/t/6a0625767eb434572fc21dd4/1778787702796/WhatsApp+Image+2026-05-14+at+21.32.59.jpeg?format=1500w",
+                        "matchedArtists":  [
+                                               "Алембик"
+                                           ]
+                    },
+                    {
+                        "title":  "Промоција на стихозбирката „Нервозна сум“ од Стефанија Граовац ќе се одржи во КИЦ-Скопје",
+                        "link":  "https://www.radiomof.mk/promocija-na-stihozbirkata-nervozna-sum-od-stefanija-graovac-kje-se-odrzhi-vo-kic-skopje/",
+                        "description":  "Во Културно-информативниот центар (КИЦ) во Скопје, на 9 јуни 2026 година, со почеток во 19:19 часот во Салон 19:19, ќе се одржи промоција на стихозбирката „Нервозна сум“ од авторката Стефанија Граовац, во издание на издавачката куќа „Темплум“. Промотор на книгата ќе биде Никола Гелевски, а настан...",
+                        "date":  "2026-06-04",
+                        "source":  "Радио МОФ",
+                        "siteUrl":  "https://www.radiomof.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=radiomof.mk\u0026sz=32",
+                        "thumbnail":  "https://www.radiomof.mk/wp-content/uploads/2026/06/foto-stefanija-238x300.webp",
+                        "matchedArtists":  [
+                                               "Стефанија"
+                                           ]
+                    },
+                    {
                         "title":  "Новиот проект на Александар Поповски и Кирил Џајковски, „Идеален маж“, предизвика голем интерес во Загреб",
                         "link":  "https://www.slobodenpecat.mk/noviot-proekt-idealen-mazh-na-aleksandar-popovski-i-kiril-dzhajkovski-predizvika-golem-interes-vo-zagreb/",
                         "description":  "На големата сцена на ХНК (Hrvatsko narodno kazalište) во Загреб на 5 јуни ќе се одржи премиерата на „Идеален маж“ според познатата драма на Оскар Вајлд, во режија на еден од најреномираните македонски и европски театарски режисери, Александар Поповски, со музика на истакнатиот македонски композит...",
@@ -5168,16 +5220,29 @@
                 ],
     "mentioned":  [
                       {
-                          "title":  "Мерц неуспешно го убедуваше Маѓар да го промени ставот за Украина",
-                          "link":  "https://a1on.mk/world/merc-neuspeshno-go-ubeduvashe-magjar-da-go-promeni-stavot-za-ukraina/",
-                          "description":  "Германскиот канцелар Фридрих Мерц се обиде во Берлин да го убеди унгарскиот премиер Петер Маѓар за важноста од продолжување на поддршката за Украина, но Будимпешта повтори дека нема да испраќа војници или оружје во Киев. Кипарскиот новинар и политички коментатор Алекс Христофору оцени дека разгов...",
-                          "date":  "2026-06-03",
-                          "source":  "А1он",
-                          "siteUrl":  "https://a1on.mk/",
-                          "iconUrl":  "https://www.google.com/s2/favicons?domain=a1on.mk\u0026sz=32",
-                          "thumbnail":  "https://a1on.mk/wp-content/uploads/2026/06/merc-magar-768x432.jpg",
+                          "title":  "Инцидент на аеродромот во Франкфурт: Се сруши предниот дел на авион на Луфтханза, повредени членови на екипажот",
+                          "link":  "https://trn.mk/inczident-na-aerodromot-vo-frankfurt-se-srushi-predniot-del-na-avion-na-lufthanza-povredeni-chlenovi-na-ekipazhot/",
+                          "description":  "Патнички авион од типот Boeing 787 Dreamliner на авиокомпанијата Lufthansa доживеа необичен инцидент на аеродромот во Frankfurt, кога предниот дел на леталото ненадејно се спуштил додека авионот бил паркиран на излезната порта. Според информациите објавени од германските медиуми, инцидентот се сл...",
+                          "date":  "2026-06-04",
+                          "source":  "ТРН",
+                          "siteUrl":  "https://trn.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                          "thumbnail":  "https://trn.mk/wp-content/uploads/2026/06/padna-preden-del-od-avion-na-lufthansa-printscreen-od-flightradar24-768x393.jpg",
                           "matchedArtists":  [
-                                                 "Алекс"
+                                                 "Lufthansa"
+                                             ]
+                      },
+                      {
+                          "title":  "ВИДЕО | Се огласи Слаткар со говор по „хајката“ за документарецот: Не можат да ве убедат!",
+                          "link":  "https://www.slobodenpecat.mk/video-se-oglasi-slatkar-so-govor-po-hajkata-za-dokumentarecot-ne-mozhat-da-ve-ubedat/",
+                          "description":  "По негативните критики за докментарниот филм „Слушни ме“, Слаткаристика се огласи со говор и ја раскажа својата приказна. Говорот го даде вчера пред присутните за време на доделување на наградите „Лазаров“ и го искористи моментот на сцената за да испрати порака на поддршка до сите оние кои се бор...",
+                          "date":  "2026-06-04",
+                          "source":  "Слободен Печат",
+                          "siteUrl":  "https://slobodenpecat.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                          "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/06/Slatkar-768x473.png",
+                          "matchedArtists":  [
+                                                 "Слаткаристика"
                                              ]
                       },
                       {
@@ -5191,6 +5256,32 @@
                           "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/06/kuglanje-uros-stoklas-kfm-768x780.jpg",
                           "matchedArtists":  [
                                                  "Стефанија"
+                                             ]
+                      },
+                      {
+                          "title":  "Мерц неуспешно го убедуваше Маѓар да го промени ставот за Украина",
+                          "link":  "https://a1on.mk/world/merc-neuspeshno-go-ubeduvashe-magjar-da-go-promeni-stavot-za-ukraina/",
+                          "description":  "Германскиот канцелар Фридрих Мерц се обиде во Берлин да го убеди унгарскиот премиер Петер Маѓар за важноста од продолжување на поддршката за Украина, но Будимпешта повтори дека нема да испраќа војници или оружје во Киев. Кипарскиот новинар и политички коментатор Алекс Христофору оцени дека разгов...",
+                          "date":  "2026-06-03",
+                          "source":  "А1он",
+                          "siteUrl":  "https://a1on.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=a1on.mk\u0026sz=32",
+                          "thumbnail":  "https://a1on.mk/wp-content/uploads/2026/06/merc-magar-768x432.jpg",
+                          "matchedArtists":  [
+                                                 "Алекс"
+                                             ]
+                      },
+                      {
+                          "title":  "ОЈО ГОКК бара притвор за Богоев и уште тројцата осомничени поради опасност од бегство и влијание врз истрагата",
+                          "link":  "https://360stepeni.mk/ojo-gokk-bara-pritvor-za-bogoev-i-ushte-trojtsata-osomnicheni-poradi-opasnost-od-begstvo-i-vlijanie-vrz-istragata/",
+                          "description":  "Одговарајќи на новинарски прашања пред зградата на судот, обвинителката на ОЈО ГОКК, Искра Хаџивасилева, рече дека се",
+                          "date":  "2026-06-03",
+                          "source":  "360 Степени",
+                          "siteUrl":  "https://360stepeni.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=360stepeni.mk\u0026sz=32",
+                          "thumbnail":  "https://360stepeni.mk/wp-content/uploads/2026/06/Iskra-Hadzivasileva-768x426.png",
+                          "matchedArtists":  [
+                                                 "Искра"
                                              ]
                       },
                       {
