@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-06-21T18:00:57Z",
-    "sourceLastUpdated":  "2026-06-21T17:47:50Z",
-    "generatedAt":  "2026-06-21T18:00:57Z",
+    "lastUpdated":  "2026-06-22T18:55:45Z",
+    "sourceLastUpdated":  "2026-06-22T18:38:33Z",
+    "generatedAt":  "2026-06-22T18:55:45Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  220,
-    "totalMentioned":  182,
-    "sourceArticleCount":  44049,
+    "totalMatched":  222,
+    "totalMentioned":  183,
+    "sourceArticleCount":  44385,
     "articles":  [
+                     {
+                         "title":  "„Срам да ви е“ – Искра Канзурова лута на некултурна публика во Градски парк",
+                         "link":  "https://www.slobodenpecat.mk/sram-da-vi-e-iskra-kanzurova-luta-na-nekulturna-publika-vo-gradski-park/",
+                         "description":  "Водителката Искра Канзурова се огласи лута по вчерашниот концерт во Градскиот парк во Скопје, каде што музичари од Македонија, Бугарија и Грција ја изведоа „Кармина Бурана“. Искра реагираше на некултурата на одредени музичари кои дошле во публика со своите деца. „Во врска со вчерашниот концерт од...",
+                         "date":  "2026-06-22",
+                         "source":  "Слободен Печат",
+                         "siteUrl":  "https://slobodenpecat.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                         "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/02/Iskra-768x474.jpg",
+                         "matchedArtists":  [
+                                                "Искра"
+                                            ]
+                     },
+                     {
+                         "title":  "Пред проба со бендот „Животни“: Нашата музика е обид да се одржи жива „Балканската пролет“",
+                         "link":  "https://www.slobodenpecat.mk/pred-proba-so-bendot-zhivotni-nashata-muzika-e-obid-da-se-odrzhi-zhiva-balkanskata-prolet/",
+                         "description":  "Пред штимувањето на инструментите и првиот отсвирен тон – пред да започнат со нивната проба – дел од скопскиот бенд „Животни“ ни пружи можност да ѕирнеме зад сцената и подобро да се запознаеме со нивниот проект. Во срцето на проектот „Животни“ се наоѓа основачот Мартин Џорлев, авторот на приказна...",
+                         "date":  "2026-06-22",
+                         "source":  "Слободен Печат",
+                         "siteUrl":  "https://slobodenpecat.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                         "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/06/IMG_6607-768x512.jpeg",
+                         "matchedArtists":  [
+                                                "Животни"
+                                            ]
+                     },
                      {
                          "title":  "Битола слави 25 години „Отворен Град“: Суперхикс, Lelee и четири дена урбана култура на повеќе локации",
                          "link":  "https://trn.mk/bitola-slavi-25-godini-otvoren-grad-superhiks-lelee-i-chetiri-dena-urbana-kultura-na-povekje-lokaczii/",
@@ -2886,6 +2912,32 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "„Срам да ви е“ – Искра Канзурова лута на некултурна публика во Градски парк",
+                        "link":  "https://www.slobodenpecat.mk/sram-da-vi-e-iskra-kanzurova-luta-na-nekulturna-publika-vo-gradski-park/",
+                        "description":  "Водителката Искра Канзурова се огласи лута по вчерашниот концерт во Градскиот парк во Скопје, каде што музичари од Македонија, Бугарија и Грција ја изведоа „Кармина Бурана“. Искра реагираше на некултурата на одредени музичари кои дошле во публика со своите деца. „Во врска со вчерашниот концерт од...",
+                        "date":  "2026-06-22",
+                        "source":  "Слободен Печат",
+                        "siteUrl":  "https://slobodenpecat.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                        "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/02/Iskra-768x474.jpg",
+                        "matchedArtists":  [
+                                               "Искра"
+                                           ]
+                    },
+                    {
+                        "title":  "Пред проба со бендот „Животни“: Нашата музика е обид да се одржи жива „Балканската пролет“",
+                        "link":  "https://www.slobodenpecat.mk/pred-proba-so-bendot-zhivotni-nashata-muzika-e-obid-da-se-odrzhi-zhiva-balkanskata-prolet/",
+                        "description":  "Пред штимувањето на инструментите и првиот отсвирен тон – пред да започнат со нивната проба – дел од скопскиот бенд „Животни“ ни пружи можност да ѕирнеме зад сцената и подобро да се запознаеме со нивниот проект. Во срцето на проектот „Животни“ се наоѓа основачот Мартин Џорлев, авторот на приказна...",
+                        "date":  "2026-06-22",
+                        "source":  "Слободен Печат",
+                        "siteUrl":  "https://slobodenpecat.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                        "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/06/IMG_6607-768x512.jpeg",
+                        "matchedArtists":  [
+                                               "Животни"
+                                           ]
+                    },
                     {
                         "title":  "Битола слави 25 години „Отворен Град“: Суперхикс, Lelee и четири дена урбана култура на повеќе локации",
                         "link":  "https://trn.mk/bitola-slavi-25-godini-otvoren-grad-superhiks-lelee-i-chetiri-dena-urbana-kultura-na-povekje-lokaczii/",
@@ -5790,6 +5842,19 @@
                           "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/68332d2eb85d5113d69cc7fe/6a32ae4a83bbee5474505f78/1781706747759/monoton+bday+poster.png?format=1500w",
                           "matchedArtists":  [
                                                  "Член 16"
+                                             ]
+                      },
+                      {
+                          "title":  "Пред проба со бендот „Животни“: Нашата музика е обид да се одржи жива „Балканската пролет“",
+                          "link":  "https://www.slobodenpecat.mk/pred-proba-so-bendot-zhivotni-nashata-muzika-e-obid-da-se-odrzhi-zhiva-balkanskata-prolet/",
+                          "description":  "Пред штимувањето на инструментите и првиот отсвирен тон – пред да започнат со нивната проба – дел од скопскиот бенд „Животни“ ни пружи можност да ѕирнеме зад сцената и подобро да се запознаеме со нивниот проект. Во срцето на проектот „Животни“ се наоѓа основачот Мартин Џорлев, авторот на приказна...",
+                          "date":  "2026-06-22",
+                          "source":  "Слободен Печат",
+                          "siteUrl":  "https://slobodenpecat.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                          "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/06/IMG_6607-768x512.jpeg",
+                          "matchedArtists":  [
+                                                 "Мартин Џорлев"
                                              ]
                       },
                       {
