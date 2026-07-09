@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-07-08T18:01:53Z",
-    "sourceLastUpdated":  "2026-07-08T17:50:49Z",
-    "generatedAt":  "2026-07-08T18:01:53Z",
+    "lastUpdated":  "2026-07-09T18:06:54Z",
+    "sourceLastUpdated":  "2026-07-09T17:54:03Z",
+    "generatedAt":  "2026-07-09T18:06:54Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  54,
-    "totalMentioned":  21,
-    "sourceArticleCount":  3852,
+    "totalMatched":  55,
+    "totalMentioned":  22,
+    "sourceArticleCount":  4137,
     "articles":  [
+                     {
+                         "title":  "„Приказната за Силјан“ со историски успех: Прв македонски филм номиниран за Emmy Awards",
+                         "link":  "https://trn.mk/prikaznata-za-siljan-emmy-awards-nominacii/",
+                         "description":  "Документарниот филм „Приказната за Силјан“ на режисерката Тамара Котевска испиша нова страница во македонската кинематографија, откако беше номиниран во две категории на 78. Emmy Awards. Ова е првпат македонски филм да добие номинација за овие престижни награди, со што успехот на „Приказната за С...",
+                         "date":  "2026-07-09",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/07/screenshot-2026-07-09-at-13.38.11-768x987.jpeg",
+                         "matchedArtists":  [
+                                                "Emmy"
+                                            ]
+                     },
                      {
                          "title":  "Дина Јашари х Божиновски: Мали амајлии пред еден голем блескав момент",
                          "link":  "https://portret.digital/dina-jashari-h-bozhinovski-mali-amajlii-pred-eden-golem-bleskav-moment/",
@@ -715,6 +728,19 @@
                  ],
     "matched":  [
                     {
+                        "title":  "„Приказната за Силјан“ со историски успех: Прв македонски филм номиниран за Emmy Awards",
+                        "link":  "https://trn.mk/prikaznata-za-siljan-emmy-awards-nominacii/",
+                        "description":  "Документарниот филм „Приказната за Силјан“ на режисерката Тамара Котевска испиша нова страница во македонската кинематографија, откако беше номиниран во две категории на 78. Emmy Awards. Ова е првпат македонски филм да добие номинација за овие престижни награди, со што успехот на „Приказната за С...",
+                        "date":  "2026-07-09",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/07/screenshot-2026-07-09-at-13.38.11-768x987.jpeg",
+                        "matchedArtists":  [
+                                               "Emmy"
+                                           ]
+                    },
+                    {
                         "title":  "Дина Јашари х Божиновски: Мали амајлии пред еден голем блескав момент",
                         "link":  "https://portret.digital/dina-jashari-h-bozhinovski-mali-amajlii-pred-eden-golem-bleskav-moment/",
                         "description":  "Пред вечерта да продолжи како патување низ поп историјата на Duran Duran, сцената во Скопје ја отвори Дина Јашари. Млада, смирена и своја. Нејзиниот настап донесе свежина пред големиот концертен момент, а нејзиниот изглед беше тивко заокружен со детали од Божиновски: Tissot PRX 25mm и TI SENTO Cl...",
@@ -1421,6 +1447,19 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "ПРВ МАКЕДОНСКИ ФИЛМ НОМИНИРАН ЗА EMMY AWARDS: „ПРИКАЗНАТА ЗА СИЛЈАН“ СО ДВЕ НОМИНАЦИИ ЗА НАЈПРЕСТИЖНИТЕ ТВ НАГРАДИ",
+                          "link":  "https://portret.digital/prv-makedonski-film-nominiran-za-emmy-awards-prikaznata-za-siljan-so-dve-nominaczii-za-najprestizhnite-tv-nagradi/",
+                          "description":  "Документарниот филм „Приказната за Силјан“ на Тамара Котевска испиша нова страница во историјата на македонската кинематографија, со две номинации за 78. Emmy Awards, најпрестижните награди во светската телевизиска индустрија. Ова е првпат македонски филм да биде номиниран за Emmy Awards, со што ...",
+                          "date":  "2026-07-09",
+                          "source":  "Портрет",
+                          "siteUrl":  "https://portret.digital/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=portret.digital\u0026sz=32",
+                          "thumbnail":  "https://portret.digital/wp-content/uploads/2026/07/emmy_nom_4x5_tos_allupinc_2-768x960.jpg",
+                          "matchedArtists":  [
+                                                 "Emmy"
+                                             ]
+                      },
                       {
                           "title":  "ВИДЕО: Осомничената за бомбашкиот напад во Монако пронајдена застрлена кај Киев",
                           "link":  "https://a1on.mk/world/video-osomnichenata-za-bombashkiot-napad-vo-monako-pronajdena-zastrlena-kaj-kiev/",
