@@ -11884,24 +11884,28 @@
     },
     {
       "name": "Трифунка",
-      "city": "Скопје",
+      "city": "Штип",
       "genre": "Rap, Hip Hop",
       "soundsLike": "недостигаат податоци",
       "links": {
         "youtube": "https://www.youtube.com/channel/UC_Qw4ChUGYbtfmvfijNOaRQ",
         "spotify": "https://open.spotify.com/artist/077HUbbZohU3JGchIGeHJk?si=K07vu9VZQUGjaxiWm9gKpA",
-        "instagram": "https://www.instagram.com/trifunkaofficial/",
+        "instagram": "https://www.instagram.com/trifunka.mp3?igsh=b2dtZnJ0cTN3bzJ2&utm_source=qr",
         "amazon_music": "https://music.amazon.com/albums/B0FHZK91CQ?trackAsin=B0FHYS11T7",
         "tidal": "https://listen.tidal.com/track/448747516",
         "youtube_music": "https://music.youtube.com/watch?v=vPBYLZOXCPs"
       },
       "contact": "trifunkata@gmail.com",
       "label": null,
-      "accentColors": null,
-      "confirmed": false,
+      "accentColors": [
+        "#ffab01",
+        "#000000"
+      ],
+      "confirmed": true,
       "image": "https://i.scdn.co/image/ab6761610000e5ebd0d8c115f1e6cf8665db3905",
       "imageSource": "spotify",
-      "spotifyName": "Trifunka"
+      "spotifyName": "Trifunka",
+      "_activityStatus": "active"
     },
     {
       "name": "Tsar Von Time",
