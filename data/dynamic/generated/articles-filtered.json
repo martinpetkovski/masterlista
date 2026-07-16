@@ -1,12 +1,26 @@
 {
-    "lastUpdated":  "2026-07-15T17:59:52Z",
-    "sourceLastUpdated":  "2026-07-15T17:46:14Z",
-    "generatedAt":  "2026-07-15T17:59:52Z",
+    "lastUpdated":  "2026-07-16T17:59:45Z",
+    "sourceLastUpdated":  "2026-07-16T17:47:10Z",
+    "generatedAt":  "2026-07-16T17:59:45Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  62,
+    "totalMatched":  63,
     "totalMentioned":  29,
-    "sourceArticleCount":  5845,
+    "sourceArticleCount":  6134,
     "articles":  [
+                     {
+                         "title":  "ВИДЕО: Слаткаристика и Дупер го објавија видео записот за песната „ОК“",
+                         "link":  "https://trn.mk/slatkaristika-duper-ok/",
+                         "description":  "Соработката помеѓу Слаткаристика и Дупер е песната „Ок“, која има има заразлив ритам и ќе стане вистински хит, но тоа што најмногу привлече внимание е видео записот, но и неговото снимање. При снимањето на видео спотот, Слаткаристика и Илчо од Дупер договорија кладба, при што раперот тврдеше дека...",
+                         "date":  "2026-07-16",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/07/duper-slatkar-768x432.jpg",
+                         "matchedArtists":  [
+                                                "Дупер",
+                                                "Слаткаристика"
+                                            ]
+                     },
                      {
                          "title":  "Шишање! Илчо од Дупер изгуби кладба од Слаткар, спотот за новиот сингл стигнува на време!",
                          "link":  "https://trn.mk/ilco-duper-kladba-slatkar-kosa/",
@@ -818,6 +832,20 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "ВИДЕО: Слаткаристика и Дупер го објавија видео записот за песната „ОК“",
+                        "link":  "https://trn.mk/slatkaristika-duper-ok/",
+                        "description":  "Соработката помеѓу Слаткаристика и Дупер е песната „Ок“, која има има заразлив ритам и ќе стане вистински хит, но тоа што најмногу привлече внимание е видео записот, но и неговото снимање. При снимањето на видео спотот, Слаткаристика и Илчо од Дупер договорија кладба, при што раперот тврдеше дека...",
+                        "date":  "2026-07-16",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/07/duper-slatkar-768x432.jpg",
+                        "matchedArtists":  [
+                                               "Дупер",
+                                               "Слаткаристика"
+                                           ]
+                    },
                     {
                         "title":  "Шишање! Илчо од Дупер изгуби кладба од Слаткар, спотот за новиот сингл стигнува на време!",
                         "link":  "https://trn.mk/ilco-duper-kladba-slatkar-kosa/",
