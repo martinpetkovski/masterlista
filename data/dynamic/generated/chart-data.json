@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T16:35:44.417Z",
+  "generatedAt": "2026-07-23T17:46:11.033Z",
   "totalReleases": 2856,
   "totalArtists": 407,
   "releases": [
@@ -8,14 +8,15 @@
       "popularity": 0,
       "followers": 84,
       "youtubeViews": 0,
-      "spotifyPopularity": 0
+      "spotifyPopularity": 0,
+      "youtubeTrackCount": 0
     },
     {
       "releaseId": "6GPG1hI9EqK0gUDmEqNSKI",
       "popularity": 3,
       "followers": 5179,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 0
     },
     {
@@ -23,7 +24,7 @@
       "popularity": 3,
       "followers": 2674,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 1
     },
     {
@@ -31,7 +32,8 @@
       "popularity": 2,
       "followers": 29,
       "youtubeViews": 0,
-      "spotifyPopularity": 0
+      "spotifyPopularity": 2,
+      "youtubeTrackCount": 0
     },
     {
       "releaseId": "5E7nfpmk2NMir4b9KwzCS8",
@@ -80,7 +82,8 @@
       "popularity": 0,
       "followers": 4,
       "youtubeViews": 0,
-      "spotifyPopularity": 0
+      "spotifyPopularity": 0,
+      "youtubeTrackCount": 2
     },
     {
       "releaseId": "3OLTJRyJ0v3GtDqHCmGUQC",
@@ -177,7 +180,7 @@
       "popularity": 6,
       "followers": 314,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 1,
       "viewsDelta": 0
     },
@@ -204,7 +207,7 @@
       "popularity": 7,
       "followers": 5179,
       "youtubeViews": 0,
-      "spotifyPopularity": 6,
+      "spotifyPopularity": 7,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -231,7 +234,7 @@
       "popularity": 8,
       "followers": 71,
       "youtubeViews": 0,
-      "spotifyPopularity": 7,
+      "spotifyPopularity": 8,
       "youtubeTrackCount": 1,
       "viewsDelta": 88603
     },
@@ -339,7 +342,7 @@
       "popularity": 3,
       "followers": 258,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 17,
       "viewsDelta": 38
     },
@@ -456,7 +459,7 @@
       "popularity": 2,
       "followers": 1203,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 2,
       "viewsDelta": 23
     },
@@ -527,7 +530,7 @@
       "popularity": 17,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 18,
+      "spotifyPopularity": 17,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -698,7 +701,7 @@
       "popularity": 15,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 16,
+      "spotifyPopularity": 15,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -1076,7 +1079,7 @@
       "popularity": 3,
       "followers": 1012,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 2,
       "viewsDelta": 372
     },
@@ -1841,7 +1844,7 @@
       "popularity": 4,
       "followers": 314,
       "youtubeViews": 0,
-      "spotifyPopularity": 5,
+      "spotifyPopularity": 4,
       "youtubeTrackCount": 6,
       "viewsDelta": 6
     },
@@ -2876,7 +2879,7 @@
       "popularity": 27,
       "followers": 5905,
       "youtubeViews": 0,
-      "spotifyPopularity": 26,
+      "spotifyPopularity": 27,
       "youtubeTrackCount": 15,
       "viewsDelta": 16162
     },
@@ -3110,7 +3113,7 @@
       "popularity": 19,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 18,
+      "spotifyPopularity": 19,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -3398,7 +3401,7 @@
       "popularity": 13,
       "followers": 105,
       "youtubeViews": 0,
-      "spotifyPopularity": 12,
+      "spotifyPopularity": 13,
       "youtubeTrackCount": 2,
       "viewsDelta": 2791
     },
@@ -3488,7 +3491,7 @@
       "popularity": 10,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 11,
+      "spotifyPopularity": 10,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -3713,7 +3716,7 @@
       "popularity": 6,
       "followers": 2674,
       "youtubeViews": 0,
-      "spotifyPopularity": 5,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 2,
       "viewsDelta": 656
     },
@@ -3767,7 +3770,7 @@
       "popularity": 1,
       "followers": 271,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 1,
       "viewsDelta": 5
     },
@@ -3821,7 +3824,7 @@
       "popularity": 2,
       "followers": 227,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 5,
       "viewsDelta": 27
     },
@@ -3884,7 +3887,7 @@
       "popularity": 16,
       "followers": 6937,
       "youtubeViews": 0,
-      "spotifyPopularity": 15,
+      "spotifyPopularity": 16,
       "youtubeTrackCount": 2,
       "viewsDelta": 697
     },
@@ -4469,7 +4472,7 @@
       "popularity": 3,
       "followers": 57,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 0,
       "viewsDelta": 22
     },
@@ -5396,7 +5399,7 @@
       "popularity": 3,
       "followers": 8501,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 1,
       "viewsDelta": 679
     },
@@ -5504,7 +5507,7 @@
       "popularity": 23,
       "followers": 35403,
       "youtubeViews": 0,
-      "spotifyPopularity": 22,
+      "spotifyPopularity": 23,
       "youtubeTrackCount": 0,
       "viewsDelta": 39959
     },
@@ -6242,7 +6245,7 @@
       "popularity": 1,
       "followers": 45,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 8,
       "viewsDelta": 16
     },
@@ -6701,7 +6704,7 @@
       "popularity": 8,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 7,
+      "spotifyPopularity": 8,
       "youtubeTrackCount": 1,
       "viewsDelta": 31
     },
@@ -8060,7 +8063,7 @@
       "popularity": 7,
       "followers": 7146,
       "youtubeViews": 0,
-      "spotifyPopularity": 6,
+      "spotifyPopularity": 7,
       "youtubeTrackCount": 1,
       "viewsDelta": 387
     },
@@ -8420,7 +8423,7 @@
       "popularity": 5,
       "followers": 5179,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 5,
       "youtubeTrackCount": 5,
       "viewsDelta": 43
     },
@@ -8429,7 +8432,7 @@
       "popularity": 13,
       "followers": 5179,
       "youtubeViews": 0,
-      "spotifyPopularity": 12,
+      "spotifyPopularity": 13,
       "youtubeTrackCount": 4,
       "viewsDelta": 504
     },
@@ -8645,7 +8648,7 @@
       "popularity": 2,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 1,
       "viewsDelta": 0
     },
@@ -8933,7 +8936,7 @@
       "popularity": 2,
       "followers": 1280,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 1,
       "viewsDelta": 53
     },
@@ -9419,7 +9422,7 @@
       "popularity": 16,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 15,
+      "spotifyPopularity": 16,
       "youtubeTrackCount": 1,
       "viewsDelta": 153
     },
@@ -9716,7 +9719,7 @@
       "popularity": 1,
       "followers": 1280,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 1,
       "viewsDelta": 54
     },
@@ -9932,7 +9935,7 @@
       "popularity": 3,
       "followers": 1285,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 14,
       "viewsDelta": 51
     },
@@ -10157,7 +10160,7 @@
       "popularity": 4,
       "followers": 1280,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 4,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -10364,7 +10367,7 @@
       "popularity": 1,
       "followers": 246,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 7,
       "viewsDelta": 5
     },
@@ -10833,7 +10836,7 @@
       "followers": 2674,
       "youtubeViews": 0,
       "spotifyPopularity": 5,
-      "youtubeTrackCount": 0,
+      "youtubeTrackCount": 1,
       "viewsDelta": 29
     },
     {
@@ -11129,7 +11132,7 @@
       "popularity": 1,
       "followers": 26,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 7,
       "viewsDelta": 3
     },
@@ -11435,7 +11438,7 @@
       "popularity": 1,
       "followers": 416,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 11,
       "viewsDelta": 41
     },
@@ -11462,7 +11465,7 @@
       "popularity": 3,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 1,
       "viewsDelta": 5
     },
@@ -11948,7 +11951,7 @@
       "popularity": 3,
       "followers": 130,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 9,
       "viewsDelta": 169
     },
@@ -12650,7 +12653,7 @@
       "popularity": 1,
       "followers": 7883,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 2,
       "viewsDelta": 50
     },
@@ -12803,7 +12806,7 @@
       "popularity": 6,
       "followers": 541,
       "youtubeViews": 0,
-      "spotifyPopularity": 7,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 11,
       "viewsDelta": 27
     },
@@ -13127,7 +13130,7 @@
       "popularity": 2,
       "followers": 7943,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 0,
       "viewsDelta": 224
     },
@@ -13154,7 +13157,7 @@
       "popularity": 3,
       "followers": 4807,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 0,
       "viewsDelta": 119
     },
@@ -13433,7 +13436,7 @@
       "popularity": 1,
       "followers": 1280,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 1,
       "viewsDelta": 51
     },
@@ -14000,7 +14003,7 @@
       "popularity": 2,
       "followers": 7943,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 1,
       "viewsDelta": 272
     },
@@ -14630,7 +14633,7 @@
       "popularity": 2,
       "followers": 237,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 22,
       "viewsDelta": 11
     },
@@ -15566,7 +15569,7 @@
       "popularity": 2,
       "followers": 271,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 2,
       "viewsDelta": 51
     },
@@ -15827,7 +15830,7 @@
       "popularity": 2,
       "followers": 395,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 18,
       "viewsDelta": 70
     },
@@ -16637,7 +16640,7 @@
       "popularity": 4,
       "followers": 443,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 4,
       "youtubeTrackCount": 1,
       "viewsDelta": 395
     },
@@ -17159,7 +17162,7 @@
       "popularity": 6,
       "followers": 7146,
       "youtubeViews": 0,
-      "spotifyPopularity": 5,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 1,
       "viewsDelta": 398
     },
@@ -17222,7 +17225,7 @@
       "popularity": 15,
       "followers": 2892,
       "youtubeViews": 0,
-      "spotifyPopularity": 14,
+      "spotifyPopularity": 15,
       "youtubeTrackCount": 10,
       "viewsDelta": 131
     },
@@ -17240,7 +17243,7 @@
       "popularity": 13,
       "followers": 35403,
       "youtubeViews": 0,
-      "spotifyPopularity": 12,
+      "spotifyPopularity": 13,
       "youtubeTrackCount": 0,
       "viewsDelta": 286
     },
@@ -17285,7 +17288,7 @@
       "popularity": 15,
       "followers": 4034,
       "youtubeViews": 0,
-      "spotifyPopularity": 16,
+      "spotifyPopularity": 15,
       "youtubeTrackCount": 0,
       "viewsDelta": 958
     },
@@ -17789,7 +17792,7 @@
       "popularity": 1,
       "followers": 271,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 1,
       "viewsDelta": 113
     },
@@ -18500,7 +18503,7 @@
       "popularity": 9,
       "followers": 35403,
       "youtubeViews": 0,
-      "spotifyPopularity": 8,
+      "spotifyPopularity": 9,
       "youtubeTrackCount": 0,
       "viewsDelta": 553
     },
@@ -18572,7 +18575,7 @@
       "popularity": 16,
       "followers": 20237,
       "youtubeViews": 0,
-      "spotifyPopularity": 15,
+      "spotifyPopularity": 16,
       "youtubeTrackCount": 2,
       "viewsDelta": 38
     },
@@ -18950,7 +18953,7 @@
       "popularity": 2,
       "followers": 1012,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 2,
       "viewsDelta": 8
     },
@@ -19220,7 +19223,7 @@
       "popularity": 14,
       "followers": 64863,
       "youtubeViews": 0,
-      "spotifyPopularity": 13,
+      "spotifyPopularity": 14,
       "youtubeTrackCount": 1,
       "viewsDelta": 2215
     },
@@ -19247,7 +19250,7 @@
       "popularity": 7,
       "followers": 64863,
       "youtubeViews": 0,
-      "spotifyPopularity": 6,
+      "spotifyPopularity": 7,
       "youtubeTrackCount": 1,
       "viewsDelta": 432
     },
@@ -19310,7 +19313,7 @@
       "popularity": 1,
       "followers": 424,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 2,
       "viewsDelta": 7
     },
@@ -19463,7 +19466,7 @@
       "popularity": 19,
       "followers": 7883,
       "youtubeViews": 0,
-      "spotifyPopularity": 20,
+      "spotifyPopularity": 19,
       "youtubeTrackCount": 1,
       "viewsDelta": 186
     },
@@ -19481,7 +19484,7 @@
       "popularity": 2,
       "followers": 559,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 0,
       "viewsDelta": 24
     },
@@ -19814,7 +19817,7 @@
       "popularity": 6,
       "followers": 18491,
       "youtubeViews": 0,
-      "spotifyPopularity": 7,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 1,
       "viewsDelta": 491
     },
@@ -20741,7 +20744,7 @@
       "popularity": 7,
       "followers": 4807,
       "youtubeViews": 0,
-      "spotifyPopularity": 8,
+      "spotifyPopularity": 7,
       "youtubeTrackCount": 0,
       "viewsDelta": 759
     },
@@ -20831,7 +20834,7 @@
       "popularity": 4,
       "followers": 20294,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 4,
       "youtubeTrackCount": 1,
       "viewsDelta": 2463
     },
@@ -20993,7 +20996,7 @@
       "popularity": 6,
       "followers": 547,
       "youtubeViews": 0,
-      "spotifyPopularity": 5,
+      "spotifyPopularity": 6,
       "youtubeTrackCount": 10,
       "viewsDelta": 83
     },
@@ -21686,7 +21689,7 @@
       "popularity": 3,
       "followers": 10689,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 1,
       "viewsDelta": 123
     },
@@ -21749,7 +21752,7 @@
       "popularity": 10,
       "followers": 20294,
       "youtubeViews": 0,
-      "spotifyPopularity": 9,
+      "spotifyPopularity": 10,
       "youtubeTrackCount": 1,
       "viewsDelta": 4397
     },
@@ -21758,7 +21761,7 @@
       "popularity": 1,
       "followers": 1148,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 0,
       "viewsDelta": 42
     },
@@ -22010,7 +22013,7 @@
       "popularity": 2,
       "followers": 103,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 12,
       "viewsDelta": 4
     },
@@ -22073,7 +22076,7 @@
       "popularity": 0,
       "followers": 413,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 0,
       "youtubeTrackCount": 12,
       "viewsDelta": 34
     },
@@ -22352,7 +22355,7 @@
       "popularity": 27,
       "followers": 5905,
       "youtubeViews": 0,
-      "spotifyPopularity": 26,
+      "spotifyPopularity": 27,
       "youtubeTrackCount": 13,
       "viewsDelta": 11430
     },
@@ -22802,7 +22805,7 @@
       "popularity": 2,
       "followers": 547,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 9,
       "viewsDelta": 30
     },
@@ -22847,7 +22850,7 @@
       "popularity": 3,
       "followers": 454,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 9,
       "viewsDelta": 9
     },
@@ -23270,7 +23273,7 @@
       "popularity": 3,
       "followers": 547,
       "youtubeViews": 0,
-      "spotifyPopularity": 2,
+      "spotifyPopularity": 3,
       "youtubeTrackCount": 11,
       "viewsDelta": 66
     },
@@ -23351,7 +23354,7 @@
       "popularity": 18,
       "followers": 29263,
       "youtubeViews": 0,
-      "spotifyPopularity": 19,
+      "spotifyPopularity": 18,
       "youtubeTrackCount": 11,
       "viewsDelta": 1519
     },
@@ -23603,7 +23606,7 @@
       "popularity": 19,
       "followers": 7943,
       "youtubeViews": 0,
-      "spotifyPopularity": 18,
+      "spotifyPopularity": 19,
       "youtubeTrackCount": 13,
       "viewsDelta": 4586
     },
@@ -23612,7 +23615,7 @@
       "popularity": 18,
       "followers": 248126,
       "youtubeViews": 0,
-      "spotifyPopularity": 17,
+      "spotifyPopularity": 18,
       "youtubeTrackCount": 15,
       "viewsDelta": 4241
     },
@@ -23747,7 +23750,7 @@
       "popularity": 15,
       "followers": 1354,
       "youtubeViews": 0,
-      "spotifyPopularity": 14,
+      "spotifyPopularity": 15,
       "youtubeTrackCount": 20,
       "viewsDelta": 1901
     },
@@ -24026,7 +24029,7 @@
       "popularity": 2,
       "followers": 202,
       "youtubeViews": 0,
-      "spotifyPopularity": 1,
+      "spotifyPopularity": 2,
       "youtubeTrackCount": 1,
       "viewsDelta": 259
     },
@@ -24089,7 +24092,7 @@
       "popularity": 9,
       "followers": 15972,
       "youtubeViews": 0,
-      "spotifyPopularity": 10,
+      "spotifyPopularity": 9,
       "youtubeTrackCount": 9,
       "viewsDelta": 1
     },
@@ -24116,7 +24119,7 @@
       "popularity": 4,
       "followers": 647,
       "youtubeViews": 0,
-      "spotifyPopularity": 3,
+      "spotifyPopularity": 4,
       "youtubeTrackCount": 0,
       "viewsDelta": 0
     },
@@ -24422,7 +24425,7 @@
       "popularity": 1,
       "followers": 547,
       "youtubeViews": 0,
-      "spotifyPopularity": 0,
+      "spotifyPopularity": 1,
       "youtubeTrackCount": 0,
       "viewsDelta": 27
     },
@@ -24512,7 +24515,7 @@
       "popularity": 10,
       "followers": 647,
       "youtubeViews": 0,
-      "spotifyPopularity": 9,
+      "spotifyPopularity": 10,
       "youtubeTrackCount": 10,
       "viewsDelta": 0
     },
@@ -25124,7 +25127,7 @@
       "popularity": 5,
       "followers": 143,
       "youtubeViews": 0,
-      "spotifyPopularity": 4,
+      "spotifyPopularity": 5,
       "youtubeTrackCount": 11,
       "viewsDelta": 21
     },
