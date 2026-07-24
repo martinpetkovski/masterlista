@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-07-23T17:56:44Z",
-    "sourceLastUpdated":  "2026-07-23T17:47:03Z",
-    "generatedAt":  "2026-07-23T17:56:44Z",
+    "lastUpdated":  "2026-07-24T17:57:07Z",
+    "sourceLastUpdated":  "2026-07-24T17:47:03Z",
+    "generatedAt":  "2026-07-24T17:57:07Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  65,
+    "totalMatched":  66,
     "totalMentioned":  34,
-    "sourceArticleCount":  8148,
+    "sourceArticleCount":  8424,
     "articles":  [
+                     {
+                         "title":  "MARDUK / Ambroz / Warhammer",
+                         "link":  "https://mktickets.mk/event/marduk-ambroz-warhammer/",
+                         "description":  "MARDUK Еден збор совршено ги опишува, СТРАВОПОЧИТ! Marduk не се непознати на Македонската публика, а нивниот прв концерт далечната 2007ма во Кастро и ден денес се прераскажува низ андерграундот. После 7 години се враќаат во Скопје да проверат до кај сме и што сме Трошење зборови за најава се непо...",
+                         "date":  "2026-07-24",
+                         "source":  "MK Tickets",
+                         "siteUrl":  "https://www.mktickets.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=mktickets.mk\u0026sz=32",
+                         "thumbnail":  "https://mktickets.mk/wp-content/uploads/2026/07/тв-250x164.png",
+                         "matchedArtists":  [
+                                                "Ambroz"
+                                            ]
+                     },
                      {
                          "title":  "Пред проба со бендот „Персеида“: Колку повеќе нè викаат да свириме, толку повеќе креираме за тие настапи",
                          "link":  "https://www.slobodenpecat.mk/pred-proba-so-bendot-perseida-kolku-povekje-ne-vikaat-da-svirime-tolku-povekje-kreirame-za-tie-nastapi/",
@@ -858,6 +871,19 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "MARDUK / Ambroz / Warhammer",
+                        "link":  "https://mktickets.mk/event/marduk-ambroz-warhammer/",
+                        "description":  "MARDUK Еден збор совршено ги опишува, СТРАВОПОЧИТ! Marduk не се непознати на Македонската публика, а нивниот прв концерт далечната 2007ма во Кастро и ден денес се прераскажува низ андерграундот. После 7 години се враќаат во Скопје да проверат до кај сме и што сме Трошење зборови за најава се непо...",
+                        "date":  "2026-07-24",
+                        "source":  "MK Tickets",
+                        "siteUrl":  "https://www.mktickets.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=mktickets.mk\u0026sz=32",
+                        "thumbnail":  "https://mktickets.mk/wp-content/uploads/2026/07/тв-250x164.png",
+                        "matchedArtists":  [
+                                               "Ambroz"
+                                           ]
+                    },
                     {
                         "title":  "Пред проба со бендот „Персеида“: Колку повеќе нè викаат да свириме, толку повеќе креираме за тие настапи",
                         "link":  "https://www.slobodenpecat.mk/pred-proba-so-bendot-perseida-kolku-povekje-ne-vikaat-da-svirime-tolku-povekje-kreirame-za-tie-nastapi/",
