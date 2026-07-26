@@ -1531,6 +1531,14 @@ function Merge-ChartSnapshotState {
 }
 
 # Determine the Monday of the live chart-history baseline week
+$providedViewsDeltaMap = @{}
+foreach ($r in $releases) {
+    $providedDelta = [int]($r.viewsDelta -as [int])
+    if ($providedDelta -gt 0 -and $r.releaseId) {
+        $providedViewsDeltaMap[$r.releaseId] = $providedDelta
+    }
+}
+
 $prevChartMonday = $null
 if ($deltaBaselineWeek) {
     $prevChartMonday = Get-ChartMondayFromWeekId $deltaBaselineWeek.weekId
@@ -1547,6 +1555,16 @@ foreach ($r in $mainReleasesDeduped) {
 foreach ($r in $releases) {
     $delta = Get-ViewsDelta -release $r -previousViewsMap $prevViewsMap -previousVideoIdsMap $prevVideoIdsMap -previousVideoViewsMap $prevVideoViewsMap -previousChartMonday $prevChartMonday -UseCurrentTrackVideoFilter
     $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $delta -Force
+}
+
+$computedPositiveDeltaCount = @($releases | Where-Object { [int]($_.viewsDelta -as [int]) -gt 0 }).Count
+if ($computedPositiveDeltaCount -le 0 -and $providedViewsDeltaMap.Count -gt 0) {
+    foreach ($r in $releases) {
+        if ($r.releaseId -and $providedViewsDeltaMap.ContainsKey($r.releaseId)) {
+            $r | Add-Member -NotePropertyName viewsDelta -NotePropertyValue $providedViewsDeltaMap[$r.releaseId] -Force
+        }
+    }
+    Write-Host "  > Live archive matches current totals - preserving $($providedViewsDeltaMap.Count) upstream YouTube delta(s)" -ForegroundColor Cyan
 }
 
 $negativeDeltaCount = Set-NegativeViewsDeltaIssues -items $releases -baselineWeekId $(if ($deltaBaselineWeek) { $deltaBaselineWeek.weekId } else { $null })

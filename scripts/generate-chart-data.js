@@ -18,6 +18,21 @@ const ROOT = path.resolve(__dirname, '..');
 const STATIC_DATA_DIR = path.join(ROOT, 'data', 'static');
 const EDITABLE_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'editable');
 const GENERATED_DATA_DIR = path.join(ROOT, 'data', 'dynamic', 'generated');
+const MIN_SPOTIFY_ARTIST_COVERAGE = 0.8;
+const MIN_RELEASE_RETENTION = 0.8;
+const MIN_VERIFICATION_RETENTION = 0.9;
+
+function countProtectedYouTubeTracks(releases) {
+  let count = 0;
+  for (const release of releases || []) {
+    for (const track of release.youtubeTracks || []) {
+      if (track.verified === 'verified' || track.verified === 'will-not-verify') {
+        count++;
+      }
+    }
+  }
+  return count;
+}
 
 // Spotify API helpers
 async function getSpotifyToken(clientId, clientSecret) {
@@ -584,12 +599,18 @@ async function getArtistsBatch(artistIds, token) {
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
     
-    if (response.ok) {
-      const data = await response.json();
-      for (const artist of (data.artists || [])) {
-        if (artist) {
-          results[artist.id] = artist;
-        }
+    if (!response.ok) {
+      const details = await response.text().catch(() => '');
+      throw new Error(
+        `Spotify artist batch failed with HTTP ${response.status}` +
+        (details ? `: ${details.slice(0, 300)}` : '')
+      );
+    }
+
+    const data = await response.json();
+    for (const artist of (data.artists || [])) {
+      if (artist) {
+        results[artist.id] = artist;
       }
     }
     
@@ -717,7 +738,15 @@ async function main() {
   
   // Fetch all artist info in batches
   const artistsInfo = await getArtistsBatch(artistIds, spotifyToken);
-  console.log(`Got info for ${Object.keys(artistsInfo).length} artists`);
+  const fetchedArtistCount = Object.keys(artistsInfo).length;
+  console.log(`Got info for ${fetchedArtistCount} artists`);
+  const artistCoverage = artistIds.length > 0 ? fetchedArtistCount / artistIds.length : 0;
+  if (artistCoverage < MIN_SPOTIFY_ARTIST_COVERAGE) {
+    throw new Error(
+      `Spotify artist coverage is too low (${fetchedArtistCount}/${artistIds.length}); ` +
+      'refusing to overwrite chart data'
+    );
+  }
   
   // ==================== Update artist images in bands.json ====================
   // For each Spotify artist, determine the best image and write it to bands.json.
@@ -886,6 +915,16 @@ async function main() {
   // Load existing data to preserve verified YouTube state between publish and finalize phases.
   const existingReleases = loadExistingReleases();
   const existingWeeklyChartData = loadExistingWeeklyChartData();
+  const existingReleaseCount = existingReleases.size;
+  if (
+    existingReleaseCount > 0 &&
+    sortedReleases.length < Math.floor(existingReleaseCount * MIN_RELEASE_RETENTION)
+  ) {
+    throw new Error(
+      `Spotify returned only ${sortedReleases.length}/${existingReleaseCount} existing releases; ` +
+      'refusing to overwrite chart data'
+    );
+  }
   
   // ==================== Build releases.json (catalog) ====================
   const releaseCatalog = sortedReleases.map(r => {
@@ -917,6 +956,19 @@ async function main() {
     }
     return entry;
   });
+
+  const existingProtectedTrackCount = countProtectedYouTubeTracks([...existingReleases.values()]);
+  const nextProtectedTrackCount = countProtectedYouTubeTracks(releaseCatalog);
+  if (
+    existingProtectedTrackCount >= 100 &&
+    nextProtectedTrackCount < Math.floor(existingProtectedTrackCount * MIN_VERIFICATION_RETENTION)
+  ) {
+    throw new Error(
+      `YouTube verification retention is too low ` +
+      `(${nextProtectedTrackCount}/${existingProtectedTrackCount}); ` +
+      'refusing to overwrite releases.json'
+    );
+  }
   
   const releasesOutput = {
     generatedAt: now.toISOString(),

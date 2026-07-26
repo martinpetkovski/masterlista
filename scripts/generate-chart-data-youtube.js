@@ -1293,6 +1293,7 @@ async function main() {
         : '  No YouTube history — will approximate last week views from Spotify popularity');
 
     const isMatchOnly = process.argv.includes('--match-only');
+    const skipMatching = process.argv.includes('--skip-matching') || process.env.YOUTUBE_SKIP_MATCHING === '1';
     const existingYtMap = buildExistingYoutubeTrackMap(releases);
     const existingChartVideoIds = collectExistingVideoIds(existingYtMap, track => track.verified === 'verified');
     const allStats = new Map();
@@ -1387,8 +1388,13 @@ async function main() {
     let stoppedForQuota = false;
     let invalidated = 0;
     const startTime = Date.now();
+    const artistsForMatching = skipMatching ? [] : artistsToProcess;
 
-    for (const artist of artistsToProcess) {
+    if (skipMatching) {
+        console.log('  Skipping channel rematching; preserving existing release-track associations');
+    }
+
+    for (const artist of artistsForMatching) {
         if (youtubeQuotaExhausted) { stoppedForQuota = true; break; }
         const cacheKey = artist.name.toLowerCase().trim();
         const artistReleases = releasesByArtist.get(cacheKey) || [];
@@ -1469,7 +1475,7 @@ async function main() {
         artistsDone++;
         if (artistsDone % 25 === 0) {
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`  ${artistsDone}/${artistsToProcess.length} artists | ${totalTracksMatched} tracks matched | ${elapsed}s | quota: ${quotaUsed}`);
+            console.log(`  ${artistsDone}/${artistsForMatching.length} artists | ${totalTracksMatched} tracks matched | ${elapsed}s | quota: ${quotaUsed}`);
             saveCache(cache);
         }
         await sleep(API_DELAY_MS);
