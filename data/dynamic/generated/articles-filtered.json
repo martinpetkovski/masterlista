@@ -1,11 +1,11 @@
 {
-    "lastUpdated":  "2026-08-04T18:07:32Z",
-    "sourceLastUpdated":  "2026-08-04T17:52:00Z",
-    "generatedAt":  "2026-08-04T18:07:32Z",
+    "lastUpdated":  "2026-08-05T18:05:05Z",
+    "sourceLastUpdated":  "2026-08-05T17:49:43Z",
+    "generatedAt":  "2026-08-05T18:05:05Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  81,
-    "totalMentioned":  46,
-    "sourceArticleCount":  11390,
+    "totalMatched":  83,
+    "totalMentioned":  47,
+    "sourceArticleCount":  11672,
     "articles":  [
                      {
                          "title":  "Never Mind the Music Heres the Noise 2",
@@ -18,6 +18,33 @@
                          "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/68332d2eb85d5113d69cc7fe/6a61c26061cc0b42945828bb/1784792295147/WhatsApp+Image+2026-07-23+at+09.28.42.jpeg?format=1500w",
                          "matchedArtists":  [
                                                 "Noise"
+                                            ]
+                     },
+                     {
+                         "title":  "Сезоната на Премиер -лигата уште не е почната, но веќе е историска",
+                         "link":  "https://novamakedonija.com.mk/sport/fudbal/sezonata-na-premier-ligata-ushte-ne-e-pochnata-no-vekje-e-istoriska/",
+                         "description":  "ФУДБАЛ Рекордни девет тима ќе ја почнат сезоната со нови тренери. Артета, назначен во декември 2019 година, сега е тренерот со најдолг стаж во лигата. Првпат од сезоната 1985/1986 најсилната лига на Англија ќе почне без Фергусон, Венгер, Мурињо, Клоп или Гвардиола, кои заедно освоија 26 од 34 тит...",
+                         "date":  "2026-08-05",
+                         "source":  "Нова Македонија",
+                         "siteUrl":  "https://novamakedonija.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk\u0026sz=32",
+                         "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/08/anglija-epa-11089053-768x496.jpg",
+                         "matchedArtists":  [
+                                                "Премиер"
+                                            ]
+                     },
+                     {
+                         "title":  "ВИДЕО | „Засекогаш млади“: Маријана и Росана по 35 години повторно со нова песна со Дац и Александар",
+                         "link":  "https://www.slobodenpecat.mk/video-zasekogash-mladi-marijana-i-rosana-po-35-godini-povtorno-so-nova-pesna-so-dac-i-aleksandar/",
+                         "description":  "По повеќе од три и пол децении, препознатливите гласови на Маријана и Росана повторно се споија во нова песна. „Засекогаш млади“ е нивната нова музичка приказна со Дац и Александар – четворица пријатели што ги поврзуваат музиката, искрената дружба, многу смеа и незаборавните настапи низ Македониј...",
+                         "date":  "2026-08-05",
+                         "source":  "Слободен Печат",
+                         "siteUrl":  "https://slobodenpecat.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                         "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/08/COVER-768x432.jpg",
+                         "matchedArtists":  [
+                                                "Маријана",
+                                                "Росана"
                                             ]
                      },
                      {
@@ -1083,6 +1110,33 @@
                                            ]
                     },
                     {
+                        "title":  "Сезоната на Премиер -лигата уште не е почната, но веќе е историска",
+                        "link":  "https://novamakedonija.com.mk/sport/fudbal/sezonata-na-premier-ligata-ushte-ne-e-pochnata-no-vekje-e-istoriska/",
+                        "description":  "ФУДБАЛ Рекордни девет тима ќе ја почнат сезоната со нови тренери. Артета, назначен во декември 2019 година, сега е тренерот со најдолг стаж во лигата. Првпат од сезоната 1985/1986 најсилната лига на Англија ќе почне без Фергусон, Венгер, Мурињо, Клоп или Гвардиола, кои заедно освоија 26 од 34 тит...",
+                        "date":  "2026-08-05",
+                        "source":  "Нова Македонија",
+                        "siteUrl":  "https://novamakedonija.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk\u0026sz=32",
+                        "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/08/anglija-epa-11089053-768x496.jpg",
+                        "matchedArtists":  [
+                                               "Премиер"
+                                           ]
+                    },
+                    {
+                        "title":  "ВИДЕО | „Засекогаш млади“: Маријана и Росана по 35 години повторно со нова песна со Дац и Александар",
+                        "link":  "https://www.slobodenpecat.mk/video-zasekogash-mladi-marijana-i-rosana-po-35-godini-povtorno-so-nova-pesna-so-dac-i-aleksandar/",
+                        "description":  "По повеќе од три и пол децении, препознатливите гласови на Маријана и Росана повторно се споија во нова песна. „Засекогаш млади“ е нивната нова музичка приказна со Дац и Александар – четворица пријатели што ги поврзуваат музиката, искрената дружба, многу смеа и незаборавните настапи низ Македониј...",
+                        "date":  "2026-08-05",
+                        "source":  "Слободен Печат",
+                        "siteUrl":  "https://slobodenpecat.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                        "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/08/COVER-768x432.jpg",
+                        "matchedArtists":  [
+                                               "Маријана",
+                                               "Росана"
+                                           ]
+                    },
+                    {
                         "title":  "Македонија мора да биде слободна, таа прекрасна земја што го роди Александар Велики",
                         "link":  "https://novamakedonija.com.mk/makedonija/politika/makedonija-mora-da-bide-slobodna-taa-prekrasna-zemja-shto-go-rodi-aleksandar-veliki/",
                         "description":  "Македонската борба за слобода како клучно европско прашање во статијата на словенечкиот публицист Нико Жупанич од 1903 година Текстот на Жупанич е важен документ за разбирање на европската перцепција на македонското прашање во 1903 година – годината на Илинденското востание. Тој ја гледа Македони...",
@@ -2131,6 +2185,19 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "Британскиот премиер разгледува можност за јавна истрага за активностите на Џефри Епстин во Велика Британија",
+                          "link":  "https://libertas.mk/britanskiot-premier-razgleduva-mozhnost-za-avna-istraga-za-aktivnostite-na-efri-epstin-vo-velika-britani-a/",
+                          "description":  "Британскиот премиер Енди Бернам ја разгледува можноста за отворање јавна истрага за активностите во Велика Британија на починатиот осуден сексуален престапник Џефри Епстин – изјави денеска министерката за жртви Алекс Дејвис-Џонс за Би-Би-Си. Таа рече дека премиерот „ја разгледува“ можноста за так...",
+                          "date":  "2026-08-05",
+                          "source":  "Либертас",
+                          "siteUrl":  "https://libertas.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=libertas.mk\u0026sz=32",
+                          "thumbnail":  "https://libertas.mk/wp-content/uploads/2026/02/epstajn-300x166.jpg",
+                          "matchedArtists":  [
+                                                 "Алекс"
+                                             ]
+                      },
                       {
                           "title":  "Германскиот авиопревозник извести за загуба во првата половина од годината",
                           "link":  "https://netpress.com.mk/germanskiot-avioprevoznik-izvesti-za-zaguba-za-prvata-polovina/",
