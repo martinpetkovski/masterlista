@@ -28,7 +28,7 @@
           "name": "PICK N' ROLL",
           "videoId": "nJ1AYrJQOuY",
           "url": "https://www.youtube.com/watch?v=nJ1AYrJQOuY",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 30446,
           "publishedAt": "2026-08-19"
         },
@@ -36,7 +36,7 @@
           "name": "PICK N' ROLL",
           "videoId": "ZkfhO60EH04",
           "url": "https://www.youtube.com/watch?v=ZkfhO60EH04",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 612,
           "publishedAt": "2026-08-18"
         }
@@ -68,7 +68,7 @@
           "name": "Projection",
           "videoId": "TZ_erTNobZI",
           "url": "https://www.youtube.com/watch?v=TZ_erTNobZI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 67,
           "publishedAt": "2026-08-19"
         },
@@ -76,7 +76,7 @@
           "name": "Projection",
           "videoId": "ZOrMIhhwh9o",
           "url": "https://www.youtube.com/watch?v=ZOrMIhhwh9o",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 6,
           "publishedAt": "2026-08-18"
         }
@@ -141,7 +141,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3FBtudLfRnvdSCEI79hMkB?si=l6Y6yP57TlmLiIZhNMwlmA",
       "effectiveReleaseDate": "2026-08-19",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "HERE WE GO",
+          "videoId": "9AdxeY_hKfA",
+          "url": "https://www.youtube.com/watch?v=9AdxeY_hKfA",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Славе Димитров",
@@ -164,7 +172,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/01Gf0M6khNnSoNXshQPrKl?si=Ln42w3m0Tu6TyoAB6eC5QQ",
       "effectiveReleaseDate": "2026-08-18",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "OPSTANOK 1 (Zavrsna Tema)",
+          "videoId": "9nb6XrDTjqc",
+          "url": "https://www.youtube.com/watch?v=9nb6XrDTjqc",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Славе Димитров",
@@ -187,7 +203,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/01Gf0M6khNnSoNXshQPrKl?si=Ln42w3m0Tu6TyoAB6eC5QQ",
       "effectiveReleaseDate": "2026-08-18",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "OPSTANOK 2 (Glavna Tema)",
+          "videoId": "EJ13cU9Uf7I",
+          "url": "https://www.youtube.com/watch?v=EJ13cU9Uf7I",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Фолтин",
@@ -211,7 +235,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0rXnfWL0gCATJTjiQlH3M7",
       "effectiveReleaseDate": "2026-08-17",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Prsti Prsti (Re:Vasil Hadzimanov)",
+          "videoId": "QiyGe_P-fyU",
+          "url": "https://www.youtube.com/watch?v=QiyGe_P-fyU",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Cassato",
@@ -237,9 +269,15 @@
           "name": "Chains of a Thousand Kisses",
           "videoId": "JEEvqHcOcdw",
           "url": "https://www.youtube.com/watch?v=JEEvqHcOcdw",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 1293,
           "publishedAt": "2026-08-14"
+        },
+        {
+          "name": "Chains of a Thousand Kisses",
+          "videoId": "ajbCu4x-VgE",
+          "url": "https://www.youtube.com/watch?v=ajbCu4x-VgE",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-08-14",
@@ -266,7 +304,21 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/37kyVppYsqLXJ84p4eNW2B?si=7OlJmpw5S5S6f1i_mHXf7w",
       "effectiveReleaseDate": "2026-08-14",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "JETSKI",
+          "videoId": "evkXwB6Gua4",
+          "url": "https://www.youtube.com/watch?v=evkXwB6Gua4",
+          "verified": "verified"
+        },
+        {
+          "name": "JETSKI",
+          "videoId": "Ak4ZWQzeN_M",
+          "url": "https://www.youtube.com/watch?v=Ak4ZWQzeN_M",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Климе Ковачески",
@@ -293,7 +345,7 @@
           "name": "Odyssey (French Lyrical - Reimagined)",
           "videoId": "b6jvOETzdek",
           "url": "https://www.youtube.com/watch?v=b6jvOETzdek",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 20,
           "publishedAt": "2026-08-13"
         }
@@ -327,7 +379,7 @@
           "name": "MRTOV INTERNET TEORIJA",
           "videoId": "iUOIN9D6sgg",
           "url": "https://www.youtube.com/watch?v=iUOIN9D6sgg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 28,
           "publishedAt": "2026-08-11"
         }
@@ -360,7 +412,7 @@
           "name": "Dreams Veiled in the Shades of Life",
           "videoId": "GZcgKomsPr0",
           "url": "https://www.youtube.com/watch?v=GZcgKomsPr0",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 4,
           "publishedAt": "2026-08-12"
         }
@@ -393,9 +445,15 @@
           "name": "Ostani",
           "videoId": "VfjKhgbtcZA",
           "url": "https://www.youtube.com/watch?v=VfjKhgbtcZA",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 6,
           "publishedAt": "2026-08-11"
+        },
+        {
+          "name": "Ostani",
+          "videoId": "8QyfXzGFi4Q",
+          "url": "https://www.youtube.com/watch?v=8QyfXzGFi4Q",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-08-11",
@@ -424,7 +482,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/3ch8xMEWLNzIwFGlvjQ8EN",
       "effectiveReleaseDate": "2026-08-10",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Archimed - Eureka, Majstor Se Cheka (Re:Parketi, Prince$$ Donatsu, Donplaya)",
+          "videoId": "dYxG98vy1lA",
+          "url": "https://www.youtube.com/watch?v=dYxG98vy1lA",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Johnny Larry",
@@ -450,7 +516,7 @@
           "name": "Leto Gospodovo",
           "videoId": "livFPhRwWVg",
           "url": "https://www.youtube.com/watch?v=livFPhRwWVg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 509,
           "publishedAt": "2026-08-09"
         }
@@ -481,7 +547,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0nyKVqkATGrYXA98ieTJr0?si=rovLgRpqTrmiy_OtTnfKbw",
       "effectiveReleaseDate": "2026-08-07",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Tankli Tunkli - Maximusland Remix",
+          "videoId": "quY1hTUc4yU",
+          "url": "https://www.youtube.com/watch?v=quY1hTUc4yU",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Galoski",
@@ -507,9 +581,15 @@
           "name": "Step",
           "videoId": "8w5IE-t2tB8",
           "url": "https://www.youtube.com/watch?v=8w5IE-t2tB8",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 8309,
           "publishedAt": "2026-08-17"
+        },
+        {
+          "name": "Step",
+          "videoId": "2Vm8JGZpyCk",
+          "url": "https://www.youtube.com/watch?v=2Vm8JGZpyCk",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-08-07",
