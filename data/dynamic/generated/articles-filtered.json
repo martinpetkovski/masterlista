@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-08-24T17:40:58Z",
-    "sourceLastUpdated":  "2026-08-24T17:29:45Z",
-    "generatedAt":  "2026-08-24T17:40:58Z",
+    "lastUpdated":  "2026-08-25T17:46:25Z",
+    "sourceLastUpdated":  "2026-08-25T17:28:27Z",
+    "generatedAt":  "2026-08-25T17:46:25Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  100,
-    "totalMentioned":  62,
-    "sourceArticleCount":  16493,
+    "totalMatched":  101,
+    "totalMentioned":  64,
+    "sourceArticleCount":  16780,
     "articles":  [
+                     {
+                         "title":  "Фолтин со јубилеен концерт ја затвора БитФест, но прославата продолжува по Хераклеа",
+                         "link":  "https://trn.mk/foltin-30-koncert-heraklea-29-avgust/",
+                         "description":  "Триесет години по првиот настап во Хераклеа, Фолтин повторно се враќаат на истото место, овојпат со јубилејниот концерт „Фолтин 30“, закажан за 29 август во 20 часот. Концертот ќе биде големото финале на овогодишниот БитФест, но за бендот и публиката вечерта нема да заврши со последната песна. Пр...",
+                         "date":  "2026-08-25",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/08/screenshot-2026-08-25-at-16.12.58-768x439.jpeg",
+                         "matchedArtists":  [
+                                                "Фолтин"
+                                            ]
+                     },
                      {
                          "title":  "„Ме погали по главата и рече – поздрави ги дома“: Јана Стојановска сподели топол спомен за татко ѝ Ненад",
                          "link":  "https://www.slobodenpecat.mk/me-pogali-po-glavata-i-reche-pozdravi-gi-doma-jana-stojanovska-spodeli-topol-spomen-za-tatko-%d1%9d-nenad/",
@@ -1320,6 +1333,19 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Фолтин со јубилеен концерт ја затвора БитФест, но прославата продолжува по Хераклеа",
+                        "link":  "https://trn.mk/foltin-30-koncert-heraklea-29-avgust/",
+                        "description":  "Триесет години по првиот настап во Хераклеа, Фолтин повторно се враќаат на истото место, овојпат со јубилејниот концерт „Фолтин 30“, закажан за 29 август во 20 часот. Концертот ќе биде големото финале на овогодишниот БитФест, но за бендот и публиката вечерта нема да заврши со последната песна. Пр...",
+                        "date":  "2026-08-25",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/08/screenshot-2026-08-25-at-16.12.58-768x439.jpeg",
+                        "matchedArtists":  [
+                                               "Фолтин"
+                                           ]
+                    },
                     {
                         "title":  "„Ме погали по главата и рече – поздрави ги дома“: Јана Стојановска сподели топол спомен за татко ѝ Ненад",
                         "link":  "https://www.slobodenpecat.mk/me-pogali-po-glavata-i-reche-pozdravi-gi-doma-jana-stojanovska-spodeli-topol-spomen-za-tatko-%d1%9d-nenad/",
@@ -2644,6 +2670,32 @@
                           "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/68332d2eb85d5113d69cc7fe/6a77996febbdee2fb3831fcb/1786223200696/photo_2026-08-08_23-02-19.jpg?format=1500w",
                           "matchedArtists":  [
                                                  "Noise"
+                                             ]
+                      },
+                      {
+                          "title":  "Преку 1.000 хектари со тутун, сончоглед, пченка и пиперки се столчени од градот во Долнени и околината",
+                          "link":  "https://www.slobodenpecat.mk/preku-1-000-hektari-so-tutun-sonchogled-pchenka-i-piperki-se-stolcheni-od-gradot-vo-dolneni-i-okolinata/",
+                          "description":  "Околу 1.000 до 1.100 хектари, засадени главно со тутун, но и со сончоглед, пченка и пиперки, се уништени вчера во силното невреме со град кое го зафати Прилепско, правејќи најголема штета во Долнени и околните села, објави ТВ „Алфа“. Градот со големина на орев и силниот ветер на некои места го ун...",
+                          "date":  "2026-08-25",
+                          "source":  "Слободен Печат",
+                          "siteUrl":  "https://slobodenpecat.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                          "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/08/grad-tutun-debreste-768x628.jpg",
+                          "matchedArtists":  [
+                                                 "Алфа"
+                                             ]
+                      },
+                      {
+                          "title":  "Џез за Чудаци 42",
+                          "link":  "https://www.mono-ton.com/events/-42",
+                          "description":  "ВТОРНИК 25ТИ8МИ 2100 ПАБ ЅЕ ЏЕЗ ЗА ЧУДАЦИ #42 Maria Grubor Vardarska - поезија Jimmy Ivanovski - труба Филип Букршлиев – гитара",
+                          "date":  "2026-08-25",
+                          "source":  "mono-ton",
+                          "siteUrl":  "https://www.mono-ton.com/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=www.mono-ton.com\u0026sz=32",
+                          "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/68332d2eb85d5113d69cc7fe/6a8c81ab7792c81b4f65e2a5/1787593387778/photo_2026-08-22_15-36-02.jpg?format=1500w",
+                          "matchedArtists":  [
+                                                 "Филип Букршлиев"
                                              ]
                       },
                       {
