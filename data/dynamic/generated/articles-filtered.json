@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-09-03T17:40:42Z",
-    "sourceLastUpdated":  "2026-09-03T17:23:01Z",
-    "generatedAt":  "2026-09-03T17:40:42Z",
+    "lastUpdated":  "2026-09-04T17:37:23Z",
+    "sourceLastUpdated":  "2026-09-04T17:23:22Z",
+    "generatedAt":  "2026-09-04T17:37:23Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  108,
-    "totalMentioned":  77,
-    "sourceArticleCount":  19053,
+    "totalMatched":  110,
+    "totalMentioned":  78,
+    "sourceArticleCount":  19290,
     "articles":  [
+                     {
+                         "title":  "Влатко Стефановски со пријателите носи акустична вечер во Филхармонија",
+                         "link":  "https://trn.mk/vlatko-stefanovski-acoustic-night-filharmonija/",
+                         "description":  "Македонскиот гитарист Влатко Стефановски на 17 декември ќе одржи специјален концерт насловен „Влатко Стефановски \u0026 Пријатели – Acoustic Night“ во Македонската филхармонија во Скопје. Настапот доаѓа непосредно по неговото сценско појавување со светската оперска ѕвезда Хозе Карерас по повод Денот н...",
+                         "date":  "2026-09-04",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2025/03/vlatko-stefanovski-768x511.jpg",
+                         "matchedArtists":  [
+                                                "Влатко Стефановски"
+                                            ]
+                     },
+                     {
+                         "title":  "По настапот со Карерас, Влатко Стефановски најави специјална Acoustic Night со пријатели",
+                         "link":  "https://netpress.com.mk/po-nastapot-so-kareras-vlatko-stefanovski-najavi-speczijalna-acoustic-night-so-prijateli/",
+                         "description":  "Откако пред неколку дена ја воодушеви публиката на големиот концерт во Скопје, каде што настапи заедно со светската оперска легенда Хозе Карерас во рамките на одбележувањето на Денот на независноста на Северна Македонија, Влатко Стефановски најави нов музички настан кој на 17-ти декември повторно...",
+                         "date":  "2026-09-04",
+                         "source":  "Нетпрес",
+                         "siteUrl":  "https://netpress.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                         "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/09/stefanovski-hd.jpg-f-1-1-2-768x512.jpg",
+                         "matchedArtists":  [
+                                                "Влатко Стефановски"
+                                            ]
+                     },
                      {
                          "title":  "„Фолтин“ одржаа голем концерт на Хераклеја",
                          "link":  "https://trn.mk/foltin-odrzhaa-golem-konczert-na-herakleja/",
@@ -1424,6 +1450,32 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Влатко Стефановски со пријателите носи акустична вечер во Филхармонија",
+                        "link":  "https://trn.mk/vlatko-stefanovski-acoustic-night-filharmonija/",
+                        "description":  "Македонскиот гитарист Влатко Стефановски на 17 декември ќе одржи специјален концерт насловен „Влатко Стефановски \u0026 Пријатели – Acoustic Night“ во Македонската филхармонија во Скопје. Настапот доаѓа непосредно по неговото сценско појавување со светската оперска ѕвезда Хозе Карерас по повод Денот н...",
+                        "date":  "2026-09-04",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2025/03/vlatko-stefanovski-768x511.jpg",
+                        "matchedArtists":  [
+                                               "Влатко Стефановски"
+                                           ]
+                    },
+                    {
+                        "title":  "По настапот со Карерас, Влатко Стефановски најави специјална Acoustic Night со пријатели",
+                        "link":  "https://netpress.com.mk/po-nastapot-so-kareras-vlatko-stefanovski-najavi-speczijalna-acoustic-night-so-prijateli/",
+                        "description":  "Откако пред неколку дена ја воодушеви публиката на големиот концерт во Скопје, каде што настапи заедно со светската оперска легенда Хозе Карерас во рамките на одбележувањето на Денот на независноста на Северна Македонија, Влатко Стефановски најави нов музички настан кој на 17-ти декември повторно...",
+                        "date":  "2026-09-04",
+                        "source":  "Нетпрес",
+                        "siteUrl":  "https://netpress.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                        "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/09/stefanovski-hd.jpg-f-1-1-2-768x512.jpg",
+                        "matchedArtists":  [
+                                               "Влатко Стефановски"
+                                           ]
+                    },
                     {
                         "title":  "„Фолтин“ одржаа голем концерт на Хераклеја",
                         "link":  "https://trn.mk/foltin-odrzhaa-golem-konczert-na-herakleja/",
@@ -2852,6 +2904,19 @@
                           "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/t/6a998901ca3632104410e424/1788446977767/789060125_1098647065872800_1026154350993336571_n.png?format=1500w",
                           "matchedArtists":  [
                                                  "Cruel"
+                                             ]
+                      },
+                      {
+                          "title":  "„КУКЛА ЖИВА“ ЈА ОБЕДИНИ МАКЕДОНСКАТА МУЗИЧКА И КУЛТУРНА ЈАВНОСТ: ТАМАРА ТОДЕВСКА ГО ПРОМОВИРАШЕ СВОЈОТ НОВ ВИЗУЕЛЕН АЛБУМ И ЗАКАЖА КОНЦЕРТ НА 7. ДЕКЕМВРИ ВО АРЕНАТА „БОРИС ТРАЈКОВСКИ“",
+                          "link":  "https://portret.digital/kukla-zhiva-ja-obedini-makedonskata-muzichka-i-kulturna-javnost-tamara-todevska-go-promovirashe-svojot-nov-vizuelen-album-i-zakazha-konczert-na-7-dekemvri-vo-arenata-boris/",
+                          "description":  "Десет песни, десет приказни и една нова ера. Тамара Тодевска го претстави „Кукла жива“, својот нов визуелен албум, пред бројни колеги, соработници, музичари, новинари, партнери и пријатели, на промоција која на едно место обедини различни генерации од македонската музичка и културна сцена. На едн...",
+                          "date":  "2026-09-04",
+                          "source":  "Портрет",
+                          "siteUrl":  "https://portret.digital/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=portret.digital\u0026sz=32",
+                          "thumbnail":  "https://portret.digital/wp-content/uploads/2026/09/tamara-195-768x512.jpg",
+                          "matchedArtists":  [
+                                                 "Тамара Тодевска"
                                              ]
                       },
                       {
