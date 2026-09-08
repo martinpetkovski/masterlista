@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-09-07T17:49:23Z",
-    "sourceLastUpdated":  "2026-09-07T17:21:36Z",
-    "generatedAt":  "2026-09-07T17:49:23Z",
+    "lastUpdated":  "2026-09-08T17:52:02Z",
+    "sourceLastUpdated":  "2026-09-08T17:25:32Z",
+    "generatedAt":  "2026-09-08T17:52:02Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  110,
+    "totalMatched":  111,
     "totalMentioned":  80,
-    "sourceArticleCount":  19959,
+    "sourceArticleCount":  20176,
     "articles":  [
+                     {
+                         "title":  "Љубојна со целовечерен концерт во Побожје на фестивалот Комшилук",
+                         "link":  "https://trn.mk/ljubojna-koncert-selo-pobozje-festival-komsiluk/",
+                         "description":  "Музичкиот состав Љубојна ќе одржи целовечерен концерт во селото Побожје на 13 септември, како дел од вечерната програма на фестивалот Комшилук. Предводени од Вера Милошевска-Јосифовска и Оливер Јосифовски, бендот пред публиката ќе ги изведе своите препознатливи обработки што со години ја поврзува...",
+                         "date":  "2026-09-08",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/ljubojna1-768x480.webp",
+                         "matchedArtists":  [
+                                                "Љубојна"
+                                            ]
+                     },
                      {
                          "title":  "Влатко Стефановски со пријателите носи акустична вечер во Филхармонија",
                          "link":  "https://trn.mk/vlatko-stefanovski-acoustic-night-filharmonija/",
@@ -1450,6 +1463,19 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Љубојна со целовечерен концерт во Побожје на фестивалот Комшилук",
+                        "link":  "https://trn.mk/ljubojna-koncert-selo-pobozje-festival-komsiluk/",
+                        "description":  "Музичкиот состав Љубојна ќе одржи целовечерен концерт во селото Побожје на 13 септември, како дел од вечерната програма на фестивалот Комшилук. Предводени од Вера Милошевска-Јосифовска и Оливер Јосифовски, бендот пред публиката ќе ги изведе своите препознатливи обработки што со години ја поврзува...",
+                        "date":  "2026-09-08",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/ljubojna1-768x480.webp",
+                        "matchedArtists":  [
+                                               "Љубојна"
+                                           ]
+                    },
                     {
                         "title":  "Влатко Стефановски со пријателите носи акустична вечер во Филхармонија",
                         "link":  "https://trn.mk/vlatko-stefanovski-acoustic-night-filharmonija/",
