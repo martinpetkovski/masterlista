@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-09-09T17:48:48Z",
-    "sourceLastUpdated":  "2026-09-09T17:21:16Z",
-    "generatedAt":  "2026-09-09T17:48:48Z",
+    "lastUpdated":  "2026-09-10T17:52:09Z",
+    "sourceLastUpdated":  "2026-09-10T17:24:08Z",
+    "generatedAt":  "2026-09-10T17:52:09Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  111,
+    "totalMatched":  112,
     "totalMentioned":  81,
-    "sourceArticleCount":  20425,
+    "sourceArticleCount":  20660,
     "articles":  [
+                     {
+                         "title":  "„Меморија“ најавува концертен спектакл на 23 октомври во „Јане Сандански“",
+                         "link":  "https://netpress.com.mk/memorija-najavuva-konczerten-spektakl-na-23-oktomvri-vo-jane-sandanski/",
+                         "description":  "Легендарната македонска група „Меморија“ подготвува нова средба со својата публика. На 23 октомври 2026 година во СЦ „Јане Сандански“ во Скопје, бендот најавува концертен спектакл со песните што со децении се пеат во еден глас. Од „Нена“ до „Дирлада“, преку „Оган под ѕвездите“ и безвременските ба...",
+                         "date":  "2026-09-10",
+                         "source":  "Нетпрес",
+                         "siteUrl":  "https://netpress.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                         "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/09/memorija-hero-768x401.jpg",
+                         "matchedArtists":  [
+                                                "Меморија"
+                                            ]
+                     },
                      {
                          "title":  "Љубојна со целовечерен концерт во Побожје на фестивалот Комшилук",
                          "link":  "https://trn.mk/ljubojna-koncert-selo-pobozje-festival-komsiluk/",
@@ -1463,6 +1476,19 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "„Меморија“ најавува концертен спектакл на 23 октомври во „Јане Сандански“",
+                        "link":  "https://netpress.com.mk/memorija-najavuva-konczerten-spektakl-na-23-oktomvri-vo-jane-sandanski/",
+                        "description":  "Легендарната македонска група „Меморија“ подготвува нова средба со својата публика. На 23 октомври 2026 година во СЦ „Јане Сандански“ во Скопје, бендот најавува концертен спектакл со песните што со децении се пеат во еден глас. Од „Нена“ до „Дирлада“, преку „Оган под ѕвездите“ и безвременските ба...",
+                        "date":  "2026-09-10",
+                        "source":  "Нетпрес",
+                        "siteUrl":  "https://netpress.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                        "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/09/memorija-hero-768x401.jpg",
+                        "matchedArtists":  [
+                                               "Меморија"
+                                           ]
+                    },
                     {
                         "title":  "Љубојна со целовечерен концерт во Побожје на фестивалот Комшилук",
                         "link":  "https://trn.mk/ljubojna-koncert-selo-pobozje-festival-komsiluk/",
