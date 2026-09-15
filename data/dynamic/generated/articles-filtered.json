@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-09-14T17:51:04Z",
-    "sourceLastUpdated":  "2026-09-14T17:22:49Z",
-    "generatedAt":  "2026-09-14T17:51:04Z",
+    "lastUpdated":  "2026-09-15T17:52:21Z",
+    "sourceLastUpdated":  "2026-09-15T17:24:37Z",
+    "generatedAt":  "2026-09-15T17:52:21Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  112,
-    "totalMentioned":  85,
-    "sourceArticleCount":  21560,
+    "totalMatched":  113,
+    "totalMentioned":  86,
+    "sourceArticleCount":  21850,
     "articles":  [
+                     {
+                         "title":  "Антикорупциска отворила предмет само за евентуален судир на интереси на Николче Мицевски, а не за целосното спонзорирање од Лотарија за прославата на независноста",
+                         "link":  "https://www.slobodenpecat.mk/antikorupciska-otvorila-predmet-samo-za-eventualen-sudir-na-interesi-na-nikolche-micevski-a-ne-za-celosnototo-sponzoriranje-od-lotarija-za-proslavata-na-nezavisnosta/",
+                         "description":  "Државната комисија за спречување на корупцијата (ДКСК) не отворила предмет за целосното финансирање на прославата на 35-години независност на Македонија од страна на Државна лотарија, туку појаснува дека отворениот предмет по допрен глас е само за евентуален судир на интереси на Николче Мицевски,...",
+                         "date":  "2026-09-15",
+                         "source":  "Слободен Печат",
+                         "siteUrl":  "https://slobodenpecat.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                         "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/09/nikolce-micevski-1-768x768.jpg",
+                         "matchedArtists":  [
+                                                "Николче Мицевски"
+                                            ]
+                     },
                      {
                          "title":  "„Меморија“ најавува концертен спектакл на 23 октомври во „Јане Сандански“",
                          "link":  "https://netpress.com.mk/memorija-najavuva-konczerten-spektakl-na-23-oktomvri-vo-jane-sandanski/",
@@ -1476,6 +1489,19 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Антикорупциска отворила предмет само за евентуален судир на интереси на Николче Мицевски, а не за целосното спонзорирање од Лотарија за прославата на независноста",
+                        "link":  "https://www.slobodenpecat.mk/antikorupciska-otvorila-predmet-samo-za-eventualen-sudir-na-interesi-na-nikolche-micevski-a-ne-za-celosnototo-sponzoriranje-od-lotarija-za-proslavata-na-nezavisnosta/",
+                        "description":  "Државната комисија за спречување на корупцијата (ДКСК) не отворила предмет за целосното финансирање на прославата на 35-години независност на Македонија од страна на Државна лотарија, туку појаснува дека отворениот предмет по допрен глас е само за евентуален судир на интереси на Николче Мицевски,...",
+                        "date":  "2026-09-15",
+                        "source":  "Слободен Печат",
+                        "siteUrl":  "https://slobodenpecat.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=slobodenpecat.mk\u0026sz=32",
+                        "thumbnail":  "https://www.slobodenpecat.mk/wp-content/uploads/2026/09/nikolce-micevski-1-768x768.jpg",
+                        "matchedArtists":  [
+                                               "Николче Мицевски"
+                                           ]
+                    },
                     {
                         "title":  "„Меморија“ најавува концертен спектакл на 23 октомври во „Јане Сандански“",
                         "link":  "https://netpress.com.mk/memorija-najavuva-konczerten-spektakl-na-23-oktomvri-vo-jane-sandanski/",
@@ -2956,6 +2982,19 @@
                           "thumbnail":  "http://static1.squarespace.com/static/682f26578fd3ad3996a9d1aa/t/6a998901ca3632104410e424/1788446977767/789060125_1098647065872800_1026154350993336571_n.png?format=1500w",
                           "matchedArtists":  [
                                                  "Cruel"
+                                             ]
+                      },
+                      {
+                          "title":  "Антикорупциска ќе ја „чешла“ прославата за независноста",
+                          "link":  "https://trn.mk/antikorupciska-nikolce-micevski-proslava-nezavisnost/",
+                          "description":  "Државната комисија за спречување на корупцијата отвори предмет за судир на интереси против Николче Мицевски. Антикорупционерите проверуваат како музичарот прво оценувал кој ќе ја организира државната прослава за 35 години независност, а потоа самиот се качи на бината како дел од програмата. ДКСК ...",
+                          "date":  "2026-09-15",
+                          "source":  "ТРН",
+                          "siteUrl":  "https://trn.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                          "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/nikolce-micevski-768x457.jpg",
+                          "matchedArtists":  [
+                                                 "Николче Мицевски"
                                              ]
                       },
                       {
