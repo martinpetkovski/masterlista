@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-09-22T17:52:04Z",
-    "sourceLastUpdated":  "2026-09-22T17:23:24Z",
-    "generatedAt":  "2026-09-22T17:52:04Z",
+    "lastUpdated":  "2026-09-23T17:47:14Z",
+    "sourceLastUpdated":  "2026-09-23T17:23:56Z",
+    "generatedAt":  "2026-09-23T17:47:14Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  126,
-    "totalMentioned":  95,
-    "sourceArticleCount":  23501,
+    "totalMatched":  127,
+    "totalMentioned":  97,
+    "sourceArticleCount":  23746,
     "articles":  [
+                     {
+                         "title":  "Михаил Парушев на 6 октомври во „Паблик рум“ го промовира новиот проект „Атер“",
+                         "link":  "https://trn.mk/mihail-parushev-ater-koncert-public-room/",
+                         "description":  "Музичарот и композитор Михаил Парушев на 6 октомври во просторот на „Паблик рум“ во Скопје ќе одржи концертна промоција на својот нов авторски проект насловен „Атер“. Програмата содржи осум композиции низ кои Парушев прави пресек на повеќе творечки етапи, претставувајќи нови верзии на стари теми ...",
+                         "date":  "2026-09-23",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/ater-foto-768x960.jpg",
+                         "matchedArtists":  [
+                                                "Михаил Парушев"
+                                            ]
+                     },
                      {
                          "title":  "Тамара Тодевска во РеТрн: „Кукла жива“, 25 години музика и голем концерт во Скопје",
                          "link":  "https://trn.mk/tamara-todevska-vo-retrn-kukla-zhiva-25-godini-muzika-i-golem-konczert-vo-skopje/",
@@ -1660,6 +1673,19 @@
                  ],
     "matched":  [
                     {
+                        "title":  "Михаил Парушев на 6 октомври во „Паблик рум“ го промовира новиот проект „Атер“",
+                        "link":  "https://trn.mk/mihail-parushev-ater-koncert-public-room/",
+                        "description":  "Музичарот и композитор Михаил Парушев на 6 октомври во просторот на „Паблик рум“ во Скопје ќе одржи концертна промоција на својот нов авторски проект насловен „Атер“. Програмата содржи осум композиции низ кои Парушев прави пресек на повеќе творечки етапи, претставувајќи нови верзии на стари теми ...",
+                        "date":  "2026-09-23",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/ater-foto-768x960.jpg",
+                        "matchedArtists":  [
+                                               "Михаил Парушев"
+                                           ]
+                    },
+                    {
                         "title":  "Тамара Тодевска во РеТрн: „Кукла жива“, 25 години музика и голем концерт во Скопје",
                         "link":  "https://trn.mk/tamara-todevska-vo-retrn-kukla-zhiva-25-godini-muzika-i-golem-konczert-vo-skopje/",
                         "description":  "Тамара Тодевска е нашата нова гостинка во РеТрн, а доаѓа во период во кој отвора ново поглавје во својата музичка приказна. По 25 години на сцената, Тамара неодамна го претстави „Кукла жива“ – нејзиниот нов визуелен албум составен од 10 песни и 10 визуелни приказни. Проектот доаѓа по долг период ...",
@@ -3311,6 +3337,32 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "Сергеј Попоски пред Жељко Бебек во љубљанските Крижанке: „Каде и да ме однесе музиката, Македонија секогаш ќе биде со мене“",
+                          "link":  "https://trn.mk/sergej-poposki-zeljko-bebek-krizanke/",
+                          "description":  "Младиот пејач од Прилеп, Сергеј Попоски, со сè посигурни чекори ја носи македонската музичка енергија и дух и надвор од границите на својата земја. Неговиот глас, непосредноста и емоцијата со која настапува веќе му носат споредби со Тоше Проески, а дел од публиката во него препознава еден нов мла...",
+                          "date":  "2026-09-23",
+                          "source":  "ТРН",
+                          "siteUrl":  "https://trn.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                          "thumbnail":  "https://trn.mk/wp-content/uploads/2026/09/sergej_krizanke__012_2048-768x512.jpg",
+                          "matchedArtists":  [
+                                                 "Тоше Проески"
+                                             ]
+                      },
+                      {
+                          "title":  "Јована Зимбовска: „Младите имаат големи прашања, само им треба простор да ги постават“",
+                          "link":  "https://www.radiomof.mk/jovana-zimbova-mladite-imaat-golemi-prasanja-samo-im-treba-prostor-da-gi-postavat/",
+                          "description":  "Јована Зимбовска е ученичка во IV година во гимназијата „Алгоритам“. Нејзиниот интерес за филозофијата, логиката и општествените науки произлегува од желбата подобро да ги разбере луѓето и светот околу себе. Во разговорот за „Радио МОФ“ таа зборува за критичкото мислење, прашањата што ги поставув...",
+                          "date":  "2026-09-23",
+                          "source":  "Радио МОФ",
+                          "siteUrl":  "https://www.radiomof.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=radiomof.mk\u0026sz=32",
+                          "thumbnail":  "https://www.radiomof.mk/wp-content/uploads/2026/09/MixCollage-23-Sep-2026-07-09-AM-5397-768x432.webp",
+                          "matchedArtists":  [
+                                                 "Алгоритам"
+                                             ]
+                      },
                       {
                           "title":  "ЦУК: Гори магацин за бои и лакови во Железара",
                           "link":  "https://libertas.mk/cuk-gori-magacin-za-boi-i-lakovi-vo-zhelezara/",
