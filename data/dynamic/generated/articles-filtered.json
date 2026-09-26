@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-09-25T17:41:33Z",
-    "sourceLastUpdated":  "2026-09-25T17:24:09Z",
-    "generatedAt":  "2026-09-25T17:41:33Z",
+    "lastUpdated":  "2026-09-26T17:53:28Z",
+    "sourceLastUpdated":  "2026-09-26T17:23:08Z",
+    "generatedAt":  "2026-09-26T17:53:28Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  129,
-    "totalMentioned":  98,
-    "sourceArticleCount":  24226,
+    "totalMatched":  130,
+    "totalMentioned":  99,
+    "sourceArticleCount":  24465,
     "articles":  [
+                     {
+                         "title":  "Нов музички проект „Атер“ на Михаил Парушев",
+                         "link":  "https://novamakedonija.com.mk/zivot/magazin/nov-muzichki-proekt-ater-na-mihail-parushev/",
+                         "description":  "„Атер“ е проект што ги поврзува различните периоди и авторски интереси на Михаил Парушев, притоа создавајќи нова концертна целина во која старите композиции добиваат нов контекст, а необјавениот материјал за првпат се среќава со публика во живо. На 6 октомври во „Јавна соба“ ќе се одржи концертна...",
+                         "date":  "2026-09-26",
+                         "source":  "Нова Македонија",
+                         "siteUrl":  "https://novamakedonija.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk\u0026sz=32",
+                         "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/09/mihhail-parusev.jpeg",
+                         "matchedArtists":  [
+                                                "Михаил Парушев"
+                                            ]
+                     },
                      {
                          "title":  "Хитовите на Тоше Проески објавени на луксузно двојно винилно издание",
                          "link":  "https://trn.mk/hitovite-na-toshe-proeski-objaveni-na-luksuzno-dvojno-vinilno-izdanie/",
@@ -1699,6 +1712,19 @@
                  ],
     "matched":  [
                     {
+                        "title":  "Нов музички проект „Атер“ на Михаил Парушев",
+                        "link":  "https://novamakedonija.com.mk/zivot/magazin/nov-muzichki-proekt-ater-na-mihail-parushev/",
+                        "description":  "„Атер“ е проект што ги поврзува различните периоди и авторски интереси на Михаил Парушев, притоа создавајќи нова концертна целина во која старите композиции добиваат нов контекст, а необјавениот материјал за првпат се среќава со публика во живо. На 6 октомври во „Јавна соба“ ќе се одржи концертна...",
+                        "date":  "2026-09-26",
+                        "source":  "Нова Македонија",
+                        "siteUrl":  "https://novamakedonija.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk\u0026sz=32",
+                        "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/09/mihhail-parusev.jpeg",
+                        "matchedArtists":  [
+                                               "Михаил Парушев"
+                                           ]
+                    },
+                    {
                         "title":  "Хитовите на Тоше Проески објавени на луксузно двојно винилно издание",
                         "link":  "https://trn.mk/hitovite-na-toshe-proeski-objaveni-na-luksuzno-dvojno-vinilno-izdanie/",
                         "description":  "Шеснаесет песни од богатата музичка кариера на Тоше Проески се објавени на новото двојно винилно издание „The Very Best of Toše Proeski“, кое го претстави хрватската дискографска куќа „Хит рекордс“. Колекцијата носи избор од најпознатите песни на македонската музичка ѕвезда, меѓу кои „Игра без гр...",
@@ -3389,6 +3415,19 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "Стотици илјади верници се очекуваат на мисата на папата во Париз",
+                          "link":  "https://libertas.mk/stotici-il-adi-vernici-se-ochekuvaat-na-misata-na-papata-vo-pariz/",
+                          "description":  "Папата Лав XIV ја продолжува својата посета на Франција денескасо голема миса во Париз, каде што се очекуваат неколку стотици илјади верници. Според Католичката црква, околу 600.000 луѓе се пријавиле за учество на мисата на Плоштадот Конкорд. Попладнето, поглаварот на 1,4 милијарди католици во св...",
+                          "date":  "2026-09-26",
+                          "source":  "Либертас",
+                          "siteUrl":  "https://libertas.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=libertas.mk\u0026sz=32",
+                          "thumbnail":  "https://libertas.mk/wp-content/uploads/2026/09/20260926091335_big_730x400_8-300x200.webp",
+                          "matchedArtists":  [
+                                                 "Конкорд"
+                                             ]
+                      },
                       {
                           "title":  "Моќна македонска песна со длабоко лично значење",
                           "link":  "https://novamakedonija.com.mk/zivot/magazin/mokjna-makedonska-pesna-so-dlaboko-lichno-znachenje/",
