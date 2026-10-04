@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-03T17:46:30.280Z",
-  "totalReleases": 2905,
+  "generatedAt": "2026-10-04T17:48:06.463Z",
+  "totalReleases": 2904,
   "totalArtists": 407,
   "releases": [
     {
@@ -45406,6 +45406,28 @@
       "bandName": "Стојне Николова",
       "spotifyName": "STOJNE NIKOLOVA",
       "artistId": "3hnJVFZ7e6S20BGHhtFTLF",
+      "releaseId": "1Gvldy07eshUwhOgR2MsOK",
+      "releaseTitle": "Reka gazi maloj mome",
+      "releaseType": "single",
+      "releaseDate": "2025-03-11",
+      "releaseUrl": "https://open.spotify.com/album/1Gvldy07eshUwhOgR2MsOK",
+      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273fdb666061f1f64e19f234171",
+      "totalTracks": 1,
+      "trackNames": [
+        "Reka gazi maloj mome"
+      ],
+      "trackArtists": [
+        [
+          "STOJNE NIKOLOVA"
+        ]
+      ],
+      "spotifyUrl": "https://open.spotify.com/artist/3hnJVFZ7e6S20BGHhtFTLF?si=3koVP0szRBWYnxB8wrT0ig",
+      "effectiveReleaseDate": "2025-03-11"
+    },
+    {
+      "bandName": "Стојне Николова",
+      "spotifyName": "STOJNE NIKOLOVA",
+      "artistId": "3hnJVFZ7e6S20BGHhtFTLF",
       "releaseId": "5Opg6IrQGtx0xgXyBIFW4h",
       "releaseTitle": "Ajde Makedonijo",
       "releaseType": "single",
@@ -45811,28 +45833,6 @@
       "totalTracks": 1,
       "trackNames": [
         "Rano e"
-      ],
-      "trackArtists": [
-        [
-          "STOJNE NIKOLOVA"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/3hnJVFZ7e6S20BGHhtFTLF?si=3koVP0szRBWYnxB8wrT0ig",
-      "effectiveReleaseDate": "2025-03-11"
-    },
-    {
-      "bandName": "Стојне Николова",
-      "spotifyName": "STOJNE NIKOLOVA",
-      "artistId": "3hnJVFZ7e6S20BGHhtFTLF",
-      "releaseId": "1Gvldy07eshUwhOgR2MsOK",
-      "releaseTitle": "Reka gazi maloj mome",
-      "releaseType": "single",
-      "releaseDate": "2025-03-11",
-      "releaseUrl": "https://open.spotify.com/album/1Gvldy07eshUwhOgR2MsOK",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273fdb666061f1f64e19f234171",
-      "totalTracks": 1,
-      "trackNames": [
-        "Reka gazi maloj mome"
       ],
       "trackArtists": [
         [
@@ -97022,39 +97022,6 @@
       "bandName": "Ѓоко Јовиќ",
       "spotifyName": "Gjoko Jovik",
       "artistId": "0FnI8Vurkihz77LB3OW9Sh",
-      "releaseId": "28xu3X1O7yXzvIniMJqFsN",
-      "releaseTitle": "Sinot edinec",
-      "releaseType": "single",
-      "releaseDate": "2022-12-06",
-      "releaseUrl": "https://open.spotify.com/album/28xu3X1O7yXzvIniMJqFsN",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273cb5e68392895000507be47bb",
-      "totalTracks": 1,
-      "trackNames": [
-        "Sinot edinec"
-      ],
-      "trackArtists": [
-        [
-          "Gjoko Jovik"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
-      "youtubeTracks": [
-        {
-          "name": "Sinot edinec",
-          "videoId": "i8NFeAGR07s",
-          "url": "https://www.youtube.com/watch?v=i8NFeAGR07s",
-          "verified": "verified",
-          "views": 14696,
-          "publishedAt": "2016-02-13"
-        }
-      ],
-      "youtubeViews": 14696,
-      "effectiveReleaseDate": "2016-02-13"
-    },
-    {
-      "bandName": "Ѓоко Јовиќ",
-      "spotifyName": "Gjoko Jovik",
-      "artistId": "0FnI8Vurkihz77LB3OW9Sh",
       "releaseId": "5f2kvan1gjxPj46wzqmojA",
       "releaseTitle": "Edna i edinstvena",
       "releaseType": "single",
@@ -97182,6 +97149,39 @@
       ],
       "youtubeViews": 129115,
       "effectiveReleaseDate": "2016-12-21"
+    },
+    {
+      "bandName": "Ѓоко Јовиќ",
+      "spotifyName": "Gjoko Jovik",
+      "artistId": "0FnI8Vurkihz77LB3OW9Sh",
+      "releaseId": "28xu3X1O7yXzvIniMJqFsN",
+      "releaseTitle": "Sinot edinec",
+      "releaseType": "single",
+      "releaseDate": "2022-12-06",
+      "releaseUrl": "https://open.spotify.com/album/28xu3X1O7yXzvIniMJqFsN",
+      "thumbnail": "https://i.scdn.co/image/ab67616d0000b273cb5e68392895000507be47bb",
+      "totalTracks": 1,
+      "trackNames": [
+        "Sinot edinec"
+      ],
+      "trackArtists": [
+        [
+          "Gjoko Jovik"
+        ]
+      ],
+      "spotifyUrl": "https://open.spotify.com/artist/0FnI8Vurkihz77LB3OW9Sh?si=WFPoFJX2QJK_2M32LItohA",
+      "youtubeTracks": [
+        {
+          "name": "Sinot edinec",
+          "videoId": "i8NFeAGR07s",
+          "url": "https://www.youtube.com/watch?v=i8NFeAGR07s",
+          "verified": "verified",
+          "views": 14696,
+          "publishedAt": "2016-02-13"
+        }
+      ],
+      "youtubeViews": 14696,
+      "effectiveReleaseDate": "2016-02-13"
     },
     {
       "bandName": "Ѓоко Јовиќ",
@@ -217596,267 +217596,6 @@
       ],
       "youtubeViews": 2830138,
       "effectiveReleaseDate": "2007-10-13"
-    },
-    {
-      "bandName": "Маја Вукичевиќ",
-      "spotifyName": "Maja Vukicevic",
-      "artistId": "5rT7GxpcqtPdlUEZHoEhvF",
-      "releaseId": "2ldOAYpcwish81R2vR4zns",
-      "releaseTitle": "Amajlija",
-      "releaseType": "album",
-      "releaseDate": "2007-09-01",
-      "releaseUrl": "https://open.spotify.com/album/2ldOAYpcwish81R2vR4zns",
-      "thumbnail": "https://i.scdn.co/image/ab67616d0000b27389f4fe1ba01766f4ef16c8f4",
-      "totalTracks": 10,
-      "trackNames": [
-        "Amajlija",
-        "Se Uste Si Toj",
-        "Ne Sviri Ja Pesnata",
-        "Dali Me Sonuvas",
-        "Utro Doagja",
-        "So Tebe",
-        "Kako Nekogas",
-        "Jas Bez Tebe",
-        "Nie Sami",
-        "Ne Sviri Ja Pesnata Dance Mix"
-      ],
-      "trackArtists": [
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ],
-        [
-          "Maja Vukicevic"
-        ]
-      ],
-      "spotifyUrl": "https://open.spotify.com/artist/5rT7GxpcqtPdlUEZHoEhvF?si=kV52LZ8gS3ynGLP8rLFBXA",
-      "youtubeTracks": [
-        {
-          "name": "Amajlija",
-          "videoId": "UNnvxAhxxuE",
-          "url": "https://www.youtube.com/watch?v=UNnvxAhxxuE",
-          "verified": "verified",
-          "views": 20,
-          "publishedAt": "2025-08-01"
-        },
-        {
-          "name": "Utro Doagja",
-          "videoId": "U4m2RCYfLXo",
-          "url": "https://www.youtube.com/watch?v=U4m2RCYfLXo",
-          "verified": "verified",
-          "views": 38,
-          "publishedAt": "2025-04-23"
-        },
-        {
-          "name": "So Tebe",
-          "videoId": "FcGLb6lDs2M",
-          "url": "https://www.youtube.com/watch?v=FcGLb6lDs2M",
-          "verified": "verified",
-          "views": 3454,
-          "publishedAt": "2025-10-26"
-        },
-        {
-          "name": "Kako Nekogas",
-          "videoId": "_FjLaq0Ffdk",
-          "url": "https://www.youtube.com/watch?v=_FjLaq0Ffdk",
-          "verified": "verified",
-          "views": 84,
-          "publishedAt": "2025-04-19"
-        },
-        {
-          "name": "Jas Bez Tebe",
-          "videoId": "5Oo1qr612SI",
-          "url": "https://www.youtube.com/watch?v=5Oo1qr612SI",
-          "verified": "verified",
-          "views": 2455,
-          "publishedAt": "2023-10-22"
-        },
-        {
-          "name": "Amajlija",
-          "videoId": "EQrOIzKlKYk",
-          "url": "https://www.youtube.com/watch?v=EQrOIzKlKYk",
-          "verified": "verified",
-          "views": 82,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Amajlija",
-          "videoId": "D7xz41RaLbo",
-          "url": "https://www.youtube.com/watch?v=D7xz41RaLbo",
-          "verified": "verified",
-          "views": 61,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Se Uste Si Toj",
-          "videoId": "z201R9ZeJEU",
-          "url": "https://www.youtube.com/watch?v=z201R9ZeJEU",
-          "verified": "verified",
-          "views": 13,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Se Uste Si Toj",
-          "videoId": "Wrl_lsWT7tc",
-          "url": "https://www.youtube.com/watch?v=Wrl_lsWT7tc",
-          "verified": "verified",
-          "views": 37,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Se Uste Si Toj",
-          "videoId": "NEDTmWRMtvA",
-          "url": "https://www.youtube.com/watch?v=NEDTmWRMtvA",
-          "verified": "verified",
-          "views": 4149,
-          "publishedAt": "2016-05-28"
-        },
-        {
-          "name": "Ne Sviri Ja Pesnata",
-          "videoId": "ZBzL0Zf72H4",
-          "url": "https://www.youtube.com/watch?v=ZBzL0Zf72H4",
-          "verified": "verified",
-          "views": 25,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Dali Me Sonuvas",
-          "videoId": "Y8p8bVkuBpg",
-          "url": "https://www.youtube.com/watch?v=Y8p8bVkuBpg",
-          "verified": "verified",
-          "views": 9,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Dali Me Sonuvas",
-          "videoId": "zMWyll5q-So",
-          "url": "https://www.youtube.com/watch?v=zMWyll5q-So",
-          "verified": "verified",
-          "views": 24,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Dali Me Sonuvas",
-          "videoId": "bF9kbdDIEJk",
-          "url": "https://www.youtube.com/watch?v=bF9kbdDIEJk",
-          "verified": "verified",
-          "views": 53,
-          "publishedAt": "2017-02-08"
-        },
-        {
-          "name": "Utro Doagja",
-          "videoId": "TrZVpmLFXvY",
-          "url": "https://www.youtube.com/watch?v=TrZVpmLFXvY",
-          "verified": "verified",
-          "views": 3986,
-          "publishedAt": "2008-05-25"
-        },
-        {
-          "name": "So Tebe",
-          "videoId": "0SymMNszKxc",
-          "url": "https://www.youtube.com/watch?v=0SymMNszKxc",
-          "verified": "verified",
-          "views": 16,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "So Tebe",
-          "videoId": "_vQwApJjx-4",
-          "url": "https://www.youtube.com/watch?v=_vQwApJjx-4",
-          "verified": "verified",
-          "views": 1012,
-          "publishedAt": "2009-03-22"
-        },
-        {
-          "name": "So Tebe",
-          "videoId": "VikCUhAecEc",
-          "url": "https://www.youtube.com/watch?v=VikCUhAecEc",
-          "verified": "verified",
-          "views": 8,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Kako Nekogas",
-          "videoId": "kKwN5ejpJT4",
-          "url": "https://www.youtube.com/watch?v=kKwN5ejpJT4",
-          "verified": "verified",
-          "views": 136,
-          "publishedAt": "2022-06-26"
-        },
-        {
-          "name": "Kako Nekogas",
-          "videoId": "2Kp6RO2HHT4",
-          "url": "https://www.youtube.com/watch?v=2Kp6RO2HHT4",
-          "verified": "verified",
-          "views": 24,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Kako Nekogas",
-          "videoId": "oaIyG89kQ5w",
-          "url": "https://www.youtube.com/watch?v=oaIyG89kQ5w",
-          "verified": "verified",
-          "views": 7,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Jas Bez Tebe",
-          "videoId": "iU1t6bPpkJw",
-          "url": "https://www.youtube.com/watch?v=iU1t6bPpkJw",
-          "verified": "verified",
-          "views": 10,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Nie Sami",
-          "videoId": "DWEXhCJYOxM",
-          "url": "https://www.youtube.com/watch?v=DWEXhCJYOxM",
-          "verified": "verified",
-          "views": 10,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Nie Sami",
-          "videoId": "Uqj5cGHa1Jo",
-          "url": "https://www.youtube.com/watch?v=Uqj5cGHa1Jo",
-          "verified": "verified",
-          "views": 10,
-          "publishedAt": "2026-06-16"
-        },
-        {
-          "name": "Ne Sviri Ja Pesnata Dance Mix",
-          "videoId": "yFdrYT0NKDs",
-          "url": "https://www.youtube.com/watch?v=yFdrYT0NKDs",
-          "verified": "verified",
-          "views": 14,
-          "publishedAt": "2026-06-16"
-        }
-      ],
-      "youtubeViews": 15737,
-      "effectiveReleaseDate": "2007-09-01"
     },
     {
       "bandName": "The Government",
