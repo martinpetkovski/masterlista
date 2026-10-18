@@ -28,7 +28,7 @@
           "name": "Laž",
           "videoId": "S25K6aso7NA",
           "url": "https://www.youtube.com/watch?v=S25K6aso7NA",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 729,
           "publishedAt": "2026-10-18"
         },
@@ -36,9 +36,15 @@
           "name": "Laž",
           "videoId": "-oT21TCouAA",
           "url": "https://www.youtube.com/watch?v=-oT21TCouAA",
-          "verified": "unverified",
+          "verified": "will-not-verify",
           "views": 9567,
           "publishedAt": "2026-09-24"
+        },
+        {
+          "name": "Laž",
+          "videoId": "kD88xmywMio",
+          "url": "https://www.youtube.com/watch?v=kD88xmywMio",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-10-18",
@@ -68,7 +74,7 @@
           "name": "Lokalen Rap General",
           "videoId": "R7p1ZNDr0Sg",
           "url": "https://www.youtube.com/watch?v=R7p1ZNDr0Sg",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 3,
           "publishedAt": "2026-10-15"
         },
@@ -76,7 +82,7 @@
           "name": "Lokalen Rap General",
           "videoId": "sEdnf9A6AuM",
           "url": "https://www.youtube.com/watch?v=sEdnf9A6AuM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 299,
           "publishedAt": "2026-10-15"
         }
@@ -108,7 +114,7 @@
           "name": "Razglednica",
           "videoId": "EQPDXZZkO14",
           "url": "https://www.youtube.com/watch?v=EQPDXZZkO14",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 2181,
           "publishedAt": "2026-10-16"
         }
@@ -136,7 +142,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN",
       "effectiveReleaseDate": "2026-10-13",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Distant Memory",
+          "videoId": "7QoToZK9F8A",
+          "url": "https://www.youtube.com/watch?v=7QoToZK9F8A",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Nascor San",
