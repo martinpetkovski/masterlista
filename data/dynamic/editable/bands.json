@@ -7833,13 +7833,14 @@
     {
       "name": "Nascor San",
       "city": "Скопје",
-      "genre": "",
+      "genre": "недостигаат податоци",
       "soundsLike": "недостигаат податоци",
       "links": {
         "soundcloud": "https://soundcloud.com/nascor_san",
         "youtube": "https://www.youtube.com/channel/UCZ6M7Fu8aG1dkC_FSzF6WoQ",
         "instagram": "https://www.instagram.com/nascor_san/",
-        "spotify": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN"
+        "spotify": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN",
+        "youtube_music": "https://www.youtube.com/channel/UCZ6M7Fu8aG1dkC_FSzF6WoQ"
       },
       "contact": "недостигаат податоци",
       "label": null,
@@ -7849,7 +7850,8 @@
       ],
       "confirmed": false,
       "image": "https://i.scdn.co/image/ab67616d0000b2738b4d5c4869725836e790d000",
-      "imageSource": "spotify"
+      "imageSource": "spotify",
+      "_activityStatus": "active"
     },
     {
       "name": "Наско",
