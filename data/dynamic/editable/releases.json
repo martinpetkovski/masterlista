@@ -172,7 +172,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN",
       "effectiveReleaseDate": "2026-10-13",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Reborn Into Abundance",
+          "videoId": "_I3rDgy5yHo",
+          "url": "https://www.youtube.com/watch?v=_I3rDgy5yHo",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Nascor San",
@@ -194,7 +202,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/44mrjvx9aOlFbeJOh15zoN",
       "effectiveReleaseDate": "2026-10-13",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "Uncoil The Serpent",
+          "videoId": "E68zzSKyGWo",
+          "url": "https://www.youtube.com/watch?v=E68zzSKyGWo",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Димитар Андоновски",
@@ -221,7 +237,7 @@
           "name": "Gubam Kontrola",
           "videoId": "shU6q1rsCJI",
           "url": "https://www.youtube.com/watch?v=shU6q1rsCJI",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 13825,
           "publishedAt": "2026-10-14"
         }
@@ -251,7 +267,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/0rXnfWL0gCATJTjiQlH3M7",
       "effectiveReleaseDate": "2026-10-12",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "The Custos' Wife (Re:Kottarashky)",
+          "videoId": "Szhs5FyqzWI",
+          "url": "https://www.youtube.com/watch?v=Szhs5FyqzWI",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Aiman",
@@ -277,7 +301,7 @@
           "name": "Princeza",
           "videoId": "mSCTZuDQLI4",
           "url": "https://www.youtube.com/watch?v=mSCTZuDQLI4",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 22848,
           "publishedAt": "2026-10-10"
         }
@@ -309,9 +333,15 @@
           "name": "In My Mind",
           "videoId": "zZZSeq0j4Zc",
           "url": "https://www.youtube.com/watch?v=zZZSeq0j4Zc",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 480,
           "publishedAt": "2026-10-09"
+        },
+        {
+          "name": "In My Mind",
+          "videoId": "l6NscrofGEQ",
+          "url": "https://www.youtube.com/watch?v=l6NscrofGEQ",
+          "verified": "verified"
         }
       ],
       "effectiveReleaseDate": "2026-10-09",
@@ -375,7 +405,7 @@
           "name": "Mi Amor",
           "videoId": "EDw316nvjok",
           "url": "https://www.youtube.com/watch?v=EDw316nvjok",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 72187,
           "publishedAt": "2026-10-07"
         }
@@ -406,7 +436,15 @@
       ],
       "spotifyUrl": "https://open.spotify.com/artist/502fD1fdYlaVpW3nYHa5nE?si=nP-fh1EYTFqE0zwfG19urg",
       "effectiveReleaseDate": "2026-10-05",
-      "youtubeViews": 0
+      "youtubeViews": 0,
+      "youtubeTracks": [
+        {
+          "name": "128 (Re:Duke Bojadziev, Karolina Gočeva)",
+          "videoId": "MhGnSKBWswA",
+          "url": "https://www.youtube.com/watch?v=MhGnSKBWswA",
+          "verified": "verified"
+        }
+      ]
     },
     {
       "bandName": "Тотално Опуштање",
@@ -505,7 +543,7 @@
           "name": "BITE ME!",
           "videoId": "Y_davT5H9WM",
           "url": "https://www.youtube.com/watch?v=Y_davT5H9WM",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 7642,
           "publishedAt": "2026-10-02"
         },
@@ -513,7 +551,7 @@
           "name": "BITE ME!",
           "videoId": "XshlRlpyM-A",
           "url": "https://www.youtube.com/watch?v=XshlRlpyM-A",
-          "verified": "unverified",
+          "verified": "verified",
           "views": 4512,
           "publishedAt": "2026-10-01"
         }
