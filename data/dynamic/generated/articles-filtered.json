@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-10-20T18:06:22Z",
-    "sourceLastUpdated":  "2026-10-20T17:33:12Z",
-    "generatedAt":  "2026-10-20T18:06:22Z",
+    "lastUpdated":  "2026-10-21T17:46:37Z",
+    "sourceLastUpdated":  "2026-10-21T17:24:04Z",
+    "generatedAt":  "2026-10-21T17:46:37Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  158,
-    "totalMentioned":  123,
-    "sourceArticleCount":  29912,
+    "totalMatched":  160,
+    "totalMentioned":  124,
+    "sourceArticleCount":  30164,
     "articles":  [
+                     {
+                         "title":  "Пеце „Суперхикс“: Младите учат за сексот од погрешни извори, а согласноста и границите се прашање на зрелост",
+                         "link":  "https://trn.mk/superhiks-mladite-uchat-za-seksot-od-pogreshni-izvori-a-soglasnosta-i-graniczite-se-prashanje-na-zrelost/",
+                         "description":  "„Живееме во поголемиот дел од колективната свест во осумнаесетти век, а не во 2026 година“ вака Пеце од „Суперхикс“ ја опишува општествената непријатност отворено да се зборува за сексуалното образование, иако младите секојдневно се изложени на сексуални и експлицитни содржини преку интернетот и ...",
+                         "date":  "2026-10-21",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/dsc05155-768x512.jpg",
+                         "matchedArtists":  [
+                                                "Суперхикс"
+                                            ]
+                     },
+                     {
+                         "title":  "Анастасија Палчевска освои бронзен медал на Светското првенство во хип-хоп",
+                         "link":  "https://netpress.com.mk/anastasija-palchevska-osvoi-bronzen-medal-na-svetskoto-prvenstvo-vo-hip-hop/",
+                         "description":  "Уште еден голем успех за македонскиот танц на меѓународната сцена! Македонската танчерка Анастасија Палчевска освои бронзен медал на Светското првенство во хип-хоп и попинг, кое се одржа во Киелце, Полска, запишувајќи значаен резултат за Македонија. Палчевска го освои третото место во категоријат...",
+                         "date":  "2026-10-21",
+                         "source":  "Нетпрес",
+                         "siteUrl":  "https://netpress.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                         "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/10/ap3-768x1024.png",
+                         "matchedArtists":  [
+                                                "Анастасија"
+                                            ]
+                     },
                      {
                          "title":  "„Алгоритам не може да одговара и затоа не смее да одлучува за судбината на човекот“",
                          "link":  "https://trn.mk/vestacka-inteligencija-menadzerski-odluki-pravilo-ibm/",
@@ -2076,6 +2102,32 @@
                  ],
     "matched":  [
                     {
+                        "title":  "Пеце „Суперхикс“: Младите учат за сексот од погрешни извори, а согласноста и границите се прашање на зрелост",
+                        "link":  "https://trn.mk/superhiks-mladite-uchat-za-seksot-od-pogreshni-izvori-a-soglasnosta-i-graniczite-se-prashanje-na-zrelost/",
+                        "description":  "„Живееме во поголемиот дел од колективната свест во осумнаесетти век, а не во 2026 година“ вака Пеце од „Суперхикс“ ја опишува општествената непријатност отворено да се зборува за сексуалното образование, иако младите секојдневно се изложени на сексуални и експлицитни содржини преку интернетот и ...",
+                        "date":  "2026-10-21",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/dsc05155-768x512.jpg",
+                        "matchedArtists":  [
+                                               "Суперхикс"
+                                           ]
+                    },
+                    {
+                        "title":  "Анастасија Палчевска освои бронзен медал на Светското првенство во хип-хоп",
+                        "link":  "https://netpress.com.mk/anastasija-palchevska-osvoi-bronzen-medal-na-svetskoto-prvenstvo-vo-hip-hop/",
+                        "description":  "Уште еден голем успех за македонскиот танц на меѓународната сцена! Македонската танчерка Анастасија Палчевска освои бронзен медал на Светското првенство во хип-хоп и попинг, кое се одржа во Киелце, Полска, запишувајќи значаен резултат за Македонија. Палчевска го освои третото место во категоријат...",
+                        "date":  "2026-10-21",
+                        "source":  "Нетпрес",
+                        "siteUrl":  "https://netpress.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                        "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/10/ap3-768x1024.png",
+                        "matchedArtists":  [
+                                               "Анастасија"
+                                           ]
+                    },
+                    {
                         "title":  "„Алгоритам не може да одговара и затоа не смее да одлучува за судбината на човекот“",
                         "link":  "https://trn.mk/vestacka-inteligencija-menadzerski-odluki-pravilo-ibm/",
                         "description":  "„Компјутерот никогаш не може да сноси одговорност, затоа компјутерот никогаш не смее да донесе менаџерска одлука“. Оваа реченица стоеше на слајд за обука на вработените во ИБМ (IBM) пред речиси половина век. Денес, со експанзијата на вештачката интелигенција во канцелариите и институциите, предуп...",
@@ -4143,6 +4195,19 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "Книга за читателите што сакаат литература што не се плаши да постави големи прашања",
+                          "link":  "https://novamakedonija.com.mk/prilozi/lik/kniga-za-chitatelite-shto-sakaat-literatura-shto-ne-se-plashi-da-postavi-golemi-prashanja/",
+                          "description":  "Владо Јаневски, писател, автор на „Изгубени низ дупки во џебовите“ „Изгубени низ дупки во џебовите“ на Владо Јаневски е книжевно дело за читателите што сакаат литература што не се плаши да постави големи прашања: што е слобода, што останува од човекот кога системот се обидува да го контролира или...",
+                          "date":  "2026-10-21",
+                          "source":  "Нова Македонија",
+                          "siteUrl":  "https://novamakedonija.com.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=novamakedonija.com.mk\u0026sz=32",
+                          "thumbnail":  "https://novamakedonija.com.mk/wp-content/uploads/2026/10/851110461_29006396458994526_4091074068088392806_n-768x530.jpg",
+                          "matchedArtists":  [
+                                                 "Владо Јаневски"
+                                             ]
+                      },
                       {
                           "title":  "Публиката го движи звукот и светлото во новата поставка „Циркулации“ на Наневски и Јовановиќ",
                           "link":  "https://trn.mk/izlozhba-cirkulacii-nanevski-jovanovik-suli-an/",
