@@ -1,12 +1,38 @@
 {
-    "lastUpdated":  "2026-10-21T17:46:37Z",
-    "sourceLastUpdated":  "2026-10-21T17:24:04Z",
-    "generatedAt":  "2026-10-21T17:46:37Z",
+    "lastUpdated":  "2026-10-22T17:58:15Z",
+    "sourceLastUpdated":  "2026-10-22T17:25:49Z",
+    "generatedAt":  "2026-10-22T17:58:15Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  160,
+    "totalMatched":  162,
     "totalMentioned":  124,
-    "sourceArticleCount":  30164,
+    "sourceArticleCount":  30413,
     "articles":  [
+                     {
+                         "title":  "Слаткаристика: Филмот „Слушни ме“ е гласот на сите оние што се бореле да бидат слушнати",
+                         "link":  "https://trn.mk/filmot-slushni-me-slatkaristika/",
+                         "description":  "Музичкиот документарен филм „Слушни ме“, инспириран од животната приказна на Марко Маринковиќ – Слаткаристика, е најавен за почетокот на 2027 година. Македонскиот автор ја сподели најавата по повод Светскиот ден за подигнување на свеста за пелтечењето, со порака за разбирање, поддршка и слушање н...",
+                         "date":  "2026-10-22",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/slatkar-muzika-film-768x403.jpg",
+                         "matchedArtists":  [
+                                                "Слаткаристика"
+                                            ]
+                     },
+                     {
+                         "title":  "Инстант лоз „Титаниум“ на Државна лотарија",
+                         "link":  "https://netpress.com.mk/instant-loz-titanium-na-drzhavna-lotarija/",
+                         "description":  "Со лозот „Титаниум“, Државна лотарија продолжува да ја збогатува понудата на инстант игри што носат возбуда и надеж. Лоз што носи уникатна можност за освојување автомобили и парични добивки, создаден за сите љубители на возбуда и адреналин. Фондот на добивки е особено привлечен и вклучува: 14 пре...",
+                         "date":  "2026-10-22",
+                         "source":  "Нетпрес",
+                         "siteUrl":  "https://netpress.com.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                         "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/10/titanium-1024x1024-1-768x768.jpg",
+                         "matchedArtists":  [
+                                                "Титаниум"
+                                            ]
+                     },
                      {
                          "title":  "Пеце „Суперхикс“: Младите учат за сексот од погрешни извори, а согласноста и границите се прашање на зрелост",
                          "link":  "https://trn.mk/superhiks-mladite-uchat-za-seksot-od-pogreshni-izvori-a-soglasnosta-i-graniczite-se-prashanje-na-zrelost/",
@@ -2101,6 +2127,32 @@
                      }
                  ],
     "matched":  [
+                    {
+                        "title":  "Слаткаристика: Филмот „Слушни ме“ е гласот на сите оние што се бореле да бидат слушнати",
+                        "link":  "https://trn.mk/filmot-slushni-me-slatkaristika/",
+                        "description":  "Музичкиот документарен филм „Слушни ме“, инспириран од животната приказна на Марко Маринковиќ – Слаткаристика, е најавен за почетокот на 2027 година. Македонскиот автор ја сподели најавата по повод Светскиот ден за подигнување на свеста за пелтечењето, со порака за разбирање, поддршка и слушање н...",
+                        "date":  "2026-10-22",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/slatkar-muzika-film-768x403.jpg",
+                        "matchedArtists":  [
+                                               "Слаткаристика"
+                                           ]
+                    },
+                    {
+                        "title":  "Инстант лоз „Титаниум“ на Државна лотарија",
+                        "link":  "https://netpress.com.mk/instant-loz-titanium-na-drzhavna-lotarija/",
+                        "description":  "Со лозот „Титаниум“, Државна лотарија продолжува да ја збогатува понудата на инстант игри што носат возбуда и надеж. Лоз што носи уникатна можност за освојување автомобили и парични добивки, создаден за сите љубители на возбуда и адреналин. Фондот на добивки е особено привлечен и вклучува: 14 пре...",
+                        "date":  "2026-10-22",
+                        "source":  "Нетпрес",
+                        "siteUrl":  "https://netpress.com.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=netpress.com.mk\u0026sz=32",
+                        "thumbnail":  "https://netpress.com.mk/wp-content/uploads/2026/10/titanium-1024x1024-1-768x768.jpg",
+                        "matchedArtists":  [
+                                               "Титаниум"
+                                           ]
+                    },
                     {
                         "title":  "Пеце „Суперхикс“: Младите учат за сексот од погрешни извори, а согласноста и границите се прашање на зрелост",
                         "link":  "https://trn.mk/superhiks-mladite-uchat-za-seksot-od-pogreshni-izvori-a-soglasnosta-i-graniczite-se-prashanje-na-zrelost/",
