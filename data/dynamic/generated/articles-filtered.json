@@ -1,12 +1,25 @@
 {
-    "lastUpdated":  "2026-10-22T17:58:15Z",
-    "sourceLastUpdated":  "2026-10-22T17:25:49Z",
-    "generatedAt":  "2026-10-22T17:58:15Z",
+    "lastUpdated":  "2026-10-23T17:56:20Z",
+    "sourceLastUpdated":  "2026-10-23T17:23:11Z",
+    "generatedAt":  "2026-10-23T17:56:20Z",
     "classifierVersion":  "media-classifier-v1",
-    "totalMatched":  162,
-    "totalMentioned":  124,
-    "sourceArticleCount":  30413,
+    "totalMatched":  163,
+    "totalMentioned":  125,
+    "sourceArticleCount":  30636,
     "articles":  [
+                     {
+                         "title":  "Откриено кои се гостите на концертот на Влатко Стефановски во Македонската филхармонија",
+                         "link":  "https://trn.mk/otkrieno-koi-se-gostite-na-konczertot-na-vlatko-stefanovski-vo-makedonskata-filharmonija/",
+                         "description":  "Влатко Стефановски ќе одржи концерт под наслов „Acoustic Night” на 17 декември 2026 година, со почеток во 20 часот, во Македонската филхармонија во Скопје. Познати се и имињата на музичарите кои ќе му се придружат на сцената. Покрај Стефановски, ќе настапат Мирослав Тадиќ, Дамир Имери, Горан Бојч...",
+                         "date":  "2026-10-23",
+                         "source":  "ТРН",
+                         "siteUrl":  "https://trn.mk/",
+                         "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                         "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/photo-©-stefan-rajhl_-avalon-booking-vlatko-stefanovski-miroslav-tadic-makedonska-filharmonija-02.06.2024_-0073-768x511.jpg",
+                         "matchedArtists":  [
+                                                "Влатко Стефановски"
+                                            ]
+                     },
                      {
                          "title":  "Слаткаристика: Филмот „Слушни ме“ е гласот на сите оние што се бореле да бидат слушнати",
                          "link":  "https://trn.mk/filmot-slushni-me-slatkaristika/",
@@ -2128,6 +2141,19 @@
                  ],
     "matched":  [
                     {
+                        "title":  "Откриено кои се гостите на концертот на Влатко Стефановски во Македонската филхармонија",
+                        "link":  "https://trn.mk/otkrieno-koi-se-gostite-na-konczertot-na-vlatko-stefanovski-vo-makedonskata-filharmonija/",
+                        "description":  "Влатко Стефановски ќе одржи концерт под наслов „Acoustic Night” на 17 декември 2026 година, со почеток во 20 часот, во Македонската филхармонија во Скопје. Познати се и имињата на музичарите кои ќе му се придружат на сцената. Покрај Стефановски, ќе настапат Мирослав Тадиќ, Дамир Имери, Горан Бојч...",
+                        "date":  "2026-10-23",
+                        "source":  "ТРН",
+                        "siteUrl":  "https://trn.mk/",
+                        "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                        "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/photo-©-stefan-rajhl_-avalon-booking-vlatko-stefanovski-miroslav-tadic-makedonska-filharmonija-02.06.2024_-0073-768x511.jpg",
+                        "matchedArtists":  [
+                                               "Влатко Стефановски"
+                                           ]
+                    },
+                    {
                         "title":  "Слаткаристика: Филмот „Слушни ме“ е гласот на сите оние што се бореле да бидат слушнати",
                         "link":  "https://trn.mk/filmot-slushni-me-slatkaristika/",
                         "description":  "Музичкиот документарен филм „Слушни ме“, инспириран од животната приказна на Марко Маринковиќ – Слаткаристика, е најавен за почетокот на 2027 година. Македонскиот автор ја сподели најавата по повод Светскиот ден за подигнување на свеста за пелтечењето, со порака за разбирање, поддршка и слушање н...",
@@ -4247,6 +4273,19 @@
                     }
                 ],
     "mentioned":  [
+                      {
+                          "title":  "Претставата „Те чекам“ во Кавадарци ја отвори дебатата за машката ранливост и личните граници",
+                          "link":  "https://trn.mk/te-cekam-kavadarci-pretstava-toksicna-maskost/",
+                          "description":  "Претставата „Те чекам“ на 21 октомври ги собра младите во Кавадарци на отворена дебата за штетните родови очекувања и потребата од емоционална отвореност. Изведбата, реализирана од Театар за Тебе и ХЕРА во соработка меѓу Општина Кавадарци и невладината организација „Визија“, го продолжи процесот ...",
+                          "date":  "2026-10-23",
+                          "source":  "ТРН",
+                          "siteUrl":  "https://trn.mk/",
+                          "iconUrl":  "https://www.google.com/s2/favicons?domain=trn.mk\u0026sz=32",
+                          "thumbnail":  "https://trn.mk/wp-content/uploads/2026/10/pretstava-kavadarci1-768x480.jpg",
+                          "matchedArtists":  [
+                                                 "Визија"
+                                             ]
+                      },
                       {
                           "title":  "Книга за читателите што сакаат литература што не се плаши да постави големи прашања",
                           "link":  "https://novamakedonija.com.mk/prilozi/lik/kniga-za-chitatelite-shto-sakaat-literatura-shto-ne-se-plashi-da-postavi-golemi-prashanja/",
